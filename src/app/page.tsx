@@ -56,7 +56,7 @@ export default function Home() {
             value={walletAddress}
             onChange={handleInputChange}
             placeholder="Enter Solana wallet address"
-            className="flex-1 p-2 border rounded"
+            className="flex-1 p-2 border rounded text-black bg-white"
           />
           <button
             onClick={handleSearch}
