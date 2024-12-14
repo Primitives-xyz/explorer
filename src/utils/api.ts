@@ -26,7 +26,7 @@ interface FollowStats {
 
 export async function getProfiles(walletAddress: string): Promise<Profile[]> {
   const response = await fetch(
-    `${BASE_URL}/profiles?walletAddress=${walletAddress}&shouldIncludeExternal=true&apiKey=${API_KEY}`
+    `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`
   );
   
   if (!response.ok) {
