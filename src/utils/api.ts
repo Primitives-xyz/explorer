@@ -71,10 +71,10 @@ export async function getProfiles(
   }
 }
 
-export async function getFollowStats(profileId: string): Promise<FollowStats> {
+export async function getFollowStats(username: string): Promise<FollowStats> {
   const [followersRes, followingRes] = await Promise.all([
-    fetch(`/api/profiles/${profileId}/followers`),
-    fetch(`/api/profiles/${profileId}/following`)
+    fetch(`/api/profiles/${username}/followers`),
+    fetch(`/api/profiles/${username}/following`)
   ]);
 
   if (!followersRes.ok || !followingRes.ok) {

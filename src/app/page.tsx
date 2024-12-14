@@ -39,7 +39,7 @@ export default function Home() {
         const profilesWithStats = await Promise.all(
           profilesData.items.map(async (profile) => {
             try {
-              const stats = await getFollowStats(profile.profile.id);
+              const stats = await getFollowStats(profile.profile.username);
               return { ...profile, followStats: stats };
             } catch (error) {
               return { ...profile, followStats: { followers: 0, following: 0 } };
