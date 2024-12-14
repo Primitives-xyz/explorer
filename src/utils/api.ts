@@ -3,9 +3,13 @@ import { type } from 'os';
 export interface Profile {
   id: string;
   handle: string;
-  displayName: string;
-  avatar: string;
-  // Add other profile fields as needed
+  username: string;
+  bio: string | null;
+  image: string | null;
+  namespace: {
+    name: string;
+    faviconURL: string | null;
+  };
 }
 
 interface ProfileResponse {

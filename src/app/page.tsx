@@ -97,23 +97,38 @@ export default function Home() {
           {profiles.map((profile) => (
             <div
               key={profile.id}
-              className="p-6 bg-white border rounded-lg shadow-sm hover:shadow-md transition"
+              className="p-6 bg-white border rounded-lg shadow-sm hover:shadow-md transition relative"
             >
-              <div className="flex items-center gap-6">
-                {profile.avatar && (
+              {profile.namespace?.faviconURL && (
+                <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                  <img 
+                    src={profile.namespace.faviconURL} 
+                    alt={profile.namespace.name}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm text-gray-600">{profile.namespace.name}</span>
+                </div>
+              )}
+
+              <div className="flex items-start gap-6">
+                {profile.image && (
                   <img
-                    src={profile.avatar}
-                    alt={profile.handle}
-                    className="w-16 h-16 rounded-full shadow"
+                    src={profile.image}
+                    alt={profile.username}
+                    className="w-16 h-16 rounded-full shadow object-cover"
                   />
                 )}
+
                 <div className="flex-grow">
-                  <h2 className="text-xl font-bold text-gray-900">{profile.displayName}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {profile.username}
+                  </h2>
                   <p className="text-gray-600">@{profile.handle}</p>
                   {profile.bio && (
-                    <p className="mt-2 text-gray-700">{profile.bio}</p>
+                    <p className="mt-2 text-gray-700 whitespace-pre-wrap">{profile.bio}</p>
                   )}
                 </div>
+
                 {profile.followStats && (
                   <div className="text-right">
                     <p className="text-gray-900">
