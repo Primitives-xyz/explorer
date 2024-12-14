@@ -1,5 +1,3 @@
-import { Helius } from 'helius-sdk';
-
 export enum TokenType {
   ALL = 'ALL',
   FUNGIBLE = 'FUNGIBLE',
@@ -18,21 +16,36 @@ export interface FungibleToken {
 
 export async function getTokens(walletAddress: string): Promise<FungibleToken[]> {
   try {
-    const helius = new Helius(process.env.NEXT_PUBLIC_HELIUS_API_KEY!);
+    const response = await fetch(
+      'https://api.helius.xyz/v0/token-balances',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 'my-id',
+          method: 'searchAssets',
+          params: {
+            ownerAddress: walletAddress,
+            tokenType: TokenType.FUNGIBLE,
+            displayOptions: {
+              showCollectionMetadata: true,
+            },
+          },
+          api_key: process.env.NEXT_PUBLIC_HELIUS_API_KEY,
+        }),
+      }
+    );
 
-    const assets = await helius.rpc.searchAssets({
-      ownerAddress: walletAddress,
-      tokenType: TokenType.FUNGIBLE,
-      displayOptions: {
-        showCollectionMetadata: true,
-      },
-    });
-
-    if (!assets || !assets.items) {
+    const data = await response.json();
+    
+    if (!data.result?.items) {
       return [];
     }
 
-    return assets.items.map((item: any) => ({
+    return data.result.items.map((item: any) => ({
       id: item.id,
       name: item.content?.metadata?.name || 'Unknown Token',
       symbol: item.content?.metadata?.symbol || '',
@@ -41,9 +54,9 @@ export async function getTokens(walletAddress: string): Promise<FungibleToken[]>
       price: item.token_info?.price_info?.price_per_token || 0,
       currency: 'USDC',
     }));
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching tokens:', error);
-    throw new Error(`Failed to fetch tokens: ${error.message}`);
+    return [];
   }
 }
 

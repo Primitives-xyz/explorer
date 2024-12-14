@@ -1,6 +1,44 @@
 import { type } from 'os';
 import { PaginatedData } from '@/types/pagination';
 
+export enum FetchMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+}
+
+export async function fetchTapestry<T = any>({
+  endpoint,
+  method = FetchMethod.GET,
+  data,
+}: {
+  endpoint: string;
+  method?: FetchMethod;
+  data?: any;
+}): Promise<T> {
+  const url = `${process.env.NEXT_PUBLIC_TAPESTRY_URL}/${endpoint}?apiKey=${process.env.NEXT_PUBLIC_TAPESTRY_API_KEY}`;
+  
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (data && method !== FetchMethod.GET) {
+    options.body = JSON.stringify(data);
+  }
+
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
 export interface Profile {
   profile: {
     id: string;
