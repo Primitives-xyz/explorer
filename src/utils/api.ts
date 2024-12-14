@@ -1,12 +1,5 @@
 import { type } from 'os';
 
-const BASE_URL = process.env.NEXT_PUBLIC_TAPESTRY_URL || 'https://api.usetapestry.dev/api/v1';
-const API_KEY = process.env.NEXT_PUBLIC_TAPESTRY_API_KEY;
-
-if (!API_KEY) {
-  throw new Error('NEXT_PUBLIC_TAPESTRY_API_KEY is not defined in environment variables');
-}
-
 export interface Profile {
   id: string;
   handle: string;
@@ -26,17 +19,7 @@ interface FollowStats {
 
 export async function getProfiles(walletAddress: string): Promise<Profile[]> {
   try {
-    console.log('Request URL:', `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`);
-    const response = await fetch(
-      `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`,
-      {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Origin': window.location.origin
-        }
-      }
-    );
+    const response = await fetch(`/api/profiles?walletAddress=${walletAddress}`);
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -58,8 +41,8 @@ export async function getProfiles(walletAddress: string): Promise<Profile[]> {
 
 export async function getFollowStats(profileId: string): Promise<FollowStats> {
   const [followersRes, followingRes] = await Promise.all([
-    fetch(`${BASE_URL}/profiles/${profileId}/followers?apiKey=${API_KEY}`),
-    fetch(`${BASE_URL}/profiles/${profileId}/following?apiKey=${API_KEY}`)
+    fetch(`/api/profiles/${profileId}/followers`),
+    fetch(`/api/profiles/${profileId}/following`)
   ]);
 
   if (!followersRes.ok || !followingRes.ok) {

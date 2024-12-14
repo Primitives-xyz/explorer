@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { getProfiles, getFollowStats } from '@/utils/api';
+import { useState, ChangeEvent } from 'react';
+import { getProfiles, getFollowStats, type Profile as ApiProfile } from '@/utils/api';
 
-interface Profile {
-  id: string;
-  handle: string;
-  displayName: string;
-  avatar: string;
+interface Profile extends ApiProfile {
   followStats?: {
     followers: number;
     following: number;
@@ -45,6 +41,10 @@ export default function Home() {
     }
   };
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setWalletAddress(e.target.value);
+  };
+
   return (
     <main className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
@@ -54,7 +54,7 @@ export default function Home() {
           <input
             type="text"
             value={walletAddress}
-            onChange={(e) => setWalletAddress(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Enter Solana wallet address"
             className="flex-1 p-2 border rounded"
           />

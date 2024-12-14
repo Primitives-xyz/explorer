@@ -1,34 +1,26 @@
 // app/api/profiles/findAllProfiles/route.ts
 
-import { FetchMethod, fetchTapestry } from '@/utils/api'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const walletAddress = searchParams.get('walletAddress')
+const BASE_URL = process.env.NEXT_PUBLIC_TAPESTRY_URL || 'https://api.usetapestry.dev/api/v1';
+const API_KEY = process.env.NEXT_PUBLIC_TAPESTRY_API_KEY;
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const walletAddress = searchParams.get('walletAddress');
 
   if (!walletAddress) {
-    return NextResponse.json(
-      { error: 'walletAddress is required' },
-      { status: 400 },
-    )
+    return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 });
   }
 
+  const tapestryUrl = `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`;
+  
   try {
-    const data = await fetchTapestry<any>({
-      endpoint: 'profiles',
-      method: FetchMethod.GET,
-      data: {
-        walletAddress,
-      },
-    })
-
-    return NextResponse.json(data)
-  } catch (error: any) {
-    console.error('Error fetching profiles:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch profiles' },
-      { status: 500 },
-    )
+    const response = await fetch(tapestryUrl);
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error fetching from Tapestry:', error);
+    return NextResponse.json({ error: 'Failed to fetch profiles' }, { status: 500 });
   }
 }
