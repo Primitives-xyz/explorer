@@ -25,16 +25,35 @@ interface FollowStats {
 }
 
 export async function getProfiles(walletAddress: string): Promise<Profile[]> {
-  const response = await fetch(
-    `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`
-  );
-  
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.statusText}`);
+  try {
+    console.log('Request URL:', `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`);
+    const response = await fetch(
+      `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Origin': window.location.origin
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    }
+    
+    const data: ProfileResponse = await response.json();
+    return data.profiles;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
   }
-  
-  const data: ProfileResponse = await response.json();
-  return data.profiles;
 }
 
 export async function getFollowStats(profileId: string): Promise<FollowStats> {
