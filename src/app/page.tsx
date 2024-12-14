@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { getProfiles, getFollowStats, type Profile as ApiProfile } from '@/utils/api';
 import { getTokens, type FungibleToken } from '@/utils/helius';
 
@@ -17,6 +17,10 @@ export default function Home() {
   const [tokens, setTokens] = useState<FungibleToken[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setWalletAddress(e.target.value);
+  };
 
   const handleSearch = async () => {
     if (!walletAddress) return;

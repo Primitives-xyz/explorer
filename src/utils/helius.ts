@@ -58,23 +58,4 @@ export async function getTokens(walletAddress: string): Promise<FungibleToken[]>
     console.error('Error fetching tokens:', error);
     return [];
   }
-}
-
-// Optional: Add function to get a single asset details
-export async function getAssetDetails(tokenId: string) {
-  try {
-    const helius = new Helius(process.env.NEXT_PUBLIC_HELIUS_API_KEY!);
-
-    const asset = await helius.rpc.getAsset({
-      id: tokenId,
-      displayOptions: {
-        showCollectionMetadata: true,
-      },
-    });
-
-    return asset;
-  } catch (error: any) {
-    console.error('Error fetching asset details:', error);
-    throw new Error(`Failed to fetch asset details: ${error.message}`);
-  }
 } 
