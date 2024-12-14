@@ -31,8 +31,9 @@ export async function getProfiles(walletAddress: string): Promise<Profile[]> {
       throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
     
-    const data: ProfileResponse = await response.json();
-    return data.profiles;
+    const data = await response.json();
+    console.log('Profiles data:', data);
+    return data.profiles || [];
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;
