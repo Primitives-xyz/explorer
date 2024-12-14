@@ -1,4 +1,5 @@
 import { type } from 'os';
+import { PaginatedData } from '@/types/pagination';
 
 export interface Profile {
   profile: {
@@ -36,9 +37,16 @@ interface FollowStats {
   following: number;
 }
 
-export async function getProfiles(walletAddress: string): Promise<Profile[]> {
+export const ITEMS_PER_PAGE = 10;
+
+export async function getProfiles(
+  walletAddress: string,
+  page: number = 1
+): Promise<PaginatedData<Profile>> {
   try {
-    const response = await fetch(`/api/profiles?walletAddress=${walletAddress}`);
+    const response = await fetch(
+      `/api/profiles?walletAddress=${walletAddress}&page=${page}&limit=${ITEMS_PER_PAGE}`
+    );
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -50,9 +58,13 @@ export async function getProfiles(walletAddress: string): Promise<Profile[]> {
       throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
     
-    const data: ProfileResponse = await response.json();
-    console.log('Raw API response:', data);
-    return data.profiles || [];
+    const data = await response.json();
+    return {
+      items: data.profiles || [],
+      hasMore: data.profiles.length === ITEMS_PER_PAGE,
+      page: data.page,
+      pageSize: data.pageSize
+    };
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;

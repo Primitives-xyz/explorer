@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, ChangeEvent } from 'react';
-import { getProfiles, getFollowStats, type Profile as ApiProfile } from '@/utils/api';
+import { useState } from 'react';
+import { getProfiles, getFollowStats, type Profile as ApiProfile, ITEMS_PER_PAGE } from '@/utils/api';
+import { LoadMoreObserver } from '@/components/load-more-observer';
 
 interface ProfileWithStats extends ApiProfile {
   followStats?: {
@@ -15,33 +16,35 @@ export default function Home() {
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
   const handleSearch = async () => {
     if (!walletAddress) return;
     
     setLoading(true);
     setError(null);
+    setPage(1);
+    
     try {
-      const profilesData = await getProfiles(walletAddress);
-      console.log('Received profiles:', profilesData); // Debug log
+      const profilesData = await getProfiles(walletAddress, 1);
       
-      if (!profilesData || profilesData.length === 0) {
+      if (!profilesData.items || profilesData.items.length === 0) {
         setError('No profiles found for this wallet address');
         setProfiles([]);
         return;
       }
 
-      // Get follow stats for each profile
       const profilesWithStats = await Promise.all(
-        profilesData.map(async (profile) => {
+        profilesData.items.map(async (profile) => {
           try {
-            const stats = await getFollowStats(profile.id);
+            const stats = await getFollowStats(profile.profile.id);
             return {
               ...profile,
               followStats: stats,
             };
           } catch (error) {
-            console.error(`Error fetching stats for profile ${profile.id}:`, error);
+            console.error(`Error fetching stats for profile ${profile.profile.id}:`, error);
             return {
               ...profile,
               followStats: { followers: 0, following: 0 },
@@ -50,12 +53,47 @@ export default function Home() {
         })
       );
       
-      console.log('Profiles with stats:', profilesWithStats); // Debug log
       setProfiles(profilesWithStats);
+      setHasMore(profilesData.hasMore);
     } catch (error) {
       console.error('Error fetching profiles:', error);
       setError('Failed to fetch profiles. Please try again.');
       setProfiles([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (loading || !hasMore) return;
+    
+    setLoading(true);
+    try {
+      const nextPage = page + 1;
+      const newData = await getProfiles(walletAddress, nextPage);
+      
+      const newProfilesWithStats = await Promise.all(
+        newData.items.map(async (profile) => {
+          try {
+            const stats = await getFollowStats(profile.profile.id);
+            return {
+              ...profile,
+              followStats: stats,
+            };
+          } catch (error) {
+            return {
+              ...profile,
+              followStats: { followers: 0, following: 0 },
+            };
+          }
+        })
+      );
+
+      setProfiles([...profiles, ...newProfilesWithStats]);
+      setPage(nextPage);
+      setHasMore(newData.hasMore);
+    } catch (error) {
+      console.error('Error loading more profiles:', error);
     } finally {
       setLoading(false);
     }
@@ -158,6 +196,12 @@ export default function Home() {
               </div>
             </div>
           ))}
+          
+          <LoadMoreObserver
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
+            loading={loading}
+          />
         </div>
 
         {loading && (
