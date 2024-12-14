@@ -13,10 +13,28 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Wallet address is required' }, { status: 400 });
   }
 
-  const tapestryUrl = `${BASE_URL}/profiles/?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`;
-  
   try {
-    const response = await fetch(tapestryUrl);
+    // Note: API key must be first query parameter
+    const response = await fetch(
+      `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Tapestry API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
+      return NextResponse.json({ error: 'Failed to fetch profiles from Tapestry' }, { status: response.status });
+    }
+
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
