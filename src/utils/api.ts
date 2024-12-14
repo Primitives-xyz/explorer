@@ -1,87 +1,55 @@
-export enum FetchMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
+const BASE_URL = 'https://api.usetapestry.dev/api/v1';
+
+interface Profile {
+  id: string;
+  handle: string;
+  displayName: string;
+  avatar: string;
+  // Add other profile fields as needed
 }
 
-const createURL = ({
-  domain,
-  endpoint,
-}: {
-  domain: string
-  endpoint: string
-}) => {
-  domain = domain.replace(/\/+$/, '')
-  endpoint = endpoint.replace(/^\/+|\/+$/g, '')
-
-  if (!domain) {
-    return endpoint
-  }
-
-  return domain + '/' + endpoint
+interface ProfileResponse {
+  profiles: Profile[];
 }
 
-export const getUrlWithQueryParameters = (
-  endpoint: string | null,
-  data?: Record<string, any>,
-) => {
-  const queryParameters = new URLSearchParams(data).toString()
-
-  return `${endpoint}${!!queryParameters ? '&' + queryParameters : ''}`
+interface FollowStats {
+  followers: number;
+  following: number;
 }
 
-export const fetchTapestry = async <ResponseType = any, InputType = any>({
-  method = FetchMethod.GET,
-  endpoint,
-  data,
-}: {
-  method?: FetchMethod
-  endpoint: string
-  data?: InputType
-}): Promise<ResponseType> => {
-  endpoint = `${endpoint}?apiKey=${process.env.TAPESTRY_API_KEY}`
-
-  if (method === FetchMethod.GET && data) {
-    endpoint = getUrlWithQueryParameters(endpoint, data)
-  }
-
-  const url = createURL({
-    domain: process.env.TAPESTRY_URL!,
-    endpoint,
-  })
-
-  const body =
-    method === FetchMethod.POST || method === FetchMethod.PUT
-      ? JSON.stringify(data)
-      : undefined
-
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body,
-  })
-
-  if (!response.ok) {
-    // error handling
-    const text = await response.text()
-    console.error(`Error fetching ${endpoint}`, text)
-
-    try {
-      const data = JSON.parse(text)
-      throw data
-    } catch {
-      throw new Error(text)
+export async function getProfiles(walletAddress: string): Promise<Profile[]> {
+  const response = await fetch(
+    `${BASE_URL}/profiles?walletAddress=${walletAddress}&shouldIncludeExternal=true`,
+    {
+      headers: {
+        'x-api-key': process.env.NEXT_PUBLIC_TAPESTRY_API_KEY || '',
+      },
     }
-  } else {
-    try {
-      const data = await response.json()
-      return data
-    } catch (error) {
-      console.error(error)
-      return null as ResponseType
-    }
-  }
+  );
+  
+  const data: ProfileResponse = await response.json();
+  return data.profiles;
+}
+
+export async function getFollowStats(profileId: string): Promise<FollowStats> {
+  const [followersRes, followingRes] = await Promise.all([
+    fetch(`${BASE_URL}/profiles/${profileId}/followers`, {
+      headers: {
+        'x-api-key': process.env.NEXT_PUBLIC_TAPESTRY_API_KEY || '',
+      },
+    }),
+    fetch(`${BASE_URL}/profiles/${profileId}/following`, {
+      headers: {
+        'x-api-key': process.env.NEXT_PUBLIC_TAPESTRY_API_KEY || '',
+      },
+    }),
+  ]);
+
+  const followers = await followersRes.json();
+  const following = await followingRes.json();
+
+  return {
+    followers: followers.total,
+    following: following.total,
+  };
 }

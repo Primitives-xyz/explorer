@@ -5,8 +5,8 @@ This is a [Tapestry](https://www.usetapestry.dev/) boilerplate repository, it's 
 You'll need to add your api key and the tapestry URL to your environment variables - in the file `.env.local`:
 
 ```bash
-TAPESTRY_API_KEY=xxx
-TAPESTRY_URL=https://protocol-server.fly.dev/v1
+TAPESTRY_API_KEY=4bad1b01-2ac3-4852-8582-f251448dc926
+TAPESTRY_URL=https://api.usetapestry.dev/api/v1
 
 ```
 
