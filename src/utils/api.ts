@@ -1,19 +1,34 @@
 import { type } from 'os';
 
 export interface Profile {
-  id: string;
-  handle: string;
-  username: string;
-  bio: string | null;
-  image: string | null;
+  profile: {
+    id: string;
+    namespace: string;
+    username: string;
+    bio: string | null;
+    image: string | null;
+    blockchain: string;
+    created_at: number;
+  };
+  wallet: {
+    address: string;
+  };
   namespace: {
+    id: number;
     name: string;
-    faviconURL: string | null;
+    readableName: string;
+    faviconURL: string;
+    createdAt: string;
+    updatedAt: string;
+    isDefault: boolean;
+    team_id: number;
   };
 }
 
 interface ProfileResponse {
   profiles: Profile[];
+  page: number;
+  pageSize: number;
 }
 
 interface FollowStats {
@@ -35,8 +50,8 @@ export async function getProfiles(walletAddress: string): Promise<Profile[]> {
       throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
-    console.log('Profiles data:', data);
+    const data: ProfileResponse = await response.json();
+    console.log('Raw API response:', data);
     return data.profiles || [];
   } catch (error) {
     console.error('Fetch error:', error);

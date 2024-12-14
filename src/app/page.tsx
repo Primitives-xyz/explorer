@@ -3,7 +3,7 @@
 import { useState, ChangeEvent } from 'react';
 import { getProfiles, getFollowStats, type Profile as ApiProfile } from '@/utils/api';
 
-interface Profile extends ApiProfile {
+interface ProfileWithStats extends ApiProfile {
   followStats?: {
     followers: number;
     following: number;
@@ -12,7 +12,7 @@ interface Profile extends ApiProfile {
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState('');
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [profiles, setProfiles] = useState<ProfileWithStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,51 +96,65 @@ export default function Home() {
         <div className="space-y-4">
           {profiles.map((profile) => (
             <div
-              key={profile.id}
-              className="p-6 bg-white border rounded-lg shadow-sm hover:shadow-md transition relative"
+              key={profile.profile.id}
+              className="p-6 bg-white border rounded-lg shadow-sm hover:shadow-md transition"
             >
-              {profile.namespace?.faviconURL && (
-                <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
-                  <img 
-                    src={profile.namespace.faviconURL} 
-                    alt={profile.namespace.name}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-sm text-gray-600">{profile.namespace.name}</span>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start gap-6 flex-grow">
+                  {profile.profile.image && (
+                    <img
+                      src={profile.profile.image}
+                      alt={profile.profile.username}
+                      className="w-16 h-16 rounded-full shadow object-cover"
+                    />
+                  )}
+
+                  <div className="flex-grow">
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {profile.profile.username}
+                    </h2>
+                    <p className="text-gray-600 text-sm">
+                      {profile.wallet.address}
+                    </p>
+                    {profile.profile.bio && (
+                      <p className="mt-2 text-gray-700 whitespace-pre-wrap">
+                        {profile.profile.bio}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              )}
 
-              <div className="flex items-start gap-6">
-                {profile.image && (
-                  <img
-                    src={profile.image}
-                    alt={profile.username}
-                    className="w-16 h-16 rounded-full shadow object-cover"
-                  />
-                )}
+                <div className="flex flex-col items-end gap-2">
+                  {profile.namespace?.faviconURL && (
+                    <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                      <img 
+                        src={profile.namespace.faviconURL} 
+                        alt={profile.namespace.name}
+                        className="w-4 h-4"
+                      />
+                      <span className="text-sm text-gray-600">
+                        {profile.namespace.readableName}
+                      </span>
+                    </div>
+                  )}
 
-                <div className="flex-grow">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {profile.username}
-                  </h2>
-                  <p className="text-gray-600">@{profile.handle}</p>
-                  {profile.bio && (
-                    <p className="mt-2 text-gray-700 whitespace-pre-wrap">{profile.bio}</p>
+                  {profile.followStats && (
+                    <div className="text-right mt-2">
+                      <p className="text-gray-900">
+                        <span className="font-bold text-lg">
+                          {profile.followStats.followers}
+                        </span>
+                        <span className="text-gray-600 ml-1">followers</span>
+                      </p>
+                      <p className="text-gray-900">
+                        <span className="font-bold text-lg">
+                          {profile.followStats.following}
+                        </span>
+                        <span className="text-gray-600 ml-1">following</span>
+                      </p>
+                    </div>
                   )}
                 </div>
-
-                {profile.followStats && (
-                  <div className="text-right">
-                    <p className="text-gray-900">
-                      <span className="font-bold text-lg">{profile.followStats.followers}</span>
-                      <span className="text-gray-600 ml-1">followers</span>
-                    </p>
-                    <p className="text-gray-900">
-                      <span className="font-bold text-lg">{profile.followStats.following}</span>
-                      <span className="text-gray-600 ml-1">following</span>
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           ))}
