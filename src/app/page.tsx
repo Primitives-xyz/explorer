@@ -138,6 +138,10 @@ export default function Home() {
 
   console.log(tokens)
 
+  const clearError = () => {
+    setError(null)
+  }
+
   return (
     <Layout>
       <div className="w-full overflow-hidden">
@@ -151,8 +155,15 @@ export default function Home() {
         />
 
         {error && (
-          <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 overflow-x-auto whitespace-nowrap scrollbar-none">
-            ! ERROR: {error}
+          <div className="relative p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 overflow-x-auto whitespace-nowrap scrollbar-none">
+            <button
+              onClick={clearError}
+              className="absolute right-2 top-1/2 -translate-y-1/2 px-2 hover:text-red-200 transition-colors"
+              aria-label="Dismiss error"
+            >
+              ✕
+            </button>
+            <span>! ERROR: {error}</span>
           </div>
         )}
 
@@ -175,14 +186,6 @@ export default function Home() {
             />
           </div>
         </div>
-
-        {loading && (
-          <div className="text-center py-4 w-full">
-            <div className="inline-block px-2 py-1 border border-green-600 text-sm">
-              LOADING...
-            </div>
-          </div>
-        )}
 
         {!loading && profiles.length === 0 && !error && (
           <div className="text-center py-8 text-green-600 w-full">
