@@ -1,4 +1,5 @@
-import { FetchMethod, fetchTapestry } from '@/utils/api'
+import { fetchTapestryServer } from '@/lib/tapestry-server'
+import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -12,14 +13,10 @@ export async function GET(
   }
 
   try {
-    const response = await fetchTapestry({
+    const response = await fetchTapestryServer({
       endpoint: `profiles/${username}/following`,
       method: FetchMethod.GET,
     })
-
-    if (response.error) {
-      return NextResponse.json({ error: response.error }, { status: 500 })
-    }
 
     return NextResponse.json(response)
   } catch (error: any) {
@@ -29,4 +26,4 @@ export async function GET(
       { status: 500 },
     )
   }
-} 
+}

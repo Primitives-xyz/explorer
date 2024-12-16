@@ -1,5 +1,4 @@
-import { type } from 'os';
-import { PaginatedData } from '@/types/pagination';
+import { PaginatedData } from '@/types/pagination'
 
 export enum FetchMethod {
   GET = 'GET',
@@ -8,122 +7,93 @@ export enum FetchMethod {
   DELETE = 'DELETE',
 }
 
-export async function fetchTapestry<T = any>({
-  endpoint,
-  method = FetchMethod.GET,
-  data,
-}: {
-  endpoint: string;
-  method?: FetchMethod;
-  data?: any;
-}): Promise<T> {
-  const url = `${process.env.NEXT_PUBLIC_TAPESTRY_URL}/${endpoint}?apiKey=${process.env.NEXT_PUBLIC_TAPESTRY_API_KEY}`;
-  
-  const options: RequestInit = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  if (data && method !== FetchMethod.GET) {
-    options.body = JSON.stringify(data);
-  }
-
-  const response = await fetch(url, options);
-  
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
 export interface Profile {
   profile: {
-    id: string;
-    namespace: string;
-    username: string;
-    bio: string | null;
-    image: string | null;
-    blockchain: string;
-    created_at: number;
-  };
+    id: string
+    namespace: string
+    username: string
+    bio: string | null
+    image: string | null
+    blockchain: string
+    created_at: number
+  }
   wallet: {
-    address: string;
-  };
+    address: string
+  }
   namespace: {
-    id: number;
-    name: string;
-    readableName: string;
-    faviconURL: string;
-    createdAt: string;
-    updatedAt: string;
-    isDefault: boolean;
-    team_id: number;
-  };
+    id: number
+    name: string
+    readableName: string
+    faviconURL: string
+    createdAt: string
+    updatedAt: string
+    isDefault: boolean
+    team_id: number
+  }
 }
 
 interface ProfileResponse {
-  profiles: Profile[];
-  page: number;
-  pageSize: number;
+  profiles: Profile[]
+  page: number
+  pageSize: number
 }
 
 interface FollowStats {
-  followers: number;
-  following: number;
+  followers: number
+  following: number
 }
 
-export const ITEMS_PER_PAGE = 10;
+export const ITEMS_PER_PAGE = 10
 
 export async function getProfiles(
   walletAddress: string,
-  page: number = 1
+  page: number = 1,
 ): Promise<PaginatedData<Profile>> {
   try {
     const response = await fetch(
-      `/api/profiles?walletAddress=${walletAddress}&page=${page}&limit=${ITEMS_PER_PAGE}`
-    );
-    
+      `/api/profiles?walletAddress=${walletAddress}&page=${page}&limit=${ITEMS_PER_PAGE}`,
+    )
+
     if (!response.ok) {
-      const errorText = await response.text();
+      const errorText = await response.text()
       console.error('API Error:', {
         status: response.status,
         statusText: response.statusText,
-        error: errorText
-      });
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        error: errorText,
+      })
+      throw new Error(
+        `API request failed: ${response.status} ${response.statusText}`,
+      )
     }
-    
-    const data = await response.json();
+
+    const data = await response.json()
     return {
       items: data.profiles || [],
       hasMore: data.profiles.length === ITEMS_PER_PAGE,
       page: data.page,
-      pageSize: data.pageSize
-    };
+      pageSize: data.pageSize,
+    }
   } catch (error) {
-    console.error('Fetch error:', error);
-    throw error;
+    console.error('Fetch error:', error)
+    throw error
   }
 }
 
 export async function getFollowStats(username: string): Promise<FollowStats> {
   const [followersRes, followingRes] = await Promise.all([
     fetch(`/api/profiles/${username}/followers`),
-    fetch(`/api/profiles/${username}/following`)
-  ]);
+    fetch(`/api/profiles/${username}/following`),
+  ])
 
   if (!followersRes.ok || !followingRes.ok) {
-    throw new Error('Failed to fetch follow stats');
+    throw new Error('Failed to fetch follow stats')
   }
 
-  const followers = await followersRes.json();
-  const following = await followingRes.json();
+  const followers = await followersRes.json()
+  const following = await followingRes.json()
 
   return {
     followers: followers.total,
     following: following.total,
-  };
+  }
 }
