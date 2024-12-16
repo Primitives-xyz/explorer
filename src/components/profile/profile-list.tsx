@@ -2,7 +2,7 @@ import { Profile } from '@/components/profile/profile'
 import { getProfilesList } from '@/lib/tapestry'
 
 export async function ProfilesList() {
-  const data = await getProfilesList({})
+  const data = await getProfilesList()
 
   const profiles = data.profiles
 

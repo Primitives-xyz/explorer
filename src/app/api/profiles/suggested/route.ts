@@ -1,6 +1,11 @@
 // app/api/profiles/suggestedProfiles/route.ts
-import { FetchMethod, fetchTapestry } from '@/utils/api'
+import { FetchMethod, fetchTapestry, Profile } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
+
+interface SuggestedProfilesResponse {
+  profiles: Profile[]
+  error?: string
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -14,7 +19,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const response = await fetchTapestry({
+    const response = await fetchTapestry<SuggestedProfilesResponse>({
       endpoint: `profiles/suggested/${walletAddress}`,
       method: FetchMethod.GET,
     })

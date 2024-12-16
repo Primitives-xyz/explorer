@@ -97,3 +97,35 @@ export async function getFollowStats(username: string): Promise<FollowStats> {
     following: following.total,
   }
 }
+
+export async function fetchTapestry<T>({
+  endpoint,
+  method = FetchMethod.GET,
+  data,
+}: {
+  endpoint: string
+  method?: FetchMethod
+  data?: unknown
+}): Promise<T> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
+  const url = `${baseUrl}/${endpoint}`
+
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+
+  if (data) {
+    options.body = JSON.stringify(data)
+  }
+
+  const response = await fetch(url, options)
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  return response.json()
+}

@@ -46,6 +46,46 @@ export default function PortfolioTabs({
     }
   }
 
+  const renderContent = () => {
+    if (activeTab === 'transactions') {
+      return (
+        <TransactionList
+          transactions={transactions}
+          loadingMore={loadingMore}
+          onLoadMore={loadMoreTransactions}
+        />
+      )
+    }
+
+    const tokens = activeTab === 'fungible' ? fungibleTokens : nonfungibleTokens
+    if (tokens.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-gray-600">
+            No {activeTab === 'fungible' ? 'tokens' : 'NFTs'} found for this
+            wallet
+          </p>
+        </div>
+      )
+    }
+
+    if (activeTab === 'nonfungible') {
+      return (
+        <div className="text-center py-12">
+          <p className="text-gray-600">NFT display coming soon</p>
+        </div>
+      )
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {fungibleTokens.map((token) => (
+          <TokenCard key={token.id} token={token} tokenType="fungible" />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="flex flex-wrap gap-2 sm:gap-4 mb-8">
@@ -81,38 +121,7 @@ export default function PortfolioTabs({
         </button>
       </div>
 
-      {activeTab !== 'transactions' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {(activeTab === 'fungible' ? fungibleTokens : nonfungibleTokens).map(
-            (token) => (
-              <TokenCard key={token.id} token={token} tokenType={activeTab} />
-            ),
-          )}
-        </div>
-      ) : (
-        <TransactionList
-          transactions={transactions}
-          loadingMore={loadingMore}
-          onLoadMore={loadMoreTransactions}
-        />
-      )}
-
-      {((activeTab !== 'transactions' &&
-        (activeTab === 'fungible' ? fungibleTokens : nonfungibleTokens)
-          .length === 0) ||
-        (activeTab === 'transactions' && transactions.length === 0)) && (
-        <div className="text-center py-12">
-          <p className="text-gray-600">
-            No{' '}
-            {activeTab === 'fungible'
-              ? 'tokens'
-              : activeTab === 'nonfungible'
-                ? 'NFTs'
-                : 'transactions'}{' '}
-            found for this wallet
-          </p>
-        </div>
-      )}
+      {renderContent()}
     </>
   )
 }

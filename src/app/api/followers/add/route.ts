@@ -6,6 +6,13 @@ interface FollowRequestBody {
   followeeUser: { username: string }
 }
 
+// Define the expected response type
+interface TapestryResponse {
+  error?: string
+  // Add other expected response properties here
+  [key: string]: any // For other unknown properties
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { followerUser, followeeUser }: FollowRequestBody = await req.json()
@@ -25,7 +32,7 @@ export async function POST(req: NextRequest) {
       execution: 'FAST_UNCONFIRMED',
     }
 
-    const response = await fetchTapestry({
+    const response = await fetchTapestry<TapestryResponse>({
       endpoint: 'followers/add',
       method: FetchMethod.POST,
       data: bodyData,

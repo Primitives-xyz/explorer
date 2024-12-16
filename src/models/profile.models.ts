@@ -6,9 +6,11 @@ export interface ISocialCounts {
 }
 
 export interface IProfileResponse {
-  [x: string]: any
-  walletAddress?: string | undefined
-  socialCounts: ISocialCounts
+  walletAddress: string
+  socialCounts: {
+    followers: number
+    following: number
+  }
 }
 
 export interface IProfile {
@@ -22,7 +24,8 @@ export interface IProfile {
   isWaitListed?: boolean
 }
 export interface IGetSocialResponse extends IPaginatedResponse {
-  profiles: IProfile[]
+  profiles: ISuggestedProfiles[]
+  totalCount: number
 }
 
 export interface ISuggestedProfile {
@@ -42,5 +45,9 @@ export interface ISuggestedProfile {
 }
 
 export interface ISuggestedProfiles {
-  [key: string]: ISuggestedProfile
+  id: string
+  username: string
+  walletAddress: string
+  bio?: string
+  avatar?: string
 }
