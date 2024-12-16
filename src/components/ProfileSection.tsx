@@ -63,78 +63,58 @@ export const ProfileSection = ({
   if (!hasSearched) return null
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-      {/* Header */}
-      <div className="border-b border-green-800 p-2">
-        <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
-            {'>'} profile_info.sol
-          </div>
-          <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
-            COUNT: {profiles.length}
-          </div>
-        </div>
-      </div>
+    <div className="bg-white rounded-lg shadow-sm p-6">
+      <h2 className="text-xl font-semibold mb-4">Social Profiles</h2>
+      <div className="space-y-4">
+        {profiles?.map((profile) => (
+          <div
+            key={`${profile.profile.id}-${profile.namespace.name}`}
+            className="border rounded-lg p-4 relative"
+          >
+            {/* Namespace Badge - Top Right */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+              {profile.namespace.faviconURL && (
+                <img
+                  src={profile.namespace.faviconURL}
+                  alt={profile.namespace.readableName}
+                  className="w-4 h-4"
+                />
+              )}
+              <span className="text-sm text-gray-600">
+                {profile.namespace.readableName}
+              </span>
+            </div>
 
-      {error && (
-        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400">
-          <span>! ERROR: {error}</span>
-        </div>
-      )}
-
-      {/* Profile List */}
-      <div className="divide-y divide-green-800/30">
-        {isLoading ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> FETCHING PROFILES...'}
-          </div>
-        ) : profiles.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> NO PROFILES FOUND'}
-          </div>
-        ) : (
-          profiles.map((profile) => (
-            <div
-              key={profile.profile.username}
-              className="p-4 hover:bg-green-900/10"
-            >
-              <div className="flex items-start gap-4">
-                {profile.profile.image && (
-                  <img
-                    src={profile.profile.image}
-                    alt={profile.profile.username}
-                    className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
-                  />
+            {/* Profile Content */}
+            <div className="flex items-start gap-4 pr-32"> {/* Added right padding to prevent overlap */}
+              {profile.profile.image && (
+                <img
+                  src={profile.profile.image}
+                  alt={profile.profile.username}
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+              )}
+              
+              <div>
+                <h3 className="font-semibold text-lg">
+                  {profile.profile.username}
+                </h3>
+                {profile.profile.bio && (
+                  <p className="text-gray-600 mt-1">{profile.profile.bio}</p>
                 )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded">
-                        @{profile.profile.username}
-                      </span>
-                      {profile.profile.bio && (
-                        <span className="text-green-600 font-mono">
-                          {profile.profile.bio}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex gap-4 text-xs text-green-600 font-mono">
-                      <span>
-                        Followers: {profile.followStats?.followers || 0}
-                      </span>
-                      <span>
-                        Following: {profile.followStats?.following || 0}
-                      </span>
-                    </div>
-                    <div className="text-xs text-green-600/50 font-mono">
-                      {profile.wallet.address}
-                    </div>
-                  </div>
-                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  {profile.wallet.address}
+                </p>
               </div>
             </div>
-          ))
-        )}
+
+            {/* Follow Stats */}
+            <div className="mt-4 flex gap-4 text-sm text-gray-600">
+              <span>{profile.followStats?.followers || 0} followers</span>
+              <span>{profile.followStats?.following || 0} following</span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
