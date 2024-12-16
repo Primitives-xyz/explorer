@@ -62,8 +62,8 @@ export default function Home() {
           hasSearched={hasSearched}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-          <div className="space-y-4 w-full overflow-hidden">
+        <div className="space-y-4 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
             <ProfileSection
               walletAddress={walletAddress}
               hasSearched={hasSearched}
@@ -74,7 +74,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="space-y-4 w-full overflow-hidden">
+          <div className="w-full">
             <TransactionSection
               walletAddress={walletAddress}
               hasSearched={hasSearched}
