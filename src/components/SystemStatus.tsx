@@ -31,7 +31,7 @@ export const SystemStatus = () => {
   }, [])
 
   return (
-    <footer className="sticky bottom-0 border-t border-green-800 bg-black/50 p-2">
+    <footer className="sticky bottom-0 border-t border-green-800 bg-black/90 backdrop-blur-sm p-2">
       <div className="container mx-auto">
         <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-mono">
           <div className="flex items-center gap-2">

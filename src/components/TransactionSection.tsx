@@ -22,14 +22,14 @@ export const TransactionSection = ({
   if (!shouldShowContent) return null
 
   return (
-    <div className="border border-green-800 bg-black/50">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
       {/* Header */}
       <div className="border-b border-green-800 p-2">
-        <div className="flex justify-between items-center">
-          <div className="text-green-500 text-sm font-mono">
+        <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
+          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
             {'>'} transaction_log.sol
           </div>
-          <div className="text-xs text-green-600 font-mono">
+          <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
             COUNT: {transactions.length}
           </div>
         </div>
@@ -48,34 +48,34 @@ export const TransactionSection = ({
         ) : (
           transactions.map((tx) => (
             <div key={tx.signature} className="p-3 hover:bg-green-900/10">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 overflow-hidden">
                 {/* Transaction Header */}
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-green-400 font-mono bg-green-900/20 px-1.5 py-0.5 rounded">
+                <div className="flex items-center justify-between text-xs overflow-x-auto scrollbar-none">
+                  <span className="text-green-400 font-mono bg-green-900/20 px-1.5 py-0.5 rounded whitespace-nowrap">
                     {formatDistanceToNow(new Date(tx.timestamp * 1000))} ago
                   </span>
-                  <span className="text-green-600 font-mono bg-green-900/20 px-1.5 py-0.5 rounded">
+                  <span className="text-green-600 font-mono bg-green-900/20 px-1.5 py-0.5 rounded whitespace-nowrap ml-2">
                     {tx.type}
                   </span>
                 </div>
 
                 {/* Transaction Details */}
-                <div className="text-sm text-green-300 font-mono bg-green-900/10 p-2 rounded">
+                <div className="text-sm text-green-300 font-mono bg-green-900/10 p-2 rounded overflow-x-auto scrollbar-none whitespace-nowrap">
                   {tx.description}
                 </div>
 
                 {/* Transfers Container */}
-                <div className="space-y-1 bg-green-900/5 p-2 rounded">
+                <div className="space-y-1 bg-green-900/5 p-2 rounded overflow-hidden">
                   {/* Native Transfers */}
                   {tx.nativeTransfers?.map((transfer, i) => (
                     <div
                       key={i}
-                      className="text-xs text-green-500 font-mono flex items-center gap-2"
+                      className="text-xs text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
                     >
-                      <span className="text-green-600">
+                      <span className="text-green-600 flex-shrink-0">
                         {transfer.amount > 0 ? '↓' : '↑'}
                       </span>
-                      <span className="bg-green-900/20 px-1.5 py-0.5 rounded">
+                      <span className="bg-green-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
                         {Math.abs(transfer.amount)} SOL
                       </span>
                     </div>
@@ -85,12 +85,12 @@ export const TransactionSection = ({
                   {tx.tokenTransfers?.map((transfer, i) => (
                     <div
                       key={i}
-                      className="text-xs text-green-500 font-mono flex items-center gap-2"
+                      className="text-xs text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
                     >
-                      <span className="text-green-600">
+                      <span className="text-green-600 flex-shrink-0">
                         {transfer.tokenAmount > 0 ? '↓' : '↑'}
                       </span>
-                      <span className="bg-green-900/20 px-1.5 py-0.5 rounded">
+                      <span className="bg-green-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
                         {Math.abs(transfer.tokenAmount)}
                       </span>
                     </div>
@@ -98,7 +98,7 @@ export const TransactionSection = ({
                 </div>
 
                 {/* Transaction Hash */}
-                <div className="text-xs text-green-800 font-mono truncate hover:text-green-600">
+                <div className="text-xs text-green-800 font-mono truncate hover:text-green-600 overflow-hidden">
                   sig: {tx.signature}
                 </div>
               </div>

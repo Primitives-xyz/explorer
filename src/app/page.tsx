@@ -119,54 +119,56 @@ export default function Home() {
 
   return (
     <Layout>
-      <ActivityTape />
-      <Header walletAddress={walletAddress} />
-      <SearchBar
-        walletAddress={walletAddress}
-        handleInputChange={handleInputChange}
-        handleSearch={handleSearch}
-        loading={loading}
-      />
+      <div className="w-full overflow-hidden">
+        <ActivityTape />
+        <Header walletAddress={walletAddress} />
+        <SearchBar
+          walletAddress={walletAddress}
+          handleInputChange={handleInputChange}
+          handleSearch={handleSearch}
+          loading={loading}
+        />
 
-      {error && (
-        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400">
-          ! ERROR: {error}
-        </div>
-      )}
+        {error && (
+          <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 overflow-x-auto whitespace-nowrap scrollbar-none">
+            ! ERROR: {error}
+          </div>
+        )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="space-y-4">
-          {profiles.length > 0 && <ProfileSection profiles={profiles} />}
-          <TokenSection
-            tokens={tokens}
-            totalValue={totalValue}
-            isLoading={loading}
-            hasSearched={hasSearched}
-          />
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+          <div className="space-y-4 w-full overflow-hidden">
+            {profiles.length > 0 && <ProfileSection profiles={profiles} />}
+            <TokenSection
+              tokens={tokens}
+              totalValue={totalValue}
+              isLoading={loading}
+              hasSearched={hasSearched}
+            />
+          </div>
 
-        <div className="space-y-4">
-          <TransactionSection
-            transactions={transactions}
-            isLoading={loading}
-            hasSearched={hasSearched}
-          />
-        </div>
-      </div>
-
-      {loading && (
-        <div className="text-center py-4">
-          <div className="inline-block px-2 py-1 border border-green-600 text-sm">
-            LOADING...
+          <div className="space-y-4 w-full overflow-hidden">
+            <TransactionSection
+              transactions={transactions}
+              isLoading={loading}
+              hasSearched={hasSearched}
+            />
           </div>
         </div>
-      )}
 
-      {!loading && profiles.length === 0 && !error && (
-        <div className="text-center py-8 text-green-600">
-          {'>>> WAITING FOR INPUT <<<'}
-        </div>
-      )}
+        {loading && (
+          <div className="text-center py-4 w-full">
+            <div className="inline-block px-2 py-1 border border-green-600 text-sm">
+              LOADING...
+            </div>
+          </div>
+        )}
+
+        {!loading && profiles.length === 0 && !error && (
+          <div className="text-center py-8 text-green-600 w-full">
+            {'>>> WAITING FOR INPUT <<<'}
+          </div>
+        )}
+      </div>
     </Layout>
   )
 }

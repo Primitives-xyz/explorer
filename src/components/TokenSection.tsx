@@ -24,14 +24,14 @@ export const TokenSection = ({
   if (!shouldShowContent) return null
 
   return (
-    <div className="border border-green-800 bg-black/50">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
       {/* Header */}
       <div className="border-b border-green-800 p-2">
-        <div className="flex justify-between items-center">
-          <div className="text-green-500 text-sm font-mono">
+        <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
+          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
             {'>'} token_balances.sol
           </div>
-          <div className="text-xs text-green-600 font-mono">
+          <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
             TOTAL: ${totalValue.toFixed(2)} USDC
           </div>
         </div>
@@ -50,32 +50,32 @@ export const TokenSection = ({
         ) : (
           tokens.map((token) => (
             <div key={token.id} className="p-3 hover:bg-green-900/10">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 overflow-hidden">
                 {/* Token Header */}
                 <div className="flex items-center gap-3">
                   {token.imageUrl && (
                     <img
                       src={token.imageUrl}
                       alt=""
-                      className="w-8 h-8 rounded-sm opacity-80 bg-green-900/20 p-1"
+                      className="w-8 h-8 rounded-sm opacity-80 bg-green-900/20 p-1 flex-shrink-0"
                     />
                   )}
-                  <div className="flex-1">
-                    <div className="text-green-300 font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-green-300 font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block truncate max-w-full">
                       {token.symbol}
                     </div>
                   </div>
                 </div>
 
                 {/* Token Details */}
-                <div className="space-y-1 bg-green-900/5 p-2 rounded text-xs font-mono">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-1 bg-green-900/5 p-2 rounded text-xs font-mono overflow-x-auto scrollbar-none">
+                  <div className="flex items-center gap-2 whitespace-nowrap">
                     <span className="text-green-600">Balance:</span>
                     <span className="text-green-500 bg-green-900/20 px-1.5 py-0.5 rounded">
                       {token.balance.toFixed(4)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 whitespace-nowrap">
                     <span className="text-green-600">Value:</span>
                     <span className="text-green-500 bg-green-900/20 px-1.5 py-0.5 rounded">
                       ${(token.balance * (token.price || 0)).toFixed(2)}
