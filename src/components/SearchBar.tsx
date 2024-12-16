@@ -38,7 +38,7 @@ export default function SearchBar({
           <span className="text-green-500 font-mono">$</span>
           <input
             type="text"
-            placeholder="WALLET_ADDRESS.sol"
+            placeholder="BprhcaJtUTER4e3ArGYC1bmgjqvyuh1rovY3p8dgv2Eq"
             value={walletAddress}
             onChange={handleInputChange}
             className="flex-1 bg-transparent font-mono text-green-400 placeholder-green-800 
