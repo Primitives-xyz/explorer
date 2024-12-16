@@ -81,10 +81,7 @@ export const createComment = async ({
   text,
   commentId,
 }: ICreateCommentInput) => {
-  const createCommentResponse = await fetchTapestry<
-    ICreateCommentResponse,
-    ICreateCommentInput
-  >({
+  const createCommentResponse = await fetchTapestry<ICreateCommentResponse>({
     endpoint: 'comments',
     method: FetchMethod.POST,
     data: {
