@@ -8,6 +8,7 @@ interface SearchBarProps {
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void
   handleSearch: () => Promise<void>
   loading: boolean
+  hasSearched?: boolean
 }
 
 export default function SearchBar({
@@ -15,6 +16,7 @@ export default function SearchBar({
   handleInputChange,
   handleSearch,
   loading,
+  hasSearched = false,
 }: SearchBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -63,7 +65,7 @@ export default function SearchBar({
               <span className="text-yellow-500">
                 {`>>>`} ANALYZING WALLET DATA...
               </span>
-            ) : walletAddress ? (
+            ) : walletAddress && !hasSearched ? (
               <span className="text-green-600">
                 {`>>>`} READY TO ANALYZE {walletAddress.slice(0, 8)}...
               </span>
