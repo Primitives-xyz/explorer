@@ -152,6 +152,7 @@ export default function Home() {
           handleInputChange={handleInputChange}
           handleSearch={handleSearch}
           loading={loading}
+          hasSearched={hasSearched}
         />
 
         {error && (
