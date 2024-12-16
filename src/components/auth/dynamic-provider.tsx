@@ -1,5 +1,6 @@
 'use client'
 
+import '@/styles/dynamic-labs.css'
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core'
 import { SolanaWalletConnectors } from '@dynamic-labs/solana'
 
@@ -11,7 +12,6 @@ function WalletProviderComponent({ children }: { children: React.ReactNode }) {
           process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID ||
           '186dbeec-35af-4a94-8b5a-73b04840be61',
         walletConnectors: [SolanaWalletConnectors],
-        cssOverrides: <link rel="stylesheet" href="/dynamic-labs.css" />,
       }}
       theme="dark"
       locale={{

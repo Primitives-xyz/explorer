@@ -1,5 +1,4 @@
-import { getTransactionHistory } from '@/utils/helius'
-import { getTokens } from '@/utils/tokens'
+import { FungibleToken, Transaction } from '@/utils/helius'
 import Link from 'next/link'
 import PortfolioTabs from './PortfolioTabs'
 
@@ -9,19 +8,106 @@ interface PageProps {
   }
 }
 
+interface Token {
+  id: string
+  interface: string
+  content: {
+    metadata?: {
+      name?: string
+      symbol?: string
+    }
+    links?: {
+      image?: string
+    }
+  }
+  token_info?: {
+    balance: string
+    decimals: number
+    price_info?: {
+      price_per_token?: number
+      total_price?: number
+      currency?: string
+    }
+  }
+}
+
+async function fetchTokens(address: string): Promise<Token[]> {
+  const response = await fetch(`${process.env.RPC_URL}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: 'my-id',
+      method: 'searchAssets',
+      params: {
+        ownerAddress: address,
+        tokenType: 'all',
+        displayOptions: {
+          showCollectionMetadata: true,
+        },
+      },
+    }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const data = await response.json()
+  return data.result?.items || []
+}
+
+async function fetchTransactions(address: string): Promise<Transaction[]> {
+  // Extract API key from the RPC URL string
+  const apiKey = process.env.RPC_URL?.split('api-key=')[1]
+  if (!apiKey) {
+    throw new Error('API key not found in RPC URL')
+  }
+
+  const response = await fetch(
+    `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=10`,
+  )
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const data = await response.json()
+  return data
+}
+
+function transformToFungibleToken(token: Token): FungibleToken {
+  return {
+    id: token.id,
+    name: token.content?.metadata?.name || 'Unknown Token',
+    symbol: token.content?.metadata?.symbol || '',
+    imageUrl: token.content?.links?.image || null,
+    balance:
+      Number(token.token_info?.balance || 0) /
+      Math.pow(10, token.token_info?.decimals || 0),
+    price: token.token_info?.price_info?.price_per_token || 0,
+    currency: token.token_info?.price_info?.currency || 'USDC',
+  }
+}
+
 export default async function PortfolioPage({ params }: PageProps) {
   const [tokens, initialTransactions] = await Promise.all([
-    getTokens(params.address),
-    getTransactionHistory(params.address),
+    fetchTokens(params.address),
+    fetchTransactions(params.address),
   ])
 
-  const fungibleTokens = tokens.filter(
-    (token) =>
-      token.interface === 'FungibleToken' ||
-      token.interface === 'FungibleAsset',
-  )
+  const fungibleTokens = tokens
+    .filter(
+      (token: Token) =>
+        token.interface === 'FungibleToken' ||
+        token.interface === 'FungibleAsset',
+    )
+    .map(transformToFungibleToken)
+
   const nonfungibleTokens = tokens.filter(
-    (token) =>
+    (token: Token) =>
       token.interface !== 'FungibleToken' &&
       token.interface !== 'FungibleAsset',
   )

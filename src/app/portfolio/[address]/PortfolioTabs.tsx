@@ -1,15 +1,14 @@
 'use client'
 
 import TokenCard from '@/components/TokenCard'
-import { Token } from '@/types/Token'
-import { Transaction, getTransactionHistory } from '@/utils/helius'
+import { FungibleToken, Transaction } from '@/utils/helius'
 import { useState } from 'react'
 import TransactionList from './TransactionList'
 
 interface PortfolioTabsProps {
   address: string
-  fungibleTokens: Token[]
-  nonfungibleTokens: Token[]
+  fungibleTokens: FungibleToken[]
+  nonfungibleTokens: any[]
   initialTransactions: Transaction[]
 }
 
@@ -32,7 +31,13 @@ export default function PortfolioTabs({
     setLoadingMore(true)
     try {
       const lastSignature = transactions[transactions.length - 1].signature
-      const moreTxs = await getTransactionHistory(address, lastSignature)
+      const response = await fetch(
+        `/api/transactions?address=${address}&before=${lastSignature}`,
+      )
+      if (!response.ok) {
+        throw new Error('Failed to fetch more transactions')
+      }
+      const moreTxs = await response.json()
       setTransactions([...transactions, ...moreTxs])
     } catch (error) {
       console.error('Error loading more transactions:', error)

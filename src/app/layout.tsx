@@ -9,12 +9,17 @@ const WalletProvider = dynamic(
     ssr: false,
   },
 )
+
 export const metadata: Metadata = {
   title: 'Social Graph Explorer',
   description: 'Explore social connections on Tapestry Protocol',
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+interface RootLayoutProps {
+  children: ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body>
