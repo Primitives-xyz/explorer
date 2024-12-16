@@ -1,5 +1,6 @@
 'use client'
 
+import { ActivityTape } from '@/components/ActivityTape'
 import { Header } from '@/components/Header'
 import { Layout } from '@/components/Layout'
 import { ProfileSection } from '@/components/ProfileSection'
@@ -118,6 +119,7 @@ export default function Home() {
 
   return (
     <Layout>
+      <ActivityTape />
       <Header walletAddress={walletAddress} />
       <SearchBar
         walletAddress={walletAddress}
