@@ -82,9 +82,9 @@ export const TransactionSection = ({
   if (!hasSearched) return null
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col max-h-[800px]">
       {/* Header */}
-      <div className="border-b border-green-800 p-2">
+      <div className="border-b border-green-800 p-2 flex-shrink-0">
         <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
           <div className="text-green-500 text-sm font-mono whitespace-nowrap">
             {'>'} transaction_log.sol
@@ -96,13 +96,13 @@ export const TransactionSection = ({
       </div>
 
       {error && (
-        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400">
+        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
           <span>! ERROR: {error}</span>
         </div>
       )}
 
       {/* Transaction List */}
-      <div className="divide-y divide-green-800/30">
+      <div className="divide-y divide-green-800/30 overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
         {isLoading && transactions.length === 0 ? (
           <div className="p-4 text-center text-green-600 font-mono">
             {'>>> FETCHING TRANSACTIONS...'}
@@ -171,24 +171,24 @@ export const TransactionSection = ({
                 </div>
               </div>
             ))}
-
-            {/* Load More Button */}
-            {!isLoading && (
-              <div className="border-t border-green-800 p-2">
-                <button
-                  className="w-full text-center text-xs text-green-600 hover:text-green-500 font-mono"
-                  onClick={handleLoadMore}
-                  disabled={isLoading}
-                >
-                  {isLoading
-                    ? '>>> LOADING MORE... <<<'
-                    : '>>> LOAD MORE TRANSACTIONS <<<'}
-                </button>
-              </div>
-            )}
           </>
         )}
       </div>
+
+      {/* Load More Button */}
+      {!isLoading && transactions.length > 0 && (
+        <div className="border-t border-green-800 p-2 flex-shrink-0">
+          <button
+            className="w-full text-center text-xs text-green-600 hover:text-green-500 font-mono"
+            onClick={handleLoadMore}
+            disabled={isLoading}
+          >
+            {isLoading
+              ? '>>> LOADING MORE... <<<'
+              : '>>> LOAD MORE TRANSACTIONS <<<'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
