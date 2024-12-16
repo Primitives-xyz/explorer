@@ -3,6 +3,16 @@
 import { Transaction } from '@/utils/helius'
 import { formatDistanceToNow } from 'date-fns'
 
+const LAMPORTS_PER_SOL = 1000000000
+
+const formatLamportsToSol = (lamports: number) => {
+  const sol = Math.abs(lamports) / LAMPORTS_PER_SOL
+  return sol.toLocaleString(undefined, {
+    minimumFractionDigits: 9,
+    maximumFractionDigits: 9,
+  })
+}
+
 interface TransactionSectionProps {
   transactions: Transaction[]
   isLoading?: boolean
@@ -48,7 +58,7 @@ export const TransactionSection = ({
         ) : (
           transactions.map((tx) => (
             <div key={tx.signature} className="p-3 hover:bg-green-900/10">
-              <div className="flex flex-col gap-2 overflow-hidden">
+              <div className="flex flex-col gap-1.5 overflow-hidden">
                 {/* Transaction Header */}
                 <div className="flex items-center justify-between text-xs overflow-x-auto scrollbar-none">
                   <span className="text-green-400 font-mono bg-green-900/20 px-1.5 py-0.5 rounded whitespace-nowrap">
@@ -60,23 +70,23 @@ export const TransactionSection = ({
                 </div>
 
                 {/* Transaction Details */}
-                <div className="text-sm text-green-300 font-mono bg-green-900/10 p-2 rounded overflow-x-auto scrollbar-none whitespace-nowrap">
+                <div className="text-base text-green-300 font-mono bg-green-900/10 p-2 rounded overflow-x-auto scrollbar-none break-words">
                   {tx.description}
                 </div>
 
                 {/* Transfers Container */}
-                <div className="space-y-1 bg-green-900/5 p-2 rounded overflow-hidden">
+                <div className="space-y-1 bg-green-900/5 p-1.5 rounded overflow-hidden">
                   {/* Native Transfers */}
                   {tx.nativeTransfers?.map((transfer, i) => (
                     <div
                       key={i}
-                      className="text-xs text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
+                      className="text-sm text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
                     >
                       <span className="text-green-600 flex-shrink-0">
                         {transfer.amount > 0 ? '↓' : '↑'}
                       </span>
-                      <span className="bg-green-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
-                        {Math.abs(transfer.amount)} SOL
+                      <span className="bg-green-900/20 px-2 py-0.5 rounded flex-shrink-0 font-semibold">
+                        {formatLamportsToSol(transfer.amount)} SOL
                       </span>
                     </div>
                   ))}
@@ -85,12 +95,12 @@ export const TransactionSection = ({
                   {tx.tokenTransfers?.map((transfer, i) => (
                     <div
                       key={i}
-                      className="text-xs text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
+                      className="text-sm text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
                     >
                       <span className="text-green-600 flex-shrink-0">
                         {transfer.tokenAmount > 0 ? '↓' : '↑'}
                       </span>
-                      <span className="bg-green-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
+                      <span className="bg-green-900/20 px-2 py-0.5 rounded flex-shrink-0 font-semibold">
                         {Math.abs(transfer.tokenAmount)}
                       </span>
                     </div>
@@ -98,7 +108,7 @@ export const TransactionSection = ({
                 </div>
 
                 {/* Transaction Hash */}
-                <div className="text-xs text-green-800 font-mono truncate hover:text-green-600 overflow-hidden">
+                <div className="text-xs text-green-800 font-mono truncate hover:text-green-600 overflow-hidden pt-0.5">
                   sig: {tx.signature}
                 </div>
               </div>

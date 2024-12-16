@@ -15,9 +15,12 @@ import {
   type FungibleToken,
   type Transaction,
 } from '@/utils/helius'
-import { ChangeEvent, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 export default function Home() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [walletAddress, setWalletAddress] = useState('')
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
   const [tokens, setTokens] = useState<FungibleToken[]>([])
@@ -26,12 +29,30 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [hasSearched, setHasSearched] = useState(false)
 
+  useEffect(() => {
+    const addressFromUrl = searchParams.get('address')
+    if (addressFromUrl && addressFromUrl !== walletAddress) {
+      setWalletAddress(addressFromUrl)
+      setHasSearched(false) // Reset search state for new address
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (walletAddress && !hasSearched) {
+      handleSearch()
+    }
+  }, [walletAddress, hasSearched])
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setWalletAddress(e.target.value)
   }
 
   const handleSearch = async () => {
     if (!walletAddress) return
+
+    // Update URL with wallet address
+    const newUrl = `?address=${walletAddress}`
+    router.push(newUrl)
 
     setLoading(true)
     setError(null)

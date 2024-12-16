@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import React, { ChangeEvent } from 'react'
 
 interface SearchBarProps {
@@ -17,6 +17,7 @@ export default function SearchBar({
   loading,
 }: SearchBarProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
