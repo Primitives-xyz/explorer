@@ -7,6 +7,46 @@ const truncateAddress = (address: string) => {
   return `${address.slice(0, 4)}...${address.slice(-4)}`
 }
 
+interface ImageModalProps {
+  isOpen: boolean
+  onClose: () => void
+  imageUrl: string
+  symbol: string
+}
+
+const ImageModal = ({ isOpen, onClose, imageUrl, symbol }: ImageModalProps) => {
+  if (!isOpen) return null
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+      onClick={onClose}
+    >
+      <div className="relative max-w-lg w-full mx-4">
+        <div
+          className="bg-black/90 border border-green-800 rounded-lg p-4 relative"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-green-600 hover:text-green-400 font-mono text-sm"
+          >
+            [close]
+          </button>
+          <img
+            src={imageUrl}
+            alt={symbol}
+            className="w-full h-auto rounded-lg"
+          />
+          <div className="text-center mt-2 text-green-500 font-mono text-sm">
+            {symbol}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 interface TokenSectionProps {
   tokens: FungibleToken[]
   totalValue: number
@@ -22,6 +62,10 @@ export const TokenSection = ({
 }: TokenSectionProps) => {
   const [expandedTokenId, setExpandedTokenId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'value' | 'balance' | 'symbol'>('value')
+  const [selectedImage, setSelectedImage] = useState<{
+    url: string
+    symbol: string
+  } | null>(null)
 
   const shouldShowContent =
     isLoading || tokens.length > 0 || (hasSearched && tokens.length === 0)
@@ -119,13 +163,46 @@ export const TokenSection = ({
               <div className="flex flex-col gap-2 overflow-hidden">
                 {/* Token Header */}
                 <div className="flex items-center gap-3">
-                  {token.imageUrl && (
-                    <img
-                      src={token.imageUrl}
-                      alt={token.symbol}
-                      className="w-8 h-8 rounded-sm opacity-80 bg-green-900/20 p-1 flex-shrink-0"
-                    />
-                  )}
+                  <div
+                    className="relative group cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (token.imageUrl) {
+                        setSelectedImage({
+                          url: token.imageUrl,
+                          symbol: token.symbol,
+                        })
+                      }
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm group-hover:bg-green-500/20 transition-all duration-300"></div>
+                    {token.imageUrl ? (
+                      <img
+                        src={token.imageUrl}
+                        alt={token.symbol}
+                        className="relative w-10 h-10 rounded-lg object-contain p-1.5 bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300"
+                        onError={(e) => {
+                          // Hide the broken image and show fallback
+                          e.currentTarget.style.display = 'none'
+                          e.currentTarget.parentElement?.classList.add(
+                            'fallback-active',
+                          )
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`relative w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300 flex items-center justify-center ${!token.imageUrl ? 'block' : 'hidden fallback'}`}
+                    >
+                      <span className="text-green-500 font-mono text-sm font-bold">
+                        {token.symbol.slice(0, 3)}
+                      </span>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-green-400 text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
+                        [view]
+                      </span>
+                    </div>
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <div className="text-green-300 font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block truncate">
@@ -203,6 +280,15 @@ export const TokenSection = ({
           ))
         )}
       </div>
+
+      {selectedImage && (
+        <ImageModal
+          isOpen={true}
+          onClose={() => setSelectedImage(null)}
+          imageUrl={selectedImage.url}
+          symbol={selectedImage.symbol}
+        />
+      )}
     </div>
   )
 }
