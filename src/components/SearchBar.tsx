@@ -7,7 +7,7 @@ interface SearchBarProps {
   walletAddress: string
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void
   handleSearch: () => Promise<void>
-  loading: boolean
+  loading?: boolean
   hasSearched?: boolean
 }
 
@@ -15,7 +15,7 @@ export default function SearchBar({
   walletAddress,
   handleInputChange,
   handleSearch,
-  loading,
+  loading = false,
   hasSearched = false,
 }: SearchBarProps) {
   const router = useRouter()
@@ -23,8 +23,8 @@ export default function SearchBar({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-    if (walletAddress) {
-      handleSearch()
+    if (walletAddress && !loading) {
+      await handleSearch()
     }
   }
 
@@ -68,6 +68,10 @@ export default function SearchBar({
             ) : walletAddress && !hasSearched ? (
               <span className="text-green-600">
                 {`>>>`} READY TO ANALYZE {walletAddress.slice(0, 8)}...
+              </span>
+            ) : hasSearched ? (
+              <span className="text-green-600">
+                {`>>>`} ANALYZING {walletAddress.slice(0, 8)}...
               </span>
             ) : (
               <span className="text-green-800">{`>>>`}_ AWAITING INPUT</span>

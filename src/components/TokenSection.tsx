@@ -1,6 +1,8 @@
+'use client'
+
 import { formatNumber } from '@/utils/format'
 import { FungibleToken } from '@/utils/helius'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const truncateAddress = (address: string) => {
   if (!address) return ''
@@ -48,16 +50,12 @@ const ImageModal = ({ isOpen, onClose, imageUrl, symbol }: ImageModalProps) => {
 }
 
 interface TokenSectionProps {
-  tokens: FungibleToken[]
-  totalValue: number
-  isLoading?: boolean
+  walletAddress: string
   hasSearched?: boolean
 }
 
 export const TokenSection = ({
-  tokens,
-  totalValue,
-  isLoading,
+  walletAddress,
   hasSearched,
 }: TokenSectionProps) => {
   const [expandedTokenId, setExpandedTokenId] = useState<string | null>(null)
@@ -66,6 +64,43 @@ export const TokenSection = ({
     url: string
     symbol: string
   } | null>(null)
+  const [tokens, setTokens] = useState<FungibleToken[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchTokens = async () => {
+      if (!walletAddress || !hasSearched) return
+
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetch(`/api/tokens?address=${walletAddress}`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const tokensData = await response.json()
+        if ('error' in tokensData) {
+          throw new Error(tokensData.error)
+        }
+        setTokens(tokensData)
+      } catch (error) {
+        console.error('Error fetching tokens:', error)
+        setError('Failed to fetch tokens.')
+        setTokens([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTokens()
+  }, [walletAddress, hasSearched])
+
+  // Calculate total value of tokens
+  const totalValue = tokens.reduce((acc, token) => {
+    return acc + (token.price || 0) * token.balance
+  }, 0)
 
   const shouldShowContent =
     isLoading || tokens.length > 0 || (hasSearched && tokens.length === 0)
@@ -102,6 +137,12 @@ export const TokenSection = ({
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400">
+          <span>! ERROR: {error}</span>
+        </div>
+      )}
 
       {/* Sort Controls */}
       {tokens.length > 0 && !isLoading && (
