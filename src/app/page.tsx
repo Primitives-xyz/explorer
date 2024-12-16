@@ -36,44 +36,15 @@ export default function Home() {
     setError(null)
     setHasSearched(true)
 
-    try {
-      // Fetch tokens, profiles, and transactions separately to handle errors independently
-      let profilesData
-      let tokensData: FungibleToken[] = []
-      let transactionsData: Transaction[] = []
-
+    // Fetch data in parallel
+    const fetchProfiles = async () => {
       try {
-        profilesData = await getProfiles(walletAddress)
-      } catch (error) {
-        console.error('Profiles fetch error:', error)
-        setError('Failed to fetch profiles. Some data may be incomplete.')
-        profilesData = { items: [] }
-      }
+        const profilesData = await getProfiles(walletAddress)
+        if (!profilesData.items || profilesData.items.length === 0) {
+          setProfiles([])
+          return
+        }
 
-      try {
-        tokensData = await getTokens(walletAddress)
-        console.log('Tokens received in component:', tokensData)
-      } catch (error) {
-        console.error('Tokens fetch error:', error)
-        tokensData = []
-      }
-
-      try {
-        transactionsData = await getTransactionHistory(
-          walletAddress,
-          undefined,
-          10,
-        )
-        console.log('Transactions received:', transactionsData)
-      } catch (error) {
-        console.error('Transactions fetch error:', error)
-        transactionsData = []
-      }
-
-      // Process profiles
-      if (!profilesData.items || profilesData.items.length === 0) {
-        setProfiles([])
-      } else {
         const profilesWithStats = await Promise.all(
           profilesData.items.map(async (profile) => {
             try {
@@ -85,17 +56,57 @@ export default function Home() {
           }),
         )
         setProfiles(profilesWithStats)
+      } catch (error) {
+        console.error('Profiles fetch error:', error)
+        setError((prev) =>
+          prev
+            ? `${prev}\nFailed to fetch profiles.`
+            : 'Failed to fetch profiles.',
+        )
+        setProfiles([])
       }
-
-      // Set tokens and transactions
-      setTokens(tokensData)
-      setTransactions(transactionsData)
-    } catch (error) {
-      console.error('General error:', error)
-      setError('An unexpected error occurred.')
-    } finally {
-      setLoading(false)
     }
+
+    const fetchTokens = async () => {
+      try {
+        const tokensData = await getTokens(walletAddress)
+        console.log('Tokens received in component:', tokensData)
+        setTokens(tokensData)
+      } catch (error) {
+        console.error('Tokens fetch error:', error)
+        setError((prev) =>
+          prev ? `${prev}\nFailed to fetch tokens.` : 'Failed to fetch tokens.',
+        )
+        setTokens([])
+      }
+    }
+
+    const fetchTransactions = async () => {
+      try {
+        const transactionsData = await getTransactionHistory(
+          walletAddress,
+          undefined,
+          10,
+        )
+        console.log('Transactions received:', transactionsData)
+        setTransactions(transactionsData)
+      } catch (error) {
+        console.error('Transactions fetch error:', error)
+        setError((prev) =>
+          prev
+            ? `${prev}\nFailed to fetch transactions.`
+            : 'Failed to fetch transactions.',
+        )
+        setTransactions([])
+      }
+    }
+
+    // Start all fetches in parallel
+    Promise.all([fetchProfiles(), fetchTokens(), fetchTransactions()]).finally(
+      () => {
+        setLoading(false)
+      },
+    )
   }
 
   // Calculate total value of tokens
