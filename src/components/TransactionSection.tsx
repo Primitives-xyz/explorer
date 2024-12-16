@@ -108,7 +108,7 @@ export const TransactionSection = ({
       </div>
 
       {/* Footer with View More option */}
-      {transactions.length > 0 && (
+      {transactions.length > 0 && !isLoading && (
         <div className="border-t border-green-800 p-2">
           <button
             className="w-full text-center text-xs text-green-600 hover:text-green-500 font-mono"
