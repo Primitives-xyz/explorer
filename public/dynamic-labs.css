@@ -1,0 +1,90 @@
+.button--brand-primary,
+.typography--button-primary {
+  color: rgb(74 222 128) !important; /* green-400 */
+  border-color: rgb(34 197 94) !important; /* green-500 */
+  background: transparent !important;
+}
+
+.button--brand-primary:hover {
+  background: rgba(21, 128, 61, 0.3) !important; /* green-900/30 */
+}
+
+.dynamic-widget-inline {
+  --dynamic-font-family: inherit;
+  --dynamic-border-radius: 0;
+}
+
+.dynamic-widget-inline button {
+  border: 1px solid;
+  padding: 0.25rem 0.75rem;
+  box-shadow: none !important;
+}
+
+/* Dropdown menu styling */
+.dynamic-widget-inline .menu-container {
+  background: rgb(17 24 39) !important; /* gray-900 */
+  border: 1px solid rgb(34 197 94) !important; /* green-500 */
+  border-radius: 0;
+  background-color: transparent !important;
+}
+
+.dynamic-widget-inline .menu-container * {
+  color: rgb(74 222 128) !important; /* green-400 */
+}
+
+.dynamic-widget-inline .menu-container button:hover {
+  background: rgba(21, 128, 61, 0.3) !important; /* green-900/30 */
+}
+
+/* Style the initial login button */
+.dynamic-widget-inline .wallet-connection-button {
+  background: transparent !important;
+  color: rgb(74 222 128) !important; /* green-400 */
+  border: 1px solid rgb(34 197 94) !important; /* green-500 */
+  border-radius: 0 !important;
+  font-family: inherit !important;
+}
+
+.dynamic-widget-inline .wallet-connection-button:hover {
+  background: rgba(21, 128, 61, 0.3) !important; /* green-900/30 */
+}
+
+/* Ensure text is properly colored */
+.dynamic-widget-inline .wallet-connection-button span {
+  color: rgb(74 222 128) !important; /* green-400 */
+}
+
+.dynamic-shadow-dom {
+  /* Override the core theme variables */
+  --dynamic-font-family-primary: inherit;
+  --dynamic-border-radius: 0;
+
+  /* Colors */
+  --dynamic-text-primary: rgb(74 222 128); /* green-400 */
+  --dynamic-text-secondary: rgb(74 222 128);
+  --dynamic-text-tertiary: rgb(74 222 128);
+
+  /* Button styling */
+  --dynamic-connect-button-background: transparent;
+  --dynamic-connect-button-color: rgb(74 222 128);
+  --dynamic-connect-button-border: 1px solid rgb(34 197 94);
+  --dynamic-connect-button-shadow: none;
+  --dynamic-connect-button-radius: 0;
+
+  /* Button hover state */
+  --dynamic-connect-button-background-hover: rgba(21, 128, 61, 0.3);
+  --dynamic-connect-button-color-hover: rgb(74 222 128);
+  --dynamic-connect-button-border-hover: 1px solid rgb(34 197 94);
+  --dynamic-connect-button-shadow-hover: none;
+
+  /* Dropdown/Modal styling */
+  --dynamic-modal-border: 1px solid rgb(34 197 94);
+  --dynamic-base-1: rgb(17 24 39); /* gray-900 */
+  --dynamic-base-2: rgb(17 24 39);
+  --dynamic-base-3: rgb(17 24 39);
+  --dynamic-base-4: rgb(17 24 39);
+  --dynamic-base-5: rgb(17 24 39);
+
+  /* Hover states */
+  --dynamic-hover: rgba(21, 128, 61, 0.3);
+}

@@ -1,3 +1,4 @@
+import { DynamicWidget } from '@dynamic-labs/sdk-react-core'
 import Link from 'next/link'
 
 export const Header = ({ walletAddress }: { walletAddress: string }) => (
@@ -10,15 +11,20 @@ export const Header = ({ walletAddress }: { walletAddress: string }) => (
         STATUS: ONLINE | NETWORK: SOLANA | MODE: READ
       </div>
     </div>
-    <Link
-      href={walletAddress ? `/portfolio/${walletAddress}` : '#'}
-      className={`px-3 py-1 border ${
-        walletAddress
-          ? 'border-green-500 text-green-400 hover:bg-green-900/30'
-          : 'border-gray-700 text-gray-600 cursor-not-allowed'
-      }`}
-    >
-      [PORTFOLIO]
-    </Link>
+    <div className="flex items-center gap-4">
+      <div className="mt-[3px]">
+        <DynamicWidget variant="dropdown" />
+      </div>
+      <Link
+        href={walletAddress ? `/portfolio/${walletAddress}` : '#'}
+        className={`px-3 py-1 border ${
+          walletAddress
+            ? 'border-green-500 text-green-400 hover:bg-green-900/30'
+            : 'border-gray-700 text-gray-600 cursor-not-allowed'
+        }`}
+      >
+        [PORTFOLIO]
+      </Link>
+    </div>
   </div>
 )
