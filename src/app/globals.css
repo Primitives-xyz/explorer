@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideY {
+  0% {
+    transform: translateY(0%);
+  }
+  50% {
+    transform: translateY(calc(100% - 4rem));
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+.hover-scroll-indicator:hover + .scroll-indicator {
+  opacity: 1;
+}
+
 :root {
   --background: #fff;
   --foreground: #000;
