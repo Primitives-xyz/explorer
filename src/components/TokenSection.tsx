@@ -2,6 +2,11 @@ import { formatNumber } from '@/utils/format'
 import { FungibleToken } from '@/utils/helius'
 import { useMemo, useState } from 'react'
 
+const truncateAddress = (address: string) => {
+  if (!address) return ''
+  return `${address.slice(0, 4)}...${address.slice(-4)}`
+}
+
 interface TokenSectionProps {
   tokens: FungibleToken[]
   totalValue: number
@@ -126,8 +131,19 @@ export const TokenSection = ({
                       <div className="text-green-300 font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block truncate">
                         {token.symbol}
                       </div>
-                      <div className="text-green-600/50 text-xs">
-                        {expandedTokenId === token.id ? '[-]' : '[+]'}
+                      <div className="flex items-center gap-2">
+                        <div className="text-green-600/50 text-xs font-mono">
+                          {truncateAddress(token.id)}
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navigator.clipboard.writeText(token.id)
+                          }}
+                          className="text-green-600/50 hover:text-green-400/80 text-xs font-mono bg-green-900/20 px-1.5 py-0.5 rounded transition-colors"
+                        >
+                          [copy]
+                        </button>
                       </div>
                     </div>
                   </div>
