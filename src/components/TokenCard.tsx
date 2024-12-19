@@ -15,6 +15,8 @@ function isFungibleToken(token: FungibleToken | NFTToken): token is FungibleToke
 }
 
 export default function TokenCard({ token, tokenType }: TokenCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   const formatNumber = (num: number, maxDecimals = 2) => {
     if (num >= 1_000_000_000) {
       return `${(num / 1_000_000_000).toFixed(2)}B`
@@ -123,7 +125,6 @@ export default function TokenCard({ token, tokenType }: TokenCardProps) {
 
   if (tokenType === 'nonfungible') {
     const nftToken = token as NFTToken
-    const [isModalOpen, setIsModalOpen] = useState(false)
 
     return (
       <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
