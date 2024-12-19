@@ -63,7 +63,7 @@ export const ProfileSection = ({
   }, [walletAddress, hasSearched])
 
   if (!hasSearched) return null
-
+  console.log({ profiles })
   return (
     <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col max-h-[600px] relative group">
       {/* Header */}
@@ -132,29 +132,42 @@ export const ProfileSection = ({
               className="p-4 hover:bg-green-900/10"
             >
               <div className="flex items-start gap-4">
-                {profile.profile.image && (
+                <div className="relative">
                   <img
-                    src={profile.profile.image}
+                    src={
+                      profile.profile.image ||
+                      'https://api.dicebear.com/7.x/shapes/svg?seed=' +
+                        profile.profile.username
+                    }
                     alt={profile.profile.username}
                     className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
                   />
-                )}
+                  {profile.namespace?.faviconURL && (
+                    <img
+                      src={profile.namespace.faviconURL}
+                      alt={profile.namespace.readableName}
+                      className="absolute -bottom-2 -right-2 w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
+                    />
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          router.push(`/${profile.profile.username}`)
-                        }
-                        className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
-                      >
-                        @{profile.profile.username}
-                      </button>
-                      {profile.profile.bio && (
-                        <span className="text-green-600 font-mono">
-                          {profile.profile.bio}
-                        </span>
-                      )}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            router.push(`/${profile.profile.username}`)
+                          }
+                          className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
+                        >
+                          @{profile.profile.username}
+                        </button>
+                        {profile.profile.bio && (
+                          <span className="text-green-600 font-mono">
+                            {profile.profile.bio}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="flex gap-4 text-xs text-green-600 font-mono">
                       <span>
@@ -165,7 +178,15 @@ export const ProfileSection = ({
                       </span>
                     </div>
                     <div className="text-xs text-green-600/50 font-mono">
-                      {profile.wallet.address}
+                      <button
+                        onClick={() =>
+                          router.push(`/namespace/${profile.namespace?.name}`)
+                        }
+                        className="hover:text-green-500 transition-colors"
+                      >
+                        {profile.namespace?.readableName ||
+                          profile.namespace?.name}
+                      </button>
                     </div>
                   </div>
                 </div>
