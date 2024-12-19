@@ -1,14 +1,14 @@
 'use client'
 
 import TokenCard from '@/components/TokenCard'
-import { FungibleToken, Transaction } from '@/utils/helius'
+import { FungibleToken, NFTToken, Transaction } from '@/utils/helius'
 import { useState } from 'react'
 import TransactionList from './TransactionList'
 
 interface PortfolioTabsProps {
   address: string
   fungibleTokens: FungibleToken[]
-  nonfungibleTokens: any[]
+  nonfungibleTokens: NFTToken[]
   initialTransactions: Transaction[]
 }
 

@@ -1,16 +1,18 @@
 'use client'
 
-import { FungibleToken } from '@/utils/helius'
+import { FungibleToken, NFTToken } from '@/utils/helius'
 import Image from 'next/image'
 
 interface TokenCardProps {
-  token: FungibleToken
+  token: FungibleToken | NFTToken
   tokenType: 'fungible' | 'nonfungible'
 }
 
-export default function TokenCard({ token, tokenType }: TokenCardProps) {
-  const isFungible = tokenType === 'fungible'
+function isFungibleToken(token: FungibleToken | NFTToken): token is FungibleToken {
+  return 'balance' in token && 'symbol' in token
+}
 
+export default function TokenCard({ token, tokenType }: TokenCardProps) {
   const formatNumber = (num: number, maxDecimals = 2) => {
     if (num >= 1_000_000_000) {
       return `${(num / 1_000_000_000).toFixed(2)}B`
@@ -37,7 +39,7 @@ export default function TokenCard({ token, tokenType }: TokenCardProps) {
     }
   }
 
-  if (isFungible) {
+  if (tokenType === 'fungible' && isFungibleToken(token)) {
     const totalValue = token.balance * (token.price || 0)
 
     return (
@@ -117,38 +119,44 @@ export default function TokenCard({ token, tokenType }: TokenCardProps) {
     )
   }
 
-  return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="p-4">
-        <div className="flex items-center space-x-4">
-          <div className="relative w-12 h-12 flex-shrink-0">
-            <Image
-              src={token.content?.links?.image || '/placeholder.png'}
-              alt={token.content?.metadata?.name || 'NFT'}
-              fill
-              className="rounded-full object-cover"
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold truncate">
-                {token.content?.metadata?.name || 'Unnamed NFT'}
-              </h3>
-              <span className="text-sm font-medium text-gray-500 ml-2">
-                {token.content?.metadata?.symbol || 'NFT'}
-              </span>
+  if (tokenType === 'nonfungible') {
+    const nftToken = token as NFTToken
+    return (
+      <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        <div className="p-4">
+          <div className="flex items-center space-x-4">
+            <div className="relative w-12 h-12 flex-shrink-0">
+              <Image
+                src={nftToken.content?.links?.image || '/placeholder.png'}
+                alt={nftToken.content?.metadata?.name || 'NFT'}
+                fill
+                className="rounded-full object-cover"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold truncate">
+                  {nftToken.content?.metadata?.name || 'Unnamed NFT'}
+                </h3>
+                <span className="text-sm font-medium text-gray-500 ml-2">
+                  {nftToken.content?.metadata?.symbol || 'NFT'}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="mt-4 bg-gray-50 rounded-lg p-3 space-y-2">
-          {token.content?.metadata?.attributes?.map((attr, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{attr.trait_type}</span>
-              <span className="text-sm font-medium">{attr.value}</span>
-            </div>
-          ))}
+          <div className="mt-4 bg-gray-50 rounded-lg p-3 space-y-2">
+            {nftToken.content?.metadata?.attributes?.map((attr: { trait_type: string; value: string | number }, index: number) => (
+              <div key={index} className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">{attr.trait_type}</span>
+                <span className="text-sm font-medium">{attr.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  return null
+}
