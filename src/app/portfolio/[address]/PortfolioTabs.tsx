@@ -1,14 +1,14 @@
 'use client'
 
 import TokenCard from '@/components/TokenCard'
-import { FungibleToken, Transaction } from '@/utils/helius'
+import { FungibleToken, NFTToken, Transaction } from '@/utils/helius'
 import { useState } from 'react'
 import TransactionList from './TransactionList'
 
 interface PortfolioTabsProps {
   address: string
   fungibleTokens: FungibleToken[]
-  nonfungibleTokens: any[]
+  nonfungibleTokens: NFTToken[]
   initialTransactions: Transaction[]
 }
 
@@ -70,10 +70,10 @@ export default function PortfolioTabs({
 
     if (activeTab === 'nonfungible') {
       return (
-        <div className="text-center py-12">
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> NFT DISPLAY COMING SOON'}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {nonfungibleTokens.map((token) => (
+            <TokenCard key={token.id} token={token} tokenType="nonfungible" />
+          ))}
         </div>
       )
     }

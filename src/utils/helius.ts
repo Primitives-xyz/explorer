@@ -14,6 +14,24 @@ export interface FungibleToken {
   currency?: string
 }
 
+export interface NFTToken {
+  id: string
+  interface: string
+  content?: {
+    metadata?: {
+      name?: string
+      symbol?: string
+      attributes?: Array<{
+        trait_type: string
+        value: string | number
+      }>
+    }
+    links?: {
+      image?: string
+    }
+  }
+}
+
 export interface Transaction {
   description: string
   type: string
