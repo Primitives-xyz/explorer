@@ -71,6 +71,7 @@ export default function SearchBar({
       target: { value: address },
     } as ChangeEvent<HTMLInputElement>
     handleInputChange(event)
+    await handleSearch()
     setShowDropdown(false)
   }
 
