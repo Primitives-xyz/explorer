@@ -2,6 +2,8 @@
 
 import { FungibleToken, NFTToken } from '@/utils/helius'
 import Image from 'next/image'
+import { useState } from 'react'
+import { ImageModal } from './tokens/ImageModal'
 
 interface TokenCardProps {
   token: FungibleToken | NFTToken
@@ -121,42 +123,58 @@ export default function TokenCard({ token, tokenType }: TokenCardProps) {
 
   if (tokenType === 'nonfungible') {
     const nftToken = token as NFTToken
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
     return (
       <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-        <div className="p-4">
-          <div className="flex items-center space-x-4">
-            <div className="relative w-12 h-12 flex-shrink-0">
-              <Image
-                src={nftToken.content?.links?.image || '/placeholder.png'}
-                alt={nftToken.content?.metadata?.name || 'NFT'}
-                fill
-                className="rounded-full object-cover"
-              />
+        <div className="p-6">
+          <div
+            className="relative w-48 h-48 flex-shrink-0 mb-4 mx-auto cursor-pointer"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <Image
+              src={nftToken.content?.links?.image || '/placeholder.png'}
+              alt={nftToken.content?.metadata?.name || 'NFT'}
+              fill
+              className="rounded-lg object-cover hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+              <span className="text-green-400 text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
+                [view full]
+              </span>
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold truncate">
-                  {nftToken.content?.metadata?.name || 'Unnamed NFT'}
-                </h3>
-                <span className="text-sm font-medium text-gray-500 ml-2">
-                  {nftToken.content?.metadata?.symbol || 'NFT'}
-                </span>
-              </div>
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold truncate">
+                {nftToken.content?.metadata?.name || 'Unnamed NFT'}
+              </h3>
+              <span className="text-sm font-medium text-gray-500 ml-2">
+                {nftToken.content?.metadata?.symbol || 'NFT'}
+              </span>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+              {nftToken.content?.metadata?.attributes?.map((attr: { trait_type: string; value: string | number }, index: number) => (
+                <div key={index} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">{attr.trait_type}</span>
+                  <span className="text-sm font-medium">{attr.value}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="mt-4 bg-gray-50 rounded-lg p-3 space-y-2">
-            {nftToken.content?.metadata?.attributes?.map((attr: { trait_type: string; value: string | number }, index: number) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">{attr.trait_type}</span>
-                <span className="text-sm font-medium">{attr.value}</span>
-              </div>
-            ))}
-          </div>
+          {isModalOpen && (
+            <ImageModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              imageUrl={nftToken.content?.links?.image || '/placeholder.png'}
+              symbol={nftToken.content?.metadata?.name || 'NFT'}
+            />
+          )}
         </div>
       </div>
     )
   }
 
   return null
-}
