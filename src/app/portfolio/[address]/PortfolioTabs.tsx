@@ -70,10 +70,10 @@ export default function PortfolioTabs({
 
     if (activeTab === 'nonfungible') {
       return (
-        <div className="text-center py-12">
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> NFT DISPLAY COMING SOON'}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {nonfungibleTokens.map((token) => (
+            <TokenCard key={token.id} token={token} tokenType="nonfungible" />
+          ))}
         </div>
       )
     }
