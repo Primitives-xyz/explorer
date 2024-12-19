@@ -16,6 +16,7 @@ export default function Home() {
   const [walletAddress, setWalletAddress] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false)
 
   const wallet = userWallets[0]
   const address = wallet?.address
@@ -23,14 +24,17 @@ export default function Home() {
   useEffect(() => {
     const addressFromUrl = searchParams.get('address')
 
-    if (addressFromUrl && addressFromUrl !== walletAddress) {
-      setWalletAddress(addressFromUrl)
-      handleSearch()
-    } else if (!addressFromUrl && address && !walletAddress) {
-      setWalletAddress(address)
-      handleSearch()
+    if (!initialLoadComplete) {
+      if (addressFromUrl) {
+        setWalletAddress(addressFromUrl)
+        handleSearch()
+      } else if (address) {
+        setWalletAddress(address)
+        handleSearch()
+      }
+      setInitialLoadComplete(true)
     }
-  }, [searchParams, address, walletAddress])
+  }, [searchParams, address, initialLoadComplete])
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setWalletAddress(e.target.value)
@@ -42,8 +46,10 @@ export default function Home() {
 
     setIsSearching(true)
     try {
-      const newUrl = `?address=${walletAddress}`
-      router.push(newUrl)
+      if (initialLoadComplete) {
+        const newUrl = `?address=${walletAddress}`
+        router.push(newUrl)
+      }
       setHasSearched(true)
     } finally {
       setIsSearching(false)

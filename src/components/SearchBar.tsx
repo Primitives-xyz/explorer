@@ -67,12 +67,14 @@ export default function SearchBar({
   }
 
   const handleRecentSearchClick = async (address: string) => {
+    if (loading) return
+
     const event = {
       target: { value: address },
     } as ChangeEvent<HTMLInputElement>
     handleInputChange(event)
-    await handleSearch()
     setShowDropdown(false)
+    await handleSearch()
   }
 
   return (
