@@ -130,7 +130,7 @@ export default function TokenCard({ token, tokenType }: TokenCardProps) {
       <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
         <div className="p-6">
           <div
-            className="relative w-48 h-48 flex-shrink-0 mb-4 mx-auto cursor-pointer"
+            className="relative w-full h-32 flex-shrink-0 mb-4 cursor-pointer"
             onClick={() => setIsModalOpen(true)}
           >
             <Image
