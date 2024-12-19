@@ -178,3 +178,4 @@ export default function TokenCard({ token, tokenType }: TokenCardProps) {
   }
 
   return null
+}
