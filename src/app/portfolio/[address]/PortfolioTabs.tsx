@@ -61,9 +61,8 @@ export default function PortfolioTabs({
     if (tokens.length === 0) {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-600">
-            No {activeTab === 'fungible' ? 'tokens' : 'NFTs'} found for this
-            wallet
+          <p className="text-green-600 font-mono">
+            No {activeTab === 'fungible' ? 'tokens' : 'NFTs'} found for this wallet
           </p>
         </div>
       )
@@ -72,7 +71,7 @@ export default function PortfolioTabs({
     if (activeTab === 'nonfungible') {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-600">NFT display coming soon</p>
+          <p className="text-green-600 font-mono">NFT display coming soon</p>
         </div>
       )
     }
@@ -88,40 +87,43 @@ export default function PortfolioTabs({
 
   return (
     <>
-      <div className="flex flex-wrap gap-2 sm:gap-4 mb-8">
-        <button
-          onClick={() => setActiveTab('fungible')}
-          className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-lg transition-colors ${
-            activeTab === 'fungible'
-              ? 'bg-purple-600 text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-50'
-          }`}
-        >
-          Tokens ({fungibleTokens.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('nonfungible')}
-          className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-lg transition-colors ${
-            activeTab === 'nonfungible'
-              ? 'bg-purple-600 text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-50'
-          }`}
-        >
-          NFTs ({nonfungibleTokens.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('transactions')}
-          className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-lg transition-colors ${
-            activeTab === 'transactions'
-              ? 'bg-purple-600 text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-50'
-          }`}
-        >
-          Transactions ({transactions.length})
-        </button>
+      <div className="border border-green-800 bg-black/50 p-4 rounded-none mb-8">
+        <div className="flex flex-wrap gap-2 sm:gap-4">
+          <button
+            onClick={() => setActiveTab('fungible')}
+            className={`px-4 py-1.5 font-mono text-sm transition-colors ${
+              activeTab === 'fungible'
+                ? 'bg-green-900/20 text-green-400 border border-green-800'
+                : 'text-green-600 hover:text-green-500 hover:bg-green-900/10'
+            }`}
+          >
+            Tokens ({fungibleTokens.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('nonfungible')}
+            className={`px-4 py-1.5 font-mono text-sm transition-colors ${
+              activeTab === 'nonfungible'
+                ? 'bg-green-900/20 text-green-400 border border-green-800'
+                : 'text-green-600 hover:text-green-500 hover:bg-green-900/10'
+            }`}
+          >
+            NFTs ({nonfungibleTokens.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('transactions')}
+            className={`px-4 py-1.5 font-mono text-sm transition-colors ${
+              activeTab === 'transactions'
+                ? 'bg-green-900/20 text-green-400 border border-green-800'
+                : 'text-green-600 hover:text-green-500 hover:bg-green-900/10'
+            }`}
+          >
+            Transactions ({transactions.length})
+          </button>
+        </div>
       </div>
 
-      {renderContent()}
+      <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
+        {renderContent()}
+      </div>
     </>
   )
-}
