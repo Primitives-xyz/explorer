@@ -128,16 +128,16 @@ export default function TokenCard({ token, tokenType }: TokenCardProps) {
 
     return (
       <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <div
-            className="relative w-full h-32 flex-shrink-0 mb-4 cursor-pointer"
+            className="relative aspect-square w-full mb-4 cursor-pointer bg-black/5"
             onClick={() => setIsModalOpen(true)}
           >
             <Image
               src={nftToken.content?.links?.image || '/placeholder.png'}
               alt={nftToken.content?.metadata?.name || 'NFT'}
               fill
-              className="rounded-lg object-cover hover:scale-105 transition-transform duration-300"
+              className="rounded-lg object-contain p-2 hover:scale-105 transition-transform duration-300"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
               <span className="text-green-400 text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
