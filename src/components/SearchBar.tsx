@@ -1,7 +1,12 @@
 'use client'
 
+import {
+  SearchHistoryItem,
+  addSearchToHistory,
+  getRecentSearches,
+} from '@/utils/searchHistory'
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 interface SearchBarProps {
   walletAddress: string
@@ -20,12 +25,53 @@ export default function SearchBar({
 }: SearchBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Load recent searches when component mounts
+    loadRecentSearches()
+
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const loadRecentSearches = async () => {
+    try {
+      const searches = await getRecentSearches()
+      setRecentSearches(searches)
+    } catch (error) {
+      console.error('Failed to load recent searches:', error)
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     if (walletAddress && !loading) {
       await handleSearch()
+      await addSearchToHistory(walletAddress)
+      await loadRecentSearches() // Refresh the recent searches
+      setShowDropdown(false)
     }
+  }
+
+  const handleRecentSearchClick = async (address: string) => {
+    const event = {
+      target: { value: address },
+    } as ChangeEvent<HTMLInputElement>
+    handleInputChange(event)
+    setShowDropdown(false)
   }
 
   return (
@@ -43,6 +89,7 @@ export default function SearchBar({
             placeholder="BprhcaJtUTER4e3ArGYC1bmgjqvyuh1rovY3p8dgv2Eq"
             value={walletAddress}
             onChange={handleInputChange}
+            onFocus={() => setShowDropdown(true)}
             className="flex-1 bg-transparent font-mono text-green-400 placeholder-green-800 
                      focus:outline-none focus:ring-0 border-none text-sm"
             disabled={loading}
@@ -58,6 +105,29 @@ export default function SearchBar({
             {loading ? '[PROCESSING...]' : '[EXECUTE]'}
           </button>
         </div>
+
+        {/* Recent Searches Dropdown */}
+        {showDropdown && recentSearches.length > 0 && (
+          <div
+            ref={dropdownRef}
+            className="absolute z-10 w-full mt-1 bg-black/90 border border-green-800 max-h-60 overflow-y-auto"
+          >
+            {recentSearches.map((search) => (
+              <div
+                key={search.walletAddress}
+                onClick={() => handleRecentSearchClick(search.walletAddress)}
+                className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 last:border-b-0"
+              >
+                <div className="font-mono text-green-400 text-sm">
+                  {search.walletAddress}
+                </div>
+                <div className="text-green-600 text-xs">
+                  {new Date(search.timestamp).toLocaleDateString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="absolute -bottom-6 left-0 right-0">
           <div className="text-xs font-mono">
