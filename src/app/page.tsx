@@ -22,20 +22,15 @@ export default function Home() {
 
   useEffect(() => {
     const addressFromUrl = searchParams.get('address')
-    const shouldAutoSearch = !hasSearched && !isSearching
 
-    if (addressFromUrl && !walletAddress) {
+    if (addressFromUrl && addressFromUrl !== walletAddress) {
       setWalletAddress(addressFromUrl)
-      if (shouldAutoSearch) {
-        handleSearch()
-      }
+      handleSearch()
     } else if (!addressFromUrl && address && !walletAddress) {
       setWalletAddress(address)
-      if (shouldAutoSearch) {
-        handleSearch()
-      }
+      handleSearch()
     }
-  }, [searchParams, address])
+  }, [searchParams, address, walletAddress])
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setWalletAddress(e.target.value)

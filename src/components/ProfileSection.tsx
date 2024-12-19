@@ -143,11 +143,18 @@ export const ProfileSection = ({
                     className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
                   />
                   {profile.namespace?.faviconURL && (
-                    <img
-                      src={profile.namespace.faviconURL}
-                      alt={profile.namespace.readableName}
-                      className="absolute -bottom-2 -right-2 w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
-                    />
+                    <button
+                      onClick={() =>
+                        router.push(`/namespace/${profile.namespace?.name}`)
+                      }
+                      className="absolute -bottom-2 -right-2 hover:scale-110 transition-transform"
+                    >
+                      <img
+                        src={profile.namespace.faviconURL}
+                        alt={profile.namespace.readableName}
+                        className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
+                      />
+                    </button>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
