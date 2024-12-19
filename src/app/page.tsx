@@ -1,29 +1,35 @@
 'use client'
 
-import { ActivityTape } from '@/components/ActivityTape'
-import { Header } from '@/components/Header'
 import { Layout } from '@/components/Layout'
 import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
 import { TokenSection } from '@/components/TokenSection'
 import { TransactionSection } from '@/components/TransactionSection'
+import { useUserWallets } from '@dynamic-labs/sdk-react-core'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
 
 export default function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const userWallets = useUserWallets()
   const [walletAddress, setWalletAddress] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+
+  const wallet = userWallets[0]
+  const address = wallet?.address
 
   useEffect(() => {
     const addressFromUrl = searchParams.get('address')
     if (addressFromUrl && addressFromUrl !== walletAddress) {
       setWalletAddress(addressFromUrl)
-      setHasSearched(false) // Reset search state for new address
+      setHasSearched(false)
+    } else if (!addressFromUrl && address && address !== walletAddress) {
+      setWalletAddress(address)
+      setHasSearched(false)
     }
-  }, [searchParams])
+  }, [searchParams, address, walletAddress])
 
   useEffect(() => {
     if (walletAddress && !hasSearched) {
@@ -40,7 +46,6 @@ export default function Home() {
 
     setIsSearching(true)
     try {
-      // Update URL with wallet address
       const newUrl = `?address=${walletAddress}`
       router.push(newUrl)
       setHasSearched(true)
@@ -52,8 +57,6 @@ export default function Home() {
   return (
     <Layout>
       <div className="w-full overflow-hidden">
-        <ActivityTape />
-        <Header walletAddress={walletAddress} />
         <SearchBar
           walletAddress={walletAddress}
           handleInputChange={handleInputChange}
@@ -61,7 +64,6 @@ export default function Home() {
           loading={isSearching}
           hasSearched={hasSearched}
         />
-
         <div className="space-y-4 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
             <ProfileSection
@@ -71,9 +73,9 @@ export default function Home() {
             <TokenSection
               walletAddress={walletAddress}
               hasSearched={hasSearched}
+              tokenType="fungible"
             />
           </div>
-
           <div className="w-full">
             <TransactionSection
               walletAddress={walletAddress}
@@ -81,7 +83,6 @@ export default function Home() {
             />
           </div>
         </div>
-
         {!hasSearched && (
           <div className="text-center py-8 text-green-600 w-full">
             {'>>> WAITING FOR INPUT <<<'}

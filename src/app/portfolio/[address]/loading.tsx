@@ -21,7 +21,10 @@ export default function Loading() {
           {/* Tab Skeleton */}
           <div className="flex gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-10 w-32 bg-green-900/20 rounded-lg"></div>
+              <div
+                key={i}
+                className="h-10 w-32 bg-green-900/20 rounded-lg"
+              ></div>
             ))}
           </div>
 

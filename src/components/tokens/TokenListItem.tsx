@@ -39,31 +39,37 @@ export const TokenListItem = ({
             }}
           >
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm group-hover:bg-green-500/20 transition-all duration-300"></div>
-            {token.imageUrl ? (
-              <img
-                src={token.imageUrl}
-                alt={token.symbol}
-                className="relative w-10 h-10 rounded-lg object-contain p-1.5 bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                  e.currentTarget.parentElement?.classList.add(
-                    'fallback-active',
-                  )
-                }}
-              />
-            ) : null}
+
+            {/* Image container */}
+            {token.imageUrl && (
+              <div className="relative inline-block">
+                <img
+                  src={token.imageUrl}
+                  alt={token.symbol}
+                  className="w-10 h-10 rounded-lg object-contain p-1.5 bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                    e.currentTarget.parentElement?.parentElement?.classList.add(
+                      'fallback-active',
+                    )
+                  }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <span className="text-green-400 text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
+                    [view]
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Fallback container */}
             <div
-              className={`relative w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300 flex items-center justify-center ${
+              className={`w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300 flex items-center justify-center ${
                 !token.imageUrl ? 'block' : 'hidden fallback'
               }`}
             >
               <span className="text-green-500 font-mono text-sm font-bold">
                 {token.symbol.slice(0, 3)}
-              </span>
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <span className="text-green-400 text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
-                [view]
               </span>
             </div>
           </div>
