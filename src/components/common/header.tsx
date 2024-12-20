@@ -1,14 +1,12 @@
 'use client'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { Button } from '@/components/common/button'
 import { abbreviateWalletAddress } from '@/components/common/tools'
 import { UnifiedWalletButton } from '@jup-ag/wallet-adapter'
-import { LogOut } from 'lucide-react'
 import Link from 'next/link'
 
 export function Header() {
-  const { walletAddress, mainUsername, walletDisconnect } = useCurrentWallet()
+  const { walletAddress, mainUsername } = useCurrentWallet()
 
   const handleCopy = (address: string) => {
     navigator.clipboard.writeText(address)
@@ -37,9 +35,6 @@ export function Header() {
                 </span>
               </p>
             </div>
-            <Button onClick={walletDisconnect}>
-              <LogOut size={20} />
-            </Button>
           </div>
         ) : (
           <UnifiedWalletButton />
