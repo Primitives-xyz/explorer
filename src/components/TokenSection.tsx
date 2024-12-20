@@ -173,7 +173,7 @@ export const TokenSection = ({
             )}
             {nfts.length > 0 && (
               <NFTGrid
-                nfts={nfts}
+                tokens={nfts}
                 onImageClick={(url, symbol) =>
                   setSelectedImage({ url, symbol })
                 }
