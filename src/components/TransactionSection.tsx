@@ -14,6 +14,21 @@ const formatLamportsToSol = (lamports: number) => {
   })
 }
 
+const getTransactionTypeColor = (type: string) => {
+  switch (type) {
+    case 'COMPRESSED_NFT_MINT':
+      return 'bg-purple-900/50 text-purple-400 border-purple-800'
+    case 'TRANSFER':
+      return 'bg-blue-900/50 text-blue-400 border-blue-800'
+    case 'SWAP':
+      return 'bg-orange-900/50 text-orange-400 border-orange-800'
+    case 'DEPOSIT':
+      return 'bg-green-900/50 text-green-400 border-green-800'
+    default:
+      return 'bg-gray-900/50 text-gray-400 border-gray-800'
+  }
+}
+
 interface TransactionSectionProps {
   walletAddress: string
   hasSearched?: boolean
@@ -111,15 +126,29 @@ export const TransactionSection = ({
                 <div className="flex flex-col gap-1">
                   {/* Transaction Header */}
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-green-400 font-mono">
-                      {formatDistanceToNow(new Date(tx.timestamp * 1000))} ago
-                    </span>
-                    <span className="text-green-600 font-mono">{tx.type}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-400 font-mono">
+                        {formatDistanceToNow(new Date(tx.timestamp * 1000))} ago
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded border ${getTransactionTypeColor(tx.type)} text-xs font-mono`}
+                      >
+                        {tx.type}
+                      </span>
+                    </div>
+                    <a
+                      href={`https://solscan.io/tx/${tx.signature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:text-green-500 font-mono"
+                    >
+                      View
+                    </a>
                   </div>
 
-                  {/* Transaction Details */}
+                  {/* Transaction Description */}
                   <div className="text-sm text-green-300 font-mono break-words">
-                    {tx.description}
+                    {tx.description || 'No description available'}
                   </div>
 
                   {/* Transfers */}
@@ -129,8 +158,28 @@ export const TransactionSection = ({
                         key={i}
                         className="text-xs text-green-500 font-mono flex items-center gap-1"
                       >
-                        <span>{transfer.amount > 0 ? '↓' : '↑'}</span>
+                        <span>
+                          {transfer.fromUserAccount === walletAddress
+                            ? '↑'
+                            : '↓'}
+                        </span>
                         <span>{formatLamportsToSol(transfer.amount)} SOL</span>
+                        <span className="text-green-700">
+                          {transfer.fromUserAccount === walletAddress
+                            ? 'to'
+                            : 'from'}
+                        </span>
+                        <span className="text-green-600 text-xs">
+                          {(transfer.fromUserAccount === walletAddress
+                            ? transfer.toUserAccount
+                            : transfer.fromUserAccount
+                          ).slice(0, 4)}
+                          ...
+                          {(transfer.fromUserAccount === walletAddress
+                            ? transfer.toUserAccount
+                            : transfer.fromUserAccount
+                          ).slice(-4)}
+                        </span>
                       </div>
                     ))}
                     {tx.tokenTransfers?.map((transfer, i) => (
@@ -138,8 +187,30 @@ export const TransactionSection = ({
                         key={i}
                         className="text-xs text-green-500 font-mono flex items-center gap-1"
                       >
-                        <span>{transfer.tokenAmount > 0 ? '↓' : '↑'}</span>
-                        <span>{Math.abs(transfer.tokenAmount)}</span>
+                        <span>
+                          {transfer.fromUserAccount === walletAddress
+                            ? '↑'
+                            : '↓'}
+                        </span>
+                        <span>
+                          {transfer.tokenAmount} {transfer.mint.slice(0, 4)}...
+                        </span>
+                        <span className="text-green-700">
+                          {transfer.fromUserAccount === walletAddress
+                            ? 'to'
+                            : 'from'}
+                        </span>
+                        <span className="text-green-600 text-xs">
+                          {(transfer.fromUserAccount === walletAddress
+                            ? transfer.toUserAccount
+                            : transfer.fromUserAccount
+                          ).slice(0, 4)}
+                          ...
+                          {(transfer.fromUserAccount === walletAddress
+                            ? transfer.toUserAccount
+                            : transfer.fromUserAccount
+                          ).slice(-4)}
+                        </span>
                       </div>
                     ))}
                   </div>
