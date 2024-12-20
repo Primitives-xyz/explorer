@@ -71,7 +71,7 @@ export const TokenContainer = ({
 }: TokenContainerProps) => {
   if (view === 'nfts') {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-[3fr,1fr] gap-4 w-full">
+      <div className="flex flex-col gap-4 w-full">
         <div className="min-w-0">
           <NFTSection
             walletAddress={walletAddress}

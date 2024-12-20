@@ -124,7 +124,7 @@ export const NFTGrid = ({
   })
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-3">
       {sortedTokens.map((token) => {
         const imageUrl = token.imageUrl
         const name = token.name || 'Unnamed Token'
@@ -134,11 +134,11 @@ export const NFTGrid = ({
         return (
           <div
             key={token.id}
-            className="border border-green-800/30 rounded-lg p-4 hover:bg-green-900/10 transition-colors relative group"
+            className="border border-green-800/30 rounded-lg p-3 hover:bg-green-900/10 transition-colors relative group"
           >
             {/* Compressed Badge */}
             {token.compressed && (
-              <div className="absolute top-4 right-4 bg-green-900/80 text-green-300 text-sm px-3 py-1.5 rounded-full z-10">
+              <div className="absolute top-3 right-3 bg-green-900/80 text-green-300 text-xs px-2 py-1 rounded-full z-10">
                 Compressed
               </div>
             )}

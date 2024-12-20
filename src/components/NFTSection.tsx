@@ -24,8 +24,6 @@ export const NFTSection = ({
   error,
   items = [],
 }: NFTSectionProps) => {
-  const [expandedTokenId, setExpandedTokenId] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<'value' | 'balance' | 'symbol'>('value')
   const [selectedImage, setSelectedImage] = useState<{
     url: string
     symbol: string
@@ -52,7 +50,7 @@ export const NFTSection = ({
   }
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px]">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px] lg:h-[600px]">
       {/* Header */}
       {!hideTitle && (
         <div className="border-b border-green-800 p-3 flex-shrink-0">
