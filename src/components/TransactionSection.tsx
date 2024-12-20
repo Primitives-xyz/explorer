@@ -75,10 +75,7 @@ export const TransactionSection = ({
   if (!hasSearched) return null
 
   return (
-    <div
-      className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group min-h-[484px]"
-      style={{ maxHeight: maxHeight }}
-    >
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px]">
       {/* Header */}
       <div className="border-b border-green-800 p-2 flex-shrink-0">
         <div className="flex justify-between items-center overflow-x-auto scrollbar-none">

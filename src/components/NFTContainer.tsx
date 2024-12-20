@@ -109,8 +109,8 @@ export const NFTContainer = ({
   }, [walletAddress, hasSearched, tokenType])
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-4 w-full">
-      <div className="min-w-0">
+    <div className="flex flex-col gap-4 w-full">
+      <div className="w-full">
         <NFTSection
           walletAddress={walletAddress}
           hasSearched={hasSearched}
@@ -121,7 +121,7 @@ export const NFTContainer = ({
           items={tokenData?.items}
         />
       </div>
-      <div className="min-w-0">
+      <div className="w-full">
         <TransactionSection
           walletAddress={walletAddress}
           hasSearched={hasSearched}
