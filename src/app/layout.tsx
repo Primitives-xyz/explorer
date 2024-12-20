@@ -21,6 +21,9 @@ const Header = dynamic(
 export const metadata: Metadata = {
   title: 'Social Graph Explorer',
   description: 'Explore social connections on Tapestry Protocol',
+  openGraph: {
+    images: ['https://assets.usetapestry.dev/explorer-2.png'],
+  },
 }
 
 interface RootLayoutProps {
