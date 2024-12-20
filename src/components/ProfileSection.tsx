@@ -35,6 +35,9 @@ export const ProfileSection = ({
     const fetchProfiles = async () => {
       if (!walletAddress || !hasSearched) return
 
+      setSelectedNamespace(null)
+      setProfiles([])
+      setFilteredProfiles([])
       setIsLoading(true)
       setError(null)
 
