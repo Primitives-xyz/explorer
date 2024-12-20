@@ -22,51 +22,45 @@ export default function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const userWallets = useUserWallets()
+
   const [walletAddress, setWalletAddress] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const [tokenData, setTokenData] = useState<TokenData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const wallet = userWallets[0]
-  const address = wallet?.address
+  const connectedWalletAddr = wallet?.address
 
+  // On mount or when URL param changes, set walletAddress & trigger fetch
   useEffect(() => {
     const addressFromUrl = searchParams.get('address')
-
-    if (!initialLoadComplete) {
-      if (addressFromUrl) {
-        setWalletAddress(addressFromUrl)
-        setHasSearched(true)
-        fetchTokens()
-      } else if (address) {
-        setWalletAddress(address)
-        setHasSearched(true)
-        fetchTokens()
-      }
-      setInitialLoadComplete(true)
+    if (addressFromUrl && addressFromUrl !== walletAddress) {
+      // If a different address is in the URL
+      setWalletAddress(addressFromUrl)
+      setHasSearched(true)
+    } else if (!addressFromUrl && connectedWalletAddr && !walletAddress) {
+      // If user has connected wallet but there's no ?address= in the URL
+      setWalletAddress(connectedWalletAddr)
+      setHasSearched(true)
     }
-  }, [searchParams, address, initialLoadComplete])
+  }, [searchParams, connectedWalletAddr, walletAddress])
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setWalletAddress(e.target.value)
-    setHasSearched(false)
-    setTokenData(null)
-  }
+  // Whenever we have a walletAddress & hasSearched, auto-fetch tokens
+  useEffect(() => {
+    if (walletAddress && hasSearched) {
+      fetchTokens(walletAddress)
+    }
+  }, [walletAddress, hasSearched])
 
-  const fetchTokens = async () => {
-    if (!walletAddress) return
-
+  // Single function that fetches tokens for a given address
+  async function fetchTokens(addr: string) {
     setIsLoading(true)
     setError(null)
     setTokenData(null)
-
     try {
-      const response = await fetch(
-        `/api/tokens?address=${walletAddress}&type=all`,
-      )
+      const response = await fetch(`/api/tokens?address=${addr}&type=all`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
@@ -74,10 +68,9 @@ export default function Home() {
       if ('error' in data) {
         throw new Error(data.error)
       }
-
       setTokenData(data)
-    } catch (error) {
-      console.error('Error fetching tokens:', error)
+    } catch (err) {
+      console.error('Error fetching tokens:', err)
       setError('Failed to fetch tokens.')
       setTokenData(null)
     } finally {
@@ -85,21 +78,35 @@ export default function Home() {
     }
   }
 
-  const handleSearch = async () => {
-    if (!walletAddress) return
-
+  // The "unified" search action that updates state + pushes URL + fetches in one go
+  async function searchAddress(newAddress: string) {
+    if (!newAddress) return
     setIsSearching(true)
+    setWalletAddress(newAddress)
+    setHasSearched(true)
     setTokenData(null)
+
+    // Refresh the URL param
+    router.push(`?address=${newAddress}`)
+
     try {
-      if (initialLoadComplete) {
-        const newUrl = `?address=${walletAddress}`
-        router.push(newUrl)
-      }
-      setHasSearched(true)
-      await fetchTokens()
+      await fetchTokens(newAddress)
     } finally {
       setIsSearching(false)
     }
+  }
+
+  // For typing in the input (as opposed to the dropdown):
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setWalletAddress(e.target.value)
+    setHasSearched(false)
+    setTokenData(null)
+  }
+
+  // Called when user clicks the [EXECUTE] button from the child form
+  // or presses Enter in the input
+  const handleSubmitSearch = () => {
+    searchAddress(walletAddress)
   }
 
   return (
@@ -108,9 +115,12 @@ export default function Home() {
         <SearchBar
           walletAddress={walletAddress}
           handleInputChange={handleInputChange}
-          handleSearch={handleSearch}
+          // We pass down a callback that *just* calls searchAddress
+          handleSearch={handleSubmitSearch}
           loading={isSearching}
           hasSearched={hasSearched}
+          // Optionally pass searchAddress if you want direct calls from the child
+          onPickRecentAddress={searchAddress}
         />
         <div className="space-y-4 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
