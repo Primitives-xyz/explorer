@@ -1,7 +1,13 @@
 'use client'
 
-import { DynamicWidget, useUserWallets } from '@dynamic-labs/sdk-react-core'
+import { useUserWallets } from '@dynamic-labs/sdk-react-core'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
+
+const DynamicWidget = dynamic(
+  () => import('@dynamic-labs/sdk-react-core').then((mod) => mod.DynamicWidget),
+  { ssr: false },
+)
 
 export const Header = () => {
   const userWallets = useUserWallets()
@@ -30,7 +36,7 @@ export const Header = () => {
             {/* Actions */}
             <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto scrollbar-none">
               <div className="mt-[3px] flex-shrink-0">
-                <DynamicWidget variant="dropdown" />
+                <DynamicWidget />
               </div>
               <Link
                 href={walletAddress ? `/portfolio/${walletAddress}` : '#'}

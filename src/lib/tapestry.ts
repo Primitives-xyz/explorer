@@ -17,8 +17,31 @@ export const createProfile = async ({
   ownerWalletAddress: string
 }): Promise<any> => {
   try {
-    if (!username || !ownerWalletAddress) {
-      throw new Error('Missing required fields for creating profile')
+    // Input validation
+    if (!username && !ownerWalletAddress) {
+      throw new Error('Both username and wallet address are required')
+    }
+
+    if (!username) {
+      throw new Error('Username is required')
+    }
+
+    if (!ownerWalletAddress) {
+      throw new Error('Wallet address is required')
+    }
+
+    if (username.length < 3) {
+      throw new Error('Username must be at least 3 characters long')
+    }
+
+    if (username.length > 30) {
+      throw new Error('Username must not exceed 30 characters')
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      throw new Error(
+        'Username can only contain letters, numbers, and underscores',
+      )
     }
 
     const createProfileResponse = await fetchTapestry({
@@ -28,17 +51,43 @@ export const createProfile = async ({
         walletAddress: ownerWalletAddress,
         username,
         blockchain: 'SOLANA',
+        execution: 'FAST_UNCONFIRMED',
       },
     })
 
     if (!createProfileResponse) {
-      throw new Error('Failed to create profile - no response received')
+      throw new Error(
+        'Failed to create profile - no response received from server',
+      )
     }
 
     return createProfileResponse
-  } catch (error) {
+  } catch (error: any) {
     console.error('[createProfile Error]:', error)
-    throw error
+
+    // Rethrow with more specific error messages
+    if (error.message?.includes('already exists')) {
+      throw new Error('This username is already taken')
+    }
+
+    if (error.message?.includes('Invalid wallet address')) {
+      throw new Error('The provided wallet address is invalid')
+    }
+
+    // If it's already a custom error message from our validation, throw it as is
+    if (
+      error.message &&
+      (error.message.includes('Username') ||
+        error.message.includes('Wallet address') ||
+        error.message.includes('Both username'))
+    ) {
+      throw error
+    }
+
+    // Generic error
+    throw new Error(
+      `Failed to create profile: ${error.message || 'An unexpected error occurred'}`,
+    )
   }
 }
 

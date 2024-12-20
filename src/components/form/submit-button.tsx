@@ -1,19 +1,21 @@
 'use client'
 
-import { useFormStatus } from 'react-dom'
+import { ButtonHTMLAttributes } from 'react'
 
-interface Props {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
+  disabled?: boolean
 }
 
-export function SubmitButton({ children }: Props) {
-  const { pending } = useFormStatus()
-
+export function SubmitButton({ children, disabled, ...props }: Props) {
   return (
     <button
       type="submit"
-      className="bg-foreground text-background h-10 p-2 hover:opacity-80 rounded"
-      disabled={pending}
+      disabled={disabled}
+      className={`w-full px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+        disabled ? 'opacity-50 cursor-not-allowed' : ''
+      }`}
+      {...props}
     >
       {children}
     </button>

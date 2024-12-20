@@ -1,6 +1,7 @@
 'use client'
 
 import { Layout } from '@/components/Layout'
+import { CreateProfile } from '@/components/profile/create-profile'
 import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
 import { TokenContainer } from '@/components/TokenContainer'
@@ -112,14 +113,13 @@ export default function Home() {
   return (
     <Layout>
       <div className="w-full overflow-hidden">
+        <CreateProfile />
         <SearchBar
           walletAddress={walletAddress}
           handleInputChange={handleInputChange}
-          // We pass down a callback that *just* calls searchAddress
           handleSearch={handleSubmitSearch}
           loading={isSearching}
           hasSearched={hasSearched}
-          // Optionally pass searchAddress if you want direct calls from the child
           onPickRecentAddress={searchAddress}
         />
         <div className="space-y-4 w-full">
