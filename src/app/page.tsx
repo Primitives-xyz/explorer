@@ -39,10 +39,12 @@ export default function Home() {
     if (!initialLoadComplete) {
       if (addressFromUrl) {
         setWalletAddress(addressFromUrl)
-        handleSearch()
+        setHasSearched(true)
+        fetchTokens()
       } else if (address) {
         setWalletAddress(address)
-        handleSearch()
+        setHasSearched(true)
+        fetchTokens()
       }
       setInitialLoadComplete(true)
     }
@@ -51,6 +53,7 @@ export default function Home() {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setWalletAddress(e.target.value)
     setHasSearched(false)
+    setTokenData(null)
   }
 
   const fetchTokens = async () => {
@@ -58,6 +61,7 @@ export default function Home() {
 
     setIsLoading(true)
     setError(null)
+    setTokenData(null)
 
     try {
       const response = await fetch(
@@ -85,6 +89,7 @@ export default function Home() {
     if (!walletAddress) return
 
     setIsSearching(true)
+    setTokenData(null)
     try {
       if (initialLoadComplete) {
         const newUrl = `?address=${walletAddress}`

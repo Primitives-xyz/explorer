@@ -1,4 +1,5 @@
 import { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
+import { useState } from 'react'
 
 interface NFTGridProps {
   tokens: (NFT | TokenWithInscription | FungibleToken)[]
@@ -6,6 +7,8 @@ interface NFTGridProps {
 }
 
 export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
+
   const isInscription = (
     token: NFT | TokenWithInscription | FungibleToken,
   ): token is TokenWithInscription => {
@@ -34,9 +37,26 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
     )
   }
 
+  const handleImageError = (tokenId: string) => {
+    setFailedImages((prev) => new Set(prev).add(tokenId))
+  }
+
+  const hasValidImage = (token: NFT | TokenWithInscription | FungibleToken) => {
+    return token.imageUrl && !failedImages.has(token.id)
+  }
+
+  // Sort tokens: items with valid images first
+  const sortedTokens = [...tokens].sort((a, b) => {
+    const aHasImage = hasValidImage(a)
+    const bHasImage = hasValidImage(b)
+    if (aHasImage && !bHasImage) return -1
+    if (!aHasImage && bHasImage) return 1
+    return 0
+  })
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-      {tokens.map((token) => {
+      {sortedTokens.map((token) => {
         const imageUrl = token.imageUrl
         const name = token.name || 'Unnamed Token'
         const symbol = token.symbol || ''
@@ -61,7 +81,10 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
                   src={imageUrl}
                   alt={name}
                   className="w-full h-full object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105"
-                  onClick={() => onImageClick(imageUrl, name)}
+                  onClick={() =>
+                    !failedImages.has(token.id) && onImageClick(imageUrl, name)
+                  }
+                  onError={() => handleImageError(token.id)}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-green-600/50">
