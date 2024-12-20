@@ -7,7 +7,7 @@ import SearchBar from '@/components/SearchBar'
 import { TokenContainer } from '@/components/TokenContainer'
 import { FungibleToken, NFT } from '@/utils/types'
 import { useUserWallets } from '@dynamic-labs/sdk-react-core'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
 
 interface TokenData {
@@ -23,6 +23,7 @@ export default function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const userWallets = useUserWallets()
+  const pathname = usePathname()
 
   const [walletAddress, setWalletAddress] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
@@ -34,18 +35,42 @@ export default function Home() {
   const wallet = userWallets[0]
   const connectedWalletAddr = wallet?.address
 
-  // On mount or when URL param changes, set walletAddress & trigger fetch
+  // Clear states when component mounts or pathname changes
+  useEffect(() => {
+    const clearStates = () => {
+      setWalletAddress('')
+      setHasSearched(false)
+      setIsSearching(false)
+      setTokenData(null)
+      setIsLoading(false)
+      setError(null)
+    }
+
+    clearStates()
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (target.closest('a')) {
+        clearStates()
+      }
+    }
+
+    document.addEventListener('click', handleClick)
+
+    return () => {
+      document.removeEventListener('click', handleClick)
+    }
+  }, [pathname])
+
+  // Separate effect for handling URL params and connected wallet
   useEffect(() => {
     const addressFromUrl = searchParams.get('address')
     if (addressFromUrl) {
       setWalletAddress(addressFromUrl)
       setHasSearched(true)
       fetchTokens(addressFromUrl)
-    } else if (connectedWalletAddr && !walletAddress) {
-      setWalletAddress(connectedWalletAddr)
-      // Don't auto-search when setting connected wallet
     }
-  }, [searchParams]) // Only depend on searchParams
+  }, [searchParams, connectedWalletAddr])
 
   // Single function that fetches tokens for a given address
   async function fetchTokens(addr: string) {
