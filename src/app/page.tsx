@@ -4,10 +4,19 @@ import { Layout } from '@/components/Layout'
 import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
 import { TokenContainer } from '@/components/TokenContainer'
-import { TransactionSection } from '@/components/TransactionSection'
+import { FungibleToken, NFT } from '@/utils/types'
 import { useUserWallets } from '@dynamic-labs/sdk-react-core'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
+
+interface TokenData {
+  items: (FungibleToken | NFT)[]
+  nativeBalance: {
+    lamports: number
+    price_per_sol: number
+    total_price: number
+  }
+}
 
 export default function Home() {
   const router = useRouter()
@@ -17,6 +26,9 @@ export default function Home() {
   const [hasSearched, setHasSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+  const [tokenData, setTokenData] = useState<TokenData | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const wallet = userWallets[0]
   const address = wallet?.address
@@ -41,6 +53,34 @@ export default function Home() {
     setHasSearched(false)
   }
 
+  const fetchTokens = async () => {
+    if (!walletAddress) return
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch(
+        `/api/tokens?address=${walletAddress}&type=all`,
+      )
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data = await response.json()
+      if ('error' in data) {
+        throw new Error(data.error)
+      }
+
+      setTokenData(data)
+    } catch (error) {
+      console.error('Error fetching tokens:', error)
+      setError('Failed to fetch tokens.')
+      setTokenData(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleSearch = async () => {
     if (!walletAddress) return
 
@@ -51,6 +91,7 @@ export default function Home() {
         router.push(newUrl)
       }
       setHasSearched(true)
+      await fetchTokens()
     } finally {
       setIsSearching(false)
     }
@@ -76,20 +117,29 @@ export default function Home() {
               walletAddress={walletAddress}
               hasSearched={hasSearched}
               tokenType="fungible"
+              view="tokens"
+              tokenData={tokenData}
+              isLoading={isLoading}
+              error={error}
             />
           </div>
           <div className="w-full">
-            <TransactionSection
+            <TokenContainer
               walletAddress={walletAddress}
               hasSearched={hasSearched}
+              tokenType="all"
+              view="nfts"
+              tokenData={tokenData}
+              isLoading={isLoading}
+              error={error}
             />
           </div>
+          {!hasSearched && (
+            <div className="text-center py-8 text-green-600 w-full">
+              {'>>> WAITING FOR INPUT <<<'}
+            </div>
+          )}
         </div>
-        {!hasSearched && (
-          <div className="text-center py-8 text-green-600 w-full">
-            {'>>> WAITING FOR INPUT <<<'}
-          </div>
-        )}
       </div>
     </Layout>
   )

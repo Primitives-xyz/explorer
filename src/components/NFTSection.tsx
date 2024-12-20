@@ -1,0 +1,132 @@
+'use client'
+
+import { FungibleToken, NFT } from '@/utils/types'
+import { useState } from 'react'
+import { ImageModal } from './tokens/ImageModal'
+import { NFTGrid } from './tokens/NFTGrid'
+
+interface NFTSectionProps {
+  walletAddress: string
+  hasSearched?: boolean
+  tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
+  hideTitle?: boolean
+  isLoading: boolean
+  error: string | null
+  items?: (FungibleToken | NFT)[]
+}
+
+export const NFTSection = ({
+  walletAddress,
+  hasSearched,
+  tokenType = 'all',
+  hideTitle = false,
+  isLoading,
+  error,
+  items = [],
+}: NFTSectionProps) => {
+  const [expandedTokenId, setExpandedTokenId] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<'value' | 'balance' | 'symbol'>('value')
+  const [selectedImage, setSelectedImage] = useState<{
+    url: string
+    symbol: string
+  } | null>(null)
+
+  const shouldShowContent =
+    isLoading || items.length > 0 || (hasSearched && items.length === 0)
+
+  if (!shouldShowContent) return null
+
+  const getTitle = () => {
+    switch (tokenType) {
+      case 'fungible':
+        return 'fungible_tokens.sol'
+      case 'nft':
+        return 'regular_nfts.sol'
+      case 'compressed':
+        return 'compressed_nfts.sol'
+      case 'programmable':
+        return 'programmable_nfts.sol'
+      default:
+        return 'all_tokens.sol'
+    }
+  }
+
+  return (
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[484px] relative group">
+      {/* Header */}
+      {!hideTitle && (
+        <div className="border-b border-green-800 p-2 flex-shrink-0">
+          <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
+            <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+              {'>'} {getTitle()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
+          <span>! ERROR: {error}</span>
+        </div>
+      )}
+
+      {/* Scroll Indicators */}
+      <div
+        className="absolute right-1 top-[40px] bottom-1 w-1 opacity-0 transition-opacity duration-300 pointer-events-none"
+        style={{
+          opacity: 0,
+          animation: 'fadeOut 0.3s ease-out',
+        }}
+      >
+        <div className="h-full bg-green-500/5 rounded-full">
+          <div
+            className="h-16 w-full bg-green-500/10 rounded-full"
+            style={{
+              animation: 'slideY 3s ease-in-out infinite',
+              transformOrigin: 'top',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div
+        className="overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50 hover-scroll-indicator"
+        onScroll={(e) => {
+          const indicator = e.currentTarget.previousSibling as HTMLElement
+          if (e.currentTarget.scrollTop > 0) {
+            indicator.style.opacity = '1'
+            indicator.style.animation = 'fadeIn 0.3s ease-out'
+          } else {
+            indicator.style.opacity = '0'
+            indicator.style.animation = 'fadeOut 0.3s ease-out'
+          }
+        }}
+      >
+        {isLoading ? (
+          <div className="p-4 text-center text-green-600 font-mono">
+            {'>>> FETCHING TOKENS...'}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="p-4 text-center text-green-600 font-mono">
+            {'>>> NO TOKENS FOUND'}
+          </div>
+        ) : (
+          <NFTGrid
+            tokens={items}
+            onImageClick={(url, symbol) => setSelectedImage({ url, symbol })}
+          />
+        )}
+      </div>
+
+      {selectedImage && (
+        <ImageModal
+          isOpen={true}
+          onClose={() => setSelectedImage(null)}
+          imageUrl={selectedImage.url}
+          symbol={selectedImage.symbol}
+        />
+      )}
+    </div>
+  )
+}

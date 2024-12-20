@@ -2,10 +2,20 @@
 
 import { TokenContainer } from '@/components/TokenContainer'
 import { TransactionSection } from '@/components/TransactionSection'
-import { useState } from 'react'
+import { FungibleToken, NFT } from '@/utils/types'
+import { useEffect, useState } from 'react'
 
 interface PortfolioTabsProps {
   address: string
+}
+
+interface TokenData {
+  items: (FungibleToken | NFT)[]
+  nativeBalance: {
+    lamports: number
+    price_per_sol: number
+    total_price: number
+  }
 }
 
 type TokenTab =
@@ -18,6 +28,39 @@ type TokenTab =
 
 export default function PortfolioTabs({ address }: PortfolioTabsProps) {
   const [activeTab, setActiveTab] = useState<TokenTab>('all')
+  const [tokenData, setTokenData] = useState<TokenData | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchTokens = async () => {
+      if (!address) return
+
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetch(`/api/tokens?address=${address}&type=all`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        if ('error' in data) {
+          throw new Error(data.error)
+        }
+
+        setTokenData(data)
+      } catch (error) {
+        console.error('Error fetching tokens:', error)
+        setError('Failed to fetch tokens.')
+        setTokenData(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTokens()
+  }, [address])
 
   const renderContent = () => {
     if (activeTab === 'transactions') {
@@ -30,6 +73,9 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
         hasSearched={true}
         tokenType={activeTab}
         hideTitle={true}
+        tokenData={tokenData}
+        isLoading={isLoading}
+        error={error}
       />
     )
   }

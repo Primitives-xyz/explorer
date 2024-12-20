@@ -9,25 +9,27 @@ const LAMPORTS_PER_SOL = 1000000000
 const formatLamportsToSol = (lamports: number) => {
   const sol = Math.abs(lamports) / LAMPORTS_PER_SOL
   return sol.toLocaleString(undefined, {
-    minimumFractionDigits: 9,
-    maximumFractionDigits: 9,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   })
 }
 
 interface TransactionSectionProps {
   walletAddress: string
   hasSearched?: boolean
+  maxHeight?: string
 }
 
 export const TransactionSection = ({
   walletAddress,
   hasSearched,
+  maxHeight = '484px',
 }: TransactionSectionProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
-  const ITEMS_PER_PAGE = 10
+  const ITEMS_PER_PAGE = 5
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -48,25 +50,20 @@ export const TransactionSection = ({
         }
 
         const response = await fetch(url)
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`)
-        }
         const transactionsData = await response.json()
-        if ('error' in transactionsData) {
-          throw new Error(transactionsData.error)
-        }
+        if ('error' in transactionsData) throw new Error(transactionsData.error)
 
-        if (page === 1) {
-          setTransactions(transactionsData)
-        } else {
-          setTransactions((prev) => [...prev, ...transactionsData])
-        }
+        setTransactions(
+          page === 1
+            ? transactionsData
+            : (prev) => [...prev, ...transactionsData],
+        )
       } catch (error) {
         console.error('Error fetching transactions:', error)
         setError('Failed to fetch transactions.')
-        if (page === 1) {
-          setTransactions([])
-        }
+        if (page === 1) setTransactions([])
       } finally {
         setIsLoading(false)
       }
@@ -75,14 +72,13 @@ export const TransactionSection = ({
     fetchTransactions()
   }, [walletAddress, hasSearched, page])
 
-  const handleLoadMore = () => {
-    setPage((prev) => prev + 1)
-  }
-
   if (!hasSearched) return null
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col max-h-[800px] relative group">
+    <div
+      className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group min-h-[484px]"
+      style={{ maxHeight: maxHeight }}
+    >
       {/* Header */}
       <div className="border-b border-green-800 p-2 flex-shrink-0">
         <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
@@ -96,108 +92,59 @@ export const TransactionSection = ({
       </div>
 
       {error && (
-        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
-          <span>! ERROR: {error}</span>
+        <div className="p-1.5 text-xs border border-red-800 bg-red-900/20 text-red-400">
+          {error}
         </div>
       )}
 
-      {/* Scroll Indicators */}
-      <div
-        className="absolute right-1 top-[40px] bottom-1 w-1 opacity-0 transition-opacity duration-300 pointer-events-none"
-        style={{
-          opacity: 0,
-          animation: 'fadeOut 0.3s ease-out',
-        }}
-      >
-        <div className="h-full bg-green-500/5 rounded-full">
-          <div
-            className="h-16 w-full bg-green-500/10 rounded-full"
-            style={{
-              animation: 'slideY 3s ease-in-out infinite',
-              transformOrigin: 'top',
-            }}
-          />
-        </div>
-      </div>
-
       {/* Transaction List */}
-      <div
-        className="divide-y divide-green-800/30 overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50 hover-scroll-indicator"
-        onScroll={(e) => {
-          const indicator = e.currentTarget.previousSibling as HTMLElement
-          if (e.currentTarget.scrollTop > 0) {
-            indicator.style.opacity = '1'
-            indicator.style.animation = 'fadeIn 0.3s ease-out'
-          } else {
-            indicator.style.opacity = '0'
-            indicator.style.animation = 'fadeOut 0.3s ease-out'
-          }
-        }}
-      >
+      <div className="divide-y divide-green-800/30 overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
         {isLoading && transactions.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> FETCHING TRANSACTIONS...'}
+          <div className="p-2 text-center text-green-600 text-sm font-mono">
+            Loading...
           </div>
         ) : transactions.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> NO TRANSACTIONS FOUND'}
+          <div className="p-2 text-center text-green-600 text-sm font-mono">
+            No transactions
           </div>
         ) : (
           <>
             {transactions.map((tx) => (
-              <div key={tx.signature} className="p-3 hover:bg-green-900/10">
-                <div className="flex flex-col gap-1.5 overflow-hidden">
+              <div key={tx.signature} className="p-2 hover:bg-green-900/10">
+                <div className="flex flex-col gap-1">
                   {/* Transaction Header */}
-                  <div className="flex items-center justify-between text-xs overflow-x-auto scrollbar-none">
-                    <span className="text-green-400 font-mono bg-green-900/20 px-1.5 py-0.5 rounded whitespace-nowrap">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-green-400 font-mono">
                       {formatDistanceToNow(new Date(tx.timestamp * 1000))} ago
                     </span>
-                    <span className="text-green-600 font-mono bg-green-900/20 px-1.5 py-0.5 rounded whitespace-nowrap ml-2">
-                      {tx.type}
-                    </span>
+                    <span className="text-green-600 font-mono">{tx.type}</span>
                   </div>
 
                   {/* Transaction Details */}
-                  <div className="text-base text-green-300 font-mono bg-green-900/10 p-2 rounded overflow-x-auto scrollbar-none break-words">
+                  <div className="text-sm text-green-300 font-mono break-words">
                     {tx.description}
                   </div>
 
-                  {/* Transfers Container */}
-                  <div className="space-y-1 bg-green-900/5 p-1.5 rounded overflow-hidden">
-                    {/* Native Transfers */}
+                  {/* Transfers */}
+                  <div className="space-y-0.5">
                     {tx.nativeTransfers?.map((transfer, i) => (
                       <div
                         key={i}
-                        className="text-sm text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
+                        className="text-xs text-green-500 font-mono flex items-center gap-1"
                       >
-                        <span className="text-green-600 flex-shrink-0">
-                          {transfer.amount > 0 ? '↓' : '↑'}
-                        </span>
-                        <span className="bg-green-900/20 px-2 py-0.5 rounded flex-shrink-0 font-semibold">
-                          {formatLamportsToSol(transfer.amount)} SOL
-                        </span>
+                        <span>{transfer.amount > 0 ? '↓' : '↑'}</span>
+                        <span>{formatLamportsToSol(transfer.amount)} SOL</span>
                       </div>
                     ))}
-
-                    {/* Token Transfers */}
                     {tx.tokenTransfers?.map((transfer, i) => (
                       <div
                         key={i}
-                        className="text-sm text-green-500 font-mono flex items-center gap-2 overflow-x-auto scrollbar-none whitespace-nowrap"
+                        className="text-xs text-green-500 font-mono flex items-center gap-1"
                       >
-                        <span className="text-green-600 flex-shrink-0">
-                          {transfer.tokenAmount > 0 ? '↓' : '↑'}
-                        </span>
-                        <span className="bg-green-900/20 px-2 py-0.5 rounded flex-shrink-0 font-semibold">
-                          {Math.abs(transfer.tokenAmount)}
-                        </span>
+                        <span>{transfer.tokenAmount > 0 ? '↓' : '↑'}</span>
+                        <span>{Math.abs(transfer.tokenAmount)}</span>
                       </div>
                     ))}
-                  </div>
-
-                  {/* Transaction Hash */}
-                  <div className="text-xs text-green-800 font-mono truncate hover:text-green-600 overflow-hidden pt-0.5">
-                    sig: {tx.signature}
                   </div>
                 </div>
               </div>
@@ -206,19 +153,15 @@ export const TransactionSection = ({
         )}
       </div>
 
-      {/* Load More Button */}
+      {/* Load More */}
       {!isLoading && transactions.length > 0 && (
-        <div className="border-t border-green-800 p-2 flex-shrink-0">
-          <button
-            className="w-full text-center text-xs text-green-600 hover:text-green-500 font-mono"
-            onClick={handleLoadMore}
-            disabled={isLoading}
-          >
-            {isLoading
-              ? '>>> LOADING MORE... <<<'
-              : '>>> LOAD MORE TRANSACTIONS <<<'}
-          </button>
-        </div>
+        <button
+          className="w-full p-1 text-xs text-green-600 hover:text-green-500 font-mono border-t border-green-800"
+          onClick={() => setPage((prev) => prev + 1)}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Loading...' : 'Load More'}
+        </button>
       )}
     </div>
   )

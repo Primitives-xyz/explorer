@@ -1,6 +1,7 @@
 import { FungibleToken, NFT } from '@/utils/types'
-import { useEffect, useState } from 'react'
+import { NFTSection } from './NFTSection'
 import { TokenSection } from './TokenSection'
+import { TransactionSection } from './TransactionSection'
 import { SolBalanceSection } from './tokens/SolBalanceSection'
 
 interface TokenContainerProps {
@@ -8,6 +9,10 @@ interface TokenContainerProps {
   hasSearched?: boolean
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
+  view?: 'tokens' | 'nfts'
+  tokenData: TokenData | null
+  isLoading: boolean
+  error: string | null
 }
 
 interface TokenData {
@@ -19,47 +24,76 @@ interface TokenData {
   }
 }
 
+const filterNFTs = (items: (FungibleToken | NFT)[], tokenType: string) => {
+  return items.filter((item: FungibleToken | NFT) => {
+    // Exclude fungible tokens
+    if (
+      item.interface === 'FungibleToken' ||
+      item.interface === 'FungibleAsset'
+    ) {
+      return false
+    }
+
+    switch (tokenType) {
+      case 'nft':
+        return (
+          ['V1_NFT', 'V2_NFT', 'LEGACY_NFT', 'MplCoreAsset'].includes(
+            item.interface,
+          ) && !item.compressed
+        )
+      case 'compressed':
+        return ['V1_NFT', 'V2_NFT'].includes(item.interface) && item.compressed
+      case 'programmable':
+        return item.interface === 'ProgrammableNFT'
+      case 'all':
+      default:
+        return true
+    }
+  })
+}
+
+const filterTokens = (items: (FungibleToken | NFT)[]) => {
+  return items.filter(
+    (item) =>
+      item.interface === 'FungibleToken' || item.interface === 'FungibleAsset',
+  )
+}
+
 export const TokenContainer = ({
   walletAddress,
   hasSearched,
   tokenType = 'all',
   hideTitle = false,
+  view = 'tokens',
+  tokenData,
+  isLoading,
+  error,
 }: TokenContainerProps) => {
-  const [tokenData, setTokenData] = useState<TokenData | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const fetchTokens = async () => {
-      if (!walletAddress || !hasSearched) return
-
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        const response = await fetch(
-          `/api/tokens?address=${walletAddress}&type=all`,
-        )
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const data = await response.json()
-        if ('error' in data) {
-          throw new Error(data.error)
-        }
-
-        setTokenData(data)
-      } catch (error) {
-        console.error('Error fetching tokens:', error)
-        setError('Failed to fetch tokens.')
-        setTokenData(null)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchTokens()
-  }, [walletAddress, hasSearched])
+  if (view === 'nfts') {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-[3fr,1fr] gap-4 w-full">
+        <div className="min-w-0">
+          <NFTSection
+            walletAddress={walletAddress}
+            hasSearched={hasSearched}
+            tokenType={tokenType}
+            hideTitle={hideTitle}
+            isLoading={isLoading}
+            error={error}
+            items={
+              tokenData?.items ? filterNFTs(tokenData.items, tokenType) : []
+            }
+          />
+        </div>
+        <div className="min-w-0">
+          <TransactionSection
+            walletAddress={walletAddress}
+            hasSearched={hasSearched}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -78,7 +112,7 @@ export const TokenContainer = ({
         hideTitle={hideTitle}
         isLoading={isLoading}
         error={error}
-        items={tokenData?.items}
+        items={tokenData?.items ? filterTokens(tokenData.items) : []}
       />
     </div>
   )
