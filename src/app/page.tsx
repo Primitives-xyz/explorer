@@ -3,7 +3,7 @@
 import { Layout } from '@/components/Layout'
 import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
-import { TokenSection } from '@/components/TokenSection'
+import { TokenContainer } from '@/components/TokenContainer'
 import { TransactionSection } from '@/components/TransactionSection'
 import { useUserWallets } from '@dynamic-labs/sdk-react-core'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -72,7 +72,7 @@ export default function Home() {
               walletAddress={walletAddress}
               hasSearched={hasSearched}
             />
-            <TokenSection
+            <TokenContainer
               walletAddress={walletAddress}
               hasSearched={hasSearched}
               tokenType="fungible"

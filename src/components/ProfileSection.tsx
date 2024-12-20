@@ -99,7 +99,7 @@ export const ProfileSection = ({
   if (!hasSearched) return null
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col max-h-[600px] relative group">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[400px] lg:h-[600px] relative group">
       {/* Header */}
       <div className="border-b border-green-800 p-2 flex-shrink-0">
         <div className="flex justify-between items-center overflow-x-auto scrollbar-none">

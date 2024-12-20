@@ -2,7 +2,7 @@
 
 import { formatNumber } from '@/utils/format'
 import { FungibleToken, NFT } from '@/utils/types'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ImageModal } from './tokens/ImageModal'
 import { NFTGrid } from './tokens/NFTGrid'
 import { TokenList } from './tokens/TokenList'
@@ -12,6 +12,9 @@ interface TokenSectionProps {
   hasSearched?: boolean
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
+  isLoading: boolean
+  error: string | null
+  items?: (FungibleToken | NFT)[]
 }
 
 export const TokenSection = ({
@@ -19,6 +22,9 @@ export const TokenSection = ({
   hasSearched,
   tokenType = 'all',
   hideTitle = false,
+  isLoading,
+  error,
+  items = [],
 }: TokenSectionProps) => {
   const [expandedTokenId, setExpandedTokenId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'value' | 'balance' | 'symbol'>('value')
@@ -26,10 +32,47 @@ export const TokenSection = ({
     url: string
     symbol: string
   } | null>(null)
-  const [tokens, setTokens] = useState<FungibleToken[]>([])
-  const [nfts, setNfts] = useState<NFT[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+
+  // Filter items based on token type
+  const tokens = items.filter(
+    (item: any) =>
+      tokenType === 'all' ||
+      (tokenType === 'fungible' &&
+        (item.interface === 'FungibleToken' ||
+          item.interface === 'FungibleAsset')) ||
+      (tokenType === 'nft' &&
+        (item.interface === 'V1_NFT' ||
+          item.interface === 'V2_NFT' ||
+          item.interface === 'LEGACY_NFT') &&
+        !item.compressed) ||
+      (tokenType === 'compressed' &&
+        (item.interface === 'V1_NFT' || item.interface === 'V2_NFT') &&
+        item.compressed) ||
+      (tokenType === 'programmable' && item.interface === 'ProgrammableNFT'),
+  )
+
+  const fungibleTokens = tokens.filter(
+    (item: any) =>
+      item.interface === 'FungibleToken' || item.interface === 'FungibleAsset',
+  ) as FungibleToken[]
+
+  const nfts = tokens.filter(
+    (item: any) =>
+      item.interface === 'V1_NFT' ||
+      item.interface === 'V2_NFT' ||
+      item.interface === 'ProgrammableNFT' ||
+      item.interface === 'LEGACY_NFT',
+  ) as NFT[]
+
+  // Calculate total value of tokens
+  const totalValue = fungibleTokens.reduce<number>((acc, token) => {
+    return acc + (token.price || 0) * token.balance
+  }, 0)
+
+  const shouldShowContent =
+    isLoading || tokens.length > 0 || (hasSearched && tokens.length === 0)
+
+  if (!shouldShowContent) return null
 
   const getTitle = () => {
     switch (tokenType) {
@@ -46,105 +89,8 @@ export const TokenSection = ({
     }
   }
 
-  useEffect(() => {
-    const fetchTokens = async () => {
-      if (!walletAddress || !hasSearched) return
-
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        const response = await fetch(
-          `/api/tokens?address=${walletAddress}&type=all`,
-        )
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const data = await response.json()
-        if ('error' in data) {
-          throw new Error(data.error)
-        }
-
-        const items = Array.isArray(data.items) ? data.items : []
-
-        // Filter items based on token type
-        if (tokenType === 'fungible') {
-          const fungibleTokens = items.filter(
-            (item: any) =>
-              item.interface === 'FungibleToken' ||
-              item.interface === 'FungibleAsset',
-          )
-          setTokens(fungibleTokens)
-          setNfts([])
-        } else if (tokenType === 'nft') {
-          const regularNfts = items.filter(
-            (item: any) =>
-              (item.interface === 'V1_NFT' ||
-                item.interface === 'V2_NFT' ||
-                item.interface === 'LEGACY_NFT') &&
-              !item.compressed,
-          )
-          setNfts(regularNfts)
-          setTokens([])
-        } else if (tokenType === 'compressed') {
-          const compressedNfts = items.filter(
-            (item: any) =>
-              (item.interface === 'V1_NFT' || item.interface === 'V2_NFT') &&
-              item.compressed,
-          )
-          setNfts(compressedNfts)
-          setTokens([])
-        } else if (tokenType === 'programmable') {
-          const programmableNfts = items.filter(
-            (item: any) => item.interface === 'ProgrammableNFT',
-          )
-          setNfts(programmableNfts)
-          setTokens([])
-        } else {
-          // 'all' - separate into fungible and non-fungible
-          const fungibleTokens = items.filter(
-            (item: any) =>
-              item.interface === 'FungibleToken' ||
-              item.interface === 'FungibleAsset',
-          )
-          const allNfts = items.filter(
-            (item: any) =>
-              item.interface === 'V1_NFT' ||
-              item.interface === 'V2_NFT' ||
-              item.interface === 'ProgrammableNFT' ||
-              item.interface === 'LEGACY_NFT',
-          )
-          setTokens(fungibleTokens)
-          setNfts(allNfts)
-        }
-      } catch (error) {
-        console.error('Error fetching tokens:', error)
-        setError('Failed to fetch tokens.')
-        setTokens([])
-        setNfts([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchTokens()
-  }, [walletAddress, hasSearched, tokenType])
-
-  // Calculate total value of tokens
-  const totalValue = tokens.reduce<number>((acc, token) => {
-    return acc + (token.price || 0) * token.balance
-  }, 0)
-
-  const shouldShowContent =
-    isLoading ||
-    tokens.length > 0 ||
-    nfts.length > 0 ||
-    (hasSearched && tokens.length === 0)
-
-  if (!shouldShowContent) return null
-
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col max-h-[600px] relative group">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[284px] lg:h-[484px] relative group">
       {/* Header */}
       {!hideTitle && (
         <div className="border-b border-green-800 p-2 flex-shrink-0">
@@ -152,7 +98,7 @@ export const TokenSection = ({
             <div className="text-green-500 text-sm font-mono whitespace-nowrap">
               {'>'} {getTitle()}
             </div>
-            {tokens.length > 0 && (
+            {fungibleTokens.length > 0 && (
               <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
                 TOTAL: ${formatNumber(totalValue)} USDC
               </div>
@@ -204,15 +150,15 @@ export const TokenSection = ({
           <div className="p-4 text-center text-green-600 font-mono">
             {'>>> FETCHING TOKENS...'}
           </div>
-        ) : hasSearched && tokens.length === 0 && nfts.length === 0 ? (
+        ) : hasSearched && tokens.length === 0 ? (
           <div className="p-4 text-center text-green-600 font-mono">
             {'>>> NO TOKENS FOUND'}
           </div>
         ) : (
           <>
-            {tokens.length > 0 && (
+            {fungibleTokens.length > 0 && (
               <TokenList
-                tokens={tokens}
+                tokens={fungibleTokens}
                 totalValue={totalValue}
                 expandedTokenId={expandedTokenId}
                 onExpand={(id) =>
