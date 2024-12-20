@@ -76,18 +76,9 @@ export default function SearchBar({
       await addSearchToHistory(address)
       await loadRecentSearches()
 
-      // If parent gave us a direct callback, call it;
-      // or if not, mimic normal flow
+      // If parent gave us a direct callback, call it
       if (onPickRecentAddress) {
-        // We do everything with a single parent call
         onPickRecentAddress(address)
-      } else {
-        // Otherwise fallback: manually mimic user input + search
-        const event = {
-          target: { value: address },
-        } as ChangeEvent<HTMLInputElement>
-        handleInputChange(event)
-        handleSearch()
       }
     } catch (error) {
       console.error(error)
@@ -109,7 +100,7 @@ export default function SearchBar({
             placeholder="BprhcaJtUTER4e3ArG..."
             value={walletAddress}
             onChange={handleInputChange}
-            onFocus={() => setShowDropdown(true)}
+            onFocus={() => walletAddress.length > 0 && setShowDropdown(true)}
             className="flex-1 bg-transparent font-mono text-green-400 placeholder-green-800 
                      focus:outline-none focus:ring-0 border-none text-sm"
             disabled={loading}

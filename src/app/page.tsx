@@ -37,23 +37,15 @@ export default function Home() {
   // On mount or when URL param changes, set walletAddress & trigger fetch
   useEffect(() => {
     const addressFromUrl = searchParams.get('address')
-    if (addressFromUrl && addressFromUrl !== walletAddress) {
-      // If a different address is in the URL
+    if (addressFromUrl) {
       setWalletAddress(addressFromUrl)
       setHasSearched(true)
-    } else if (!addressFromUrl && connectedWalletAddr && !walletAddress) {
-      // If user has connected wallet but there's no ?address= in the URL
+      fetchTokens(addressFromUrl)
+    } else if (connectedWalletAddr && !walletAddress) {
       setWalletAddress(connectedWalletAddr)
-      setHasSearched(true)
+      // Don't auto-search when setting connected wallet
     }
-  }, [searchParams, connectedWalletAddr, walletAddress])
-
-  // Whenever we have a walletAddress & hasSearched, auto-fetch tokens
-  useEffect(() => {
-    if (walletAddress && hasSearched) {
-      fetchTokens(walletAddress)
-    }
-  }, [walletAddress, hasSearched])
+  }, [searchParams]) // Only depend on searchParams
 
   // Single function that fetches tokens for a given address
   async function fetchTokens(addr: string) {
@@ -100,13 +92,14 @@ export default function Home() {
   // For typing in the input (as opposed to the dropdown):
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setWalletAddress(e.target.value)
-    setHasSearched(false)
-    setTokenData(null)
+    // Don't reset hasSearched or tokenData while typing
   }
 
   // Called when user clicks the [EXECUTE] button from the child form
   // or presses Enter in the input
   const handleSubmitSearch = () => {
+    if (!walletAddress) return
+    setHasSearched(true)
     searchAddress(walletAddress)
   }
 
