@@ -1,6 +1,6 @@
 'use client'
 
-import { TokenSection } from '@/components/TokenSection'
+import { TokenContainer } from '@/components/TokenContainer'
 import { TransactionSection } from '@/components/TransactionSection'
 import { useState } from 'react'
 
@@ -25,7 +25,7 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
     }
 
     return (
-      <TokenSection
+      <TokenContainer
         walletAddress={address}
         hasSearched={true}
         tokenType={activeTab}
