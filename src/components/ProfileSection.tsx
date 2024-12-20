@@ -1,8 +1,10 @@
 'use client'
 
 import { getFollowStats, getProfiles, Profile } from '@/utils/api'
+import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Modal } from './common/modal'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -30,6 +32,7 @@ export const ProfileSection = ({
   )
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -109,11 +112,57 @@ export const ProfileSection = ({
           <div className="text-green-500 text-sm font-mono whitespace-nowrap">
             {'>'} profile_info.sol
           </div>
-          <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
-            COUNT: {filteredProfiles.length}
+          <div className="flex items-center gap-2">
+            <div className="text-xs text-green-600 font-mono whitespace-nowrap">
+              COUNT: {filteredProfiles.length}
+            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10 text-green-500 transition-colors"
+            >
+              <Plus size={16} />
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Domain Creation Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Create New Profile"
+      >
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() =>
+              window.open('https://www.dotblink.me/search', '_blank')
+            }
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+          >
+            Create A .Blink Profile
+          </button>
+          <button
+            onClick={() => window.open('https://www.sns.id/', '_blank')}
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+          >
+            Create a .Sol Profile
+          </button>
+          <button
+            onClick={() =>
+              window.open('https://alldomains.id/buy-domain', '_blank')
+            }
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+          >
+            Explore All Domains
+          </button>
+          <button
+            onClick={() => window.open('https://www.tapaigames.com/', '_blank')}
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+          >
+            Create a Nimbus App
+          </button>
+        </div>
+      </Modal>
 
       {/* Namespace Filters */}
       {namespaces.length > 0 && (
