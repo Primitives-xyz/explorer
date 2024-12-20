@@ -79,3 +79,16 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+.stats-card {
+  @apply bg-white/10 backdrop-blur-lg rounded-xl p-6 
+         border border-white/20 shadow-xl;
+}
+
+.stats-value {
+  @apply text-4xl font-bold text-white mb-2;
+}
+
+.stats-label {
+  @apply text-sm text-gray-300;
+}

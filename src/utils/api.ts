@@ -129,3 +129,25 @@ export async function fetchTapestry<T>({
 
   return response.json()
 }
+
+export async function getSwapTransactions(walletAddress: string) {
+  const url = `https://api.helius.xyz/v0/addresses/${walletAddress}/transactions?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`;
+  
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // Filter transactions from 2024 that are swaps
+    const swapsFrom2024 = data.filter((tx: any) => {
+      const timestamp = tx.timestamp;
+      const date = new Date(timestamp * 1000);
+      const isFrom2024 = date.getFullYear() === 2024;
+      return isFrom2024 && tx.type === "SWAP";
+    });
+
+    return swapsFrom2024.length;
+  } catch (error) {
+    console.error("Error fetching swap transactions:", error);
+    return 0;
+  }
+}

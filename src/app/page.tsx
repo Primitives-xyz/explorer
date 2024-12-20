@@ -8,8 +8,9 @@ import { TransactionSection } from '@/components/TransactionSection'
 import { useUserWallets } from '@dynamic-labs/sdk-react-core'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { getSwapTransactions } from '@/utils/api'
 
-export default function Home() {
+export default async function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const userWallets = useUserWallets()
@@ -56,6 +57,8 @@ export default function Home() {
     }
   }
 
+  const swapCount = await getSwapTransactions(address)
+
   return (
     <Layout>
       <div className="w-full overflow-hidden">
@@ -90,6 +93,12 @@ export default function Home() {
             {'>>> WAITING FOR INPUT <<<'}
           </div>
         )}
+        <div className="mt-8">
+          <div className="stats-card">
+            <div className="stats-value">{swapCount}</div>
+            <div className="stats-label">Swaps in 2024</div>
+          </div>
+        </div>
       </div>
     </Layout>
   )
