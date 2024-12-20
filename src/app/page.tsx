@@ -113,7 +113,13 @@ export default function Home() {
   return (
     <Layout>
       <div className="w-full overflow-hidden">
-        <CreateProfile />
+        <CreateProfile
+          onProfileCreated={() => {
+            if (connectedWalletAddr) {
+              searchAddress(connectedWalletAddr)
+            }
+          }}
+        />
         <SearchBar
           walletAddress={walletAddress}
           handleInputChange={handleInputChange}

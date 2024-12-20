@@ -7,29 +7,26 @@ import { Input } from '@/components/form/input'
 import { SubmitButton } from '@/components/form/submit-button'
 import { useEffect, useState } from 'react'
 
-export function CreateProfile() {
-  const { walletAddress, mainUsername } = useCurrentWallet()
+export function CreateProfile({
+  onProfileCreated,
+}: {
+  onProfileCreated?: () => void
+}) {
+  const { walletAddress, hasProfile, loadingMainUsername } = useCurrentWallet()
   const [username, setUsername] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [response, setResponse] = useState<any | null>(null)
-  const [hasCheckedUsername, setHasCheckedUsername] = useState(false)
 
   useEffect(() => {
-    // Only update modal state after we've confirmed username status
-    if (walletAddress) {
-      if (mainUsername === null || mainUsername === undefined) {
-        // Still loading username status
-        return
-      }
-      setHasCheckedUsername(true)
-      setIsModalOpen(!mainUsername)
+    // Only show modal if we have a wallet connected and no profile
+    if (walletAddress && !loadingMainUsername) {
+      setIsModalOpen(!hasProfile)
     } else {
-      setHasCheckedUsername(false)
       setIsModalOpen(false)
     }
-  }, [walletAddress, mainUsername])
+  }, [walletAddress, hasProfile, loadingMainUsername])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -60,6 +57,7 @@ export function CreateProfile() {
 
         setResponse(data)
         setIsModalOpen(false)
+        onProfileCreated?.()
       } catch (err: any) {
         console.error('Profile creation error:', err)
         setError(err.message || 'Failed to create profile')
@@ -75,7 +73,8 @@ export function CreateProfile() {
     setUsername(validValue)
   }
 
-  if (!walletAddress || mainUsername) return null
+  // Only render if we have a wallet connected and no profile
+  if (!walletAddress || hasProfile) return null
 
   return (
     <Modal

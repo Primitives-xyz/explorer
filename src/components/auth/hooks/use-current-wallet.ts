@@ -3,6 +3,15 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { useUserWallets } from '@dynamic-labs/sdk-react-core'
 
+interface Profile {
+  namespace?: {
+    name: string
+  }
+  profile?: {
+    username: string
+  }
+}
+
 export function useCurrentWallet() {
   const userWallets = useUserWallets()
   const wallet = userWallets[0]
@@ -15,11 +24,17 @@ export function useCurrentWallet() {
       ? profiles[0]?.profile?.username
       : undefined
 
+  const hasProfile = profiles?.some(
+    (profile: Profile) => profile.namespace?.name === 'nemoapp',
+  )
+
   return {
     walletIsConnected: !!walletAddress,
     wallet,
     walletAddress,
     mainUsername,
     loadingMainUsername: loading,
+    hasProfile,
+    profiles,
   }
 }
