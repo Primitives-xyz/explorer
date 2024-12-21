@@ -9,18 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@dynamic-labs/ethereum": "^3.9.2",
     "@dynamic-labs/sdk-react-core": "^3.9.2",
     "@dynamic-labs/solana": "^3.9.2",
-    "@dynamic-labs/wagmi-connector": "^3.9.2",
     "@emotion/react": "^11.13.3",
-    "@jup-ag/wallet-adapter": "^1.0.0-alpha-5",
     "@solana/spl-token": "^0.4.8",
     "@solana/wallet-adapter-wallets": "^0.19.32",
-    "@solana/web3.js": "^1.93.2",
-    "@solflare-wallet/wallet-adapter": "^1.0.3",
-    "@tanstack/react-query": "^5.62.7",
-    "@tanstack/react-virtual": "^3.11.1",
+    "@solana/web3.js": "^2.0.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.446.0",
@@ -29,19 +23,17 @@
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.0.0",
     "react": "^19.0.0",
-    "react-dom": "^18",
-    "swr": "^2.2.5",
-    "viem": "^2.21.55",
-    "wagmi": "^2.14.1"
+    "react-dom": "^19.0.0",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "eslint": "^9.17.0",
     "eslint-config-next": "15.1.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.7.2"
   }
 }

@@ -1,4 +1,3 @@
-import { BaseWalletAdapter } from '@jup-ag/wallet-adapter'
 
 // solana
 export const RPC_URL =
@@ -10,12 +9,7 @@ export const PROTOCOL_SERVER_URL =
 
 export const PROTOCOL_API_KEY = process.env.PROTOCOL_API_KEY
 
-export type WalletAdapterWithMutableSupportedTransactionVersions<T> = Omit<
-  T,
-  'supportedTransactionVersions'
-> & {
-  supportedTransactionVersions: BaseWalletAdapter['supportedTransactionVersions']
-}
+
 
 export const metadata = {
   name: 'tapestry-boilerplate',

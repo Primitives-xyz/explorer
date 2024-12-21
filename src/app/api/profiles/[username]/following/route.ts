@@ -2,17 +2,22 @@ import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { username: string } },
-) {
-  const { username } = params
+type RouteContext = {
+  params: Promise<{ username: string }>
+}
 
-  if (!username) {
-    return NextResponse.json({ error: 'Username is required' }, { status: 400 })
-  }
-
+export async function GET(req: NextRequest, context: RouteContext) {
   try {
+    const params = await context.params
+    const { username } = params
+
+    if (!username) {
+      return NextResponse.json(
+        { error: 'Username is required' },
+        { status: 400 },
+      )
+    }
+
     const response = await fetchTapestryServer({
       endpoint: `profiles/${username}/following`,
       method: FetchMethod.GET,
@@ -27,3 +32,5 @@ export async function GET(
     )
   }
 }
+
+export const dynamic = 'force-dynamic'

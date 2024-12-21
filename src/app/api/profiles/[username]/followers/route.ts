@@ -2,12 +2,13 @@ import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { username: string } },
-) {
+type RouteContext = {
+  params: Promise<{ username: string }>
+}
+
+export async function GET(req: NextRequest, context: RouteContext) {
   try {
-    const params = await Promise.resolve(context.params)
+    const params = await context.params
     const { username } = params
 
     if (!username) {
@@ -29,17 +30,9 @@ export async function GET(
       method: FetchMethod.GET,
     })
 
-    console.log('[Followers API Debug] Response:', {
-      hasProfiles: !!response?.profiles,
-      profileCount: response?.profiles?.length || 0,
-      page: response?.page,
-      pageSize: response?.pageSize,
-    })
-
     return NextResponse.json(response)
   } catch (error: any) {
     console.error('[Followers API Error]:', {
-      username: context.params.username,
       error: error.message,
       stack: error.stack,
     })
@@ -49,3 +42,6 @@ export async function GET(
     )
   }
 }
+
+// Add route configuration for caching behavior
+export const dynamic = 'force-dynamic'
