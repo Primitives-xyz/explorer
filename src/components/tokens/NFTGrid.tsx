@@ -6,20 +6,6 @@ interface Authority {
   scopes: string[]
 }
 
-interface TokenBase {
-  id: string
-  interface?: string
-  name: string
-  symbol: string
-  imageUrl: string | null
-  mint: string
-  compressed: boolean
-  authorities: Authority[] | undefined
-  creators: any[]
-  mutable: boolean
-  burnt: boolean
-}
-
 interface NFTGridProps {
   tokens: (NFT | TokenWithInscription | FungibleToken)[]
   onImageClick: (url: string, symbol: string) => void

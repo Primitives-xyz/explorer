@@ -1,11 +1,11 @@
 'use client'
 
 import { Alert } from '@/components/common/alert'
-import { Button } from '@/components/common/button'
 import { LoadCircle } from '@/components/common/load-circle'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useGetFollowers } from '@/components/profile/hooks/use-get-followers'
 import { UserRoundCheck } from 'lucide-react'
+import { useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 
 interface Props {
@@ -15,11 +15,12 @@ interface Props {
 export function FollowButton({ username }: Props) {
   const { walletAddress, mainUsername, loadingMainUsername } =
     useCurrentWallet()
-  const { followUser, loading, error, success } = useFollowUser()
-
-  const { followers } = useGetFollowers(username)
+  const { followUser, unfollowUser, loading, error, success } = useFollowUser()
+  const { followers, mutate } = useGetFollowers(username)
+  const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
 
   const followersList = followers?.profiles?.map((item) => item.username)
+  const isFollowing = followersList?.includes(mainUsername)
 
   const handleFollow = async () => {
     if (mainUsername && username) {
@@ -27,37 +28,99 @@ export function FollowButton({ username }: Props) {
         followerUsername: mainUsername,
         followeeUsername: username,
       })
+      mutate()
+    }
+  }
+
+  const handleUnfollow = async () => {
+    if (mainUsername && username) {
+      await unfollowUser({
+        followerUsername: mainUsername,
+        followeeUsername: username,
+      })
+      setShowUnfollowConfirm(false)
+      mutate()
     }
   }
 
   if (!walletAddress) {
+    console.log('FollowButton: No wallet connected')
     return null
-  }
-
-  if (followersList?.includes(mainUsername)) {
-    return <UserRoundCheck size={20} />
   }
 
   if (mainUsername === username) {
+    console.log('FollowButton: Viewing own profile')
     return null
+  }
+
+  if (loadingMainUsername) {
+    console.log('FollowButton: Loading main username')
+    return (
+      <span>
+        <LoadCircle />
+      </span>
+    )
+  }
+
+  if (isFollowing) {
+    return (
+      <>
+        {showUnfollowConfirm ? (
+          <div className="space-y-2">
+            <button
+              onClick={handleUnfollow}
+              disabled={loading}
+              className="w-full px-4 py-2 bg-red-900/30 text-red-400 font-mono border border-red-800 hover:bg-red-900/50 transition-colors rounded disabled:opacity-50"
+            >
+              {loading ? 'Unfollowing...' : 'Confirm Unfollow'}
+            </button>
+            <button
+              onClick={() => setShowUnfollowConfirm(false)}
+              disabled={loading}
+              className="w-full px-4 py-2 bg-green-900/30 text-green-400 font-mono border border-green-800 hover:bg-green-900/50 transition-colors rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowUnfollowConfirm(true)}
+            className="w-full px-4 py-2 bg-green-900/30 text-green-400 font-mono border border-green-800 hover:bg-green-900/50 transition-colors rounded flex items-center justify-center gap-2"
+          >
+            <UserRoundCheck size={16} />
+            Following
+          </button>
+        )}
+      </>
+    )
   }
 
   return (
     <>
-      {loadingMainUsername ? (
-        <span>
-          <LoadCircle />
-        </span>
-      ) : (
-        <Button onClick={handleFollow} disabled={loading}>
-          {loading ? 'Following...' : 'Follow'}
-        </Button>
-      )}
+      <button
+        onClick={handleFollow}
+        disabled={loading}
+        className={`
+          w-full px-4 py-2 
+          font-mono text-sm
+          border rounded
+          transition-colors
+          ${
+            isFollowing
+              ? 'bg-green-900/30 text-green-400 border-green-800 hover:bg-green-900/50'
+              : 'bg-green-500/20 text-green-400 border-green-500 hover:bg-green-500/30'
+          }
+        `}
+      >
+        {loading ? 'Following...' : 'Follow'}
+      </button>
 
       {success && (
         <Alert
           type="success"
-          message="Followed user successfully!"
+          message={
+            isFollowing ? 'Unfollowed successfully!' : 'Followed successfully!'
+          }
           duration={5000}
         />
       )}
@@ -65,7 +128,9 @@ export function FollowButton({ username }: Props) {
       {error && (
         <Alert
           type="error"
-          message="There was an error following the user."
+          message={`There was an error ${
+            isFollowing ? 'unfollowing' : 'following'
+          } the user.`}
           duration={5000}
         />
       )}

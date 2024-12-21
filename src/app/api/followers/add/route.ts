@@ -1,4 +1,5 @@
-import { FetchMethod, fetchTapestry } from '@/utils/api'
+import { fetchTapestryServer } from '@/lib/tapestry-server'
+import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface FollowRequestBody {
@@ -25,29 +26,38 @@ export async function POST(req: NextRequest) {
     }
 
     const bodyData = {
-      blockchain: 'SOLANA',
       startId: followerUser.username,
       endId: followeeUser.username,
-      properties: [],
-      execution: 'FAST_UNCONFIRMED',
     }
 
-    const response = await fetchTapestry<TapestryResponse>({
+    const response = await fetchTapestryServer<TapestryResponse>({
       endpoint: 'followers/add',
       method: FetchMethod.POST,
       data: bodyData,
     })
 
-    if (response.error) {
-      return NextResponse.json(
-        { error: response.error || 'Failed to follow user' },
-        { status: 500 },
-      )
-    }
-
     return NextResponse.json(response)
   } catch (error: any) {
     console.error('Error processing follow request:', error)
+
+    // Handle specific error cases
+    if (error.message?.includes('status: 404')) {
+      return NextResponse.json(
+        { error: 'Follow endpoint not found' },
+        { status: 404 },
+      )
+    }
+
+    if (
+      error.message?.includes('status: 401') ||
+      error.message?.includes('status: 403')
+    ) {
+      return NextResponse.json(
+        { error: 'Authentication failed' },
+        { status: 401 },
+      )
+    }
+
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },
       { status: 500 },

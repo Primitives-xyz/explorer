@@ -19,14 +19,9 @@ export function useCurrentWallet() {
 
   const { profiles, loading } = useGetProfiles(walletAddress || '')
 
-  const mainUsername =
-    profiles?.[0]?.namespace?.name === 'nemoapp'
-      ? profiles[0]?.profile?.username
-      : undefined
+  const mainUsername = profiles?.[0]?.profile?.username
 
-  const hasProfile = profiles?.some(
-    (profile: Profile) => profile.namespace?.name === 'nemoapp',
-  )
+  const hasProfile = profiles?.length > 0
 
   return {
     walletIsConnected: !!walletAddress,

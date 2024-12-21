@@ -78,11 +78,16 @@ export const ProfileSection = ({
 
   useEffect(() => {
     if (selectedNamespace) {
-      setFilteredProfiles(
-        profiles.filter((p) => p.namespace?.name === selectedNamespace),
-      )
+      const filtered = profiles.filter((profile) => {
+        const profileNamespace = profile.namespace?.name || ''
+        const targetNamespace = selectedNamespace
+
+        return profileNamespace === targetNamespace
+      })
+
+      setFilteredProfiles([...filtered])
     } else {
-      setFilteredProfiles(profiles)
+      setFilteredProfiles([...profiles])
     }
   }, [selectedNamespace, profiles])
 
@@ -252,7 +257,7 @@ export const ProfileSection = ({
         ) : (
           filteredProfiles.map((profile) => (
             <div
-              key={profile.profile.username}
+              key={`${profile.profile.username}-${profile.namespace?.name}`}
               className="p-4 hover:bg-green-900/10"
             >
               <div className="flex items-start gap-4">

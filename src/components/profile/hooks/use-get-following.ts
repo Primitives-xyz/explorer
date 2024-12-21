@@ -1,23 +1,23 @@
 import { IGetSocialResponse } from '@/models/profile.models'
 import useSWR from 'swr'
 
-export const useGetFollowers = (username: string) => {
+export const useGetFollowing = (username: string) => {
   const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) {
       const errorData = await res.json()
-      throw new Error(errorData.error || 'Failed to fetch followers')
+      throw new Error(errorData.error || 'Failed to fetch following')
     }
     return await res.json()
   }
 
   const {
-    data: followers,
+    data: following,
     error,
     isLoading: loading,
     mutate,
   } = useSWR<IGetSocialResponse>(
-    username ? `/api/profiles/${username}/followers` : null,
+    username ? `/api/profiles/${username}/following` : null,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -25,5 +25,5 @@ export const useGetFollowers = (username: string) => {
     },
   )
 
-  return { followers, loading, error, mutate }
+  return { following, loading, error, mutate }
 }

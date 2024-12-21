@@ -1,32 +1,35 @@
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 export const useGetProfiles = (walletAddress: string) => {
-  const [profiles, setProfiles] = useState<any>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<any>(null)
-
-  useEffect(() => {
-    if (!walletAddress) return
-
-    const fetchProfiles = async () => {
-      setLoading(true)
-      try {
-        const res = await fetch(`/api/profiles?walletAddress=${walletAddress}`)
-        if (!res.ok) {
-          const errorData = await res.json()
-          throw new Error(errorData.error || 'Failed to fetch profiles')
-        }
-        const data = await res.json()
-        setProfiles(data.profiles)
-      } catch (err: any) {
-        setError(err)
-      } finally {
-        setLoading(false)
-      }
+  const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) {
+      const errorData = await res.json()
+      throw new Error(errorData.error || 'Failed to fetch profiles')
     }
+    const data = await res.json()
+    return data.profiles
+  }
 
-    fetchProfiles()
-  }, [walletAddress])
+  const {
+    data: profiles,
+    error,
+    isLoading,
+  } = useSWR(
+    walletAddress ? `/api/profiles?walletAddress=${walletAddress}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 2000,
+      revalidateIfStale: false,
+      revalidateOnMount: true,
+      refreshInterval: 0,
+      refreshWhenHidden: false,
+      refreshWhenOffline: false,
+      focusThrottleInterval: 60000,
+    },
+  )
 
-  return { profiles, loading, error }
+  return { profiles, loading: isLoading, error }
 }

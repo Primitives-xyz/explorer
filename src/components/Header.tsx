@@ -1,6 +1,6 @@
 'use client'
 
-import { useUserWallets } from '@dynamic-labs/sdk-react-core'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
@@ -10,8 +10,8 @@ const DynamicWidget = dynamic(
 )
 
 export const Header = () => {
-  const userWallets = useUserWallets()
-  const walletAddress = userWallets[0]?.address
+  const { walletAddress, mainUsername, loadingMainUsername } =
+    useCurrentWallet()
 
   return (
     <div className="w-full border-b border-green-800/50">
@@ -19,9 +19,19 @@ export const Header = () => {
         <div className="flex flex-col gap-4 mb-6 pb-4 w-full overflow-hidden">
           {/* Terminal Header */}
           <div className="w-full bg-black/20 px-3 py-1 border border-green-800/30 rounded-sm overflow-hidden">
-            <div className="flex items-center gap-2 text-[10px] text-green-600/80 whitespace-nowrap overflow-x-auto scrollbar-none">
-              <div className="w-2 h-2 rounded-full bg-green-500/80 flex-shrink-0"></div>
-              STATUS: ONLINE | NETWORK: SOLANA | MODE: READ
+            <div className="flex items-center justify-between text-[10px] text-green-600/80 whitespace-nowrap overflow-x-auto scrollbar-none">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500/80 flex-shrink-0"></div>
+                STATUS: ONLINE | NETWORK: SOLANA | MODE: READ
+              </div>
+              {mainUsername && (
+                <Link
+                  href={`/${mainUsername}`}
+                  className="font-bold text-green-500 hover:opacity-80 transition-opacity"
+                >
+                  USER: {mainUsername}
+                </Link>
+              )}
             </div>
           </div>
 
