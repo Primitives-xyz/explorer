@@ -13,14 +13,32 @@ export async function GET(
   }
 
   try {
+    console.log('[Followers API Debug] Fetching followers for:', {
+      username,
+      url: `profiles/${username}/followers`,
+      env: process.env.NODE_ENV,
+      tapestryUrl: process.env.TAPESTRY_URL,
+    })
+
     const response = await fetchTapestryServer({
       endpoint: `profiles/${username}/followers`,
       method: FetchMethod.GET,
     })
 
+    console.log('[Followers API Debug] Response:', {
+      hasProfiles: !!response?.profiles,
+      profileCount: response?.profiles?.length || 0,
+      page: response?.page,
+      pageSize: response?.pageSize,
+    })
+
     return NextResponse.json(response)
   } catch (error: any) {
-    console.error('Error fetching followers:', error)
+    console.error('[Followers API Error]:', {
+      username,
+      error: error.message,
+      stack: error.stack,
+    })
     return NextResponse.json(
       { error: error.message || 'Failed to fetch followers' },
       { status: 500 },
