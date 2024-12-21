@@ -4,15 +4,19 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { username: string } },
+  context: { params: { username: string } },
 ) {
-  const { username } = params
-
-  if (!username) {
-    return NextResponse.json({ error: 'Username is required' }, { status: 400 })
-  }
-
   try {
+    const params = await Promise.resolve(context.params)
+    const { username } = params
+
+    if (!username) {
+      return NextResponse.json(
+        { error: 'Username is required' },
+        { status: 400 },
+      )
+    }
+
     console.log('[Followers API Debug] Fetching followers for:', {
       username,
       url: `profiles/${username}/followers`,
@@ -35,7 +39,7 @@ export async function GET(
     return NextResponse.json(response)
   } catch (error: any) {
     console.error('[Followers API Error]:', {
-      username,
+      username: context.params.username,
       error: error.message,
       stack: error.stack,
     })

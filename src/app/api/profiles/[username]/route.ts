@@ -4,11 +4,13 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { username: string } },
+  context: { params: { username: string } },
 ) {
   try {
+    const { username } = context.params
+
     const data = await fetchTapestryServer({
-      endpoint: `profiles/${params.username}`,
+      endpoint: `profiles/${username}`,
       method: FetchMethod.GET,
     })
     return NextResponse.json(data)
