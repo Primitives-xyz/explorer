@@ -9,3 +9,5 @@ interface Props {
 export default async function ProfilePage({ params: { username } }: Props) {
   return <ProfileContent username={username} />
 }
+
+export const dynamic = 'force-dynamic'
