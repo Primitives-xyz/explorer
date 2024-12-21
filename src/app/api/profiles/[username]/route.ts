@@ -7,7 +7,8 @@ export async function GET(
   context: { params: { username: string } },
 ) {
   try {
-    const { username } = context.params
+    const params = await Promise.resolve(context.params)
+    const { username } = params
 
     const data = await fetchTapestryServer({
       endpoint: `profiles/${username}`,
