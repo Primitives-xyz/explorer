@@ -21,13 +21,16 @@ export const useGetProfiles = (walletAddress: string) => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 2000,
+      dedupingInterval: 3600000,
       revalidateIfStale: false,
       revalidateOnMount: true,
       refreshInterval: 0,
       refreshWhenHidden: false,
       refreshWhenOffline: false,
-      focusThrottleInterval: 60000,
+      focusThrottleInterval: 3600000,
+      shouldRetryOnError: false,
+      errorRetryCount: 2,
+      keepPreviousData: true,
     },
   )
 

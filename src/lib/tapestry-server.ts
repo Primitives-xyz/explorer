@@ -21,12 +21,7 @@ export async function fetchTapestryServer<T = any>({
   const cleanEndpoint = endpoint.replace(/^\/+/, '')
   const url = `${BASE_URL}/${cleanEndpoint}?apiKey=${API_KEY}`
 
-  const debugUrl = `${BASE_URL}/${cleanEndpoint}`
-  console.log('[Tapestry API Debug] Requesting:', {
-    method,
-    url: debugUrl,
-    hasData: !!data,
-  })
+  console.log('-- Tapestry Serverside Url: ', url, ' - ', method, ' - ', data)
 
   try {
     const options: RequestInit = {
@@ -35,14 +30,6 @@ export async function fetchTapestryServer<T = any>({
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-    }
-
-    if (data && method !== FetchMethod.GET) {
-      options.body = JSON.stringify(data)
-      console.log('[Tapestry API Debug] Request body:', {
-        ...data,
-        properties: data.properties || [],
-      })
     }
 
     const response = await fetch(url, options)
@@ -72,7 +59,9 @@ export async function fetchTapestryServer<T = any>({
           throw new Error(`Internal server error: ${errorText}`)
         default:
           throw new Error(
-            `HTTP error! status: ${response.status} - ${errorText || response.statusText}`,
+            `HTTP error! status: ${response.status} - ${
+              errorText || response.statusText
+            }`,
           )
       }
     }
