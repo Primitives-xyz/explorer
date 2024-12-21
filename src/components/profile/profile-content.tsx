@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import { Card } from '../common/card'
 import { FollowButton } from './follow-button'
 
@@ -28,28 +28,22 @@ function LoadingCard() {
 }
 
 export function ProfileContent({ username }: Props) {
-  const [data, setData] = useState<ProfileData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error('Failed to fetch profile')
+    return res.json()
+  }
 
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const response = await fetch(`/api/profiles/${username}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile')
-        }
-        const profileData = await response.json()
-        setData(profileData)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch profile')
-      } finally {
-        setLoading(false)
-      }
-    }
+  const { data, error, isLoading } = useSWR<ProfileData>(
+    `/api/profiles/${username}`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 2000,
+    },
+  )
 
-    fetchProfile()
-  }, [username])
+  const loading = isLoading
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

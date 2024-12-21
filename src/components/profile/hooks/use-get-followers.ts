@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 export const useGetFollowers = (username: string) => {
   const fetcher = async (url: string) => {
-    const res = await fetch(url)
+    const res = await fetch(url, { cache: 'no-store' })
     if (!res.ok) {
       const errorData = await res.json()
       throw new Error(errorData.error || 'Failed to fetch followers')
@@ -20,8 +20,10 @@ export const useGetFollowers = (username: string) => {
     username ? `/api/profiles/${username}/followers` : null,
     fetcher,
     {
-      revalidateOnFocus: false,
-      dedupingInterval: 2000,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      dedupingInterval: 1000,
+      refreshInterval: 3000,
     },
   )
 

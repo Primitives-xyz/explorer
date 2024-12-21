@@ -28,7 +28,8 @@ export function FollowButton({ username }: Props) {
         followerUsername: mainUsername,
         followeeUsername: username,
       })
-      mutate()
+      await mutate()
+      await fetch(`/api/profiles/${username}`, { method: 'HEAD' })
     }
   }
 
@@ -39,7 +40,8 @@ export function FollowButton({ username }: Props) {
         followeeUsername: username,
       })
       setShowUnfollowConfirm(false)
-      mutate()
+      await mutate()
+      await fetch(`/api/profiles/${username}`, { method: 'HEAD' })
     }
   }
 
