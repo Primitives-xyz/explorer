@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const { username } = params
 
     const data = await fetchTapestryServer({
-      endpoint: `profiles/${username}`,
+      endpoint: `profiles/new/${username}`,
       method: FetchMethod.GET,
     })
     return NextResponse.json(data)
