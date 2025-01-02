@@ -8,7 +8,6 @@ import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 
 interface Props {
   username: string
-  fromUsername?: string
 }
 
 interface ProfileData {
@@ -30,7 +29,7 @@ function LoadingCard() {
   )
 }
 
-export function ProfileContent({ username, fromUsername }: Props) {
+export function ProfileContent({ username }: Props) {
   const { useNewApi } = useApiVersion()
   const { mainUsername } = useCurrentWallet()
   const fetcher = async (url: string) => {

@@ -14,7 +14,7 @@
     "@emotion/react": "^11.13.3",
     "@solana/spl-token": "^0.4.9",
     "@solana/wallet-adapter-wallets": "^0.19.32",
-    "@solana/web3.js": "^2.0.0",
+    "@solana/web3.js": "^1.92.1",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.469.0",

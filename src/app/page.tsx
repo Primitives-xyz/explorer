@@ -130,31 +130,12 @@ export default function Home() {
   // The "unified" search action that updates state + pushes URL + fetches in one go
   async function searchAddress(newAddress: string) {
     if (!newAddress) return
-
-    // Clear all states before starting new search
-    setIsSearching(true)
-    setWalletAddress(newAddress)
-    setTokenData(null)
-    setError(null)
-    setHasSearched(true)
-
-    // Refresh the URL param
-    router.push(`?address=${newAddress}`)
-
-    try {
-      await Promise.all([fetchTokens(newAddress), fetchProfiles(newAddress)])
-    } finally {
-      setIsSearching(false)
-    }
+    router.push(`/${newAddress}`)
   }
 
   // For typing in the input (as opposed to the dropdown):
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setWalletAddress(e.target.value)
-    // Clear states when input changes
-    setHasSearched(false)
-    setTokenData(null)
-    setError(null)
   }
 
   // Called when user clicks the [EXECUTE] button from the child form
