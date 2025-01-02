@@ -4,9 +4,11 @@ import useSWR from 'swr'
 import { Card } from '../common/card'
 import { FollowButton } from './follow-button'
 import { useApiVersion } from '@/hooks/use-api-version'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 
 interface Props {
   username: string
+  fromUsername?: string
 }
 
 interface ProfileData {
@@ -28,9 +30,9 @@ function LoadingCard() {
   )
 }
 
-export function ProfileContent({ username }: Props) {
+export function ProfileContent({ username, fromUsername }: Props) {
   const { useNewApi } = useApiVersion()
-
+  const { mainUsername } = useCurrentWallet()
   const fetcher = async (url: string) => {
     const apiUrl = `${url}?useNewApi=${useNewApi}`
     const res = await fetch(apiUrl)
@@ -39,7 +41,7 @@ export function ProfileContent({ username }: Props) {
   }
 
   const { data, error, isLoading } = useSWR<ProfileData>(
-    `/api/profiles/${username}`,
+    `/api/profiles/${username}?fromUsername=${mainUsername} `,
     fetcher,
     {
       revalidateOnFocus: true,

@@ -20,10 +20,10 @@ export const useGetFollowers = (username: string) => {
     username ? `/api/profiles/${username}/followers` : null,
     fetcher,
     {
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-      dedupingInterval: 1000,
-      refreshInterval: 3000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 30000,
+      revalidateIfStale: false,
     },
   )
 

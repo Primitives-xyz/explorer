@@ -32,12 +32,6 @@ export interface Profile {
   }
 }
 
-interface ProfileResponse {
-  profiles: Profile[]
-  page: number
-  pageSize: number
-}
-
 interface FollowStats {
   followers: number
   following: number

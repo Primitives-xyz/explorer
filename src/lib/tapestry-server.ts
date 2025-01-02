@@ -19,7 +19,10 @@ export async function fetchTapestryServer<T = any>({
   }
 
   const cleanEndpoint = endpoint.replace(/^\/+/, '')
-  const url = `${BASE_URL}/${cleanEndpoint}?apiKey=${API_KEY}`
+
+  // Add query parameter separator based on existing params
+  const separator = cleanEndpoint.includes('?') ? '&' : '?'
+  const url = `${BASE_URL}/${cleanEndpoint}${separator}apiKey=${API_KEY}`
 
   try {
     const options: RequestInit = {

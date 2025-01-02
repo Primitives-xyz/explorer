@@ -11,6 +11,7 @@ export interface IProfileResponse {
     followers: number
     following: number
   }
+  isFollowing: boolean
 }
 
 export interface IProfile {

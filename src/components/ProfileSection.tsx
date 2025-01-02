@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Modal } from './common/modal'
 import { useFollowStats } from '@/hooks/use-follow-stats'
+import { FollowButton } from './profile/follow-button'
+import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -281,9 +283,11 @@ const ProfileCard = ({
   profile: ProfileWithStats
   router: any
 }) => {
-  const { stats } = useFollowStats(profile.profile.username)
+  const { mainUsername } = useCurrentWallet()
+  const { stats } = useFollowStats(profile.profile.username, mainUsername)
   const followers = typeof stats?.followers === 'number' ? stats.followers : 0
   const following = typeof stats?.following === 'number' ? stats.following : 0
+  const isFollowing = stats?.isFollowing || false
 
   return (
     <div className="p-4 hover:bg-green-900/10">
@@ -315,8 +319,8 @@ const ProfileCard = ({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => router.push(`/${profile.profile.username}`)}
                   className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
@@ -324,25 +328,29 @@ const ProfileCard = ({
                   @{profile.profile.username}
                 </button>
                 {profile.profile.bio && (
-                  <span className="text-green-600 font-mono">
+                  <span className="text-green-600 font-mono text-sm truncate">
                     {profile.profile.bio}
                   </span>
                 )}
               </div>
+              <div className="flex-shrink-0">
+                <FollowButton username={profile.profile.username} />
+              </div>
             </div>
-            <div className="flex gap-4 text-xs text-green-600 font-mono">
+            <div className="flex items-center gap-4 text-xs text-green-600 font-mono">
               <span>Followers: {followers}</span>
               <span>Following: {following}</span>
-            </div>
-            <div className="text-xs text-green-600/50 font-mono">
-              <button
-                onClick={() =>
-                  router.push(`/namespace/${profile.namespace?.name}`)
-                }
-                className="hover:text-green-500 transition-colors"
-              >
-                {profile.namespace?.readableName || profile.namespace?.name}
-              </button>
+
+              <span className="text-green-600/50">
+                <button
+                  onClick={() =>
+                    router.push(`/namespace/${profile.namespace?.name}`)
+                  }
+                  className="hover:text-green-500 transition-colors"
+                >
+                  {profile.namespace?.readableName || profile.namespace?.name}
+                </button>
+              </span>
             </div>
           </div>
         </div>

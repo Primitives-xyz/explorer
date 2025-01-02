@@ -1,42 +1,35 @@
 import useSWR from 'swr'
+import { IProfileResponse } from '@/models/profile.models'
 
-const DEFAULT_STATS = { followers: 0, following: 0 }
-
-async function fetchFollowStats(url: string) {
+async function fetchProfile(url: string): Promise<IProfileResponse> {
   const res = await fetch(url)
   if (!res.ok) {
-    throw new Error('Failed to fetch follow stats')
+    const errorData = await res.json()
+    throw new Error(errorData.error || 'Failed to fetch profile')
   }
-  const data = await res.json()
-  return data.profiles?.length || 0
+  return await res.json()
 }
 
-export function useFollowStats(username: string) {
-  const { data: followers, error: followersError } = useSWR(
-    username ? `/api/profiles/${username}/followers` : null,
-    fetchFollowStats,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 30000, // 30 seconds
-      fallbackData: 0,
-    },
-  )
+export function useFollowStats(username: string, fromUsername: string) {
+  // only add fromusername if it exist
+  const url =
+    username && fromUsername
+      ? `/api/profiles/${username}?fromUsername=${fromUsername}`
+      : null
 
-  const { data: following, error: followingError } = useSWR(
-    username ? `/api/profiles/${username}/following` : null,
-    fetchFollowStats,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 30000, // 30 seconds
-      fallbackData: 0,
-    },
-  )
+  const { data, error } = useSWR<IProfileResponse>(url, fetchProfile, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 30000, // 30 seconds
+    revalidateIfStale: false,
+  })
 
   return {
     stats: {
-      followers: followers || 0,
-      following: following || 0,
+      followers: data?.socialCounts?.followers || 0,
+      following: data?.socialCounts?.following || 0,
+      isFollowing: data?.isFollowing || false,
     },
-    error: followersError || followingError,
+    error,
   }
 }

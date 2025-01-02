@@ -86,7 +86,9 @@ export const createProfile = async ({
 
     // Generic error
     throw new Error(
-      `Failed to create profile: ${error.message || 'An unexpected error occurred'}`,
+      `Failed to create profile: ${
+        error.message || 'An unexpected error occurred'
+      }`,
     )
   }
 }
@@ -113,25 +115,6 @@ export const getSuggestedProfiles = async ({
   } catch (error) {
     console.error('[getSuggestedProfiles Error]:', error)
     throw error
-  }
-}
-
-export const getProfileInfo = async ({
-  username,
-}: {
-  username: string
-}): Promise<IProfileResponse | null> => {
-  try {
-    if (!username) {
-      throw new Error('Username is required')
-    }
-
-    return await fetchTapestry<IProfileResponse>({
-      endpoint: `profiles/${username}`,
-    })
-  } catch (error) {
-    console.error('[getProfileInfo Error]', error)
-    return null
   }
 }
 
