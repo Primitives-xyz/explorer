@@ -1,5 +1,6 @@
 'use client'
 import { ActivityTape } from '@/components/ActivityTape'
+import { GlobalSearch } from '@/components/GlobalSearch'
 import dynamic from 'next/dynamic'
 import { ReactNode } from 'react'
 
@@ -25,6 +26,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
         <Header />
         {children}
       </div>
+      <GlobalSearch />
     </WalletProvider>
   )
 }

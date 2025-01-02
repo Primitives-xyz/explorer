@@ -18,13 +18,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
       )
     }
 
-    console.log('[Followers API Debug] Fetching followers for:', {
-      username,
-      url: `profiles/${username}/followers`,
-      env: process.env.NODE_ENV,
-      tapestryUrl: process.env.TAPESTRY_URL,
-    })
-
     const response = await fetchTapestryServer({
       endpoint: `profiles/${username}/followers`,
       method: FetchMethod.GET,

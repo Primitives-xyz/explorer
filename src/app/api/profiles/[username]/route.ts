@@ -10,9 +10,15 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
     const { username } = params
+    const searchParams = request.nextUrl.searchParams
+    const useNewApi = searchParams.get('useNewApi') !== 'false' // defaults to true if not specified
+    console.log({ useNewApi })
+    const endpoint = useNewApi
+      ? `profiles/new/${username}`
+      : `profiles/${username}`
 
     const data = await fetchTapestryServer({
-      endpoint: `profiles/new/${username}`,
+      endpoint,
       method: FetchMethod.GET,
     })
     return NextResponse.json(data)

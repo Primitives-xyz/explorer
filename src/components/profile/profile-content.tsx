@@ -3,6 +3,7 @@
 import useSWR from 'swr'
 import { Card } from '../common/card'
 import { FollowButton } from './follow-button'
+import { useApiVersion } from '@/hooks/use-api-version'
 
 interface Props {
   username: string
@@ -28,8 +29,11 @@ function LoadingCard() {
 }
 
 export function ProfileContent({ username }: Props) {
+  const { useNewApi } = useApiVersion()
+
   const fetcher = async (url: string) => {
-    const res = await fetch(url, { cache: 'no-store' })
+    const apiUrl = `${url}?useNewApi=${useNewApi}`
+    const res = await fetch(apiUrl, { cache: 'no-store' })
     if (!res.ok) throw new Error('Failed to fetch profile')
     return res.json()
   }
@@ -63,7 +67,10 @@ export function ProfileContent({ username }: Props) {
             <div className="flex items-center space-x-2">
               <span className="text-green-600 font-mono">
                 {data?.walletAddress
-                  ? `${data.walletAddress.slice(0, 4)}...${data.walletAddress.slice(-4)}`
+                  ? `${data.walletAddress.slice(
+                      0,
+                      4,
+                    )}...${data.walletAddress.slice(-4)}`
                   : 'Wallet not connected'}
               </span>
               {data?.walletAddress && (
@@ -169,6 +176,12 @@ export function ProfileContent({ username }: Props) {
                 <div className="flex justify-between">
                   <span className="text-green-600">Status</span>
                   <span className="text-green-400">Active</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-green-600">API Version</span>
+                  <span className="text-green-400">
+                    {useNewApi ? 'New' : 'Old'}
+                  </span>
                 </div>
               </div>
             </div>
