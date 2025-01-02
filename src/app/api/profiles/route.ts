@@ -9,23 +9,18 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
 
-  if (!walletAddress) {
-    return NextResponse.json(
-      { error: 'Wallet address is required' },
-      { status: 400 },
-    )
-  }
+  // Construct URL based on whether walletAddress is provided
+  const apiUrl = walletAddress
+    ? `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`
+    : `${BASE_URL}/profiles?apiKey=${API_KEY}`
 
   try {
-    const response = await fetch(
-      `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
       },
-    )
+    })
 
     if (!response.ok) {
       const errorText = await response.text()

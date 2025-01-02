@@ -2,8 +2,8 @@ import { IGetSocialResponse } from '@/models/profile.models'
 import useSWR from 'swr'
 
 export const useGetFollowers = (username: string) => {
-  const fetcher = async (url: string) => {
-    const res = await fetch(url, { cache: 'no-store' })
+  const fetcher = async (url: string): Promise<IGetSocialResponse> => {
+    const res = await fetch(url)
     if (!res.ok) {
       const errorData = await res.json()
       throw new Error(errorData.error || 'Failed to fetch followers')

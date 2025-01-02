@@ -29,6 +29,8 @@ export async function POST(req: NextRequest) {
       startId: followerUser.username,
       endId: followeeUser.username,
     }
+    console.log('CALLING ADD FOLLOWERS')
+    console.log(bodyData)
 
     const response = await fetchTapestryServer<TapestryResponse>({
       endpoint: 'followers/add',

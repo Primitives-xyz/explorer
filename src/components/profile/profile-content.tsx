@@ -33,7 +33,7 @@ export function ProfileContent({ username }: Props) {
 
   const fetcher = async (url: string) => {
     const apiUrl = `${url}?useNewApi=${useNewApi}`
-    const res = await fetch(apiUrl, { cache: 'no-store' })
+    const res = await fetch(apiUrl)
     if (!res.ok) throw new Error('Failed to fetch profile')
     return res.json()
   }

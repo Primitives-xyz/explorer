@@ -17,15 +17,17 @@ export interface IProfile {
   id: string
   created_at: number
   username: string
-  bio: string
-  image: string
+  bio: string | null
+  image: string | null
   namespace: string
   blockchain: BLOCKCHAIN
   isWaitListed?: boolean
 }
-export interface IGetSocialResponse extends IPaginatedResponse {
-  profiles: ISuggestedProfiles[]
-  totalCount: number
+
+export interface IGetSocialResponse {
+  profiles: IProfile[]
+  page: number
+  pageSize: number
 }
 
 export interface ISuggestedProfile {

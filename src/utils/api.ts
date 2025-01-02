@@ -93,8 +93,8 @@ export async function getFollowStats(username: string): Promise<FollowStats> {
   const following = await followingRes.json()
 
   return {
-    followers: followers.total,
-    following: following.total,
+    followers: followers.profiles?.length || 0,
+    following: following.profiles?.length || 0,
   }
 }
 

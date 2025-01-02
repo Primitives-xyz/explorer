@@ -21,8 +21,6 @@ export async function fetchTapestryServer<T = any>({
   const cleanEndpoint = endpoint.replace(/^\/+/, '')
   const url = `${BASE_URL}/${cleanEndpoint}?apiKey=${API_KEY}`
 
-  console.log('-- Tapestry Serverside Url: ', url, ' - ', method, ' - ', data)
-
   try {
     const options: RequestInit = {
       method,
@@ -30,6 +28,10 @@ export async function fetchTapestryServer<T = any>({
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
+    }
+
+    if (data) {
+      options.body = JSON.stringify(data)
     }
 
     const response = await fetch(url, options)
@@ -69,12 +71,12 @@ export async function fetchTapestryServer<T = any>({
     const responseData = await response.json()
     return responseData
   } catch (error: any) {
-    // Handle network errors
-    if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-      throw new Error('Network error - unable to connect to Tapestry API')
-    }
-
-    // Re-throw the error with additional context if needed
+    // Log the full error for debugging
+    console.error('Tapestry Server Error:', {
+      error: error.message,
+      stack: error.stack,
+      endpoint: cleanEndpoint,
+    })
     throw error
   }
 }

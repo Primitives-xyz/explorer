@@ -19,6 +19,10 @@ interface TokenData {
   }
 }
 
+interface ProfileData {
+  profiles: any[]
+}
+
 export default function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -31,9 +35,16 @@ export default function Home() {
   const [tokenData, setTokenData] = useState<TokenData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [profileData, setProfileData] = useState<ProfileData | null>(null)
+  const [profileError, setProfileError] = useState<string | null>(null)
 
   const wallet = userWallets[0]
   const connectedWalletAddr = wallet?.address
+
+  // Initial fetch of profiles when page loads
+  useEffect(() => {
+    fetchProfiles()
+  }, [])
 
   // Clear states when component mounts or pathname changes
   useEffect(() => {
@@ -96,6 +107,26 @@ export default function Home() {
     }
   }
 
+  // Add new function to fetch profiles
+  async function fetchProfiles(addr?: string) {
+    setProfileError(null)
+    try {
+      const url = addr ? `/api/profiles?walletAddress=${addr}` : '/api/profiles'
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data = await response.json()
+      if ('error' in data) {
+        throw new Error(data.error)
+      }
+      setProfileData(data)
+    } catch (err) {
+      console.error('Error fetching profiles:', err)
+      setProfileError('Failed to fetch profiles.')
+    }
+  }
+
   // The "unified" search action that updates state + pushes URL + fetches in one go
   async function searchAddress(newAddress: string) {
     if (!newAddress) return
@@ -111,7 +142,7 @@ export default function Home() {
     router.push(`?address=${newAddress}`)
 
     try {
-      await fetchTokens(newAddress)
+      await Promise.all([fetchTokens(newAddress), fetchProfiles(newAddress)])
     } finally {
       setIsSearching(false)
     }
@@ -156,6 +187,8 @@ export default function Home() {
             <ProfileSection
               walletAddress={walletAddress}
               hasSearched={hasSearched}
+              profileData={profileData}
+              error={profileError}
             />
             <TokenContainer
               walletAddress={walletAddress}

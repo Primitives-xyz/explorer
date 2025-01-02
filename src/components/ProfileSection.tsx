@@ -1,10 +1,11 @@
 'use client'
 
-import { getFollowStats, getProfiles, Profile } from '@/utils/api'
+import { getProfiles, Profile } from '@/utils/api'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Modal } from './common/modal'
+import { useFollowStats } from '@/hooks/use-follow-stats'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -13,14 +14,22 @@ interface ProfileWithStats extends Profile {
   }
 }
 
+interface ProfileData {
+  profiles: any[]
+}
+
 interface ProfileSectionProps {
   walletAddress: string
   hasSearched?: boolean
+  profileData?: ProfileData | null
+  error?: string | null
 }
 
 export const ProfileSection = ({
   walletAddress,
   hasSearched,
+  profileData,
+  error: propError,
 }: ProfileSectionProps) => {
   const router = useRouter()
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
@@ -36,36 +45,32 @@ export const ProfileSection = ({
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      if (!walletAddress || !hasSearched) return
+      if (!walletAddress && !profileData) return
 
-      setSelectedNamespace(null)
-      setProfiles([])
-      setFilteredProfiles([])
       setIsLoading(true)
       setError(null)
 
       try {
-        const profilesData = await getProfiles(walletAddress)
-        if (!profilesData.items || profilesData.items.length === 0) {
-          setProfiles([])
-          return
-        }
+        if (profileData) {
+          const initialProfiles = profileData.profiles
+          setProfiles(initialProfiles)
+          setFilteredProfiles(initialProfiles)
+          setSelectedNamespace(null)
+        } else {
+          const profilesData = await getProfiles(walletAddress)
+          if (!profilesData.items || profilesData.items.length === 0) {
+            setProfiles([])
+            setFilteredProfiles([])
+            return
+          }
 
-        const profilesWithStats = await Promise.all(
-          profilesData.items.map(async (profile) => {
-            try {
-              const stats = await getFollowStats(profile.profile.username)
-              return { ...profile, followStats: stats }
-            } catch (error) {
-              return { ...profile, followStats: { followers: 0, following: 0 } }
-            }
-          }),
-        )
-        setProfiles(profilesWithStats)
-        setFilteredProfiles(profilesWithStats)
+          setProfiles(profilesData.items)
+          setFilteredProfiles(profilesData.items)
+          setSelectedNamespace(null)
+        }
       } catch (error) {
         console.error('Profiles fetch error:', error)
-        setError('Failed to fetch profiles.')
+        setError(propError || 'Failed to fetch profiles.')
         setProfiles([])
         setFilteredProfiles([])
       } finally {
@@ -74,7 +79,7 @@ export const ProfileSection = ({
     }
 
     fetchProfiles()
-  }, [walletAddress, hasSearched])
+  }, [walletAddress, hasSearched, profileData, propError])
 
   useEffect(() => {
     if (selectedNamespace) {
@@ -106,8 +111,6 @@ export const ProfileSection = ({
         ),
     ),
   ).map((str) => JSON.parse(str))
-
-  if (!hasSearched) return null
 
   return (
     <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[400px] lg:h-[600px] relative group">
@@ -255,81 +258,94 @@ export const ProfileSection = ({
             {'>>> NO PROFILES FOUND'}
           </div>
         ) : (
-          filteredProfiles.map((profile) => (
-            <div
-              key={`${profile.profile.username}-${profile.namespace?.name}`}
-              className="p-4 hover:bg-green-900/10"
+          filteredProfiles.map((profile) => {
+            return (
+              <ProfileCard
+                key={`${profile.profile.username}-${profile.namespace?.name}`}
+                profile={profile}
+                router={router}
+              />
+            )
+          })
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Separate component for profile card
+const ProfileCard = ({
+  profile,
+  router,
+}: {
+  profile: ProfileWithStats
+  router: any
+}) => {
+  const { stats } = useFollowStats(profile.profile.username)
+  const followers = typeof stats?.followers === 'number' ? stats.followers : 0
+  const following = typeof stats?.following === 'number' ? stats.following : 0
+
+  return (
+    <div className="p-4 hover:bg-green-900/10">
+      <div className="flex items-start gap-4">
+        <div className="relative">
+          <img
+            src={
+              profile.profile.image ||
+              'https://api.dicebear.com/7.x/shapes/svg?seed=' +
+                profile.profile.username
+            }
+            alt={profile.profile.username}
+            className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
+          />
+          {profile.namespace?.faviconURL && (
+            <button
+              onClick={() =>
+                router.push(`/namespace/${profile.namespace?.name}`)
+              }
+              className="absolute -bottom-2 -right-2 hover:scale-110 transition-transform"
             >
-              <div className="flex items-start gap-4">
-                <div className="relative">
-                  <img
-                    src={
-                      profile.profile.image ||
-                      'https://api.dicebear.com/7.x/shapes/svg?seed=' +
-                        profile.profile.username
-                    }
-                    alt={profile.profile.username}
-                    className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
-                  />
-                  {profile.namespace?.faviconURL && (
-                    <button
-                      onClick={() =>
-                        router.push(`/namespace/${profile.namespace?.name}`)
-                      }
-                      className="absolute -bottom-2 -right-2 hover:scale-110 transition-transform"
-                    >
-                      <img
-                        src={profile.namespace.faviconURL}
-                        alt={profile.namespace.readableName}
-                        className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
-                      />
-                    </button>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            router.push(`/${profile.profile.username}`)
-                          }
-                          className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
-                        >
-                          @{profile.profile.username}
-                        </button>
-                        {profile.profile.bio && (
-                          <span className="text-green-600 font-mono">
-                            {profile.profile.bio}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-4 text-xs text-green-600 font-mono">
-                      <span>
-                        Followers: {profile.followStats?.followers || 0}
-                      </span>
-                      <span>
-                        Following: {profile.followStats?.following || 0}
-                      </span>
-                    </div>
-                    <div className="text-xs text-green-600/50 font-mono">
-                      <button
-                        onClick={() =>
-                          router.push(`/namespace/${profile.namespace?.name}`)
-                        }
-                        className="hover:text-green-500 transition-colors"
-                      >
-                        {profile.namespace?.readableName ||
-                          profile.namespace?.name}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              <img
+                src={profile.namespace.faviconURL}
+                alt={profile.namespace.readableName}
+                className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
+              />
+            </button>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => router.push(`/${profile.profile.username}`)}
+                  className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
+                >
+                  @{profile.profile.username}
+                </button>
+                {profile.profile.bio && (
+                  <span className="text-green-600 font-mono">
+                    {profile.profile.bio}
+                  </span>
+                )}
               </div>
             </div>
-          ))
-        )}
+            <div className="flex gap-4 text-xs text-green-600 font-mono">
+              <span>Followers: {followers}</span>
+              <span>Following: {following}</span>
+            </div>
+            <div className="text-xs text-green-600/50 font-mono">
+              <button
+                onClick={() =>
+                  router.push(`/namespace/${profile.namespace?.name}`)
+                }
+                className="hover:text-green-500 transition-colors"
+              >
+                {profile.namespace?.readableName || profile.namespace?.name}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
