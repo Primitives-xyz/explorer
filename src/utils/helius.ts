@@ -32,6 +32,13 @@ export interface NFTToken {
   }
 }
 
+interface ParsedInstruction {
+  programId: string
+  data: string
+  accounts: string[]
+  decodedData?: any
+}
+
 export interface Transaction {
   description: string
   type: string
@@ -47,11 +54,15 @@ export interface Transaction {
     amount: number
   }[]
   tokenTransfers: {
-    fromUserAccount: string
-    toUserAccount: string
+    from: string
+    to: string
     fromTokenAccount: string
     toTokenAccount: string
-    tokenAmount: number
-    mint: string
+    amount: number
+    tokenMint: string
   }[]
+  parsedInstructions?: ParsedInstruction[]
+  balanceChanges: {
+    [address: string]: number
+  }
 }

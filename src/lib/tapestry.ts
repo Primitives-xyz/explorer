@@ -160,31 +160,6 @@ export const getFollowers = async ({
   }
 }
 
-export const getFollowing = async ({
-  username,
-}: {
-  username: string
-}): Promise<IGetSocialResponse> => {
-  try {
-    if (!username) {
-      throw new Error('Username is required')
-    }
-
-    const response = await fetchTapestry<IGetSocialResponse>({
-      endpoint: `profiles/${username}/following`,
-    })
-
-    if (!response) {
-      throw new Error('Failed to get following - no response received')
-    }
-
-    return response
-  } catch (error) {
-    console.error('[getFollowing Error]:', error)
-    throw error
-  }
-}
-
 export const createComment = async ({
   profileId,
   contentId,

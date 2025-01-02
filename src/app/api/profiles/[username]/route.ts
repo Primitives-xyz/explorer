@@ -16,7 +16,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const fromUsername = searchParams.get('fromUsername')
 
     const useNewApi = searchParams.get('useNewApi') !== 'false' // defaults to true if not specified
-    console.log({ useNewApi })
     let endpoint = useNewApi
       ? `profiles/new/${username}`
       : `profiles/${username}`

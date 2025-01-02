@@ -9,6 +9,8 @@ import { FungibleToken, NFT } from '@/utils/types'
 import { useUserWallets } from '@dynamic-labs/sdk-react-core'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { FollowingList } from '@/components/profile/FollowingList'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 
 interface TokenData {
   items: (FungibleToken | NFT)[]
@@ -25,11 +27,10 @@ interface ProfileData {
 
 export default function Home() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const userWallets = useUserWallets()
   const pathname = usePathname()
+  const { walletAddress: currentWalletAddress, mainUsername } =
+    useCurrentWallet()
 
-  const [walletAddress, setWalletAddress] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [tokenData, setTokenData] = useState<TokenData | null>(null)
@@ -37,9 +38,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [profileError, setProfileError] = useState<string | null>(null)
-
-  const wallet = userWallets[0]
-  const connectedWalletAddr = wallet?.address
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
 
   // Initial fetch of profiles when page loads
   useEffect(() => {
@@ -49,8 +48,6 @@ export default function Home() {
   // Clear states when component mounts or pathname changes
   useEffect(() => {
     const clearStates = () => {
-      setWalletAddress('')
-      setHasSearched(false)
       setIsSearching(false)
       setTokenData(null)
       setIsLoading(false)
@@ -73,45 +70,12 @@ export default function Home() {
     }
   }, [pathname])
 
-  // Separate effect for handling URL params and connected wallet
-  useEffect(() => {
-    const addressFromUrl = searchParams.get('address')
-    if (addressFromUrl) {
-      setWalletAddress(addressFromUrl)
-      setHasSearched(true)
-      fetchTokens(addressFromUrl)
-    }
-  }, [searchParams, connectedWalletAddr])
-
-  // Single function that fetches tokens for a given address
-  async function fetchTokens(addr: string) {
-    setIsLoading(true)
-    setError(null)
-    setTokenData(null)
-    try {
-      const response = await fetch(`/api/tokens?address=${addr}&type=all`)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const data = await response.json()
-      if ('error' in data) {
-        throw new Error(data.error)
-      }
-      setTokenData(data)
-    } catch (err) {
-      console.error('Error fetching tokens:', err)
-      setError('Failed to fetch tokens.')
-      setTokenData(null)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   // Add new function to fetch profiles
-  async function fetchProfiles(addr?: string) {
+  async function fetchProfiles() {
     setProfileError(null)
+    setIsLoadingProfiles(true)
     try {
-      const url = addr ? `/api/profiles?walletAddress=${addr}` : '/api/profiles'
+      const url = '/api/profiles'
       const response = await fetch(url)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -124,6 +88,8 @@ export default function Home() {
     } catch (err) {
       console.error('Error fetching profiles:', err)
       setProfileError('Failed to fetch profiles.')
+    } finally {
+      setIsLoadingProfiles(false)
     }
   }
 
@@ -133,31 +99,18 @@ export default function Home() {
     router.push(`/${newAddress}`)
   }
 
-  // For typing in the input (as opposed to the dropdown):
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setWalletAddress(e.target.value)
-  }
-
   // Called when user clicks the [EXECUTE] button from the child form
-  // or presses Enter in the input
   const handleSubmitSearch = () => {
-    if (!walletAddress) return
-    searchAddress(walletAddress)
+    if (!currentWalletAddress) return
+    searchAddress(currentWalletAddress)
   }
 
   return (
     <Layout>
       <div className="w-full overflow-hidden">
-        <CreateProfile
-          onProfileCreated={() => {
-            if (connectedWalletAddr) {
-              searchAddress(connectedWalletAddr)
-            }
-          }}
-        />
+        <CreateProfile onProfileCreated={() => {}} />
         <SearchBar
-          walletAddress={walletAddress}
-          handleInputChange={handleInputChange}
+          walletAddress={currentWalletAddress}
           handleSearch={handleSubmitSearch}
           loading={isSearching}
           hasSearched={hasSearched}
@@ -165,25 +118,35 @@ export default function Home() {
         />
         <div className="space-y-4 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-            <ProfileSection
-              walletAddress={walletAddress}
-              hasSearched={hasSearched}
-              profileData={profileData}
-              error={profileError}
-            />
-            <TokenContainer
-              walletAddress={walletAddress}
-              hasSearched={hasSearched}
-              tokenType="fungible"
-              view="tokens"
-              tokenData={tokenData}
-              isLoading={isLoading}
-              error={error}
-            />
+            <div className="w-full h-full">
+              <ProfileSection
+                walletAddress={currentWalletAddress}
+                hasSearched={hasSearched}
+                profileData={profileData}
+                error={profileError}
+                isLoadingProfileData={isLoadingProfiles}
+              />
+            </div>
+            <div className="w-full h-full">
+              <TokenContainer
+                walletAddress={currentWalletAddress}
+                hasSearched={hasSearched}
+                tokenType="fungible"
+                view="tokens"
+                tokenData={tokenData}
+                isLoading={isLoading}
+                error={error}
+              />
+            </div>
           </div>
+          {mainUsername && (
+            <div className="w-full">
+              <FollowingList username={mainUsername} />
+            </div>
+          )}
           <div className="w-full">
             <TokenContainer
-              walletAddress={walletAddress}
+              walletAddress={currentWalletAddress}
               hasSearched={hasSearched}
               tokenType="all"
               view="nfts"

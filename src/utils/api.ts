@@ -73,25 +73,6 @@ export async function getProfiles(
   }
 }
 
-export async function getFollowStats(username: string): Promise<FollowStats> {
-  const [followersRes, followingRes] = await Promise.all([
-    fetch(`/api/profiles/${username}/followers`),
-    fetch(`/api/profiles/${username}/following`),
-  ])
-
-  if (!followersRes.ok || !followingRes.ok) {
-    throw new Error('Failed to fetch follow stats')
-  }
-
-  const followers = await followersRes.json()
-  const following = await followingRes.json()
-
-  return {
-    followers: followers.profiles?.length || 0,
-    following: following.profiles?.length || 0,
-  }
-}
-
 export async function fetchTapestry<T>({
   endpoint,
   method = FetchMethod.GET,

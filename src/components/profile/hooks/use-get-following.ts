@@ -1,29 +1,41 @@
-import { IGetSocialResponse } from '@/models/profile.models'
 import useSWR from 'swr'
 
-export const useGetFollowing = (username: string) => {
-  const fetcher = async (url: string) => {
-    const res = await fetch(url)
-    if (!res.ok) {
-      const errorData = await res.json()
-      throw new Error(errorData.error || 'Failed to fetch following')
-    }
-    return await res.json()
-  }
+interface Wallet {
+  id: string
+  blockchain: string
+}
 
-  const {
-    data: following,
-    error,
-    isLoading: loading,
-    mutate,
-  } = useSWR<IGetSocialResponse>(
+interface Profile {
+  id: string
+  created_at: number
+  namespace: string
+  username: string
+  bio: string | null
+  image: string | null
+  wallet: Wallet | null
+}
+
+interface GetFollowingResponse {
+  profiles: Profile[]
+  page: number
+  pageSize: number
+}
+
+export function useGetFollowing(username: string) {
+  const { data, error } = useSWR<GetFollowingResponse>(
     username ? `/api/profiles/${username}/following` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 2000,
+    async (url: string) => {
+      const res = await fetch(url)
+      if (!res.ok) {
+        throw new Error('Failed to fetch following')
+      }
+      return res.json()
     },
   )
 
-  return { following, loading, error, mutate }
+  return {
+    following: data,
+    loading: !error && !data,
+    error,
+  }
 }

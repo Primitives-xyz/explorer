@@ -21,10 +21,11 @@ interface ProfileData {
 }
 
 interface ProfileSectionProps {
-  walletAddress: string
+  walletAddress?: string
   hasSearched?: boolean
   profileData?: ProfileData | null
   error?: string | null
+  isLoadingProfileData?: boolean
 }
 
 export const ProfileSection = ({
@@ -32,6 +33,7 @@ export const ProfileSection = ({
   hasSearched,
   profileData,
   error: propError,
+  isLoadingProfileData,
 }: ProfileSectionProps) => {
   const router = useRouter()
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
@@ -47,7 +49,8 @@ export const ProfileSection = ({
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      if (!walletAddress && !profileData) return
+      if (!walletAddress && !profileData && !hasSearched) return
+      if (isLoadingProfileData) return
 
       setIsLoading(true)
       setError(null)
@@ -58,7 +61,8 @@ export const ProfileSection = ({
           setProfiles(initialProfiles)
           setFilteredProfiles(initialProfiles)
           setSelectedNamespace(null)
-        } else {
+        } else if (walletAddress) {
+          console.log('fetching profiles for wallet address', walletAddress)
           const profilesData = await getProfiles(walletAddress)
           if (!profilesData.items || profilesData.items.length === 0) {
             setProfiles([])
@@ -81,7 +85,7 @@ export const ProfileSection = ({
     }
 
     fetchProfiles()
-  }, [walletAddress, hasSearched, profileData, propError])
+  }, [walletAddress, profileData, propError, hasSearched, isLoadingProfileData])
 
   useEffect(() => {
     if (selectedNamespace) {
