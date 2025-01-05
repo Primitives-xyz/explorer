@@ -11,7 +11,7 @@ interface NFTSectionProps {
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
   isLoading: boolean
-  error: string | null
+  error?: string
   items?: (FungibleToken | NFT)[]
 }
 

@@ -4,10 +4,9 @@ const LAMPORTS_PER_SOL = 1000000000
 
 interface SolBalanceSectionProps {
   walletAddress: string
-  hasSearched?: boolean
   hideTitle?: boolean
   isLoading: boolean
-  error: string | null
+  error?: string
   nativeBalance?: {
     lamports: number
     price_per_sol: number
@@ -17,7 +16,6 @@ interface SolBalanceSectionProps {
 
 export const SolBalanceSection = ({
   walletAddress,
-  hasSearched,
   hideTitle = false,
   isLoading,
   error,
@@ -28,8 +26,7 @@ export const SolBalanceSection = ({
     : null
   const solPrice = nativeBalance?.price_per_sol ?? null
 
-  const shouldShowContent =
-    isLoading || balance !== null || (hasSearched && balance === null)
+  const shouldShowContent = isLoading || balance !== null
 
   if (!shouldShowContent) return null
 

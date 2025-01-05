@@ -5,38 +5,25 @@ import {
   addSearchToHistory,
   getRecentSearches,
 } from '@/utils/searchHistory'
-import { useRouter } from 'next/navigation'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useRouter } from 'next/navigation'
 
 interface SearchBarProps {
-  walletAddress?: string
   handleSearch: () => void
-  loading?: boolean
-  hasSearched?: boolean
   onPickRecentAddress?: (addr: string) => void
 }
 
 export default function SearchBar({
-  walletAddress = '',
   handleSearch,
-  loading = false,
-  hasSearched = false,
   onPickRecentAddress,
 }: SearchBarProps) {
   const router = useRouter()
-  const [inputValue, setInputValue] = useState(walletAddress)
+  const [inputValue, setInputValue] = useState('')
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLDivElement>(null)
-
-  // Update input value when walletAddress prop changes
-  useEffect(() => {
-    if (walletAddress !== undefined) {
-      setInputValue(walletAddress)
-    }
-  }, [walletAddress])
 
   useEffect(() => {
     // Load recent searches
@@ -66,17 +53,19 @@ export default function SearchBar({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-    if (inputValue && !loading) {
+    if (inputValue) {
       // On form submit, we call handleSearch from props
       await handleSearch()
       await addSearchToHistory(inputValue)
       await loadRecentSearches()
       setShowDropdown(false)
+
+      // Add navigation
+      router.push(`/${inputValue}`)
     }
   }
 
   async function handleRecentSearchClick(address: string) {
-    if (loading) return
     setShowDropdown(false)
     setInputValue(address)
 
@@ -173,34 +162,25 @@ export default function SearchBar({
               onFocus={() => setShowDropdown(true)}
               className="flex-1 bg-transparent font-mono text-green-400 placeholder-green-800 
                        focus:outline-none focus:ring-0 border-none text-sm"
-              disabled={loading}
             />
 
             <button
               type="submit"
-              disabled={!inputValue || loading}
+              disabled={!inputValue}
               className="px-4 py-1 font-mono text-sm border border-green-600 text-green-400
                        hover:bg-green-900/20 disabled:opacity-50 disabled:hover:bg-transparent
                        transition-colors duration-150"
             >
-              {loading ? '[PROCESSING...]' : '[EXECUTE]'}
+              [EXECUTE]
             </button>
           </div>
 
           {renderDropdown()}
 
           <div className="absolute mt-2 left-0 right-0 text-xs font-mono">
-            {loading ? (
-              <span className="text-yellow-500">
-                {`>>>`} ANALYZING WALLET DATA...
-              </span>
-            ) : inputValue && !hasSearched ? (
+            {inputValue ? (
               <span className="text-green-600">
                 {`>>>`} READY TO ANALYZE {inputValue.slice(0, 8)}...
-              </span>
-            ) : hasSearched ? (
-              <span className="text-green-600">
-                {`>>>`} ANALYZING {inputValue.slice(0, 8)}...
               </span>
             ) : (
               <span className="text-green-800">{`>>>`}_ AWAITING INPUT</span>

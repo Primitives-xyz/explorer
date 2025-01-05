@@ -5,10 +5,10 @@ import { CreateProfile } from '@/components/profile/create-profile'
 import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
 import { TokenContainer } from '@/components/TokenContainer'
+import { TrendingTokens } from '@/components/tokens/TrendingTokens'
 import { FungibleToken, NFT } from '@/utils/types'
-import { useUserWallets } from '@dynamic-labs/sdk-react-core'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { FollowingList } from '@/components/profile/FollowingList'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 
@@ -27,15 +27,11 @@ interface ProfileData {
 
 export default function Home() {
   const router = useRouter()
-  const pathname = usePathname()
   const { walletAddress: currentWalletAddress, mainUsername } =
     useCurrentWallet()
 
   const [hasSearched, setHasSearched] = useState(false)
-  const [isSearching, setIsSearching] = useState(false)
-  const [tokenData, setTokenData] = useState<TokenData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [profileError, setProfileError] = useState<string | null>(null)
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false)
@@ -44,31 +40,6 @@ export default function Home() {
   useEffect(() => {
     fetchProfiles()
   }, [])
-
-  // Clear states when component mounts or pathname changes
-  useEffect(() => {
-    const clearStates = () => {
-      setIsSearching(false)
-      setTokenData(null)
-      setIsLoading(false)
-      setError(null)
-    }
-
-    clearStates()
-
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (target.closest('a')) {
-        clearStates()
-      }
-    }
-
-    document.addEventListener('click', handleClick)
-
-    return () => {
-      document.removeEventListener('click', handleClick)
-    }
-  }, [pathname])
 
   // Add new function to fetch profiles
   async function fetchProfiles() {
@@ -87,6 +58,7 @@ export default function Home() {
       setProfileData(data)
     } catch (err) {
       console.error('Error fetching profiles:', err)
+
       setProfileError('Failed to fetch profiles.')
     } finally {
       setIsLoadingProfiles(false)
@@ -110,10 +82,7 @@ export default function Home() {
       <div className="w-full overflow-hidden">
         <CreateProfile onProfileCreated={() => {}} />
         <SearchBar
-          walletAddress={currentWalletAddress}
           handleSearch={handleSubmitSearch}
-          loading={isSearching}
-          hasSearched={hasSearched}
           onPickRecentAddress={searchAddress}
         />
         <div className="space-y-4 w-full">
@@ -133,9 +102,7 @@ export default function Home() {
                 hasSearched={hasSearched}
                 tokenType="fungible"
                 view="tokens"
-                tokenData={tokenData}
                 isLoading={isLoading}
-                error={error}
               />
             </div>
           </div>
@@ -145,14 +112,15 @@ export default function Home() {
             </div>
           )}
           <div className="w-full">
+            <TrendingTokens />
+          </div>
+          <div className="w-full">
             <TokenContainer
               walletAddress={currentWalletAddress}
               hasSearched={hasSearched}
               tokenType="all"
               view="nfts"
-              tokenData={tokenData}
               isLoading={isLoading}
-              error={error}
             />
           </div>
           {!hasSearched && (

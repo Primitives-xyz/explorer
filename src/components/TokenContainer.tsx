@@ -10,9 +10,9 @@ interface TokenContainerProps {
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
   view?: 'tokens' | 'nfts'
-  tokenData: TokenData | null
   isLoading: boolean
-  error: string | null
+  tokenData?: TokenData
+  error?: string
 }
 
 interface TokenData {
@@ -99,15 +99,12 @@ export const TokenContainer = ({
     <div className="flex flex-col gap-4">
       <SolBalanceSection
         walletAddress={walletAddress}
-        hasSearched={hasSearched}
         hideTitle={hideTitle}
         isLoading={isLoading}
         error={error}
         nativeBalance={tokenData?.nativeBalance}
       />
       <TokenSection
-        walletAddress={walletAddress}
-        hasSearched={hasSearched}
         tokenType={tokenType}
         hideTitle={hideTitle}
         isLoading={isLoading}

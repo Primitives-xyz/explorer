@@ -28,16 +28,16 @@ type TokenTab =
 
 export default function PortfolioTabs({ address }: PortfolioTabsProps) {
   const [activeTab, setActiveTab] = useState<TokenTab>('all')
-  const [tokenData, setTokenData] = useState<TokenData | null>(null)
+  const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const fetchTokens = async () => {
       if (!address) return
 
       setIsLoading(true)
-      setError(null)
+      setError(undefined)
 
       try {
         const response = await fetch(`/api/tokens?address=${address}&type=all`)
@@ -53,7 +53,7 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
       } catch (error) {
         console.error('Error fetching tokens:', error)
         setError('Failed to fetch tokens.')
-        setTokenData(null)
+        setTokenData(undefined)
       } finally {
         setIsLoading(false)
       }

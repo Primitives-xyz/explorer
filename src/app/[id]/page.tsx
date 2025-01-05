@@ -2,10 +2,11 @@ import { ProfileContent } from '@/components/profile/profile-content'
 import { PublicKey } from '@solana/web3.js'
 import PortfolioTabs from '../portfolio/[address]/PortfolioTabs'
 import NFTDetails from '@/components/NFTDetails'
+import FungibleTokenDetails from '@/components/FungibleTokenDetails'
 
 type Params = Promise<{ id: string }>
 
-async function checkIsNFT(id: string) {
+async function fetchTokenInfo(id: string) {
   try {
     const response = await fetch(`${process.env.RPC_URL}`, {
       method: 'POST',
@@ -27,7 +28,7 @@ async function checkIsNFT(id: string) {
     }
 
     const data = await response.json()
-    return !data.error
+    return data
   } catch (error) {
     return false
   }
@@ -51,11 +52,17 @@ export default async function ProfilePage({ params }: { params: Params }) {
     return <ProfileContent username={id} />
   }
 
-  // Check if this public key is an NFT
-  const isNFT = await checkIsNFT(id)
-
-  if (isNFT) {
-    return <NFTDetails id={id} />
+  // Check if this public key is a token
+  const tokenInfo = await fetchTokenInfo(id)
+  if (tokenInfo) {
+    // Check if it's a fungible token or NFT
+    if (
+      tokenInfo.result.interface === 'FungibleToken' ||
+      tokenInfo.result.interface === 'FungibleAsset'
+    ) {
+      return <FungibleTokenDetails id={id} tokenInfo={tokenInfo.result} />
+    }
+    return <NFTDetails id={id} tokenInfo={tokenInfo.result} />
   }
 
   return (

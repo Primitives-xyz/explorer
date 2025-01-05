@@ -8,18 +8,14 @@ import { NFTGrid } from './tokens/NFTGrid'
 import { TokenList } from './tokens/TokenList'
 
 interface TokenSectionProps {
-  walletAddress: string
-  hasSearched?: boolean
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
   isLoading: boolean
-  error: string | null
+  error?: string
   items?: (FungibleToken | NFT)[]
 }
 
 export const TokenSection = ({
-  walletAddress,
-  hasSearched,
   tokenType = 'all',
   hideTitle = false,
   isLoading,
@@ -69,8 +65,7 @@ export const TokenSection = ({
     return acc + (token.price || 0) * token.balance
   }, 0)
 
-  const shouldShowContent =
-    isLoading || tokens.length > 0 || (hasSearched && tokens.length === 0)
+  const shouldShowContent = isLoading || tokens.length > 0
 
   if (!shouldShowContent) return null
 
@@ -149,10 +144,6 @@ export const TokenSection = ({
         {isLoading ? (
           <div className="p-4 text-center text-green-600 font-mono">
             {'>>> FETCHING TOKENS...'}
-          </div>
-        ) : hasSearched && tokens.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> NO TOKENS FOUND'}
           </div>
         ) : (
           <>
