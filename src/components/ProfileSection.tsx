@@ -35,6 +35,8 @@ export const ProfileSection = ({
   error: propError,
   isLoadingProfileData,
 }: ProfileSectionProps) => {
+  const key = walletAddress || 'default'
+
   const router = useRouter()
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
   const [filteredProfiles, setFilteredProfiles] = useState<ProfileWithStats[]>(
@@ -47,23 +49,45 @@ export const ProfileSection = ({
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  // Cleanup function to reset state
+  const resetState = () => {
+    setProfiles([])
+    setFilteredProfiles([])
+    setSelectedNamespace(null)
+    setError(null)
+    setIsLoading(false)
+  }
+
   useEffect(() => {
+    // Reset state on mount and cleanup on unmount
+    resetState()
+    return () => resetState()
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+
     const fetchProfiles = async () => {
       if (!walletAddress && !profileData && !hasSearched) return
       if (isLoadingProfileData) return
 
+      // Reset state before fetching new data
+      resetState()
+      if (!isMounted) return
+
       setIsLoading(true)
-      setError(null)
 
       try {
-        if (profileData) {
+        if (profileData && isMounted) {
           const initialProfiles = profileData.profiles
           setProfiles(initialProfiles)
           setFilteredProfiles(initialProfiles)
-          setSelectedNamespace(null)
-        } else if (walletAddress) {
+        } else if (walletAddress && isMounted) {
           console.log('fetching profiles for wallet address', walletAddress)
           const profilesData = await getProfiles(walletAddress)
+
+          if (!isMounted) return
+
           if (!profilesData.items || profilesData.items.length === 0) {
             setProfiles([])
             setFilteredProfiles([])
@@ -72,19 +96,26 @@ export const ProfileSection = ({
 
           setProfiles(profilesData.items)
           setFilteredProfiles(profilesData.items)
-          setSelectedNamespace(null)
         }
       } catch (error) {
         console.error('Profiles fetch error:', error)
-        setError(propError || 'Failed to fetch profiles.')
-        setProfiles([])
-        setFilteredProfiles([])
+        if (isMounted) {
+          setError(propError || 'Failed to fetch profiles.')
+          setProfiles([])
+          setFilteredProfiles([])
+        }
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchProfiles()
+
+    return () => {
+      isMounted = false
+    }
   }, [walletAddress, profileData, propError, hasSearched, isLoadingProfileData])
 
   useEffect(() => {
@@ -119,7 +150,10 @@ export const ProfileSection = ({
   ).map((str) => JSON.parse(str))
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[400px] lg:h-[600px] relative group">
+    <div
+      key={key}
+      className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[400px] lg:h-[600px] relative group"
+    >
       {/* Header */}
       <div className="border-b border-green-800 p-2 flex-shrink-0">
         <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
