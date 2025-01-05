@@ -4,13 +4,18 @@ import PortfolioTabs from '../portfolio/[address]/PortfolioTabs'
 import NFTDetails from '@/components/NFTDetails'
 import FungibleTokenDetails from '@/components/FungibleTokenDetails'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
-import { Metadata } from 'next'
+import { Metadata, ResolvingMetadata } from 'next'
 
-type Params = Promise<{ id: string }>
+type Props = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
 
-export async function generateMetadata({ params }: { params: Params }) {
-  const resolvedParams = await params
-  const { id } = resolvedParams
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const { id } = params
 
   try {
     const tokenInfo = await fetchTokenInfo(id)
@@ -23,19 +28,22 @@ export async function generateMetadata({ params }: { params: Params }) {
       const imageUrl =
         result.content?.links?.image || result.content?.files?.[0]?.uri
 
+      // Optionally access and extend parent metadata
+      const previousImages = (await parent).openGraph?.images || []
+
       return {
         title: `${title} | Explorer`,
         description,
         openGraph: {
           title: `${title} | Explorer`,
           description,
-          ...(imageUrl && { images: [{ url: imageUrl }] }),
+          images: imageUrl ? [imageUrl, ...previousImages] : previousImages,
         },
         twitter: {
           card: 'summary_large_image',
           title: `${title} | Explorer`,
           description,
-          ...(imageUrl && { images: [imageUrl] }),
+          images: imageUrl ? [imageUrl] : [],
         },
       }
     }
@@ -47,12 +55,20 @@ export async function generateMetadata({ params }: { params: Params }) {
   return {
     title: `${id} | Explorer`,
     description: `Explore details for ${id}`,
+    openGraph: {
+      title: `${id} | Explorer`,
+      description: `Explore details for ${id}`,
+    },
+    twitter: {
+      card: 'summary',
+      title: `${id} | Explorer`,
+      description: `Explore details for ${id}`,
+    },
   }
 }
 
-export default async function ProfilePage({ params }: { params: Params }) {
-  const resolvedParams = await params
-  const { id } = resolvedParams
+export default async function ProfilePage({ params }: Props) {
+  const { id } = params
 
   let isPublicKey = false
   let publicKey: PublicKey | null = null
