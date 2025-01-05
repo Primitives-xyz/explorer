@@ -1,5 +1,7 @@
 import { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useState } from 'react'
+import { TokenAddress } from './TokenAddress'
+import { useRouter } from 'next/navigation'
 
 interface Authority {
   address: string
@@ -18,7 +20,7 @@ export const NFTGrid = ({
   onAddressSearch,
 }: NFTGridProps) => {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
-  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
+  const router = useRouter()
 
   const isInscription = (
     token: NFT | TokenWithInscription | FungibleToken,
@@ -38,47 +40,13 @@ export const NFTGrid = ({
     return 'balance' in token
   }
 
-  const handleCopyAddress = async (address: string, e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent triggering the search
-    try {
-      await navigator.clipboard.writeText(address)
-      setCopiedAddress(address)
-      setTimeout(() => setCopiedAddress(null), 2000)
-    } catch (err) {
-      console.error('Failed to copy address:', err)
-    }
-  }
-
-  const handleAddressClick = (address: string) => {
-    if (onAddressSearch) {
-      onAddressSearch(address)
-    }
-  }
-
   const formatCreators = (creators: any[]) => {
     if (!creators || creators.length === 0) return 'Unknown Creator'
     const displayedCreators = creators.slice(0, 2).map((creator, index) => {
       const address = creator.address || creator
       return (
         <span key={address} className="inline-flex items-center gap-1">
-          <span
-            onClick={() => handleAddressClick(address)}
-            className="cursor-pointer hover:text-green-400 transition-colors"
-            title={address}
-          >
-            {address.slice(0, 4)}...{address.slice(-4)}
-          </span>
-          <button
-            onClick={(e) => handleCopyAddress(address, e)}
-            className="p-1 hover:bg-green-900/20 rounded transition-colors"
-            title="Copy address"
-          >
-            {copiedAddress === address ? (
-              <span className="text-green-400">✓</span>
-            ) : (
-              <span>📋</span>
-            )}
-          </button>
+          <TokenAddress address={address} />
           {index < Math.min(creators.length, 2) - 1 && ', '}
         </span>
       )
@@ -150,34 +118,23 @@ export const NFTGrid = ({
 
             {/* Token Info */}
             <div className="space-y-2">
-              <div className="text-green-400 font-mono text-base truncate font-semibold group-hover:text-green-300 transition-colors">
+              <button
+                onClick={() => router.push(`/${token.id}`)}
+                className="text-green-400 font-mono text-base truncate font-semibold group-hover:text-green-300 transition-colors w-full text-left hover:text-green-200"
+              >
                 {name}
-              </div>
+              </button>
               {symbol && (
-                <div className="text-green-600 font-mono text-sm group-hover:text-green-500 transition-colors">
+                <button
+                  onClick={() => router.push(`/${token.id}`)}
+                  className="text-green-600 font-mono text-sm group-hover:text-green-500 transition-colors w-full text-left hover:text-green-400"
+                >
                   {symbol}
-                </div>
+                </button>
               )}
               <div className="text-green-600/80 font-mono text-xs flex items-center gap-1">
                 <span className="text-green-600/50">Token:</span>
-                <span
-                  onClick={() => handleAddressClick(token.id)}
-                  className="cursor-pointer hover:text-green-400 transition-colors"
-                  title={token.id}
-                >
-                  {token.id.slice(0, 4)}...{token.id.slice(-4)}
-                </span>
-                <button
-                  onClick={(e) => handleCopyAddress(token.id, e)}
-                  className="p-1 hover:bg-green-900/20 rounded transition-colors"
-                  title="Copy token address"
-                >
-                  {copiedAddress === token.id ? (
-                    <span className="text-green-400">✓</span>
-                  ) : (
-                    <span>📋</span>
-                  )}
-                </button>
+                <TokenAddress address={token.id} />
               </div>
               <div className="text-green-600/80 font-mono text-xs group-hover:text-green-500/80 transition-colors">
                 <span className="text-green-600/50">Creator:</span>{' '}
@@ -240,51 +197,9 @@ export const NFTGrid = ({
                   </span>
                 )}
                 {isFungible(token) && token.associatedTokenAddress && (
-                  <span
-                    className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20 text-green-500 rounded group-hover:bg-green-900/30 group-hover:text-green-400 transition-colors cursor-pointer"
-                    onClick={() =>
-                      handleAddressClick(token.associatedTokenAddress)
-                    }
-                    title={`Associated Token: ${token.associatedTokenAddress}`}
-                  >
-                    ATA: {token.associatedTokenAddress.slice(0, 4)}...
-                  </span>
-                )}
-                {isFungible(token) && token.tokenProgram && (
-                  <span
-                    className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20 text-green-500 rounded group-hover:bg-green-900/30 group-hover:text-green-400 transition-colors cursor-pointer"
-                    onClick={() => handleAddressClick(token.tokenProgram)}
-                    title={`Token Program: ${token.tokenProgram}`}
-                  >
-                    Program: {token.tokenProgram.slice(0, 4)}...
-                  </span>
-                )}
-                {token.interface && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20 text-green-500 rounded group-hover:bg-green-900/30 group-hover:text-green-400 transition-colors">
-                    {token.interface}
-                  </span>
-                )}
-                {(token.authorities as unknown as Authority[])?.map(
-                  (authority, index) => (
-                    <span
-                      key={`${authority.address}-${index}`}
-                      className="text-xs font-mono px-1.5 py-0.5 bg-blue-900/20 text-blue-500 rounded group-hover:bg-blue-900/30 group-hover:text-blue-400 transition-colors cursor-pointer"
-                      onClick={() => handleAddressClick(authority.address)}
-                      title={`Authority: ${authority.address} (${authority.scopes.join(', ')})`}
-                    >
-                      Auth: {authority.address.slice(0, 4)}...
-                    </span>
-                  ),
-                )}
-                {isFungible(token) && token.decimals !== undefined && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-purple-900/20 text-purple-500 rounded group-hover:bg-purple-900/30 group-hover:text-purple-400 transition-colors">
-                    {token.decimals}d
-                  </span>
-                )}
-                {isFungible(token) && token.price && token.price > 0 && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-indigo-900/20 text-indigo-500 rounded group-hover:bg-indigo-900/30 group-hover:text-indigo-400 transition-colors">
-                    ${token.price.toFixed(4)}
-                  </span>
+                  <div className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20 text-green-500 rounded group-hover:bg-green-900/30 group-hover:text-green-400 transition-colors">
+                    ATA: <TokenAddress address={token.associatedTokenAddress} />
+                  </div>
                 )}
               </div>
             </div>

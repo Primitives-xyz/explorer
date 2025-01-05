@@ -70,19 +70,24 @@ export default async function ProfilePage({ params }: { params: Params }) {
   }
 
   // Check if this public key is a token
-  const tokenInfo = await fetchTokenInfo(id)
+  try {
+    const tokenInfo = await fetchTokenInfo(id)
 
-  if (tokenInfo) {
-    // Check if it's a fungible token or NFT
-    if (
-      tokenInfo.result.interface === 'FungibleToken' ||
-      tokenInfo.result.interface === 'FungibleAsset'
-    ) {
-      return <FungibleTokenDetails id={id} tokenInfo={tokenInfo.result} />
+    if (tokenInfo?.result) {
+      // Check if it's a fungible token or NFT
+      if (
+        tokenInfo.result.interface === 'FungibleToken' ||
+        tokenInfo.result.interface === 'FungibleAsset'
+      ) {
+        return <FungibleTokenDetails id={id} tokenInfo={tokenInfo.result} />
+      }
+      return <NFTDetails id={id} tokenInfo={tokenInfo.result} />
     }
-    return <NFTDetails id={id} tokenInfo={tokenInfo.result} />
+  } catch (error) {
+    console.error('Error fetching token info:', error)
   }
 
+  // If token fetch fails or it's not a token, render wallet view
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-mono text-green-500 mb-8">Wallet: {id}</h1>
