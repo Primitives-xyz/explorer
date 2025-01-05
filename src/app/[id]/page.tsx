@@ -24,17 +24,13 @@ export async function generateMetadata(
       const imageUrl =
         result.content?.links?.image || result.content?.files?.[0]?.uri
 
-      // Optionally access and extend parent metadata
-      const parentMetadata = await parent
-      const previousImages = parentMetadata.openGraph?.images || []
-
       return {
         title: `${title} | Explorer`,
         description,
         openGraph: {
           title: `${title} | Explorer`,
           description,
-          ...(imageUrl && { images: [{ url: imageUrl }, ...previousImages] }),
+          ...(imageUrl && { images: [{ url: imageUrl }] }),
         },
         twitter: {
           card: 'summary_large_image',
