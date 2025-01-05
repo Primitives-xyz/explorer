@@ -3,34 +3,50 @@ import { PublicKey } from '@solana/web3.js'
 import PortfolioTabs from '../portfolio/[address]/PortfolioTabs'
 import NFTDetails from '@/components/NFTDetails'
 import FungibleTokenDetails from '@/components/FungibleTokenDetails'
+import { fetchTokenInfo } from '@/utils/helius/das-api'
+import { Metadata } from 'next'
 
 type Params = Promise<{ id: string }>
 
-async function fetchTokenInfo(id: string) {
+export async function generateMetadata({ params }: { params: Params }) {
+  const resolvedParams = await params
+  const { id } = resolvedParams
+
   try {
-    const response = await fetch(`${process.env.RPC_URL}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 'my-id',
-        method: 'getAsset',
-        params: {
-          id: id,
+    const tokenInfo = await fetchTokenInfo(id)
+    if (tokenInfo?.result) {
+      const { result } = tokenInfo
+      const title = result.content?.metadata?.name || id
+      const description =
+        result.content?.metadata?.description ||
+        `Details for ${result.interface} ${id}`
+      const imageUrl =
+        result.content?.links?.image || result.content?.files?.[0]?.uri
+
+      return {
+        title: `${title} | Explorer`,
+        description,
+        openGraph: {
+          title: `${title} | Explorer`,
+          description,
+          ...(imageUrl && { images: [{ url: imageUrl }] }),
         },
-      }),
-    })
-
-    if (!response.ok) {
-      return false
+        twitter: {
+          card: 'summary_large_image',
+          title: `${title} | Explorer`,
+          description,
+          ...(imageUrl && { images: [imageUrl] }),
+        },
+      }
     }
-
-    const data = await response.json()
-    return data
   } catch (error) {
-    return false
+    console.error('Error generating metadata:', error)
+  }
+
+  // Default metadata if token info not available
+  return {
+    title: `${id} | Explorer`,
+    description: `Explore details for ${id}`,
   }
 }
 
@@ -54,6 +70,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
 
   // Check if this public key is a token
   const tokenInfo = await fetchTokenInfo(id)
+
   if (tokenInfo) {
     // Check if it's a fungible token or NFT
     if (

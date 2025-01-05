@@ -1,5 +1,5 @@
 import { formatNumber } from '@/utils/format'
-import { FungibleToken } from '@/utils/helius'
+import { FungibleToken } from '@/utils/helius/types'
 
 const truncateAddress = (address: string) => {
   if (!address) return ''

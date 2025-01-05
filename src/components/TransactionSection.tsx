@@ -1,6 +1,6 @@
 'use client'
 
-import { Transaction } from '@/utils/helius'
+import { Transaction } from '@/utils/helius/types'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useState } from 'react'
 

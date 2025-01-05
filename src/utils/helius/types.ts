@@ -66,3 +66,55 @@ export interface Transaction {
     [address: string]: number
   }
 }
+
+export interface FungibleTokenDetailsProps {
+  id: string
+  tokenInfo: {
+    id: string
+    interface: string
+    content: {
+      metadata: {
+        name: string
+        symbol: string
+        description: string
+      }
+      files?: Array<{
+        uri: string
+        type: string
+      }>
+      links?: {
+        image?: string
+      }
+    }
+    authorities: Array<{
+      address: string
+      scopes: string[]
+    }>
+    royalty?: {
+      royalty_model: string
+      target: string
+      percent: number
+      basis_points: number
+      primary_sale_happened: boolean
+      locked: boolean
+    }
+    ownership: {
+      owner: string
+      delegate: string
+      frozen: boolean
+      delegated: boolean
+      ownership_model: string
+    }
+    token_info: {
+      symbol: string
+      supply: number
+      decimals: number
+      token_program: string
+      price_info?: {
+        price_per_token: number
+        currency: string
+        volume_24h?: number
+      }
+    }
+  }
+}
