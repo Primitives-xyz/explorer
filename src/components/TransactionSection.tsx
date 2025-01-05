@@ -3,6 +3,7 @@
 import { Transaction } from '@/utils/helius/types'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const LAMPORTS_PER_SOL = 1000000000
 
@@ -62,14 +63,13 @@ const getSourceIcon = (source: string) => {
 interface TransactionSectionProps {
   walletAddress: string
   hasSearched?: boolean
-  maxHeight?: string
 }
 
 export const TransactionSection = ({
   walletAddress,
   hasSearched,
-  maxHeight = '484px',
 }: TransactionSectionProps) => {
+  const router = useRouter()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -104,6 +104,7 @@ export const TransactionSection = ({
         }
 
         const transactionsData = await response.json()
+        console.log('transactionsData', transactionsData.slice(0, 5))
         if ('error' in transactionsData) throw new Error(transactionsData.error)
 
         setTransactions(
@@ -185,7 +186,30 @@ export const TransactionSection = ({
                 }
               >
                 <div className="flex flex-col gap-1">
-                  {/* Transaction Header */}
+                  {/* Transaction Signature */}
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="text-green-400 hover:text-green-300 font-mono cursor-pointer text-sm transition-colors duration-200 border border-green-800/50 rounded px-2 py-0.5 hover:border-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/${tx.signature}`)
+                      }}
+                      title="Click to view transaction details"
+                    >
+                      {tx.signature}
+                    </span>
+                    <a
+                      href={`https://solscan.io/tx/${tx.signature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:text-green-500 font-mono text-xs"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      View
+                    </a>
+                  </div>
+
+                  {/* Transaction Info */}
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <span className="text-green-400 font-mono">
@@ -213,22 +237,11 @@ export const TransactionSection = ({
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-600 font-mono">
-                        {tx.fee
-                          ? `${(tx.fee / LAMPORTS_PER_SOL).toFixed(5)} SOL`
-                          : ''}
-                      </span>
-                      <a
-                        href={`https://solscan.io/tx/${tx.signature}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-green-600 hover:text-green-500 font-mono"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View
-                      </a>
-                    </div>
+                    <span className="text-green-600 font-mono">
+                      {tx.fee
+                        ? `${(tx.fee / LAMPORTS_PER_SOL).toFixed(5)} SOL`
+                        : ''}
+                    </span>
                   </div>
 
                   {/* Transaction Description */}
