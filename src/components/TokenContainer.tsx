@@ -69,7 +69,8 @@ export const TokenContainer = ({
   isLoading,
   error,
 }: TokenContainerProps) => {
-  if (view === 'nfts') {
+  console.log({ view })
+  if (tokenType === 'nft') {
     return (
       <div className="flex flex-col gap-4 w-full">
         <div className="min-w-0">

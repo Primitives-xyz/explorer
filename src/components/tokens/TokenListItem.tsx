@@ -1,10 +1,7 @@
 import { formatNumber } from '@/utils/format'
 import { FungibleToken } from '@/utils/helius/types'
-
-const truncateAddress = (address: string) => {
-  if (!address) return ''
-  return `${address.slice(0, 4)}...${address.slice(-4)}`
-}
+import { TokenAddress } from './TokenAddress'
+import { useRouter } from 'next/navigation'
 
 interface TokenListItemProps {
   token: FungibleToken
@@ -21,6 +18,8 @@ export const TokenListItem = ({
   onExpand,
   onImageClick,
 }: TokenListItemProps) => {
+  const router = useRouter()
+
   return (
     <div
       className="p-3 hover:bg-green-900/10 cursor-pointer transition-colors"
@@ -75,23 +74,16 @@ export const TokenListItem = ({
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <div className="text-green-300 font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block truncate">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/${token.id}`)
+                }}
+                className="text-green-300 font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block truncate hover:text-green-200 transition-colors"
+              >
                 {token.symbol}
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="text-green-600/50 text-xs font-mono">
-                  {truncateAddress(token.id)}
-                </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    navigator.clipboard.writeText(token.id)
-                  }}
-                  className="text-green-600/50 hover:text-green-400/80 text-xs font-mono bg-green-900/20 px-1.5 py-0.5 rounded transition-colors"
-                >
-                  [copy]
-                </button>
-              </div>
+              </button>
+              <TokenAddress address={token.id} />
             </div>
           </div>
         </div>
@@ -137,11 +129,8 @@ export const TokenListItem = ({
         {/* Expanded Details */}
         {expandedTokenId === token.id && (
           <div className="mt-2 space-y-2 bg-green-900/10 p-3 rounded text-xs font-mono">
-            <div className="space-y-1">
-              <span className="text-green-600">Token Address:</span>
-              <div className="text-green-500 bg-green-900/20 px-2 py-1 rounded font-mono text-xs break-all">
-                {token.id}
-              </div>
+            <div className="text-green-500 bg-green-900/20 px-2 py-1 rounded font-mono text-xs break-all">
+              <TokenAddress address={token.id} showFull />
             </div>
           </div>
         )}
