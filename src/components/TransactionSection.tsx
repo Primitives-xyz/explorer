@@ -314,28 +314,32 @@ export const TransactionSection = ({
                         className="text-xs text-green-500 font-mono flex items-center gap-1"
                       >
                         <span>
-                          {transfer.from === walletAddress ? '↑' : '↓'}
+                          {transfer.fromUserAccount === walletAddress
+                            ? '↑'
+                            : '↓'}
                         </span>
                         <span>
-                          {transfer.amount || 0}{' '}
-                          {transfer.tokenMint
-                            ? `${transfer.tokenMint.slice(0, 4)}...`
+                          {transfer.tokenAmount || 0}{' '}
+                          {transfer.mint
+                            ? `${transfer.mint.slice(0, 4)}...`
                             : 'Unknown'}
                         </span>
                         <span className="text-green-700">
-                          {transfer.from === walletAddress ? 'to' : 'from'}
+                          {transfer.fromUserAccount === walletAddress
+                            ? 'to'
+                            : 'from'}
                         </span>
                         <span className="text-green-600 text-xs">
                           {(
-                            (transfer.from === walletAddress
-                              ? transfer.to
-                              : transfer.from) || ''
+                            (transfer.fromUserAccount === walletAddress
+                              ? transfer.toUserAccount
+                              : transfer.fromUserAccount) || ''
                           ).slice(0, 4)}
                           ...
                           {(
-                            (transfer.from === walletAddress
-                              ? transfer.to
-                              : transfer.from) || ''
+                            (transfer.fromUserAccount === walletAddress
+                              ? transfer.toUserAccount
+                              : transfer.fromUserAccount) || ''
                           ).slice(-4)}
                         </span>
                       </div>
