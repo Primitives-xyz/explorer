@@ -9,7 +9,6 @@ import { TrendingTokens } from '@/components/tokens/TrendingTokens'
 import { FungibleToken, NFT } from '@/utils/types'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { FollowingList } from '@/components/profile/FollowingList'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { FollowingContainer } from '@/components/profile/FollowingContainer'
 
@@ -73,6 +72,7 @@ export default function Home() {
       }
       const data = await response.json()
       setTokenData(data)
+      router.push(`/${address}`)
     } catch (err) {
       console.error('Error fetching tokens:', err)
       setError('Failed to fetch tokens.')

@@ -28,9 +28,11 @@ export const useGetProfiles = (walletAddress: string) => {
       refreshWhenHidden: false,
       refreshWhenOffline: false,
       focusThrottleInterval: 3600000,
-      shouldRetryOnError: false,
-      errorRetryCount: 2,
+      shouldRetryOnError: true,
+      errorRetryCount: 3,
       keepPreviousData: true,
+      fallbackData: null,
+      isPaused: () => !walletAddress,
     },
   )
 

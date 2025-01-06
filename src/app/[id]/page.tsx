@@ -18,47 +18,27 @@ export async function generateMetadata(
   try {
     const tokenInfo = await fetchTokenInfo(id)
     if (tokenInfo?.result) {
-      const { result } = tokenInfo
-      const title = result.content?.metadata?.name || id
-      const description =
-        result.content?.metadata?.description ||
-        `Details for ${result.interface} ${id}`
-      const imageUrl =
-        result.content?.links?.image || result.content?.files?.[0]?.uri
-
+      const token = tokenInfo.result
       return {
-        title: `${title} | Explorer`,
-        description,
-        openGraph: {
-          title: `${title} | Explorer`,
-          description,
-          ...(imageUrl && { images: [{ url: imageUrl }] }),
-        },
-        twitter: {
-          card: 'summary_large_image',
-          title: `${title} | Explorer`,
-          description,
-          ...(imageUrl && { images: [imageUrl] }),
-        },
+        title: `${token.content.metadata.name} | Explorer`,
+        description: token.content.metadata.description,
       }
     }
   } catch (error) {
-    console.error('Error generating metadata:', error)
+    console.error('Error fetching token info:', error)
   }
 
-  // Default metadata if token info not available
   return {
     title: `${id} | Explorer`,
-    description: `Explore details for ${id}`,
+    description: `View details for ${id}`,
   }
 }
 
 export default async function ProfilePage({ params }: { params: Params }) {
-  const resolvedParams = await params
-  const { id } = resolvedParams
+  const { id } = await params
 
   // Clean up the id - remove @ symbol if present
-  const cleanId = id.startsWith('@') ? id.slice(1) : id
+  const cleanId = id?.startsWith('@') ? id.slice(1) : id
 
   // First check if it's a transaction signature
   if (isValidTransactionSignature(cleanId)) {

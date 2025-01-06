@@ -12,7 +12,7 @@ export function CreateProfile({
 }: {
   onProfileCreated?: () => void
 }) {
-  const { walletAddress, hasProfile, loadingMainUsername } = useCurrentWallet()
+  const { walletAddress, hasProfile, loadingProfiles } = useCurrentWallet()
   const [username, setUsername] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -21,12 +21,12 @@ export function CreateProfile({
 
   useEffect(() => {
     // Only show modal if we have a wallet connected and no profile
-    if (walletAddress && !loadingMainUsername) {
+    if (walletAddress && !loadingProfiles) {
       setIsModalOpen(!hasProfile)
     } else {
       setIsModalOpen(false)
     }
-  }, [walletAddress, hasProfile, loadingMainUsername])
+  }, [walletAddress, hasProfile, loadingProfiles])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

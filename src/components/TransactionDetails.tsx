@@ -85,6 +85,61 @@ const getSourceIcon = (source: string) => {
   }
 }
 
+// Helper to get account label
+const getAccountLabel = (account: string, transaction?: Transaction) => {
+  // Well-known program IDs
+  const KNOWN_PROGRAMS: Record<string, string> = {
+    TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA: 'Token Program',
+    So11111111111111111111111111111111111111112: 'Wrapped SOL',
+    JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4: 'Jupiter',
+    whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc: 'Orca Whirlpools',
+    SoLFiHG9TfgtdUXUjWAxi3LtvYuFyDLVhBWxdMZxyCe: 'SolFi',
+    dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH: 'Drift v2',
+  }
+
+  // Check if it's a known program
+  if (KNOWN_PROGRAMS[account]) {
+    return KNOWN_PROGRAMS[account]
+  }
+
+  if (transaction) {
+    // Check if it's the fee payer
+    if (account === transaction.feePayer) {
+      return 'Fee Payer'
+    }
+
+    // Check if it's involved in native transfers
+    const nativeTransfer = transaction.nativeTransfers?.find(
+      (transfer) =>
+        transfer.fromUserAccount === account ||
+        transfer.toUserAccount === account,
+    )
+    if (nativeTransfer) {
+      return nativeTransfer.fromUserAccount === account ? 'Sender' : 'Receiver'
+    }
+
+    // Check if it's involved in token transfers
+    const tokenTransfer = transaction.tokenTransfers?.find(
+      (transfer) =>
+        transfer.fromUserAccount === account ||
+        transfer.toUserAccount === account ||
+        transfer.fromTokenAccount === account ||
+        transfer.toTokenAccount === account,
+    )
+    if (tokenTransfer) {
+      if (tokenTransfer.fromUserAccount === account) return 'Token Sender'
+      if (tokenTransfer.toUserAccount === account) return 'Token Receiver'
+      if (tokenTransfer.fromTokenAccount === account)
+        return 'Source Token Account'
+      if (tokenTransfer.toTokenAccount === account)
+        return 'Destination Token Account'
+    }
+  }
+
+  // Format address for display
+  return `${account.slice(0, 4)}...${account.slice(-4)}`
+}
+
 interface TransactionDetailsProps {
   signature: string
 }
@@ -162,6 +217,11 @@ export default function TransactionDetails({
 
     const { tokenInputs, tokenOutputs, innerSwaps } = transaction.events.swap
 
+    // Calculate total input/output for summary
+    const totalInput = transaction.events.swap.nativeInput?.amount || '0'
+    const totalOutput =
+      transaction.events.swap.tokenOutputs?.[0]?.tokenAmount || '0'
+
     return (
       <div className="mb-8 space-y-6">
         {/* Main Swap Summary */}
@@ -173,10 +233,7 @@ export default function TransactionDetails({
             <div className="flex-1">
               <div className="text-green-400 font-mono text-sm mb-1">Input</div>
               <div className="text-xl font-mono text-green-300">
-                {formatTokenAmount(
-                  transaction.events.swap.nativeInput?.amount || 0,
-                )}{' '}
-                SOL
+                {formatTokenAmount(totalInput)} SOL
               </div>
             </div>
             <div className="px-4 text-green-500">→</div>
@@ -185,11 +242,7 @@ export default function TransactionDetails({
                 Output
               </div>
               <div className="text-xl font-mono text-green-300">
-                {formatTokenAmount(
-                  transaction.events.swap.tokenOutputs[0]?.tokenAmount || 0,
-                  6,
-                )}{' '}
-                USDC
+                {formatTokenAmount(totalOutput, 6)} USDC
               </div>
             </div>
           </div>
@@ -202,42 +255,54 @@ export default function TransactionDetails({
               Route Details
             </h3>
             <div className="space-y-4">
-              {innerSwaps.map((swap: InnerSwap, index: number) => (
-                <div
-                  key={index}
-                  className="border-l-2 border-green-800/40 pl-4"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-400 font-mono text-sm">
-                        Step {index + 1}
-                      </span>
-                      <span
-                        className={`px-2 py-0.5 rounded border text-xs font-mono ${getTransactionTypeColor(
-                          'SWAP',
-                          swap.programInfo.source || 'UNKNOWN',
-                        )}`}
-                      >
-                        {swap.programInfo.source || 'UNKNOWN'}
-                      </span>
+              {innerSwaps.map((swap: InnerSwap, index: number) => {
+                const inputAmount = swap.tokenInputs[0]?.tokenAmount || '0'
+                const outputAmount = swap.tokenOutputs[0]?.tokenAmount || '0'
+                const inputDecimals =
+                  swap.tokenInputs[0]?.mint ===
+                  'So11111111111111111111111111111111111111112'
+                    ? 9
+                    : 6
+                const outputDecimals =
+                  swap.tokenOutputs[0]?.mint ===
+                  'So11111111111111111111111111111111111111112'
+                    ? 9
+                    : 6
+
+                return (
+                  <div
+                    key={index}
+                    className="border-l-2 border-green-800/40 pl-4"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-400 font-mono text-sm">
+                          Step {index + 1}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded border text-xs font-mono ${getTransactionTypeColor(
+                            'SWAP',
+                            swap.programInfo.source || 'UNKNOWN',
+                          )}`}
+                        >
+                          {swap.programInfo.source || 'UNKNOWN'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="text-green-300 font-mono">
+                        {formatTokenAmount(inputAmount, inputDecimals)}{' '}
+                        {getTokenSymbol(swap.tokenInputs[0]?.mint)}
+                      </div>
+                      <div className="px-2 text-green-500">→</div>
+                      <div className="text-green-300 font-mono">
+                        {formatTokenAmount(outputAmount, outputDecimals)}{' '}
+                        {getTokenSymbol(swap.tokenOutputs[0]?.mint)}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="text-green-300 font-mono">
-                      {formatTokenAmount(swap.tokenInputs[0]?.tokenAmount || 0)}{' '}
-                      {getTokenSymbol(swap.tokenInputs[0]?.mint)}
-                    </div>
-                    <div className="px-2 text-green-500">→</div>
-                    <div className="text-green-300 font-mono">
-                      {formatTokenAmount(
-                        swap.tokenOutputs[0]?.tokenAmount || 0,
-                        6,
-                      )}{' '}
-                      {getTokenSymbol(swap.tokenOutputs[0]?.mint)}
-                    </div>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}
@@ -342,9 +407,14 @@ export default function TransactionDetails({
                 className="flex flex-col gap-2 pb-3 border-b border-green-800/20 last:border-0"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-green-400 text-sm">
-                    {account.account.slice(0, 4)}...{account.account.slice(-4)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-green-400 text-sm">
+                      {getAccountLabel(account.account, transaction)}
+                    </span>
+                    <span className="text-green-500/60 text-xs font-mono">
+                      {account.account}
+                    </span>
+                  </div>
                   {account.nativeBalanceChange !== 0 && (
                     <span
                       className={`font-mono text-sm ${
@@ -368,9 +438,14 @@ export default function TransactionDetails({
                       key={changeIndex}
                       className="flex items-center justify-between pl-4 text-sm"
                     >
-                      <span className="font-mono text-green-500">
-                        {change.mint.slice(0, 4)}...{change.mint.slice(-4)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-green-500">
+                          {getAccountLabel(change.tokenAccount, transaction)}
+                        </span>
+                        <span className="text-green-500/60 text-xs font-mono">
+                          {change.tokenAccount}
+                        </span>
+                      </div>
                       <span
                         className={`font-mono ${
                           amount > 0 ? 'text-green-400' : 'text-red-400'
