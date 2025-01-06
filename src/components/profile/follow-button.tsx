@@ -25,15 +25,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   const isFollowing = stats?.isFollowing || false
   const [optimisticFollowing, setOptimisticFollowing] = useState(false)
   const [showHolderModal, setShowHolderModal] = useState(false)
-  const { isHolder, startCheck, isCheckingHolder } = useHolderCheck()
-
-  // Trigger initial check when component mounts
-  useEffect(() => {
-    if (walletAddress && isHolder === null && !isCheckingHolder) {
-      console.log('Triggering initial holder check')
-      startCheck()
-    }
-  }, [walletAddress, isHolder, isCheckingHolder])
+  const { isHolder, isCheckingHolder } = useHolderCheck()
 
   // Early return if not applicable
   if (!walletAddress || mainUsername === username) return null
@@ -46,22 +38,13 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   const handleFollow = () => {
     if (!mainUsername) return
 
-    // If we don't know holder status yet, check it
-    if (isHolder === null) {
-      console.log('Starting holder check from follow button')
-      startCheck()
-      return
-    }
-
-    // If we're not a holder, show the modal
-    if (!isHolder) {
-      console.log('Not a holder, showing modal')
+    // If we're still checking or not a holder, show the modal
+    if (isCheckingHolder || !isHolder) {
       setShowHolderModal(true)
       return
     }
 
     // If we are a holder, proceed with the follow
-    console.log('Is holder, proceeding with follow')
     setOptimisticFollowing(true)
     followUser({
       followerUsername: mainUsername,

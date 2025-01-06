@@ -13,7 +13,8 @@ export function CreateProfile({
 }: {
   onProfileCreated?: () => void
 }) {
-  const { walletAddress, hasProfile, loadingProfiles } = useCurrentWallet()
+  const { walletAddress, mainUsername, loadingProfiles } = useCurrentWallet()
+  const hasProfile = !!mainUsername
   const { isHolder, isCheckingHolder } = useHolderCheck()
   const [username, setUsername] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)

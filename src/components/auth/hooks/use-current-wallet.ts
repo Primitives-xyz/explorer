@@ -12,27 +12,36 @@ export function useCurrentWallet() {
   const { sdkHasLoaded } = useDynamicContext()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
-
   // Basic wallet state
   const walletAddress = useMemo(
     () => (sdkHasLoaded && isLoggedIn ? userWallets[0]?.address || '' : ''),
     [userWallets, sdkHasLoaded, isLoggedIn],
   )
-
   const { profiles, loading: loadingProfiles } = useGetProfiles(walletAddress)
-  console.log(
-    'profiles',
-    profiles?.filter((profile: any) => profile.namespace.name === 'nemoapp'),
-  )
-  const mainUsername = profiles?.filter(
-    (profile: any) => profile.namespace.name === 'nemoapp',
-  )[0]?.profile?.username
-  console.log('mainUsername', mainUsername)
+
+  const mainUsername = useMemo(() => {
+    if (!profiles) return ''
+    return (
+      profiles.find((profile: any) => profile.namespace.name === 'nemoapp')
+        ?.profile?.username || ''
+    )
+  }, [profiles])
+
+  if (!isLoggedIn || !sdkHasLoaded || !walletAddress || loadingProfiles)
+    return {
+      walletAddress: '',
+      mainUsername: '',
+      loadingProfiles: false,
+      isLoggedIn: false,
+      sdkHasLoaded: false,
+      profiles: [],
+    }
+
   return {
     walletAddress,
     mainUsername,
-    hasProfile: !!mainUsername,
     loadingProfiles,
+    profiles,
     isLoggedIn,
     sdkHasLoaded,
   }

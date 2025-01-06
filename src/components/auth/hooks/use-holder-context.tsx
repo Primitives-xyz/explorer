@@ -26,16 +26,28 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
     modalDismissed: boolean
     isLoading: boolean
     checkedAddress: string | null
+    lastCheckTime: number | null
   }>({
     isHolder: null,
     modalDismissed: false,
     isLoading: false,
     checkedAddress: null,
+    lastCheckTime: null,
   })
   const modalTimer = useRef<ReturnType<typeof setTimeout>>(null)
   const hasInitialized = useRef(false)
 
   const checkHolder = async (address: string) => {
+    // Add time-based cache check (30 minutes)
+    const now = Date.now()
+    if (
+      state.checkedAddress === address &&
+      state.lastCheckTime &&
+      now - state.lastCheckTime < 1800000
+    ) {
+      return
+    }
+
     setState((prev) => ({ ...prev, isLoading: true }))
 
     try {
@@ -51,6 +63,7 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
           isHolder: data.isHolder,
           isLoading: false,
           checkedAddress: address,
+          lastCheckTime: now,
         }))
       }
     } catch (error) {
@@ -61,6 +74,7 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
           isHolder: false,
           isLoading: false,
           checkedAddress: address,
+          lastCheckTime: now,
         }))
       }
     }
@@ -79,13 +93,14 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
     }
   }, [walletAddress, isLoggedIn, sdkHasLoaded])
 
-  // Check when wallet changes
+  // Check when wallet changes, but only if it's different from the last checked address
   useEffect(() => {
     if (
       walletAddress &&
       isLoggedIn &&
       sdkHasLoaded &&
-      state.checkedAddress !== walletAddress
+      state.checkedAddress !== walletAddress &&
+      !state.isLoading // Prevent concurrent checks
     ) {
       checkHolder(walletAddress)
     }
@@ -99,6 +114,7 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
         modalDismissed: false,
         isLoading: false,
         checkedAddress: null,
+        lastCheckTime: null,
       })
       hasInitialized.current = false
     }

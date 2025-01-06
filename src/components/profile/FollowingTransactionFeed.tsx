@@ -22,42 +22,13 @@ export const FollowingTransactionFeed = ({
   loadedWallets = 0,
   totalWallets = 0,
 }: FollowingTransactionFeedProps) => {
-  const { isHolder, showModal, closeModal, isCheckingHolder, startCheck } =
-    useHolderCheck()
+  const { isHolder } = useHolderCheck()
   const [expandedTx, setExpandedTx] = useState<string | null>(null)
   const {
     walletAddress,
     isLoggedIn: currentIsLoggedIn,
     sdkHasLoaded: currentSdkHasLoaded,
   } = useCurrentWallet()
-
-  // Trigger initial check when component mounts
-  useEffect(() => {
-    if (walletAddress && isLoggedIn && sdkHasLoaded && isHolder === null) {
-      console.log('TransactionFeed: Triggering initial holder check')
-      startCheck()
-    }
-  }, [walletAddress, isLoggedIn, sdkHasLoaded, isHolder])
-
-  // Show loading state while checking holder status
-  if (isCheckingHolder) {
-    return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px]">
-        <div className="border-b border-green-800 p-2">
-          <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-            <div className="text-green-500 text-sm font-mono">
-              {'>'} following_activity.sol
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-          <div className="text-green-400 font-mono text-lg mb-4">
-            🐸 Checking holder status...
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   // If we need to show the holder modal, render that instead
   if (!isHolder) {
@@ -77,14 +48,6 @@ export const FollowingTransactionFeed = ({
           <div className="text-green-500 font-mono text-sm max-w-md mb-6">
             To view transaction activity, you need to be a holder of a Frog NFT.
           </div>
-          {showModal && (
-            <button
-              onClick={closeModal}
-              className="px-4 py-2 bg-green-900/20 border border-green-800 text-green-400 hover:bg-green-900/30 transition-colors rounded font-mono text-sm"
-            >
-              Dismiss
-            </button>
-          )}
         </div>
       </div>
     )

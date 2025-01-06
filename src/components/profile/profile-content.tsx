@@ -5,6 +5,7 @@ import { Card } from '../common/card'
 import { FollowButton } from './follow-button'
 import { useApiVersion } from '@/hooks/use-api-version'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
+import { ProfileSection } from '../ProfileSection'
 
 interface Props {
   username: string
@@ -31,7 +32,7 @@ function LoadingCard() {
 
 export function ProfileContent({ username }: Props) {
   const { useNewApi } = useApiVersion()
-  const { mainUsername } = useCurrentWallet()
+  const { mainUsername, profiles } = useCurrentWallet()
   const fetcher = async (url: string) => {
     const apiUrl = `${url}?useNewApi=${useNewApi}`
     const res = await fetch(apiUrl)
@@ -78,7 +79,6 @@ export function ProfileContent({ username }: Props) {
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(data.walletAddress)
-                    // Optional: Add a toast notification here
                   }}
                   className="p-1.5 text-green-400 hover:bg-green-900/30 rounded transition-colors"
                   title="Copy wallet address"
@@ -138,27 +138,18 @@ export function ProfileContent({ username }: Props) {
               </div>
             </Card>
           </div>
+
+          {/* Profile Section Component */}
+          <ProfileSection
+            walletAddress={data?.walletAddress}
+            hasSearched={!loading}
+            isLoadingProfileData={loading}
+            profileData={{ profiles }}
+          />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Profile Actions */}
-          <Card>
-            <div className="p-4 space-y-4">
-              <h3 className="text-lg font-mono text-green-400">
-                Profile Actions
-              </h3>
-              <div className="space-y-2">
-                <button className="w-full px-4 py-2 bg-green-900/30 text-green-400 font-mono border border-green-800 hover:bg-green-900/50 transition-colors rounded">
-                  Share Profile
-                </button>
-                <button className="w-full px-4 py-2 bg-green-900/30 text-green-400 font-mono border border-green-800 hover:bg-green-900/50 transition-colors rounded">
-                  Copy Profile Link
-                </button>
-              </div>
-            </div>
-          </Card>
-
           {/* Profile Info */}
           <Card>
             <div className="p-4">

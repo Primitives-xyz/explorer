@@ -3,11 +3,12 @@
 import { getProfiles, Profile } from '@/utils/api'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Modal } from './common/modal'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { FollowButton } from './profile/follow-button'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
+import { memo } from 'react'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -28,6 +29,99 @@ interface ProfileSectionProps {
   isLoadingProfileData?: boolean
 }
 
+// Memoize the profile card component
+const ProfileCard = memo(
+  ({ profile, router }: { profile: ProfileWithStats; router: any }) => {
+    const { mainUsername } = useCurrentWallet()
+
+    // Only fetch stats for nemoapp namespace
+    const isNemoApp = profile.namespace?.name === 'nemoapp'
+    const stats = isNemoApp
+      ? useFollowStats(profile.profile.username, mainUsername || '').stats
+      : null
+
+    const followers =
+      isNemoApp && typeof stats?.followers === 'number' ? stats.followers : 0
+    const following =
+      isNemoApp && typeof stats?.following === 'number' ? stats.following : 0
+    const isFollowing = (isNemoApp && stats?.isFollowing) || false
+
+    const handleProfileClick = useCallback(() => {
+      router.push(`/${profile.profile.username}`)
+    }, [router, profile.profile.username])
+
+    const handleNamespaceClick = useCallback(() => {
+      router.push(`/namespace/${profile.namespace?.name}`)
+    }, [router, profile.namespace?.name])
+
+    return (
+      <div className="p-4 hover:bg-green-900/10">
+        <div className="flex items-start gap-4">
+          <div className="relative">
+            <img
+              src={
+                profile.profile.image ||
+                'https://api.dicebear.com/7.x/shapes/svg?seed=' +
+                  profile.profile.username
+              }
+              alt={profile.profile.username}
+              className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
+            />
+            {profile.namespace?.faviconURL && (
+              <button
+                onClick={handleNamespaceClick}
+                className="absolute -bottom-2 -right-2 hover:scale-110 transition-transform"
+              >
+                <img
+                  src={profile.namespace.faviconURL}
+                  alt={profile.namespace.readableName}
+                  className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
+                />
+              </button>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={handleProfileClick}
+                    className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
+                  >
+                    @{profile.profile.username}
+                  </button>
+                  {profile.profile.bio && (
+                    <span className="text-green-600 font-mono text-sm truncate">
+                      {profile.profile.bio}
+                    </span>
+                  )}
+                </div>
+                <div className="flex-shrink-0">
+                  <FollowButton username={profile.profile.username} />
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-xs text-green-600 font-mono">
+                <span>Followers: {followers}</span>
+                <span>Following: {following}</span>
+                <span className="text-green-600/50">
+                  <button
+                    onClick={handleNamespaceClick}
+                    className="hover:text-green-500 transition-colors"
+                  >
+                    {profile.namespace?.readableName || profile.namespace?.name}
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+)
+
+ProfileCard.displayName = 'ProfileCard'
+
 export const ProfileSection = ({
   walletAddress,
   hasSearched,
@@ -36,12 +130,8 @@ export const ProfileSection = ({
   isLoadingProfileData,
 }: ProfileSectionProps) => {
   const key = walletAddress || 'default'
-
   const router = useRouter()
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
-  const [filteredProfiles, setFilteredProfiles] = useState<ProfileWithStats[]>(
-    [],
-  )
   const [selectedNamespace, setSelectedNamespace] = useState<string | null>(
     null,
   )
@@ -49,20 +139,45 @@ export const ProfileSection = ({
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  // Memoize filtered profiles
+  const filteredProfiles = useMemo(() => {
+    if (!selectedNamespace) return profiles
+    return profiles.filter(
+      (profile) => profile.namespace?.name === selectedNamespace,
+    )
+  }, [profiles, selectedNamespace])
+
+  // Memoize unique namespaces
+  const namespaces = useMemo(() => {
+    return Array.from(
+      new Set(
+        profiles
+          .map((p) => p.namespace)
+          .filter(Boolean)
+          .map((n) =>
+            JSON.stringify({
+              name: n!.name,
+              readableName: n!.readableName,
+              faviconURL: n!.faviconURL,
+            }),
+          ),
+      ),
+    ).map((str) => JSON.parse(str))
+  }, [profiles])
+
   // Cleanup function to reset state
-  const resetState = () => {
+  const resetState = useCallback(() => {
     setProfiles([])
-    setFilteredProfiles([])
     setSelectedNamespace(null)
     setError(null)
     setIsLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     // Reset state on mount and cleanup on unmount
     resetState()
-    return () => resetState()
-  }, [])
+    return resetState
+  }, [resetState])
 
   useEffect(() => {
     let isMounted = true
@@ -79,9 +194,7 @@ export const ProfileSection = ({
 
       try {
         if (profileData && isMounted) {
-          const initialProfiles = profileData.profiles
-          setProfiles(initialProfiles)
-          setFilteredProfiles(initialProfiles)
+          setProfiles(profileData.profiles)
         } else if (walletAddress && isMounted) {
           console.log('fetching profiles for wallet address', walletAddress)
           const profilesData = await getProfiles(walletAddress)
@@ -90,19 +203,16 @@ export const ProfileSection = ({
 
           if (!profilesData.items || profilesData.items.length === 0) {
             setProfiles([])
-            setFilteredProfiles([])
             return
           }
 
           setProfiles(profilesData.items)
-          setFilteredProfiles(profilesData.items)
         }
       } catch (error) {
         console.error('Profiles fetch error:', error)
         if (isMounted) {
           setError(propError || 'Failed to fetch profiles.')
           setProfiles([])
-          setFilteredProfiles([])
         }
       } finally {
         if (isMounted) {
@@ -116,38 +226,14 @@ export const ProfileSection = ({
     return () => {
       isMounted = false
     }
-  }, [walletAddress, profileData, propError, hasSearched, isLoadingProfileData])
-
-  useEffect(() => {
-    if (selectedNamespace) {
-      const filtered = profiles.filter((profile) => {
-        const profileNamespace = profile.namespace?.name || ''
-        const targetNamespace = selectedNamespace
-
-        return profileNamespace === targetNamespace
-      })
-
-      setFilteredProfiles([...filtered])
-    } else {
-      setFilteredProfiles([...profiles])
-    }
-  }, [selectedNamespace, profiles])
-
-  // Get unique namespaces
-  const namespaces = Array.from(
-    new Set(
-      profiles
-        .map((p) => p.namespace)
-        .filter(Boolean)
-        .map((n) =>
-          JSON.stringify({
-            name: n!.name,
-            readableName: n!.readableName,
-            faviconURL: n!.faviconURL,
-          }),
-        ),
-    ),
-  ).map((str) => JSON.parse(str))
+  }, [
+    walletAddress,
+    profileData,
+    propError,
+    hasSearched,
+    isLoadingProfileData,
+    resetState,
+  ])
 
   return (
     <div
@@ -298,100 +384,14 @@ export const ProfileSection = ({
             {'>>> NO PROFILES FOUND'}
           </div>
         ) : (
-          filteredProfiles.map((profile) => {
-            return (
-              <ProfileCard
-                key={`${profile.profile.username}-${profile.namespace?.name}`}
-                profile={profile}
-                router={router}
-              />
-            )
-          })
+          filteredProfiles.map((profile) => (
+            <ProfileCard
+              key={`${profile.profile.username}-${profile.namespace?.name}`}
+              profile={profile}
+              router={router}
+            />
+          ))
         )}
-      </div>
-    </div>
-  )
-}
-
-// Separate component for profile card
-const ProfileCard = ({
-  profile,
-  router,
-}: {
-  profile: ProfileWithStats
-  router: any
-}) => {
-  const { mainUsername } = useCurrentWallet()
-  const { stats } = useFollowStats(profile.profile.username, mainUsername)
-  const followers = typeof stats?.followers === 'number' ? stats.followers : 0
-  const following = typeof stats?.following === 'number' ? stats.following : 0
-  const isFollowing = stats?.isFollowing || false
-
-  return (
-    <div className="p-4 hover:bg-green-900/10">
-      <div className="flex items-start gap-4">
-        <div className="relative">
-          <img
-            src={
-              profile.profile.image ||
-              'https://api.dicebear.com/7.x/shapes/svg?seed=' +
-                profile.profile.username
-            }
-            alt={profile.profile.username}
-            className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
-          />
-          {profile.namespace?.faviconURL && (
-            <button
-              onClick={() =>
-                router.push(`/namespace/${profile.namespace?.name}`)
-              }
-              className="absolute -bottom-2 -right-2 hover:scale-110 transition-transform"
-            >
-              <img
-                src={profile.namespace.faviconURL}
-                alt={profile.namespace.readableName}
-                className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
-              />
-            </button>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  onClick={() => router.push(`/${profile.profile.username}`)}
-                  className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
-                >
-                  @{profile.profile.username}
-                </button>
-                {profile.profile.bio && (
-                  <span className="text-green-600 font-mono text-sm truncate">
-                    {profile.profile.bio}
-                  </span>
-                )}
-              </div>
-              <div className="flex-shrink-0">
-                <FollowButton username={profile.profile.username} />
-              </div>
-            </div>
-            <div className="flex items-center gap-4 text-xs text-green-600 font-mono">
-              <span>Followers: {followers}</span>
-              <span>Following: {following}</span>
-
-              <span className="text-green-600/50">
-                <button
-                  onClick={() =>
-                    router.push(`/namespace/${profile.namespace?.name}`)
-                  }
-                  className="hover:text-green-500 transition-colors"
-                >
-                  {profile.namespace?.readableName || profile.namespace?.name}
-                </button>
-              </span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
