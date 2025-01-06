@@ -93,7 +93,7 @@ export default function FungibleTokenDetails({
       </div>
 
       {/* Token Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
           <h3 className="text-xl font-mono text-green-500 mb-4">Token Info</h3>
           <div className="space-y-3">
@@ -138,6 +138,20 @@ export default function FungibleTokenDetails({
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Birdeye Chart */}
+      <div className="mb-12">
+        <h3 className="text-xl font-mono text-green-500 mb-4">Price Chart</h3>
+        <div className="w-full h-[600px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
+          <iframe
+            width="100%"
+            height="100%"
+            src={`https://birdeye.so/tv-widget/${id}?chain=solana&viewMode=pair&chartInterval=1D&chartType=CANDLE&theme=dark`}
+            frameBorder="0"
+            allowFullScreen
+          />
         </div>
       </div>
 
