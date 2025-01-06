@@ -10,7 +10,8 @@ import { FungibleToken, NFT } from '@/utils/types'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FollowingList } from '@/components/profile/FollowingList'
-import { useCurrentUsername } from '@/components/auth/hooks/use-current-username'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { FollowingContainer } from '@/components/profile/FollowingContainer'
 
 interface TokenData {
   items: (FungibleToken | NFT)[]
@@ -27,7 +28,7 @@ interface ProfileData {
 
 export default function Home() {
   const router = useRouter()
-  const { mainUsername } = useCurrentUsername()
+  const { mainUsername } = useCurrentWallet()
   const [searchQuery, setSearchQuery] = useState('')
   const [tokenData, setTokenData] = useState<TokenData | null>(null)
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
@@ -119,7 +120,7 @@ export default function Home() {
         )}
 
         {/* Following list for logged-in users */}
-        {mainUsername && <FollowingList username={mainUsername} />}
+        {mainUsername && <FollowingContainer username={mainUsername} />}
       </div>
       <CreateProfile />
     </Layout>

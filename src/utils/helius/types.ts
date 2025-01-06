@@ -32,11 +32,68 @@ export interface NFTToken {
   }
 }
 
-interface ParsedInstruction {
+export interface ParsedInstruction {
   programId: string
   data: string
   accounts: string[]
   decodedData?: any
+}
+
+export interface TokenBalanceChange {
+  userAccount: string
+  tokenAccount: string
+  mint: string
+  rawTokenAmount: {
+    tokenAmount: string
+    decimals: number
+  }
+}
+
+export interface AccountData {
+  account: string
+  nativeBalanceChange: number
+  tokenBalanceChanges: TokenBalanceChange[]
+}
+
+export interface SwapTokenInfo {
+  fromTokenAccount: string
+  toTokenAccount: string
+  fromUserAccount: string
+  toUserAccount: string
+  tokenAmount: number
+  mint: string
+  tokenStandard: string
+}
+
+export interface SwapProgramInfo {
+  source: string
+  account: string
+  programName: string
+  instructionName: string
+}
+
+export interface InnerSwap {
+  tokenInputs: SwapTokenInfo[]
+  tokenOutputs: SwapTokenInfo[]
+  tokenFees: any[]
+  nativeFees: any[]
+  programInfo: SwapProgramInfo
+}
+
+export interface SwapEvent {
+  nativeInput?: {
+    account: string
+    amount: string
+  }
+  nativeOutput?: {
+    account: string
+    amount: string
+  }
+  tokenInputs: SwapTokenInfo[]
+  tokenOutputs: SwapTokenInfo[]
+  tokenFees: any[]
+  nativeFees: any[]
+  innerSwaps: InnerSwap[]
 }
 
 export interface Transaction {
@@ -48,20 +105,26 @@ export interface Transaction {
   signature: string
   slot: number
   timestamp: number
+  sourceWallet?: string
   nativeTransfers: {
     fromUserAccount: string
     toUserAccount: string
     amount: number
   }[]
   tokenTransfers: {
-    from: string
-    to: string
     fromTokenAccount: string
     toTokenAccount: string
-    amount: number
-    tokenMint: string
+    fromUserAccount: string
+    toUserAccount: string
+    tokenAmount: number
+    mint: string
+    tokenStandard: string
   }[]
+  accountData: AccountData[]
   parsedInstructions?: ParsedInstruction[]
+  events?: {
+    swap?: SwapEvent
+  }
   balanceChanges: {
     [address: string]: number
   }

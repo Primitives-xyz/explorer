@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Address is required' }, { status: 400 })
   }
 
-  const apiKey = process.env.RPC_URL?.split('api-key=')[1]
+  const apiKey = process.env.HELIUS_API_KEY
   if (!apiKey) {
     return NextResponse.json(
       { error: 'Helius API key not configured' },
@@ -195,7 +195,7 @@ export async function GET(request: NextRequest) {
   }
 
   const url = before
-    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&before=${before}&limit=10`
+    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&until=${before}&limit=14`
     : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=14`
 
   try {
