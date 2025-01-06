@@ -55,14 +55,14 @@ export function GlobalSearch() {
     if (!searchInput.trim()) return
 
     await addSearchToHistory(searchInput)
-    router.push(`/?address=${searchInput}&useNewApi=${useNewApi}`)
+    router.push(`/${searchInput}?useNewApi=${useNewApi}`)
     setIsOpen(false)
     setSearchInput('')
   }
 
   const handleRecentSearchClick = async (address: string) => {
     await addSearchToHistory(address)
-    router.push(`/?address=${address}&useNewApi=${useNewApi}`)
+    router.push(`/${address}?useNewApi=${useNewApi}`)
     setIsOpen(false)
     setSearchInput('')
   }
