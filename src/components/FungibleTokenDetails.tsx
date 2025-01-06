@@ -19,7 +19,7 @@ export default function FungibleTokenDetails({
   return (
     <div className="container mx-auto p-8">
       {/* Hero Section with Token Identity */}
-      <div className="relative mb-12">
+      <div className="relative mb-8">
         <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />
         <div className="relative flex flex-col md:flex-row items-center gap-8 p-8 bg-black/40 border border-green-800 rounded-2xl backdrop-blur-sm">
           <div className="relative w-32 h-32 rounded-2xl border-2 border-green-500 overflow-hidden">
@@ -54,7 +54,7 @@ export default function FungibleTokenDetails({
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl hover:border-green-600/40 transition-all group">
           <h3 className="text-green-500/60 text-sm font-mono mb-2">
             Current Price
@@ -142,7 +142,7 @@ export default function FungibleTokenDetails({
       </div>
 
       {/* Birdeye Chart */}
-      <div className="mb-12">
+      <div className="mb-8">
         <h3 className="text-xl font-mono text-green-500 mb-4">Price Chart</h3>
         <div className="w-full h-[600px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
           <iframe
@@ -156,7 +156,7 @@ export default function FungibleTokenDetails({
       </div>
 
       {/* Transaction History */}
-      <div className="mb-12">
+      <div className="mb-8">
         <h3 className="text-xl font-mono text-green-500 mb-4">
           Transaction History
         </h3>
