@@ -11,8 +11,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 export function GetSuggested() {
-  const { walletAddress, mainUsername, loadingMainUsername } =
-    useCurrentWallet()
+  const { walletAddress, loadingProfiles, sdkHasLoaded } = useCurrentWallet()
   const [ownerWalletAddress, setOwnerWalletAddress] = useState(
     walletAddress || '',
   )
@@ -35,7 +34,7 @@ export function GetSuggested() {
     }
   }, [profiles])
 
-  if (loadingMainUsername || !mainUsername) {
+  if (loadingProfiles || !sdkHasLoaded) {
     return null
   }
 
