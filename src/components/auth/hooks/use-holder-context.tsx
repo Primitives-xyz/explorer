@@ -153,14 +153,6 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
     isCheckingHolder: state.isLoading,
   }
 
-  console.log('Provider state:', {
-    state,
-    walletAddress,
-    isLoggedIn,
-    sdkHasLoaded,
-    value,
-  })
-
   return (
     <HolderContext.Provider value={value}>{children}</HolderContext.Provider>
   )

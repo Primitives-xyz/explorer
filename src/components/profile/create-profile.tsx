@@ -1,6 +1,7 @@
 'use client'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { Alert } from '@/components/common/alert'
 import { Modal } from '@/components/common/modal'
 import { Input } from '@/components/form/input'
@@ -13,6 +14,7 @@ export function CreateProfile({
   onProfileCreated?: () => void
 }) {
   const { walletAddress, hasProfile, loadingProfiles } = useCurrentWallet()
+  const { isHolder, isCheckingHolder } = useHolderCheck()
   const [username, setUsername] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -20,13 +22,13 @@ export function CreateProfile({
   const [response, setResponse] = useState<any | null>(null)
 
   useEffect(() => {
-    // Only show modal if we have a wallet connected and no profile
-    if (walletAddress && !loadingProfiles) {
-      setIsModalOpen(!hasProfile)
+    // Only show modal if we have a wallet connected, no profile, and is a holder
+    if (walletAddress && !loadingProfiles && !isCheckingHolder) {
+      setIsModalOpen(!hasProfile && isHolder === true)
     } else {
       setIsModalOpen(false)
     }
-  }, [walletAddress, hasProfile, loadingProfiles])
+  }, [walletAddress, hasProfile, loadingProfiles, isHolder, isCheckingHolder])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,8 +75,8 @@ export function CreateProfile({
     setUsername(validValue)
   }
 
-  // Only render if we have a wallet connected and no profile
-  if (!walletAddress || hasProfile) return null
+  // Only render if we have a wallet connected, no profile, and is a holder
+  if (!walletAddress || hasProfile || !isHolder) return null
 
   return (
     <Modal

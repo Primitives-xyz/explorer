@@ -32,12 +32,7 @@ export interface Profile {
   }
 }
 
-interface FollowStats {
-  followers: number
-  following: number
-}
-
-export const ITEMS_PER_PAGE = 10
+export const ITEMS_PER_PAGE = 20
 
 export async function getProfiles(
   walletAddress: string,
@@ -61,6 +56,7 @@ export async function getProfiles(
     }
 
     const data = await response.json()
+    console.log('data', data)
     return {
       items: data.profiles || [],
       hasMore: data.profiles.length === ITEMS_PER_PAGE,

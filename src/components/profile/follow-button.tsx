@@ -35,15 +35,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     }
   }, [walletAddress, isHolder, isCheckingHolder])
 
-  // Debug logs
-  console.log('Follow Button State:', {
-    walletAddress,
-    isLoggedIn: !!walletAddress,
-    isHolder,
-    isCheckingHolder,
-    showHolderModal,
-  })
-
   // Early return if not applicable
   if (!walletAddress || mainUsername === username) return null
 
