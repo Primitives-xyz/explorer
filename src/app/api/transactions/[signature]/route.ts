@@ -3,10 +3,10 @@ import { isValidTransactionSignature } from '@/utils/validation'
 
 export async function GET(
   request: NextRequest,
-  context: { params: { signature: string } },
+  { params }: { params: { signature: string } },
 ) {
   try {
-    const signature = context.params.signature
+    const signature = params.signature
 
     if (!signature || !isValidTransactionSignature(signature)) {
       return NextResponse.json(
