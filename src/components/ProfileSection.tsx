@@ -33,13 +33,15 @@ interface ProfileSectionProps {
 const ProfileCard = memo(
   ({ profile, router }: { profile: ProfileWithStats; router: any }) => {
     const { mainUsername } = useCurrentWallet()
-
-    // Only fetch stats for nemoapp namespace
     const isNemoApp = profile.namespace?.name === 'nemoapp'
-    const stats = isNemoApp
-      ? useFollowStats(profile.profile.username, mainUsername || '').stats
-      : null
 
+    // Call hook unconditionally
+    const { stats } = useFollowStats(
+      isNemoApp ? profile.profile.username : '',
+      mainUsername || '',
+    )
+
+    // Move conditional logic after hook call
     const followers =
       isNemoApp && typeof stats?.followers === 'number' ? stats.followers : 0
     const following =

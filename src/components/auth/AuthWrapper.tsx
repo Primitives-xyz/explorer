@@ -41,7 +41,7 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
       <Modal
         isOpen={showModal}
         onClose={closeModal}
-        title="Frog Holder Required"
+        title="Solana Business Frog Required"
       >
         <FrogHolderRequired />
       </Modal>
