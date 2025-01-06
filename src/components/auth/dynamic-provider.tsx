@@ -8,6 +8,11 @@ function WalletProviderComponent({ children }: { children: React.ReactNode }) {
   return (
     <DynamicContextProvider
       settings={{
+        events: {
+          onLogout: () => {
+            console.log('logout')
+          },
+        },
         environmentId:
           process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID ||
           'ab6ac670-0b93-4483-86a5-d0eff1dfca10',

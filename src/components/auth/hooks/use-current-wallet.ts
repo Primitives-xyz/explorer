@@ -1,7 +1,7 @@
 'use client'
 
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { useUserWallets } from '@dynamic-labs/sdk-react-core'
+import { useDynamicContext, useUserWallets } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState, useRef, useMemo } from 'react'
 
 // Cache for holder status
