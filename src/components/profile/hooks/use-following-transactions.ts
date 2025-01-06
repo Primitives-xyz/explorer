@@ -55,13 +55,6 @@ export const useFollowingTransactions = (
   }, [walletAddress, isLoggedIn, sdkHasLoaded, isHolder, isCheckingHolder])
 
   useEffect(() => {
-    console.log('Transaction fetch conditions:', {
-      hasFollowing: !!following?.profiles?.length,
-      isHolder,
-      isCheckingHolder,
-      walletAddress,
-    })
-
     // Reset states when dependencies change
     setLoadedWallets(new Set())
     setTotalWallets(following?.profiles?.length ?? 0)

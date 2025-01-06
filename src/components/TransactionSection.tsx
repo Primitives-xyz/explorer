@@ -1,64 +1,9 @@
 'use client'
 
 import { Transaction } from '@/utils/helius/types'
-import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-
-const LAMPORTS_PER_SOL = 1000000000
-
-const formatLamportsToSol = (lamports: number) => {
-  const sol = Math.abs(lamports) / LAMPORTS_PER_SOL
-  return sol.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-}
-
-const getTransactionTypeColor = (type: string, source: string) => {
-  // First check for known marketplaces
-  switch (source) {
-    case 'MAGIC_EDEN':
-      return 'bg-purple-900/50 text-purple-400 border-purple-800'
-    case 'TENSOR':
-      return 'bg-blue-900/50 text-blue-400 border-blue-800'
-    case 'RAYDIUM':
-      return 'bg-teal-900/50 text-teal-400 border-teal-800'
-    case 'JUPITER':
-      return 'bg-orange-900/50 text-orange-400 border-orange-800'
-  }
-
-  // Then fall back to transaction type colors
-  switch (type) {
-    case 'COMPRESSED_NFT_MINT':
-      return 'bg-pink-900/50 text-pink-400 border-pink-800'
-    case 'TRANSFER':
-      return 'bg-blue-900/50 text-blue-400 border-blue-800'
-    case 'SWAP':
-      return 'bg-orange-900/50 text-orange-400 border-orange-800'
-    case 'DEPOSIT':
-      return 'bg-green-900/50 text-green-400 border-green-800'
-    default:
-      return 'bg-gray-900/50 text-gray-400 border-gray-800'
-  }
-}
-
-const getSourceIcon = (source: string) => {
-  switch (source) {
-    case 'MAGIC_EDEN':
-      return '🪄'
-    case 'TENSOR':
-      return '⚡'
-    case 'RAYDIUM':
-      return '💧'
-    case 'JUPITER':
-      return '🌌'
-    case 'SYSTEM_PROGRAM':
-      return '💻'
-    default:
-      return null
-  }
-}
+import { TransactionCard } from './transactions/TransactionCard'
+import { isSpamTransaction } from '@/utils/transaction'
 
 interface TransactionSectionProps {
   walletAddress: string
@@ -69,7 +14,6 @@ export const TransactionSection = ({
   walletAddress,
   hasSearched,
 }: TransactionSectionProps) => {
-  const router = useRouter()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -128,19 +72,6 @@ export const TransactionSection = ({
     fetchTransactions()
   }, [walletAddress, hasSearched, page])
 
-  const formatTimestamp = (timestamp: number | string) => {
-    try {
-      const date =
-        typeof timestamp === 'number'
-          ? new Date(timestamp * 1000)
-          : new Date(timestamp)
-      return formatDistanceToNow(date)
-    } catch (error) {
-      console.error('Error formatting timestamp:', error)
-      return 'Unknown time'
-    }
-  }
-
   if (!hasSearched) return null
 
   return (
@@ -175,206 +106,21 @@ export const TransactionSection = ({
           </div>
         ) : (
           <>
-            {transactions.map((tx) => (
-              <div
-                key={tx.signature}
-                className="p-2 hover:bg-green-900/10 cursor-pointer transition-all duration-200"
-                onClick={() =>
-                  setExpandedTx(
-                    expandedTx === tx.signature ? null : tx.signature,
-                  )
-                }
-              >
-                <div className="flex flex-col gap-1">
-                  {/* Transaction Signature */}
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="text-green-400 hover:text-green-300 font-mono cursor-pointer text-sm transition-colors duration-200 border border-green-800/50 rounded px-2 py-0.5 hover:border-green-700"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push(`/${tx.signature}`)
-                      }}
-                      title="Click to view transaction details"
-                    >
-                      {tx.signature}
-                    </span>
-                    <a
-                      href={`https://solscan.io/tx/${tx.signature}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-green-600 hover:text-green-500 font-mono text-xs"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      View
-                    </a>
-                  </div>
-
-                  {/* Transaction Info */}
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-400 font-mono">
-                        {formatTimestamp(tx.timestamp)} ago
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`px-2 py-0.5 rounded border ${getTransactionTypeColor(
-                            tx.type,
-                            tx.source,
-                          )} text-xs font-mono`}
-                        >
-                          {tx.type}
-                        </span>
-                        {tx.source && (
-                          <span
-                            className={`px-2 py-0.5 rounded border ${getTransactionTypeColor(
-                              tx.type,
-                              tx.source,
-                            )} text-xs font-mono flex items-center gap-1`}
-                          >
-                            {getSourceIcon(tx.source)}
-                            <span>{tx.source}</span>
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-green-600 font-mono">
-                      {tx.fee
-                        ? `${(tx.fee / LAMPORTS_PER_SOL).toFixed(5)} SOL`
-                        : ''}
-                    </span>
-                  </div>
-
-                  {/* Transaction Description */}
-                  <div className="text-sm text-green-300 font-mono break-words">
-                    {tx.description || 'No description available'}
-                  </div>
-
-                  {/* Balance Changes Summary */}
-                  {tx.balanceChanges &&
-                    Object.keys(tx.balanceChanges).length > 0 && (
-                      <div className="text-xs text-green-500 font-mono mt-1">
-                        {Object.entries(tx.balanceChanges).map(
-                          ([account, change], i) => (
-                            <div key={i} className="flex items-center gap-1">
-                              <span
-                                className={
-                                  change > 0 ? 'text-green-400' : 'text-red-400'
-                                }
-                              >
-                                {change > 0 ? '+' : ''}
-                                {Number(change).toFixed(4)} SOL
-                              </span>
-                              <span className="text-green-700">
-                                {account === walletAddress
-                                  ? '(you)'
-                                  : `(${account.slice(0, 4)}...${account.slice(
-                                      -4,
-                                    )})`}
-                              </span>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    )}
-
-                  {/* Transfers */}
-                  <div className="space-y-0.5">
-                    {tx.nativeTransfers?.map((transfer, i) => (
-                      <div
-                        key={i}
-                        className="text-xs text-green-500 font-mono flex items-center gap-1"
-                      >
-                        <span>
-                          {transfer.fromUserAccount === walletAddress
-                            ? '↑'
-                            : '↓'}
-                        </span>
-                        <span>{formatLamportsToSol(transfer.amount)} SOL</span>
-                        <span className="text-green-700">
-                          {transfer.fromUserAccount === walletAddress
-                            ? 'to'
-                            : 'from'}
-                        </span>
-                        <span className="text-green-600 text-xs">
-                          {(transfer.fromUserAccount === walletAddress
-                            ? transfer.toUserAccount
-                            : transfer.fromUserAccount
-                          ).slice(0, 4)}
-                          ...
-                          {(transfer.fromUserAccount === walletAddress
-                            ? transfer.toUserAccount
-                            : transfer.fromUserAccount
-                          ).slice(-4)}
-                        </span>
-                      </div>
-                    ))}
-                    {tx.tokenTransfers?.map((transfer, i) => (
-                      <div
-                        key={i}
-                        className="text-xs text-green-500 font-mono flex items-center gap-1"
-                      >
-                        <span>
-                          {transfer.fromUserAccount === walletAddress
-                            ? '↑'
-                            : '↓'}
-                        </span>
-                        <span>
-                          {transfer.tokenAmount || 0}{' '}
-                          {transfer.mint
-                            ? `${transfer.mint.slice(0, 4)}...`
-                            : 'Unknown'}
-                        </span>
-                        <span className="text-green-700">
-                          {transfer.fromUserAccount === walletAddress
-                            ? 'to'
-                            : 'from'}
-                        </span>
-                        <span className="text-green-600 text-xs">
-                          {(
-                            (transfer.fromUserAccount === walletAddress
-                              ? transfer.toUserAccount
-                              : transfer.fromUserAccount) || ''
-                          ).slice(0, 4)}
-                          ...
-                          {(
-                            (transfer.fromUserAccount === walletAddress
-                              ? transfer.toUserAccount
-                              : transfer.fromUserAccount) || ''
-                          ).slice(-4)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Parsed Instructions (Expanded View) */}
-                  {expandedTx === tx.signature && tx.parsedInstructions && (
-                    <div className="mt-2 space-y-2">
-                      <div className="text-xs text-green-400 font-mono">
-                        Instructions:
-                      </div>
-                      {tx.parsedInstructions.map((ix: any, index: number) => (
-                        <div
-                          key={index}
-                          className="pl-2 border-l-2 border-green-800"
-                        >
-                          <div className="text-xs text-green-500 font-mono">
-                            Program: {ix.programId.slice(0, 4)}...
-                            {ix.programId.slice(-4)}
-                          </div>
-                          {ix.decodedData && (
-                            <div className="text-xs text-green-400 font-mono pl-2 mt-1">
-                              <pre className="whitespace-pre-wrap break-all">
-                                {JSON.stringify(ix.decodedData, null, 2)}
-                              </pre>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+            {transactions
+              .filter((tx) => !isSpamTransaction(tx))
+              .map((tx) => (
+                <TransactionCard
+                  key={tx.signature}
+                  transaction={tx}
+                  sourceWallet={walletAddress}
+                  isExpanded={expandedTx === tx.signature}
+                  onExpand={() =>
+                    setExpandedTx(
+                      expandedTx === tx.signature ? null : tx.signature,
+                    )
+                  }
+                />
+              ))}
           </>
         )}
       </div>

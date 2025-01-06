@@ -36,7 +36,6 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
   const hasInitialized = useRef(false)
 
   const checkHolder = async (address: string) => {
-    console.log('Checking holder status for:', address)
     setState((prev) => ({ ...prev, isLoading: true }))
 
     try {
@@ -44,7 +43,6 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
         `/api/holders?address=${encodeURIComponent(address)}`,
       )
       const data = await response.json()
-      console.log('Holder API response:', data)
 
       // Only update if this is still the current wallet
       if (address === walletAddress) {
@@ -70,22 +68,12 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
 
   // Initial check when component mounts and wallet is ready
   useEffect(() => {
-    console.log('Checking initialization conditions:', {
-      hasInitialized: hasInitialized.current,
-      walletAddress,
-      isLoggedIn,
-      sdkHasLoaded,
-      currentHolder: state.isHolder,
-      checkedAddress: state.checkedAddress,
-    })
-
     if (
       walletAddress &&
       isLoggedIn &&
       sdkHasLoaded &&
       !hasInitialized.current
     ) {
-      console.log('Performing initial holder check')
       hasInitialized.current = true
       checkHolder(walletAddress)
     }
@@ -99,7 +87,6 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
       sdkHasLoaded &&
       state.checkedAddress !== walletAddress
     ) {
-      console.log('Wallet changed, checking new wallet:', walletAddress)
       checkHolder(walletAddress)
     }
   }, [walletAddress])
@@ -107,7 +94,6 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
   // Reset when wallet disconnects
   useEffect(() => {
     if (!walletAddress || !isLoggedIn || !sdkHasLoaded) {
-      console.log('Resetting holder state')
       setState({
         isHolder: null,
         modalDismissed: false,
@@ -133,7 +119,6 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const startCheck = () => {
-    console.log('Manual check requested')
     if (walletAddress && !state.isLoading) {
       checkHolder(walletAddress)
     }

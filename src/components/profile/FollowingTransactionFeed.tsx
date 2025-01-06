@@ -1,9 +1,9 @@
 import { Transaction } from '@/utils/helius/types'
-import { formatDistanceToNow } from 'date-fns'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { TransactionCard } from '@/components/transactions/TransactionCard'
+import { isSpamTransaction } from '@/utils/transaction'
 
 interface FollowingTransactionFeedProps {
   transactions: Transaction[]
@@ -14,66 +14,6 @@ interface FollowingTransactionFeedProps {
   totalWallets?: number
 }
 
-const LAMPORTS_PER_SOL = 1000000000
-
-const formatLamportsToSol = (lamports: number) => {
-  const sol = Math.abs(lamports) / LAMPORTS_PER_SOL
-  return sol.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-}
-
-// Helper function to detect spam/dust transactions
-function isSpamTransaction(tx: Transaction) {
-  // Check if it's a multi-transfer with tiny amounts
-  if (
-    tx.type === 'TRANSFER' &&
-    tx.nativeTransfers &&
-    tx.nativeTransfers.length > 3
-  ) {
-    // Check if all transfers are tiny amounts (less than 0.001 SOL)
-    const allTinyTransfers = tx.nativeTransfers.every(
-      (transfer) => Math.abs(transfer.amount / LAMPORTS_PER_SOL) < 0.001,
-    )
-    if (allTinyTransfers) return true
-  }
-  return false
-}
-
-const getTransactionTypeColor = (type: string, source: string) => {
-  // First check for known marketplaces
-  switch (source) {
-    case 'MAGIC_EDEN':
-      return 'bg-purple-900/50 text-purple-400 border-purple-800'
-    case 'TENSOR':
-      return 'bg-blue-900/50 text-blue-400 border-blue-800'
-    case 'RAYDIUM':
-      return 'bg-teal-900/50 text-teal-400 border-teal-800'
-    case 'JUPITER':
-      return 'bg-orange-900/50 text-orange-400 border-orange-800'
-  }
-
-  // Then fall back to transaction type colors
-  switch (type) {
-    case 'COMPRESSED_NFT_MINT':
-      return 'bg-pink-900/50 text-pink-400 border-pink-800'
-    case 'TRANSFER':
-      return 'bg-blue-900/50 text-blue-400 border-blue-800'
-    case 'SWAP':
-      return 'bg-orange-900/50 text-orange-400 border-orange-800'
-    case 'DEPOSIT':
-      return 'bg-green-900/50 text-green-400 border-green-800'
-    default:
-      return 'bg-gray-900/50 text-gray-400 border-gray-800'
-  }
-}
-
-const formatAddress = (address: string | undefined | null) => {
-  if (!address) return 'Unknown'
-  return `${address.slice(0, 4)}...${address.slice(-4)}`
-}
-
 export const FollowingTransactionFeed = ({
   transactions,
   isLoading,
@@ -82,7 +22,6 @@ export const FollowingTransactionFeed = ({
   loadedWallets = 0,
   totalWallets = 0,
 }: FollowingTransactionFeedProps) => {
-  const router = useRouter()
   const { isHolder, showModal, closeModal, isCheckingHolder, startCheck } =
     useHolderCheck()
   const [expandedTx, setExpandedTx] = useState<string | null>(null)
@@ -224,194 +163,17 @@ export const FollowingTransactionFeed = ({
         ) : (
           <>
             {filteredTransactions.map((tx) => (
-              <div
+              <TransactionCard
                 key={tx.signature}
-                className="p-2 hover:bg-green-900/10 cursor-pointer transition-all duration-200"
-                onClick={() =>
+                transaction={tx}
+                sourceWallet={tx.sourceWallet || walletAddress || ''}
+                isExpanded={expandedTx === tx.signature}
+                onExpand={() =>
                   setExpandedTx(
                     expandedTx === tx.signature ? null : tx.signature,
                   )
                 }
-              >
-                <div className="flex flex-col gap-1">
-                  {/* Transaction Signature */}
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="text-green-400 hover:text-green-300 font-mono cursor-pointer text-sm transition-colors duration-200 border border-green-800/50 rounded px-2 py-0.5 hover:border-green-700"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push(`/${tx.signature}`)
-                      }}
-                      title="Click to view transaction details"
-                    >
-                      {tx.signature}
-                    </span>
-                    <a
-                      href={`https://solscan.io/tx/${tx.signature}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-green-600 hover:text-green-500 font-mono text-xs"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      View
-                    </a>
-                  </div>
-
-                  {/* Transaction Info */}
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-400 font-mono">
-                        {formatDistanceToNow(new Date(tx.timestamp), {
-                          addSuffix: true,
-                        })}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`px-2 py-0.5 rounded border ${getTransactionTypeColor(
-                            tx.type,
-                            tx.source,
-                          )} text-xs font-mono`}
-                        >
-                          {tx.type}
-                        </span>
-                        {tx.source && (
-                          <span
-                            className={`px-2 py-0.5 rounded border ${getTransactionTypeColor(
-                              tx.type,
-                              tx.source,
-                            )} text-xs font-mono`}
-                          >
-                            {tx.source}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-green-600 font-mono">
-                      {tx.fee ? `${formatLamportsToSol(tx.fee)} SOL` : ''}
-                    </span>
-                  </div>
-
-                  {/* Transaction Description */}
-                  <div className="text-sm text-green-300 font-mono break-words">
-                    {tx.description || 'No description available'}
-                  </div>
-
-                  {/* Transfers */}
-                  <div className="space-y-0.5">
-                    {tx.nativeTransfers
-                      ?.filter((transfer) => transfer.amount > 0) // Only show non-zero transfers
-                      .map((transfer, i) => (
-                        <div
-                          key={i}
-                          className="text-xs text-green-500 font-mono flex items-center gap-1"
-                        >
-                          <span>
-                            {transfer.fromUserAccount === tx.sourceWallet
-                              ? '↑'
-                              : '↓'}
-                          </span>
-                          <span>
-                            {formatLamportsToSol(transfer.amount)} SOL
-                          </span>
-                          <span className="text-green-700">
-                            {transfer.fromUserAccount === tx.sourceWallet
-                              ? 'to'
-                              : 'from'}
-                          </span>
-                          <a
-                            href={`https://solscan.io/account/${
-                              transfer.fromUserAccount === tx.sourceWallet
-                                ? transfer.toUserAccount
-                                : transfer.fromUserAccount
-                            }`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-green-600 hover:text-green-400 transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {formatAddress(
-                              transfer.fromUserAccount === tx.sourceWallet
-                                ? transfer.toUserAccount
-                                : transfer.fromUserAccount,
-                            )}
-                          </a>
-                        </div>
-                      ))}
-                    {tx.tokenTransfers
-                      ?.filter(
-                        (transfer) =>
-                          transfer.tokenAmount && transfer.tokenAmount > 0,
-                      ) // Only show non-zero transfers
-                      .map((transfer, i) => {
-                        const targetAddress =
-                          transfer.fromUserAccount === tx.sourceWallet
-                            ? transfer.toUserAccount
-                            : transfer.fromUserAccount
-
-                        return (
-                          <div
-                            key={i}
-                            className="text-xs text-green-500 font-mono flex items-center gap-1"
-                          >
-                            <span>
-                              {transfer.fromUserAccount === tx.sourceWallet
-                                ? '↑'
-                                : '↓'}
-                            </span>
-                            <span>
-                              {transfer.tokenAmount?.toLocaleString() || 0}{' '}
-                              {transfer.mint
-                                ? `${formatAddress(transfer.mint)}`
-                                : 'Unknown'}
-                            </span>
-                            <span className="text-green-700">
-                              {transfer.fromUserAccount === tx.sourceWallet
-                                ? 'to'
-                                : 'from'}
-                            </span>
-                            {targetAddress && (
-                              <a
-                                href={`https://solscan.io/account/${targetAddress}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-green-600 hover:text-green-400 transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {formatAddress(targetAddress)}
-                              </a>
-                            )}
-                          </div>
-                        )
-                      })}
-                  </div>
-
-                  {/* Parsed Instructions (Expanded View) */}
-                  {expandedTx === tx.signature && tx.parsedInstructions && (
-                    <div className="mt-2 space-y-2">
-                      <div className="text-xs text-green-400 font-mono">
-                        Instructions:
-                      </div>
-                      {tx.parsedInstructions.map((ix: any, index: number) => (
-                        <div
-                          key={index}
-                          className="pl-2 border-l-2 border-green-800"
-                        >
-                          <div className="text-xs text-green-500 font-mono">
-                            Program: {formatAddress(ix.programId)}
-                          </div>
-                          {ix.decodedData && (
-                            <div className="text-xs text-green-400 font-mono pl-2 mt-1">
-                              <pre className="whitespace-pre-wrap break-all">
-                                {JSON.stringify(ix.decodedData, null, 2)}
-                              </pre>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              />
             ))}
             {isLoading && (
               <div className="p-4 text-center text-green-600 font-mono">

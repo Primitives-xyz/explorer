@@ -20,13 +20,18 @@ export function useCurrentWallet() {
   )
 
   const { profiles, loading: loadingProfiles } = useGetProfiles(walletAddress)
-  const hasProfile = profiles?.length > 0
-  const mainUsername = profiles?.[0]?.profile?.username
-
+  console.log(
+    'profiles',
+    profiles?.filter((profile: any) => profile.namespace.name === 'nemoapp'),
+  )
+  const mainUsername = profiles?.filter(
+    (profile: any) => profile.namespace.name === 'nemoapp',
+  )[0]?.profile?.username
+  console.log('mainUsername', mainUsername)
   return {
     walletAddress,
     mainUsername,
-    hasProfile,
+    hasProfile: !!mainUsername,
     loadingProfiles,
     isLoggedIn,
     sdkHasLoaded,
