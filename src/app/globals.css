@@ -64,15 +64,8 @@
 }
 
 :root {
-  --background: #fff;
-  --foreground: #000;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000;
-    --foreground: #fff;
-  }
+  --background: #000;
+  --foreground: #fff;
 }
 
 body {

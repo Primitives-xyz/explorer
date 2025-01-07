@@ -6,6 +6,7 @@ import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
 import { TokenContainer } from '@/components/TokenContainer'
 import { TrendingTokens } from '@/components/tokens/TrendingTokens'
+import { TopTraders } from '@/components/traders/TopTraders'
 import { FungibleToken, NFT } from '@/utils/types'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -95,7 +96,7 @@ export default function Home() {
           onPickRecentAddress={searchAddress}
         />
 
-        {/* Grid layout for TrendingTokens and ProfileSection */}
+        {/* Grid layout for ProfileSection and TrendingTokens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ProfileSection
             walletAddress={searchQuery}
@@ -106,6 +107,9 @@ export default function Home() {
           />
           <TrendingTokens />
         </div>
+
+        {/* Top Traders Section */}
+        <TopTraders />
 
         {/* Token results */}
         {tokenData && (
