@@ -108,9 +108,6 @@ export default function Home() {
           <TrendingTokens />
         </div>
 
-        {/* Top Traders Section */}
-        <TopTraders />
-
         {/* Token results */}
         {tokenData && (
           <TokenContainer
@@ -125,6 +122,8 @@ export default function Home() {
 
         {/* Following list for logged-in users */}
         {mainUsername && <FollowingContainer username={mainUsername} />}
+        {/* Top Traders Section */}
+        <TopTraders />
       </div>
       <CreateProfile />
     </Layout>

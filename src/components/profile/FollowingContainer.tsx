@@ -29,11 +29,6 @@ export const FollowingContainer = ({ username }: FollowingContainerProps) => {
         loadedWallets={loadedWallets}
         totalWallets={totalWallets}
       />
-      {/* <FollowingProfileList
-        profiles={following?.profiles ?? []}
-        loading={loading}
-        error={error}
-      /> */}
     </div>
   )
 }

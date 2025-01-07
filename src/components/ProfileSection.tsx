@@ -98,13 +98,19 @@ const ProfileCard = memo(
                     </span>
                   )}
                 </div>
-                <div className="flex-shrink-0">
-                  <FollowButton username={profile.profile.username} />
-                </div>
+                {profile.namespace?.name === 'nemoapp' && (
+                  <div className="flex-shrink-0">
+                    <FollowButton username={profile.profile.username} />
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-4 text-xs text-green-600 font-mono">
-                <span>Followers: {followers}</span>
-                <span>Following: {following}</span>
+                {isNemoApp && (
+                  <>
+                    <span>Followers: {followers}</span>
+                    <span>Following: {following}</span>
+                  </>
+                )}
                 <span className="text-green-600/50">
                   <button
                     onClick={handleNamespaceClick}
@@ -381,7 +387,7 @@ export const ProfileSection = ({
           <div className="p-4 text-center text-green-600 font-mono">
             {'>>> FETCHING PROFILES...'}
           </div>
-        ) : filteredProfiles.length === 0 ? (
+        ) : filteredProfiles.length === 0 && !isLoading ? (
           <div className="p-4 text-center text-green-600 font-mono">
             {'>>> NO PROFILES FOUND'}
           </div>

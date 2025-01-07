@@ -3,13 +3,22 @@
 import { Alert } from '@/components/common/alert'
 import { LoadCircle } from '@/components/common/load-circle'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
-import { UserRoundCheck, UserRoundPlus } from 'lucide-react'
+import { UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { FrogHolderRequired } from '../auth/FrogHolderRequired'
+import dynamic from 'next/dynamic'
+
+const DynamicConnectButton = dynamic(
+  () =>
+    import('@dynamic-labs/sdk-react-core').then(
+      (mod) => mod.DynamicConnectButton,
+    ),
+  { ssr: false },
+)
 
 interface Props {
   username: string
@@ -17,46 +26,112 @@ interface Props {
 }
 
 export function FollowButton({ username, size = 'sm' }: Props) {
-  const { walletAddress, mainUsername } = useCurrentWallet()
+  const { walletAddress, mainUsername, isLoggedIn, sdkHasLoaded } =
+    useCurrentWallet()
   const { followUser, unfollowUser, loading, success } = useFollowUser()
-  const { mutate } = useProfileFollowers(username)
+  const { mutate: mutateFollowers } = useProfileFollowers(username)
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
-  const { stats } = useFollowStats(username, mainUsername)
-  const isFollowing = stats?.isFollowing || false
+  const {
+    stats,
+    mutate: mutateStats,
+    isLoading: isLoadingStats,
+  } = useFollowStats(username, mainUsername)
+  const isFollowing = stats?.isFollowing ?? false
   const [optimisticFollowing, setOptimisticFollowing] = useState(false)
   const [showHolderModal, setShowHolderModal] = useState(false)
   const { isHolder, isCheckingHolder } = useHolderCheck()
-
-  // Early return if not applicable
-  if (!walletAddress || mainUsername === username) return null
 
   const buttonClasses = `font-mono rounded transition-colors ${
     size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'
   }`
   const iconSize = size === 'lg' ? 16 : 14
 
+  // Reset optimistic state and revalidate on mount or username change
+  useEffect(() => {
+    setOptimisticFollowing(false)
+    mutateStats()
+    mutateFollowers()
+  }, [username, mainUsername, mutateStats, mutateFollowers])
+
+  // Sync optimistic state with actual state only when not in a loading state
+  useEffect(() => {
+    if (
+      !loading &&
+      stats?.isFollowing !== undefined &&
+      stats?.isFollowing !== null
+    ) {
+      setOptimisticFollowing(stats.isFollowing)
+    }
+  }, [stats?.isFollowing, loading])
+
+  // Early return if viewing own profile
+  if (mainUsername === username) return null
+
+  // Show loading state while initializing
+  if (isLoggedIn && (isCheckingHolder || isLoadingStats)) {
+    return (
+      <div
+        className={`${buttonClasses} flex items-center gap-1 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
+      >
+        <LoaderCircle className="animate-spin" size={iconSize} />
+        <span>{isCheckingHolder ? 'Checking holder...' : 'Loading...'}</span>
+      </div>
+    )
+  }
+
+  // If not logged in or SDK hasn't loaded, show follow button that triggers connect wallet
+  if (!isLoggedIn || !sdkHasLoaded) {
+    return (
+      <DynamicConnectButton>
+        <div
+          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 cursor-pointer`}
+        >
+          <UserRoundPlus size={iconSize} />
+          Follow
+        </div>
+      </DynamicConnectButton>
+    )
+  }
+
   const handleFollow = () => {
     if (!mainUsername) return
 
-    // If we're still checking or not a holder, show the modal
-    if (isCheckingHolder || !isHolder) {
-      setShowHolderModal(true)
-      return
-    }
-
-    // If we are a holder, proceed with the follow
+    // Set optimistic state immediately
     setOptimisticFollowing(true)
+
+    // Optimistically update the local data
+    mutateStats(
+      (currentData) =>
+        currentData
+          ? {
+              ...currentData,
+              isFollowing: true,
+            }
+          : currentData,
+      false, // Don't revalidate immediately
+    )
+
     followUser({
       followerUsername: mainUsername,
       followeeUsername: username,
     })
-      .then(() => {
-        mutate()
-        fetch(`/api/profiles/${username}`, { method: 'HEAD' })
+      .then(async () => {
+        try {
+          // Revalidate both followers and stats
+          await Promise.all([
+            mutateFollowers(),
+            mutateStats(),
+            fetch(`/api/profiles/${username}`, { method: 'HEAD' }),
+          ])
+        } catch (error) {
+          console.error('Failed to revalidate after follow:', error)
+        }
       })
       .catch((error) => {
         console.error('Failed to follow:', error)
         setOptimisticFollowing(false)
+        // Revert the optimistic update
+        mutateStats()
       })
   }
 
@@ -64,15 +139,41 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     if (!mainUsername) return
 
     try {
+      // Set optimistic state immediately
+      setOptimisticFollowing(false)
+
+      // Optimistically update the local data
+      mutateStats(
+        (currentData) =>
+          currentData
+            ? {
+                ...currentData,
+                isFollowing: false,
+              }
+            : currentData,
+        false, // Don't revalidate immediately
+      )
+
       await unfollowUser({
         followerUsername: mainUsername,
         followeeUsername: username,
       })
-      await mutate()
-      await fetch(`/api/profiles/${username}`, { method: 'HEAD' })
+      try {
+        // Revalidate both followers and stats
+        await Promise.all([
+          mutateFollowers(),
+          mutateStats(),
+          fetch(`/api/profiles/${username}`, { method: 'HEAD' }),
+        ])
+      } catch (error) {
+        console.error('Failed to revalidate after unfollow:', error)
+      }
       setShowUnfollowConfirm(false)
     } catch (error) {
       console.error('Failed to unfollow:', error)
+      // Reset optimistic state and revert the optimistic update
+      setOptimisticFollowing(true)
+      mutateStats()
     }
   }
 

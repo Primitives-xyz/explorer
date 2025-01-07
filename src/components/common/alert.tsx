@@ -28,12 +28,12 @@ export const Alert = ({
     type === 'success'
       ? 'bg-green-100 border-green-400 text-green-700'
       : type === 'error'
-        ? 'bg-red-100 border-red-400 text-red-700'
-        : 'bg-blue-100 border-blue-400 text-blue-700'
+      ? 'bg-red-100 border-red-400 text-red-700'
+      : 'bg-blue-100 border-blue-400 text-blue-700'
 
   return (
     <div
-      className={`fixed bottom-4 left-4 ${backgroundColor} border px-4 py-3 rounded-lg shadow-lg`}
+      className={`fixed bottom-4 left-4 ${backgroundColor} border px-4 py-3 rounded-lg shadow-lg z-[9999]`}
       role="alert"
     >
       <div className="flex items-center justify-center">

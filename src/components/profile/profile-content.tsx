@@ -6,6 +6,7 @@ import { FollowButton } from './follow-button'
 import { useApiVersion } from '@/hooks/use-api-version'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../ProfileSection'
+import { useGetProfiles } from '../auth/hooks/use-get-profiles'
 
 interface Props {
   username: string
@@ -32,7 +33,7 @@ function LoadingCard() {
 
 export function ProfileContent({ username }: Props) {
   const { useNewApi } = useApiVersion()
-  const { mainUsername, profiles } = useCurrentWallet()
+  const { mainUsername } = useCurrentWallet()
   const fetcher = async (url: string) => {
     const apiUrl = `${url}?useNewApi=${useNewApi}`
     const res = await fetch(apiUrl)
@@ -50,8 +51,10 @@ export function ProfileContent({ username }: Props) {
       refreshInterval: 3000,
     },
   )
-
-  const loading = isLoading
+  const { profiles, loading: loadingProfiles } = useGetProfiles(
+    data?.walletAddress || '',
+  )
+  const loading = isLoading || loadingProfiles
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">

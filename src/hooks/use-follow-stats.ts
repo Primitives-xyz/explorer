@@ -11,25 +11,32 @@ async function fetchProfile(url: string): Promise<IProfileResponse> {
 }
 
 export function useFollowStats(username: string, fromUsername: string) {
-  // only add fromusername if it exist
-  const url =
-    username && fromUsername
+  // Construct URL based on whether fromUsername exists
+  const url = username
+    ? fromUsername
       ? `/api/profiles/${username}?fromUsername=${fromUsername}`
-      : null
+      : `/api/profiles/${username}`
+    : null
 
-  const { data, error } = useSWR<IProfileResponse>(url, fetchProfile, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 30000, // 30 seconds
-    revalidateIfStale: false,
-  })
+  const { data, error, mutate, isLoading } = useSWR<IProfileResponse>(
+    url,
+    fetchProfile,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 30000, // 30 seconds
+      revalidateIfStale: false,
+    },
+  )
 
   return {
     stats: {
       followers: data?.socialCounts?.followers || 0,
       following: data?.socialCounts?.following || 0,
-      isFollowing: data?.isFollowing || false,
+      isFollowing: data?.isFollowing ?? null,
     },
+    isLoading,
     error,
+    mutate,
   }
 }

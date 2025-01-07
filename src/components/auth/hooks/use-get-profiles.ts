@@ -1,4 +1,4 @@
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 
 export const useGetProfiles = (walletAddress: string) => {
   const fetcher = async (url: string) => {
@@ -11,30 +11,33 @@ export const useGetProfiles = (walletAddress: string) => {
     return data.profiles
   }
 
+  const key = walletAddress
+    ? `/api/profiles?walletAddress=${walletAddress}`
+    : null
+
   const {
     data: profiles,
     error,
     isLoading,
-  } = useSWR(
-    walletAddress ? `/api/profiles?walletAddress=${walletAddress}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      dedupingInterval: 3600000,
-      revalidateIfStale: false,
-      revalidateOnMount: true,
-      refreshInterval: 0,
-      refreshWhenHidden: false,
-      refreshWhenOffline: false,
-      focusThrottleInterval: 3600000,
-      shouldRetryOnError: true,
-      errorRetryCount: 3,
-      keepPreviousData: true,
-      fallbackData: null,
-      isPaused: () => !walletAddress,
-    },
-  )
+    mutate: mutateProfiles,
+  } = useSWR(key, fetcher, {
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+    dedupingInterval: 0,
+    revalidateIfStale: true,
+    revalidateOnMount: true,
+    refreshInterval: 0,
+    shouldRetryOnError: true,
+    errorRetryCount: 3,
+    keepPreviousData: true,
+    fallbackData: null,
+    isPaused: () => !walletAddress,
+  })
 
-  return { profiles, loading: isLoading, error }
+  return { profiles, loading: isLoading, error, mutateProfiles }
+}
+
+// Export a function to manually trigger revalidation
+export const refreshProfiles = (walletAddress: string) => {
+  return mutate(`/api/profiles?walletAddress=${walletAddress}`)
 }
