@@ -17,7 +17,7 @@ export const TransactionBadge = ({
   return (
     <div className="flex items-center gap-1.5">
       <span
-        className={`rounded border font-mono ${sizeClasses} ${getTransactionTypeColor(
+        className={`rounded border font-mono font-medium ${sizeClasses} ${getTransactionTypeColor(
           type,
           source || '',
         )}`}

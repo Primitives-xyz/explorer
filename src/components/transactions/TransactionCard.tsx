@@ -35,7 +35,10 @@ export const TransactionCard = ({
                 addSuffix: true,
               })}
             </span>
-            <TransactionBadge type={tx.type} source={tx.source} />
+            <TransactionBadge 
+              type={tx.events?.swap ? 'SWAP' : tx.type === 'TRANSFER' && tx.tokenTransfers?.length > 1 ? 'ZAP' : tx.type}
+              source={tx.source}
+            />
           </div>
           <span className="text-green-600 font-mono">
             {tx.fee ? `${formatLamportsToSol(tx.fee)} SOL` : ''}

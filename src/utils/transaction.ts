@@ -11,12 +11,21 @@ export const formatLamportsToSol = (lamports: number) => {
 export const formatTokenAmount = (
   amount: string | number,
   decimals: number = 9,
+  sourceWallet?: string,
+  fromAddress?: string
 ) => {
   const value = Number(amount) / Math.pow(10, decimals)
-  return value.toLocaleString(undefined, {
+  const isNegative = sourceWallet && fromAddress && fromAddress === sourceWallet
+  const sign = isNegative ? '-' : '+'
+  const formatted = value.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: decimals,
   })
+  return {
+    formatted: `${sign}${formatted}`,
+    isNegative,
+    value
+  }
 }
 
 export const getTransactionTypeColor = (type: string, source: string) => {
@@ -30,6 +39,8 @@ export const getTransactionTypeColor = (type: string, source: string) => {
       return 'bg-teal-900/50 text-teal-400 border-teal-800'
     case 'JUPITER':
       return 'bg-orange-900/50 text-orange-400 border-orange-800'
+    case 'ORCA':
+      return 'bg-blue-900/50 text-blue-400 border-blue-800'
   }
 
   // Then fall back to transaction type colors
@@ -40,6 +51,8 @@ export const getTransactionTypeColor = (type: string, source: string) => {
       return 'bg-blue-900/50 text-blue-400 border-blue-800'
     case 'SWAP':
       return 'bg-orange-900/50 text-orange-400 border-orange-800'
+    case 'ZAP':
+      return 'bg-purple-900/50 text-purple-400 border-purple-800'
     case 'DEPOSIT':
       return 'bg-green-900/50 text-green-400 border-green-800'
     default:
