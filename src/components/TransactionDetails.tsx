@@ -10,9 +10,19 @@ import {
   formatTokenAmount,
   getTokenSymbol,
 } from '@/utils/transaction'
+import { formatNumber } from '@/utils/format'
 
 interface TransactionDetailsProps {
   signature: string
+}
+
+interface TokenDisplay {
+  amount: string
+  symbol: string
+  decimals: number
+  mint: string
+  imageUrl?: string
+  usdValue?: number
 }
 
 export default function TransactionDetails({
