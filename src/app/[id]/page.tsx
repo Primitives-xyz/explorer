@@ -8,6 +8,7 @@ import { fetchTokenInfo } from '@/utils/helius/das-api'
 import { Metadata, ResolvingMetadata } from 'next'
 import { isValidTransactionSignature } from '@/utils/validation'
 import { TokenInfo, FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
+import { ProfileSection } from '@/components/ProfileSection'
 
 // Types
 type Params = Promise<{ id: string }>
@@ -48,11 +49,12 @@ export async function generateMetadata(
  */
 function WalletView({ address }: { address: string }) {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       <h1 className="text-2xl font-mono text-green-500 mb-8">
         Wallet: {address}
       </h1>
       <PortfolioTabs address={address} />
+      <ProfileSection walletAddress={address} />
     </div>
   )
 }

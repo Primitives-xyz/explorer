@@ -10,14 +10,10 @@ import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 
 interface SearchBarProps {
-  handleSearch: () => void
   onPickRecentAddress?: (addr: string) => void
 }
 
-export default function SearchBar({
-  handleSearch,
-  onPickRecentAddress,
-}: SearchBarProps) {
+export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
   const router = useRouter()
   const [inputValue, setInputValue] = useState('')
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])
@@ -55,7 +51,6 @@ export default function SearchBar({
     event.preventDefault()
     if (inputValue) {
       // On form submit, we call handleSearch from props
-      await handleSearch()
       await addSearchToHistory(inputValue)
       await loadRecentSearches()
       setShowDropdown(false)

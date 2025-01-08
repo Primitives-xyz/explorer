@@ -9,6 +9,7 @@ import { useFollowStats } from '@/hooks/use-follow-stats'
 import { FollowButton } from './profile/follow-button'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 import { memo } from 'react'
+import { TokenAddress } from './tokens/TokenAddress'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -35,7 +36,6 @@ const ProfileCard = memo(
     const { mainUsername } = useCurrentWallet()
     const isNemoApp = profile.namespace?.name === 'nemoapp'
 
-    // Call hook unconditionally
     const { stats } = useFollowStats(
       isNemoApp ? profile.profile.username : '',
       mainUsername || '',
@@ -88,10 +88,18 @@ const ProfileCard = memo(
                 <div className="flex items-center gap-2 flex-wrap">
                   <button
                     onClick={handleProfileClick}
-                    className="text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded hover:bg-green-900/40 transition-colors"
+                    className="text-green-400 font-mono text-lg bg-green-900/20 px-3 py-1.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold"
                   >
                     @{profile.profile.username}
                   </button>
+                  {profile.wallet?.address && (
+                    <div className="flex items-center gap-1.5 bg-black/30 px-2 py-1 rounded-md">
+                      <span className="text-green-600/60 text-xs">
+                        address:
+                      </span>
+                      <TokenAddress address={profile.wallet.address} />
+                    </div>
+                  )}
                   {profile.profile.bio && (
                     <span className="text-green-600 font-mono text-sm truncate">
                       {profile.profile.bio}

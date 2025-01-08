@@ -29,11 +29,8 @@ interface ProfileData {
 export default function Home() {
   const router = useRouter()
   const { mainUsername } = useCurrentWallet()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [tokenData, setTokenData] = useState<TokenData | null>(null)
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [error, setError] = useState<string | undefined>(undefined)
-  const [isLoadingTokenData, setIsLoadingTokenData] = useState(false)
   const [isLoadingProfileData, setIsLoadingProfileData] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
 
@@ -64,42 +61,26 @@ export default function Home() {
 
   // Add function to search address
   const searchAddress = async (address: string) => {
-    setIsLoadingTokenData(true)
     setHasSearched(true)
     try {
-      const response = await fetch(`/api/tokens/${address}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch tokens')
-      }
-      const data = await response.json()
-      setTokenData(data)
       router.push(`/${address}`)
     } catch (err) {
       console.error('Error fetching tokens:', err)
       setError('Failed to fetch tokens.')
     } finally {
-      setIsLoadingTokenData(false)
     }
   }
 
   // Called when user clicks the [EXECUTE] button from the child form
-  const handleSubmitSearch = () => {
-    if (!searchQuery) return
-    searchAddress(searchQuery)
-  }
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 space-y-8">
-        <SearchBar
-          handleSearch={handleSubmitSearch}
-          onPickRecentAddress={searchAddress}
-        />
+        <SearchBar onPickRecentAddress={searchAddress} />
 
         {/* Grid layout for ProfileSection and TrendingTokens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ProfileSection
-            walletAddress={searchQuery}
+            walletAddress={''}
             hasSearched={hasSearched}
             profileData={profileData}
             error={error}
@@ -109,16 +90,6 @@ export default function Home() {
         </div>
 
         {/* Token results */}
-        {tokenData && (
-          <TokenContainer
-            walletAddress={searchQuery}
-            hasSearched={hasSearched}
-            tokenType="all"
-            isLoading={isLoadingTokenData}
-            tokenData={tokenData}
-            error={error}
-          />
-        )}
 
         {/* Following list for logged-in users */}
         {mainUsername && <FollowingContainer username={mainUsername} />}
