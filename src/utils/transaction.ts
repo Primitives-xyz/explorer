@@ -8,15 +8,17 @@ export const formatLamportsToSol = (lamports: number) => {
   })
 }
 
-export const formatTokenAmount = (
-  amount: string | number,
-  decimals: number = 9,
-) => {
-  const value = Number(amount) / Math.pow(10, decimals)
-  return value.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: decimals,
-  })
+export const formatTokenAmount = (amount: number, decimals: number = 0): string => {
+  if (typeof amount !== 'number') return '0'
+  
+  // Handle decimals
+  const adjustedAmount = decimals > 0 ? amount / Math.pow(10, decimals) : amount
+  
+  // Format with commas for thousands
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: Math.min(decimals, 6), // Cap at 6 decimal places
+  }).format(adjustedAmount)
 }
 
 export const getTransactionTypeColor = (type: string, source: string) => {
