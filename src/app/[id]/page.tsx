@@ -1,6 +1,8 @@
+'use client'
+
 import { ProfileContent } from '@/components/profile/profile-content'
 import { PublicKey } from '@solana/web3.js'
-import PortfolioTabs from '../portfolio/[address]/PortfolioTabs'
+import PortfolioTabs from '../portfolio/[id]/PortfolioTabs'
 import NFTDetails from '@/components/NFTDetails'
 import FungibleTokenDetails from '@/components/FungibleTokenDetails'
 import TransactionDetails from '@/components/TransactionDetails'
@@ -8,6 +10,8 @@ import { fetchTokenInfo } from '@/utils/helius/das-api'
 import { Metadata, ResolvingMetadata } from 'next'
 import { isValidTransactionSignature } from '@/utils/validation'
 import { TokenInfo, FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
+import { Layout } from '@/components/Layout'
+import { WalletProfiles } from '@/components/profile/WalletProfiles'
 
 // Types
 type Params = Promise<{ id: string }>
@@ -48,10 +52,11 @@ export async function generateMetadata(
  */
 function WalletView({ address }: { address: string }) {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       <h1 className="text-2xl font-mono text-green-500 mb-8">
         Wallet: {address}
       </h1>
+      <WalletProfiles walletAddress={address} />
       <PortfolioTabs address={address} />
     </div>
   )
@@ -100,8 +105,8 @@ async function TokenView({ id }: { id: string }) {
  * 2. Public keys -> TokenView (which can show token or wallet)
  * 3. Usernames -> ProfileContent
  */
-export default async function ProfilePage({ params }: { params: Params }) {
-  const { id } = await params
+export default function WalletPage({ params }: { params: { id: string } }) {
+  const { id } = params
 
   // Remove @ prefix if present (for usernames)
   const cleanId = id?.startsWith('@') ? id.slice(1) : id
