@@ -16,6 +16,19 @@
   @apply object-cover rounded-lg shadow-sm;
 }
 
+.token-image {
+  @apply transition-all duration-300;
+}
+
+.token-image:hover {
+  @apply transform scale-105 brightness-110;
+}
+
+.token-fallback {
+  @apply bg-gradient-to-br from-green-900/20 to-green-800/20;
+  backdrop-filter: blur(4px);
+}
+
 .amount-positive {
   @apply text-green-500;
 }
@@ -25,8 +38,14 @@
 }
 
 .amount-container {
-  @apply font-mono flex items-center gap-1 text-xs;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @apply font-mono flex items-center gap-1.5 text-xs flex-wrap;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .amount-container {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

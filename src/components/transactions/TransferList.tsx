@@ -55,43 +55,52 @@ const TokenTransferItem = ({ transfer, sourceWallet, targetAddress }: TokenTrans
   }, [transfer.mint]);
 
   return (
-    <div className="text-xs text-green-500 font-mono flex items-center gap-2">
-      <span>{transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}</span>
+    <div className="text-xs font-mono flex items-center gap-2 p-1 rounded hover:bg-green-500/5 transition-colors duration-200">
+      <span className={transfer.fromUserAccount === sourceWallet ? 'text-red-400' : 'text-green-400'}>
+        {transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}
+      </span>
       {tokenData?.imageUrl && (
         <div 
           className={`relative group cursor-pointer ${
-            tokenData.tokenStandard === 'NonFungible' ? 'w-12 h-12' : 'w-5 h-5'
+            tokenData.tokenStandard === 'NonFungible' ? 'w-14 h-14' : 'w-6 h-6'
           }`}
           onClick={(e: MouseEvent) => {
             e.stopPropagation();
             // TODO: Implement image modal
           }}
         >
-          <div className="absolute inset-0 bg-green-500/10 filter blur-sm group-hover:bg-green-500/20 transition-all duration-300 rounded-lg" />
+          <div className="absolute inset-0 bg-green-500/5 filter blur-sm group-hover:bg-green-500/10 transition-all duration-300 rounded-lg" />
           <div className={`relative overflow-hidden ${
-            tokenData.tokenStandard === 'NonFungible' ? 'rounded-lg' : 'rounded-full'
+            tokenData.tokenStandard === 'NonFungible' ? 'rounded-lg shadow-lg' : 'rounded-full'
           }`}>
             <Image
               src={tokenData.imageUrl}
               alt={tokenData.symbol || 'token'}
               fill
-              className={`object-cover p-1 bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300 ${
-                tokenData.tokenStandard === 'NonFungible' ? styles['nft-image'] : ''
-              }`}
+              className={`${styles['token-image']} object-cover p-1 bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300`}
               priority={tokenData.tokenStandard === 'NonFungible'}
+              loading={tokenData.tokenStandard === 'NonFungible' ? 'eager' : 'lazy'}
               onError={(e: SyntheticEvent<HTMLImageElement>) => {
                 const target = e.currentTarget;
                 target.style.display = 'none';
                 const parent = target.parentElement;
                 if (parent && tokenData.symbol) {
-                  parent.classList.add('bg-black/40', 'ring-1', 'ring-green-500/20');
+                  parent.classList.add('bg-black/40', 'ring-1', 'ring-green-500/20', 'flex', 'items-center', 'justify-center', styles['token-fallback']);
                   const span = document.createElement('span');
-                  span.className = 'text-green-500 font-mono text-sm font-bold';
-                  span.textContent = tokenData.symbol.slice(0, 3);
+                  span.className = 'text-green-500 font-mono text-xs font-medium tracking-wider';
+                  span.textContent = tokenData.symbol.slice(0, 3).toUpperCase();
                   parent.appendChild(span);
                 }
               }}
             />
+            {tokenData.tokenStandard === 'NonFungible' && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-full h-full bg-black/0 group-hover:bg-black/40 transition-all duration-300" />
+                <span className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-xs font-medium tracking-wide px-2 py-1 rounded bg-black/60">
+                  View NFT
+                </span>
+              </div>
+            )}
             {tokenData.tokenStandard === 'NonFungible' && (
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                 <span className="text-green-400 text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
