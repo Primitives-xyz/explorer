@@ -2,7 +2,6 @@ import { FungibleToken, NFT } from '@/utils/types'
 import { NFTSection } from './NFTSection'
 import { TokenSection } from './TokenSection'
 import { TransactionSection } from './TransactionSection'
-import { SolBalanceSection } from './tokens/SolBalanceSection'
 
 interface TokenContainerProps {
   walletAddress: string
@@ -69,11 +68,10 @@ export const TokenContainer = ({
   isLoading,
   error,
 }: TokenContainerProps) => {
-  console.log({ view })
   if (tokenType === 'nft') {
     return (
-      <div className="flex flex-col gap-4 w-full">
-        <div className="min-w-0">
+      <div className="flex flex-col space-y-6">
+        <div>
           <NFTSection
             walletAddress={walletAddress}
             hasSearched={hasSearched}
@@ -86,7 +84,7 @@ export const TokenContainer = ({
             }
           />
         </div>
-        <div className="min-w-0">
+        <div>
           <TransactionSection
             walletAddress={walletAddress}
             hasSearched={hasSearched}
@@ -97,14 +95,7 @@ export const TokenContainer = ({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <SolBalanceSection
-        walletAddress={walletAddress}
-        hideTitle={hideTitle}
-        isLoading={isLoading}
-        error={error}
-        nativeBalance={tokenData?.nativeBalance}
-      />
+    <div className="flex flex-col">
       <TokenSection
         tokenType={tokenType}
         hideTitle={hideTitle}

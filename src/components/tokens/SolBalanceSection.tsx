@@ -1,51 +1,42 @@
+import { TokenPortfolioResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
 
-const LAMPORTS_PER_SOL = 1000000000
-
-interface SolBalanceSectionProps {
-  walletAddress: string
+interface PortfolioBalanceSectionProps {
   hideTitle?: boolean
   isLoading: boolean
   error?: string
-  nativeBalance?: {
-    lamports: number
-    price_per_sol: number
-    total_price: number
-  }
+
+  portfolioData?: TokenPortfolioResponse
 }
 
-export const SolBalanceSection = ({
-  walletAddress,
+export const PortfolioBalanceSection = ({
   hideTitle = false,
   isLoading,
   error,
-  nativeBalance,
-}: SolBalanceSectionProps) => {
-  const balance = nativeBalance
-    ? nativeBalance.lamports / LAMPORTS_PER_SOL
-    : null
-  const solPrice = nativeBalance?.price_per_sol ?? null
+  portfolioData,
+}: PortfolioBalanceSectionProps) => {
+  const { items, totalUsd } = portfolioData?.data || { items: [], totalUsd: 0 }
 
-  const shouldShowContent = isLoading || balance !== null
+  // Find SOL token data
+  const solToken = items.find((item) => item.symbol === 'SOL')
+  const solBalance = solToken?.uiAmount ?? 0
+  const solValue = solToken?.valueUsd ?? 0
+
+  // Calculate other tokens
+  const tokenCount = items.length - 1 // Subtract SOL
+  const otherTokensValue = totalUsd - solValue
+
+  const shouldShowContent = isLoading || portfolioData?.data
 
   if (!shouldShowContent) return null
 
-  const totalValue = balance && solPrice ? balance * solPrice : 0
-
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[100px] relative group">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[200px] relative group">
       {/* Header */}
       {!hideTitle && (
-        <div className="border-b border-green-800 p-2 flex-shrink-0">
-          <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-            <div className="text-green-500 text-sm font-mono whitespace-nowrap">
-              {'>'} native_balance.sol
-            </div>
-            {balance !== null && solPrice !== null && (
-              <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
-                TOTAL: ${formatNumber(totalValue)} USDC
-              </div>
-            )}
+        <div className="border-b border-green-800 p-3 flex-shrink-0 bg-black/30">
+          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+            {'>'} portfolio_balance
           </div>
         </div>
       )}
@@ -57,26 +48,42 @@ export const SolBalanceSection = ({
       )}
 
       {/* Content */}
-      <div className="flex-grow p-4 font-mono">
+      <div className="flex-grow p-6 font-mono">
         {isLoading ? (
-          <div className="text-center text-green-600">
-            {'>>> FETCHING SOL BALANCE...'}
-          </div>
-        ) : balance === null ? (
-          <div className="text-center text-green-600">
-            {'>>> NO BALANCE FOUND'}
+          <div className="flex flex-col space-y-6 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="flex items-baseline space-x-2">
+                <div className="h-6 w-32 bg-green-800/30 rounded"></div>
+              </div>
+              <div className="h-5 w-24 bg-green-800/30 rounded"></div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="h-5 w-24 bg-green-800/30 rounded"></div>
+              <div className="h-5 w-28 bg-green-800/30 rounded"></div>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-green-800">
+              <div className="text-green-600/50">TOTAL</div>
+              <div className="h-5 w-28 bg-green-800/30 rounded"></div>
+            </div>
           </div>
         ) : (
-          <div className="flex items-center justify-between">
-            <div className="text-green-400">
-              <span className="text-green-600">{'>'}</span>{' '}
-              {formatNumber(balance)} SOL
+          <div className="flex flex-col space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-green-400">
+                {formatNumber(solBalance)} SOL
+              </span>
+              <span className="text-green-600">${formatNumber(solValue)}</span>
             </div>
-            {solPrice && (
-              <div className="text-green-600">
-                ${formatNumber(solPrice)} / SOL
-              </div>
-            )}
+            <div className="flex justify-between items-center">
+              <span className="text-green-400">{tokenCount} Tokens</span>
+              <span className="text-green-600">
+                ${formatNumber(otherTokensValue)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-green-800">
+              <span className="text-green-400">Total</span>
+              <span className="text-green-600">${formatNumber(totalUsd)}</span>
+            </div>
           </div>
         )}
       </div>

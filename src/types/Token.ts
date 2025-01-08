@@ -86,3 +86,25 @@ export interface FungibleTokenInfo extends BaseTokenInfo {
 export type TokenInfo = {
   result?: NFTTokenInfo | FungibleTokenInfo
 }
+
+export interface TokenPortfolioItem {
+  address: string
+  name: string
+  symbol: string
+  decimals: number
+  balance: string
+  uiAmount: number
+  chainId: string
+  logoURI: string
+  priceUsd: number
+  valueUsd: number
+}
+
+export interface TokenPortfolioResponse {
+  success: boolean
+  data: {
+    wallet: string
+    totalUsd: number
+    items: TokenPortfolioItem[]
+  }
+}

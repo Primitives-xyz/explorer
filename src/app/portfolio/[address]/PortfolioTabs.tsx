@@ -90,9 +90,9 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
   }
 
   return (
-    <>
-      <div className="bg-black/50 w-full overflow-hidden flex flex-col">
-        <div className="flex flex-wrap gap-4">
+    <div className="h-full flex flex-col bg-black/20">
+      <div className="border-b border-green-500/20">
+        <div className="flex flex-wrap gap-4 p-4">
           <button
             onClick={() => setActiveTab('all')}
             className={getTabStyle('all')}
@@ -132,7 +132,7 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
         </div>
       </div>
 
-      <div className="mt-8">{renderContent()}</div>
-    </>
+      <div className="flex-grow p-4 overflow-auto">{renderContent()}</div>
+    </div>
   )
 }

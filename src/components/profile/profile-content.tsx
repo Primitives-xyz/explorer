@@ -7,6 +7,7 @@ import { useApiVersion } from '@/hooks/use-api-version'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../ProfileSection'
 import { useGetProfiles } from '../auth/hooks/use-get-profiles'
+import { useRouter } from 'next/navigation'
 
 interface Props {
   username: string
@@ -55,6 +56,7 @@ export function ProfileContent({ username }: Props) {
     data?.walletAddress || '',
   )
   const loading = isLoading || loadingProfiles
+  const router = useRouter()
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -70,14 +72,19 @@ export function ProfileContent({ username }: Props) {
             <div className="h-5 bg-green-900/20 rounded animate-pulse w-32"></div>
           ) : (
             <div className="flex items-center space-x-2">
-              <span className="text-green-600 font-mono">
+              <button
+                onClick={() => {
+                  router.push(`/${data?.walletAddress}`)
+                }}
+                className="text-green-600 font-mono hover:text-green-400 hover:bg-green-900/30 rounded px-2 py-1 transition-colors"
+              >
                 {data?.walletAddress
                   ? `${data.walletAddress.slice(
                       0,
                       4,
                     )}...${data.walletAddress.slice(-4)}`
                   : 'Wallet not connected'}
-              </span>
+              </button>
               {data?.walletAddress && (
                 <button
                   onClick={() => {
