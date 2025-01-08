@@ -69,6 +69,51 @@ export async function getProfiles(
   }
 }
 
+export interface TokenMetadata {
+  name: string
+  symbol: string
+  description?: string
+  imageUrl?: string
+  tokenStandard?: string
+  decimals?: number
+  supply?: number
+  priceInfo?: {
+    pricePerToken: number
+    currency: string
+    volume24h?: number
+  }
+}
+
+export async function fetchTokenMetadata(mint: string): Promise<TokenMetadata | null> {
+  try {
+    const response = await fetch(`/api/tokens/${mint}`)
+    if (!response.ok) {
+      console.error(`Failed to fetch metadata for token ${mint}:`, response.statusText)
+      return null
+    }
+    const data = await response.json()
+    
+    // Normalize the metadata structure
+    return {
+      name: data.content?.metadata?.name || data.name || '',
+      symbol: data.content?.metadata?.symbol || data.symbol || '',
+      description: data.content?.metadata?.description,
+      imageUrl: data.content?.links?.image || data.content?.files?.[0]?.cdn_uri || data.content?.files?.[0]?.uri,
+      tokenStandard: data.content?.metadata?.token_standard || data.interface,
+      decimals: data.token_info?.decimals,
+      supply: data.token_info?.supply,
+      priceInfo: data.token_info?.price_info ? {
+        pricePerToken: data.token_info.price_info.price_per_token,
+        currency: data.token_info.price_info.currency,
+        volume24h: data.token_info.price_info.volume_24h
+      } : undefined
+    }
+  } catch (error) {
+    console.error('Error fetching token metadata:', error)
+    return null
+  }
+}
+
 export async function fetchTapestry<T>({
   endpoint,
   method = FetchMethod.GET,

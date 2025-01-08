@@ -1,0 +1,17 @@
+.fallback-active {
+  @apply bg-gray-200 flex items-center justify-center;
+}
+
+.fallback-active::after {
+  content: attr(data-fallback);
+  @apply text-gray-600 font-medium text-sm;
+}
+
+/* NFT-specific styles */
+.nft-container {
+  @apply transition-transform hover:scale-105;
+}
+
+.nft-image {
+  @apply object-cover rounded-lg shadow-sm;
+}
