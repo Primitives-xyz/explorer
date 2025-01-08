@@ -1,6 +1,4 @@
 import { formatLamportsToSol, formatAddress, formatTokenAmount } from '@/utils/transaction'
-import { fetchTokenMetadata } from '@/utils/api'
-import type { TokenMetadata } from '@/utils/api'
 import Image from 'next/image'
 import styles from './TransferList.module.css'
 import type { MouseEvent, SyntheticEvent } from 'react'
@@ -19,6 +17,26 @@ interface TokenTransfer {
   mint?: string
 }
 
+interface TokenTransfer {
+  tokenMint: string
+  from: string
+  to: string
+  amount: number
+  metadata?: {
+    name: string
+    symbol: string
+    decimals?: number
+    imageUrl?: string
+    tokenStandard?: string
+    price_info?: {
+      price_per_token: number
+      currency: string
+      volume_24h?: number
+    }
+    supply?: number
+  }
+}
+
 interface TokenTransferItemProps {
   transfer: TokenTransfer
   sourceWallet: string
@@ -26,33 +44,17 @@ interface TokenTransferItemProps {
 }
 
 const TokenTransferItem = ({ transfer, sourceWallet, targetAddress }: TokenTransferItemProps) => {
-  const [tokenData, setTokenData] = useState<TokenMetadata | null>(null);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  
+  // Use pre-fetched metadata from the API
+  const tokenData = transfer.metadata || null;
 
+  // Reset image states when metadata changes
   useEffect(() => {
-    let mounted = true;
-    const controller = new AbortController();
-
-    const fetchMetadata = async () => {
-      if (!transfer.mint) return;
-      
-      try {
-        const result = await fetchTokenMetadata(transfer.mint);
-        if (mounted && !controller.signal.aborted && result) {
-          setTokenData(result);
-        }
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Unknown error';
-        console.error('Error fetching token metadata:', message);
-      }
-    };
-
-    void fetchMetadata();
-    
-    return () => {
-      mounted = false;
-      controller.abort();
-    };
-  }, [transfer.mint]);
+    setImageLoading(true);
+    setImageError(false);
+  }, [tokenData?.imageUrl]);
 
   return (
     <div className="text-xs font-mono flex items-center gap-2 p-1 rounded hover:bg-green-500/5 transition-colors duration-200">
@@ -71,16 +73,19 @@ const TokenTransferItem = ({ transfer, sourceWallet, targetAddress }: TokenTrans
         >
           <div className="absolute inset-0 bg-green-500/5 filter blur-sm group-hover:bg-green-500/10 transition-all duration-300 rounded-lg" />
           <div className={`relative overflow-hidden ${
-            tokenData.tokenStandard === 'NonFungible' ? 'rounded-lg shadow-lg' : 'rounded-full'
-          }`}>
+            tokenData?.tokenStandard === 'NonFungible' ? 'rounded-lg shadow-lg' : 'rounded-full'
+          } ${imageLoading ? 'animate-pulse bg-green-500/10' : ''}`}>
             <Image
-              src={tokenData.imageUrl}
-              alt={tokenData.symbol || 'token'}
+              src={tokenData?.imageUrl || ''}
+              alt={tokenData?.symbol || 'token'}
               fill
               className={`${styles['token-image']} object-cover p-1 bg-black/40 ring-1 ring-green-500/20 group-hover:ring-green-500/40 transition-all duration-300`}
-              priority={tokenData.tokenStandard === 'NonFungible'}
-              loading={tokenData.tokenStandard === 'NonFungible' ? 'eager' : 'lazy'}
+              priority={tokenData?.tokenStandard === 'NonFungible'}
+              loading={tokenData?.tokenStandard === 'NonFungible' ? 'eager' : 'lazy'}
+              onLoad={() => setImageLoading(false)}
               onError={(e: SyntheticEvent<HTMLImageElement>) => {
+                setImageError(true);
+                setImageLoading(false);
                 const target = e.currentTarget;
                 target.style.display = 'none';
                 const parent = target.parentElement;
@@ -123,19 +128,19 @@ const TokenTransferItem = ({ transfer, sourceWallet, targetAddress }: TokenTrans
             <>
               <span className={formattedAmount.isNegative ? styles['amount-negative'] : styles['amount-positive']}>
                 {formattedAmount.formatted}{' '}
-                {tokenData?.symbol || (transfer.mint ? formatAddress(transfer.mint) : 'Unknown')}
+                {tokenData?.symbol || (transfer.tokenMint ? formatAddress(transfer.tokenMint) : 'Unknown')}
               </span>
-              {tokenData?.priceInfo && (
+              {tokenData?.price_info && (
                 <span className="text-gray-500 ml-1">
-                  (= ${(Math.abs(formattedAmount.value) * tokenData.priceInfo.pricePerToken).toFixed(2)} {tokenData.priceInfo.currency})
-                  {tokenData.token_info?.supply && (
+                  (= ${(Math.abs(formattedAmount.value) * tokenData.price_info.price_per_token).toFixed(2)} {tokenData.price_info.currency})
+                  {tokenData.supply && (
                     <span className="text-gray-400 ml-1">
-                      • Supply: {(tokenData.token_info.supply / Math.pow(10, tokenData.decimals || 9)).toLocaleString()}
+                      • Supply: {(tokenData.supply / Math.pow(10, tokenData.decimals || 9)).toLocaleString()}
                     </span>
                   )}
-                  {tokenData.token_info?.price_info?.volume_24h && (
+                  {tokenData.price_info.volume_24h && (
                     <span className="text-gray-400 ml-1">
-                      • 24h Vol: ${tokenData.token_info.price_info.volume_24h.toLocaleString()}
+                      • 24h Vol: ${tokenData.price_info.volume_24h.toLocaleString()}
                     </span>
                   )}
                 </span>

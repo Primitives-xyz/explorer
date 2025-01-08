@@ -99,16 +99,23 @@ async function parseTransactions(transactions: any[]) {
         )
 
         // Add additional transaction metadata
+        const [tokenTransfers, programsInvolved, events, balanceChanges] = await Promise.all([
+          getTokenTransfers(tx),
+          getProgramInteractions(tx),
+          parseEvents(tx),
+          getBalanceChanges(tx)
+        ])
+
         return {
           ...details,
           signature: tx.signature,
           success: !tx.transactionError,
           accountsInvolved:
             tx.accountData?.map((acc: any) => acc.account) || [],
-          tokenTransfers: getTokenTransfers(tx),
-          programsInvolved: getProgramInteractions(tx),
-          events: parseEvents(tx),
-          balanceChanges: getBalanceChanges(tx),
+          tokenTransfers,
+          programsInvolved,
+          events,
+          balanceChanges,
           parsedInstructions,
         }
       } catch (error) {
@@ -119,13 +126,65 @@ async function parseTransactions(transactions: any[]) {
   ).then((results) => results.filter(Boolean))
 }
 
-function getTokenTransfers(tx: any) {
-  return (tx.tokenTransfers || []).map((transfer: any) => ({
-    tokenMint: transfer.mint || transfer.tokenMint || '',
-    from: transfer.fromUserAccount || '',
-    to: transfer.toUserAccount || '',
-    amount: transfer.tokenAmount || 0,
-  }))
+async function getTokenTransfers(tx: any) {
+  if (!tx.tokenTransfers?.length) return []
+  
+  const transfers = tx.tokenTransfers || []
+  const uniqueMints = new Set(transfers.map((t: any) => t.mint || t.tokenMint))
+  const metadataPromises = Array.from(uniqueMints).map(async (mint: unknown) => {
+    if (typeof mint !== 'string') return null
+    if (!mint) return null
+    try {
+      const response = await fetch(`${process.env.RPC_URL}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 'my-id',
+          method: 'getAsset',
+          params: { id: mint }
+        })
+      })
+      
+      if (!response.ok) return null
+      const data = await response.json()
+      if (data.error) return null
+      
+      return {
+        mint,
+        metadata: {
+          name: data.result?.content?.metadata?.name || 'Unknown Token',
+          symbol: data.result?.content?.metadata?.symbol || '',
+          decimals: data.result?.token_info?.decimals,
+          imageUrl: data.result?.content?.links?.image || data.result?.content?.files?.[0]?.cdn_uri || null,
+          tokenStandard: data.result?.interface || data.result?.content?.metadata?.token_standard,
+          price_info: data.result?.token_info?.price_info,
+          supply: data.result?.token_info?.supply
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching metadata for token ${mint}:`, error)
+      return null
+    }
+  })
+  
+  const metadataResults = await Promise.all(metadataPromises)
+  const metadataMap = new Map(
+    metadataResults
+      .filter(Boolean)
+      .map(result => [result!.mint, result!.metadata])
+  )
+  
+  return transfers.map((transfer: any) => {
+    const mint = transfer.mint || transfer.tokenMint || ''
+    return {
+      tokenMint: mint,
+      from: transfer.fromUserAccount || '',
+      to: transfer.toUserAccount || '',
+      amount: transfer.tokenAmount || 0,
+      metadata: metadataMap.get(mint) || null
+    }
+  })
 }
 
 function getProgramInteractions(tx: any) {
