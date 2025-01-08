@@ -3,6 +3,7 @@ import PortfolioTabs from '@/app/portfolio/[address]/PortfolioTabs'
 import { ProfileSection } from '../ProfileSection'
 import { PortfolioBalanceSection } from '../tokens/SolBalanceSection'
 import { TradingStats } from '../trading/TradingStats'
+import { TapestryPromoSection } from '../tapestry/TapestryPromoSection'
 import { useEffect, useState } from 'react'
 import { TokenPortfolioResponse } from '@/types/Token'
 
@@ -81,32 +82,40 @@ export function WalletView({ address }: { address: string }) {
   }, [address])
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <h1 className="text-2xl font-mono text-green-500 mb-8">
+    <div className="container mx-auto px-4 py-8 space-y-6">
+      <h1 className="text-2xl font-mono text-green-500 mb-4">
         Wallet: {address}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <PortfolioBalanceSection
-          hideTitle={false}
-          isLoading={isLoading}
-          error={error || undefined}
-          portfolioData={portfolioData}
-        />
-        <TradingStats walletAddress={address} hideTitle={false} />
+      {/* Top section */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left side - Profile Section */}
+        <div className="lg:w-1/2">
+          <ProfileSection walletAddress={address} />
+        </div>
+
+        {/* Right side - Balance and Trading Stats */}
+        <div className="lg:w-1/2 flex flex-col space-y-3 h-[400px] lg:h-[600px]">
+          <div className="h-[calc(33.33%-0.5rem)]">
+            <PortfolioBalanceSection
+              hideTitle={false}
+              isLoading={isLoading}
+              error={error || undefined}
+              portfolioData={portfolioData}
+            />
+          </div>
+          <div className="h-[calc(33.33%-0.5rem)]">
+            <TradingStats walletAddress={address} hideTitle={false} />
+          </div>
+          <div className="h-[calc(33.33%-0.5rem)]">
+            <TapestryPromoSection hideTitle={false} />
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[600px]">
-        <div className="lg:col-span-4 h-full">
-          <div className="h-full">
-            <ProfileSection walletAddress={address} />
-          </div>
-        </div>
-        <div className="lg:col-span-8 h-full overflow-auto">
-          <div className="h-full">
-            <PortfolioTabs address={address} />
-          </div>
-        </div>
+      {/* Bottom - Portfolio Tabs */}
+      <div className="mt-6">
+        <PortfolioTabs address={address} />
       </div>
     </div>
   )
