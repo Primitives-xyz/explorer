@@ -26,7 +26,7 @@ export const TapestryPromoSection = ({
           </div>
           <p className="text-green-600 text-sm leading-relaxed">
             Build meaningful connections in the Solana ecosystem. Create your
-            own social graph with Tapestry's powerful social protocol.
+            own social graph with Tapestry&apos;s powerful social protocol.
           </p>
         </div>
 
