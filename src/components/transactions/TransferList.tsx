@@ -14,14 +14,7 @@ interface TokenTransfer {
   fromUserAccount: string
   toUserAccount: string
   tokenAmount: number
-  mint?: string
-}
-
-interface TokenTransfer {
   tokenMint: string
-  from: string
-  to: string
-  amount: number
   metadata?: {
     name: string
     symbol: string
@@ -119,7 +112,7 @@ const TokenTransferItem = ({ transfer, sourceWallet, targetAddress }: TokenTrans
       <span className={styles['amount-container']}>
         {(() => {
           const formattedAmount = formatTokenAmount(
-            transfer.tokenAmount,
+            transfer.tokenAmount || 0,
             tokenData?.decimals || 9,
             sourceWallet,
             transfer.fromUserAccount
@@ -128,7 +121,7 @@ const TokenTransferItem = ({ transfer, sourceWallet, targetAddress }: TokenTrans
             <>
               <span className={formattedAmount.isNegative ? styles['amount-negative'] : styles['amount-positive']}>
                 {formattedAmount.formatted}{' '}
-                {tokenData?.symbol || (transfer.tokenMint ? formatAddress(transfer.tokenMint) : 'Unknown')}
+                {tokenData?.symbol || formatAddress(transfer.tokenMint)}
               </span>
               {tokenData?.price_info && (
                 <span className="text-gray-500 ml-1">
@@ -219,7 +212,7 @@ export const TransferList = ({
 
           return (
             <TokenTransferItem 
-              key={`${transfer.fromUserAccount}-${transfer.toUserAccount}-${transfer.tokenAmount}-${transfer.mint || ''}`}
+              key={`${transfer.fromUserAccount}-${transfer.toUserAccount}-${transfer.tokenAmount}-${transfer.tokenMint || ''}`}
               transfer={transfer}
               sourceWallet={sourceWallet}
               targetAddress={targetAddress}
