@@ -104,7 +104,7 @@ export default function TransactionDetails({
             <div className="flex-1">
               <div className="text-green-400 font-mono text-sm mb-1">Input</div>
               <div className="text-xl font-mono text-green-300">
-                {formatTokenAmount(totalInput)} SOL
+                {formatTokenAmount(totalInput).formatted} SOL
               </div>
             </div>
             <div className="px-4 text-green-500">→</div>
@@ -113,7 +113,7 @@ export default function TransactionDetails({
                 Output
               </div>
               <div className="text-xl font-mono text-green-300">
-                {formatTokenAmount(totalOutput, 6)} USDC
+                {formatTokenAmount(totalOutput, 6).formatted} USDC
               </div>
             </div>
           </div>
@@ -158,12 +158,12 @@ export default function TransactionDetails({
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <div className="text-green-300 font-mono">
-                        {formatTokenAmount(inputAmount, inputDecimals)}{' '}
+                        {formatTokenAmount(inputAmount, inputDecimals).formatted}{' '}
                         {getTokenSymbol(swap.tokenInputs[0]?.mint)}
                       </div>
                       <div className="px-2 text-green-500">→</div>
                       <div className="text-green-300 font-mono">
-                        {formatTokenAmount(outputAmount, outputDecimals)}{' '}
+                        {formatTokenAmount(outputAmount, outputDecimals).formatted}{' '}
                         {getTokenSymbol(swap.tokenOutputs[0]?.mint)}
                       </div>
                     </div>
@@ -260,7 +260,7 @@ export default function TransactionDetails({
                       }`}
                     >
                       {account.nativeBalanceChange > 0 ? '+' : ''}
-                      {formatTokenAmount(account.nativeBalanceChange)} SOL
+                      {formatTokenAmount(account.nativeBalanceChange).formatted} SOL
                     </span>
                   )}
                 </div>
@@ -288,7 +288,7 @@ export default function TransactionDetails({
                         {formatTokenAmount(
                           change.rawTokenAmount.tokenAmount,
                           change.rawTokenAmount.decimals,
-                        )}{' '}
+                        ).formatted}{' '}
                         {symbol}
                       </span>
                     </div>

@@ -15,3 +15,18 @@
 .nft-image {
   @apply object-cover rounded-lg shadow-sm;
 }
+
+.amount-positive {
+  @apply text-green-500;
+}
+
+.amount-negative {
+  @apply text-red-500;
+}
+
+.amount-container {
+  @apply font-mono flex items-center gap-1 text-xs;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

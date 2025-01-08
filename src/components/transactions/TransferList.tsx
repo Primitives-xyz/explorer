@@ -1,4 +1,4 @@
-import { formatLamportsToSol, formatAddress } from '@/utils/transaction'
+import { formatLamportsToSol, formatAddress, formatTokenAmount } from '@/utils/transaction'
 import { fetchTokenMetadata } from '@/utils/api'
 import type { TokenMetadata } from '@/utils/api'
 import Image from 'next/image'
@@ -102,14 +102,38 @@ const TokenTransferItem = ({ transfer, sourceWallet, targetAddress }: TokenTrans
           </div>
         </div>
       )}
-      <span>
-        {transfer.tokenAmount?.toLocaleString() || 0}{' '}
-        {tokenData?.symbol || (transfer.mint ? formatAddress(transfer.mint) : 'Unknown')}
-        {tokenData?.priceInfo && (
-          <span className="text-gray-500 ml-1">
-            (${(transfer.tokenAmount * tokenData.priceInfo.pricePerToken).toFixed(2)} {tokenData.priceInfo.currency})
-          </span>
-        )}
+      <span className={styles['amount-container']}>
+        {(() => {
+          const formattedAmount = formatTokenAmount(
+            transfer.tokenAmount,
+            tokenData?.decimals || 9,
+            sourceWallet,
+            transfer.fromUserAccount
+          )
+          return (
+            <>
+              <span className={formattedAmount.isNegative ? styles['amount-negative'] : styles['amount-positive']}>
+                {formattedAmount.formatted}{' '}
+                {tokenData?.symbol || (transfer.mint ? formatAddress(transfer.mint) : 'Unknown')}
+              </span>
+              {tokenData?.priceInfo && (
+                <span className="text-gray-500 ml-1">
+                  (= ${(Math.abs(formattedAmount.value) * tokenData.priceInfo.pricePerToken).toFixed(2)} {tokenData.priceInfo.currency})
+                  {tokenData.token_info?.supply && (
+                    <span className="text-gray-400 ml-1">
+                      • Supply: {(tokenData.token_info.supply / Math.pow(10, tokenData.decimals || 9)).toLocaleString()}
+                    </span>
+                  )}
+                  {tokenData.token_info?.price_info?.volume_24h && (
+                    <span className="text-gray-400 ml-1">
+                      • 24h Vol: ${tokenData.token_info.price_info.volume_24h.toLocaleString()}
+                    </span>
+                  )}
+                </span>
+              )}
+            </>
+          )
+        })()}
       </span>
       <span className="text-green-700">
         {transfer.fromUserAccount === sourceWallet ? 'to' : 'from'}

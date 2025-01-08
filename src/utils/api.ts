@@ -76,7 +76,16 @@ export interface TokenMetadata {
   imageUrl?: string
   tokenStandard?: string
   decimals?: number
-  supply?: number
+  token_info?: {
+    supply: number
+    decimals: number
+    token_program: string
+    price_info?: {
+      price_per_token: number
+      currency: string
+      volume_24h?: number
+    }
+  }
   priceInfo?: {
     pricePerToken: number
     currency: string
@@ -101,7 +110,7 @@ export async function fetchTokenMetadata(mint: string): Promise<TokenMetadata | 
       imageUrl: data.content?.links?.image || data.content?.files?.[0]?.cdn_uri || data.content?.files?.[0]?.uri,
       tokenStandard: data.content?.metadata?.token_standard || data.interface,
       decimals: data.token_info?.decimals,
-      supply: data.token_info?.supply,
+      token_info: data.token_info,
       priceInfo: data.token_info?.price_info ? {
         pricePerToken: data.token_info.price_info.price_per_token,
         currency: data.token_info.price_info.currency,
