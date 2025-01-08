@@ -4,6 +4,7 @@ import { Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
 import { TransactionCard } from './transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
+import { SwapActivityItem } from './transactions/SwapActivityItem'
 
 interface TransactionSectionProps {
   walletAddress: string
@@ -75,40 +76,19 @@ export const TransactionSection = ({
   if (!hasSearched) return null
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px]">
-      {/* Header */}
-      <div className="border-b border-green-800 p-2 flex-shrink-0">
-        <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
-            {'>'} transaction_log.sol
-          </div>
-          <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
-            COUNT: {transactions.length}
-          </div>
-        </div>
-      </div>
-
-      {error && (
-        <div className="p-1.5 text-xs border border-red-800 bg-red-900/20 text-red-400">
-          {error}
-        </div>
-      )}
-
-      {/* Transaction List */}
-      <div className="divide-y divide-green-800/30 overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
-        {isLoading && transactions.length === 0 ? (
-          <div className="p-2 text-center text-green-600 text-sm font-mono">
-            Loading...
-          </div>
-        ) : transactions.length === 0 ? (
-          <div className="p-2 text-center text-green-600 text-sm font-mono">
-            No transactions
-          </div>
+    <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="flex-1 overflow-y-auto space-y-1 p-2">
+        {isLoading ? (
+          <LoadingTransactions />
         ) : (
           <>
-            {transactions
-              .filter((tx) => !isSpamTransaction(tx))
-              .map((tx) => (
+            {transactions.map((tx) => (
+              tx.type === 'SWAP' ? (
+                <SwapActivityItem 
+                  key={tx.signature}
+                  transaction={tx}
+                />
+              ) : (
                 <TransactionCard
                   key={tx.signature}
                   transaction={tx}
@@ -120,21 +100,11 @@ export const TransactionSection = ({
                     )
                   }
                 />
-              ))}
+              )
+            ))}
           </>
         )}
       </div>
-
-      {/* Load More */}
-      {!isLoading && transactions.length > 0 && (
-        <button
-          className="w-full p-1 text-xs text-green-600 hover:text-green-500 font-mono border-t border-green-800 transition-colors duration-200"
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Loading...' : 'Load More'}
-        </button>
-      )}
     </div>
   )
 }
