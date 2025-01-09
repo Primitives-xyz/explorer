@@ -3,13 +3,19 @@ import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RouteContext = {
-  params: Promise<{ username: string }>
+  params: { username: string }
 }
 
+console.log('🔥 FOLLOWING ROUTE MODULE LOADED 🔥')
+
 export async function GET(req: NextRequest, context: RouteContext) {
+  console.log('🔥 FOLLOWING ENDPOINT HIT 🔥')
+  console.log('Request URL:', req.url)
+  console.log('Request method:', req.method)
   try {
-    const params = await context.params
-    const { username } = params
+    const { username } = context.params
+    console.log('🔥 USERNAME FROM PARAMS:', username)
+    console.log('🔥 FULL PARAMS:', context.params)
 
     if (!username) {
       return NextResponse.json(
@@ -17,15 +23,15 @@ export async function GET(req: NextRequest, context: RouteContext) {
         { status: 400 },
       )
     }
-    console.log('calling API with username', username)
+
     const response = await fetchTapestryServer({
       endpoint: `profiles/${username}/following`,
       method: FetchMethod.GET,
     })
-    console.log('response', response)
+    console.log('🔥 TAPESTRY RESPONSE:', response)
     return NextResponse.json(response)
   } catch (error: any) {
-    console.error('Error fetching following:', error)
+    console.error('🔥 ERROR IN FOLLOWING ENDPOINT:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch following' },
       { status: 500 },
