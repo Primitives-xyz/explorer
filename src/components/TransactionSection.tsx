@@ -36,7 +36,7 @@ export const TransactionSection = ({
         if (page > 1 && transactions.length > 0) {
           url.searchParams.set(
             'before',
-            transactions[transactions.length - 1].timestamp.toString(),
+            transactions[transactions.length - 1]?.timestamp?.toString() ?? '',
           )
         }
 
