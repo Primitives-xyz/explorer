@@ -112,7 +112,7 @@ export const TransferList = ({
                 {transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}
               </span>
               <div className="flex items-center gap-1">
-                {transfer.metadata?.image && (
+                {transfer.metadata?.image && transfer.metadata?.symbol && (
                   <Image
                     src={transfer.metadata.image}
                     alt={transfer.metadata.symbol}
