@@ -1,15 +1,16 @@
-export interface TokenTransfer {
-  tokenMint: string
-  from: string
-  to: string
-  amount: number
-}
-
 export interface TokenMetadata {
   symbol: string
   name: string
   image: string
   decimals: number
+}
+
+export interface TokenTransfer {
+  tokenMint: string
+  from: string
+  to: string
+  amount: number
+  metadata?: TokenMetadata
 }
 
 export interface EnrichedTokenTransfer extends TokenTransfer {
