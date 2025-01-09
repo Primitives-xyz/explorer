@@ -1,4 +1,5 @@
-import { Transaction, TokenTransfer, EnrichedTokenTransfer } from '@/types/transaction'
+import { TokenMetadata } from '@/types/transaction'
+import { Transaction } from '@/utils/helius/types'
 import { getTokenMetadata } from '@/utils/helius/token-api'
 
 export const enrichTransactions = async (transactions: Transaction[]): Promise<Transaction[]> => {
@@ -8,10 +9,10 @@ export const enrichTransactions = async (transactions: Transaction[]): Promise<T
         return transaction
       }
 
-      const enrichedTransfers: EnrichedTokenTransfer[] = await Promise.all(
-        transaction.tokenTransfers.map(async (transfer: TokenTransfer) => {
+      const enrichedTransfers = await Promise.all(
+        transaction.tokenTransfers.map(async (transfer) => {
           try {
-            const metadata = await getTokenMetadata(transfer.tokenMint)
+            const metadata = await getTokenMetadata(transfer.mint)
             return {
               ...transfer,
               metadata,

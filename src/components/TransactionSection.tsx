@@ -1,6 +1,6 @@
 'use client'
 
-import { Transaction } from '@/types/transaction'
+import { Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
 import { TransactionCard } from './transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
@@ -57,7 +57,7 @@ export const TransactionSection = ({
         setTransactions(
           page === 1
             ? enrichedTransactions
-            : (prev) => [...prev, ...enrichedTransactions],
+            : (prev: Transaction[]) => [...prev, ...enrichedTransactions],
         )
       } catch (error) {
         console.error('Error fetching transactions:', error)
