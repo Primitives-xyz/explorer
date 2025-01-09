@@ -17,12 +17,12 @@ export async function GET(req: NextRequest, context: RouteContext) {
         { status: 400 },
       )
     }
-
+    console.log('calling API with username', username)
     const response = await fetchTapestryServer({
       endpoint: `profiles/${username}/following`,
       method: FetchMethod.GET,
     })
-
+    console.log('response', response)
     return NextResponse.json(response)
   } catch (error: any) {
     console.error('Error fetching following:', error)

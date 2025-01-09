@@ -8,6 +8,10 @@ import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../ProfileSection'
 import { useGetProfiles } from '../auth/hooks/use-get-profiles'
 import { useRouter } from 'next/navigation'
+import { useProfileFollowers } from '@/hooks/use-profile-followers'
+import { FollowerSection } from '../followers/FollowerSection'
+import { useProfileFollowing } from '@/hooks/use-profile-following'
+import { FollowingSection } from '../following/FollowingSection'
 
 interface Props {
   username: string
@@ -21,20 +25,20 @@ interface ProfileData {
   }
 }
 
-function LoadingCard() {
-  return (
-    <Card>
-      <div className="p-4">
-        <div className="h-8 bg-green-900/20 rounded animate-pulse mb-2"></div>
-        <div className="h-4 bg-green-900/20 rounded animate-pulse w-1/2"></div>
-      </div>
-    </Card>
-  )
-}
-
 export function ProfileContent({ username }: Props) {
   const { useNewApi } = useApiVersion()
   const { mainUsername } = useCurrentWallet()
+  const {
+    followers,
+    isLoading: isLoadingFollowers,
+    error: followersError,
+  } = useProfileFollowers(username)
+  const {
+    following,
+    isLoading: isLoadingFollowing,
+    error: followingError,
+  } = useProfileFollowing(username)
+  console.log('following', following)
   const fetcher = async (url: string) => {
     const apiUrl = `${url}?useNewApi=${useNewApi}`
     const res = await fetch(apiUrl)
@@ -188,6 +192,20 @@ export function ProfileContent({ username }: Props) {
               </div>
             </div>
           </Card>
+
+          {/* Followers Section */}
+          <FollowerSection
+            followers={followers}
+            isLoading={isLoadingFollowers}
+            error={followersError}
+          />
+
+          {/* Following Section */}
+          <FollowingSection
+            following={following}
+            isLoading={isLoadingFollowing}
+            error={followingError}
+          />
         </div>
       </div>
     </div>
