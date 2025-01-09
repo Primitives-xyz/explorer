@@ -57,9 +57,9 @@ const ProfileCard = memo(
     }, [router, profile.namespace?.name])
 
     return (
-      <div className="p-4 hover:bg-green-900/10">
-        <div className="flex items-start gap-4">
-          <div className="relative">
+      <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
+        <div className="flex items-start gap-3 h-full">
+          <div className="relative flex-shrink-0">
             <img
               src={
                 profile.profile.image ||
@@ -67,43 +67,36 @@ const ProfileCard = memo(
                   profile.profile.username
               }
               alt={profile.profile.username}
-              className="w-16 h-16 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
+              className="w-12 h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
             />
             {profile.namespace?.faviconURL && (
               <button
                 onClick={handleNamespaceClick}
-                className="absolute -bottom-2 -right-2 hover:scale-110 transition-transform"
+                className="absolute -bottom-1.5 -right-1.5 hover:scale-110 transition-transform"
               >
                 <img
                   src={profile.namespace.faviconURL}
                   alt={profile.namespace.readableName}
-                  className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
+                  className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
                 />
               </button>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={handleProfileClick}
-                    className="text-green-400 font-mono text-lg bg-green-900/20 px-3 py-1.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold"
+                    className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold"
                   >
                     @{profile.profile.username}
                   </button>
-                  {profile.wallet?.address && (
-                    <div className="flex items-center gap-1.5 bg-black/30 px-2 py-1 rounded-md">
-                      <span className="text-green-600/60 text-xs">
-                        address:
-                      </span>
-                      <TokenAddress address={profile.wallet.address} />
+                  {isNemoApp && (
+                    <div className="flex items-center gap-2 text-xs text-green-600 font-mono">
+                      <span>Followers: {followers}</span>
+                      <span>Following: {following}</span>
                     </div>
-                  )}
-                  {profile.profile.bio && (
-                    <span className="text-green-600 font-mono text-sm truncate">
-                      {profile.profile.bio}
-                    </span>
                   )}
                 </div>
                 {profile.namespace?.name === 'nemoapp' && (
@@ -112,22 +105,32 @@ const ProfileCard = memo(
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-4 text-xs text-green-600 font-mono">
-                {isNemoApp && (
-                  <>
-                    <span>Followers: {followers}</span>
-                    <span>Following: {following}</span>
-                  </>
+
+              <div className="flex items-center gap-2">
+                {profile.wallet?.address && (
+                  <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md">
+                    <span className="text-green-600/60 text-xs">address:</span>
+                    <TokenAddress address={profile.wallet.address} />
+                  </div>
                 )}
-                <span className="text-green-600/50">
-                  <button
-                    onClick={handleNamespaceClick}
-                    className="hover:text-green-500 transition-colors"
-                  >
-                    {profile.namespace?.readableName || profile.namespace?.name}
-                  </button>
-                </span>
               </div>
+
+              {profile.profile.bio && (
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600 font-mono text-xs truncate">
+                    {profile.profile.bio}
+                  </span>
+                  <span className="text-green-600/50 text-xs">
+                    <button
+                      onClick={handleNamespaceClick}
+                      className="hover:text-green-500 transition-colors"
+                    >
+                      {profile.namespace?.readableName ||
+                        profile.namespace?.name}
+                    </button>
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -253,19 +256,28 @@ export const ProfileSection = ({
     resetState,
   ])
 
+  const shouldShowContent =
+    isLoading ||
+    isLoadingProfileData ||
+    profiles.length > 0 ||
+    (hasSearched && profiles.length === 0)
+
+  if (!shouldShowContent) return null
+
   return (
     <div
       key={key}
       className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[400px] lg:h-[600px] relative group"
     >
       {/* Header */}
-      <div className="border-b border-green-800 p-2 flex-shrink-0">
-        <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+      <div className="border-b border-green-800 p-4 flex-shrink-0 bg-black/20">
+        <div className="flex justify-between items-center">
+          <div className="text-green-500 text-sm font-mono flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             {'>'} profile_info.sol
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-xs text-green-600 font-mono whitespace-nowrap">
+            <div className="text-xs text-green-600 font-mono bg-green-900/20 px-3 py-1 rounded-full">
               COUNT: {filteredProfiles?.length || 0}
             </div>
             <button
@@ -317,20 +329,29 @@ export const ProfileSection = ({
       </Modal>
 
       {/* Namespace Filters */}
-      {namespaces.length > 0 && (
-        <div className="border-b border-green-800/30 p-2 flex-shrink-0">
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-            <button
-              onClick={() => setSelectedNamespace(null)}
-              className={`px-2 py-1 rounded text-xs font-mono whitespace-nowrap transition-colors ${
-                selectedNamespace === null
-                  ? 'bg-green-500 text-black font-semibold'
-                  : 'text-green-500 hover:bg-green-500/10'
-              }`}
-            >
-              All
-            </button>
-            {namespaces.map((namespace) => (
+      <div className="border-b border-green-800/30 p-2 flex-shrink-0">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <button
+            onClick={() => setSelectedNamespace(null)}
+            className={`px-2 py-1 rounded text-xs font-mono whitespace-nowrap transition-colors ${
+              selectedNamespace === null
+                ? 'bg-green-500 text-black font-semibold'
+                : 'text-green-500 hover:bg-green-500/10'
+            }`}
+          >
+            All
+          </button>
+          {isLoading || isLoadingProfileData ? (
+            <>
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-6 w-20 bg-green-500/5 rounded animate-pulse"
+                />
+              ))}
+            </>
+          ) : (
+            namespaces.map((namespace) => (
               <button
                 key={namespace.name}
                 onClick={() => setSelectedNamespace(namespace.name)}
@@ -349,10 +370,10 @@ export const ProfileSection = ({
                 )}
                 {namespace.readableName || namespace.name}
               </button>
-            ))}
-          </div>
+            ))
+          )}
         </div>
-      )}
+      </div>
 
       {error && (
         <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
@@ -393,11 +414,16 @@ export const ProfileSection = ({
           }
         }}
       >
-        {isLoading ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> FETCHING PROFILES...'}
+        {isLoading || isLoadingProfileData ? (
+          <div className="p-8 flex flex-col items-center gap-4">
+            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+            <div className="text-green-600 font-mono animate-pulse">
+              {'>>> FETCHING PROFILES...'}
+            </div>
           </div>
-        ) : filteredProfiles.length === 0 && !isLoading ? (
+        ) : filteredProfiles.length === 0 &&
+          !isLoading &&
+          !isLoadingProfileData ? (
           <div className="p-4 text-center text-green-600 font-mono">
             {'>>> NO PROFILES FOUND'}
           </div>
