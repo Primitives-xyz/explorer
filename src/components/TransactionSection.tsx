@@ -4,7 +4,6 @@ import { Transaction } from '@/types/transaction'
 import { useEffect, useState } from 'react'
 import { TransactionCard } from './transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
-import { enrichTransactions } from '@/services/transaction.service'
 
 interface TransactionSectionProps {
   walletAddress: string
