@@ -157,24 +157,26 @@ export const ProfileSection = ({
 
   // Memoize filtered profiles
   const filteredProfiles = useMemo(() => {
+    if (!profiles || !Array.isArray(profiles)) return []
     if (!selectedNamespace) return profiles
     return profiles.filter(
-      (profile) => profile.namespace?.name === selectedNamespace,
+      (profile) => profile?.namespace?.name === selectedNamespace,
     )
   }, [profiles, selectedNamespace])
 
   // Memoize unique namespaces
   const namespaces = useMemo(() => {
+    if (!profiles || !Array.isArray(profiles)) return []
+
     return Array.from(
       new Set(
         profiles
-          .map((p) => p.namespace)
-          .filter(Boolean)
-          .map((n) =>
+          .filter((p) => p?.namespace != null)
+          .map((p) =>
             JSON.stringify({
-              name: n!.name,
-              readableName: n!.readableName,
-              faviconURL: n!.faviconURL,
+              name: p.namespace.name,
+              readableName: p.namespace.readableName,
+              faviconURL: p.namespace.faviconURL,
             }),
           ),
       ),
@@ -264,7 +266,7 @@ export const ProfileSection = ({
           </div>
           <div className="flex items-center gap-2">
             <div className="text-xs text-green-600 font-mono whitespace-nowrap">
-              COUNT: {filteredProfiles.length}
+              COUNT: {filteredProfiles?.length || 0}
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
