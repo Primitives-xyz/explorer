@@ -98,16 +98,13 @@ export const TrendingTokens = () => {
     <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[400px] lg:h-[600px] relative group backdrop-blur-sm">
       {/* Header */}
       <div className="border-b border-green-800 p-4 flex-shrink-0 bg-black/20">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div className="text-green-500 text-sm font-mono flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             {'>'} trending_tokens.sol
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-xs text-green-600 font-mono bg-green-900/20 px-3 py-1 rounded-full">
-              RANK BY: {getSortLabel()}
-            </div>
-            <div className="text-xs text-green-600 font-mono bg-green-900/20 px-3 py-1 rounded-full">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="text-xs text-green-600 font-mono bg-green-900/20 px-3 py-1 rounded-full whitespace-nowrap">
               COUNT: {tokens.length}
             </div>
           </div>
