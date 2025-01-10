@@ -4,6 +4,7 @@ import { Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
 import { TransactionCard } from './transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
+import { enrichTransactions } from '@/services/transaction.service'
 
 interface TransactionSectionProps {
   walletAddress: string
@@ -35,7 +36,7 @@ export const TransactionSection = ({
         if (page > 1 && transactions.length > 0) {
           url.searchParams.set(
             'before',
-            transactions[transactions.length - 1].timestamp.toString(),
+            transactions[transactions.length - 1]?.timestamp?.toString() ?? '',
           )
         }
 
@@ -48,13 +49,15 @@ export const TransactionSection = ({
         }
 
         const transactionsData = await response.json()
-        console.log('transactionsData', transactionsData.slice(0, 5))
         if ('error' in transactionsData) throw new Error(transactionsData.error)
+
+        // Enrich transactions with token metadata
+        const enrichedTransactions = await enrichTransactions(transactionsData)
 
         setTransactions(
           page === 1
-            ? transactionsData
-            : (prev) => [...prev, ...transactionsData],
+            ? enrichedTransactions
+            : (prev: Transaction[]) => [...prev, ...enrichedTransactions],
         )
       } catch (error) {
         console.error('Error fetching transactions:', error)
