@@ -91,7 +91,11 @@ export function WalletView({ address }: { address: string }) {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left side - Profile Section */}
         <div className="lg:w-1/2">
-          <ProfileSection walletAddress={address} />
+          <ProfileSection
+            walletAddress={address}
+            isLoadingProfileData={isLoading}
+            hasSearched={true}
+          />
         </div>
 
         {/* Right side - Balance and Trading Stats */}

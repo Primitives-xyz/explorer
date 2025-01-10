@@ -8,6 +8,10 @@ import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../ProfileSection'
 import { useGetProfiles } from '../auth/hooks/use-get-profiles'
 import { useRouter } from 'next/navigation'
+import { useProfileFollowers } from '@/hooks/use-profile-followers'
+import { useProfileFollowing } from '@/hooks/use-profile-following'
+import { SocialSection } from '../social/SocialSection'
+import { TokenAddress } from '../tokens/TokenAddress'
 
 interface Props {
   username: string
@@ -21,20 +25,20 @@ interface ProfileData {
   }
 }
 
-function LoadingCard() {
-  return (
-    <Card>
-      <div className="p-4">
-        <div className="h-8 bg-green-900/20 rounded animate-pulse mb-2"></div>
-        <div className="h-4 bg-green-900/20 rounded animate-pulse w-1/2"></div>
-      </div>
-    </Card>
-  )
-}
-
 export function ProfileContent({ username }: Props) {
   const { useNewApi } = useApiVersion()
   const { mainUsername } = useCurrentWallet()
+  const {
+    followers,
+    isLoading: isLoadingFollowers,
+    error: followersError,
+  } = useProfileFollowers(username)
+  const {
+    following,
+    isLoading: isLoadingFollowing,
+    error: followingError,
+  } = useProfileFollowing(username)
+  console.log('following', following)
   const fetcher = async (url: string) => {
     const apiUrl = `${url}?useNewApi=${useNewApi}`
     const res = await fetch(apiUrl)
@@ -61,63 +65,20 @@ export function ProfileContent({ username }: Props) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-4">
           <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
-          <div className="min-w-[120px]">
-            <FollowButton username={username} />
+          <FollowButton username={username} size="lg" />
+        </div>
+
+        {!loading && data?.walletAddress && (
+          <div className="flex items-center gap-2 text-sm">
+            <TokenAddress address={data.walletAddress} />
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          {loading ? (
-            <div className="h-5 bg-green-900/20 rounded animate-pulse w-32"></div>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => {
-                  router.push(`/${data?.walletAddress}`)
-                }}
-                className="text-green-600 font-mono hover:text-green-400 hover:bg-green-900/30 rounded px-2 py-1 transition-colors"
-              >
-                {data?.walletAddress
-                  ? `${data.walletAddress.slice(
-                      0,
-                      4,
-                    )}...${data.walletAddress.slice(-4)}`
-                  : 'Wallet not connected'}
-              </button>
-              {data?.walletAddress && (
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(data.walletAddress)
-                  }}
-                  className="p-1.5 text-green-400 hover:bg-green-900/30 rounded transition-colors"
-                  title="Copy wallet address"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Profile Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-4">
             <Card>
               <div className="p-4">
@@ -126,7 +87,7 @@ export function ProfileContent({ username }: Props) {
                 </h3>
                 <div className="text-3xl font-mono text-green-500">
                   {loading ? (
-                    <div className="h-8 bg-green-900/20 rounded animate-pulse w-16"></div>
+                    <div className="h-8 bg-green-900/20 rounded animate-pulse w-16" />
                   ) : (
                     data?.socialCounts?.followers || 0
                   )}
@@ -140,7 +101,7 @@ export function ProfileContent({ username }: Props) {
                 </h3>
                 <div className="text-3xl font-mono text-green-500">
                   {loading ? (
-                    <div className="h-8 bg-green-900/20 rounded animate-pulse w-16"></div>
+                    <div className="h-8 bg-green-900/20 rounded animate-pulse w-16" />
                   ) : (
                     data?.socialCounts?.following || 0
                   )}
@@ -149,7 +110,6 @@ export function ProfileContent({ username }: Props) {
             </Card>
           </div>
 
-          {/* Profile Section Component */}
           <ProfileSection
             walletAddress={data?.walletAddress}
             hasSearched={!loading}
@@ -158,9 +118,7 @@ export function ProfileContent({ username }: Props) {
           />
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Profile Info */}
           <Card>
             <div className="p-4">
               <h3 className="text-lg font-mono text-green-400 mb-4">
@@ -179,15 +137,22 @@ export function ProfileContent({ username }: Props) {
                   <span className="text-green-600">Status</span>
                   <span className="text-green-400">Active</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-green-600">API Version</span>
-                  <span className="text-green-400">
-                    {useNewApi ? 'New' : 'Old'}
-                  </span>
-                </div>
               </div>
             </div>
           </Card>
+
+          <SocialSection
+            users={followers}
+            isLoading={isLoadingFollowers}
+            error={followersError}
+            type="followers"
+          />
+          <SocialSection
+            users={following}
+            isLoading={isLoadingFollowing}
+            error={followingError}
+            type="following"
+          />
         </div>
       </div>
     </div>

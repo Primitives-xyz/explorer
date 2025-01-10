@@ -87,7 +87,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
       {walletAddress && (
         <>
           <Link
-            href={`/portfolio/${walletAddress}`}
+            href={`/${walletAddress}`}
             className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
           >
             [PORTFOLIO]
