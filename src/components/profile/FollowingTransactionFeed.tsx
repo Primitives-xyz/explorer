@@ -1,9 +1,15 @@
 import { Transaction } from '@/utils/helius/types'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { TransactionCard } from '@/components/transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
+import { DataContainer } from '@/components/common/DataContainer'
+import { ScrollableContent } from '@/components/common/ScrollableContent'
+import { FilterBar } from '@/components/common/FilterBar'
+import { FilterButton } from '@/components/common/FilterButton'
+
+type TransactionType = string
 
 interface FollowingTransactionFeedProps {
   transactions: Transaction[]
@@ -24,23 +30,28 @@ export const FollowingTransactionFeed = ({
 }: FollowingTransactionFeedProps) => {
   const { isHolder } = useHolderCheck()
   const [expandedTx, setExpandedTx] = useState<string | null>(null)
+  const [selectedType, setSelectedType] = useState<TransactionType>('all')
   const {
     walletAddress,
     isLoggedIn: currentIsLoggedIn,
     sdkHasLoaded: currentSdkHasLoaded,
   } = useCurrentWallet()
 
+  // Get unique transaction types from the results
+  const transactionTypes = useMemo(() => {
+    const types = new Set(['all'])
+    transactions.forEach((tx) => {
+      if (!isSpamTransaction(tx) && tx.type) {
+        types.add(tx.type.toLowerCase().replace('_', ' '))
+      }
+    })
+    return Array.from(types)
+  }, [transactions])
+
   // If we need to show the holder modal, render that instead
   if (!isHolder) {
     return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px]">
-        <div className="border-b border-green-800 p-2">
-          <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-            <div className="text-green-500 text-sm font-mono">
-              {'>'} following_activity.sol
-            </div>
-          </div>
-        </div>
+      <DataContainer title="following_activity.sol" height="large">
         <div className="flex flex-col items-center justify-center h-full p-4 text-center">
           <div className="text-green-400 font-mono text-lg mb-4">
             🐸 Frog Holder Access Required
@@ -49,103 +60,83 @@ export const FollowingTransactionFeed = ({
             To view transaction activity, you need to be a holder of a Frog NFT.
           </div>
         </div>
-      </div>
+      </DataContainer>
     )
   }
 
-  // Only process transactions if they are a holder
-  const filteredTransactions = transactions.filter(
-    (tx) => !isSpamTransaction(tx),
+  // Filter transactions by type and spam
+  const filteredTransactions = transactions.filter((tx) => {
+    if (isSpamTransaction(tx)) return false
+    if (selectedType === 'all') return true
+    return tx.type?.toLowerCase().replace('_', ' ') === selectedType
+  })
+
+  const headerRight = isLoading && totalWallets > 0 && (
+    <div className="text-xs text-green-600 font-mono">
+      ({loadedWallets}/{totalWallets} wallets)
+    </div>
   )
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px]">
-      <div className="border-b border-green-800 p-2">
-        <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-          <div className="text-green-500 text-sm font-mono">
-            {'>'} following_activity.sol
-          </div>
-          <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
-            COUNT: {filteredTransactions.length}
-            {isLoading && totalWallets > 0 && (
-              <span className="ml-2">
-                ({loadedWallets}/{totalWallets} wallets)
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Scroll Indicators */}
-      <div
-        className="absolute right-1 top-[40px] bottom-1 w-1 opacity-0 transition-opacity duration-300 pointer-events-none"
-        style={{
-          opacity: 0,
-          animation: 'fadeOut 0.3s ease-out',
-        }}
-      >
-        <div className="h-full bg-green-500/5 rounded-full">
-          <div
-            className="h-16 w-full bg-green-500/10 rounded-full"
-            style={{
-              animation: 'slideY 3s ease-in-out infinite',
-              transformOrigin: 'top',
-            }}
+    <DataContainer
+      title="following_activity.sol"
+      count={filteredTransactions.length}
+      height="large"
+      headerRight={headerRight}
+    >
+      <FilterBar>
+        {transactionTypes.map((type) => (
+          <FilterButton
+            key={type}
+            label={type === 'all' ? 'All' : type}
+            isSelected={selectedType === type}
+            onClick={() => setSelectedType(type)}
           />
-        </div>
-      </div>
+        ))}
+      </FilterBar>
 
-      <div
-        className="divide-y divide-green-800/30 overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50 hover-scroll-indicator"
-        onScroll={(e) => {
-          const indicator = e.currentTarget.previousSibling as HTMLElement
-          if (e.currentTarget.scrollTop > 0) {
-            indicator.style.opacity = '1'
-            indicator.style.animation = 'fadeIn 0.3s ease-out'
-          } else {
-            indicator.style.opacity = '0'
-            indicator.style.animation = 'fadeOut 0.3s ease-out'
-          }
-        }}
+      <ScrollableContent
+        isLoading={isLoading && filteredTransactions.length === 0}
+        isEmpty={filteredTransactions.length === 0}
+        loadingText=">>> LOADING TRANSACTIONS..."
+        emptyText=">>> NO RECENT ACTIVITY"
       >
-        {isLoading && filteredTransactions.length === 0 ? (
-          // Show loading skeletons when no transactions are loaded yet
-          Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="p-2 animate-pulse">
-              <div className="flex flex-col gap-2">
-                <div className="h-4 bg-green-900/20 rounded w-2/3" />
-                <div className="h-3 bg-green-900/20 rounded w-1/2" />
-                <div className="h-3 bg-green-900/20 rounded w-1/3" />
+        <div className="divide-y divide-green-800/30">
+          {isLoading && filteredTransactions.length === 0 ? (
+            // Show loading skeletons when no transactions are loaded yet
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="p-2 animate-pulse">
+                <div className="flex flex-col gap-2">
+                  <div className="h-4 bg-green-900/20 rounded w-2/3" />
+                  <div className="h-3 bg-green-900/20 rounded w-1/2" />
+                  <div className="h-3 bg-green-900/20 rounded w-1/3" />
+                </div>
               </div>
-            </div>
-          ))
-        ) : filteredTransactions.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> NO RECENT ACTIVITY'}
-          </div>
-        ) : (
-          <>
-            {filteredTransactions.map((tx) => (
-              <TransactionCard
-                key={tx.signature}
-                transaction={tx}
-                sourceWallet={tx.sourceWallet || walletAddress || ''}
-                isExpanded={expandedTx === tx.signature}
-                onExpand={() =>
-                  setExpandedTx(
-                    expandedTx === tx.signature ? null : tx.signature,
-                  )
-                }
-              />
-            ))}
-            {isLoading && (
-              <div className="p-4 text-center text-green-600 font-mono">
-                {'>>> LOADING MORE TRANSACTIONS...'}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+            ))
+          ) : (
+            <>
+              {filteredTransactions.map((tx) => (
+                <TransactionCard
+                  key={tx.signature}
+                  transaction={tx}
+                  sourceWallet={tx.sourceWallet || walletAddress || ''}
+                  isExpanded={expandedTx === tx.signature}
+                  onExpand={() =>
+                    setExpandedTx(
+                      expandedTx === tx.signature ? null : tx.signature,
+                    )
+                  }
+                />
+              ))}
+              {isLoading && (
+                <div className="p-4 text-center text-green-600 font-mono">
+                  {'>>> LOADING MORE TRANSACTIONS...'}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </ScrollableContent>
+    </DataContainer>
   )
 }

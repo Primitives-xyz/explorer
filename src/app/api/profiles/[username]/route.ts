@@ -15,10 +15,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const searchParams = request.nextUrl.searchParams
     const fromUsername = searchParams.get('fromUsername')
 
-    const useNewApi = searchParams.get('useNewApi') !== 'false' // defaults to true if not specified
-    let endpoint = useNewApi
-      ? `profiles/new/${username}`
-      : `profiles/${username}`
+    let endpoint = `profiles/new/${username}`
 
     if (fromUsername) {
       endpoint = `profiles/new/${username}?username=${fromUsername}`

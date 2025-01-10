@@ -11,6 +11,10 @@ import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 import { memo } from 'react'
 import { TokenAddress } from './tokens/TokenAddress'
 import { isValidUrl } from '@/utils/validation'
+import { DataContainer } from './common/DataContainer'
+import { ScrollableContent } from './common/ScrollableContent'
+import { FilterBar } from './common/FilterBar'
+import { FilterButton } from './common/FilterButton'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -51,22 +55,23 @@ const ProfileCard = memo(
 
     const handleProfileClick = useCallback(() => {
       // nemoapp is the namespace for the explorer app, redirect to in-app profile.
-      if(profile.namespace.name === 'nemoapp') {
+      if (profile.namespace.name === 'nemoapp') {
         router.push(`/${profile.profile.username}`)
-        return;
+        return
       }
 
-      const userProfileURL = profile.namespace.userProfileURL;
+      const userProfileURL = profile.namespace.userProfileURL
       if (userProfileURL) {
-        const baseURL = userProfileURL.endsWith('/') ? userProfileURL : `${userProfileURL}/`;
-        const finalUrl = `${baseURL}${profile.profile.username}`;
-        
-        if(isValidUrl(finalUrl)) {
-          window.open(`${finalUrl}`, '_blank');
-          return;
+        const baseURL = userProfileURL.endsWith('/')
+          ? userProfileURL
+          : `${userProfileURL}/`
+        const finalUrl = `${baseURL}${profile.profile.username}`
+
+        if (isValidUrl(finalUrl)) {
+          window.open(`${finalUrl}`, '_blank')
+          return
         }
       }
-
     }, [router, profile.profile.username])
 
     const handleNamespaceClick = useCallback(() => {
@@ -282,31 +287,20 @@ export const ProfileSection = ({
   if (!shouldShowContent) return null
 
   return (
-    <div
+    <DataContainer
       key={key}
-      className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[400px] lg:h-[600px] relative group"
+      title="profile_info.sol"
+      count={filteredProfiles?.length || 0}
+      error={error}
+      headerRight={
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10 text-green-500 transition-colors"
+        >
+          <Plus size={16} />
+        </button>
+      }
     >
-      {/* Header */}
-      <div className="border-b border-green-800 p-4 flex-shrink-0 bg-black/20">
-        <div className="flex justify-between items-center">
-          <div className="text-green-500 text-sm font-mono flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            {'>'} profile_info.sol
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-xs text-green-600 font-mono bg-green-900/20 px-3 py-1 rounded-full">
-              COUNT: {filteredProfiles?.length || 0}
-            </div>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10 text-green-500 transition-colors"
-            >
-              <Plus size={16} />
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Domain Creation Modal */}
       <Modal
         isOpen={isModalOpen}
@@ -346,114 +340,40 @@ export const ProfileSection = ({
       </Modal>
 
       {/* Namespace Filters */}
-      <div className="border-b border-green-800/30 p-2 flex-shrink-0">
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-          <button
-            onClick={() => setSelectedNamespace(null)}
-            className={`px-2 py-1 rounded text-xs font-mono whitespace-nowrap transition-colors ${
-              selectedNamespace === null
-                ? 'bg-green-500 text-black font-semibold'
-                : 'text-green-500 hover:bg-green-500/10'
-            }`}
-          >
-            All
-          </button>
-          {isLoading || isLoadingProfileData ? (
-            <>
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-6 w-20 bg-green-500/5 rounded animate-pulse"
-                />
-              ))}
-            </>
-          ) : (
-            namespaces.map((namespace) => (
-              <button
-                key={namespace.name}
-                onClick={() => setSelectedNamespace(namespace.name)}
-                className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono whitespace-nowrap transition-colors ${
-                  selectedNamespace === namespace.name
-                    ? 'bg-green-500 text-black font-semibold'
-                    : 'text-green-500 hover:bg-green-500/10'
-                }`}
-              >
-                {namespace.faviconURL && (
-                  <img
-                    src={namespace.faviconURL}
-                    alt=""
-                    className="w-3.5 h-3.5 rounded-full"
-                  />
-                )}
-                {namespace.readableName || namespace.name}
-              </button>
-            ))
-          )}
-        </div>
-      </div>
-
-      {error && (
-        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
-          <span>! ERROR: {error}</span>
-        </div>
-      )}
-
-      {/* Scroll Indicators */}
-      <div
-        className="absolute right-1 top-[40px] bottom-1 w-1 opacity-0 transition-opacity duration-300 pointer-events-none"
-        style={{
-          opacity: 0,
-          animation: 'fadeOut 0.3s ease-out',
-        }}
-      >
-        <div className="h-full bg-green-500/5 rounded-full">
-          <div
-            className="h-16 w-full bg-green-500/10 rounded-full"
-            style={{
-              animation: 'slideY 3s ease-in-out infinite',
-              transformOrigin: 'top',
-            }}
+      <FilterBar>
+        <FilterButton
+          label="All"
+          isSelected={selectedNamespace === null}
+          onClick={() => setSelectedNamespace(null)}
+        />
+        {namespaces.map((namespace) => (
+          <FilterButton
+            key={namespace.name}
+            label={namespace.readableName || namespace.name}
+            isSelected={selectedNamespace === namespace.name}
+            onClick={() => setSelectedNamespace(namespace.name)}
+            icon={namespace.faviconURL}
           />
-        </div>
-      </div>
+        ))}
+      </FilterBar>
 
       {/* Profile List */}
-      <div
-        className="divide-y divide-green-800/30 overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50 hover-scroll-indicator"
-        onScroll={(e) => {
-          const indicator = e.currentTarget.previousSibling as HTMLElement
-          if (e.currentTarget.scrollTop > 0) {
-            indicator.style.opacity = '1'
-            indicator.style.animation = 'fadeIn 0.3s ease-out'
-          } else {
-            indicator.style.opacity = '0'
-            indicator.style.animation = 'fadeOut 0.3s ease-out'
-          }
-        }}
+      <ScrollableContent
+        isLoading={isLoading || isLoadingProfileData}
+        isEmpty={filteredProfiles.length === 0}
+        loadingText=">>> FETCHING PROFILES..."
+        emptyText=">>> NO PROFILES FOUND"
       >
-        {isLoading || isLoadingProfileData ? (
-          <div className="p-8 flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-            <div className="text-green-600 font-mono animate-pulse">
-              {'>>> FETCHING PROFILES...'}
-            </div>
-          </div>
-        ) : filteredProfiles.length === 0 &&
-          !isLoading &&
-          !isLoadingProfileData ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            {'>>> NO PROFILES FOUND'}
-          </div>
-        ) : (
-          filteredProfiles.map((profile) => (
+        <div className="divide-y divide-green-800/30">
+          {filteredProfiles.map((profile) => (
             <ProfileCard
               key={`${profile.profile.username}-${profile.namespace?.name}`}
               profile={profile}
               router={router}
             />
-          ))
-        )}
-      </div>
-    </div>
+          ))}
+        </div>
+      </ScrollableContent>
+    </DataContainer>
   )
 }

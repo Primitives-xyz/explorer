@@ -6,13 +6,11 @@ import {
   getRecentSearches,
   addSearchToHistory,
 } from '@/utils/searchHistory'
-import { useApiVersion } from '@/hooks/use-api-version'
 
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchInput, setSearchInput] = useState('')
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])
-  const { useNewApi, setUseNewApi } = useApiVersion()
   const router = useRouter()
 
   useEffect(() => {
@@ -35,13 +33,6 @@ export function GlobalSearch() {
     }
   }, [isOpen])
 
-  // Save preference to localStorage when it changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('useNewApi', useNewApi.toString())
-    }
-  }, [useNewApi])
-
   async function loadRecentSearches() {
     try {
       const searches = await getRecentSearches()
@@ -55,14 +46,14 @@ export function GlobalSearch() {
     if (!searchInput.trim()) return
 
     await addSearchToHistory(searchInput)
-    router.push(`/${searchInput}?useNewApi=${useNewApi}`)
+    router.push(`/${searchInput}`)
     setIsOpen(false)
     setSearchInput('')
   }
 
   const handleRecentSearchClick = async (address: string) => {
     await addSearchToHistory(address)
-    router.push(`/${address}?useNewApi=${useNewApi}`)
+    router.push(`/${address}`)
     setIsOpen(false)
     setSearchInput('')
   }
@@ -102,23 +93,6 @@ export function GlobalSearch() {
                 <div className="text-xs text-green-800 font-mono">
                   ESC to close
                 </div>
-              </div>
-
-              {/* API Version Toggle */}
-              <div className="mt-2 flex items-center gap-2">
-                <button
-                  onClick={() => setUseNewApi(!useNewApi)}
-                  className={`px-3 py-1 text-xs font-mono border ${
-                    useNewApi
-                      ? 'border-green-500 text-green-400 bg-green-900/20'
-                      : 'border-green-800/30 text-green-600'
-                  } transition-colors hover:bg-green-900/30`}
-                >
-                  {useNewApi ? '[NEW API]' : '[OLD API]'}
-                </button>
-                <span className="text-xs text-green-600 font-mono">
-                  Toggle API version
-                </span>
               </div>
             </div>
 

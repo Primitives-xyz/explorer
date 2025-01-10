@@ -4,11 +4,13 @@ import { FollowingProfileList } from './FollowingProfileList'
 import { FollowingTransactionFeed } from './FollowingTransactionFeed'
 import { useDynamicContext, useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 
-interface FollowingContainerProps {
+interface ActivityFeedContainerProps {
   username: string
 }
 
-export const FollowingContainer = ({ username }: FollowingContainerProps) => {
+export const ActivityFeedContainer = ({
+  username,
+}: ActivityFeedContainerProps) => {
   const { following, loading, error } = useGetFollowing(username)
   const isLoggedIn = useIsLoggedIn()
   const { sdkHasLoaded } = useDynamicContext()

@@ -3,7 +3,6 @@
 import useSWR from 'swr'
 import { Card } from '../common/card'
 import { FollowButton } from './follow-button'
-import { useApiVersion } from '@/hooks/use-api-version'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../ProfileSection'
 import { useGetProfiles } from '../auth/hooks/use-get-profiles'
@@ -26,7 +25,6 @@ interface ProfileData {
 }
 
 export function ProfileContent({ username }: Props) {
-  const { useNewApi } = useApiVersion()
   const { mainUsername } = useCurrentWallet()
   const {
     followers,
@@ -38,10 +36,8 @@ export function ProfileContent({ username }: Props) {
     isLoading: isLoadingFollowing,
     error: followingError,
   } = useProfileFollowing(username)
-  console.log('following', following)
   const fetcher = async (url: string) => {
-    const apiUrl = `${url}?useNewApi=${useNewApi}`
-    const res = await fetch(apiUrl)
+    const res = await fetch(url)
     if (!res.ok) throw new Error('Failed to fetch profile')
     return res.json()
   }
