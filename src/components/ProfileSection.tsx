@@ -10,6 +10,7 @@ import { FollowButton } from './profile/follow-button'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 import { memo } from 'react'
 import { TokenAddress } from './tokens/TokenAddress'
+import { isValidUrl } from '@/utils/validation'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -49,6 +50,18 @@ const ProfileCard = memo(
     const isFollowing = (isNemoApp && stats?.isFollowing) || false
 
     const handleProfileClick = useCallback(() => {
+      const userProfileURL = profile.namespace.userProfileURL;
+
+      if (userProfileURL) {
+        const baseURL = userProfileURL.endsWith('/') ? userProfileURL : `${userProfileURL}/`;
+        const finalUrl = `${baseURL}${profile.profile.username}`;
+        
+        if(isValidUrl(finalUrl)) {
+          window.open(`${finalUrl}`, '_blank');
+          return;
+        }
+      }
+
       router.push(`/${profile.profile.username}`)
     }, [router, profile.profile.username])
 
