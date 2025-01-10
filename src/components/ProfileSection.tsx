@@ -49,6 +49,15 @@ const ProfileCard = memo(
     const isFollowing = (isNemoApp && stats?.isFollowing) || false
 
     const handleProfileClick = useCallback(() => {
+      const userProfileURL = profile.namespace.userProfileURL;
+
+      if (userProfileURL) {
+        // Check if URL ends with '/' and add it if not
+        const baseURL = userProfileURL.endsWith('/') ? userProfileURL : `${userProfileURL}/`;
+        window.open(`${baseURL}${profile.profile.username}`, '_blank');
+        return;
+      }
+
       router.push(`/${profile.profile.username}`)
     }, [router, profile.profile.username])
 
