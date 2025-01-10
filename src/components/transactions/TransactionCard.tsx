@@ -4,6 +4,7 @@ import { TransactionBadge } from './TransactionBadge'
 import { TransactionSignature } from './TransactionSignature'
 import { TransferList } from './TransferList'
 import { Transaction } from '@/utils/helius/types'
+import { SwapTransactionView } from './swap-transaction-view'
 
 interface TransactionCardProps {
   transaction: Transaction
@@ -46,6 +47,11 @@ export const TransactionCard = ({
         <div className="text-sm text-green-300 font-mono break-words">
           {tx.description || 'No description available'}
         </div>
+
+        {/* Custom Swap View for SWAP transactions */}
+        {tx.type === 'SWAP' && (
+          <SwapTransactionView tx={tx} sourceWallet={sourceWallet} />
+        )}
 
         {/* Transfers */}
         <TransferList

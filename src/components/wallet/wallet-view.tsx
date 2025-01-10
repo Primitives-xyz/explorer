@@ -4,6 +4,7 @@ import { ProfileSection } from '../ProfileSection'
 import { PortfolioBalanceSection } from '../tokens/SolBalanceSection'
 import { TradingStats } from '../trading/TradingStats'
 import { TapestryPromoSection } from '../tapestry/TapestryPromoSection'
+import { TransactionSection } from '../TransactionSection'
 import { useEffect, useState } from 'react'
 import { TokenPortfolioResponse } from '@/types/Token'
 
@@ -117,9 +118,14 @@ export function WalletView({ address }: { address: string }) {
         </div>
       </div>
 
-      {/* Bottom - Portfolio Tabs */}
+      {/* Middle - Portfolio Tabs */}
       <div className="mt-6">
         <PortfolioTabs address={address} />
+      </div>
+
+      {/* Bottom - Transaction Section */}
+      <div className="mt-6">
+        <TransactionSection walletAddress={address} hasSearched={true} />
       </div>
     </div>
   )

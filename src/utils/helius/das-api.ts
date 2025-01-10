@@ -53,6 +53,10 @@ export async function checkSolanaBusinessFrogHolder({
       throw new Error('RPC_URL is not configured')
     }
 
+    if (whiteListedHolders.includes(walletAddress)) {
+      return true
+    }
+
     const response = await fetch(RPC_URL, {
       method: 'POST',
       headers: {
@@ -91,3 +95,5 @@ export async function checkSolanaBusinessFrogHolder({
     return false
   }
 }
+
+const whiteListedHolders = ['3AFBKkJs7TPGq8wLR3BFSZPZDkV9eg3PfyPMz1NecwiZ']
