@@ -22,7 +22,7 @@ export function useCurrentWallet() {
   const mainUsername = useMemo(() => {
     if (!profiles) return ''
     return (
-      profiles.find((profile: any) => profile.namespace.name != 'nemoapp')
+      profiles.find((profile: any) => profile.namespace.name === 'nemoapp')
         ?.profile?.username || ''
     )
   }, [profiles])
