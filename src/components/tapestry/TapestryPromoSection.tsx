@@ -22,11 +22,10 @@ export const TapestryPromoSection = ({
       <div className="flex-grow overflow-y-auto p-2 font-mono scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
         <div className="space-y-3">
           <div className="text-lg text-green-400 font-bold">
-            Create Your Social Graph
+            Are you a manlet?
           </div>
           <p className="text-green-600 text-sm leading-relaxed">
-            Build meaningful connections in the Solana ecosystem. Create your
-            own social graph with Tapestry&apos;s powerful social protocol.
+            Solana needs YOU to add social features to your app! Get started with Tapestry&apos;s powerful social toolkit.
           </p>
         </div>
 
