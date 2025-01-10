@@ -11,3 +11,13 @@ export function isValidTransactionSignature(signature: string): boolean {
   const base58Regex = /^[1-9A-HJ-NP-Za-km-z]+$/
   return base58Regex.test(signature) && signature.length === 88
 }
+
+
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
