@@ -14,6 +14,15 @@ export function isValidTransactionSignature(signature: string): boolean {
   return base58Regex.test(signature) && signature.length === 88
 }
 
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export function isValidPublicKey(value: string): boolean {
   try {
     new PublicKey(value)
@@ -41,3 +50,4 @@ export type RouteType = 'transaction' | 'token' | 'profile'
 
 // Types
 export type IdParams = Promise<{ id: string }>
+

@@ -29,6 +29,7 @@ export interface Profile {
     updatedAt: string
     isDefault: boolean
     team_id: number
+    userProfileURL: string
   }
 }
 
