@@ -62,17 +62,20 @@ const ProfileCard = memo(
 
       const userProfileURL = profile.namespace.userProfileURL
       if (userProfileURL) {
-        const baseURL = userProfileURL.endsWith('/')
-          ? userProfileURL
-          : `${userProfileURL}/`
-        const finalUrl = `${baseURL}${profile.profile.username}`
+        // Check if the URL contains a query parameter pattern
+        const hasQueryParams = userProfileURL.includes('?')
+
+        // For URLs with query parameters, just append the username to the existing URL
+        const finalUrl = hasQueryParams
+          ? `${userProfileURL}${profile.profile.username}`
+          : `${userProfileURL}/${profile.profile.username}`
 
         if (isValidUrl(finalUrl)) {
-          window.open(`${finalUrl}`, '_blank')
+          window.open(finalUrl, '_blank')
           return
         }
       }
-    }, [router, profile.profile.username])
+    }, [profile, router])
 
     const handleNamespaceClick = useCallback(() => {
       router.push(`/namespace/${profile.namespace?.name}`)
