@@ -1,8 +1,8 @@
 import { FetchMethod, fetchTapestry } from '@/utils/api'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { address: string } }
 ) {
   try {
@@ -10,18 +10,15 @@ export async function GET(
 
     // Get comments for this wallet address as the contentId
     const response = await fetchTapestry({
-      endpoint: 'comments',
+      endpoint: `comments?contentId=${address}`,
       method: FetchMethod.GET,
-      queryParams: {
-        contentId: address,
-      },
     })
 
     if (!response) {
       throw new Error('Failed to fetch wall posts')
     }
 
-    return NextResponse.json({ comments: response.comments })
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Error fetching wall posts:', error)
     return NextResponse.json(
