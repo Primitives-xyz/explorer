@@ -1,6 +1,5 @@
 import { useGetFollowing } from './hooks/use-get-following'
 import { useFollowingTransactions } from './hooks/use-following-transactions'
-import { FollowingProfileList } from './FollowingProfileList'
 import { FollowingTransactionFeed } from './FollowingTransactionFeed'
 import { useDynamicContext, useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 

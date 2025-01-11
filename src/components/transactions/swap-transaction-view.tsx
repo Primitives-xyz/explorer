@@ -1,6 +1,9 @@
 import { formatNumber } from '@/utils/format'
 import { Transaction } from '@/utils/helius/types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { TokenInfo } from '@/types/Token'
+import Image from 'next/image'
+
 interface TokenTransfer {
   fromTokenAccount: string
   toTokenAccount: string
@@ -11,6 +14,14 @@ interface TokenTransfer {
   tokenStandard: string
 }
 
+interface TokenDisplay {
+  mint: string
+  amount: number
+  tokenInfo?: TokenInfo
+  loading?: boolean
+  error?: string
+}
+
 export function SwapTransactionView({
   tx,
   sourceWallet,
@@ -18,22 +29,119 @@ export function SwapTransactionView({
   tx: Transaction
   sourceWallet: string
 }) {
-  const [tokenAddress, setTokenAddress] = useState('')
-  if (tx.source === 'JUPITER') {
-    console.log({ tokenTransfers: tx.tokenTransfers })
-    console.log({ tx })
-  }
+  console.log({ tx })
+  const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
+  const [toToken, setToToken] = useState<TokenDisplay | null>(null)
 
-  // Find the token transfer that represents the token being swapped from (outgoing)
-  const fromTransfer = tx.tokenTransfers?.find(
-    (transfer: TokenTransfer) => transfer.fromUserAccount === sourceWallet,
-  )
-  // Find the token transfer that represents the token being swapped to (incoming)
-  const toTransfer = tx.tokenTransfers?.find(
-    (transfer: TokenTransfer) => transfer.toUserAccount === sourceWallet,
-  )
+  useEffect(() => {
+    async function loadTokenInfo() {
+      // Parse description for initial token info
+      // Format can be either:
+      // "wallet swapped X SOL for Y TOKEN" or
+      // "wallet swapped X TOKEN for Y SOL"
+      const descParts = tx.description?.split(' ') || []
+      const fromAmount = parseFloat(descParts[2] || '0')
+      const toAmount = parseFloat(descParts[5] || '0')
+      const fromTokenMint = descParts[3] || ''
+      const toTokenMint = descParts[6] || ''
 
-  if (!fromTransfer || !toTransfer) return null
+      const SOL_MINT = 'So11111111111111111111111111111111111111112'
+
+      // Check if this is a SOL -> Token swap or Token -> SOL swap
+      const isFromSol = fromTokenMint.toLowerCase() === 'sol'
+      const isToSol = toTokenMint.toLowerCase() === 'sol'
+
+      if (isFromSol) {
+        // SOL -> Token swap
+        setFromToken({
+          mint: SOL_MINT,
+          amount: fromAmount,
+        })
+
+        if (toTokenMint) {
+          setToToken({
+            mint: toTokenMint,
+            amount: toAmount,
+            loading: true,
+          })
+
+          try {
+            const response = await fetch(`/api/token?mint=${toTokenMint}`)
+            if (!response.ok) {
+              throw new Error('Failed to fetch token info')
+            }
+            const tokenInfo = await response.json()
+            setToToken((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    tokenInfo,
+                    loading: false,
+                  }
+                : null,
+            )
+          } catch (error) {
+            console.error('Error fetching token info:', error)
+            setToToken((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    loading: false,
+                    error: 'Failed to load token info',
+                  }
+                : null,
+            )
+          }
+        }
+      } else if (isToSol) {
+        // Token -> SOL swap
+        setToToken({
+          mint: SOL_MINT,
+          amount: toAmount,
+        })
+
+        if (fromTokenMint) {
+          setFromToken({
+            mint: fromTokenMint,
+            amount: fromAmount,
+            loading: true,
+          })
+
+          try {
+            const response = await fetch(`/api/token?mint=${fromTokenMint}`)
+            if (!response.ok) {
+              throw new Error('Failed to fetch token info')
+            }
+            const tokenInfo = await response.json()
+            setFromToken((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    tokenInfo,
+                    loading: false,
+                  }
+                : null,
+            )
+          } catch (error) {
+            console.error('Error fetching token info:', error)
+            setFromToken((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    loading: false,
+                    error: 'Failed to load token info',
+                  }
+                : null,
+            )
+          }
+        }
+      }
+    }
+
+    loadTokenInfo()
+  }, [tx, sourceWallet])
+
+  if (!fromToken || !toToken) return null
 
   return (
     <div className="flex items-center gap-2 p-2 bg-green-900/10 rounded-lg">
@@ -42,17 +150,46 @@ export function SwapTransactionView({
         <div className="relative">
           <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
           <div className="w-8 h-8 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-            <span className="text-green-500 font-mono text-xs">
-              {fromTransfer.mint.slice(0, 2)}
-            </span>
+            {fromToken.mint ===
+            'So11111111111111111111111111111111111111112' ? (
+              <Image
+                src="/images/solana-icon.svg"
+                alt="solana icon"
+                width={20}
+                height={20}
+              />
+            ) : fromToken.loading ? (
+              <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
+            ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
+              <img
+                src={fromToken.tokenInfo.result.content.links.image}
+                alt={
+                  fromToken.tokenInfo.result?.content?.metadata?.symbol ||
+                  'Token'
+                }
+                className="w-6 h-6 rounded-lg"
+              />
+            ) : (
+              <span className="text-green-500 font-mono text-xs">
+                {fromToken.mint.slice(0, 2)}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex flex-col">
           <span className="text-green-400 font-mono text-xs">
-            {formatNumber(fromTransfer.tokenAmount)}
+            {formatNumber(fromToken.amount)}
           </span>
           <span className="text-green-600 font-mono text-xs">
-            {fromTransfer.mint.slice(0, 4)}...{fromTransfer.mint.slice(-4)}
+            {fromToken.mint ===
+            'So11111111111111111111111111111111111111112' ? (
+              'SOL'
+            ) : fromToken.loading ? (
+              <div className="animate-pulse w-16 h-4 bg-green-500/20 rounded" />
+            ) : (
+              fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
+              `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`
+            )}
           </span>
         </div>
       </div>
@@ -81,17 +218,43 @@ export function SwapTransactionView({
         <div className="relative">
           <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
           <div className="w-8 h-8 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-            <span className="text-green-500 font-mono text-xs">
-              {toTransfer.mint.slice(0, 2)}
-            </span>
+            {toToken.mint === 'So11111111111111111111111111111111111111112' ? (
+              <Image
+                src="/images/solana-icon.svg"
+                alt="solana icon"
+                width={20}
+                height={20}
+              />
+            ) : toToken.loading ? (
+              <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
+            ) : toToken.tokenInfo?.result?.content?.links?.image ? (
+              <img
+                src={toToken.tokenInfo.result.content.links.image}
+                alt={
+                  toToken.tokenInfo.result?.content?.metadata?.symbol || 'Token'
+                }
+                className="w-6 h-6 rounded-lg"
+              />
+            ) : (
+              <span className="text-green-500 font-mono text-xs">
+                {toToken.mint.slice(0, 2)}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex flex-col">
           <span className="text-green-400 font-mono text-xs">
-            {formatNumber(toTransfer.tokenAmount)}
+            {formatNumber(toToken.amount)}
           </span>
           <span className="text-green-600 font-mono text-xs">
-            {toTransfer.mint.slice(0, 4)}...{toTransfer.mint.slice(-4)}
+            {toToken.mint === 'So11111111111111111111111111111111111111112' ? (
+              'SOL'
+            ) : toToken.loading ? (
+              <div className="animate-pulse w-16 h-4 bg-green-500/20 rounded" />
+            ) : (
+              toToken.tokenInfo?.result?.content?.metadata?.symbol ||
+              `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`
+            )}
           </span>
         </div>
       </div>
