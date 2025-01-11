@@ -62,7 +62,7 @@ export const DataContainer = ({
           <div className="flex items-center gap-2">
             {count !== undefined && (
               <div
-                className={`text-xs ${colors.count} font-mono ${colors.countBg} px-3 py-1 rounded-full`}
+                className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full`}
               >
                 COUNT: {count}
               </div>
