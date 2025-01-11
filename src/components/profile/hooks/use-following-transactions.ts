@@ -49,7 +49,6 @@ export const useFollowingTransactions = (
       isHolder === null &&
       !isCheckingHolder
     ) {
-      console.log('useFollowingTransactions: Triggering holder check')
       startCheck()
     }
   }, [walletAddress, isLoggedIn, sdkHasLoaded, isHolder, isCheckingHolder])

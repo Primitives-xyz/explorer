@@ -61,7 +61,6 @@ export const TopTraders = () => {
         }
 
         const data = await response.json()
-        console.log('API Response data:', data)
 
         if (!data.success) {
           throw new Error(

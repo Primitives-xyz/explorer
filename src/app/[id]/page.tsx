@@ -1,5 +1,5 @@
 import { ProfileContent } from '@/components/profile/profile-content'
-import TransactionDetails from '@/components/TransactionDetails'
+import TransactionDetails from '@/components/transactions/transaction-view'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
 import { Metadata } from 'next'
 import {

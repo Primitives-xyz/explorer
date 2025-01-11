@@ -3,8 +3,8 @@
 import { Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { TransactionBadge } from './transactions/TransactionBadge'
-import { TransactionSignature } from './transactions/TransactionSignature'
+import { TransactionBadge } from './TransactionBadge'
+import { TransactionSignature } from './TransactionSignature'
 import {
   formatLamportsToSol,
   formatTokenAmount,

@@ -31,7 +31,7 @@ export const TokenAddress = ({
   }
 
   return (
-    <div className="flex items-center gap-2 font-mono text-xs">
+    <div className="flex items-center  font-mono text-xs">
       <button
         onClick={handleNavigate}
         className="text-green-600/90 hover:text-green-500 transition-colors truncate font-light tracking-wider bg-black/20 px-1.5 py-0.5 rounded"
