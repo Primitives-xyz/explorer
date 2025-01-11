@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  request: Request,
-  { params }: { params: { profileId: string } }
+  request: NextRequest,
+  context: { params: { profileId: string } }
 ) {
   try {
-    const { profileId } = params
+    const { profileId } = context.params
 
     // Call Tapestry API to get comments
     const response = await fetch(
