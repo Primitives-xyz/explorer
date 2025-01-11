@@ -11,6 +11,7 @@ import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useProfileFollowing } from '@/hooks/use-profile-following'
 import { SocialSection } from '../social/SocialSection'
 import { TokenAddress } from '../tokens/TokenAddress'
+import { ProfileWall } from './ProfileWall'
 
 interface Props {
   username: string
@@ -105,6 +106,10 @@ export function ProfileContent({ username }: Props) {
               </div>
             </Card>
           </div>
+
+          {!loading && data?.walletAddress && (
+            <ProfileWall recipientWalletAddress={data.walletAddress} />
+          )}
 
           <ProfileSection
             walletAddress={data?.walletAddress}
