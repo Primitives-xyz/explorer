@@ -37,13 +37,6 @@ export function SolanaTransferView({
   const transfers =
     tx.transfers?.filter((transfer: Transfer) => transfer.amount > 0) || []
 
-  console.log('SolanaTransferView:', {
-    type: tx.type,
-    source: tx.source,
-    transfers,
-    rawTransfers: tx.transfers,
-  })
-
   if (!transfers.length) return null
 
   return (

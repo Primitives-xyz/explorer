@@ -29,7 +29,6 @@ export function SwapTransactionView({
   tx: Transaction
   sourceWallet: string
 }) {
-  console.log({ tx })
   const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
   const [toToken, setToToken] = useState<TokenDisplay | null>(null)
 
