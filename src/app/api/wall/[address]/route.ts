@@ -1,12 +1,18 @@
 import { FetchMethod, fetchTapestry } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
+type Context = {
+  params: {
+    address: string
+  }
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { address: string } }
+  context: Context
 ) {
   try {
-    const { address } = params
+    const { address } = context.params
 
     // Get comments for this wallet address as the contentId
     const response = await fetchTapestry({
