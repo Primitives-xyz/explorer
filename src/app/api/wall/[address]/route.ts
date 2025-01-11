@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { address: string } }
+  context: { params: { address: string } }
 ): Promise<NextResponse> {
   try {
-    const { address } = params
+    const { address } = context.params
 
     // Get comments for this wallet address as the contentId
     const response = await fetchTapestry({
@@ -23,7 +23,7 @@ export async function GET(
     console.error('Error fetching wall posts:', error)
     return NextResponse.json(
       { error: 'Failed to fetch wall posts' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 } 
