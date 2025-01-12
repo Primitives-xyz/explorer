@@ -31,12 +31,13 @@ export const TokenAddress = ({
   }
 
   return (
-    <div className="flex items-center  font-mono text-xs">
+    <div className="flex items-center font-mono text-xs gap-0.5">
       <button
         onClick={handleNavigate}
-        className="text-green-600/90 hover:text-green-500 transition-colors truncate font-light tracking-wider bg-black/20 px-1.5 py-0.5 rounded"
+        className="text-green-500/90 hover:text-green-400 transition-all hover:scale-[1.02] truncate font-medium tracking-wider bg-green-500/10 hover:bg-green-500/20 px-2 py-1 rounded-md flex items-center gap-1.5 border border-green-500/20 hover:border-green-500/30"
         title={address}
       >
+        <span className="text-green-500/50">→</span>
         {displayAddress}
       </button>
       <button
