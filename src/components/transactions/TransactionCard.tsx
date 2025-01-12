@@ -6,6 +6,7 @@ import { TransferList } from './TransferList'
 import { Transaction } from '@/utils/helius/types'
 import { SwapTransactionView } from './swap-transaction-view'
 import { SolanaTransferView } from './solana-transfer-view'
+import { NFTTransactionView } from './nft-transaction-view'
 
 interface TransactionCardProps {
   transaction: Transaction
@@ -59,6 +60,9 @@ export const TransactionCard = ({
         {/* Custom Solana Transfer View for SYSTEM_PROGRAM transfers */}
         {tx.source === 'SYSTEM_PROGRAM' && tx.type === 'TRANSFER' && (
           <SolanaTransferView tx={tx} sourceWallet={sourceWallet} />
+        )}
+        {(tx.source === 'MAGIC_EDEN' || tx.source === 'TENSOR') && (
+          <NFTTransactionView tx={tx} sourceWallet={sourceWallet} />
         )}
 
         {/* Transfers */}

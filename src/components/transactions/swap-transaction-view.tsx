@@ -4,16 +4,6 @@ import { useEffect, useState } from 'react'
 import { TokenInfo } from '@/types/Token'
 import Image from 'next/image'
 
-interface TokenTransfer {
-  fromTokenAccount: string
-  toTokenAccount: string
-  fromUserAccount: string
-  toUserAccount: string
-  tokenAmount: number
-  mint: string
-  tokenStandard: string
-}
-
 interface TokenDisplay {
   mint: string
   amount: number
