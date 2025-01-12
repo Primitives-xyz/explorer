@@ -33,6 +33,7 @@ interface ProfileSectionProps {
   profileData?: ProfileData | null
   error?: string | null
   isLoadingProfileData?: boolean
+  title?: string
 }
 
 // Memoize the profile card component
@@ -172,6 +173,7 @@ export const ProfileSection = ({
   profileData,
   error: propError,
   isLoadingProfileData,
+  title = 'profile_info.sol',
 }: ProfileSectionProps) => {
   const key = walletAddress || 'default'
   const router = useRouter()
@@ -292,7 +294,7 @@ export const ProfileSection = ({
   return (
     <DataContainer
       key={key}
-      title="profile_info.sol"
+      title={title}
       count={filteredProfiles?.length || 0}
       error={error}
       headerRight={

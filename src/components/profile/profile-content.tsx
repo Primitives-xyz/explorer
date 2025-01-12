@@ -116,13 +116,6 @@ export function ProfileContent({ username }: Props) {
               </button>
             </Card>
           </div>
-
-          <ProfileSection
-            walletAddress={data?.walletAddress}
-            hasSearched={!loading}
-            isLoadingProfileData={loading}
-            profileData={{ profiles }}
-          />
         </div>
 
         <div className="space-y-6">
@@ -147,6 +140,14 @@ export function ProfileContent({ username }: Props) {
               </div>
             </div>
           </Card>
+
+          <ProfileSection
+            walletAddress={data?.walletAddress}
+            hasSearched={!loading}
+            isLoadingProfileData={loading}
+            profileData={{ profiles }}
+            title="related_profiles.sol"
+          />
 
           {/* Followers Modal */}
           <Modal
