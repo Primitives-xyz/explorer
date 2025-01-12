@@ -8,6 +8,64 @@ import { DataContainer } from '@/components/common/DataContainer'
 import { ScrollableContent } from '@/components/common/ScrollableContent'
 import { FilterBar } from '@/components/common/FilterBar'
 import { FilterButton } from '@/components/common/FilterButton'
+import dynamic from 'next/dynamic'
+
+const DynamicConnectButton = dynamic(
+  () =>
+    import('@dynamic-labs/sdk-react-core').then(
+      (mod) => mod.DynamicConnectButton,
+    ),
+  { ssr: false },
+)
+
+// Mock transactions for the blurred preview
+const MOCK_TRANSACTIONS: Partial<Transaction>[] = [
+  {
+    type: 'SWAP',
+    source: 'JUPITER',
+    description: 'Whale.sol swapped 1000 SOL for 13,240 USDC on Jupiter',
+    timestamp: Date.now() / 1000,
+    signature: '3xR5Zqx9vK7u8k4Y',
+    sourceWallet: 'Whale.sol',
+    fee: 5000,
+    feePayer: 'Whale.sol',
+    slot: 123456789,
+    nativeTransfers: [],
+    tokenTransfers: [],
+    accountData: [],
+    balanceChanges: {},
+  },
+  {
+    type: 'NFT_SALE',
+    source: 'MAGIC_EDEN',
+    description: 'Mad Lads #1337 sold for 45 SOL',
+    timestamp: Date.now() / 1000 - 300,
+    signature: '7pL2Mqn8dR4w9j6X',
+    sourceWallet: 'MadLads.sol',
+    fee: 5000,
+    feePayer: 'MadLads.sol',
+    slot: 123456790,
+    nativeTransfers: [],
+    tokenTransfers: [],
+    accountData: [],
+    balanceChanges: {},
+  },
+  {
+    type: 'TRANSFER',
+    source: 'SYSTEM_PROGRAM',
+    description: 'DeGods.sol transferred 50,000 USDC to BeansDAO.sol',
+    timestamp: Date.now() / 1000 - 600,
+    signature: '2kN9Xqp5vM3r7h4W',
+    sourceWallet: 'DeGods.sol',
+    fee: 5000,
+    feePayer: 'DeGods.sol',
+    slot: 123456791,
+    nativeTransfers: [],
+    tokenTransfers: [],
+    accountData: [],
+    balanceChanges: {},
+  },
+]
 
 type TransactionType = string
 
@@ -48,8 +106,55 @@ export const FollowingTransactionFeed = ({
     return Array.from(types)
   }, [transactions])
 
+  // If not logged in, show the preview with CTA
+  if (!isLoggedIn) {
+    return (
+      <DataContainer title="following_activity.sol" height="large">
+        <div className="relative">
+          {/* Create Profile CTA */}
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <h3 className="text-green-400 font-mono text-lg mb-4">
+              Create a profile to follow wallets onchain and see their swaps in
+              real time!
+            </h3>
+            <DynamicConnectButton>
+              <div className="px-6 py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer">
+                Create Profile
+              </div>
+            </DynamicConnectButton>
+          </div>
+
+          {/* Blurred mock transactions */}
+          <div className="divide-y divide-green-800/30 blur-sm">
+            {MOCK_TRANSACTIONS.map((tx, i) => (
+              <TransactionCard
+                key={i}
+                transaction={tx as Transaction}
+                sourceWallet={''}
+                isExpanded={false}
+                onExpand={() => {}}
+              />
+            ))}
+          </div>
+        </div>
+      </DataContainer>
+    )
+  }
+
   // If we need to show the holder modal, render that instead
-  if (!isHolder) {
+  if (isHolder === null) {
+    return (
+      <DataContainer title="following_activity.sol" height="large">
+        <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+          <div className="text-green-400 font-mono text-lg mb-4">
+            {`>>> CHECKING FROG HOLDER STATUS...`}
+          </div>
+        </div>
+      </DataContainer>
+    )
+  }
+
+  if (isHolder === false) {
     return (
       <DataContainer title="following_activity.sol" height="large">
         <div className="flex flex-col items-center justify-center h-full p-4 text-center">
