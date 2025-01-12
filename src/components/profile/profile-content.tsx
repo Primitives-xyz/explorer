@@ -11,6 +11,8 @@ import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useProfileFollowing } from '@/hooks/use-profile-following'
 import { SocialSection } from '../social/SocialSection'
 import { TokenAddress } from '../tokens/TokenAddress'
+import { Modal } from '../common/modal'
+import { useState } from 'react'
 
 interface Props {
   username: string
@@ -26,6 +28,8 @@ interface ProfileData {
 
 export function ProfileContent({ username }: Props) {
   const { mainUsername } = useCurrentWallet()
+  const [showFollowersModal, setShowFollowersModal] = useState(false)
+  const [showFollowingModal, setShowFollowingModal] = useState(false)
   const {
     followers,
     isLoading: isLoadingFollowers,
@@ -78,7 +82,10 @@ export function ProfileContent({ username }: Props) {
         <div className="lg:col-span-2 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <Card>
-              <div className="p-4">
+              <button
+                onClick={() => setShowFollowersModal(true)}
+                className="w-full p-4 text-left hover:bg-green-900/10 transition-colors"
+              >
                 <h3 className="text-lg font-mono text-green-400 mb-2">
                   Followers
                 </h3>
@@ -89,10 +96,13 @@ export function ProfileContent({ username }: Props) {
                     data?.socialCounts?.followers || 0
                   )}
                 </div>
-              </div>
+              </button>
             </Card>
             <Card>
-              <div className="p-4">
+              <button
+                onClick={() => setShowFollowingModal(true)}
+                className="w-full p-4 text-left hover:bg-green-900/10 transition-colors"
+              >
                 <h3 className="text-lg font-mono text-green-400 mb-2">
                   Following
                 </h3>
@@ -103,7 +113,7 @@ export function ProfileContent({ username }: Props) {
                     data?.socialCounts?.following || 0
                   )}
                 </div>
-              </div>
+              </button>
             </Card>
           </div>
 
@@ -138,18 +148,33 @@ export function ProfileContent({ username }: Props) {
             </div>
           </Card>
 
-          <SocialSection
-            users={followers}
-            isLoading={isLoadingFollowers}
-            error={followersError}
-            type="followers"
-          />
-          <SocialSection
-            users={following}
-            isLoading={isLoadingFollowing}
-            error={followingError}
-            type="following"
-          />
+          {/* Followers Modal */}
+          <Modal
+            isOpen={showFollowersModal}
+            onClose={() => setShowFollowersModal(false)}
+            title={`@${username}'s Followers`}
+          >
+            <SocialSection
+              users={followers}
+              isLoading={isLoadingFollowers}
+              error={followersError}
+              type="followers"
+            />
+          </Modal>
+
+          {/* Following Modal */}
+          <Modal
+            isOpen={showFollowingModal}
+            onClose={() => setShowFollowingModal(false)}
+            title={`@${username}'s Following`}
+          >
+            <SocialSection
+              users={following}
+              isLoading={isLoadingFollowing}
+              error={followingError}
+              type="following"
+            />
+          </Modal>
         </div>
       </div>
     </div>
