@@ -62,15 +62,16 @@ export function ProfileContent({ username }: Props) {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
+          <div className="flex items-end gap-4">
+            <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
+            {!loading && data?.walletAddress && (
+              <div className="flex items-center gap-2 text-sm text-green-600 mb-1">
+                owned by <TokenAddress address={data.walletAddress} />
+              </div>
+            )}
+          </div>
           <FollowButton username={username} size="lg" />
         </div>
-
-        {!loading && data?.walletAddress && (
-          <div className="flex items-center gap-2 text-sm">
-            <TokenAddress address={data.walletAddress} />
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
