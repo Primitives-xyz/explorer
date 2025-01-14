@@ -1,13 +1,14 @@
 'use client'
 
+import { ProfileSearchResult } from '@/types'
 import {
   SearchHistoryItem,
   addSearchToHistory,
   getRecentSearches,
 } from '@/utils/searchHistory'
+import { useRouter } from 'next/navigation'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useRouter } from 'next/navigation'
 
 interface SearchBarProps {
   onPickRecentAddress?: (addr: string) => void
@@ -20,6 +21,8 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLDivElement>(null)
+  const [searchResults, setSearchResults] = useState<ProfileSearchResult[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     // Load recent searches
@@ -60,7 +63,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     }
   }
 
-  async function handleRecentSearchClick(address: string) {
+  const handleRecentSearchClick = async (address: string) => {
     setShowDropdown(false)
     setInputValue(address)
 
@@ -78,8 +81,48 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     }
   }
 
+  const handleProfileClick = (profile: ProfileSearchResult) => {
+    setShowDropdown(false)
+
+    // If it's an external profile, use the userProfileURL
+    if (profile.namespace.userProfileURL) {
+      const hasQueryParams = profile.namespace.userProfileURL.includes('?')
+      const finalUrl = hasQueryParams
+        ? `${profile.namespace.userProfileURL}${profile.profile.username}`
+        : `${profile.namespace.userProfileURL}/${profile.profile.username}`
+      window.open(finalUrl, '_blank')
+    } else {
+      // Otherwise use internal navigation
+      router.push(`/${profile.profile.username}`)
+    }
+  }
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
+    const value = e.target.value
+    setInputValue(value)
+    setShowDropdown(true)
+    searchProfiles(value)
+  }
+
+  const searchProfiles = async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([])
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await fetch(
+        `/api/search?query=${encodeURIComponent(query)}`,
+      )
+      const data = await response.json()
+      setSearchResults(data.profiles)
+    } catch (error) {
+      console.error('Failed to search profiles:', error)
+      setSearchResults([])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   // Function to get dropdown position
@@ -98,6 +141,8 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     if (!showDropdown) return null
     const { top, left, width } = getDropdownPosition()
 
+    console.log('searchResults:::: *******', searchResults)
+
     return createPortal(
       <div
         ref={dropdownRef}
@@ -107,28 +152,86 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
           left: `${left}px`,
           width: `${width}px`,
         }}
-        className="fixed bg-black border border-green-800 max-h-60 overflow-y-auto shadow-lg z-[100]"
+        className="fixed bg-black border border-green-800 max-h-96 overflow-y-auto shadow-lg z-[100]"
       >
-        {recentSearches.length > 0 ? (
-          recentSearches.map((search) => (
-            <div
-              key={search.walletAddress}
-              onClick={() => handleRecentSearchClick(search.walletAddress)}
-              className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
-                         last:border-b-0 backdrop-blur-sm bg-black/95"
-            >
-              <div className="font-mono text-green-400 text-sm">
-                {search.walletAddress}
-              </div>
-              <div className="text-green-600 text-xs">
-                {new Date(search.timestamp).toLocaleDateString()}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="p-4 text-center text-green-600 font-mono text-sm border-b border-green-800/30 backdrop-blur-sm bg-black/95">
-            {'>>> NO SEARCH HISTORY <<<'}
+        {isLoading ? (
+          <div className="p-4 text-center text-green-600 font-mono text-sm backdrop-blur-sm bg-black/95">
+            {'>>> SEARCHING...'}
           </div>
+        ) : (
+          <>
+            {/* Profile Search Results */}
+            {searchResults.length > 0 && (
+              <div className="border-b border-green-800/30">
+                <div className="p-2 text-xs text-green-600 font-mono bg-green-900/20">
+                  PROFILE MATCHES
+                </div>
+                {searchResults.map((profile) => (
+                  <div
+                    key={profile.profile.id}
+                    onClick={() => handleProfileClick(profile)}
+                    className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
+                             last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3"
+                  >
+                    {profile.namespace.faviconURL ? (
+                      <img
+                        src={profile.namespace.faviconURL}
+                        alt={profile.namespace.readableName}
+                        className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-green-900/20" />
+                    )}
+                    <div className="flex-1">
+                      <div className="font-mono text-green-400 text-sm">
+                        {profile.profile.username}
+                      </div>
+                      <div className="text-green-600 text-xs flex justify-between">
+                        <span>{profile.namespace.readableName}</span>
+                        <span>
+                          {profile.socialCounts.followers} followers ·{' '}
+                          {profile.socialCounts.following} following
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Recent Searches */}
+            {recentSearches.length > 0 && (
+              <div>
+                <div className="p-2 text-xs text-green-600 font-mono bg-green-900/20">
+                  RECENT SEARCHES
+                </div>
+                {recentSearches.map((search) => (
+                  <div
+                    key={search.walletAddress}
+                    onClick={() =>
+                      handleRecentSearchClick(search.walletAddress)
+                    }
+                    className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
+                             last:border-b-0 backdrop-blur-sm bg-black/95"
+                  >
+                    <div className="font-mono text-green-400 text-sm">
+                      {search.walletAddress}
+                    </div>
+                    <div className="text-green-600 text-xs">
+                      {new Date(search.timestamp).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* No Results Message */}
+            {searchResults.length === 0 && recentSearches.length === 0 && (
+              <div className="p-4 text-center text-green-600 font-mono text-sm backdrop-blur-sm bg-black/95">
+                {'>>> NO RESULTS FOUND <<<'}
+              </div>
+            )}
+          </>
         )}
       </div>,
       document.body,
