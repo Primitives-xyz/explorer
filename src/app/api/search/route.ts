@@ -15,22 +15,17 @@ export async function GET(request: Request) {
 
   try {
     const url = `${baseUrl}/search/profiles?query=${query}&apiKey=${apiKey}&includeExternalProfiles=true`
-    console.log('url', url)
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
       },
     })
 
-    console.log('response', response)
-
     if (!response.ok) {
       throw new Error(`API responded with status: ${response.status}`)
     }
 
     const data = await response.json()
-
-    console.log('data::::', data)
     return NextResponse.json(data)
   } catch (error) {
     console.error('Profile search error:', error)

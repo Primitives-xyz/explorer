@@ -63,7 +63,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     }
   }
 
-  const handleRecentSearchClick = async (address: string) => {
+  async function handleRecentSearchClick(address: string) {
     setShowDropdown(false)
     setInputValue(address)
 
@@ -78,22 +78,6 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
       }
     } catch (error) {
       console.error(error)
-    }
-  }
-
-  const handleProfileClick = (profile: ProfileSearchResult) => {
-    setShowDropdown(false)
-
-    // If it's an external profile, use the userProfileURL
-    if (profile.namespace.userProfileURL) {
-      const hasQueryParams = profile.namespace.userProfileURL.includes('?')
-      const finalUrl = hasQueryParams
-        ? `${profile.namespace.userProfileURL}${profile.profile.username}`
-        : `${profile.namespace.userProfileURL}/${profile.profile.username}`
-      window.open(finalUrl, '_blank')
-    } else {
-      // Otherwise use internal navigation
-      router.push(`/${profile.profile.username}`)
     }
   }
 
@@ -169,19 +153,11 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                 {searchResults.map((profile) => (
                   <div
                     key={profile.profile.id}
-                    onClick={() => handleProfileClick(profile)}
+                    onClick={() => handleRecentSearchClick(profile.profile.id)}
                     className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
                              last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3"
                   >
-                    {profile.namespace.faviconURL ? (
-                      <img
-                        src={profile.namespace.faviconURL}
-                        alt={profile.namespace.readableName}
-                        className="w-6 h-6 rounded-full bg-black ring-1 ring-green-500/20"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-green-900/20" />
-                    )}
+                    <div className="w-6 h-6 rounded-full bg-green-900/20" />
                     <div className="flex-1">
                       <div className="font-mono text-green-400 text-sm">
                         {profile.profile.username}
