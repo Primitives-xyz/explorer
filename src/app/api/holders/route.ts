@@ -1,5 +1,5 @@
-import { checkSolanaBusinessFrogHolder } from '@/utils/helius/das-api'
 import { NextResponse } from 'next/server'
+import { checkSolanaBusinessFrogHolder } from '@/utils/helius/das-api'
 
 export async function GET(request: Request) {
   try {
