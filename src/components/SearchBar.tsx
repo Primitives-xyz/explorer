@@ -125,8 +125,6 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     if (!showDropdown) return null
     const { top, left, width } = getDropdownPosition()
 
-    console.log('searchResults:::: *******', searchResults)
-
     return createPortal(
       <div
         ref={dropdownRef}
