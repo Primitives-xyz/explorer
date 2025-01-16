@@ -109,6 +109,21 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     }
   }
 
+  const handleProfileClick = (profile: ProfileSearchResult) => {
+    const isInternalProfile = profile.namespace.name === 'nemoapp'
+    
+    if (isInternalProfile) {
+      // Internal profile - navigate within the app
+      router.push(`/${profile.profile.username}`)
+      setShowDropdown(false)
+    } else if (profile.userProfileURL) {
+      // External profile with URL - open in new tab
+      window.open(profile.userProfileURL, '_blank')
+      setShowDropdown(false)
+    }
+    // Do nothing for external profiles without URL
+  }
+
   // Function to get dropdown position
   const getDropdownPosition = () => {
     if (!searchBarRef.current) return { top: 0, left: 0, width: 0 }
@@ -148,28 +163,37 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                 <div className="p-2 text-xs text-green-600 font-mono bg-green-900/20">
                   PROFILE MATCHES
                 </div>
-                {searchResults.map((profile) => (
-                  <div
-                    key={profile.profile.id}
-                    onClick={() => handleRecentSearchClick(profile.profile.id)}
-                    className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
-                             last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-green-900/20" />
-                    <div className="flex-1">
-                      <div className="font-mono text-green-400 text-sm">
-                        {profile.profile.username}
-                      </div>
-                      <div className="text-green-600 text-xs flex justify-between">
-                        <span>{profile.namespace.readableName}</span>
-                        <span>
-                          {profile.socialCounts.followers} followers ·{' '}
-                          {profile.socialCounts.following} following
-                        </span>
+                {searchResults.map((profile) => {
+                  const isInternalProfile = profile.namespace.name === 'nemoapp'
+                  const hasExternalUrl = !!profile.userProfileURL
+                  const isClickable = isInternalProfile || hasExternalUrl
+
+                  return (
+                    <div
+                      key={profile.profile.id}
+                      onClick={() => isClickable && handleProfileClick(profile)}
+                      className={`p-2 border-b border-green-800/30 last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3
+                                ${isClickable ? 'hover:bg-green-900/20 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                    >
+                      <div className="w-6 h-6 rounded-full bg-green-900/20" />
+                      <div className="flex-1">
+                        <div className="font-mono text-green-400 text-sm flex items-center gap-2">
+                          {profile.profile.username}
+                          {!isInternalProfile && hasExternalUrl && (
+                            <span className="text-xs text-green-600">[external]</span>
+                          )}
+                        </div>
+                        <div className="text-green-600 text-xs flex justify-between">
+                          <span>{profile.namespace.readableName}</span>
+                          <span>
+                            {profile.socialCounts.followers} followers ·{' '}
+                            {profile.socialCounts.following} following
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
 
@@ -247,16 +271,6 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
           </div>
 
           {renderDropdown()}
-
-          <div className="absolute mt-2 left-0 right-0 text-xs font-mono">
-            {inputValue ? (
-              <span className="text-green-600">
-                {`>>>`} READY TO ANALYZE {inputValue.slice(0, 8)}...
-              </span>
-            ) : (
-              <span className="text-green-800">{`>>>`}_ AWAITING INPUT</span>
-            )}
-          </div>
         </form>
       </div>
     </div>
