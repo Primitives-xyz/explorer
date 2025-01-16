@@ -215,8 +215,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
   return (
     <div className="w-full max-w-3xl mx-auto mb-8">
       <div className="text-green-500 text-xs mb-2 font-mono">
-        <span className="opacity-60">SYSTEM:</span> Enter wallet address to
-        analyze social graph...
+        <span className="opacity-60">SYSTEM:</span> Search a username or wallet address...
       </div>
 
       <div className="relative pb-8">
