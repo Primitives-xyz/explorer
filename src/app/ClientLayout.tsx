@@ -1,10 +1,12 @@
 'use client'
+
 import { ActivityTape } from '@/components/ActivityTape'
 import { GlobalSearch } from '@/components/GlobalSearch'
 import { AuthWrapper } from '@/components/auth/AuthWrapper'
 import dynamic from 'next/dynamic'
 import { ReactNode } from 'react'
 import { HolderProvider } from '@/components/auth/hooks/use-holder-context'
+import { DialectNotifications } from '@/components/notifications/DialectNotifications'
 
 const WalletProvider = dynamic(
   () => import('@/components/auth/dynamic-provider').then((mod) => mod.default),
@@ -31,6 +33,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
             {children}
           </div>
           <GlobalSearch />
+          <DialectNotifications />
         </AuthWrapper>
       </HolderProvider>
     </WalletProvider>

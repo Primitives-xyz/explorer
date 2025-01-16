@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dialectlabs/react-sdk-blockchain-solana": "^2.1.1",
+    "@dialectlabs/react-ui": "^2.2.0",
     "@dynamic-labs/sdk-react-core": "^3.9.5",
     "@dynamic-labs/solana": "^3.9.5",
     "@emotion/react": "^11.13.3",

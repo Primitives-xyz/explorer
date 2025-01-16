@@ -1,6 +1,9 @@
 import { Metadata } from 'next'
 import { ReactNode } from 'react'
 import { ClientLayout } from './ClientLayout'
+import { Providers } from '@/components/providers'
+import { Navbar } from '@/components/navbar'
+import { DialectNotifications } from '@/components/notifications/DialectNotifications'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -59,7 +62,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body>
-        <ClientLayout>{children}</ClientLayout>
+        <Providers>
+          <div className="min-h-screen bg-black text-white">
+            <Navbar />
+            {children}
+            <DialectNotifications />
+          </div>
+        </Providers>
       </body>
     </html>
   )
