@@ -81,4 +81,8 @@ body {
 .dialect[data-theme='dark'] {
   --dt-button-secondary: #00000 !important;
   --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-icon-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-input-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-button-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-icon-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
 }
