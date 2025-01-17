@@ -4,7 +4,7 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
+
 
 import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana';
 import { NotificationsButton } from '@dialectlabs/react-ui';
@@ -79,13 +79,15 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
 
   return (
     <div className="flex items-center gap-3 w-full sm:w-auto">
-        <DialectSolanaSdk 
-          dappAddress={DAPP_ADDRESS}>
+      <div style={{"position": "relative", "display": "inline-block"}}>
+      <DialectSolanaSdk 
+        dappAddress={DAPP_ADDRESS}>
           <NotificationsButton 
             theme='dark'
-          />
-        </DialectSolanaSdk>
-      <button
+            />
+      </DialectSolanaSdk>
+        </div>
+    <button
         onClick={handleSearchClick}
         className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0"
       >

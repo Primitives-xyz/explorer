@@ -78,6 +78,10 @@ body {
   height: 34px !important;
 }
 
+.dt-modal {
+  position: fixed !important;
+}
+
 .dialect[data-theme='dark'] {
   --dt-button-secondary: #00000 !important;
   --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
