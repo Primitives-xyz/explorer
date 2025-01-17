@@ -82,6 +82,14 @@ body {
   position: fixed !important;
 }
 
+@media only screen and (min-width: 640px) {
+  .dt-modal {
+    top: 35% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
 .dialect[data-theme='dark'] {
   --dt-button-secondary: #00000 !important;
   --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
