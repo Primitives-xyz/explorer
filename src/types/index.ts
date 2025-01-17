@@ -34,3 +34,20 @@ export interface FungibleToken {
   price?: number
   imageUrl?: string
 }
+
+export interface ProfileSearchResult {
+  profile: {
+    id: string
+    username: string
+  }
+  namespace: {
+    name: string
+    readableName: string
+    userProfileURL: string
+    faviconURL: string
+  }
+  socialCounts: {
+    followers: number
+    following: number
+  }
+}

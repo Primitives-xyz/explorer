@@ -48,6 +48,7 @@ interface Trade {
 interface TradeResponse {
   success: boolean
   message?: string
+  has_next: boolean
   data: {
     items: Trade[]
   }
@@ -124,46 +125,72 @@ export const TradingStats = ({
         console.log('Current time:', new Date(now * 1000).toISOString())
         console.log('After time:', new Date(afterTime * 1000).toISOString())
 
-        const options = {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            'x-chain': 'solana',
-            'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY || '',
-          },
-        }
+        let allTrades: Trade[] = []
+        let hasMore = true
+        let lastTimestamp = afterTime
+        const limit = 100
+        let totalFetched = 0
 
-        const apiUrl = `https://public-api.birdeye.so/trader/txs/seek_by_time?address=${walletAddress}&offset=0&limit=100&tx_type=swap&after_time=${afterTime}`
-        console.log('API URL:', apiUrl)
+        while (hasMore) {
+          const options = {
+            method: 'GET',
+            headers: {
+              accept: 'application/json',
+              'x-chain': 'solana',
+              'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY || '',
+            },
+          }
 
-        const response = await fetch(apiUrl, options)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const data: TradeResponse = await response.json()
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to fetch trades')
-        }
-
-        console.log('Number of trades received:', data.data.items.length)
-        if (data.data.items.length > 0) {
+          const apiUrl = `https://public-api.birdeye.so/trader/txs/seek_by_time?address=${walletAddress}&limit=${limit}&tx_type=swap&after_time=${lastTimestamp}`
           console.log(
-            'First trade time:',
-            new Date(data.data.items[0].block_unix_time * 1000).toISOString(),
+            `Fetching batch ${totalFetched / limit + 1}, after timestamp:`,
+            new Date(lastTimestamp * 1000).toISOString(),
           )
-          console.log(
-            'Last trade time:',
-            new Date(
-              data.data.items[data.data.items.length - 1].block_unix_time *
-                1000,
-            ).toISOString(),
-          )
+
+          const response = await fetch(apiUrl, options)
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          const data: TradeResponse = await response.json()
+          console.log('Batch response:', {
+            itemsReceived: data.data.items.length,
+            hasNext: data.has_next,
+            firstTimestamp: data.data.items[0]?.block_unix_time,
+            lastTimestamp:
+              data.data.items[data.data.items.length - 1]?.block_unix_time,
+          })
+
+          if (!data.success) {
+            throw new Error(data.message || 'Failed to fetch trades')
+          }
+
+          if (data.data.items.length > 0) {
+            allTrades = [...allTrades, ...data.data.items]
+            // Update the timestamp to fetch the next batch
+            lastTimestamp =
+              data.data.items[data.data.items.length - 1].block_unix_time
+            totalFetched += data.data.items.length
+          }
+
+          // Continue if we got a full batch (meaning there might be more) and haven't hit the limit
+          // Note: has_next might be undefined, so we rely on batch size instead
+          hasMore =
+            data.data.items.length === limit &&
+            totalFetched < 1000 &&
+            lastTimestamp > afterTime // ensure we don't go beyond our time period
+
+          if (hasMore) {
+            // Add a small delay to avoid rate limiting
+            await new Promise((resolve) => setTimeout(resolve, 500))
+          }
         }
 
-        let filteredTrades = data.data.items
+        console.log('Total trades fetched:', totalFetched)
+
+        let filteredTrades = allTrades
         if (timePeriod === 'yesterday' && yesterdayStart !== null) {
           const yesterdayEnd = yesterdayStart + oneDaySeconds
-          filteredTrades = data.data.items.filter(
+          filteredTrades = allTrades.filter(
             (trade) =>
               trade.block_unix_time >= yesterdayStart &&
               trade.block_unix_time < yesterdayEnd,
@@ -186,28 +213,36 @@ export const TradingStats = ({
               : quoteUsdValue - baseUsdValue
 
             for (const token of [trade.quote.symbol, trade.base.symbol]) {
+              if (!token) continue
               const current = acc.tokenVolumes.get(token) || {
                 volume: 0,
                 trades: 0,
               }
               const isQuote = token === trade.quote.symbol
-              acc.tokenVolumes.set(token, {
-                volume:
-                  current.volume + (isQuote ? quoteUsdValue : baseUsdValue),
-                trades: current.trades + 1,
-              })
+              const tokenValue = isQuote ? quoteUsdValue : baseUsdValue
+              if (!isNaN(tokenValue)) {
+                acc.tokenVolumes.set(token, {
+                  volume: current.volume + tokenValue,
+                  trades: current.trades + 1,
+                })
+              }
             }
 
             acc.totalTrades += 1
-            acc.totalVolume += Math.max(baseUsdValue, quoteUsdValue)
-            acc.pnl += tradePnL
+            const tradeVolume = Math.max(baseUsdValue || 0, quoteUsdValue || 0)
+            if (!isNaN(tradeVolume)) {
+              acc.totalVolume += tradeVolume
+            }
+            if (!isNaN(tradePnL)) {
+              acc.pnl += tradePnL
 
-            if (tradePnL > 0) {
-              acc.winningTrades += 1
-              acc.largestWin = Math.max(acc.largestWin, tradePnL)
-            } else if (tradePnL < 0) {
-              acc.losingTrades += 1
-              acc.largestLoss = Math.min(acc.largestLoss, tradePnL)
+              if (tradePnL > 0) {
+                acc.winningTrades += 1
+                acc.largestWin = Math.max(acc.largestWin, tradePnL)
+              } else if (tradePnL < 0) {
+                acc.losingTrades += 1
+                acc.largestLoss = Math.min(acc.largestLoss, tradePnL)
+              }
             }
 
             return acc

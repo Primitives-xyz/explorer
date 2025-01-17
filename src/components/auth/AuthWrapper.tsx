@@ -23,7 +23,6 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
       !isCheckingHolder
     ) {
       hasInitialized.current = true
-      console.log('AuthWrapper: Initial holder check')
       startCheck()
     }
   }, [sdkHasLoaded, isLoggedIn, walletAddress, isHolder, isCheckingHolder])

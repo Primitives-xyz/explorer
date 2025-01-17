@@ -2,9 +2,13 @@ export const LAMPORTS_PER_SOL = 1000000000
 
 export const formatLamportsToSol = (lamports: number) => {
   const sol = Math.abs(lamports) / LAMPORTS_PER_SOL
+  // For very small values, show more decimal places
+  if (sol < 0.0001) {
+    return sol.toFixed(7)
+  }
   return sol.toLocaleString(undefined, {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 4,
   })
 }
 

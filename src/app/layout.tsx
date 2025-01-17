@@ -49,6 +49,15 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://explorer.tapestry.dev',
   },
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/favicon.png',
+    },
+  },
 }
 
 interface RootLayoutProps {

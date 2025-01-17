@@ -11,7 +11,7 @@ import { FungibleToken, NFT } from '@/utils/types'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { FollowingContainer } from '@/components/profile/FollowingContainer'
+import { ActivityFeedContainer } from '@/components/profile/FollowingContainer'
 
 interface TokenData {
   items: (FungibleToken | NFT)[]
@@ -78,23 +78,28 @@ export default function Home() {
         <SearchBar onPickRecentAddress={searchAddress} />
 
         {/* Grid layout for ProfileSection and TrendingTokens */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ProfileSection
-            walletAddress={''}
-            hasSearched={hasSearched}
-            profileData={profileData}
-            error={error}
-            isLoadingProfileData={isLoadingProfileData}
-          />
-          <TrendingTokens />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <ActivityFeedContainer username={mainUsername} />
+          </div>
+          <div className="lg:col-span-1">
+            <ProfileSection
+              walletAddress={''}
+              hasSearched={hasSearched}
+              profileData={profileData}
+              error={error}
+              isLoadingProfileData={isLoadingProfileData}
+            />
+          </div>
         </div>
 
         {/* Token results */}
 
         {/* Following list for logged-in users */}
-        {mainUsername && <FollowingContainer username={mainUsername} />}
-        {/* Top Traders Section */}
-        <TopTraders />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TrendingTokens />
+          <TopTraders />
+        </div>
       </div>
       <CreateProfile />
     </Layout>

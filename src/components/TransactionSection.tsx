@@ -1,9 +1,13 @@
 'use client'
 
 import { Transaction } from '@/utils/helius/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { TransactionCard } from './transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
+import { DataContainer } from './common/DataContainer'
+import { ScrollableContent } from './common/ScrollableContent'
+import { FilterBar } from './common/FilterBar'
+import { FilterButton } from './common/FilterButton'
 
 interface TransactionSectionProps {
   walletAddress: string
@@ -19,7 +23,19 @@ export const TransactionSection = ({
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [expandedTx, setExpandedTx] = useState<string | null>(null)
+  const [selectedType, setSelectedType] = useState<string>('all')
   const ITEMS_PER_PAGE = 5
+
+  // Get unique transaction types from the results
+  const transactionTypes = useMemo(() => {
+    const types = new Set(['all'])
+    transactions.forEach((tx) => {
+      if (!isSpamTransaction(tx) && tx.type) {
+        types.add(tx.type.toLowerCase().replace('_', ' '))
+      }
+    })
+    return Array.from(types)
+  }, [transactions])
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -74,58 +90,56 @@ export const TransactionSection = ({
 
   if (!hasSearched) return null
 
+  // Filter transactions by type and spam
+  const filteredTransactions = transactions.filter((tx) => {
+    if (isSpamTransaction(tx)) return false
+    if (selectedType === 'all') return true
+    return tx.type?.toLowerCase().replace('_', ' ') === selectedType
+  })
+
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group h-[484px]">
-      {/* Header */}
-      <div className="border-b border-green-800 p-2 flex-shrink-0">
-        <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
-            {'>'} transaction_log.sol
-          </div>
-          <div className="text-xs text-green-600 font-mono whitespace-nowrap ml-2">
-            COUNT: {transactions.length}
-          </div>
+    <DataContainer
+      title="transaction_log.sol"
+      count={filteredTransactions.length}
+      error={error}
+    >
+      <FilterBar>
+        {transactionTypes.map((type) => (
+          <FilterButton
+            key={type}
+            label={type === 'all' ? 'All' : type}
+            isSelected={selectedType === type}
+            onClick={() => setSelectedType(type)}
+          />
+        ))}
+      </FilterBar>
+
+      <ScrollableContent
+        isLoading={isLoading && filteredTransactions.length === 0}
+        isEmpty={filteredTransactions.length === 0}
+        loadingText=">>> LOADING TRANSACTIONS..."
+        emptyText=">>> NO TRANSACTIONS FOUND"
+      >
+        <div className="divide-y divide-green-800/30">
+          {filteredTransactions.map((tx) => (
+            <TransactionCard
+              key={tx.signature}
+              transaction={tx}
+              sourceWallet={walletAddress}
+              isExpanded={expandedTx === tx.signature}
+              onExpand={() =>
+                setExpandedTx(expandedTx === tx.signature ? null : tx.signature)
+              }
+            />
+          ))}
+          {isLoading && page > 1 && (
+            <div className="p-4 text-center text-green-600 font-mono">
+              {'>>> LOADING MORE TRANSACTIONS...'}
+            </div>
+          )}
         </div>
-      </div>
+      </ScrollableContent>
 
-      {error && (
-        <div className="p-1.5 text-xs border border-red-800 bg-red-900/20 text-red-400">
-          {error}
-        </div>
-      )}
-
-      {/* Transaction List */}
-      <div className="divide-y divide-green-800/30 overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
-        {isLoading && transactions.length === 0 ? (
-          <div className="p-2 text-center text-green-600 text-sm font-mono">
-            Loading...
-          </div>
-        ) : transactions.length === 0 ? (
-          <div className="p-2 text-center text-green-600 text-sm font-mono">
-            No transactions
-          </div>
-        ) : (
-          <>
-            {transactions
-              .filter((tx) => !isSpamTransaction(tx))
-              .map((tx) => (
-                <TransactionCard
-                  key={tx.signature}
-                  transaction={tx}
-                  sourceWallet={walletAddress}
-                  isExpanded={expandedTx === tx.signature}
-                  onExpand={() =>
-                    setExpandedTx(
-                      expandedTx === tx.signature ? null : tx.signature,
-                    )
-                  }
-                />
-              ))}
-          </>
-        )}
-      </div>
-
-      {/* Load More */}
       {!isLoading && transactions.length > 0 && (
         <button
           className="w-full p-1 text-xs text-green-600 hover:text-green-500 font-mono border-t border-green-800 transition-colors duration-200"
@@ -135,6 +149,6 @@ export const TransactionSection = ({
           {isLoading ? 'Loading...' : 'Load More'}
         </button>
       )}
-    </div>
+    </DataContainer>
   )
 }

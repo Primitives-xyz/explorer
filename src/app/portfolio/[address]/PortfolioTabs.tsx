@@ -1,7 +1,6 @@
 'use client'
 
 import { TokenContainer } from '@/components/TokenContainer'
-import { TransactionSection } from '@/components/TransactionSection'
 import { FungibleToken, NFT } from '@/utils/types'
 import { useEffect, useState } from 'react'
 
@@ -18,13 +17,7 @@ interface TokenData {
   }
 }
 
-type TokenTab =
-  | 'all'
-  | 'fungible'
-  | 'nft'
-  | 'compressed'
-  | 'programmable'
-  | 'transactions'
+type TokenTab = 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
 
 export default function PortfolioTabs({ address }: PortfolioTabsProps) {
   const [activeTab, setActiveTab] = useState<TokenTab>('all')
@@ -63,10 +56,6 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
   }, [address])
 
   const renderContent = () => {
-    if (activeTab === 'transactions') {
-      return <TransactionSection walletAddress={address} hasSearched={true} />
-    }
-
     return (
       <TokenContainer
         walletAddress={address}
@@ -122,12 +111,6 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
             className={getTabStyle('programmable')}
           >
             Programmable NFTs
-          </button>
-          <button
-            onClick={() => setActiveTab('transactions')}
-            className={getTabStyle('transactions')}
-          >
-            Transactions
           </button>
         </div>
       </div>

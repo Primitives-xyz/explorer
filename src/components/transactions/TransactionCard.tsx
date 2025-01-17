@@ -4,6 +4,9 @@ import { TransactionBadge } from './TransactionBadge'
 import { TransactionSignature } from './TransactionSignature'
 import { TransferList } from './TransferList'
 import { Transaction } from '@/utils/helius/types'
+import { SwapTransactionView } from './swap-transaction-view'
+import { SolanaTransferView } from './solana-transfer-view'
+import { NFTTransactionView } from './nft-transaction-view'
 
 interface TransactionCardProps {
   transaction: Transaction
@@ -24,22 +27,24 @@ export const TransactionCard = ({
       onClick={onExpand}
     >
       <div className="flex flex-col gap-1">
-        {/* Transaction Signature */}
-        <TransactionSignature signature={tx.signature} />
-
-        {/* Transaction Info */}
-        <div className="flex items-center justify-between text-xs">
+        {/* Top Row: Signature, Badges, and Time */}
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
+            <span className="text-green-300 font-mono text-sm font-bold px-2 py-0.5 bg-green-900/20 rounded border border-green-800/30">
+              {tx.signature.slice(0, 4)}...{tx.signature.slice(-4)}
+            </span>
+            <TransactionBadge type={tx.type} source={tx.source} />
+          </div>
+          <div className="flex flex-col items-end text-xs">
             <span className="text-green-400 font-mono">
               {formatDistanceToNow(new Date(tx.timestamp), {
                 addSuffix: true,
               })}
             </span>
-            <TransactionBadge type={tx.type} source={tx.source} />
+            <span className="text-green-600 font-mono">
+              {tx.fee ? `${Number(tx.fee)} SOL` : ''}
+            </span>
           </div>
-          <span className="text-green-600 font-mono">
-            {tx.fee ? `${formatLamportsToSol(tx.fee)} SOL` : ''}
-          </span>
         </div>
 
         {/* Transaction Description */}
@@ -47,12 +52,27 @@ export const TransactionCard = ({
           {tx.description || 'No description available'}
         </div>
 
+        {/* Custom Swap View for SWAP transactions */}
+        {tx.type === 'SWAP' && (
+          <SwapTransactionView tx={tx} sourceWallet={sourceWallet} />
+        )}
+
+        {/* Custom Solana Transfer View for SYSTEM_PROGRAM transfers */}
+        {tx.source === 'SYSTEM_PROGRAM' && tx.type === 'TRANSFER' && (
+          <SolanaTransferView tx={tx} sourceWallet={sourceWallet} />
+        )}
+        {(tx.source === 'MAGIC_EDEN' || tx.source === 'TENSOR') && (
+          <NFTTransactionView tx={tx} sourceWallet={sourceWallet} />
+        )}
+
         {/* Transfers */}
-        <TransferList
-          nativeTransfers={tx.nativeTransfers}
-          tokenTransfers={tx.tokenTransfers}
-          sourceWallet={sourceWallet}
-        />
+        {tx.source !== 'SYSTEM_PROGRAM' && (
+          <TransferList
+            nativeTransfers={tx.nativeTransfers}
+            tokenTransfers={tx.tokenTransfers}
+            sourceWallet={sourceWallet}
+          />
+        )}
 
         {/* Parsed Instructions (Expanded View) */}
         {isExpanded && tx.parsedInstructions && (
