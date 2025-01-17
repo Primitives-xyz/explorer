@@ -6,6 +6,12 @@ import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
+import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana';
+import { NotificationsButton } from '@dialectlabs/react-ui';
+import '@dialectlabs/react-ui/index.css';
+
+const DAPP_ADDRESS = process.env.NEXT_PUBLIC_DAPP_ADDRESS || '4M2ktdatcMnziGpyvgNqu6hV2utBMKhkKLJfaUumPM9K';
+
 const DynamicConnectButton = dynamic(
   () =>
     import('@dynamic-labs/sdk-react-core').then(
@@ -73,6 +79,12 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
 
   return (
     <div className="flex items-center gap-3 w-full sm:w-auto">
+        <DialectSolanaSdk 
+          dappAddress={DAPP_ADDRESS}>
+          <NotificationsButton 
+            theme='dark'
+          />
+        </DialectSolanaSdk>
       <button
         onClick={handleSearchClick}
         className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0"

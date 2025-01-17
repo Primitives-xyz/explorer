@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dialectlabs/react-sdk-blockchain-solana": "^2.1.1",
+    "@dialectlabs/react-ui": "^2.2.0",
     "@dynamic-labs/sdk-react-core": "^3.9.5",
     "@dynamic-labs/solana": "^3.9.5",
     "@emotion/react": "^11.13.3",
     "@solana/spl-token": "^0.4.9",
+    "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.92.1",
     "@solanafm/explorer-kit": "^1.1.3",
