@@ -72,3 +72,13 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+/* necessary to make the button have the same height as connect walled + search */
+.dialect> * > button {
+  height: 34px !important;
+}
+
+.dialect[data-theme='dark'] {
+  --dt-button-secondary: #00000 !important;
+  --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+}
