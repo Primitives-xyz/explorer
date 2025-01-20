@@ -1,41 +1,18 @@
 import { Comment } from '@/types'
-import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Card } from '../common/card'
 
-export function CommentWall() {
-  const params = useParams()
-  const [comments, setComments] = useState<Comment[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+export function CommentWall({
+  comments,
+  targetProfileId,
+}: {
+  comments: Comment[]
+  targetProfileId: string
+}) {
+  console.log('$$$$$')
+  console.log(comments)
   const [newComment, setNewComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        // TODO: get requestingProfileId from local storage
-        const requestingProfileId = localStorage.getItem('profile_id')
-        console.log('requestingProfileId::::::', requestingProfileId)
-        const response = await fetch(
-          `/api/comments?targetProfileId=${params.id}&requestingProfileId=${params.id}`,
-        )
-        console.log('response::::::', response)
-        if (!response.ok) {
-          throw new Error('Failed to fetch comments')
-        }
-        const data = await response.json()
-        setComments(data)
-      } catch (err) {
-        setError('Failed to load comments')
-        console.error('Error fetching comments:', err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchComments()
-  }, [params.id])
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,7 +28,7 @@ export function CommentWall() {
         },
         body: JSON.stringify({
           content: newComment,
-          targetProfileId: params.id,
+          targetProfileId: targetProfileId,
           authorProfileId: requestingProfileId,
         }),
       })
@@ -61,8 +38,8 @@ export function CommentWall() {
       }
 
       const newCommentData = await response.json()
-      setComments((prevComments) => [...prevComments, newCommentData])
-      setNewComment('')
+      //   setNewComment('')
+      //   refreshComments(targetProfileId, requestingProfileId)
     } catch (err) {
       setError('Failed to post comment')
       console.error('Error posting comment:', err)
@@ -75,7 +52,7 @@ export function CommentWall() {
     <Card>
       <div className="p-4">
         <h3 className="text-lg font-mono text-green-400 mb-4">Comment Wall</h3>
-
+        {/* 
         <form onSubmit={handleSubmitComment} className="mb-6">
           <div className="flex flex-col space-y-2">
             <textarea
@@ -97,20 +74,10 @@ export function CommentWall() {
               {isSubmitting ? 'Posting...' : 'Post Comment'}
             </button>
           </div>
-        </form>
-
-        {isLoading && (
-          <div className="text-center text-gray-500">Loading comments...</div>
-        )}
-
-        {error && <div className="text-center text-red-500">{error}</div>}
-
-        {!isLoading && !error && comments.length === 0 && (
-          <div className="text-center text-gray-500">No comments yet</div>
-        )}
+        </form> */}
 
         <div className="space-y-4">
-          {comments.map((comment) => (
+          {(comments ?? []).map((comment) => (
             <div
               key={comment.id}
               className="border border-gray-700 rounded-lg p-4"

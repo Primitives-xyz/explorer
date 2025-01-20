@@ -1,14 +1,5 @@
 import { useState, useEffect } from 'react'
 
-const fetcher = async (url: string) => {
-  console.log('Fetcher called with URL:', url) // Debug log
-  const res = await fetch(url)
-  if (!res.ok) {
-    throw new Error(`Failed to fetch comments: ${res.statusText}`)
-  }
-  return res.json()
-}
-
 export const useGetComments = ({
   targetProfileId,
   requestingProfileId,
@@ -30,8 +21,13 @@ export const useGetComments = ({
 
       setIsLoading(true)
       try {
-        const data = await fetcher(url)
-        setComments(data)
+        console.log('- A -')
+        const data = await fetch(url)
+        console.log('- B -')
+        const response = await data.json()
+        console.log('- C -')
+        console.log('response::::::', response)
+        setComments(response)
         setError(null)
       } catch (err) {
         setError(
@@ -47,14 +43,4 @@ export const useGetComments = ({
   }, [targetProfileId, requestingProfileId])
 
   return { comments, loading: isLoading, error }
-}
-
-// Export a function to manually trigger refresh
-export const refreshComments = async (
-  targetProfileId: string,
-  requestingProfileId: string,
-) => {
-  const url = `/api/comments?targetProfileId=${targetProfileId}&profileId=${requestingProfileId}`
-  const data = await fetcher(url)
-  return data
 }
