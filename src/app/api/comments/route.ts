@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const TAPESTRY_URL = process.env.NEXT_PUBLIC_TAPESTRY_URL
+const TAPESTRY_URL = process.env.TAPESTRY_URL
+const API_KEY = process.env.TAPESTRY_API_KEY
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
+    console.log('searchParams::::::', searchParams)
     const targetProfileId = searchParams.get('targetProfileId')
+    console.log('targetProfileId::::::', targetProfileId)
+
+    const requestingProfileId = searchParams.get('requestingProfileId')
+    console.log('requestingProfileId::::::', requestingProfileId)
 
     if (!targetProfileId) {
       return NextResponse.json(
@@ -14,15 +20,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const response = await fetch(
-      `${TAPESTRY_URL}/comments?targetProfileId=${targetProfileId}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    const url = `${TAPESTRY_URL}comments?apiKey=${API_KEY}&targetProfileId=${targetProfileId}&profileId=${requestingProfileId}`
+
+    console.log('url::::::', url)
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    )
+    })
 
     if (!response.ok) {
       throw new Error('Failed to fetch comments')

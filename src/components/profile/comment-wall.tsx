@@ -12,9 +12,13 @@ export function CommentWall() {
   useEffect(() => {
     const fetchComments = async () => {
       try {
+        // TODO: get requestingProfileId from local storage
+        const requestingProfileId = localStorage.getItem('profile_id')
+        console.log('requestingProfileId::::::', requestingProfileId)
         const response = await fetch(
-          `/api/comments?targetProfileId=${params.id}`,
+          `/api/comments?targetProfileId=${params.id}&requestingProfileId=${params.id}`,
         )
+        console.log('response::::::', response)
         if (!response.ok) {
           throw new Error('Failed to fetch comments')
         }
