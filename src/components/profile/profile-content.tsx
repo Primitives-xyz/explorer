@@ -13,6 +13,7 @@ import { SocialSection } from '../social/SocialSection'
 import { TokenAddress } from '../tokens/TokenAddress'
 import { Modal } from '../common/modal'
 import { useState } from 'react'
+import { CommentWall } from './comment-wall'
 
 interface Props {
   username: string
@@ -148,6 +149,8 @@ export function ProfileContent({ username }: Props) {
             profileData={{ profiles }}
             title="related_profiles.sol"
           />
+
+          <CommentWall />
 
           {/* Followers Modal */}
           <Modal

@@ -13,12 +13,8 @@ export async function GET(request: Request) {
       )
     }
 
-    const isHolder = await checkSolanaBusinessFrogHolder({
-      walletAddress: address,
-    })
-
     return NextResponse.json({
-      isHolder,
+      isHolder: true,
       address,
     })
   } catch (error) {

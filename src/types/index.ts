@@ -51,3 +51,12 @@ export interface ProfileSearchResult {
     following: number
   }
 }
+
+export interface Comment {
+  id: string
+  content: string
+  authorId: string
+  authorUsername?: string
+  createdAt: string
+  updatedAt: string
+}
