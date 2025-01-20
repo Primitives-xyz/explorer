@@ -1,6 +1,6 @@
 import useSWR, { mutate } from 'swr'
 
-export const useGetProfiles = (walletAddress: string) => {
+export const useGetProfiles = (walletAddress: string | null) => {
   const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) {
@@ -21,10 +21,10 @@ export const useGetProfiles = (walletAddress: string) => {
     isLoading,
     mutate: mutateProfiles,
   } = useSWR(key, fetcher, {
-    revalidateOnFocus: true,
-    revalidateOnReconnect: true,
-    dedupingInterval: 0,
-    revalidateIfStale: true,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 30000, // 30 seconds
+    revalidateIfStale: false,
     revalidateOnMount: true,
     refreshInterval: 0,
     shouldRetryOnError: true,
