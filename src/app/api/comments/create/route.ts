@@ -10,6 +10,11 @@ export async function POST(req: NextRequest) {
     const text = formData.get('text')?.toString()
     const commentId = formData.get('commentId')?.toString()
 
+    console.log('profileId::::::', profileId)
+    console.log('contentId::::::', contentId)
+    console.log('text::::::', text)
+    console.log('commentId::::::', commentId)
+
     // Validate required fields
     if (!profileId) {
       return NextResponse.json(

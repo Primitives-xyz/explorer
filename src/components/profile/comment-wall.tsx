@@ -8,6 +8,8 @@ export function CommentWall() {
   const [comments, setComments] = useState<Comment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [newComment, setNewComment] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -35,10 +37,67 @@ export function CommentWall() {
     fetchComments()
   }, [params.id])
 
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newComment.trim()) return
+
+    setIsSubmitting(true)
+    try {
+      const requestingProfileId = localStorage.getItem('profile_id')
+      const response = await fetch('/api/comments/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: newComment,
+          targetProfileId: params.id,
+          authorProfileId: requestingProfileId,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to post comment')
+      }
+
+      const newCommentData = await response.json()
+      setComments((prevComments) => [...prevComments, newCommentData])
+      setNewComment('')
+    } catch (err) {
+      setError('Failed to post comment')
+      console.error('Error posting comment:', err)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <Card>
       <div className="p-4">
         <h3 className="text-lg font-mono text-green-400 mb-4">Comment Wall</h3>
+
+        <form onSubmit={handleSubmitComment} className="mb-6">
+          <div className="flex flex-col space-y-2">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg 
+                       text-gray-200 placeholder-gray-500 focus:outline-none 
+                       focus:border-green-400 resize-none"
+              rows={3}
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting || !newComment.trim()}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg 
+                       hover:bg-green-700 disabled:opacity-50 
+                       disabled:cursor-not-allowed font-mono"
+            >
+              {isSubmitting ? 'Posting...' : 'Post Comment'}
+            </button>
+          </div>
+        </form>
 
         {isLoading && (
           <div className="text-center text-gray-500">Loading comments...</div>
