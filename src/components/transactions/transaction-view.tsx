@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { TransactionBadge } from './TransactionBadge'
 import { TransactionSignature } from './TransactionSignature'
+import { TransactionCard } from './TransactionCard'
 import {
   formatLamportsToSol,
   formatTokenAmount,
@@ -21,6 +22,7 @@ export default function TransactionDetails({
   const [transaction, setTransaction] = useState<Transaction | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isExpanded, setIsExpanded] = useState(true)
 
   useEffect(() => {
     const fetchTransaction = async () => {
@@ -179,6 +181,18 @@ export default function TransactionDetails({
 
   return (
     <div className="container mx-auto p-8">
+      {/* Transaction Card */}
+      {transaction && (
+        <div className="mb-8 border border-green-800/40 rounded-xl bg-black/40">
+          <TransactionCard
+            transaction={transaction}
+            sourceWallet=""
+            isExpanded={true}
+            onExpand={() => {}}
+          />
+        </div>
+      )}
+
       {/* Transaction Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-mono text-green-500 mb-2">

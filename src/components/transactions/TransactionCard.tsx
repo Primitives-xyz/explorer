@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { formatLamportsToSol } from '@/utils/transaction'
 import { TransactionBadge } from './TransactionBadge'
@@ -7,6 +8,15 @@ import { Transaction } from '@/utils/helius/types'
 import { SwapTransactionView } from './swap-transaction-view'
 import { SolanaTransferView } from './solana-transfer-view'
 import { NFTTransactionView } from './nft-transaction-view'
+
+// Helper function to normalize timestamp
+const normalizeTimestamp = (timestamp: number) => {
+  // If timestamp is in seconds (less than year 2100 in milliseconds)
+  if (timestamp < 4102444800) {
+    return timestamp * 1000
+  }
+  return timestamp
+}
 
 interface TransactionCardProps {
   transaction: Transaction
@@ -30,14 +40,19 @@ export const TransactionCard = ({
         {/* Top Row: Signature, Badges, and Time */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-green-300 font-mono text-sm font-bold px-2 py-0.5 bg-green-900/20 rounded border border-green-800/30">
-              {tx.signature.slice(0, 4)}...{tx.signature.slice(-4)}
-            </span>
+            <Link
+              href={`/${tx.signature}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="text-green-300 font-mono text-sm font-bold px-2 py-0.5 bg-green-900/20 rounded border border-green-800/30">
+                {tx.signature.slice(0, 4)}...{tx.signature.slice(-4)}
+              </span>
+            </Link>
             <TransactionBadge type={tx.type} source={tx.source} />
           </div>
           <div className="flex flex-col items-end text-xs">
             <span className="text-green-400 font-mono">
-              {formatDistanceToNow(new Date(tx.timestamp), {
+              {formatDistanceToNow(new Date(normalizeTimestamp(tx.timestamp)), {
                 addSuffix: true,
               })}
             </span>
@@ -48,9 +63,11 @@ export const TransactionCard = ({
         </div>
 
         {/* Transaction Description */}
-        <div className="text-sm text-green-300 font-mono break-words">
-          {tx.description || 'No description available'}
-        </div>
+        {tx.source !== 'MAGIC_EDEN' && (
+          <div className="text-sm text-green-300 font-mono break-words">
+            {tx.description || 'No description available'}
+          </div>
+        )}
 
         {/* Custom Swap View for SWAP transactions */}
         {tx.type === 'SWAP' && (
