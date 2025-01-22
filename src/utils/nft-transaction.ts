@@ -169,7 +169,7 @@ export const isSystemAccount = (address: string): boolean => {
 export const getSaleAmount = (transfers: Transfer[]): number => {
   // For Tensor transactions, look for the maxAmount in the buyCore instruction
   if (transfers.length === 0) {
-    return 0.1747 // Hardcoded for testing, should come from instruction data
+    return 0 // Hardcoded for testing, should come from instruction data
   }
 
   return transfers

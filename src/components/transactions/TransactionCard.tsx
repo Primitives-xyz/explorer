@@ -10,6 +10,7 @@ import { SolanaTransferView } from './solana-transfer-view'
 import { NFTTransactionView } from './nft-transaction-view'
 import { SPLTransferView } from './spl-transfer-view'
 import { ExtendedTransaction } from '@/utils/nft-transaction'
+import { memo, useMemo } from 'react'
 
 // Helper function to normalize timestamp
 const normalizeTimestamp = (timestamp: number) => {
@@ -20,40 +21,52 @@ const normalizeTimestamp = (timestamp: number) => {
   return timestamp
 }
 
-// Helper function to transform Transaction to ExtendedTransaction
+// Move helper function outside component to prevent recreation
 const transformToExtendedTransaction = (
   tx: Transaction,
-): ExtendedTransaction => {
-  return {
-    ...tx,
-    tokenTransfers:
-      tx.tokenTransfers?.map((transfer) => ({
-        fromTokenAccount: transfer.fromTokenAccount,
-        toTokenAccount: transfer.toTokenAccount,
-        fromUserAccount: transfer.fromUserAccount,
-        toUserAccount: transfer.toUserAccount,
-        tokenAmount: transfer.tokenAmount,
-        mint: transfer.tokenMint,
-        tokenStandard: transfer.tokenStandard,
-      })) || [],
-    transfers:
-      tx.nativeTransfers?.map((transfer) => ({
-        from: transfer.fromUserAccount,
-        to: transfer.toUserAccount,
-        amount: transfer.amount,
-      })) || [],
-  }
-}
+): ExtendedTransaction => ({
+  ...tx,
+  tokenTransfers:
+    tx.tokenTransfers?.map((transfer) => ({
+      fromTokenAccount: transfer.fromTokenAccount,
+      toTokenAccount: transfer.toTokenAccount,
+      fromUserAccount: transfer.fromUserAccount,
+      toUserAccount: transfer.toUserAccount,
+      tokenAmount: transfer.tokenAmount,
+      mint: transfer.tokenMint,
+      tokenStandard: transfer.tokenStandard,
+    })) || [],
+  transfers:
+    tx.nativeTransfers?.map((transfer) => ({
+      from: transfer.fromUserAccount,
+      to: transfer.toUserAccount,
+      amount: transfer.amount,
+    })) || [],
+})
 
 interface TransactionCardProps {
   transaction: Transaction
   sourceWallet: string
 }
 
-export const TransactionCard = ({
+export const TransactionCard = memo(function TransactionCard({
   transaction: tx,
   sourceWallet,
-}: TransactionCardProps) => {
+}: TransactionCardProps) {
+  // Memoize expensive computations and transformations
+  const { formattedTime, extendedTransaction } = useMemo(
+    () => ({
+      formattedTime: formatDistanceToNow(
+        new Date(normalizeTimestamp(tx.timestamp)),
+        {
+          addSuffix: true,
+        },
+      ),
+      extendedTransaction: transformToExtendedTransaction(tx),
+    }),
+    [tx],
+  )
+
   return (
     <div className="p-2 hover:bg-green-900/10 transition-all duration-200">
       <div className="flex flex-col gap-1">
@@ -75,11 +88,7 @@ export const TransactionCard = ({
             )}
           </div>
           <div className="flex flex-col items-end text-xs">
-            <span className="text-green-400 font-mono">
-              {formatDistanceToNow(new Date(normalizeTimestamp(tx.timestamp)), {
-                addSuffix: true,
-              })}
-            </span>
+            <span className="text-green-400 font-mono">{formattedTime}</span>
             <span className="text-green-600 font-mono">
               {tx.fee ? `${Number(tx.fee)} SOL` : ''}
             </span>
@@ -116,7 +125,7 @@ export const TransactionCard = ({
           tx.source === 'TENSOR' ||
           tx.type === 'COMPRESSED_NFT_MINT') && (
           <NFTTransactionView
-            tx={transformToExtendedTransaction(tx)}
+            tx={extendedTransaction}
             sourceWallet={sourceWallet}
           />
         )}
@@ -133,4 +142,4 @@ export const TransactionCard = ({
       </div>
     </div>
   )
-}
+})

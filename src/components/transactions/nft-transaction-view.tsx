@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, memo } from 'react'
 import { TokenResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
 import { TokenAddress } from '../tokens/TokenAddress'
@@ -18,7 +18,7 @@ interface NFTTransactionViewProps {
   sourceWallet: string
 }
 
-export function NFTTransactionView({
+export const NFTTransactionView = memo(function NFTTransactionView({
   tx,
   sourceWallet,
 }: NFTTransactionViewProps) {
@@ -28,15 +28,25 @@ export function NFTTransactionView({
   const [error, setError] = useState<string | null>(null)
   const [detectionMethod, setDetectionMethod] = useState<string>('')
 
-  // Normalize the transaction format
-  const instructions = tx.parsedInstructions || tx.instructions || []
-  const transfers = normalizeTransfers(tx)
+  // Memoize expensive computations
+  const { instructions, transfers, compressedNFTMintEvent } = useMemo(() => {
+    return {
+      instructions: tx.parsedInstructions || tx.instructions || [],
+      transfers: normalizeTransfers(tx),
+      compressedNFTMintEvent: tx.events?.find(
+        (event): event is CompressedNFTMintEvent =>
+          event.type === 'COMPRESSED_NFT_MINT',
+      ),
+    }
+  }, [tx])
 
-  // Check if this is a compressed NFT mint from events
-  const compressedNFTMintEvent = tx.events?.find(
-    (event): event is CompressedNFTMintEvent =>
-      event.type === 'COMPRESSED_NFT_MINT',
-  )
+  // Memoize transaction type calculations
+  const { isMint, isBuy, saleAmount } = useMemo(() => {
+    const isMint = tx.type === 'COMPRESSED_NFT_MINT' || !!compressedNFTMintEvent
+    const isBuy = !isMint && isNFTBuyTransaction(tx, sourceWallet)
+    const saleAmount = getSaleAmount(transfers)
+    return { isMint, isBuy, saleAmount }
+  }, [tx, sourceWallet, compressedNFTMintEvent, transfers])
 
   // Find the NFT asset from the transaction data
   useEffect(() => {
@@ -76,13 +86,6 @@ export function NFTTransactionView({
       setNftMint(mint)
     }
   }, [tx, sourceWallet, instructions, compressedNFTMintEvent])
-
-  // Determine if this is a mint, buy or sell
-  const isMint = tx.type === 'COMPRESSED_NFT_MINT' || compressedNFTMintEvent
-  const isBuy = !isMint && isNFTBuyTransaction(tx, sourceWallet)
-
-  // Get the actual sale amount
-  const saleAmount = getSaleAmount(transfers)
 
   useEffect(() => {
     async function fetchNFT() {
@@ -242,4 +245,4 @@ export function NFTTransactionView({
       )}
     </div>
   )
-}
+})
