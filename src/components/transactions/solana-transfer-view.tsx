@@ -34,6 +34,7 @@ export function SolanaTransferView({
   tx,
   sourceWallet,
 }: SolanaTransferViewProps) {
+  console.log({ TRANSFER_TX: tx })
   const transfers =
     tx.transfers?.filter((transfer: Transfer) => transfer.amount > 0) || []
 

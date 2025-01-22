@@ -21,7 +21,6 @@ export function NFTTransactionView({
   tx,
   sourceWallet,
 }: NFTTransactionViewProps) {
-  console.log('NFTTransactionView', tx)
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [nftInfo, setNftInfo] = useState<TokenResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -39,17 +38,6 @@ export function NFTTransactionView({
 
   // Find the NFT asset from the transaction data
   useEffect(() => {
-    console.log('Analyzing transaction:', {
-      instructions: instructions?.map((ix) => ({
-        programId: ix.programId,
-        accounts: ix.accounts,
-        innerInstructions: ix.innerInstructions,
-      })),
-      accountData: tx.accountData,
-      accountsInvolved: tx.accountsInvolved,
-      tokenTransfers: tx.tokenTransfers,
-    })
-
     // Try to find NFT mint from token transfers
     let mint = findNFTMintFromTokenTransfers(tx)
     if (mint) {
@@ -92,34 +80,38 @@ export function NFTTransactionView({
       setLoading(true)
       setError(null)
       try {
-        const response = await fetch(`/api/token?mint=${nftMint}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch NFT info')
+        const response = await fetch(`/api/token?mint=${nftMint}`).catch(() => {
+          throw new Error('Network error while fetching NFT data')
+        })
+
+        if (!response?.ok) {
+          throw new Error(
+            `HTTP error! status: ${response?.status || 'unknown'}`,
+          )
         }
-        const data = await response.json()
-        if ('error' in data) {
-          throw new Error(data.error)
+
+        let data
+        try {
+          data = await response.json()
+        } catch (parseError) {
+          throw new Error('Failed to parse NFT data')
         }
-        console.log('NFT data from API:', data)
+
+        if (!data || 'error' in data) {
+          throw new Error(data?.error || 'Invalid NFT data received')
+        }
+
         setNftInfo(data)
       } catch (err) {
         console.error('Error fetching NFT:', err)
-        setError(`Error: ${(err as Error).message}`)
+        setError(err instanceof Error ? err.message : 'Failed to load NFT data')
+        setNftInfo(null)
       } finally {
         setLoading(false)
       }
     }
     fetchNFT()
   }, [nftMint])
-
-  console.log('Rendering NFT view with:', {
-    nftMint,
-    nftInfo,
-    isBuy,
-    saleAmount,
-    loading,
-    error,
-  })
 
   return (
     <div className="group relative overflow-hidden transition-all duration-200 hover:scale-[1.01] p-3 bg-gradient-to-r from-green-950/40 to-green-900/20 rounded-lg border border-green-800/20 hover:border-green-700/30">

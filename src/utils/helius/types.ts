@@ -114,10 +114,13 @@ export interface Transaction {
   tokenTransfers: {
     fromTokenAccount: string
     toTokenAccount: string
+    tokenMint: string
+    amount: number
+    from: string
+    to: string
     fromUserAccount: string
     toUserAccount: string
     tokenAmount: number
-    mint: string
     tokenStandard: string
   }[]
   accountData: AccountData[]
