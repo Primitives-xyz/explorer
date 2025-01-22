@@ -9,10 +9,11 @@ import { useGetProfiles } from '../auth/hooks/use-get-profiles'
 import { useRouter } from 'next/navigation'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useProfileFollowing } from '@/hooks/use-profile-following'
+import { useProfileComments } from '@/hooks/use-profile-comments'
 import { SocialSection } from '../social/SocialSection'
 import { TokenAddress } from '../tokens/TokenAddress'
 import { Modal } from '../common/modal'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Props {
   username: string
@@ -40,6 +41,18 @@ export function ProfileContent({ username }: Props) {
     isLoading: isLoadingFollowing,
     error: followingError,
   } = useProfileFollowing(username)
+  const {
+    comments,
+    isLoading: isLoadingComments,
+    error: commentsError,
+  } = useProfileComments(username)
+
+  useEffect(() => {
+    if (comments) {
+      console.log('Profile comments:', comments)
+    }
+  }, [comments])
+
   const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) throw new Error('Failed to fetch profile')
@@ -116,6 +129,44 @@ export function ProfileContent({ username }: Props) {
               </button>
             </Card>
           </div>
+
+          {/* Comments Section */}
+          <Card>
+            <div className="p-4">
+              <h3 className="text-lg font-mono text-green-400 mb-4">
+                Comments
+              </h3>
+              <div className="space-y-4">
+                {isLoadingComments ? (
+                  <div className="text-green-600 font-mono">
+                    Loading comments...
+                  </div>
+                ) : commentsError ? (
+                  <div className="text-red-500 font-mono">
+                    Error loading comments
+                  </div>
+                ) : comments.length === 0 ? (
+                  <div className="text-green-600 font-mono">
+                    No comments yet
+                  </div>
+                ) : (
+                  comments.map((comment) => (
+                    <div
+                      key={comment.id}
+                      className="p-4 bg-green-900/10 rounded-lg border border-green-800/30"
+                    >
+                      <div className="text-green-400 font-mono">
+                        {comment.text}
+                      </div>
+                      <div className="text-green-600 text-sm font-mono mt-2">
+                        {new Date(comment.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </Card>
         </div>
 
         <div className="space-y-6">
