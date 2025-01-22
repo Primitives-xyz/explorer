@@ -13,8 +13,7 @@ interface Props {
 export function CommentWall({ username, comments = [] }: Props) {
   const [comment, setComment] = useState('')
   const { postComment, isLoading, error } = usePostComment()
-  //   const { mainUsername } = useCurrentWallet()
-  const mainUsername = 'marcusmth'
+  const { mainUsername } = useCurrentWallet()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,10 +43,12 @@ export function CommentWall({ username, comments = [] }: Props) {
                 key={index}
                 className="border border-green-800/30 rounded-lg p-3"
               >
-                <div className="text-green-400 font-mono text-sm mb-1">
-                  @{comment.profileId}
+                <div className="text-green-300 font-mono">
+                  {comment.comment.text}
                 </div>
-                <div className="text-green-300 font-mono">{comment.text}</div>
+                <div className="text-green-600 font-mono text-xs mt-2">
+                  {new Date(comment.comment.created_at).toLocaleDateString()}
+                </div>
               </div>
             ))}
           </div>
