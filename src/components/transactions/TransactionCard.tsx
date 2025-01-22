@@ -76,6 +76,11 @@ export const TransactionCard = ({
               </span>
             </Link>
             <TransactionBadge type={tx.type} source={tx.source} />
+            {sourceWallet && (
+              <span className="text-gray-300 font-mono text-xs px-2 py-0.5 bg-gray-900/20 rounded border border-gray-800/30">
+                {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+              </span>
+            )}
           </div>
           <div className="flex flex-col items-end text-xs">
             <span className="text-green-400 font-mono">
@@ -113,7 +118,9 @@ export const TransactionCard = ({
         )}
 
         {/* NFT Transaction View for MAGIC_EDEN and TENSOR */}
-        {(tx.source === 'MAGIC_EDEN' || tx.source === 'TENSOR') && (
+        {(tx.source === 'MAGIC_EDEN' ||
+          tx.source === 'TENSOR' ||
+          tx.sourceWallet) && (
           <NFTTransactionView
             tx={transformToExtendedTransaction(tx)}
             sourceWallet={sourceWallet}

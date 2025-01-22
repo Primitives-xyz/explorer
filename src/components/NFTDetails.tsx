@@ -4,81 +4,11 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { TransactionSection } from './TransactionSection'
 import { CopyPaste } from './common/copy-paste'
+import { NFTTokenInfo } from '@/types/Token'
 
 interface NFTDetailsProps {
   id: string
-  tokenInfo: NFTData
-}
-
-interface NFTData {
-  id: string
-  interface: string
-  content: {
-    $schema?: string
-    metadata: {
-      name: string
-      symbol: string
-      description: string
-      attributes?: Array<{
-        trait_type: string
-        value: string
-      }>
-    }
-    files?: Array<{
-      uri: string
-      type: string
-      cdn_uri?: string
-    }>
-    links?: {
-      image?: string
-      external_url?: string
-    }
-  }
-  authorities: Array<{
-    address: string
-    scopes: string[]
-  }>
-  compression?: {
-    compressed: boolean
-    eligible: boolean
-    data_hash: string
-    creator_hash: string
-    asset_hash: string
-    tree: string
-    seq: number
-    leaf_id: number
-  }
-  grouping?: Array<{
-    group_key: string
-    group_value: string
-  }>
-  royalty?: {
-    royalty_model: string
-    target: string | null
-    percent: number
-    basis_points: number
-    primary_sale_happened: boolean
-    locked: boolean
-  }
-  creators?: Array<{
-    address: string
-    share: number
-    verified: boolean
-  }>
-  ownership: {
-    owner: string
-    delegate: string | null
-    frozen: boolean
-    delegated: boolean
-    ownership_model: string
-  }
-  supply?: {
-    print_max_supply: number
-    print_current_supply: number
-    edition_nonce: number
-  } | null
-  mutable: boolean
-  burnt: boolean
+  tokenInfo: NFTTokenInfo
 }
 
 type NFTTab = 'overview' | 'technical' | 'transactions'
@@ -140,7 +70,8 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                   label: 'Collection',
                   value:
                     tokenInfo.grouping?.find(
-                      (g) => g.group_key === 'collection',
+                      (g: { group_key: string; group_value: string }) =>
+                        g.group_key === 'collection',
                     )?.group_value || 'None',
                   extraContent: (value: string) =>
                     value !== 'None' && (
@@ -196,25 +127,32 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
               Authorities
             </h3>
             <div className="space-y-3">
-              {tokenInfo.authorities.map((authority, i) => (
-                <div key={i} className="flex flex-col">
-                  <span className="text-green-500/60 text-sm">Address</span>
-                  <span className="font-mono text-green-400 break-all">
-                    {authority.address}
-                  </span>
-                  <span className="text-green-500/60 text-sm mt-1">Scopes</span>
-                  <div className="flex flex-wrap gap-2">
-                    {authority.scopes.map((scope, j) => (
-                      <span
-                        key={j}
-                        className="px-2 py-1 bg-green-500/10 rounded-md text-green-400 text-sm"
-                      >
-                        {scope}
-                      </span>
-                    ))}
+              {tokenInfo.authorities.map(
+                (
+                  authority: { address: string; scopes: string[] },
+                  i: number,
+                ) => (
+                  <div key={i} className="flex flex-col">
+                    <span className="text-green-500/60 text-sm">Address</span>
+                    <span className="font-mono text-green-400 break-all">
+                      {authority.address}
+                    </span>
+                    <span className="text-green-500/60 text-sm mt-1">
+                      Scopes
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {authority.scopes.map((scope: string, j: number) => (
+                        <span
+                          key={j}
+                          className="px-2 py-1 bg-green-500/10 rounded-md text-green-400 text-sm"
+                        >
+                          {scope}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
         </div>
@@ -228,19 +166,24 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                 Attributes
               </h3>
               <div className="grid grid-cols-2 gap-4">
-                {tokenInfo.content.metadata.attributes.map((attr, index) => (
-                  <div
-                    key={index}
-                    className="p-3 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
-                  >
-                    <h4 className="text-green-500/60 text-xs mb-1 font-mono">
-                      {attr.trait_type}
-                    </h4>
-                    <p className="text-green-400 font-mono group-hover:text-green-300 transition-colors">
-                      {attr.value}
-                    </p>
-                  </div>
-                ))}
+                {tokenInfo.content.metadata.attributes.map(
+                  (
+                    attr: { trait_type: string; value: string },
+                    index: number,
+                  ) => (
+                    <div
+                      key={index}
+                      className="p-3 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
+                    >
+                      <h4 className="text-green-500/60 text-xs mb-1 font-mono">
+                        {attr.trait_type}
+                      </h4>
+                      <p className="text-green-400 font-mono group-hover:text-green-300 transition-colors">
+                        {attr.value}
+                      </p>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -252,23 +195,32 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                 Creators
               </h3>
               <div className="space-y-3">
-                {tokenInfo.creators.map((creator, index) => (
-                  <div key={index} className="flex flex-col">
-                    <div className="flex justify-between items-center">
-                      <span className="font-mono text-green-400 break-all">
-                        {creator.address}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-green-500/60 text-sm">
-                          {creator.share}%
+                {tokenInfo.creators.map(
+                  (
+                    creator: {
+                      address: string
+                      share?: number
+                      verified?: boolean
+                    },
+                    index: number,
+                  ) => (
+                    <div key={index} className="flex flex-col">
+                      <div className="flex justify-between items-center">
+                        <span className="font-mono text-green-400 break-all">
+                          {creator.address}
                         </span>
-                        {creator.verified && (
-                          <span className="text-green-400 text-xs">✓</span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-500/60 text-sm">
+                            {creator.share || 0}%
+                          </span>
+                          {creator.verified && (
+                            <span className="text-green-400 text-xs">✓</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -294,43 +246,48 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
           <h4 className="text-green-500/60 text-sm font-mono mb-4">Files</h4>
           <div className="space-y-4">
-            {tokenInfo.content.files.map((file, index) => (
-              <div
-                key={index}
-                className="p-4 bg-black/30 rounded-lg border border-green-800/40"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-green-500/60 text-xs font-mono">
-                      URI
-                    </span>
-                    <div className="font-mono text-green-400 break-all text-sm">
-                      {file.uri}
-                    </div>
-                  </div>
-                  {file.type && (
+            {tokenInfo.content.files.map(
+              (
+                file: { uri: string; type: string; cdn_uri?: string },
+                index: number,
+              ) => (
+                <div
+                  key={index}
+                  className="p-4 bg-black/30 rounded-lg border border-green-800/40"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div>
                       <span className="text-green-500/60 text-xs font-mono">
-                        Type
-                      </span>
-                      <div className="font-mono text-green-400 text-sm">
-                        {file.type}
-                      </div>
-                    </div>
-                  )}
-                  {file.cdn_uri && (
-                    <div className="md:col-span-2">
-                      <span className="text-green-500/60 text-xs font-mono">
-                        CDN URI
+                        URI
                       </span>
                       <div className="font-mono text-green-400 break-all text-sm">
-                        {file.cdn_uri}
+                        {file.uri}
                       </div>
                     </div>
-                  )}
+                    {file.type && (
+                      <div>
+                        <span className="text-green-500/60 text-xs font-mono">
+                          Type
+                        </span>
+                        <div className="font-mono text-green-400 text-sm">
+                          {file.type}
+                        </div>
+                      </div>
+                    )}
+                    {file.cdn_uri && (
+                      <div className="md:col-span-2">
+                        <span className="text-green-500/60 text-xs font-mono">
+                          CDN URI
+                        </span>
+                        <div className="font-mono text-green-400 break-all text-sm">
+                          {file.cdn_uri}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </div>
       )}

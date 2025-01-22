@@ -80,14 +80,12 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
 
       try {
         const response = await fetch(`/api/token?mint=${transfer.tokenMint}`)
-        console.log('Token info API response status:', response.status)
 
         if (!response.ok) {
           throw new Error('Failed to fetch token info')
         }
 
         const data = await response.json()
-        console.log('Token info response:', data)
 
         setTokenInfo((prev) => ({
           ...(prev || {}),

@@ -8,8 +8,7 @@ export interface BaseTokenInfo {
     files?: Array<{
       uri: string
       cdn_uri?: string
-      mime?: string
-      type?: string
+      type: string
     }>
     metadata: {
       name: string

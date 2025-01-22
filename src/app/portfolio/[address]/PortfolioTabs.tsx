@@ -17,10 +17,10 @@ interface TokenData {
   }
 }
 
-type TokenTab = 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
+type TokenTab = 'fungible' | 'nft'
 
 export default function PortfolioTabs({ address }: PortfolioTabsProps) {
-  const [activeTab, setActiveTab] = useState<TokenTab>('all')
+  const [activeTab, setActiveTab] = useState<TokenTab>('fungible')
   const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | undefined>(undefined)
@@ -83,39 +83,20 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
       <div className="border-b border-green-500/20">
         <div className="flex flex-wrap gap-4 p-4">
           <button
-            onClick={() => setActiveTab('all')}
-            className={getTabStyle('all')}
-          >
-            All Tokens
-          </button>
-          <button
             onClick={() => setActiveTab('fungible')}
             className={getTabStyle('fungible')}
           >
-            Fungible
+            Tokens
           </button>
           <button
             onClick={() => setActiveTab('nft')}
             className={getTabStyle('nft')}
           >
-            Regular NFTs
-          </button>
-          <button
-            onClick={() => setActiveTab('compressed')}
-            className={getTabStyle('compressed')}
-          >
-            Compressed NFTs
-          </button>
-          <button
-            onClick={() => setActiveTab('programmable')}
-            className={getTabStyle('programmable')}
-          >
-            Programmable NFTs
+            NFTs
           </button>
         </div>
       </div>
-
-      <div className="flex-grow p-4 overflow-auto">{renderContent()}</div>
+      <div className="flex-grow overflow-auto">{renderContent()}</div>
     </div>
   )
 }

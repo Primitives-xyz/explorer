@@ -21,6 +21,7 @@ export function NFTTransactionView({
   tx,
   sourceWallet,
 }: NFTTransactionViewProps) {
+  console.log({ tx })
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [nftInfo, setNftInfo] = useState<TokenResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -93,15 +94,17 @@ export function NFTTransactionView({
         let data
         try {
           data = await response.json()
+          if (!data || 'error' in data) {
+            console.warn('Invalid NFT data:', data?.error || 'No data received')
+            setNftInfo(null)
+            return
+          }
+          setNftInfo(data)
         } catch (parseError) {
-          throw new Error('Failed to parse NFT data')
+          console.error('Failed to parse NFT data:', parseError)
+          setError('Failed to parse NFT data')
+          setNftInfo(null)
         }
-
-        if (!data || 'error' in data) {
-          throw new Error(data?.error || 'Invalid NFT data received')
-        }
-
-        setNftInfo(data)
       } catch (err) {
         console.error('Error fetching NFT:', err)
         setError(err instanceof Error ? err.message : 'Failed to load NFT data')
