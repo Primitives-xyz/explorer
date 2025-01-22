@@ -53,42 +53,40 @@ export function CommentWall({ username, comments = [] }: Props) {
             ))}
           </div>
 
-          {/* Comment Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <p>{`mainusername: ${mainUsername}`}</p>
-              <p>{`username: ${username}`}</p>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Write a comment..."
-                className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3 text-green-400 font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
-                disabled={isLoading || !mainUsername}
-              />
-              {isLoading && (
-                <div className="absolute right-3 top-3">
-                  <LoadCircle />
-                </div>
-              )}
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={isLoading || !comment.trim() || !mainUsername}
-                className="px-4 py-2 bg-green-900/30 text-green-400 font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? 'Posting...' : 'Post Comment'}
-              </button>
-            </div>
-          </form>
-
-          {error && <Alert type="error" message={error} />}
-
-          {!mainUsername && (
+          {/* Comment Form - Only show when mainUsername exists */}
+          {mainUsername ? (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="relative">
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Write a comment..."
+                  className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3 text-green-400 font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
+                  disabled={isLoading}
+                />
+                {isLoading && (
+                  <div className="absolute right-3 top-3">
+                    <LoadCircle />
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isLoading || !comment.trim()}
+                  className="px-4 py-2 bg-green-900/30 text-green-400 font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoading ? 'Posting...' : 'Post Comment'}
+                </button>
+              </div>
+            </form>
+          ) : (
             <div className="text-green-600 font-mono text-sm text-center">
               Connect your wallet to post comments
             </div>
           )}
+
+          {error && <Alert type="error" message={error} />}
         </div>
       </div>
     </Card>
