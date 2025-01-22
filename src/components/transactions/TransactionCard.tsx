@@ -8,6 +8,8 @@ import { Transaction } from '@/utils/helius/types'
 import { SwapTransactionView } from './swap-transaction-view'
 import { SolanaTransferView } from './solana-transfer-view'
 import { NFTTransactionView } from './nft-transaction-view'
+import { SPLTransferView } from './spl-transfer-view'
+import { ExtendedTransaction } from '@/utils/nft-transaction'
 
 // Helper function to normalize timestamp
 const normalizeTimestamp = (timestamp: number) => {
@@ -16,6 +18,31 @@ const normalizeTimestamp = (timestamp: number) => {
     return timestamp * 1000
   }
   return timestamp
+}
+
+// Helper function to transform Transaction to ExtendedTransaction
+const transformToExtendedTransaction = (
+  tx: Transaction,
+): ExtendedTransaction => {
+  return {
+    ...tx,
+    tokenTransfers:
+      tx.tokenTransfers?.map((transfer) => ({
+        fromTokenAccount: transfer.fromTokenAccount,
+        toTokenAccount: transfer.toTokenAccount,
+        fromUserAccount: transfer.fromUserAccount,
+        toUserAccount: transfer.toUserAccount,
+        tokenAmount: transfer.tokenAmount,
+        mint: transfer.tokenMint,
+        tokenStandard: transfer.tokenStandard,
+      })) || [],
+    transfers:
+      tx.nativeTransfers?.map((transfer) => ({
+        from: transfer.fromUserAccount,
+        to: transfer.toUserAccount,
+        amount: transfer.amount,
+      })) || [],
+  }
 }
 
 interface TransactionCardProps {
@@ -49,6 +76,11 @@ export const TransactionCard = ({
               </span>
             </Link>
             <TransactionBadge type={tx.type} source={tx.source} />
+            {sourceWallet && (
+              <span className="text-gray-300 font-mono text-xs px-2 py-0.5 bg-gray-900/20 rounded border border-gray-800/30">
+                {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+              </span>
+            )}
           </div>
           <div className="flex flex-col items-end text-xs">
             <span className="text-green-400 font-mono">
@@ -63,11 +95,12 @@ export const TransactionCard = ({
         </div>
 
         {/* Transaction Description */}
-        {tx.source !== 'MAGIC_EDEN' && (
-          <div className="text-sm text-green-300 font-mono break-words">
-            {tx.description || 'No description available'}
-          </div>
-        )}
+        {tx.source !== 'MAGIC_EDEN' &&
+          tx.source !== 'SOLANA_PROGRAM_LIBRARY' && (
+            <div className="text-sm text-green-300 font-mono break-words">
+              {tx.description || 'No description available'}
+            </div>
+          )}
 
         {/* Custom Swap View for SWAP transactions */}
         {tx.type === 'SWAP' && (
@@ -78,18 +111,31 @@ export const TransactionCard = ({
         {tx.source === 'SYSTEM_PROGRAM' && tx.type === 'TRANSFER' && (
           <SolanaTransferView tx={tx} sourceWallet={sourceWallet} />
         )}
-        {(tx.source === 'MAGIC_EDEN' || tx.source === 'TENSOR') && (
-          <NFTTransactionView tx={tx} sourceWallet={sourceWallet} />
+
+        {/* Custom SPL Token Transfer View for SOLANA_PROGRAM_LIBRARY transfers */}
+        {tx.source === 'SOLANA_PROGRAM_LIBRARY' && tx.type === 'TRANSFER' && (
+          <SPLTransferView tx={tx} sourceWallet={sourceWallet} />
         )}
 
-        {/* Transfers */}
-        {tx.source !== 'SYSTEM_PROGRAM' && (
-          <TransferList
-            nativeTransfers={tx.nativeTransfers}
-            tokenTransfers={tx.tokenTransfers}
+        {/* NFT Transaction View for MAGIC_EDEN and TENSOR */}
+        {(tx.source === 'MAGIC_EDEN' ||
+          tx.source === 'TENSOR' ||
+          tx.sourceWallet) && (
+          <NFTTransactionView
+            tx={transformToExtendedTransaction(tx)}
             sourceWallet={sourceWallet}
           />
         )}
+
+        {/* Transfers */}
+        {tx.source !== 'SYSTEM_PROGRAM' &&
+          tx.source !== 'SOLANA_PROGRAM_LIBRARY' && (
+            <TransferList
+              nativeTransfers={tx.nativeTransfers}
+              tokenTransfers={tx.tokenTransfers}
+              sourceWallet={sourceWallet}
+            />
+          )}
 
         {/* Parsed Instructions (Expanded View) */}
         {isExpanded && tx.parsedInstructions && (

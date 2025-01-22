@@ -7,6 +7,7 @@ import { TapestryPromoSection } from '../tapestry/TapestryPromoSection'
 import { TransactionSection } from '../TransactionSection'
 import { useEffect, useState } from 'react'
 import { TokenPortfolioResponse } from '@/types/Token'
+import { WalletFollowButton } from '../profile/wallet-follow-button'
 
 interface TokenData {
   nativeBalance: {
@@ -84,9 +85,10 @@ export function WalletView({ address }: { address: string }) {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      <h1 className="text-2xl font-mono text-green-500 mb-4">
-        Wallet: {address}
-      </h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-mono text-green-500">Wallet: {address}</h1>
+        <WalletFollowButton walletAddress={address} size="lg" />
+      </div>
 
       {/* Top section */}
       <div className="flex flex-col lg:flex-row gap-6">

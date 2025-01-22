@@ -114,10 +114,13 @@ export interface Transaction {
   tokenTransfers: {
     fromTokenAccount: string
     toTokenAccount: string
+    tokenMint: string
+    amount: number
+    from: string
+    to: string
     fromUserAccount: string
     toUserAccount: string
     tokenAmount: number
-    mint: string
     tokenStandard: string
   }[]
   accountData: AccountData[]
@@ -144,6 +147,7 @@ export interface FungibleTokenDetailsProps {
       files?: Array<{
         uri: string
         type: string
+        cdn_uri?: string
       }>
       links?: {
         image?: string
@@ -155,7 +159,7 @@ export interface FungibleTokenDetailsProps {
     }>
     royalty?: {
       royalty_model: string
-      target: string
+      target: string | null
       percent: number
       basis_points: number
       primary_sale_happened: boolean
@@ -163,7 +167,7 @@ export interface FungibleTokenDetailsProps {
     }
     ownership: {
       owner: string
-      delegate: string
+      delegate: string | null
       frozen: boolean
       delegated: boolean
       ownership_model: string
