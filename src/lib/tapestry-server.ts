@@ -17,7 +17,6 @@ export async function fetchTapestryServer<T = any>({
       'Missing required environment variables: TAPESTRY_URL or TAPESTRY_API_KEY',
     )
   }
-
   const cleanEndpoint = endpoint.replace(/^\/+/, '')
 
   // Add query parameter separator based on existing params

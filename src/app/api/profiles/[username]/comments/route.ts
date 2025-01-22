@@ -10,24 +10,27 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
     const { username } = params
-    if (!username) {
-      return NextResponse.json(
-        { error: 'Username is required' },
-        { status: 400 },
-      )
-    }
+
     const response = await fetchTapestryServer({
-      endpoint: `profiles/${username}/following`,
+      endpoint: `comments?profileId=${username}`,
       method: FetchMethod.GET,
     })
+
+    if (!response) {
+      throw new Error('Failed to fetch comments')
+    }
+
     return NextResponse.json(response)
-  } catch (error: any) {
-    console.error('Error fetching following:', error)
+  } catch (error) {
+    console.error('[Get Comments Error]:', error)
+
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch following' },
+      { error: 'An unexpected error occurred' },
       { status: 500 },
     )
   }
 }
-
-export const dynamic = 'force-dynamic'

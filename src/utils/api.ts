@@ -81,7 +81,6 @@ export async function fetchTapestry<T>({
 }): Promise<T> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
   const url = `${baseUrl}/${endpoint}`
-
   const options: RequestInit = {
     method,
     headers: {
