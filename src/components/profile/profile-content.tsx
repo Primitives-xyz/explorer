@@ -6,12 +6,13 @@ import { FollowButton } from './follow-button'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../ProfileSection'
 import { useGetProfiles } from '../auth/hooks/use-get-profiles'
-import { useRouter } from 'next/navigation'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useProfileFollowing } from '@/hooks/use-profile-following'
+import { useProfileComments } from '@/hooks/use-profile-comments'
 import { SocialSection } from '../social/SocialSection'
 import { TokenAddress } from '../tokens/TokenAddress'
 import { Modal } from '../common/modal'
+import { CommentWall } from './CommentWall'
 import { useState } from 'react'
 
 interface Props {
@@ -40,13 +41,15 @@ export function ProfileContent({ username }: Props) {
     isLoading: isLoadingFollowing,
     error: followingError,
   } = useProfileFollowing(username)
+  const { comments } = useProfileComments(username)
+
   const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) throw new Error('Failed to fetch profile')
     return res.json()
   }
 
-  const { data, error, isLoading } = useSWR<ProfileData>(
+  const { data, isLoading } = useSWR<ProfileData>(
     `/api/profiles/${username}?fromUsername=${mainUsername} `,
     fetcher,
     {
@@ -60,7 +63,6 @@ export function ProfileContent({ username }: Props) {
     data?.walletAddress || '',
   )
   const loading = isLoading || loadingProfiles
-  const router = useRouter()
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -116,6 +118,9 @@ export function ProfileContent({ username }: Props) {
               </button>
             </Card>
           </div>
+
+          {/* Comment Wall */}
+          <CommentWall username={username} comments={comments} />
         </div>
 
         <div className="space-y-6">
