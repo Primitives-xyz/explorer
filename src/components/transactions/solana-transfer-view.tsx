@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { Transaction } from '@/utils/helius/types'
 
@@ -61,11 +62,27 @@ export function SolanaTransferView({
                 {transfer.from === sourceWallet ? 'Sent' : 'Received'}
               </span>
               <span className="text-green-600 font-mono text-xs">
-                {transfer.from === sourceWallet
-                  ? `To: ${transfer.to.slice(0, 4)}...${transfer.to.slice(-4)}`
-                  : `From: ${transfer.from.slice(0, 4)}...${transfer.from.slice(
-                      -4,
-                    )}`}
+                {transfer.from === sourceWallet ? (
+                  <>
+                    To:{' '}
+                    <Link
+                      href={`/${transfer.to}`}
+                      className="hover:text-green-400 transition-colors"
+                    >
+                      {transfer.to.slice(0, 4)}...{transfer.to.slice(-4)}
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    From:{' '}
+                    <Link
+                      href={`/${transfer.from}`}
+                      className="hover:text-green-400 transition-colors"
+                    >
+                      {transfer.from.slice(0, 4)}...{transfer.from.slice(-4)}
+                    </Link>
+                  </>
+                )}
               </span>
             </div>
 

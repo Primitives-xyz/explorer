@@ -1,4 +1,8 @@
-import { Transaction, AccountData } from '@/utils/helius/types'
+import {
+  Transaction,
+  AccountData,
+  TransactionEvent,
+} from '@/utils/helius/types'
 
 interface Transfer {
   to: string
@@ -35,7 +39,11 @@ interface TokenTransfer {
 export interface ExtendedTransaction
   extends Omit<
     Transaction,
-    'nativeTransfers' | 'tokenTransfers' | 'accountData' | 'balanceChanges'
+    | 'nativeTransfers'
+    | 'tokenTransfers'
+    | 'accountData'
+    | 'balanceChanges'
+    | 'events'
   > {
   transfers?: Transfer[]
   instructions?: Instruction[]
@@ -49,6 +57,7 @@ export interface ExtendedTransaction
   }[]
   balanceChanges?: { [address: string]: number }
   tokenTransfers?: TokenTransfer[]
+  events?: TransactionEvent[]
 }
 
 export const findNFTMintFromTensorInstructions = (

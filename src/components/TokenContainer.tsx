@@ -23,6 +23,20 @@ interface TokenData {
   }
 }
 
+const EmptyState = ({ type }: { type: 'nft' | 'token' }) => (
+  <div className="flex flex-col items-center justify-center p-8 text-center rounded-lg border border-green-500/20 bg-black/20">
+    <div className="text-3xl mb-2">{type === 'nft' ? '🖼️' : '💰'}</div>
+    <h3 className="text-lg font-medium text-green-300 mb-2">
+      No {type === 'nft' ? 'NFTs' : 'tokens'} found
+    </h3>
+    <p className="text-sm text-green-600">
+      {type === 'nft'
+        ? "This wallet doesn't have any NFTs yet"
+        : "This wallet doesn't have any tokens yet"}
+    </p>
+  </div>
+)
+
 const filterNFTs = (items: (FungibleToken | NFT)[], tokenType: string) => {
   return items.filter((item: FungibleToken | NFT) => {
     // Exclude fungible tokens
@@ -68,41 +82,46 @@ export const TokenContainer = ({
   isLoading,
   error,
 }: TokenContainerProps) => {
+  const filteredNFTs = tokenData?.items
+    ? filterNFTs(tokenData.items, tokenType)
+    : []
+  const filteredTokens = tokenData?.items ? filterTokens(tokenData.items) : []
+
   if (tokenType === 'nft') {
     return (
       <div className="flex flex-col space-y-6">
-        <div>
-          <NFTSection
-            walletAddress={walletAddress}
-            hasSearched={hasSearched}
-            tokenType={tokenType}
-            hideTitle={hideTitle}
-            isLoading={isLoading}
-            error={error}
-            items={
-              tokenData?.items ? filterNFTs(tokenData.items, tokenType) : []
-            }
-          />
-        </div>
-        <div>
-          <TransactionSection
-            walletAddress={walletAddress}
-            hasSearched={hasSearched}
-          />
-        </div>
+        {!isLoading && !error && filteredNFTs.length === 0 ? (
+          <EmptyState type="nft" />
+        ) : (
+          <div>
+            <NFTSection
+              walletAddress={walletAddress}
+              hasSearched={hasSearched}
+              tokenType={tokenType}
+              hideTitle={hideTitle}
+              isLoading={isLoading}
+              error={error}
+              items={filteredNFTs}
+            />
+          </div>
+        )}
       </div>
     )
   }
 
   return (
     <div className="flex flex-col">
-      <TokenSection
-        tokenType={tokenType}
-        hideTitle={hideTitle}
-        isLoading={isLoading}
-        error={error}
-        items={tokenData?.items ? filterTokens(tokenData.items) : []}
-      />
+      {!isLoading && !error && filteredTokens.length === 0 ? (
+        <EmptyState type="token" />
+      ) : (
+        <TokenSection
+          tokenType={tokenType}
+          hideTitle={hideTitle}
+          isLoading={isLoading}
+          error={error}
+          items={filteredTokens}
+        />
+      )}
     </div>
   )
 }

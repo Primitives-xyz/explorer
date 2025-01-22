@@ -96,6 +96,31 @@ export interface SwapEvent {
   innerSwaps: InnerSwap[]
 }
 
+export interface CompressedNFTMintEvent {
+  type: 'COMPRESSED_NFT_MINT'
+  assetId: string
+  newOwner: string
+  metadata: {
+    name: string
+    symbol: string
+    uri: string
+    sellerFeeBasisPoints: number
+    primarySaleHappened: boolean
+    isMutable: boolean
+    tokenStandard: string
+    tokenProgramVersion: string
+    creators: Array<{
+      address: string
+      share: number
+      verified: boolean
+    }>
+  }
+}
+
+export type TransactionEvent =
+  | { type: 'SWAP'; swap: SwapEvent }
+  | CompressedNFTMintEvent
+
 export interface Transaction {
   description: string
   type: string
@@ -125,9 +150,7 @@ export interface Transaction {
   }[]
   accountData: AccountData[]
   parsedInstructions?: ParsedInstruction[]
-  events?: {
-    swap?: SwapEvent
-  }
+  events?: TransactionEvent[]
   balanceChanges: {
     [address: string]: number
   }
