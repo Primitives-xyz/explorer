@@ -126,10 +126,6 @@ export const TransactionSection = ({
               key={tx.signature}
               transaction={tx}
               sourceWallet={walletAddress}
-              isExpanded={expandedTx === tx.signature}
-              onExpand={() =>
-                setExpandedTx(expandedTx === tx.signature ? null : tx.signature)
-              }
             />
           ))}
           {isLoading && page > 1 && (

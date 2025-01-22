@@ -131,8 +131,6 @@ export const FollowingTransactionFeed = ({
                 key={i}
                 transaction={tx as Transaction}
                 sourceWallet={''}
-                isExpanded={false}
-                onExpand={() => {}}
               />
             ))}
           </div>
@@ -225,12 +223,6 @@ export const FollowingTransactionFeed = ({
                   key={tx.signature}
                   transaction={tx}
                   sourceWallet={tx.sourceWallet || walletAddress || ''}
-                  isExpanded={expandedTx === tx.signature}
-                  onExpand={() =>
-                    setExpandedTx(
-                      expandedTx === tx.signature ? null : tx.signature,
-                    )
-                  }
                 />
               ))}
               {isLoading && (

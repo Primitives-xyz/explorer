@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Transaction } from '@/utils/helius/types'
 import { formatNumber } from '@/utils/format'
+import Link from 'next/link'
 
 interface TokenTransfer {
   tokenMint: string
@@ -173,14 +174,28 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                   </span>
                 </div>
                 <span className="text-green-600/60 font-mono text-xs">
-                  {isReceiving
-                    ? `From: ${transfer.from?.slice(
-                        0,
-                        4,
-                      )}...${transfer.from?.slice(-4)}`
-                    : `To: ${transfer.to?.slice(0, 4)}...${transfer.to?.slice(
-                        -4,
-                      )}`}
+                  {isReceiving ? (
+                    <>
+                      From:{' '}
+                      <Link
+                        href={`/portfolio/${transfer.from}`}
+                        className="hover:text-green-500 transition-colors"
+                      >
+                        {transfer.from?.slice(0, 4)}...
+                        {transfer.from?.slice(-4)}
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      To:{' '}
+                      <Link
+                        href={`/${transfer.to}`}
+                        className="hover:text-green-500 transition-colors"
+                      >
+                        {transfer.to?.slice(0, 4)}...{transfer.to?.slice(-4)}
+                      </Link>
+                    </>
+                  )}
                 </span>
               </div>
 

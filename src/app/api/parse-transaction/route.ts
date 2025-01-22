@@ -34,16 +34,6 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json()
 
-    console.log('Helius API Request:', {
-      url: `https://api.helius.xyz/v0/transactions?api-key=****`,
-      body: { transactions: [signature] },
-    })
-    console.log('Helius API Response:', {
-      status: response.status,
-      statusText: response.statusText,
-      data,
-    })
-
     if (!response.ok) {
       const errorMessage =
         typeof data.error === 'object'

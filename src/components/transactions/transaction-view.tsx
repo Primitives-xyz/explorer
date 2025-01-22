@@ -1,6 +1,6 @@
 'use client'
 
-import { Transaction } from '@/utils/helius/types'
+import { InnerSwap, Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { TransactionBadge } from './TransactionBadge'
@@ -86,14 +86,14 @@ export default function TransactionDetails({
   }
 
   const renderSwapDetails = () => {
-    if (!transaction.events?.swap) return null
+    const swapEvent = transaction.events?.find((event) => event.type === 'SWAP')
+    if (!swapEvent || !('swap' in swapEvent)) return null
 
-    const { tokenInputs, tokenOutputs, innerSwaps } = transaction.events.swap
+    const { tokenInputs, tokenOutputs, innerSwaps } = swapEvent.swap
 
     // Calculate total input/output for summary
-    const totalInput = transaction.events.swap.nativeInput?.amount || '0'
-    const totalOutput =
-      transaction.events.swap.tokenOutputs?.[0]?.tokenAmount || '0'
+    const totalInput = swapEvent.swap.nativeInput?.amount || '0'
+    const totalOutput = swapEvent.swap.tokenOutputs?.[0]?.tokenAmount || '0'
 
     return (
       <div className="mb-8 space-y-6">
@@ -128,7 +128,7 @@ export default function TransactionDetails({
               Route Details
             </h3>
             <div className="space-y-4">
-              {innerSwaps.map((swap, index) => {
+              {innerSwaps.map((swap: InnerSwap, index: number) => {
                 const inputAmount = swap.tokenInputs[0]?.tokenAmount || '0'
                 const outputAmount = swap.tokenOutputs[0]?.tokenAmount || '0'
                 const inputDecimals =
@@ -184,12 +184,7 @@ export default function TransactionDetails({
       {/* Transaction Card */}
       {transaction && (
         <div className="mb-8 border border-green-800/40 rounded-xl bg-black/40">
-          <TransactionCard
-            transaction={transaction}
-            sourceWallet=""
-            isExpanded={true}
-            onExpand={() => {}}
-          />
+          <TransactionCard transaction={transaction} sourceWallet="" />
         </div>
       )}
 

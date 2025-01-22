@@ -11,6 +11,7 @@ import {
   isNFTBuyTransaction,
   normalizeTransfers,
 } from '@/utils/nft-transaction'
+import { CompressedNFTMintEvent } from '@/utils/helius/types'
 
 interface NFTTransactionViewProps {
   tx: ExtendedTransaction
@@ -21,7 +22,6 @@ export function NFTTransactionView({
   tx,
   sourceWallet,
 }: NFTTransactionViewProps) {
-  console.log({ tx })
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [nftInfo, setNftInfo] = useState<TokenResponse | null>(null)
   const [loading, setLoading] = useState(false)
@@ -32,13 +32,21 @@ export function NFTTransactionView({
   const instructions = tx.parsedInstructions || tx.instructions || []
   const transfers = normalizeTransfers(tx)
 
-  // Check if this is a Metaplex Core Program transfer
-  const isMetaplexCoreTransfer = instructions?.some((ix) =>
-    ix.accounts?.includes('CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d'),
+  // Check if this is a compressed NFT mint from events
+  const compressedNFTMintEvent = tx.events?.find(
+    (event): event is CompressedNFTMintEvent =>
+      event.type === 'COMPRESSED_NFT_MINT',
   )
 
   // Find the NFT asset from the transaction data
   useEffect(() => {
+    // If we have a compressed NFT mint event, use its assetId
+    if (compressedNFTMintEvent) {
+      setDetectionMethod('compressed_nft_mint')
+      setNftMint(compressedNFTMintEvent.assetId)
+      return
+    }
+
     // Try to find NFT mint from token transfers
     let mint = findNFTMintFromTokenTransfers(tx)
     if (mint) {
@@ -67,10 +75,11 @@ export function NFTTransactionView({
       setDetectionMethod('account_data')
       setNftMint(mint)
     }
-  }, [tx, sourceWallet, instructions])
+  }, [tx, sourceWallet, instructions, compressedNFTMintEvent])
 
-  // Determine if this is a buy or sell
-  const isBuy = isNFTBuyTransaction(tx, sourceWallet)
+  // Determine if this is a mint, buy or sell
+  const isMint = tx.type === 'COMPRESSED_NFT_MINT' || compressedNFTMintEvent
+  const isBuy = !isMint && isNFTBuyTransaction(tx, sourceWallet)
 
   // Get the actual sale amount
   const saleAmount = getSaleAmount(transfers)
@@ -133,6 +142,12 @@ export function NFTTransactionView({
                 alt={nftInfo.result.content.metadata.symbol || 'NFT'}
                 className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
               />
+            ) : compressedNFTMintEvent?.metadata?.uri ? (
+              <img
+                src={compressedNFTMintEvent.metadata.uri}
+                alt={compressedNFTMintEvent.metadata.symbol || 'NFT'}
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
+              />
             ) : (
               <div className="text-green-500 font-mono text-xs flex items-center justify-center w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20">
                 NFT
@@ -146,12 +161,17 @@ export function NFTTransactionView({
           {/* Top Row - Name and Symbol */}
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-green-200 font-medium text-sm truncate">
-              {nftInfo?.result?.content?.metadata?.name ||
+              {compressedNFTMintEvent?.metadata?.name ||
+                nftInfo?.result?.content?.metadata?.name ||
                 `NFT ${nftMint?.slice(0, 4)}...${nftMint?.slice(-4)}`}
             </h3>
-            {nftInfo?.result?.content?.metadata?.symbol && (
+            {(compressedNFTMintEvent?.metadata?.symbol ||
+              nftInfo?.result?.content?.metadata?.symbol) && (
               <span className="text-green-500/60 text-xs whitespace-nowrap">
-                ({nftInfo.result.content.metadata.symbol})
+                (
+                {compressedNFTMintEvent?.metadata?.symbol ||
+                  nftInfo?.result?.content?.metadata?.symbol}
+                )
               </span>
             )}
           </div>
@@ -160,12 +180,14 @@ export function NFTTransactionView({
           <div className="flex items-center gap-3 text-sm">
             <span
               className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                isBuy
+                isMint
+                  ? 'bg-blue-500/10 text-blue-400'
+                  : isBuy
                   ? 'bg-green-500/10 text-green-400'
                   : 'bg-red-500/10 text-red-400'
               }`}
             >
-              {isBuy ? 'Bought' : 'Sold'}
+              {isMint ? 'Minted' : isBuy ? 'Bought' : 'Sold'}
             </span>
 
             {saleAmount > 0 && (
@@ -199,6 +221,14 @@ export function NFTTransactionView({
                     }
                   />
                 </div>
+              )}
+
+              {/* Compressed NFT Badge */}
+              {(tx.type === 'COMPRESSED_NFT_MINT' ||
+                compressedNFTMintEvent) && (
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400">
+                  Compressed
+                </span>
               )}
             </div>
           </div>
