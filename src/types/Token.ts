@@ -1,19 +1,25 @@
 // Common token properties
 export interface BaseTokenInfo {
-  id: string
   interface: string
+  id: string
   content: {
     $schema?: string
+    json_uri?: string
+    files?: Array<{
+      uri: string
+      cdn_uri?: string
+      mime?: string
+      type?: string
+    }>
     metadata: {
       name: string
       symbol: string
       description: string
+      attributes?: Array<{
+        trait_type: string
+        value: string
+      }>
     }
-    files?: Array<{
-      uri: string
-      type: string
-      cdn_uri?: string
-    }>
     links?: {
       image?: string
       external_url?: string
@@ -25,20 +31,14 @@ export interface BaseTokenInfo {
   }>
   ownership: {
     owner: string
-    delegate: string
+    delegate: string | null
     frozen: boolean
     delegated: boolean
     ownership_model: string
   }
-}
-
-// NFT-specific properties
-export interface NFTTokenInfo extends BaseTokenInfo {
-  mutable: boolean
-  burnt: boolean
   compression?: {
-    compressed: boolean
     eligible: boolean
+    compressed: boolean
     data_hash: string
     creator_hash: string
     asset_hash: string
@@ -58,10 +58,60 @@ export interface NFTTokenInfo extends BaseTokenInfo {
     primary_sale_happened: boolean
     locked: boolean
   }
+  creators?: Array<{
+    address: string
+    verified?: boolean
+    share?: number
+  }>
+  supply: any | null
+  mutable: boolean
+  burnt: boolean
+  plugins?: Record<string, any>
+  mpl_core_info?: {
+    plugins_json_version: number
+  }
+  external_plugins?: any[]
+}
+
+export interface NFTMetadata {
+  name: string
+  symbol: string
+  description: string
+  attributes?: Array<{
+    trait_type: string
+    value: string
+  }>
+  collection?: {
+    key?: string
+    name?: string
+    verified?: boolean
+  }
+  sellerFeeBasisPoints?: number
+  primarySaleHappened?: boolean
+  isMutable?: boolean
+  editionNonce?: number
+  tokenStandard?: string
+  tokenProgramVersion?: string
+  creators?: Array<{
+    address: string
+    verified: boolean
+    share: number
+  }>
+}
+
+// NFT-specific properties
+export interface NFTTokenInfo extends BaseTokenInfo {
+  interface:
+    | 'MplCoreAsset'
+    | 'V1_NFT'
+    | 'V2_NFT'
+    | 'LEGACY_NFT'
+    | 'ProgrammableNFT'
 }
 
 // Fungible token-specific properties
 export interface FungibleTokenInfo extends BaseTokenInfo {
+  interface: 'FungibleToken' | 'FungibleAsset'
   token_info: {
     symbol: string
     supply: number
@@ -73,14 +123,12 @@ export interface FungibleTokenInfo extends BaseTokenInfo {
       volume_24h?: number
     }
   }
-  royalty?: {
-    royalty_model: string
-    target: string
-    percent: number
-    basis_points: number
-    primary_sale_happened: boolean
-    locked: boolean
-  }
+}
+
+export interface TokenResponse {
+  jsonrpc: string
+  result: NFTTokenInfo | FungibleTokenInfo
+  id: string
 }
 
 export type TokenInfo = {
