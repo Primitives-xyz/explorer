@@ -29,6 +29,10 @@ export const getTransactionTypeColor = (type: string, source: string) => {
     case 'MAGIC_EDEN':
       return 'bg-purple-900/50 text-purple-400 border-purple-800'
     case 'TENSOR':
+      // For Tensor, treat UNKNOWN type as NFT transaction
+      if (type === 'UNKNOWN') {
+        return 'bg-blue-900/50 text-blue-400 border-blue-800'
+      }
       return 'bg-blue-900/50 text-blue-400 border-blue-800'
     case 'RAYDIUM':
       return 'bg-teal-900/50 text-teal-400 border-teal-800'
@@ -99,4 +103,75 @@ export const isSpamTransaction = (tx: any) => {
     if (allTinyTransfers) return true
   }
   return false
+}
+
+// Helper to identify royalty payments in NFT transactions
+export const getRoyaltyInfo = (tx: any) => {
+  // Only process NFT transactions from marketplaces
+  if (!tx || (tx.source !== 'TENSOR' && tx.source !== 'MAGIC_EDEN')) {
+    return null
+  }
+
+  const changes = tx.balanceChanges || {}
+  const totalChange = Object.values(changes).reduce(
+    (sum: number, val: any) => Math.abs(sum) + Math.abs(Number(val)),
+    0,
+  )
+
+  // Find potential royalty payments (typically 1-10% of total transaction value)
+  const royaltyPayments = Object.entries(changes)
+    .filter(([address, amount]) => {
+      const absAmount = Math.abs(Number(amount))
+      const percentage = (absAmount / totalChange) * 100
+      // Royalties typically fall between 1-10% of total transaction value
+      return Number(amount) > 0 && percentage >= 1 && percentage <= 10
+    })
+    .map(([address, amount]) => ({
+      address,
+      amount: Number(amount),
+      percentage: ((Math.abs(Number(amount)) / totalChange) * 100).toFixed(2),
+    }))
+
+  if (royaltyPayments.length === 0) return null
+
+  return {
+    payments: royaltyPayments,
+    totalVolume: totalChange,
+  }
+}
+
+// Helper to get role in NFT transaction
+export const getNFTTransactionRole = (address: string, tx: any) => {
+  if (!tx.balanceChanges) return 'unknown'
+
+  const changes = tx.balanceChanges
+  const amount = changes[address]
+
+  if (!amount) return 'unknown'
+
+  // Get royalty info to identify royalty receivers
+  const royaltyInfo = getRoyaltyInfo(tx)
+  const isRoyaltyReceiver = royaltyInfo?.payments.some(
+    (p) => p.address === address,
+  )
+
+  if (isRoyaltyReceiver) return 'royalty'
+  if (amount < 0) return 'buyer'
+  if (amount > 0) return 'seller'
+
+  return 'unknown'
+}
+
+// Helper to get role-based styling
+export const getNFTTransactionRoleColor = (role: string) => {
+  switch (role) {
+    case 'buyer':
+      return 'text-red-400'
+    case 'seller':
+      return 'text-green-400'
+    case 'royalty':
+      return 'text-purple-400'
+    default:
+      return 'text-gray-400'
+  }
 }

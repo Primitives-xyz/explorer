@@ -213,18 +213,19 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto mb-8">
-      <div className="text-green-500 text-xs mb-2 font-mono">
-        <span className="opacity-60">SYSTEM:</span> Search a username or wallet address...
+    <div className="w-full max-w-2xl sm:max-w-3xl mx-auto mb-2 sm:mb-8">
+      <div className="text-green-500 text-[10px] sm:text-xs mb-1 sm:mb-2 font-mono px-2 sm:px-0">
+        <span className="opacity-60">SYSTEM:</span> Search a username or wallet
+        address...
       </div>
 
-      <div className="relative pb-8">
+      <div className="relative pb-4 sm:pb-8">
         <form onSubmit={handleSubmit} className="relative">
           <div
             ref={searchBarRef}
-            className="flex items-center gap-2 bg-black/30 border border-green-800 p-2"
+            className="flex items-center gap-1 sm:gap-2 bg-black/30 border border-green-800 p-1 sm:p-2"
           >
-            <span className="text-green-500 font-mono">$</span>
+            <span className="text-green-500 font-mono text-sm">$</span>
             <input
               type="text"
               placeholder="BprhcaJtUTER4e3ArG..."
@@ -232,15 +233,15 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
               onChange={handleInputChange}
               onFocus={() => setShowDropdown(true)}
               className="flex-1 bg-transparent font-mono text-green-400 placeholder-green-800 
-                       focus:outline-none focus:ring-0 border-none text-sm"
+                       focus:outline-none focus:ring-0 border-none text-xs sm:text-sm min-w-0"
             />
 
             <button
               type="submit"
               disabled={!inputValue}
-              className="px-4 py-1 font-mono text-sm border border-green-600 text-green-400
+              className="px-2 sm:px-4 py-1 font-mono text-xs sm:text-sm border border-green-600 text-green-400
                        hover:bg-green-900/20 disabled:opacity-50 disabled:hover:bg-transparent
-                       transition-colors duration-150"
+                       transition-colors duration-150 whitespace-nowrap"
             >
               [EXECUTE]
             </button>
@@ -248,7 +249,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
 
           {renderDropdown()}
 
-          <div className="absolute mt-2 left-0 right-0 text-xs font-mono">
+          <div className="absolute mt-1 sm:mt-2 left-0 right-0 text-[10px] sm:text-xs font-mono">
             {inputValue ? (
               <span className="text-green-600">
                 {`>>>`} READY TO ANALYZE {inputValue.slice(0, 8)}...

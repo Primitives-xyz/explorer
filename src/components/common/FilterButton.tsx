@@ -4,6 +4,7 @@ interface FilterButtonProps {
   onClick: () => void
   accentColor?: 'green' | 'indigo'
   icon?: string
+  className?: string
 }
 
 export const FilterButton = ({
@@ -12,6 +13,7 @@ export const FilterButton = ({
   onClick,
   accentColor = 'green',
   icon,
+  className = '',
 }: FilterButtonProps) => {
   const colorClasses = {
     green: {
@@ -31,7 +33,7 @@ export const FilterButton = ({
       onClick={onClick}
       className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono whitespace-nowrap transition-colors ${
         isSelected ? colors.selected : colors.unselected
-      }`}
+      } ${className}`}
     >
       {icon && <img src={icon} alt="" className="w-3.5 h-3.5 rounded-full" />}
       {label}

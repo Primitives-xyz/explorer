@@ -6,9 +6,29 @@ import { TransactionCard } from '@/components/transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
 import { DataContainer } from '@/components/common/DataContainer'
 import { ScrollableContent } from '@/components/common/ScrollableContent'
-import { FilterBar } from '@/components/common/FilterBar'
-import { FilterButton } from '@/components/common/FilterButton'
+import { FilterBar, FilterBarProps } from '@/components/common/FilterBar'
+import {
+  FilterButton,
+  FilterButtonProps,
+} from '@/components/common/FilterButton'
 import dynamic from 'next/dynamic'
+
+// Extend the existing interfaces to include className
+declare module '@/components/common/FilterBar' {
+  export interface FilterBarProps {
+    children: React.ReactNode
+    className?: string
+  }
+}
+
+declare module '@/components/common/FilterButton' {
+  export interface FilterButtonProps {
+    label: string
+    isSelected: boolean
+    onClick: () => void
+    className?: string
+  }
+}
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -186,14 +206,16 @@ export const FollowingTransactionFeed = ({
       count={filteredTransactions.length}
       height="large"
       headerRight={headerRight}
+      className="sm:min-w-[500px] min-w-full"
     >
-      <FilterBar>
+      <FilterBar className="flex-wrap gap-2">
         {transactionTypes.map((type) => (
           <FilterButton
             key={type}
             label={type === 'all' ? 'All' : type}
             isSelected={selectedType === type}
             onClick={() => setSelectedType(type)}
+            className="text-sm"
           />
         ))}
       </FilterBar>
@@ -218,9 +240,9 @@ export const FollowingTransactionFeed = ({
             ))
           ) : (
             <>
-              {filteredTransactions.map((tx) => (
+              {filteredTransactions.map((tx, index) => (
                 <TransactionCard
-                  key={tx.signature}
+                  key={`${tx.signature}-${index}`}
                   transaction={tx}
                   sourceWallet={tx.sourceWallet || walletAddress || ''}
                 />

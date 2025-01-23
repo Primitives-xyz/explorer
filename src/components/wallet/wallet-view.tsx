@@ -85,8 +85,10 @@ export function WalletView({ address }: { address: string }) {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-mono text-green-500">Wallet: {address}</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <h1 className="text-xl sm:text-2xl font-mono text-green-500 break-all">
+          Wallet: {address}
+        </h1>
         <WalletFollowButton walletAddress={address} size="lg" />
       </div>
 
@@ -102,8 +104,8 @@ export function WalletView({ address }: { address: string }) {
         </div>
 
         {/* Right side - Balance and Trading Stats */}
-        <div className="lg:w-1/2 flex flex-col space-y-3 h-[400px] lg:h-[600px]">
-          <div className="h-[calc(33.33%-0.5rem)]">
+        <div className="lg:w-1/2 flex flex-col space-y-3">
+          <div className="lg:h-[calc(33.33%-0.5rem)]">
             <PortfolioBalanceSection
               hideTitle={false}
               isLoading={isLoading}
@@ -111,10 +113,10 @@ export function WalletView({ address }: { address: string }) {
               portfolioData={portfolioData}
             />
           </div>
-          <div className="h-[calc(33.33%-0.5rem)]">
+          <div className=" lg:h-[calc(33.33%-0.5rem)]">
             <TradingStats walletAddress={address} hideTitle={false} />
           </div>
-          <div className="h-[calc(33.33%-0.5rem)]">
+          <div className=" lg:h-[calc(33.33%-0.5rem)]">
             <TapestryPromoSection hideTitle={false} />
           </div>
         </div>

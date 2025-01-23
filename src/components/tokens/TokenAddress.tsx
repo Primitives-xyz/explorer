@@ -5,18 +5,15 @@ import { useState } from 'react'
 
 interface TokenAddressProps {
   address: string
-  showFull?: boolean
+  className?: string
 }
 
-export const TokenAddress = ({
-  address,
-  showFull = false,
-}: TokenAddressProps) => {
+export const TokenAddress = ({ address, className }: TokenAddressProps) => {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
 
   const truncatedAddress = `${address.slice(0, 4)}...${address.slice(-4)}`
-  const displayAddress = showFull ? address : truncatedAddress
+  const displayAddress = truncatedAddress
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation()

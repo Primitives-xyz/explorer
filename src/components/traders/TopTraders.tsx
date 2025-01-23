@@ -168,7 +168,7 @@ const TraderCard = memo(
                     <div className="text-indigo-500 font-semibold mb-2">
                       Full Address
                     </div>
-                    <TokenAddress address={trader.address} showFull />
+                    <TokenAddress address={trader.address} />
                   </div>
                 </div>
               </div>

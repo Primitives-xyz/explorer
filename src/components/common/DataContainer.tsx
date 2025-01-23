@@ -48,21 +48,23 @@ export const DataContainer = ({
     >
       {/* Header */}
       <div
-        className={`border-b ${colors.border} p-4 flex-shrink-0 bg-black/20`}
+        className={`border-b ${colors.border} p-2 sm:p-4 flex-shrink-0 bg-black/20`}
       >
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <div
-            className={`${colors.text} text-sm font-mono flex items-center gap-2`}
+            className={`${colors.text} text-sm font-mono flex items-center gap-2 min-w-0 truncate`}
           >
             <span
-              className={`w-2 h-2 ${colors.dot} rounded-full animate-pulse`}
+              className={`w-2 h-2 flex-shrink-0 ${colors.dot} rounded-full animate-pulse`}
             />
-            {'>'} {title}
+            <span className="truncate">
+              {'>'} {title}
+            </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {count !== undefined && (
               <div
-                className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full`}
+                className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full whitespace-nowrap`}
               >
                 COUNT: {count}
               </div>

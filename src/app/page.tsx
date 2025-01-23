@@ -74,7 +74,7 @@ export default function Home() {
   // Called when user clicks the [EXECUTE] button from the child form
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
         <SearchBar onPickRecentAddress={searchAddress} />
 
         {/* Grid layout for ProfileSection and TrendingTokens */}

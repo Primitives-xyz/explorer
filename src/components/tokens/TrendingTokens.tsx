@@ -115,7 +115,7 @@ const TokenCard = memo(
                       <div className="text-green-600 text-xs mb-1">
                         Token Address
                       </div>
-                      <TokenAddress address={token.address} showFull />
+                      <TokenAddress address={token.address} />
                     </div>
                     <div>
                       <div className="text-green-600 text-xs mb-1">
