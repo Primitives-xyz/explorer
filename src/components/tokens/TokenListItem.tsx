@@ -130,7 +130,7 @@ export const TokenListItem = ({
         {expandedTokenId === token.id && (
           <div className="mt-2 space-y-2 bg-green-900/10 p-3 rounded text-xs font-mono">
             <div className="text-green-500 bg-green-900/20 px-2 py-1 rounded font-mono text-xs break-all">
-              <TokenAddress address={token.id} showFull />
+              <TokenAddress address={token.id} />
             </div>
           </div>
         )}
