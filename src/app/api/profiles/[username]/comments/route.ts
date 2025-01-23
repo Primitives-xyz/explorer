@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     const { username } = params
 
     const response = await fetchTapestryServer({
-      endpoint: `comments?profileId=${username}`,
+      endpoint: `comments?targetProfileId=${username}`,
       method: FetchMethod.GET,
     })
 
