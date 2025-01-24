@@ -46,13 +46,13 @@ export function useProfileComments(
   console.log('Constructed URL:', url)
 
   const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
-    url,
-    fetchComments,
+    [url, 'profile-comments'],
+    ([url]) => fetchComments(url),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       revalidateOnMount: true,
-      revalidateIfStale: false,
+      revalidateIfStale: true,
       refreshInterval: 0, // Disable auto-refresh
       dedupingInterval: 0, // Disable deduping
       fallbackData: { comments: [], page: 1, pageSize: 10 },
