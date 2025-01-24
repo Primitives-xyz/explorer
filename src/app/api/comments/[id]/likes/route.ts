@@ -8,11 +8,8 @@ type RouteContext = {
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
     const { profileId, commentId } = await request.json()
-    console.log('profileId', profileId)
-    console.log('commentId', commentId)
     const params = await context.params
     const { id } = params
-    console.log('id', id)
     if (!profileId) {
       return Response.json({ error: 'Profile ID is required' }, { status: 400 })
     }

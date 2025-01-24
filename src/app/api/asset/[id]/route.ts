@@ -1,28 +1,49 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { tapestryServer } from '@/lib/tapestry-server'
+import { NextResponse } from 'next/server'
 
-type RouteContext = {
-  params: Promise<{ id: string }>
-}
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  const { id } = await context.params
 
-export async function GET(request: NextRequest, context: RouteContext) {
-  try {
-    const params = await context.params
-    const { id } = params
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Asset ID is required' },
-        { status: 400 },
-      )
-    }
-
-    return NextResponse.json({ error: 'yikes' }, { status: 500 })
-  } catch (error) {
-    console.error('[Get Asset Error]:', error)
+  if (!process.env.RPC_URL) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to get asset' },
+      { error: 'RPC URL is not configured' },
       { status: 500 },
     )
+  }
+
+  try {
+    const response = await fetch(process.env.RPC_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 'my-id',
+        method: 'getAsset',
+        params: {
+          id: id,
+        },
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    if (data.error) {
+      throw new Error(data.error.message || 'RPC error occurred')
+    }
+
+    return NextResponse.json(data.result)
+  } catch (error) {
+    console.error('Error fetching asset:', error)
+    const errorMessage =
+      error instanceof Error ? error.message : 'Failed to fetch asset'
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
