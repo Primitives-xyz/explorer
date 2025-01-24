@@ -22,7 +22,6 @@ export function CommentWall({
   comments = [],
   isLoading = false,
 }: Props) {
-  console.log('comments @@@@@@', comments)
   const [comment, setComment] = useState('')
   const { postComment, isLoading: postCommentLoading, error } = usePostComment()
   const { mainUsername } = useCurrentWallet()
@@ -49,7 +48,6 @@ export function CommentWall({
   }
 
   const handleLike = async (commentId: string, isLiked: boolean) => {
-    console.log('handleLike :::', commentId, isLiked)
     if (!mainUsername || likeLoading) return
 
     try {
@@ -111,7 +109,8 @@ export function CommentWall({
                         onClick={() =>
                           handleLike(
                             comment.comment.id,
-                            comment.comment.isLikedByUser,
+                            comment.requestingProfileSocialInfo?.hasLiked ||
+                              false,
                           )
                         }
                         disabled={!mainUsername || likeLoading}
@@ -119,14 +118,14 @@ export function CommentWall({
                           !mainUsername ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
                       >
-                        {comment.comment.isLikedByUser ? (
+                        {comment.requestingProfileSocialInfo?.hasLiked ? (
                           <HeartSolid className="w-5 h-5 text-green-500" />
                         ) : (
                           <HeartOutline className="w-5 h-5 text-green-500" />
                         )}
                       </button>
                       <span className="text-green-500 font-mono text-sm">
-                        {comment.socialCounts.likeCount || 0}
+                        {comment.socialCounts?.likeCount || 0}
                       </span>
                     </div>
                   </div>

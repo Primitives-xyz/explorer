@@ -23,7 +23,6 @@ export async function fetchTapestryServer<T = any>({
   const separator = cleanEndpoint.includes('?') ? '&' : '?'
   const url = `${BASE_URL}/${cleanEndpoint}${separator}apiKey=${API_KEY}`
 
-  console.log('url ========', url)
   try {
     const options: RequestInit = {
       method,

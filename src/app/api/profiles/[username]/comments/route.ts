@@ -8,26 +8,19 @@ type RouteContext = {
 
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
+    const params = await context.params
+    const { username } = params
     const requestingProfileId = req.nextUrl.searchParams.get(
       'requestingProfileId',
     )
-    console.log('Route - requestingProfileId:', requestingProfileId)
 
-    const params = await context.params
-    const { username } = params
-    console.log('Route - username:', username)
-
-    // Build the endpoint URL
-    const queryParams = new URLSearchParams({
-      targetProfileId: username,
-      ...(requestingProfileId && { requestingProfileId }),
-    })
-
-    const endpoint = `comments?${queryParams.toString()}`
-    console.log('Route - final endpoint:', endpoint)
+    let url = `comments?targetProfileId=${username}`
+    if (requestingProfileId) {
+      url += `&requestingProfileId=${requestingProfileId}`
+    }
 
     const response = await fetchTapestryServer({
-      endpoint,
+      endpoint: url,
       method: FetchMethod.GET,
     })
 
@@ -38,13 +31,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
     return NextResponse.json(response)
   } catch (error) {
     console.error('[Get Comments Error]:', error)
+
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'An unexpected error occurred',
-      },
+      { error: 'An unexpected error occurred' },
       { status: 500 },
     )
   }

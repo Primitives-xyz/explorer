@@ -41,8 +41,6 @@ export function ProfileContent({ username }: Props) {
     isLoading: isLoadingFollowing,
     error: followingError,
   } = useProfileFollowing(username)
-  console.log('ProfileContent - mainUsername:', mainUsername)
-  console.log('ProfileContent - username:', username)
   const { comments, isLoading: isLoadingComments } = useProfileComments(
     username,
     mainUsername || undefined,

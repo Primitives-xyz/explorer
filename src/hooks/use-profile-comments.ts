@@ -8,18 +8,16 @@ export interface CommentItem {
     contentId: string
     commentId?: string
     created_at: string
-    likeCount: number
-    isLikedByUser: boolean
   }
   author?: {
     username: string
     id: string
   }
-  socialCounts: {
-    likeCount: number
-  }
   requestingProfileSocialInfo?: {
     hasLiked: boolean
+  }
+  socialCounts?: {
+    likeCount: number
   }
 }
 
@@ -29,56 +27,36 @@ interface GetCommentsResponse {
   pageSize: number
 }
 
-const fetchComments = async ([url, requestingProfileId]: [
-  string,
-  string | undefined,
-]) => {
-  console.log('fetchComments called with:', { url, requestingProfileId })
-
-  // Construct the URL with URLSearchParams to properly encode parameters
+async function fetchComments(url: string): Promise<GetCommentsResponse> {
   const urlObj = new URL(url, window.location.origin)
-  if (requestingProfileId) {
-    urlObj.searchParams.set('requestingProfileId', requestingProfileId)
-  }
-
-  const finalUrl = urlObj.toString()
-  console.log('Final URL:', finalUrl)
-
-  const res = await fetch(finalUrl)
+  const res = await fetch(urlObj.toString())
   if (!res.ok) {
-    console.error('Failed to fetch comments:', await res.text())
-    throw new Error('Failed to fetch comments')
+    const errorData = await res.json()
+    throw new Error(errorData.error || 'Failed to fetch comments')
   }
-  return res.json()
+  return await res.json()
 }
 
 export function useProfileComments(
   username: string | null,
-  requestingProfileId?: string,
+  mainUsername?: string,
 ) {
-  console.log('useProfileComments - username:', username)
-  console.log('useProfileComments - requestingProfileId:', requestingProfileId)
-
-  let url = null
-  if (!!username) {
-    url = `/api/profiles/${username}/comments`
-  }
-
-  // Add debug log to verify the key construction
-  const swr_key =
-    url && requestingProfileId ? [url, requestingProfileId] : url ? [url] : null
-  console.log('SWR key:', swr_key)
+  const url = username
+    ? `/api/profiles/${username}/comments${
+        mainUsername ? `?requestingProfileId=${mainUsername}` : ''
+      }`
+    : null
 
   const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
-    swr_key,
-    fetchComments,
+    [url, 'profile-comments'],
+    ([url]) => fetchComments(url),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       revalidateOnMount: true,
-      revalidateIfStale: false,
-      refreshInterval: 0,
-      dedupingInterval: 0,
+      revalidateIfStale: true,
+      refreshInterval: 0, // Disable auto-refresh
+      dedupingInterval: 0, // Disable deduping
       fallbackData: { comments: [], page: 1, pageSize: 10 },
     },
   )
