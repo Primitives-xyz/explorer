@@ -18,6 +18,9 @@ export interface CommentItem {
   socialCounts: {
     likeCount: number
   }
+  requestingProfileSocialInfo?: {
+    hasLiked: boolean
+  }
 }
 
 interface GetCommentsResponse {
@@ -26,31 +29,59 @@ interface GetCommentsResponse {
   pageSize: number
 }
 
-async function fetchComments(url: string): Promise<GetCommentsResponse> {
-  const res = await fetch(url)
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.error || 'Failed to fetch comments')
+const fetchComments = async ([url, requestingProfileId]: [
+  string,
+  string | undefined,
+]) => {
+  console.log('fetchComments called with:', { url, requestingProfileId })
+
+  // Construct the URL with URLSearchParams to properly encode parameters
+  const urlObj = new URL(url, window.location.origin)
+  if (requestingProfileId) {
+    urlObj.searchParams.set('requestingProfileId', requestingProfileId)
   }
-  return await res.json()
+
+  const finalUrl = urlObj.toString()
+  console.log('Final URL:', finalUrl)
+
+  const res = await fetch(finalUrl)
+  if (!res.ok) {
+    console.error('Failed to fetch comments:', await res.text())
+    throw new Error('Failed to fetch comments')
+  }
+  return res.json()
 }
 
-export function useProfileComments(username: string | null) {
+export function useProfileComments(
+  username: string | null,
+  requestingProfileId?: string,
+) {
+  console.log('useProfileComments - username:', username)
+  console.log('useProfileComments - requestingProfileId:', requestingProfileId)
+
+  let url = null
+  if (!!username) {
+    url = `/api/profiles/${username}/comments`
+  }
+
+  // Add debug log to verify the key construction
+  const swr_key =
+    url && requestingProfileId ? [url, requestingProfileId] : url ? [url] : null
+  console.log('SWR key:', swr_key)
+
   const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
-    username ? `/api/profiles/${username}/comments` : null,
+    swr_key,
     fetchComments,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       revalidateOnMount: true,
       revalidateIfStale: false,
-      refreshInterval: 0, // Disable auto-refresh
-      dedupingInterval: 0, // Disable deduping
+      refreshInterval: 0,
+      dedupingInterval: 0,
       fallbackData: { comments: [], page: 1, pageSize: 10 },
     },
   )
-
-  console.log('!!!!!', data)
 
   return {
     comments: data?.comments || [],

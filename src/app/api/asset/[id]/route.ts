@@ -17,8 +17,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       )
     }
 
-    const response = await tapestryServer.getAsset(id)
-    return NextResponse.json(response)
+    return NextResponse.json({ error: 'yikes' }, { status: 500 })
   } catch (error) {
     console.error('[Get Asset Error]:', error)
     return NextResponse.json(
