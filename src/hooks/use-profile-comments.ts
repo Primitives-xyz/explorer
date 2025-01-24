@@ -11,7 +11,6 @@ export interface CommentItem {
   }
   author?: {
     username: string
-    image: string | null
     id: string
   }
 }
@@ -47,14 +46,7 @@ export function useProfileComments(username: string | null) {
   )
 
   return {
-    comments:
-      data?.comments.map((comment) => ({
-        comment: {
-          text: comment.comment.text,
-          created_at: comment.comment.created_at,
-        },
-        author: comment.author,
-      })) || [],
+    comments: data?.comments || [],
     count: data?.comments?.length || 0,
     isLoading,
     error,

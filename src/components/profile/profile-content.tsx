@@ -120,21 +120,10 @@ export function ProfileContent({ username }: Props) {
             </Card>
           </div>
 
-          {/* Comment Wall */}
           <CommentWall
             username={username}
             isLoading={isLoadingComments}
-            comments={comments.map((comment) => ({
-              comment: {
-                text: comment.comment.text,
-                created_at: comment.comment.created_at,
-              },
-              author: {
-                username:
-                  comment.author?.username || comment.author?.id || 'unknown',
-                image: comment.author?.image || null,
-              },
-            }))}
+            comments={comments}
           />
         </div>
 
