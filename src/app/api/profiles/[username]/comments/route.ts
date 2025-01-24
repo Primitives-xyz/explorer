@@ -16,6 +16,8 @@ export async function GET(req: NextRequest, context: RouteContext) {
       method: FetchMethod.GET,
     })
 
+    console.log('response *******8', JSON.stringify(response))
+
     if (!response) {
       throw new Error('Failed to fetch comments')
     }

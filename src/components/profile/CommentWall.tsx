@@ -22,6 +22,7 @@ export function CommentWall({
   comments = [],
   isLoading = false,
 }: Props) {
+  console.log('comments @@@@@@', comments)
   const [comment, setComment] = useState('')
   const { postComment, isLoading: postCommentLoading, error } = usePostComment()
   const { mainUsername } = useCurrentWallet()
@@ -48,6 +49,7 @@ export function CommentWall({
   }
 
   const handleLike = async (commentId: string, isLiked: boolean) => {
+    console.log('handleLike :::', commentId, isLiked)
     if (!mainUsername || likeLoading) return
 
     try {
@@ -124,7 +126,7 @@ export function CommentWall({
                         )}
                       </button>
                       <span className="text-green-500 font-mono text-sm">
-                        {comment.comment.likeCount || 0}
+                        {comment.socialCounts.likeCount || 0}
                       </span>
                     </div>
                   </div>

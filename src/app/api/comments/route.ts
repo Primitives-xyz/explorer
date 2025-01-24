@@ -1,6 +1,5 @@
-import { fetchTapestryServer } from '@/lib/tapestry-server'
-import { FetchMethod, fetchTapestry } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
+import { tapestryServer } from '@/lib/tapestry-server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,30 +13,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const response = await fetchTapestryServer({
-      endpoint: 'comments',
-      method: FetchMethod.POST,
-      data: {
-        profileId,
-        targetProfileId,
-        text,
-      },
+    const response = await tapestryServer.createComment({
+      profileId,
+      contentId: targetProfileId,
+      text,
     })
-
-    if (!response) {
-      throw new Error('Failed to create comment')
-    }
 
     return NextResponse.json(response)
   } catch (error) {
     console.error('[Create Comment Error]:', error)
-
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
     return NextResponse.json(
-      { error: 'An unexpected error occurred' },
+      {
+        error:
+          error instanceof Error ? error.message : 'Failed to create comment',
+      },
       { status: 500 },
     )
   }

@@ -14,8 +14,9 @@ export function useCommentLikes(): UseLikeCommentResult {
   const likeComment = async (commentId: string, profileId: string) => {
     setIsLoading(true)
     setError(null)
+
     try {
-      const response = await fetch(`/api/comments/${commentId}/likes`, {
+      const response = await fetch(`/api/comments/${commentId}/like`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,8 +40,8 @@ export function useCommentLikes(): UseLikeCommentResult {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/comments/${commentId}/likes`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/comments/${commentId}/unlike`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },

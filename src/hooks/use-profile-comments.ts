@@ -15,6 +15,9 @@ export interface CommentItem {
     username: string
     id: string
   }
+  socialCounts: {
+    likeCount: number
+  }
 }
 
 interface GetCommentsResponse {
@@ -46,6 +49,8 @@ export function useProfileComments(username: string | null) {
       fallbackData: { comments: [], page: 1, pageSize: 10 },
     },
   )
+
+  console.log('!!!!!', data)
 
   return {
     comments: data?.comments || [],
