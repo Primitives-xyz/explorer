@@ -23,7 +23,9 @@ interface GetCommentsResponse {
 
 async function fetchComments(url: string): Promise<GetCommentsResponse> {
   console.log('Fetching comments from URL:', url)
-  const res = await fetch(url)
+  // Parse the URL and preserve query parameters
+  const urlObj = new URL(url, window.location.origin)
+  const res = await fetch(urlObj.toString())
   if (!res.ok) {
     const errorData = await res.json()
     throw new Error(errorData.error || 'Failed to fetch comments')
