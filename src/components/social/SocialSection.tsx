@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { memo } from 'react'
 import { TokenAddress } from '../tokens/TokenAddress'
 import { FollowButton } from '../profile/follow-button'
+import { Avatar } from '../common/Avatar'
 
 interface SocialUser {
   id: string
@@ -31,10 +32,10 @@ const SocialCard = memo(
     return (
       <div className="p-3 hover:bg-green-900/10">
         <div className="flex items-center gap-3">
-          <img
-            src={`https://api.dicebear.com/7.x/shapes/svg?seed=${user.username}`}
-            alt={user.username}
-            className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20"
+          <Avatar
+            username={user.username}
+            size={40}
+            className="flex-shrink-0"
           />
 
           <div className="flex-1 min-w-0">

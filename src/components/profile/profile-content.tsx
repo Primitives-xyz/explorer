@@ -120,7 +120,20 @@ export function ProfileContent({ username }: Props) {
           </div>
 
           {/* Comment Wall */}
-          <CommentWall username={username} comments={comments} />
+          <CommentWall
+            username={username}
+            comments={comments.map((comment) => ({
+              comment: {
+                text: comment.comment.text,
+                created_at: comment.comment.created_at,
+              },
+              author: {
+                username:
+                  comment.author?.username || comment.author?.id || 'unknown',
+                image: comment.author?.image || null,
+              },
+            }))}
+          />
         </div>
 
         <div className="space-y-6">
