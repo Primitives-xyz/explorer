@@ -44,8 +44,6 @@ export function ProfileContent({ username }: Props) {
   const { comments, isLoading: isLoadingComments } =
     useProfileComments(username)
 
-  console.log('::: isLoadingComments :::', isLoadingComments)
-
   const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) throw new Error('Failed to fetch profile')

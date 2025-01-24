@@ -9,8 +9,6 @@ interface AvatarProps {
 export function Avatar({ username, size = 24, className = '' }: AvatarProps) {
   const dicebearUrl = `https://api.dicebear.com/7.x/shapes/svg?seed=${username}`
 
-  console.log('dicebearUrl:::::', dicebearUrl)
-
   return (
     <div
       className={`relative overflow-hidden ${className}`}

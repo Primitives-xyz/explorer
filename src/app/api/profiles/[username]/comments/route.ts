@@ -3,11 +3,12 @@ import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RouteContext = {
-  params: Promise<{ username: string }>
+  params: {
+    username: string
+  }
 }
 
 export async function GET(req: NextRequest, context: RouteContext) {
-  console.log('GET request received')
   try {
     const params = await context.params
     const { username } = params
@@ -16,8 +17,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
       endpoint: `comments?targetProfileId=${username}`,
       method: FetchMethod.GET,
     })
-
-    console.log('[Get Comments Response]:', JSON.stringify(response, null, 2))
 
     if (!response) {
       throw new Error('Failed to fetch comments')

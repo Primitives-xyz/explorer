@@ -28,7 +28,6 @@ export function CommentWall({
   comments = [],
   isLoading = false,
 }: Props) {
-  console.log('comments:::::', comments)
   const [comment, setComment] = useState('')
   const { postComment, isLoading: postCommentLoading, error } = usePostComment()
   const { mainUsername } = useCurrentWallet()

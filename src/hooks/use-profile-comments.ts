@@ -48,7 +48,6 @@ async function fetchComments(url: string): Promise<GetCommentsResponse> {
           },
         }
       } catch (error) {
-        console.error('Failed to fetch author:', error)
         return {
           ...comment,
           author: {
@@ -81,9 +80,6 @@ export function useProfileComments(username: string | null) {
     },
   )
 
-  console.log('::: data :::', data)
-  console.log('::: error :::', error)
-
   return {
     comments:
       data?.comments.map((comment) => ({
@@ -94,7 +90,7 @@ export function useProfileComments(username: string | null) {
         author: comment.author,
       })) || [],
     count: data?.comments?.length || 0,
-    isLoading: isLoading,
+    isLoading,
     error,
     mutate,
   }
