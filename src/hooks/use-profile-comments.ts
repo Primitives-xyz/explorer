@@ -67,7 +67,7 @@ async function fetchComments(url: string): Promise<GetCommentsResponse> {
 }
 
 export function useProfileComments(username: string | null) {
-  const { data, error, mutate } = useSWR<GetCommentsResponse>(
+  const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
     username ? `/api/profiles/${username}/comments` : null,
     fetchComments,
     {
@@ -81,6 +81,9 @@ export function useProfileComments(username: string | null) {
     },
   )
 
+  console.log('::: data :::', data)
+  console.log('::: error :::', error)
+
   return {
     comments:
       data?.comments.map((comment) => ({
@@ -91,7 +94,7 @@ export function useProfileComments(username: string | null) {
         author: comment.author,
       })) || [],
     count: data?.comments?.length || 0,
-    isLoading: !error && !data,
+    isLoading: isLoading,
     error,
     mutate,
   }
