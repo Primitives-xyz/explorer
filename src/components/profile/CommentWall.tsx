@@ -20,12 +20,17 @@ interface Comment {
 interface Props {
   username: string
   comments?: Comment[]
+  isLoading?: boolean
 }
 
-export function CommentWall({ username, comments = [] }: Props) {
+export function CommentWall({
+  username,
+  comments = [],
+  isLoading = false,
+}: Props) {
   console.log('comments:::::', comments)
   const [comment, setComment] = useState('')
-  const { postComment, isLoading, error } = usePostComment()
+  const { postComment, isLoading: postCommentLoading, error } = usePostComment()
   const { mainUsername } = useCurrentWallet()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,30 +56,40 @@ export function CommentWall({ username, comments = [] }: Props) {
         <div className="space-y-4">
           {/* Comments List */}
           <div className="space-y-3 mb-4">
-            {comments.map((comment, index) => (
-              <div
-                key={index}
-                className="border border-green-800/30 rounded-lg p-3"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Link
-                    href={`/${comment.author.username}`}
-                    className="flex items-center gap-2 hover:opacity-80"
-                  >
-                    <Avatar username={comment.author.username} size={24} />
-                    <span className="text-green-400 font-mono text-sm">
-                      @{comment.author.username}
-                    </span>
-                  </Link>
-                </div>
-                <div className="text-green-300 font-mono">
-                  {comment.comment.text}
-                </div>
-                <div className="text-green-600 font-mono text-xs mt-2">
-                  {new Date(comment.comment.created_at).toLocaleDateString()}
-                </div>
+            {isLoading ? (
+              <div className="text-center text-green-600 font-mono py-4">
+                Loading comments...
               </div>
-            ))}
+            ) : comments.length === 0 ? (
+              <div className="text-center text-green-600 font-mono py-4">
+                be the first to comment on this profile
+              </div>
+            ) : (
+              comments.map((comment, index) => (
+                <div
+                  key={index}
+                  className="border border-green-800/30 rounded-lg p-3"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Link
+                      href={`/${comment.author.username}`}
+                      className="flex items-center gap-2 hover:opacity-80"
+                    >
+                      <Avatar username={comment.author.username} size={24} />
+                      <span className="text-green-400 font-mono text-sm">
+                        @{comment.author.username}
+                      </span>
+                    </Link>
+                  </div>
+                  <div className="text-green-300 font-mono">
+                    {comment.comment.text}
+                  </div>
+                  <div className="text-green-600 font-mono text-xs mt-2">
+                    {new Date(comment.comment.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Comment Form - Only show when mainUsername exists */}
@@ -86,9 +101,9 @@ export function CommentWall({ username, comments = [] }: Props) {
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Write a comment..."
                   className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3 text-green-400 font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
-                  disabled={isLoading}
+                  disabled={postCommentLoading}
                 />
-                {isLoading && (
+                {postCommentLoading && (
                   <div className="absolute right-3 top-3">
                     <LoadCircle />
                   </div>
@@ -97,10 +112,10 @@ export function CommentWall({ username, comments = [] }: Props) {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isLoading || !comment.trim()}
+                  disabled={postCommentLoading || !comment.trim()}
                   className="px-4 py-2 bg-green-900/30 text-green-400 font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isLoading ? 'Posting...' : 'Post Comment'}
+                  {postCommentLoading ? 'Posting...' : 'Post Comment'}
                 </button>
               </div>
             </form>
