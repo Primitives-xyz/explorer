@@ -2,15 +2,11 @@ import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
-type RouteContext = {
-  params: {
-    username: string
-  }
-}
-
-export async function GET(req: NextRequest, context: RouteContext) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { username: string } },
+) {
   try {
-    const params = await context.params
     const { username } = params
 
     const response = await fetchTapestryServer({
