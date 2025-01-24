@@ -41,7 +41,10 @@ export function ProfileContent({ username }: Props) {
     isLoading: isLoadingFollowing,
     error: followingError,
   } = useProfileFollowing(username)
-  const { comments } = useProfileComments(username)
+  const { comments, isLoading: isLoadingComments } =
+    useProfileComments(username)
+
+  console.log('::: isLoadingComments :::', isLoadingComments)
 
   const fetcher = async (url: string) => {
     const res = await fetch(url)
@@ -122,6 +125,7 @@ export function ProfileContent({ username }: Props) {
           {/* Comment Wall */}
           <CommentWall
             username={username}
+            isLoading={isLoadingComments}
             comments={comments.map((comment) => ({
               comment: {
                 text: comment.comment.text,
