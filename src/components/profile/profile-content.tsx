@@ -41,7 +41,8 @@ export function ProfileContent({ username }: Props) {
     isLoading: isLoadingFollowing,
     error: followingError,
   } = useProfileFollowing(username)
-  const { comments } = useProfileComments(username)
+  const { comments, isLoading: isLoadingComments } =
+    useProfileComments(username)
 
   const fetcher = async (url: string) => {
     const res = await fetch(url)
@@ -119,8 +120,11 @@ export function ProfileContent({ username }: Props) {
             </Card>
           </div>
 
-          {/* Comment Wall */}
-          <CommentWall username={username} comments={comments} />
+          <CommentWall
+            username={username}
+            isLoading={isLoadingComments}
+            comments={comments}
+          />
         </div>
 
         <div className="space-y-6">

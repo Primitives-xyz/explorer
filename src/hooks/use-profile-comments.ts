@@ -1,17 +1,22 @@
 import useSWR from 'swr'
 
-interface Comment {
-  id: string
-  text: string
-  profileId: string
-  contentId: string
-  commentId?: string
-  createdAt: string
-  updatedAt: string
+export interface CommentItem {
+  comment: {
+    id: string
+    text: string
+    profileId: string
+    contentId: string
+    commentId?: string
+    created_at: string
+  }
+  author?: {
+    username: string
+    id: string
+  }
 }
 
 interface GetCommentsResponse {
-  comments: Comment[]
+  comments: CommentItem[]
   page: number
   pageSize: number
 }
@@ -26,7 +31,7 @@ async function fetchComments(url: string): Promise<GetCommentsResponse> {
 }
 
 export function useProfileComments(username: string | null) {
-  const { data, error, mutate } = useSWR<GetCommentsResponse>(
+  const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
     username ? `/api/profiles/${username}/comments` : null,
     fetchComments,
     {
@@ -43,7 +48,7 @@ export function useProfileComments(username: string | null) {
   return {
     comments: data?.comments || [],
     count: data?.comments?.length || 0,
-    isLoading: !error && !data,
+    isLoading,
     error,
     mutate,
   }
