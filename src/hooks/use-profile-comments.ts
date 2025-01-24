@@ -30,9 +30,16 @@ async function fetchComments(url: string): Promise<GetCommentsResponse> {
   return await res.json()
 }
 
-export function useProfileComments(username: string | null) {
+export function useProfileComments(
+  username: string | null,
+  mainUsername?: string,
+) {
   const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
-    username ? `/api/profiles/${username}/comments` : null,
+    username
+      ? `/api/profiles/${username}/comments${
+          mainUsername ? `?requestingProfileId=${mainUsername}` : ''
+        }`
+      : null,
     fetchComments,
     {
       revalidateOnFocus: false,
