@@ -6,20 +6,11 @@ import { Alert } from '../common/alert'
 import { LoadCircle } from '../common/load-circle'
 import Link from 'next/link'
 import { Avatar } from '../common/Avatar'
-
-interface Comment {
-  comment: {
-    text: string
-    created_at: string
-  }
-  author: {
-    username: string
-  }
-}
+import { CommentItem } from '@/hooks/use-profile-comments'
 
 interface Props {
   username: string
-  comments?: Comment[]
+  comments?: CommentItem[]
   isLoading?: boolean
 }
 
@@ -69,17 +60,19 @@ export function CommentWall({
                   key={index}
                   className="border border-green-800/30 rounded-lg p-3"
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Link
-                      href={`/${comment.author.username}`}
-                      className="flex items-center gap-2 hover:opacity-80"
-                    >
-                      <Avatar username={comment.author.username} size={24} />
-                      <span className="text-green-400 font-mono text-sm">
-                        @{comment.author.username}
-                      </span>
-                    </Link>
-                  </div>
+                  {comment.author && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <Link
+                        href={`/${comment.author.username}`}
+                        className="flex items-center gap-2 hover:opacity-80"
+                      >
+                        <Avatar username={comment.author.username} size={24} />
+                        <span className="text-green-400 font-mono text-sm">
+                          @{comment.author.username}
+                        </span>
+                      </Link>
+                    </div>
+                  )}
                   <div className="text-green-300 font-mono">
                     {comment.comment.text}
                   </div>

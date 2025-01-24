@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-interface CommentItem {
+export interface CommentItem {
   comment: {
     id: string
     text: string
@@ -28,41 +28,7 @@ async function fetchComments(url: string): Promise<GetCommentsResponse> {
     const errorData = await res.json()
     throw new Error(errorData.error || 'Failed to fetch comments')
   }
-  const data = await res.json()
-
-  // Transform the response to include author information
-  const commentsWithAuthors = await Promise.all(
-    data.comments.map(async (comment: CommentItem) => {
-      try {
-        const authorRes = await fetch(
-          `/api/profiles/${comment.comment.profileId}`,
-        )
-        if (!authorRes.ok) throw new Error('Failed to fetch author')
-        const authorData = await authorRes.json()
-
-        return {
-          ...comment,
-          author: {
-            username: comment.author?.id, // profileId is the username in this case
-            image: authorData.profile?.image || null,
-          },
-        }
-      } catch (error) {
-        return {
-          ...comment,
-          author: {
-            username: comment.author?.id,
-            image: comment.author?.image,
-          },
-        }
-      }
-    }),
-  )
-
-  return {
-    ...data,
-    comments: commentsWithAuthors,
-  }
+  return await res.json()
 }
 
 export function useProfileComments(username: string | null) {
