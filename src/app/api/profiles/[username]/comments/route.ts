@@ -14,13 +14,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
       'requestingProfileId',
     )
 
-    console.log(
-      '[Profile Comments] Requesting Profile ID:',
-      requestingProfileId,
-    )
+    let url = `comments?targetProfileId=${username}`
+    if (requestingProfileId) {
+      url += `&requestingProfileId=${requestingProfileId}`
+    }
 
     const response = await fetchTapestryServer({
-      endpoint: `comments?targetProfileId=${username}`,
+      endpoint: url,
       method: FetchMethod.GET,
     })
 

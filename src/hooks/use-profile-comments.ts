@@ -13,6 +13,9 @@ export interface CommentItem {
     username: string
     id: string
   }
+  requestingProfileSocialInfo?: {
+    hasLiked: boolean
+  }
 }
 
 interface GetCommentsResponse {
@@ -22,8 +25,6 @@ interface GetCommentsResponse {
 }
 
 async function fetchComments(url: string): Promise<GetCommentsResponse> {
-  console.log('Fetching comments from URL:', url)
-  // Parse the URL and preserve query parameters
   const urlObj = new URL(url, window.location.origin)
   const res = await fetch(urlObj.toString())
   if (!res.ok) {
@@ -37,13 +38,11 @@ export function useProfileComments(
   username: string | null,
   mainUsername?: string,
 ) {
-  console.log('mainUsername +++++++', mainUsername)
   const url = username
     ? `/api/profiles/${username}/comments${
         mainUsername ? `?requestingProfileId=${mainUsername}` : ''
       }`
     : null
-  console.log('Constructed URL:', url)
 
   const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
     [url, 'profile-comments'],
