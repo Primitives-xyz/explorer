@@ -82,3 +82,21 @@ export async function fetchTapestryServer<T = any>({
     throw error
   }
 }
+
+export const tapestryServer = {
+  async likeComment(commentId: string, profileId: string) {
+    return fetchTapestryServer({
+      endpoint: `comments/${commentId}/likes`,
+      method: FetchMethod.POST,
+      data: { profileId },
+    })
+  },
+
+  async unlikeComment(commentId: string, profileId: string) {
+    return fetchTapestryServer({
+      endpoint: `comments/${commentId}/likes`,
+      method: FetchMethod.DELETE,
+      data: { profileId },
+    })
+  },
+}

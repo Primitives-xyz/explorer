@@ -7,6 +7,9 @@ import { LoadCircle } from '../common/load-circle'
 import Link from 'next/link'
 import { Avatar } from '../common/Avatar'
 import { CommentItem } from '@/hooks/use-profile-comments'
+import { useCommentLikes } from '@/hooks/use-comment-likes'
+import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline'
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid'
 
 interface Props {
   username: string
@@ -22,6 +25,11 @@ export function CommentWall({
   const [comment, setComment] = useState('')
   const { postComment, isLoading: postCommentLoading, error } = usePostComment()
   const { mainUsername } = useCurrentWallet()
+  const {
+    likeComment,
+    unlikeComment,
+    isLoading: likeLoading,
+  } = useCommentLikes()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,6 +44,20 @@ export function CommentWall({
       setComment('') // Clear the input on success
     } catch (err) {
       console.error('Failed to post comment:', err)
+    }
+  }
+
+  const handleLike = async (commentId: string, isLiked: boolean) => {
+    if (!mainUsername || likeLoading) return
+
+    try {
+      if (isLiked) {
+        await unlikeComment(commentId, mainUsername)
+      } else {
+        await likeComment(commentId, mainUsername)
+      }
+    } catch (err) {
+      console.error('Failed to handle like:', err)
     }
   }
 
@@ -76,8 +98,35 @@ export function CommentWall({
                   <div className="text-green-300 font-mono">
                     {comment.comment.text}
                   </div>
-                  <div className="text-green-600 font-mono text-xs mt-2">
-                    {new Date(comment.comment.created_at).toLocaleDateString()}
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="text-green-600 font-mono text-xs">
+                      {new Date(
+                        comment.comment.created_at,
+                      ).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() =>
+                          handleLike(
+                            comment.comment.id,
+                            comment.comment.isLikedByUser,
+                          )
+                        }
+                        disabled={!mainUsername || likeLoading}
+                        className={`p-1 rounded-full hover:bg-green-900/20 transition-colors ${
+                          !mainUsername ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {comment.comment.isLikedByUser ? (
+                          <HeartSolid className="w-5 h-5 text-green-500" />
+                        ) : (
+                          <HeartOutline className="w-5 h-5 text-green-500" />
+                        )}
+                      </button>
+                      <span className="text-green-500 font-mono text-sm">
+                        {comment.comment.likeCount || 0}
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))

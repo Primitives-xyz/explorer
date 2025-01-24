@@ -8,6 +8,8 @@ export interface CommentItem {
     contentId: string
     commentId?: string
     created_at: string
+    likeCount: number
+    isLikedByUser: boolean
   }
   author?: {
     username: string
