@@ -10,9 +10,17 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
     const { username } = params
+    const requestingProfileId = req.nextUrl.searchParams.get(
+      'requestingProfileId',
+    )
+
+    let url = `comments?targetProfileId=${username}`
+    if (requestingProfileId) {
+      url += `&requestingProfileId=${requestingProfileId}`
+    }
 
     const response = await fetchTapestryServer({
-      endpoint: `comments?targetProfileId=${username}`,
+      endpoint: url,
       method: FetchMethod.GET,
     })
 

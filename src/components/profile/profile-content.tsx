@@ -41,8 +41,10 @@ export function ProfileContent({ username }: Props) {
     isLoading: isLoadingFollowing,
     error: followingError,
   } = useProfileFollowing(username)
-  const { comments, isLoading: isLoadingComments } =
-    useProfileComments(username)
+  const { comments, isLoading: isLoadingComments } = useProfileComments(
+    username,
+    mainUsername || undefined,
+  )
 
   const fetcher = async (url: string) => {
     const res = await fetch(url)

@@ -13,6 +13,12 @@ export interface CommentItem {
     username: string
     id: string
   }
+  requestingProfileSocialInfo?: {
+    hasLiked: boolean
+  }
+  socialCounts?: {
+    likeCount: number
+  }
 }
 
 interface GetCommentsResponse {
@@ -22,7 +28,8 @@ interface GetCommentsResponse {
 }
 
 async function fetchComments(url: string): Promise<GetCommentsResponse> {
-  const res = await fetch(url)
+  const urlObj = new URL(url, window.location.origin)
+  const res = await fetch(urlObj.toString())
   if (!res.ok) {
     const errorData = await res.json()
     throw new Error(errorData.error || 'Failed to fetch comments')
@@ -30,15 +37,24 @@ async function fetchComments(url: string): Promise<GetCommentsResponse> {
   return await res.json()
 }
 
-export function useProfileComments(username: string | null) {
+export function useProfileComments(
+  username: string | null,
+  mainUsername?: string,
+) {
+  const url = username
+    ? `/api/profiles/${username}/comments${
+        mainUsername ? `?requestingProfileId=${mainUsername}` : ''
+      }`
+    : null
+
   const { data, error, mutate, isLoading } = useSWR<GetCommentsResponse>(
-    username ? `/api/profiles/${username}/comments` : null,
-    fetchComments,
+    [url, 'profile-comments'],
+    ([url]) => fetchComments(url),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       revalidateOnMount: true,
-      revalidateIfStale: false,
+      revalidateIfStale: true,
       refreshInterval: 0, // Disable auto-refresh
       dedupingInterval: 0, // Disable deduping
       fallbackData: { comments: [], page: 1, pageSize: 10 },
