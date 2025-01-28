@@ -1,21 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { formatLamportsToSol } from '@/utils/transaction'
 import { VersionedTransaction } from '@solana/web3.js'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 
-export const JupiterSwapForm = () => {
-  const [inputAmount, setInputAmount] = useState('')
-  const [inputMint, setInputMint] = useState(
-    'So11111111111111111111111111111111111111112',
-  )
-  const [outputMint, setOutputMint] = useState(
-    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-  )
+interface JupiterSwapFormProps {
+  initialInputMint?: string
+  initialOutputMint?: string
+  initialAmount?: string
+}
+
+export const JupiterSwapForm = ({
+  initialInputMint = 'So11111111111111111111111111111111111111112',
+  initialOutputMint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  initialAmount = '',
+}: JupiterSwapFormProps) => {
+  const [inputAmount, setInputAmount] = useState(initialAmount)
+  const [inputMint, setInputMint] = useState(initialInputMint)
+  const [outputMint, setOutputMint] = useState(initialOutputMint)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txSignature, setTxSignature] = useState('')
   const { primaryWallet, walletAddress } = useCurrentWallet()
+
+  // Update form when props change
+  useEffect(() => {
+    setInputMint(initialInputMint)
+  }, [initialInputMint])
+
+  useEffect(() => {
+    setOutputMint(initialOutputMint)
+  }, [initialOutputMint])
+
+  useEffect(() => {
+    setInputAmount(initialAmount)
+  }, [initialAmount])
 
   const handleSwap = async () => {
     if (!primaryWallet || !walletAddress) {
@@ -52,7 +71,6 @@ export const JupiterSwapForm = () => {
       }
 
       // Deserialize and sign transaction
-      const connection = await primaryWallet.getConnection()
       const transaction = VersionedTransaction.deserialize(
         Buffer.from(swapTransaction, 'base64'),
       )

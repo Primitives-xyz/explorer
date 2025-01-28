@@ -147,7 +147,11 @@ export function SwapTransactionView({
       </div>
 
       {showSwapForm ? (
-        <JupiterSwapForm />
+        <JupiterSwapForm
+          initialInputMint={fromToken.mint}
+          initialOutputMint={toToken.mint}
+          initialAmount={fromToken.amount.toString()}
+        />
       ) : (
         <div className="flex items-center gap-2 p-2 bg-green-900/10 rounded-lg">
           {/* From Token */}
