@@ -9,7 +9,7 @@ import {
 import { useMemo } from 'react'
 
 export function useCurrentWallet() {
-  const { sdkHasLoaded } = useDynamicContext()
+  const { sdkHasLoaded, primaryWallet } = useDynamicContext()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
   // Basic wallet state
@@ -43,6 +43,7 @@ export function useCurrentWallet() {
     loadingProfiles,
     profiles,
     isLoggedIn,
+    primaryWallet,
     sdkHasLoaded,
   }
 }
