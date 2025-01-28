@@ -69,9 +69,17 @@ export function ProfileContent({ username }: Props) {
       refreshInterval: 3000,
     },
   )
-  const { profiles, loading: loadingProfiles } = useGetProfiles(
-    data?.walletAddress || '',
-  )
+  const {
+    profiles,
+    loading: loadingProfiles,
+    error: profilesError,
+  } = useGetProfiles(data?.walletAddress || '')
+
+  if (!!profilesError) {
+    router.push('/')
+    throw new Error('Server error')
+  }
+
   const loading = isLoading || loadingProfiles
 
   return (
