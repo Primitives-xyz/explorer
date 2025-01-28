@@ -1,6 +1,7 @@
 'use client'
 
 import { ProfileSearchResult } from '@/types'
+import { handleProfileNavigation } from '@/utils/profile-navigation'
 import {
   SearchHistoryItem,
   addSearchToHistory,
@@ -151,7 +152,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                 {searchResults.map((profile) => (
                   <div
                     key={profile.profile.id}
-                    onClick={() => handleRecentSearchClick(profile.profile.id)}
+                    onClick={() => handleProfileNavigation(profile, router)}
                     className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
                              last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3"
                   >

@@ -15,6 +15,7 @@ import { DataContainer } from './common/DataContainer'
 import { ScrollableContent } from './common/ScrollableContent'
 import { FilterBar } from './common/FilterBar'
 import { FilterButton } from './common/FilterButton'
+import { handleProfileNavigation } from '@/utils/profile-navigation'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -55,27 +56,7 @@ const ProfileCard = memo(
     const isFollowing = (isNemoApp && stats?.isFollowing) || false
 
     const handleProfileClick = useCallback(() => {
-      // nemoapp is the namespace for the explorer app, redirect to in-app profile.
-      if (profile.namespace.name === 'nemoapp') {
-        router.push(`/${profile.profile.username}`)
-        return
-      }
-
-      const userProfileURL = profile.namespace.userProfileURL
-      if (userProfileURL) {
-        // Check if the URL contains a query parameter pattern
-        const hasQueryParams = userProfileURL.includes('?')
-
-        // For URLs with query parameters, just append the username to the existing URL
-        const finalUrl = hasQueryParams
-          ? `${userProfileURL}${profile.profile.username}`
-          : `${userProfileURL}/${profile.profile.username}`
-
-        if (isValidUrl(finalUrl)) {
-          window.open(finalUrl, '_blank')
-          return
-        }
-      }
+      handleProfileNavigation(profile, router)
     }, [profile, router])
 
     const handleNamespaceClick = useCallback(() => {
