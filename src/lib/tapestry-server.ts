@@ -102,12 +102,12 @@ export const tapestryServer = {
 
   async createComment({
     profileId,
-    contentId,
+    targetProfileId,
     text,
     commentId,
   }: {
     profileId: string
-    contentId: string
+    targetProfileId: string
     text: string
     commentId?: string
   }) {
@@ -116,7 +116,7 @@ export const tapestryServer = {
       method: FetchMethod.POST,
       data: {
         profileId,
-        contentId,
+        targetProfileId,
         text,
         ...(commentId && { commentId }),
       },

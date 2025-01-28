@@ -132,7 +132,7 @@ export function CommentWall({
                           >
                             <ChatBubbleLeftIcon className="w-5 h-5 text-green-500" />
                             <span className="text-green-500 font-mono text-sm">
-                              Reply
+                              {comment.socialCounts?.replyCount || 0} Reply
                             </span>
                           </button>
                         )}
@@ -165,6 +165,76 @@ export function CommentWall({
                       </div>
                     </div>
                   </div>
+
+                  {/* Display Threaded Replies */}
+                  {comment.recentReplies &&
+                    comment.recentReplies.length > 0 && (
+                      <div className="mt-2 ml-8 space-y-2">
+                        {comment.recentReplies.map((reply) => (
+                          <div
+                            key={reply.comment.id}
+                            className="border-l-2 border-green-800/30 pl-4"
+                          >
+                            <div className="border border-green-800/30 rounded-lg p-3">
+                              {reply.author && (
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Link
+                                    href={`/${reply.author.username}`}
+                                    className="flex items-center gap-2 hover:opacity-80"
+                                  >
+                                    <Avatar
+                                      username={reply.author.username}
+                                      size={20}
+                                    />
+                                    <span className="text-green-400 font-mono text-sm">
+                                      @{reply.author.username}
+                                    </span>
+                                  </Link>
+                                </div>
+                              )}
+                              <div className="text-green-300 font-mono text-sm">
+                                {reply.comment.text}
+                              </div>
+                              <div className="flex items-center justify-between mt-2">
+                                <div className="text-green-600 font-mono text-xs">
+                                  {new Date(
+                                    reply.comment.created_at,
+                                  ).toLocaleDateString()}
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() =>
+                                      handleLike(
+                                        reply.comment.id,
+                                        reply.requestingProfileSocialInfo
+                                          ?.hasLiked || false,
+                                      )
+                                    }
+                                    disabled={!mainUsername || likeLoading}
+                                    className={`p-1 rounded-full hover:bg-green-900/20 transition-colors ${
+                                      !mainUsername
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : ''
+                                    }`}
+                                  >
+                                    {reply.requestingProfileSocialInfo
+                                      ?.hasLiked ? (
+                                      <HeartSolid className="w-4 h-4 text-green-500" />
+                                    ) : (
+                                      <HeartOutline className="w-4 h-4 text-green-500" />
+                                    )}
+                                  </button>
+                                  <span className="text-green-500 font-mono text-sm">
+                                    {reply.socialCounts?.likeCount || 0}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                   {/* Reply Form */}
                   {replyToCommentId === comment.comment.id && mainUsername && (
                     <div className="mt-2 ml-6 border-l-2 border-green-800/30 pl-4">

@@ -4,7 +4,7 @@ import { tapestryServer } from '@/lib/tapestry-server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { profileId, targetProfileId, text } = body
+    const { profileId, targetProfileId, text, commentId } = body
 
     if (!profileId || !targetProfileId || !text) {
       return NextResponse.json(
@@ -15,8 +15,9 @@ export async function POST(request: NextRequest) {
 
     const response = await tapestryServer.createComment({
       profileId,
-      contentId: targetProfileId,
+      targetProfileId: targetProfileId,
       text,
+      commentId,
     })
 
     return NextResponse.json(response)
