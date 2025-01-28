@@ -69,16 +69,20 @@ export function CommentWall({
   const handleLike = async (commentId: string, isLiked: boolean) => {
     if (!mainUsername || likeLoading) return
 
+    // Optimistically update the UI
+    await refreshComments()
+
     try {
       if (isLiked) {
         await unlikeComment(commentId, mainUsername)
       } else {
         await likeComment(commentId, mainUsername)
       }
+      // Refresh to get the actual server state
+      await refreshComments()
     } catch (err) {
       console.error('Failed to handle like:', err)
-    } finally {
-      // Always refresh comments, even if there was an error
+      // Refresh again in case of error to ensure UI is in sync
       await refreshComments()
     }
   }
