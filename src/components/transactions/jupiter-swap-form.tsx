@@ -10,9 +10,17 @@ interface JupiterSwapFormProps {
   initialAmount?: string
 }
 
+// Add common token list at the top
+const COMMON_TOKENS = [
+  { mint: 'So11111111111111111111111111111111111111112', symbol: 'SOL' },
+  { mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', symbol: 'USDC' },
+  { mint: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', symbol: 'USDT' },
+  { mint: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', symbol: 'SAMO' },
+]
+
 export const JupiterSwapForm = ({
-  initialInputMint = 'So11111111111111111111111111111111111111112',
-  initialOutputMint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  initialInputMint = '',
+  initialOutputMint = '',
   initialAmount = '',
 }: JupiterSwapFormProps) => {
   const [inputAmount, setInputAmount] = useState(initialAmount)
@@ -86,6 +94,14 @@ export const JupiterSwapForm = ({
     }
   }
 
+  // Render token options with symbols
+  const renderTokenOptions = () =>
+    COMMON_TOKENS.map((token) => (
+      <option key={token.mint} value={token.mint}>
+        {token.symbol}
+      </option>
+    ))
+
   return (
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
       <div className="flex flex-col gap-2">
@@ -103,10 +119,7 @@ export const JupiterSwapForm = ({
             value={inputMint}
             onChange={(e) => setInputMint(e.target.value)}
           >
-            <option value="So11111111111111111111111111111111111111112">
-              SOL
-            </option>
-            {/* Add more token options */}
+            {renderTokenOptions()}
           </select>
 
           <span className="text-green-400">→</span>
@@ -116,10 +129,7 @@ export const JupiterSwapForm = ({
             value={outputMint}
             onChange={(e) => setOutputMint(e.target.value)}
           >
-            <option value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">
-              USDC
-            </option>
-            {/* Add more token options */}
+            {renderTokenOptions()}
           </select>
         </div>
 

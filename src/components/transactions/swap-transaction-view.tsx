@@ -26,107 +26,36 @@ export function SwapTransactionView({
 
   useEffect(() => {
     async function loadTokenInfo() {
-      // Parse description for initial token info
-      // Format can be either:
-      // "wallet swapped X SOL for Y TOKEN" or
-      // "wallet swapped X TOKEN for Y SOL"
-      const descParts = tx.description?.split(' ') || []
-      const fromAmount = parseFloat(descParts[2] || '0')
-      const toAmount = parseFloat(descParts[5] || '0')
-      const fromTokenMint = descParts[3] || ''
-      const toTokenMint = descParts[6] || ''
-
+      // Use the transaction's token transfers directly
       const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
-      // Check if this is a SOL -> Token swap or Token -> SOL swap
-      const isFromSol = fromTokenMint.toLowerCase() === 'sol'
-      const isToSol = toTokenMint.toLowerCase() === 'sol'
+      // Get input and output from token transfers
+      const inputTransfer = tx.tokenTransfers?.find(
+        (t) => t.fromUserAccount === sourceWallet,
+      )
+      const outputTransfer = tx.tokenTransfers?.find(
+        (t) => t.toUserAccount === sourceWallet,
+      )
 
-      if (isFromSol) {
-        // SOL -> Token swap
-        setFromToken({
-          mint: SOL_MINT,
-          amount: fromAmount,
-        })
+      // Handle SOL transfers from nativeTransfers
+      const nativeInput = tx.nativeTransfers?.find(
+        (t) => t.toUserAccount === sourceWallet,
+      )
+      const nativeOutput = tx.nativeTransfers?.find(
+        (t) => t.fromUserAccount === sourceWallet,
+      )
 
-        if (toTokenMint) {
-          setToToken({
-            mint: toTokenMint,
-            amount: toAmount,
-            loading: true,
-          })
+      setFromToken({
+        mint:
+          inputTransfer?.tokenMint || nativeOutput?.fromUserAccount || SOL_MINT,
+        amount: inputTransfer?.tokenAmount || nativeOutput?.amount || 0,
+      })
 
-          try {
-            const response = await fetch(`/api/token?mint=${toTokenMint}`)
-            if (!response.ok) {
-              throw new Error('Failed to fetch token info')
-            }
-            const tokenInfo = await response.json()
-            setToToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    tokenInfo,
-                    loading: false,
-                  }
-                : null,
-            )
-          } catch (error) {
-            console.error('Error fetching token info:', error)
-            setToToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    loading: false,
-                    error: 'Failed to load token info',
-                  }
-                : null,
-            )
-          }
-        }
-      } else if (isToSol) {
-        // Token -> SOL swap
-        setToToken({
-          mint: SOL_MINT,
-          amount: toAmount,
-        })
-
-        if (fromTokenMint) {
-          setFromToken({
-            mint: fromTokenMint,
-            amount: fromAmount,
-            loading: true,
-          })
-
-          try {
-            const response = await fetch(`/api/token?mint=${fromTokenMint}`)
-            if (!response.ok) {
-              throw new Error('Failed to fetch token info')
-            }
-            const tokenInfo = await response.json()
-            setFromToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    tokenInfo,
-                    loading: false,
-                  }
-                : null,
-            )
-          } catch (error) {
-            console.error('Error fetching token info:', error)
-            setFromToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    loading: false,
-                    error: 'Failed to load token info',
-                  }
-                : null,
-            )
-          }
-        }
-      }
+      setToToken({
+        mint:
+          outputTransfer?.tokenMint || nativeInput?.toUserAccount || SOL_MINT,
+        amount: outputTransfer?.tokenAmount || nativeInput?.amount || 0,
+      })
     }
 
     loadTokenInfo()
