@@ -18,7 +18,9 @@ export interface CommentItem {
   }
   socialCounts?: {
     likeCount: number
+    replyCount?: number
   }
+  recentReplies?: CommentItem[]
 }
 
 interface GetCommentsResponse {
