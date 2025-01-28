@@ -8,12 +8,18 @@ interface JupiterSwapFormProps {
   initialInputMint?: string
   initialOutputMint?: string
   initialAmount?: string
+  inputTokenName?: string
+  outputTokenName?: string
+  inputDecimals?: number
 }
 
 export const JupiterSwapForm = ({
   initialInputMint = 'So11111111111111111111111111111111111111112',
   initialOutputMint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
   initialAmount = '',
+  inputTokenName = 'SOL',
+  outputTokenName = 'USDC',
+  inputDecimals = 9, // Default to SOL decimals
 }: JupiterSwapFormProps) => {
   const [inputAmount, setInputAmount] = useState(initialAmount)
   const [inputMint, setInputMint] = useState(initialInputMint)
@@ -44,12 +50,14 @@ export const JupiterSwapForm = ({
 
     setLoading(true)
     try {
+      // Calculate amount with correct decimals
+      const multiplier = Math.pow(10, inputDecimals)
+      const adjustedAmount = Number(inputAmount) * multiplier
+
       // Get quote
       const quoteResponse = await fetch(
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-          `&outputMint=${outputMint}&amount=${
-            Number(inputAmount) * 1000000000
-          }` +
+          `&outputMint=${outputMint}&amount=${adjustedAmount}` +
           `&slippageBps=50`,
       ).then((res) => res.json())
 
@@ -103,10 +111,7 @@ export const JupiterSwapForm = ({
             value={inputMint}
             onChange={(e) => setInputMint(e.target.value)}
           >
-            <option value="So11111111111111111111111111111111111111112">
-              SOL
-            </option>
-            {/* Add more token options */}
+            <option value={inputMint}>{inputTokenName}</option>
           </select>
 
           <span className="text-green-400">→</span>
@@ -116,10 +121,7 @@ export const JupiterSwapForm = ({
             value={outputMint}
             onChange={(e) => setOutputMint(e.target.value)}
           >
-            <option value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">
-              USDC
-            </option>
-            {/* Add more token options */}
+            <option value={outputMint}>{outputTokenName}</option>
           </select>
         </div>
 

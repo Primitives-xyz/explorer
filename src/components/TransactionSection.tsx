@@ -64,7 +64,6 @@ export const TransactionSection = ({
         }
 
         const transactionsData = await response.json()
-        console.log('transactionsData', transactionsData.slice(0, 5))
         if ('error' in transactionsData) throw new Error(transactionsData.error)
 
         setTransactions(

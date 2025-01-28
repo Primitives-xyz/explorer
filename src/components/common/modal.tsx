@@ -1,38 +1,75 @@
-import { X } from 'lucide-react'
-import { ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
-  children: ReactNode
+  children: React.ReactNode
   title?: string
 }
 
-export const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
-  if (!isOpen) return null
+export function Modal({ isOpen, onClose, children, title }: ModalProps) {
+  const modalRoot = useRef<Element | null>(null)
 
-  return (
-    <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
-      onClick={onClose}
-    >
-      <div className="relative max-w-lg w-full mx-4">
-        <div
-          className="bg-black/90 border border-green-800 rounded-lg p-6 relative"
-          onClick={(e) => e.stopPropagation()}
-        >
+  useEffect(() => {
+    // Find or create modal root
+    let element = document.getElementById('modal-root')
+    if (!element) {
+      element = document.createElement('div')
+      element.id = 'modal-root'
+      document.body.appendChild(element)
+    }
+    modalRoot.current = element
+
+    // Prevent body scroll when modal is open
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
+  if (!isOpen || !modalRoot.current) return null
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div className="relative z-10 w-full max-w-lg bg-black/90 border border-green-500/20 rounded-lg shadow-xl">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-green-500/20">
+          <h2 className="text-lg font-medium text-green-400">{title}</h2>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-green-600 hover:text-green-400 font-mono text-sm"
+            className="text-green-400 hover:text-green-300 transition-colors"
           >
-            <X size={20} />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
-          {title && (
-            <h2 className="text-xl text-green-400 mb-4 font-bold">{title}</h2>
-          )}
-          {children}
         </div>
+
+        {/* Body */}
+        <div className="p-4">{children}</div>
       </div>
-    </div>
+    </div>,
+    modalRoot.current,
   )
 }
