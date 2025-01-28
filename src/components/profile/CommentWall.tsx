@@ -11,6 +11,7 @@ import { useCommentLikes } from '@/hooks/use-comment-likes'
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid'
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
+import { useProfileComments } from '@/hooks/use-profile-comments'
 
 interface Props {
   username: string
@@ -33,6 +34,12 @@ export function CommentWall({
     isLoading: likeLoading,
   } = useCommentLikes()
 
+  // Add the useProfileComments hook to get access to mutate
+  const { mutate: refreshComments } = useProfileComments(
+    username,
+    mainUsername || undefined,
+  )
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!commentText.trim() || !mainUsername) return
@@ -53,6 +60,9 @@ export function CommentWall({
       setReplyToCommentId(null) // Clear reply state
     } catch (err) {
       console.error('Failed to post comment:', err)
+    } finally {
+      // Always refresh comments, even if there was an error
+      await refreshComments()
     }
   }
 
@@ -67,6 +77,9 @@ export function CommentWall({
       }
     } catch (err) {
       console.error('Failed to handle like:', err)
+    } finally {
+      // Always refresh comments, even if there was an error
+      await refreshComments()
     }
   }
 
