@@ -52,7 +52,7 @@ export function ProfileContent({ username }: Props) {
   const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (res.status === 500) {
-      router.push('/')
+      window.location.href = '/'
       throw new Error('Server error')
     }
     if (!res.ok) throw new Error('Failed to fetch profile')
@@ -76,7 +76,7 @@ export function ProfileContent({ username }: Props) {
   } = useGetProfiles(data?.walletAddress || '')
 
   if (!!profilesError) {
-    router.push('/')
+    window.location.href = '/'
     throw new Error('Server error')
   }
 

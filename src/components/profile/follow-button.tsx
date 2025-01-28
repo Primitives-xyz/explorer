@@ -1,7 +1,6 @@
 'use client'
 
 import { Alert } from '@/components/common/alert'
-import { LoadCircle } from '@/components/common/load-circle'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -11,6 +10,7 @@ import { useFollowStats } from '@/hooks/use-follow-stats'
 import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { FrogHolderRequired } from '../auth/FrogHolderRequired'
 import dynamic from 'next/dynamic'
+import router from 'next/router'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -34,6 +34,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     stats,
     mutate: mutateStats,
     isLoading: isLoadingStats,
+    error: statsError,
   } = useFollowStats(username, mainUsername)
   const isFollowing = stats?.isFollowing ?? false
   const [optimisticFollowing, setOptimisticFollowing] = useState(false)
@@ -44,6 +45,11 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'
   }`
   const iconSize = size === 'lg' ? 16 : 14
+
+  if (!!statsError) {
+    window.location.href = '/'
+    throw new Error('Server error')
+  }
 
   // Reset optimistic state and revalidate on mount or username change
   useEffect(() => {
