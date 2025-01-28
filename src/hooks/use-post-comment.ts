@@ -4,6 +4,7 @@ interface PostCommentInput {
   profileId: string
   targetProfileId: string
   text: string
+  commentId?: string
 }
 
 export function usePostComment() {
@@ -14,6 +15,7 @@ export function usePostComment() {
     profileId,
     targetProfileId,
     text,
+    commentId,
   }: PostCommentInput) => {
     setIsLoading(true)
     setError(null)
@@ -28,6 +30,7 @@ export function usePostComment() {
           profileId,
           targetProfileId,
           text,
+          ...(commentId && { commentId }),
         }),
       })
 
