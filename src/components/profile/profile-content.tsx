@@ -14,6 +14,7 @@ import { TokenAddress } from '../tokens/TokenAddress'
 import { Modal } from '../common/modal'
 import { CommentWall } from './CommentWall'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface Props {
   username: string
@@ -46,8 +47,14 @@ export function ProfileContent({ username }: Props) {
     mainUsername || undefined,
   )
 
+  const router = useRouter()
+
   const fetcher = async (url: string) => {
     const res = await fetch(url)
+    if (res.status === 500) {
+      router.push('/')
+      throw new Error('Server error')
+    }
     if (!res.ok) throw new Error('Failed to fetch profile')
     return res.json()
   }
