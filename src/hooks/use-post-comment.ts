@@ -4,6 +4,7 @@ interface PostCommentInput {
   profileId: string
   targetProfileId: string
   text: string
+  commentId?: string
 }
 
 export function usePostComment() {
@@ -14,9 +15,29 @@ export function usePostComment() {
     profileId,
     targetProfileId,
     text,
+    commentId,
   }: PostCommentInput) => {
     setIsLoading(true)
     setError(null)
+
+    console.log('commentId in usePostComment', commentId)
+
+    let body: {
+      profileId: string
+      targetProfileId: string
+      text: string
+      commentId?: string
+    } = {
+      profileId,
+      targetProfileId,
+      text,
+    }
+
+    if (commentId) {
+      body.commentId = commentId
+    }
+
+    console.log('body in usePostComment', body)
 
     try {
       const response = await fetch('/api/comments', {
@@ -24,11 +45,7 @@ export function usePostComment() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          profileId,
-          targetProfileId,
-          text,
-        }),
+        body: JSON.stringify(body),
       })
 
       console.log('response', response)
