@@ -22,12 +22,16 @@ export const handleProfileNavigation = (
   const userProfileURL = profile.namespace.userProfileURL
   if (userProfileURL) {
     // Check if the URL contains a query parameter pattern
-    const hasQueryParams = userProfileURL.includes('?')
+    // Check if URL ends with a slash
+    const separator = userProfileURL.includes('?')
+      ? userProfileURL.includes('=')
+        ? '&'
+        : '='
+      : userProfileURL.endsWith('/')
+      ? ''
+      : '/'
 
-    // For URLs with query parameters, just append the username to the existing URL
-    const finalUrl = hasQueryParams
-      ? `${userProfileURL}${profile.profile.username}`
-      : `${userProfileURL}/${profile.profile.username}`
+    const finalUrl = `${userProfileURL}${separator}${profile.profile.username}`
 
     if (isValidUrl(finalUrl)) {
       window.open(finalUrl, '_blank')
