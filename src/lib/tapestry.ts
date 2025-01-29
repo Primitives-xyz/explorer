@@ -49,6 +49,7 @@ export const createProfile = async ({
       method: FetchMethod.POST,
       data: {
         walletAddress: ownerWalletAddress,
+        image: `https://api.dicebear.com/7.x/shapes/svg?seed=${username}`,
         username,
         blockchain: 'SOLANA',
         execution: 'FAST_UNCONFIRMED',
