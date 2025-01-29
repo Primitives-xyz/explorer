@@ -10,7 +10,6 @@ import {
 import { useRouter } from 'next/navigation'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { json } from 'stream/consumers'
 import Image from 'next/image'
 
 interface SearchBarProps {
@@ -158,11 +157,11 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                     className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
                              last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3"
                   >
-                    <div className="w-6 h-6 rounded-full bg-green-900/20 relative overflow-hidden">
-                      {profile.namespace.faviconURL && (
+                    <div className="w-8 h-8 rounded-full bg-green-900/20 relative overflow-hidden">
+                      {profile.profile.image && (
                         <Image
-                          src={profile.namespace.faviconURL}
-                          alt={`${profile.namespace.readableName} icon`}
+                          src={profile.profile.image}
+                          alt={`${profile.profile.id} profile image`}
                           fill
                           className="object-cover"
                         />
@@ -173,7 +172,19 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                         {profile.profile.username}
                       </div>
                       <div className="text-green-600 text-xs flex justify-between">
-                        <span>{profile.namespace.readableName}</span>
+                        <span className="flex space-x-2">
+                          {profile.namespace.faviconURL && (
+                            <div className="w-4 h-4 rounded-full bg-green-900/20 relative overflow-hidden">
+                              <Image
+                                src={profile.namespace.faviconURL}
+                                alt={`${profile.namespace.readableName} icon`}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          <span>{profile.namespace.readableName}</span>
+                        </span>
                         <span>
                           {profile.socialCounts.followers} followers ·{' '}
                           {profile.socialCounts.following} following

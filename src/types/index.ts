@@ -39,6 +39,7 @@ export interface ProfileSearchResult {
   profile: {
     id: string
     username: string
+    image?: string
   }
   namespace: {
     name: string
