@@ -8,7 +8,7 @@ interface Props {
 
 export function Log({ message }: Props) {
   useEffect(() => {
-    console.log(message)
+    console.log(`[Log]`, message)
   }, [message])
 
   return null

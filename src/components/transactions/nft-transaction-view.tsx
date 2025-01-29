@@ -41,7 +41,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
   }, [tx])
 
   if (tx.type === 'UNKNOWN') {
-    console.log({ tx })
+    console.log(`[NFTTransactionView] Unknown transaction type:`, { tx })
   }
 
   // Memoize transaction type calculations

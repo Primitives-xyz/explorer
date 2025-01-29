@@ -88,7 +88,6 @@ export async function checkSolanaBusinessFrogHolder({
     }
 
     const hasBusinessFrog = (data.result?.total ?? 0) >= 1
-    console.log({ hasBusinessFrog, walletAddress })
     return hasBusinessFrog
   } catch (error) {
     console.error('Error checking Business Frog holder status:', error)

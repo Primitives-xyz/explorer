@@ -5,7 +5,6 @@ import { TokenInfo } from '@/types/Token'
 import Image from 'next/image'
 import { JupiterSwapForm } from './jupiter-swap-form'
 import { Modal } from '@/components/common/modal'
-import { useTokenInfo } from '@/hooks/useTokenInfo'
 
 interface TokenDisplay {
   mint: string
@@ -59,7 +58,11 @@ export function SwapTransactionView({
           })
 
           try {
-            const { data: tokenInfo } = useTokenInfo(toTokenMint)
+            const response = await fetch(`/api/token?mint=${toTokenMint}`)
+            if (!response.ok) {
+              throw new Error('Failed to fetch token info')
+            }
+            const tokenInfo = await response.json()
             setToToken((prev) =>
               prev
                 ? {
@@ -97,7 +100,11 @@ export function SwapTransactionView({
           })
 
           try {
-            const { data: tokenInfo } = useTokenInfo(fromTokenMint)
+            const response = await fetch(`/api/token?mint=${toTokenMint}`)
+            if (!response.ok) {
+              throw new Error('Failed to fetch token info')
+            }
+            const tokenInfo = await response.json()
             setFromToken((prev) =>
               prev
                 ? {

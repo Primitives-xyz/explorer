@@ -20,8 +20,6 @@ export function usePostComment() {
     setIsLoading(true)
     setError(null)
 
-    console.log('commentId in usePostComment', commentId)
-
     let body: {
       profileId: string
       targetProfileId: string
@@ -37,8 +35,6 @@ export function usePostComment() {
       body.commentId = commentId
     }
 
-    console.log('body in usePostComment', body)
-
     try {
       const response = await fetch('/api/comments', {
         method: 'POST',
@@ -47,8 +43,6 @@ export function usePostComment() {
         },
         body: JSON.stringify(body),
       })
-
-      console.log('response', response)
 
       const data = await response.json()
 

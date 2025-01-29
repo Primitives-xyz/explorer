@@ -57,7 +57,6 @@ export async function getProfiles(
     }
 
     const data = await response.json()
-    console.log('data', data)
     return {
       items: data.profiles || [],
       hasMore: data.profiles.length === ITEMS_PER_PAGE,
