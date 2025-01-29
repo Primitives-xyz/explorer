@@ -159,11 +159,10 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                   >
                     <div className="w-8 h-8 rounded-full bg-green-900/20 relative overflow-hidden">
                       {profile.profile.image && (
-                        <Image
+                        <img
                           src={profile.profile.image}
                           alt={`${profile.profile.id} profile image`}
-                          fill
-                          className="object-cover"
+                          className="w-full h-full object-cover"
                         />
                       )}
                     </div>
