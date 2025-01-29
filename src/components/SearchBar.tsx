@@ -10,6 +10,8 @@ import {
 import { useRouter } from 'next/navigation'
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { json } from 'stream/consumers'
+import Image from 'next/image'
 
 interface SearchBarProps {
   onPickRecentAddress?: (addr: string) => void
@@ -101,6 +103,10 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
         `/api/search?query=${encodeURIComponent(query)}`,
       )
       const data = await response.json()
+      console.log(
+        'data ===================',
+        JSON.stringify(data.profiles, null, 2),
+      )
       setSearchResults(data.profiles)
     } catch (error) {
       console.error('Failed to search profiles:', error)
@@ -126,6 +132,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     if (!showDropdown) return null
     const { top, left, width } = getDropdownPosition()
 
+    console.log('%%%%%', JSON.stringify(searchResults, null, 2))
     return createPortal(
       <div
         ref={dropdownRef}
@@ -156,7 +163,16 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                     className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
                              last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3"
                   >
-                    <div className="w-6 h-6 rounded-full bg-green-900/20" />
+                    <div className="w-6 h-6 rounded-full bg-green-900/20 relative overflow-hidden">
+                      {profile.namespace.faviconURL && (
+                        <Image
+                          src={profile.namespace.faviconURL}
+                          alt={`${profile.namespace.readableName} icon`}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
                     <div className="flex-1">
                       <div className="font-mono text-green-400 text-sm">
                         {profile.profile.username}
