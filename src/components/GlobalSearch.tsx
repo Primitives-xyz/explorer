@@ -1,18 +1,9 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useRouter } from 'next/navigation'
-import {
-  SearchHistoryItem,
-  getRecentSearches,
-  addSearchToHistory,
-} from '@/utils/searchHistory'
-import { ProfileSearchResult } from '@/types'
-import { handleProfileNavigation } from '@/utils/profile-navigation'
 import SearchBar from './SearchBar'
 
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

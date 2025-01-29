@@ -103,10 +103,6 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
         `/api/search?query=${encodeURIComponent(query)}`,
       )
       const data = await response.json()
-      console.log(
-        'data ===================',
-        JSON.stringify(data.profiles, null, 2),
-      )
       setSearchResults(data.profiles)
     } catch (error) {
       console.error('Failed to search profiles:', error)
@@ -132,7 +128,6 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     if (!showDropdown) return null
     const { top, left, width } = getDropdownPosition()
 
-    console.log('%%%%%', JSON.stringify(searchResults, null, 2))
     return createPortal(
       <div
         ref={dropdownRef}

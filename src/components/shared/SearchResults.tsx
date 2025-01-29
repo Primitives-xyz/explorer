@@ -45,6 +45,8 @@ export function SearchResults({
     )
   }
 
+  console.log('searchResults ===================', searchResults)
+
   return (
     <div className={className}>
       {/* Profile Search Results */}
