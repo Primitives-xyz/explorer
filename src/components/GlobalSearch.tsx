@@ -6,11 +6,15 @@ import {
   getRecentSearches,
   addSearchToHistory,
 } from '@/utils/searchHistory'
+import { ProfileSearchResult } from '@/types'
+import { handleProfileNavigation } from '@/utils/profile-navigation'
 
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchInput, setSearchInput] = useState('')
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])
+  const [searchResults, setSearchResults] = useState<ProfileSearchResult[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -58,6 +62,32 @@ export function GlobalSearch() {
     setSearchInput('')
   }
 
+  const searchProfiles = async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([])
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await fetch(
+        `/api/search?query=${encodeURIComponent(query)}`,
+      )
+      const data = await response.json()
+      setSearchResults(data.profiles)
+    } catch (error) {
+      console.error('Failed to search profiles:', error)
+      setSearchResults([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleInputChange = (value: string) => {
+    setSearchInput(value)
+    searchProfiles(value)
+  }
+
   if (!isOpen) return null
 
   return createPortal(
@@ -79,9 +109,9 @@ export function GlobalSearch() {
                 <input
                   type="text"
                   autoFocus
-                  placeholder="Search wallet address..."
+                  placeholder="Search username or wallet address..."
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleSearch()
@@ -96,37 +126,84 @@ export function GlobalSearch() {
               </div>
             </div>
 
-            {/* Recent Searches */}
-            <div className="border-t border-green-800">
-              <div className="p-2 text-xs text-green-600 font-mono border-b border-green-800/30">
-                Recent Searches
+            {/* Loading State */}
+            {isLoading && (
+              <div className="border-t border-green-800">
+                <div className="p-4 text-center text-green-600 font-mono text-sm">
+                  {'>>> SEARCHING...'}
+                </div>
               </div>
-              <div className="max-h-96 overflow-y-auto">
-                {recentSearches.length > 0 ? (
-                  recentSearches.map((search) => (
+            )}
+
+            {/* Profile Search Results */}
+            {!isLoading && searchResults.length > 0 && (
+              <div className="border-t border-green-800">
+                <div className="p-2 text-xs text-green-600 font-mono border-b border-green-800/30">
+                  PROFILE MATCHES
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {searchResults.map((profile) => (
                     <div
-                      key={search.walletAddress}
-                      onClick={() =>
-                        handleRecentSearchClick(search.walletAddress)
-                      }
+                      key={profile.profile.id}
+                      onClick={() => {
+                        handleProfileNavigation(profile, router)
+                        setIsOpen(false)
+                      }}
                       className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
-                               last:border-b-0"
+                               last:border-b-0 flex items-center gap-3"
                     >
-                      <div className="font-mono text-green-400 text-sm">
-                        {search.walletAddress}
-                      </div>
-                      <div className="text-green-600 text-xs">
-                        {new Date(search.timestamp).toLocaleDateString()}
+                      <div className="w-6 h-6 rounded-full bg-green-900/20" />
+                      <div className="flex-1">
+                        <div className="font-mono text-green-400 text-sm">
+                          {profile.profile.username}
+                        </div>
+                        <div className="text-green-600 text-xs flex justify-between">
+                          <span>{profile.namespace.readableName}</span>
+                          <span>
+                            {profile.socialCounts.followers} followers ·{' '}
+                            {profile.socialCounts.following} following
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="p-4 text-center text-green-600 font-mono text-sm">
-                    {'>>> NO SEARCH HISTORY <<<'}
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Recent Searches */}
+            {!isLoading && searchResults.length === 0 && (
+              <div className="border-t border-green-800">
+                <div className="p-2 text-xs text-green-600 font-mono border-b border-green-800/30">
+                  Recent Searches
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {recentSearches.length > 0 ? (
+                    recentSearches.map((search) => (
+                      <div
+                        key={search.walletAddress}
+                        onClick={() =>
+                          handleRecentSearchClick(search.walletAddress)
+                        }
+                        className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
+                                 last:border-b-0"
+                      >
+                        <div className="font-mono text-green-400 text-sm">
+                          {search.walletAddress}
+                        </div>
+                        <div className="text-green-600 text-xs">
+                          {new Date(search.timestamp).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-green-600 font-mono text-sm">
+                      {'>>> NO SEARCH HISTORY <<<'}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
