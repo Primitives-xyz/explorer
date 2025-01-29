@@ -25,7 +25,7 @@ export const handleProfileNavigation = (
     // Check if URL ends with a slash
     const separator = userProfileURL.includes('?')
       ? userProfileURL.includes('=')
-        ? '&'
+        ? ''
         : '='
       : userProfileURL.endsWith('/')
       ? ''
