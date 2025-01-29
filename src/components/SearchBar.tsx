@@ -153,7 +153,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                 </div>
                 {searchResults.map((profile) => (
                   <div
-                    key={profile.profile.id}
+                    key={`profile-${profile.namespace.name}-${profile.profile.id}`}
                     onClick={() => handleProfileNavigation(profile, router)}
                     className="p-2 hover:bg-green-900/20 cursor-pointer border-b border-green-800/30 
                              last:border-b-0 backdrop-blur-sm bg-black/95 flex items-center gap-3"
@@ -193,7 +193,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
                 </div>
                 {recentSearches.map((search) => (
                   <div
-                    key={search.walletAddress}
+                    key={`recent-${search.walletAddress}`}
                     onClick={() =>
                       handleRecentSearchClick(search.walletAddress)
                     }
