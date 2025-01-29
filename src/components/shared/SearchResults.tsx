@@ -66,7 +66,14 @@ export function SearchResults({
                   {profile.profile.username}
                 </div>
                 <div className="text-green-600 text-xs flex justify-between">
-                  <span>{profile.namespace.readableName}</span>
+                  <span className="flex items-center gap-2">
+                    <img
+                      src={profile.namespace.faviconURL}
+                      alt={`${profile.namespace.readableName} icon`}
+                      className="w-4 h-4 rounded-sm"
+                    />
+                    {profile.namespace.readableName}
+                  </span>
                   <span>
                     {profile.socialCounts.followers} followers ·{' '}
                     {profile.socialCounts.following} following
