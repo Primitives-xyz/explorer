@@ -24,7 +24,7 @@ export interface Profile {
     id: number
     name: string
     readableName: string
-    faviconURL: string
+    faviconURL?: string | null
     createdAt: string
     updatedAt: string
     isDefault: boolean

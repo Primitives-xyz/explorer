@@ -35,7 +35,7 @@ export interface ISuggestedProfile {
   namespaces: {
     name: string
     readableName: string
-    faviconURL: string
+    faviconURL?: string | null
   }[]
   profile: {
     blockchain: string

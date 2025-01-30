@@ -45,7 +45,7 @@ export interface ProfileSearchResult {
     name: string
     readableName: string
     userProfileURL: string
-    faviconURL: string
+    faviconURL?: string | null
   }
   socialCounts: {
     followers: number
