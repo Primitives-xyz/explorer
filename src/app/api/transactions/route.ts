@@ -195,8 +195,8 @@ export async function GET(request: NextRequest) {
   }
 
   const url = before
-    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&until=${before}&limit=14`
-    : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=14`
+    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&before=${before}&limit=5`
+    : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=5`
 
   try {
     const response = await fetch(url)
@@ -204,7 +204,19 @@ export async function GET(request: NextRequest) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
+
+    // Handle empty response from Helius
+    if (!Array.isArray(data) || data.length === 0) {
+      return NextResponse.json([])
+    }
+
     const parsedData = await parseTransactions(data)
+
+    // Handle case where all transactions were filtered out
+    if (!parsedData || parsedData.length === 0) {
+      return NextResponse.json([])
+    }
+
     return NextResponse.json(parsedData)
   } catch (error) {
     console.error('Error fetching transactions:', error)

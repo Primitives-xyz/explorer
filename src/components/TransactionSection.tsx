@@ -48,11 +48,11 @@ export const TransactionSection = ({
         const url = new URL('/api/transactions', window.location.origin)
         url.searchParams.set('address', walletAddress)
         url.searchParams.set('limit', ITEMS_PER_PAGE.toString())
+
+        // For pagination, use the last transaction's signature
         if (page > 1 && transactions.length > 0) {
-          url.searchParams.set(
-            'before',
-            transactions[transactions.length - 1].timestamp.toString(),
-          )
+          const lastTransaction = transactions[transactions.length - 1]
+          url.searchParams.set('before', lastTransaction.signature)
         }
 
         const response = await fetch(url)
@@ -66,11 +66,37 @@ export const TransactionSection = ({
         const transactionsData = await response.json()
         if ('error' in transactionsData) throw new Error(transactionsData.error)
 
-        setTransactions(
-          page === 1
-            ? transactionsData
-            : (prev) => [...prev, ...transactionsData],
-        )
+        // Handle empty response
+        if (!Array.isArray(transactionsData) || transactionsData.length === 0) {
+          if (page > 1) {
+            // If we're paginating and get no results, we've reached the end
+            setPage((prev) => prev - 1)
+          }
+          setIsLoading(false)
+          return
+        }
+
+        setTransactions((prevTransactions) => {
+          if (page === 1) return transactionsData
+
+          // Create a Set of existing signatures for O(1) lookup
+          const existingSignatures = new Set(
+            prevTransactions.map((tx) => tx.signature),
+          )
+
+          // Only add transactions that don't already exist
+          const newTransactions = transactionsData.filter(
+            (tx: Transaction) => !existingSignatures.has(tx.signature),
+          )
+
+          // If no new unique transactions were found, we've reached the end
+          if (newTransactions.length === 0) {
+            setPage((prev) => prev - 1) // Revert the page increment
+            return prevTransactions
+          }
+
+          return [...prevTransactions, ...newTransactions]
+        })
       } catch (error) {
         console.error('Error fetching transactions:', error)
         setError(

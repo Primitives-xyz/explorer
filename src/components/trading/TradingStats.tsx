@@ -121,10 +121,6 @@ export const TradingStats = ({
             afterTime = now - 7 * oneDaySeconds
         }
 
-        console.log('Time period:', timePeriod)
-        console.log('Current time:', new Date(now * 1000).toISOString())
-        console.log('After time:', new Date(afterTime * 1000).toISOString())
-
         let allTrades: Trade[] = []
         let hasMore = true
         let lastTimestamp = afterTime
@@ -142,23 +138,12 @@ export const TradingStats = ({
           }
 
           const apiUrl = `https://public-api.birdeye.so/trader/txs/seek_by_time?address=${walletAddress}&limit=${limit}&tx_type=swap&after_time=${lastTimestamp}`
-          console.log(
-            `Fetching batch ${totalFetched / limit + 1}, after timestamp:`,
-            new Date(lastTimestamp * 1000).toISOString(),
-          )
 
           const response = await fetch(apiUrl, options)
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
           const data: TradeResponse = await response.json()
-          console.log('Batch response:', {
-            itemsReceived: data.data.items.length,
-            hasNext: data.has_next,
-            firstTimestamp: data.data.items[0]?.block_unix_time,
-            lastTimestamp:
-              data.data.items[data.data.items.length - 1]?.block_unix_time,
-          })
 
           if (!data.success) {
             throw new Error(data.message || 'Failed to fetch trades')
