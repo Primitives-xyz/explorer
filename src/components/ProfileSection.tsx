@@ -264,10 +264,9 @@ export const ProfileSection = ({
   ])
 
   const shouldShowContent =
-    isLoading ||
     isLoadingProfileData ||
-    profiles?.length > 0 ||
-    (hasSearched && profiles.length === 0)
+    (profiles && profiles.length > 0) ||
+    (hasSearched && profiles && profiles.length === 0)
 
   if (!shouldShowContent) return null
 

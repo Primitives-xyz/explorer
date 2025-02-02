@@ -40,7 +40,7 @@ export async function fetchTapestryServer<T = any>({
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Tapestry API Error:', {
+      console.error('Tapestry API Error from route: ', url, {
         status: response.status,
         statusText: response.statusText,
         endpoint: cleanEndpoint,

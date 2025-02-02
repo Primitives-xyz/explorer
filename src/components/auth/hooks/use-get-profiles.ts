@@ -1,7 +1,13 @@
 import useSWR, { mutate } from 'swr'
+import { isValidSolanaAddress } from '@/utils/validation'
 
 export const useGetProfiles = (walletAddress: string) => {
   const fetcher = async (url: string) => {
+    // Validate wallet address before making the API call
+    if (walletAddress && !isValidSolanaAddress(walletAddress)) {
+      throw new Error('Invalid Solana wallet address')
+    }
+
     const res = await fetch(url)
     if (!res.ok) {
       const errorData = await res.json()

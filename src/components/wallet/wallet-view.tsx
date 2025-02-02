@@ -8,6 +8,7 @@ import { TransactionSection } from '../TransactionSection'
 import { useEffect, useState } from 'react'
 import { TokenPortfolioResponse } from '@/types/Token'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
+import { isValidSolanaAddress } from '@/utils/validation'
 
 interface TokenData {
   nativeBalance: {
@@ -31,6 +32,13 @@ export function WalletView({ address }: { address: string }) {
   useEffect(() => {
     const fetchData = async () => {
       if (!address) return
+
+      // Validate wallet address before making any API calls
+      if (!isValidSolanaAddress(address)) {
+        setError('Invalid Solana wallet address')
+        setIsLoading(false)
+        return
+      }
 
       setIsLoading(true)
       setError(null)
@@ -82,6 +90,17 @@ export function WalletView({ address }: { address: string }) {
 
     fetchData()
   }, [address])
+
+  // Show error state if wallet address is invalid
+  if (error === 'Invalid Solana wallet address') {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-red-500 font-mono">
+          Invalid wallet address: {address}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">

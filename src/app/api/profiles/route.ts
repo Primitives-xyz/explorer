@@ -24,10 +24,11 @@ export async function GET(request: Request) {
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Tapestry API Error:', {
+      console.error('PROFILE Tapestry API Error: ', {
         status: response.status,
         statusText: response.statusText,
         error: errorText,
+        walletAddress,
       })
       return NextResponse.json(
         { error: 'Failed to fetch profiles from Tapestry' },

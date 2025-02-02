@@ -51,6 +51,7 @@ export function ProfileContent({ username }: Props) {
 
   const fetcher = async (url: string) => {
     const res = await fetch(url)
+
     if (res.status === 500) {
       window.location.href = '/'
       throw new Error('Server error')
@@ -75,7 +76,11 @@ export function ProfileContent({ username }: Props) {
     error: profilesError,
   } = useGetProfiles(data?.walletAddress || '')
 
-  if (!!profilesError) {
+  const walletAddressError =
+    profilesError?.message === 'Invalid Solana wallet address'
+  const serverError = profilesError?.message?.includes('Server error')
+
+  if (serverError) {
     window.location.href = '/'
     throw new Error('Server error')
   }
@@ -91,6 +96,11 @@ export function ProfileContent({ username }: Props) {
             {!loading && data?.walletAddress && (
               <div className="flex items-center gap-2 text-sm text-green-600 sm:mb-1">
                 owned by <TokenAddress address={data.walletAddress} />
+                {walletAddressError && (
+                  <span className="text-red-500 font-mono text-xs">
+                    (Invalid wallet address)
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -145,27 +155,41 @@ export function ProfileContent({ username }: Props) {
         </div>
 
         <div className="space-y-6">
-          <Card>
-            <div className="p-4">
-              <h3 className="text-lg font-mono text-green-400 mb-4">
-                Profile Info
-              </h3>
-              <div className="space-y-2 text-sm font-mono">
-                <div className="flex justify-between">
-                  <span className="text-green-600">Created</span>
-                  <span className="text-green-400">2024</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-green-600">Network</span>
-                  <span className="text-green-400">Solana</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-green-600">Status</span>
-                  <span className="text-green-400">Active</span>
+          {walletAddressError ? (
+            <Card>
+              <div className="p-4">
+                <h3 className="text-lg font-mono text-red-400 mb-4">
+                  Profile Error
+                </h3>
+                <p className="text-red-500 font-mono text-sm">
+                  Invalid wallet address associated with this profile. Some
+                  features may be limited.
+                </p>
+              </div>
+            </Card>
+          ) : (
+            <Card>
+              <div className="p-4">
+                <h3 className="text-lg font-mono text-green-400 mb-4">
+                  Profile Info
+                </h3>
+                <div className="space-y-2 text-sm font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-green-600">Created</span>
+                    <span className="text-green-400">2024</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-green-600">Network</span>
+                    <span className="text-green-400">Solana</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-green-600">Status</span>
+                    <span className="text-green-400">Active</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           <ProfileSection
             walletAddress={data?.walletAddress}
