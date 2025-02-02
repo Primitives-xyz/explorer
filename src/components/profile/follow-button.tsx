@@ -46,18 +46,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   }`
   const iconSize = size === 'lg' ? 16 : 14
 
-  // Handle stats error gracefully without page refresh
-  if (!!statsError) {
-    console.error('Stats error:', statsError)
-    return (
-      <div
-        className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800`}
-      >
-        Error
-      </div>
-    )
-  }
-
   // Reset optimistic state and revalidate on mount or username change
   useEffect(() => {
     setOptimisticFollowing(false)
@@ -75,6 +63,18 @@ export function FollowButton({ username, size = 'sm' }: Props) {
       setOptimisticFollowing(stats.isFollowing)
     }
   }, [stats?.isFollowing, loading])
+
+  // Handle stats error gracefully without page refresh
+  if (!!statsError) {
+    console.error('Stats error:', statsError)
+    return (
+      <div
+        className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800`}
+      >
+        Error
+      </div>
+    )
+  }
 
   // Early return if viewing own profile
   if (mainUsername === username) return null
