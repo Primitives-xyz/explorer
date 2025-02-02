@@ -1,13 +1,23 @@
 import useSWR from 'swr'
 import { IProfileResponse } from '@/models/profile.models'
 
-async function fetchProfile(url: string): Promise<IProfileResponse> {
-  const res = await fetch(url)
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.error || 'Failed to fetch profile')
+async function fetchProfile(url: string): Promise<IProfileResponse | null> {
+  try {
+    const res = await fetch(url)
+    if (!res.ok) {
+      if (res.status === 404) {
+        // Return null for not found profiles instead of throwing
+        return null
+      }
+      const errorData = await res.json()
+      throw new Error(errorData.error || 'Failed to fetch profile')
+    }
+    return await res.json()
+  } catch (error) {
+    // Log the error but don't throw it
+    console.error('Error fetching profile:', error)
+    return null
   }
-  return await res.json()
 }
 
 export function useFollowStats(username: string, fromUsername: string) {
@@ -18,7 +28,7 @@ export function useFollowStats(username: string, fromUsername: string) {
       : `/api/profiles/${username}`
     : null
 
-  const { data, error, mutate, isLoading } = useSWR<IProfileResponse>(
+  const { data, error, mutate, isLoading } = useSWR<IProfileResponse | null>(
     url,
     fetchProfile,
     {
@@ -33,7 +43,7 @@ export function useFollowStats(username: string, fromUsername: string) {
     stats: {
       followers: data?.socialCounts?.followers || 0,
       following: data?.socialCounts?.following || 0,
-      isFollowing: data?.isFollowing ?? null,
+      isFollowing: data?.isFollowing ?? false,
     },
     isLoading,
     error,

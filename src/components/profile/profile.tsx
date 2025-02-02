@@ -21,22 +21,41 @@ export function Profile({ username }: Props) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const controller = new AbortController()
+
     async function fetchProfile() {
       try {
-        const response = await fetch(`/api/profiles/${username}`)
+        const response = await fetch(`/api/profiles/${username}`, {
+          signal: controller.signal,
+        })
+
+        const responseData = await response.json()
+
         if (!response.ok) {
-          throw new Error('Failed to fetch profile')
+          throw new Error(responseData.error || 'Failed to fetch profile')
         }
-        const profileData = await response.json()
-        setData(profileData)
+
+        setData(responseData)
+        setError(null)
       } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          return
+        }
+        console.error('Profile fetch error:', err)
         setError(err instanceof Error ? err.message : 'Failed to fetch profile')
+        setData(null)
       } finally {
         setLoading(false)
       }
     }
 
+    setLoading(true)
+    setError(null)
     fetchProfile()
+
+    return () => {
+      controller.abort()
+    }
   }, [username])
 
   if (loading) {
@@ -53,7 +72,12 @@ export function Profile({ username }: Props) {
   if (error || !data) {
     return (
       <Card>
-        <div className="p-4 text-center text-green-600">Profile not found</div>
+        <div className="p-4 text-center">
+          <div className="text-green-600">Profile not found</div>
+          {error && (
+            <div className="text-sm text-green-500/60 mt-1">{error}</div>
+          )}
+        </div>
       </Card>
     )
   }

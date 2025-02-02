@@ -46,9 +46,16 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   }`
   const iconSize = size === 'lg' ? 16 : 14
 
+  // Handle stats error gracefully without page refresh
   if (!!statsError) {
-    window.location.href = '/'
-    throw new Error('Server error')
+    console.error('Stats error:', statsError)
+    return (
+      <div
+        className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800`}
+      >
+        Error
+      </div>
+    )
   }
 
   // Reset optimistic state and revalidate on mount or username change
