@@ -29,13 +29,21 @@ const StatCard = memo(
     additionalInfo?: string
     color?: string
   }) => (
-    <div className="bg-black/30 p-3 rounded-lg border border-indigo-800/30 hover:border-indigo-500/50 transition-all">
-      <div className="text-indigo-400 text-xs mb-1">{label}</div>
-      <div className={`font-mono text-lg font-medium ${color || 'text-white'}`}>
-        {value}
+    <div className="bg-black/30 p-3 rounded-lg border border-indigo-800/30 hover:border-indigo-500/50 transition-all h-[90px] flex flex-col">
+      <div className="flex flex-col flex-1">
+        <div className="text-indigo-400 text-xs">{label}</div>
+        <div
+          className={`font-mono text-base font-medium truncate mt-1 ${
+            color || 'text-white'
+          }`}
+        >
+          {value}
+        </div>
       </div>
       {additionalInfo && (
-        <div className="text-indigo-400/60 text-xs mt-1">{additionalInfo}</div>
+        <div className="text-indigo-400/60 text-[11px] leading-tight break-words w-full">
+          {additionalInfo}
+        </div>
       )}
     </div>
   ),
@@ -56,8 +64,15 @@ const TraderCard = memo(
     isSelected: boolean
     onClick: () => void
   }) => {
+    // Only calculate avgTradeSize if both volume and trade_count are greater than 0
     const avgTradeSize =
-      trader.trade_count > 0 ? trader.volume / trader.trade_count : 0
+      trader.volume > 0 && trader.trade_count > 0
+        ? trader.volume / trader.trade_count
+        : 0
+
+    // Calculate PNL per trade only if trade_count is greater than 0
+    const pnlPerTrade =
+      trader.trade_count > 0 ? trader.pnl / trader.trade_count : trader.pnl // If no trades, show total PNL
 
     return (
       <div
@@ -116,63 +131,60 @@ const TraderCard = memo(
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <StatCard
                 label="PNL/Trade"
-                value={`$${formatNumber(
-                  Math.abs(trader.pnl / trader.trade_count),
-                )}`}
-                additionalInfo="Average Profit per Trade"
+                value={
+                  trader.trade_count > 0
+                    ? `$${formatNumber(Math.abs(pnlPerTrade))}`
+                    : trader.pnl !== 0
+                    ? 'Unrealized'
+                    : 'No trades'
+                }
+                additionalInfo={
+                  trader.trade_count > 0
+                    ? 'Average Profit per Trade'
+                    : trader.pnl !== 0
+                    ? `$${formatNumber(Math.abs(trader.pnl))} total`
+                    : 'No trading activity'
+                }
                 color={trader.pnl >= 0 ? 'text-green-400' : 'text-red-400'}
               />
               <StatCard
                 label="Volume"
-                value={`$${formatNumber(trader.volume)}`}
-                additionalInfo="Total Trading Volume"
+                value={
+                  trader.volume > 0
+                    ? `$${formatNumber(trader.volume)}`
+                    : trader.pnl !== 0
+                    ? 'Holding'
+                    : 'No volume'
+                }
+                additionalInfo={
+                  trader.volume > 0
+                    ? 'Total Trading Volume'
+                    : trader.pnl !== 0
+                    ? 'Position value change'
+                    : 'No trading activity'
+                }
               />
               <StatCard
                 label="Trades"
-                value={formatNumber(trader.trade_count)}
-                additionalInfo={`Avg. Size $${formatNumber(avgTradeSize)}`}
+                value={
+                  trader.trade_count > 0
+                    ? formatNumber(trader.trade_count)
+                    : trader.pnl !== 0
+                    ? 'Holding'
+                    : '0'
+                }
+                additionalInfo={
+                  trader.trade_count > 0
+                    ? `Avg. Size $${formatNumber(avgTradeSize)}`
+                    : trader.pnl !== 0
+                    ? 'Position-based PNL'
+                    : 'No trades yet'
+                }
               />
             </div>
-
-            {/* Expanded View */}
-            {isSelected && (
-              <div className="mt-4 p-4 bg-black/30 rounded-lg border border-indigo-800/30">
-                <div className="space-y-4">
-                  <div className="text-indigo-400 font-mono text-sm">
-                    <div className="mb-2 text-indigo-500 font-semibold">
-                      Trading Stats
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-indigo-400/60">Total PNL</div>
-                        <div
-                          className={`text-lg ${
-                            trader.pnl >= 0 ? 'text-green-400' : 'text-red-400'
-                          }`}
-                        >
-                          ${formatNumber(Math.abs(trader.pnl))}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-indigo-400/60">Network</div>
-                        <div className="text-indigo-400 uppercase">
-                          {trader.network}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-indigo-500 font-semibold mb-2">
-                      Full Address
-                    </div>
-                    <TokenAddress address={trader.address} />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

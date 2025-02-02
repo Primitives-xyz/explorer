@@ -49,31 +49,17 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
   const [tokenInfo, setTokenInfo] = useState<TokenDisplay | null>(null)
 
   useEffect(() => {
-    console.log('SPL Transfer View Props:', {
-      tokenTransfers: tx.tokenTransfers,
-      sourceWallet,
-      description: tx.description,
-    })
-
     const loadTokenInfo = async () => {
       if (!tx.tokenTransfers?.length) {
-        console.log('No token transfers found')
         return
       }
 
       const transfer = tx.tokenTransfers[0]
-      console.log('First transfer:', transfer)
 
       if (!transfer.tokenMint) {
         console.log('No token mint found in transfer:', transfer)
         return
       }
-
-      console.log('Loading token info for:', {
-        mint: transfer.tokenMint,
-        amount: transfer.amount,
-        transfer,
-      })
 
       setTokenInfo((prev) =>
         prev ? { ...prev, loading: true } : { loading: true },
@@ -111,11 +97,6 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
   }, [tx])
 
   if (!tx.tokenTransfers?.length || !tokenInfo) {
-    console.log('No token transfers or token info:', {
-      hasTransfers: !!tx.tokenTransfers?.length,
-      tokenInfo,
-      firstTransfer: tx.tokenTransfers?.[0],
-    })
     return null
   }
 

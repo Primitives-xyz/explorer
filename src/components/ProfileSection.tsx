@@ -225,7 +225,6 @@ export const ProfileSection = ({
         if (profileData && isMounted) {
           setProfiles(profileData.profiles)
         } else if (walletAddress && isMounted) {
-          console.log('fetching profiles for wallet address', walletAddress)
           const profilesData = await getProfiles(walletAddress)
 
           if (!isMounted) return
