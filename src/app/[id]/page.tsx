@@ -36,11 +36,74 @@ export async function generateMetadata({
         const tokenInfo = await fetchTokenInfo(id)
         if (tokenInfo?.result) {
           const token = tokenInfo.result
+          const isNFT =
+            token.interface === 'V1_NFT' ||
+            token.interface === 'V2_NFT' ||
+            token.interface === 'LEGACY_NFT' ||
+            token.interface === 'ProgrammableNFT'
+
+          // Resolve image URL using the same logic as useNFTImage hook
+          const imageUrl =
+            token.content?.links?.image ||
+            token.content?.files?.[0]?.cdn_uri ||
+            token.content?.files?.[0]?.uri ||
+            token.content?.metadata?.image
+
+          // Get collection info if available
+          const collection = token.grouping?.find(
+            (g: { group_key: string; group_value: string }) =>
+              g.group_key === 'collection',
+          )
+          const collectionName = collection
+            ? ` from ${collection.group_value}`
+            : ''
+
+          // Build description with more context
+          const description =
+            token.content.metadata.description ||
+            `View details for ${token.content.metadata.name}${collectionName} ${
+              isNFT ? 'NFT' : 'token'
+            } on Solana`
+
           return {
             title: `${token.content.metadata.name} | Explorer`,
-            description:
-              token.content.metadata.description ||
-              `View details for ${token.content.metadata.name} token on Solana`,
+            description,
+            openGraph: {
+              title: `${token.content.metadata.name} ${
+                isNFT ? 'NFT' : 'Token'
+              } | Explorer`,
+              description,
+              ...(imageUrl && {
+                images: [
+                  {
+                    url: imageUrl,
+                    width: 1200,
+                    height: 1200,
+                    alt: token.content.metadata.name,
+                  },
+                ],
+              }),
+              type: isNFT ? 'article' : 'website',
+              siteName: 'Explorer',
+            },
+            twitter: {
+              card: imageUrl ? 'summary_large_image' : 'summary',
+              title: `${token.content.metadata.name} ${
+                isNFT ? 'NFT' : 'Token'
+              } | Explorer`,
+              description,
+              ...(imageUrl && {
+                images: [imageUrl],
+              }),
+              creator: '@explorer',
+            },
+            ...(imageUrl && {
+              icons: {
+                icon: imageUrl,
+                shortcut: imageUrl,
+                apple: imageUrl,
+              },
+            }),
           }
         }
         break
@@ -49,12 +112,40 @@ export async function generateMetadata({
         return {
           title: `Transaction ${cleanId.slice(0, 8)}... | Explorer`,
           description: `View details for Solana transaction ${cleanId}`,
+          openGraph: {
+            title: `Transaction ${cleanId.slice(0, 8)}... | Explorer`,
+            description: `View details for Solana transaction ${cleanId}`,
+            type: 'article',
+            siteName: 'Explorer',
+          },
+          twitter: {
+            card: 'summary',
+            title: `Transaction ${cleanId.slice(0, 8)}... | Explorer`,
+            description: `View details for Solana transaction ${cleanId}`,
+            creator: '@explorer',
+          },
         }
 
       case 'profile':
+        const title = `@${cleanId} | Explorer`
+        const description = `Follow @${cleanId} on Explorer to see their activity on Solana`
+
         return {
-          title: `@${cleanId} | Explorer`,
-          description: `Follow @${cleanId} on Explorer to see their activity on Solana`,
+          title,
+          description,
+          openGraph: {
+            title,
+            description,
+            type: 'website',
+            siteName: 'Explorer',
+          },
+          twitter: {
+            card: 'summary',
+            title,
+            description,
+            creator: '@explorer',
+            site: '@explorer',
+          },
         }
     }
   } catch (error) {
