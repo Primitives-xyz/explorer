@@ -148,7 +148,7 @@ export default function FungibleTokenDetails({
           <iframe
             width="100%"
             height="100%"
-            src={`https://birdeye.so/tv-widget/${id}?chain=solana&viewMode=pair&chartInterval=1D&chartType=CANDLE&theme=dark`}
+            src={`https://birdeye.so/tv-widget/${id}?chain=solana&viewMode=pair&chartInterval=15&chartType=CANDLE&theme=dark`}
             frameBorder="0"
             allowFullScreen
           />
