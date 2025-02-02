@@ -8,7 +8,8 @@ export function FrogHolderRequired({ variant = 'modal' }: Props) {
   return (
     <div className="space-y-4">
       <p className="text-green-400/80">
-        You need to be a Solana Business Frog holder to use this feature.
+        You need to be a Solana Business Frog holder to use the social features
+        of this site.
       </p>
       <p className="text-green-400/80">
         You can buy one on{' '}
