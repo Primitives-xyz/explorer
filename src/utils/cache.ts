@@ -3,7 +3,7 @@ interface CacheItem<T> {
   timestamp: number
 }
 
-class Cache<T> {
+export class Cache<T> {
   private cache: Map<string, CacheItem<T>> = new Map()
   private ttl: number
 

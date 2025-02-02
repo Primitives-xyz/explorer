@@ -210,10 +210,6 @@ export async function GET(request: NextRequest) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
-    console.log(
-      'Raw transaction data from Helius:',
-      JSON.stringify(data, null, 2),
-    )
 
     // Handle empty response from Helius
     if (!Array.isArray(data) || data.length === 0) {
