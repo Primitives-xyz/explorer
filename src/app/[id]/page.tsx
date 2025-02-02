@@ -21,22 +21,44 @@ export async function generateMetadata({
   params: Params
 }): Promise<Metadata> {
   const { id } = await params
+  const cleanId = id?.startsWith('@') ? id.slice(1) : id
+  const routeType = determineRouteType(id)
+
+  // Default metadata as fallback
   const defaultMetadata = {
     title: `${id} | Explorer`,
     description: `View details for ${id}`,
   }
 
   try {
-    const tokenInfo = await fetchTokenInfo(id)
-    if (tokenInfo?.result) {
-      const token = tokenInfo.result
-      return {
-        title: `${token.content.metadata.name} | Explorer`,
-        description: token.content.metadata.description,
-      }
+    switch (routeType) {
+      case 'token':
+        const tokenInfo = await fetchTokenInfo(id)
+        if (tokenInfo?.result) {
+          const token = tokenInfo.result
+          return {
+            title: `${token.content.metadata.name} | Explorer`,
+            description:
+              token.content.metadata.description ||
+              `View details for ${token.content.metadata.name} token on Solana`,
+          }
+        }
+        break
+
+      case 'transaction':
+        return {
+          title: `Transaction ${cleanId.slice(0, 8)}... | Explorer`,
+          description: `View details for Solana transaction ${cleanId}`,
+        }
+
+      case 'profile':
+        return {
+          title: `@${cleanId} | Explorer`,
+          description: `Follow @${cleanId} on Explorer to see their activity on Solana`,
+        }
     }
   } catch (error) {
-    console.error('Error fetching token info:', error)
+    console.error('Error generating metadata:', error)
   }
 
   return defaultMetadata
