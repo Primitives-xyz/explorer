@@ -3,6 +3,9 @@
 import { TokenContainer } from '@/components/TokenContainer'
 import { FungibleToken, NFT } from '@/utils/types'
 import { useEffect, useState } from 'react'
+import { DataContainer } from '@/components/common/DataContainer'
+import { FilterBar } from '@/components/common/FilterBar'
+import { FilterButton } from '@/components/common/FilterButton'
 
 interface PortfolioTabsProps {
   address: string
@@ -69,34 +72,40 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
     )
   }
 
-  const getTabStyle = (tab: TokenTab) => {
-    const isActive = activeTab === tab
-    return `px-4 py-2 font-mono text-sm transition-all duration-300 relative ${
-      isActive
-        ? 'text-green-300 bg-green-500/10 border border-green-500/30'
-        : 'text-green-600 hover:text-green-500 hover:bg-green-500/10'
-    }`
-  }
+  const filteredItems =
+    tokenData?.items.filter((item) => {
+      if (activeTab === 'fungible') {
+        return (
+          item.interface === 'FungibleToken' ||
+          item.interface === 'FungibleAsset'
+        )
+      } else {
+        return (
+          item.interface !== 'FungibleToken' &&
+          item.interface !== 'FungibleAsset'
+        )
+      }
+    }) || []
 
   return (
-    <div className="h-full flex flex-col bg-black/20">
-      <div className="border-b border-green-500/20">
-        <div className="flex flex-wrap gap-4 p-4">
-          <button
-            onClick={() => setActiveTab('fungible')}
-            className={getTabStyle('fungible')}
-          >
-            Tokens
-          </button>
-          <button
-            onClick={() => setActiveTab('nft')}
-            className={getTabStyle('nft')}
-          >
-            NFTs
-          </button>
-        </div>
-      </div>
+    <DataContainer
+      title="portfolio_assets.sol"
+      count={filteredItems.length}
+      error={error}
+    >
+      <FilterBar>
+        <FilterButton
+          label="Tokens"
+          isSelected={activeTab === 'fungible'}
+          onClick={() => setActiveTab('fungible')}
+        />
+        <FilterButton
+          label="NFTs"
+          isSelected={activeTab === 'nft'}
+          onClick={() => setActiveTab('nft')}
+        />
+      </FilterBar>
       <div className="flex-grow overflow-auto">{renderContent()}</div>
-    </div>
+    </DataContainer>
   )
 }

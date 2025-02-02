@@ -115,6 +115,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
             setNftInfo(null)
             return
           }
+          console.log({ nftInfo: data })
           setNftInfo(data)
         } catch (parseError) {
           console.error('Failed to parse NFT data:', parseError)

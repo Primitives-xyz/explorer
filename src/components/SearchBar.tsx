@@ -14,17 +14,25 @@ import Image from 'next/image'
 
 interface SearchBarProps {
   onPickRecentAddress?: (addr: string) => void
+  onClose?: () => void
+  autoFocus?: boolean
 }
 
-export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
+export default function SearchBar({
+  onPickRecentAddress,
+  onClose,
+  autoFocus,
+}: SearchBarProps) {
   const router = useRouter()
   const [inputValue, setInputValue] = useState('')
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchBarRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [searchResults, setSearchResults] = useState<ProfileSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
 
   useEffect(() => {
     // Load recent searches
@@ -43,6 +51,12 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [autoFocus])
+
   async function loadRecentSearches() {
     try {
       const searches = await getRecentSearches()
@@ -55,6 +69,7 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     if (inputValue) {
+      setIsNavigating(true)
       // On form submit, we call handleSearch from props
       await addSearchToHistory(inputValue)
       await loadRecentSearches()
@@ -62,12 +77,15 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
 
       // Add navigation
       router.push(`/${inputValue}`)
+      // We'll let the navigation complete before closing
+      // The loading state will show in the meantime
     }
   }
 
   async function handleRecentSearchClick(address: string) {
     setShowDropdown(false)
     setInputValue(address)
+    setIsNavigating(true)
 
     try {
       // Save to history first
@@ -78,8 +96,13 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
       if (onPickRecentAddress) {
         onPickRecentAddress(address)
       }
+
+      // Navigate
+      router.push(`/${address}`)
+      // We'll let the navigation complete before closing
     } catch (error) {
       console.error(error)
+      setIsNavigating(false)
     }
   }
 
@@ -249,30 +272,37 @@ export default function SearchBar({ onPickRecentAddress }: SearchBarProps) {
           >
             <span className="text-green-500 font-mono text-sm">$</span>
             <input
+              ref={inputRef}
               type="text"
               placeholder="BprhcaJtUTER4e3ArG..."
               value={inputValue}
               onChange={handleInputChange}
               onFocus={() => setShowDropdown(true)}
+              disabled={isNavigating}
               className="flex-1 bg-transparent font-mono text-green-400 placeholder-green-800 
-                       focus:outline-none focus:ring-0 border-none text-xs sm:text-sm min-w-0"
+                       focus:outline-none focus:ring-0 border-none text-xs sm:text-sm min-w-0
+                       disabled:opacity-50"
             />
 
             <button
               type="submit"
-              disabled={!inputValue}
+              disabled={!inputValue || isNavigating}
               className="px-2 sm:px-4 py-1 font-mono text-xs sm:text-sm border border-green-600 text-green-400
                        hover:bg-green-900/20 disabled:opacity-50 disabled:hover:bg-transparent
                        transition-colors duration-150 whitespace-nowrap"
             >
-              [EXECUTE]
+              {isNavigating ? '[LOADING...]' : '[EXECUTE]'}
             </button>
           </div>
 
           {renderDropdown()}
 
           <div className="absolute mt-1 sm:mt-2 left-0 right-0 text-[10px] sm:text-xs font-mono">
-            {inputValue ? (
+            {isNavigating ? (
+              <span className="text-green-600 animate-pulse">
+                {`>>>`} NAVIGATING TO {inputValue.slice(0, 8)}...
+              </span>
+            ) : inputValue ? (
               <span className="text-green-600">
                 {`>>>`} READY TO ANALYZE {inputValue.slice(0, 8)}...
               </span>

@@ -36,18 +36,21 @@ function categorizeTransaction(tx: any) {
 
 // Helper function to detect spam/dust transactions
 function isSpamTransaction(tx: any) {
-  // Check if it's a multi-transfer with tiny amounts
-  if (
-    tx.type === 'TRANSFER' &&
-    tx.nativeTransfers &&
-    tx.nativeTransfers.length > 3
-  ) {
-    // Check if all transfers are tiny amounts (less than 0.001 SOL)
+  // If it's not a TRANSFER type, it's not spam
+  if (tx.type !== 'TRANSFER') return false
+
+  // If there are no native transfers, it's not spam
+  if (!tx.nativeTransfers || tx.nativeTransfers.length === 0) return false
+
+  // For transfers, check if it's a mass airdrop of tiny amounts
+  if (tx.nativeTransfers.length > 15) {
+    // Check if all transfers are tiny amounts (less than 0.00001 SOL)
     const allTinyTransfers = tx.nativeTransfers.every(
-      (transfer: any) => Math.abs(transfer.amount / 1e9) < 0.001,
+      (transfer: any) => Math.abs(transfer.amount / 1e9) < 0.00001,
     )
     if (allTinyTransfers) return true
   }
+
   return false
 }
 
@@ -188,6 +191,7 @@ export async function GET(request: NextRequest) {
 
   const apiKey = process.env.HELIUS_API_KEY
   if (!apiKey) {
+    console.error('Helius API key is not configured')
     return NextResponse.json(
       { error: 'Helius API key not configured' },
       { status: 500 },
@@ -199,21 +203,31 @@ export async function GET(request: NextRequest) {
     : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=5`
 
   try {
+    console.log('Fetching transactions from Helius for address:', address)
     const response = await fetch(url)
     if (!response.ok) {
+      console.error('Helius API error:', response.status, await response.text())
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
+    console.log(
+      'Raw transaction data from Helius:',
+      JSON.stringify(data, null, 2),
+    )
 
     // Handle empty response from Helius
     if (!Array.isArray(data) || data.length === 0) {
+      console.log('No transactions returned from Helius')
       return NextResponse.json([])
     }
 
+    console.log('Parsing', data.length, 'transactions')
     const parsedData = await parseTransactions(data)
+    console.log('Parsed transaction count:', parsedData?.length || 0)
 
     // Handle case where all transactions were filtered out
     if (!parsedData || parsedData.length === 0) {
+      console.log('All transactions were filtered out')
       return NextResponse.json([])
     }
 

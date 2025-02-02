@@ -16,6 +16,30 @@ export interface BaseToken {
   creators: string[]
   mutable: boolean
   burnt: boolean
+  content?: {
+    $schema?: string
+    json_uri?: string
+    files?: Array<{
+      uri: string
+      cdn_uri?: string
+      mime?: string
+      type?: string
+    }>
+    metadata: {
+      name: string
+      symbol: string
+      description: string
+      attributes?: Array<{
+        trait_type: string
+        value: string
+      }>
+      image?: string
+    }
+    links?: {
+      image?: string
+      external_url?: string
+    }
+  }
 }
 
 export interface FungibleToken extends BaseToken {
