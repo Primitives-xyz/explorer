@@ -77,13 +77,18 @@ export async function GET(request: Request) {
         interface: item.interface,
         name: item.content?.metadata?.name || 'Unknown Token',
         symbol: item.content?.metadata?.symbol || '',
-        imageUrl: item.content?.links?.image || null,
+        imageUrl:
+          item.content?.links?.image ||
+          item.content?.files?.[0]?.uri ||
+          item.content?.json_uri ||
+          null,
         mint: item.id,
         compressed: item.compressed || false,
         authorities: item.authorities || [],
         creators: item.creators || [],
         mutable: item.mutable,
         burnt: item.burnt || false,
+        content: item.content,
       }
 
       // Add fungible token specific info

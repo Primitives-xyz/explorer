@@ -277,6 +277,7 @@ export const ProfileSection = ({
       title={title}
       count={filteredProfiles?.length || 0}
       error={error}
+      height="large"
       headerRight={
         <button
           onClick={() => setIsModalOpen(true)}

@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { TransactionSection } from './TransactionSection'
 import { CopyPaste } from './common/copy-paste'
 import { NFTTokenInfo } from '@/types/Token'
+import { useNFTImage } from '@/hooks/use-nft-image'
+import { LoadCircle } from './common/load-circle'
 
 interface NFTDetailsProps {
   id: string
@@ -13,10 +16,60 @@ interface NFTDetailsProps {
 
 type NFTTab = 'overview' | 'technical' | 'transactions'
 
+interface NFTImageProps {
+  url: string | null
+  name: string
+  isLoading: boolean
+  className?: string
+}
+
+function NFTImage({ url, name, isLoading, className = '' }: NFTImageProps) {
+  const [error, setError] = useState(false)
+
+  if (isLoading) {
+    return (
+      <div
+        className={`${className} bg-black/40 flex items-center justify-center`}
+      >
+        <LoadCircle />
+      </div>
+    )
+  }
+
+  if (error || !url) {
+    return (
+      <div
+        className={`${className} bg-gradient-to-br from-green-950/40 to-black/40 flex items-center justify-center p-4`}
+      >
+        <div className="text-center">
+          <div className="text-green-500 text-4xl mb-2">🖼️</div>
+          <div className="text-green-400/60 font-mono text-sm break-words">
+            {name || 'NFT'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`${className} relative`}>
+      <Image
+        src={url}
+        alt={name}
+        fill
+        className="object-cover"
+        onError={() => setError(true)}
+      />
+    </div>
+  )
+}
+
 export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
   const [activeTab, setActiveTab] = useState<NFTTab>('overview')
-  const imageUrl =
-    tokenInfo.content?.links?.image || tokenInfo.content?.files?.[0]?.uri
+  console.log({ tokenInfo })
+  const { url: imageUrl, isLoading: imageLoading } = useNFTImage(
+    tokenInfo.content,
+  )
 
   const getTabStyle = (tab: NFTTab) => {
     const isActive = activeTab === tab
@@ -105,9 +158,18 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                     {item.label}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-green-400 break-all">
-                      {item.value}
-                    </span>
+                    {item.label === 'NFT Address' || item.label === 'Owner' ? (
+                      <Link
+                        href={`/${item.value}`}
+                        className="font-mono text-green-400 break-all hover:text-green-300 transition-colors"
+                      >
+                        {item.value}
+                      </Link>
+                    ) : (
+                      <span className="font-mono text-green-400 break-all">
+                        {item.value}
+                      </span>
+                    )}
                     {(item.label === 'NFT Address' ||
                       item.label === 'Owner' ||
                       (item.label === 'Collection' &&
@@ -134,9 +196,12 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                 ) => (
                   <div key={i} className="flex flex-col">
                     <span className="text-green-500/60 text-sm">Address</span>
-                    <span className="font-mono text-green-400 break-all">
+                    <Link
+                      href={`/${authority.address}`}
+                      className="font-mono text-green-400 break-all hover:text-green-300 transition-colors"
+                    >
                       {authority.address}
-                    </span>
+                    </Link>
                     <span className="text-green-500/60 text-sm mt-1">
                       Scopes
                     </span>
@@ -206,9 +271,12 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                   ) => (
                     <div key={index} className="flex flex-col">
                       <div className="flex justify-between items-center">
-                        <span className="font-mono text-green-400 break-all">
+                        <Link
+                          href={`/${creator.address}`}
+                          className="font-mono text-green-400 break-all hover:text-green-300 transition-colors"
+                        >
                           {creator.address}
-                        </span>
+                        </Link>
                         <div className="flex items-center gap-2">
                           <span className="text-green-500/60 text-sm">
                             {creator.share || 0}%
@@ -351,11 +419,11 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />
         <div className="relative flex flex-col md:flex-row items-center gap-8 p-8 bg-black/40 border border-green-800 rounded-2xl backdrop-blur-sm">
           <div className="relative w-64 h-64 rounded-2xl border-2 border-green-500 overflow-hidden">
-            <Image
-              src={imageUrl || '/fallback-nft.png'}
-              alt={tokenInfo.content.metadata.name}
-              fill
-              className="object-cover"
+            <NFTImage
+              url={imageUrl}
+              name={tokenInfo.content.metadata.name}
+              isLoading={imageLoading}
+              className="w-full h-full"
             />
           </div>
 

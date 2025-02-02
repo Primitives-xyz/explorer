@@ -2,6 +2,7 @@ import { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useState } from 'react'
 import { TokenAddress } from './TokenAddress'
 import { useRouter } from 'next/navigation'
+import { useNFTImage } from '@/hooks/use-nft-image'
 
 interface Authority {
   address: string
@@ -80,7 +81,9 @@ export const NFTGrid = ({
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-3">
       {sortedTokens.map((token) => {
-        const imageUrl = token.imageUrl
+        const { url: imageUrl, isLoading: imageLoading } = useNFTImage(
+          token.content,
+        )
         const name = token.name || 'Unnamed Token'
         const symbol = token.symbol || ''
         const creators = token.creators || []
@@ -99,15 +102,19 @@ export const NFTGrid = ({
 
             {/* Image Container */}
             <div className="relative aspect-square w-full mb-4 bg-black/20 rounded-lg overflow-hidden">
-              {imageUrl ? (
+              {imageLoading ? (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="animate-pulse w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20" />
+                </div>
+              ) : imageUrl && !failedImages.has(token.id) ? (
                 <img
                   src={imageUrl}
                   alt={name}
                   className="w-full h-full object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105"
-                  onClick={() =>
-                    !failedImages.has(token.id) && onImageClick(imageUrl, name)
+                  onClick={() => onImageClick(imageUrl, name)}
+                  onError={() =>
+                    setFailedImages((prev) => new Set(prev).add(token.id))
                   }
-                  onError={() => handleImageError(token.id)}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-green-600/50 text-lg">
@@ -133,7 +140,7 @@ export const NFTGrid = ({
                 </button>
               )}
               <div className="text-green-600/80 font-mono text-xs flex items-center gap-1">
-                <span className="text-green-600/50">Token:</span>
+                <span className="text-green-600/50">NFT:</span>
                 <TokenAddress address={token.id} />
               </div>
               <div className="text-green-600/80 font-mono text-xs group-hover:text-green-500/80 transition-colors">

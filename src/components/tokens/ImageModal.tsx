@@ -1,7 +1,7 @@
 interface ImageModalProps {
   isOpen: boolean
   onClose: () => void
-  imageUrl: string
+  imageUrl: string | null
   symbol: string
 }
 
@@ -29,13 +29,35 @@ export const ImageModal = ({
           >
             [close]
           </button>
-          <img
-            src={imageUrl}
-            alt={symbol}
-            className="w-full h-auto rounded-lg"
-          />
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={symbol}
+              className="w-full h-auto rounded-lg"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+                target.parentElement?.classList.add(
+                  'min-h-[200px]',
+                  'flex',
+                  'items-center',
+                  'justify-center',
+                )
+                target.insertAdjacentHTML(
+                  'afterend',
+                  `<div class="text-green-500/50 font-mono text-sm">Image failed to load</div>`,
+                )
+              }}
+            />
+          ) : (
+            <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
+              <div className="text-green-500/50 font-mono text-sm">
+                No image available
+              </div>
+            </div>
+          )}
           <div className="text-center mt-2 text-green-500 font-mono text-sm">
-            {symbol}
+            {symbol || 'Untitled'}
           </div>
         </div>
       </div>

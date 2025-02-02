@@ -5,6 +5,16 @@ import { TokenInfo } from '@/types/Token'
 import Image from 'next/image'
 import { JupiterSwapForm } from './jupiter-swap-form'
 import { Modal } from '@/components/common/modal'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import dynamic from 'next/dynamic'
+
+const DynamicConnectButton = dynamic(
+  () =>
+    import('@dynamic-labs/sdk-react-core').then(
+      (mod) => mod.DynamicConnectButton,
+    ),
+  { ssr: false },
+)
 
 interface TokenDisplay {
   mint: string
@@ -24,6 +34,7 @@ export function SwapTransactionView({
   const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
   const [toToken, setToToken] = useState<TokenDisplay | null>(null)
   const [showSwapModal, setShowSwapModal] = useState(false)
+  const { isLoggedIn } = useCurrentWallet()
 
   useEffect(() => {
     async function loadTokenInfo() {
@@ -139,12 +150,20 @@ export function SwapTransactionView({
     <div className="space-y-4">
       {/* Swap Interface Toggle */}
       <div className="flex justify-end">
-        <button
-          onClick={() => setShowSwapModal(true)}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          New Swap
-        </button>
+        {isLoggedIn ? (
+          <button
+            onClick={() => setShowSwapModal(true)}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Copy Trade
+          </button>
+        ) : (
+          <DynamicConnectButton>
+            <div className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors cursor-pointer">
+              Copy Trade
+            </div>
+          </DynamicConnectButton>
+        )}
       </div>
 
       <div className="flex items-center gap-2 p-2 bg-green-900/10 rounded-lg">

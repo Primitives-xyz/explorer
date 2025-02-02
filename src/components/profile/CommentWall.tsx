@@ -12,6 +12,15 @@ import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid'
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
 import { useProfileComments } from '@/hooks/use-profile-comments'
+import dynamic from 'next/dynamic'
+
+const DynamicConnectButton = dynamic(
+  () =>
+    import('@dynamic-labs/sdk-react-core').then(
+      (mod) => mod.DynamicConnectButton,
+    ),
+  { ssr: false },
+)
 
 interface Props {
   username: string
@@ -98,9 +107,19 @@ export function CommentWall({
                 Loading comments...
               </div>
             ) : comments.length === 0 ? (
-              <div className="text-center text-green-600 font-mono py-4">
-                be the first to comment on this profile
-              </div>
+              !mainUsername ? (
+                <div className="flex items-center justify-center min-h-[300px]">
+                  <DynamicConnectButton>
+                    <div className="bg-green-900/30 text-green-400 font-mono rounded border border-green-800 hover:bg-green-900/50 text-center cursor-pointer px-4 py-2">
+                      Connect Wallet to Comment
+                    </div>
+                  </DynamicConnectButton>
+                </div>
+              ) : (
+                <div className="text-center text-green-600 font-mono py-4">
+                  be the first to comment on this profile
+                </div>
+              )
             ) : (
               comments.map((comment) => (
                 <div key={comment.comment.id}>
@@ -280,7 +299,7 @@ export function CommentWall({
             )}
           </div>
 
-          {/* Main Comment Form - Only show when mainUsername exists */}
+          {/* Main Comment Form - Only show when logged in */}
           {mainUsername && !replyToCommentId && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="relative">
