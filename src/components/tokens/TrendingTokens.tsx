@@ -106,28 +106,6 @@ const TokenCard = memo(
                   <span>Liq: ${formatNumber(token.liquidity)}</span>
                 </div>
               </div>
-
-              {/* Expanded View */}
-              {isSelected && (
-                <div className="mt-2 p-2 bg-green-900/10 rounded-lg border border-green-800/30 backdrop-blur-sm">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-green-600 text-xs mb-1">
-                        Token Address
-                      </div>
-                      <TokenAddress address={token.address} />
-                    </div>
-                    <div>
-                      <div className="text-green-600 text-xs mb-1">
-                        Decimals
-                      </div>
-                      <div className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-md inline-block">
-                        {token.decimals}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
