@@ -187,11 +187,7 @@ export const TrendingTokens = () => {
   }, [sortBy])
 
   return (
-    <DataContainer
-      title="trending_tokens.sol"
-      count={tokens.length}
-      error={error}
-    >
+    <DataContainer title="trending_tokens" count={tokens.length} error={error}>
       <FilterBar>
         <FilterButton
           label="Volume 24h"

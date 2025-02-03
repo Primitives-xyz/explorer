@@ -129,7 +129,7 @@ export const FollowingTransactionFeed = ({
   // If not logged in, show the preview with CTA
   if (!isLoggedIn) {
     return (
-      <DataContainer title="following_activity.sol" height="large">
+      <DataContainer title="following_activity" height="large">
         <div className="relative">
           {/* Create Profile CTA */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -162,7 +162,7 @@ export const FollowingTransactionFeed = ({
   // If we need to show the holder modal, render that instead
   if (isHolder === null) {
     return (
-      <DataContainer title="following_activity.sol" height="large">
+      <DataContainer title="following_activity" height="large">
         <div className="flex flex-col items-center justify-center h-full p-4 text-center">
           <div className="text-green-400 font-mono text-lg mb-4">
             {`>>> CHECKING FROG HOLDER STATUS...`}
@@ -174,7 +174,7 @@ export const FollowingTransactionFeed = ({
 
   if (isHolder === false) {
     return (
-      <DataContainer title="following_activity.sol" height="large">
+      <DataContainer title="following_activity" height="large">
         <div className="flex flex-col items-center justify-center h-full p-4 text-center">
           <div className="text-green-400 font-mono text-lg mb-4">
             🐸 Frog Holder Access Required
@@ -202,7 +202,7 @@ export const FollowingTransactionFeed = ({
 
   return (
     <DataContainer
-      title="following_activity.sol"
+      title="following_activity"
       count={filteredTransactions.length}
       height="large"
       headerRight={headerRight}

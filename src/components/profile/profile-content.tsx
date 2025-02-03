@@ -196,7 +196,7 @@ export function ProfileContent({ username }: Props) {
             hasSearched={!loading}
             isLoadingProfileData={loading}
             profileData={{ profiles }}
-            title="related_profiles.sol"
+            title="related_profiles"
           />
 
           {/* Followers Modal */}
