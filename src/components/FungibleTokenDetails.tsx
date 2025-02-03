@@ -4,6 +4,7 @@ import { formatNumber } from '@/utils/format'
 import { FungibleTokenDetailsProps } from '@/utils/helius/types'
 import Image from 'next/image'
 import { TransactionSection } from './TransactionSection'
+import { JupiterSwapForm } from './transactions/jupiter-swap-form'
 
 export default function FungibleTokenDetails({
   id,
@@ -152,6 +153,36 @@ export default function FungibleTokenDetails({
             frameBorder="0"
             allowFullScreen
           />
+        </div>
+      </div>
+
+      {/* Swap Section */}
+      <div className="mb-8">
+        <h3 className="text-xl font-mono text-green-500 mb-4">Swap</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* SOL to Token */}
+          <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
+            <h4 className="text-lg font-mono text-green-500 mb-4">Swap SOL</h4>
+            <JupiterSwapForm
+              initialInputMint="So11111111111111111111111111111111111111112"
+              initialOutputMint={id}
+              inputTokenName="SOL"
+              outputTokenName={tokenInfo.content.metadata.symbol}
+              inputDecimals={9}
+            />
+          </div>
+
+          {/* USDC to Token */}
+          <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
+            <h4 className="text-lg font-mono text-green-500 mb-4">Swap USDC</h4>
+            <JupiterSwapForm
+              initialInputMint="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+              initialOutputMint={id}
+              inputTokenName="USDC"
+              outputTokenName={tokenInfo.content.metadata.symbol}
+              inputDecimals={6}
+            />
+          </div>
         </div>
       </div>
 
