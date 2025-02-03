@@ -268,7 +268,7 @@ export const TradingStats = ({
         <div className="border-b border-green-800 p-2 flex-shrink-0 bg-black/30">
           <div className="flex justify-between items-center">
             <div className="text-green-500 text-sm font-mono whitespace-nowrap">
-              {'>'} trading_stats.sol
+              {'>'} trading_stats
             </div>
             <div className="flex items-center gap-2">
               <span className="text-green-600 text-xs font-mono">

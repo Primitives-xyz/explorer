@@ -33,7 +33,7 @@ export const FollowingProfileList = ({
       <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
         <div className="border-b border-green-800 p-2">
           <div className="text-green-500 text-sm font-mono">
-            {'>'} following.sol
+            {'>'} following
           </div>
         </div>
         <div className="p-4 text-center text-green-600 font-mono">
@@ -48,7 +48,7 @@ export const FollowingProfileList = ({
       <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
         <div className="border-b border-green-800 p-2">
           <div className="text-green-500 text-sm font-mono">
-            {'>'} following.sol
+            {'>'} following
           </div>
         </div>
         <div className="p-4 text-center text-red-500 font-mono">
@@ -63,7 +63,7 @@ export const FollowingProfileList = ({
       <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
         <div className="border-b border-green-800 p-2">
           <div className="text-green-500 text-sm font-mono">
-            {'>'} following.sol
+            {'>'} following
           </div>
         </div>
         <div className="p-4 text-center text-green-600 font-mono">
@@ -76,9 +76,7 @@ export const FollowingProfileList = ({
   return (
     <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
       <div className="border-b border-green-800 p-2">
-        <div className="text-green-500 text-sm font-mono">
-          {'>'} following.sol
-        </div>
+        <div className="text-green-500 text-sm font-mono">{'>'} following</div>
       </div>
       <div className="divide-y divide-green-800/30">
         {profiles.map((profile) => {

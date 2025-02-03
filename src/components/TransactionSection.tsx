@@ -124,7 +124,7 @@ export const TransactionSection = ({
 
   return (
     <DataContainer
-      title="transaction_log.sol"
+      title="transaction_log"
       count={filteredTransactions.length}
       error={error}
     >

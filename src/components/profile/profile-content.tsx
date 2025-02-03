@@ -15,16 +15,20 @@ import { Modal } from '../common/modal'
 import { CommentWall } from './CommentWall'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { ProfileInfo } from './ProfileInfo'
 
 interface Props {
   username: string
 }
 
-interface ProfileData {
+export interface ProfileData {
   walletAddress: string
   socialCounts?: {
     followers: number
     following: number
+  }
+  profile: {
+    created_at: string
   }
 }
 
@@ -168,27 +172,7 @@ export function ProfileContent({ username }: Props) {
               </div>
             </Card>
           ) : (
-            <Card>
-              <div className="p-4">
-                <h3 className="text-lg font-mono text-green-400 mb-4">
-                  Profile Info
-                </h3>
-                <div className="space-y-2 text-sm font-mono">
-                  <div className="flex justify-between">
-                    <span className="text-green-600">Created</span>
-                    <span className="text-green-400">2024</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-green-600">Network</span>
-                    <span className="text-green-400">Solana</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-green-600">Status</span>
-                    <span className="text-green-400">Active</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            !!data && <ProfileInfo profileData={data} />
           )}
 
           <ProfileSection
@@ -196,7 +180,7 @@ export function ProfileContent({ username }: Props) {
             hasSearched={!loading}
             isLoadingProfileData={loading}
             profileData={{ profiles }}
-            title="related_profiles.sol"
+            title="related_profiles"
           />
 
           {/* Followers Modal */}
