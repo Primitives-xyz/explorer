@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { ActivityFeedContainer } from '@/components/profile/FollowingContainer'
+import { TestToast } from '@/components/test-toast'
 
 interface TokenData {
   items: (FungibleToken | NFT)[]
@@ -102,6 +103,7 @@ export default function Home() {
         </div>
       </div>
       <CreateProfile />
+      <TestToast />
     </Layout>
   )
 }

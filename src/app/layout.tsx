@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { ReactNode } from 'react'
 import { ClientLayout } from './ClientLayout'
+import { Toaster } from '@/components/toast/toaster'
 import './globals.css'
-
 export const metadata: Metadata = {
   title: 'Social Graph Explorer | Tapestry Protocol',
   description:
@@ -68,6 +68,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body>
+        <Toaster />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
