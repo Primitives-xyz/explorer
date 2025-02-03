@@ -79,7 +79,7 @@ export function SocialSection({
         <div className="flex items-center justify-between">
           <div className="text-green-500 text-sm font-mono flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            {'>'} {type}.sol
+            {'>'} {type}
           </div>
           <div className="text-xs text-green-600 font-mono bg-green-900/20 px-2 py-1 rounded-full">
             COUNT: {users.length}

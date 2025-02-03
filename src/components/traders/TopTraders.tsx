@@ -261,7 +261,7 @@ export const TopTraders = () => {
         <div className="flex justify-between items-center">
           <div className="text-indigo-500 text-sm font-mono flex items-center gap-2">
             <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-            {'>'} top_traders.sol
+            {'>'} top_traders
           </div>
           <div className="flex gap-2">
             {(['today', 'yesterday', '1W'] as TimeFrame[]).map((tf) => (

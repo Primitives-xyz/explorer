@@ -13,7 +13,7 @@ export const TapestryPromoSection = ({
       {!hideTitle && (
         <div className="border-b border-green-800 p-2 flex-shrink-0 bg-black/30">
           <div className="text-green-500 text-sm font-mono whitespace-nowrap">
-            {'>'} tapestry_social.sol
+            {'>'} tapestry_social
           </div>
         </div>
       )}
@@ -25,7 +25,8 @@ export const TapestryPromoSection = ({
             Are you a Solana builder?
           </div>
           <p className="text-green-600 text-sm leading-relaxed">
-            Solana needs YOU to add social features to your app! Get started with Tapestry&apos;s powerful social toolkit.
+            Solana needs YOU to add social features to your app! Get started
+            with Tapestry&apos;s powerful social toolkit.
           </p>
         </div>
 

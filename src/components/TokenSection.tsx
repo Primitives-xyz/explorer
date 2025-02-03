@@ -72,15 +72,15 @@ export const TokenSection = ({
   const getTitle = () => {
     switch (tokenType) {
       case 'fungible':
-        return 'fungible_tokens.sol'
+        return 'fungible_tokens'
       case 'nft':
-        return 'regular_nfts.sol'
+        return 'regular_nfts'
       case 'compressed':
-        return 'compressed_nfts.sol'
+        return 'compressed_nfts'
       case 'programmable':
-        return 'programmable_nfts.sol'
+        return 'programmable_nfts'
       default:
-        return 'all_tokens.sol'
+        return 'all_tokens'
     }
   }
 

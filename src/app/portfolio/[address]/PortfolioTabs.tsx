@@ -89,7 +89,7 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
 
   return (
     <DataContainer
-      title="portfolio_assets.sol"
+      title="portfolio_assets"
       count={filteredItems.length}
       error={error}
     >
