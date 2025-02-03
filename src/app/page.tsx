@@ -103,7 +103,6 @@ export default function Home() {
         </div>
       </div>
       <CreateProfile />
-      <TestToast />
     </Layout>
   )
 }
