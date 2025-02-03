@@ -154,7 +154,7 @@ export const ProfileSection = ({
   profileData,
   error: propError,
   isLoadingProfileData,
-  title = 'profile_info.sol',
+  title = 'profile_info',
 }: ProfileSectionProps) => {
   const key = walletAddress || 'default'
   const router = useRouter()
