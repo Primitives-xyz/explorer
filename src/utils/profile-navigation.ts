@@ -1,41 +1,24 @@
-import { useRouter } from 'next/navigation'
-import { isValidUrl } from './validation'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
+import type { Profile } from './api'
 
-export const handleProfileNavigation = (
-  profile: {
-    namespace: {
-      name: string
-      userProfileURL?: string
-    }
-    profile: {
-      username: string
-    }
-  },
-  router: ReturnType<typeof useRouter>,
-) => {
-  // nemoapp is the namespace for the explorer app, redirect to in-app profile.
-  if (profile.namespace.name === 'nemoapp') {
+export function handleProfileNavigation(profile: Profile, router: any): void {
+  if (!profile.namespace) {
+    console.error('Profile namespace is missing')
+    return
+  }
+
+  // Explorer app is the namespace for the explorer app, redirect to in-app profile.
+  if (profile.namespace.name === EXPLORER_NAMESPACE) {
     router.push(`/${profile.profile.username}`)
     return
   }
 
-  const userProfileURL = profile.namespace.userProfileURL
-  if (userProfileURL) {
-    // Check if the URL contains a query parameter pattern
-    // Check if URL ends with a slash
-    const separator = userProfileURL.includes('?')
-      ? userProfileURL.includes('=')
-        ? ''
-        : '='
-      : userProfileURL.endsWith('/')
-      ? ''
-      : '/'
-
-    const finalUrl = `${userProfileURL}${separator}${profile.profile.username}`
-
-    if (isValidUrl(finalUrl)) {
-      window.open(finalUrl, '_blank')
-      return
-    }
+  // For other namespaces, redirect to their profile URL if available
+  if (profile.namespace.userProfileURL) {
+    window.open(profile.namespace.userProfileURL, '_blank')
+    return
   }
+
+  // Fallback to namespace view
+  router.push(`/namespace/${profile.namespace.name}`)
 }

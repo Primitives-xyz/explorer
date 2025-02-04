@@ -21,7 +21,6 @@ interface Props {
 export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
   const { followWallet, loading, success } = useFollowWallet()
-  const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
 
   const buttonClasses = `font-mono rounded transition-colors ${
     size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'

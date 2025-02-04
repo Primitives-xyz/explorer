@@ -4,24 +4,12 @@ import { Layout } from '@/components/Layout'
 import { CreateProfile } from '@/components/profile/create-profile'
 import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
-import { TokenContainer } from '@/components/TokenContainer'
-import { TrendingTokens } from '@/components/tokens/TrendingTokens'
 import { TopTraders } from '@/components/traders/TopTraders'
-import { FungibleToken, NFT } from '@/utils/types'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { ActivityFeedContainer } from '@/components/profile/FollowingContainer'
-import { TestToast } from '@/components/test-toast'
-
-interface TokenData {
-  items: (FungibleToken | NFT)[]
-  nativeBalance: {
-    lamports: number
-    price_per_sol: number
-    total_price: number
-  }
-}
+import { TrendingTokens } from '@/components/tokens/TrendingTokens'
 
 interface ProfileData {
   profiles: any[]

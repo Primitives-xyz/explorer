@@ -1,6 +1,6 @@
 'use client'
 
-import { getProfiles, Profile } from '@/utils/api'
+import { getProfiles, type Profile } from '@/utils/api'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback, useMemo } from 'react'
@@ -10,12 +10,13 @@ import { FollowButton } from './profile/follow-button'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 import { memo } from 'react'
 import { TokenAddress } from './tokens/TokenAddress'
-import { isValidUrl } from '@/utils/validation'
 import { DataContainer } from './common/DataContainer'
 import { ScrollableContent } from './common/ScrollableContent'
 import { FilterBar } from './common/FilterBar'
 import { FilterButton } from './common/FilterButton'
 import { handleProfileNavigation } from '@/utils/profile-navigation'
+import { getDicebearUrl, EXPLORER_NAMESPACE } from '@/lib/constants'
+import Image from 'next/image'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -41,19 +42,23 @@ interface ProfileSectionProps {
 const ProfileCard = memo(
   ({ profile, router }: { profile: ProfileWithStats; router: any }) => {
     const { mainUsername } = useCurrentWallet()
-    const isNemoApp = profile.namespace?.name === 'nemoapp'
+    const isExplorerApp = profile.namespace?.name === EXPLORER_NAMESPACE
 
     const { stats } = useFollowStats(
-      isNemoApp ? profile.profile.username : '',
+      isExplorerApp ? profile.profile.username : '',
       mainUsername || '',
     )
 
     // Move conditional logic after hook call
     const followers =
-      isNemoApp && typeof stats?.followers === 'number' ? stats.followers : 0
+      isExplorerApp && typeof stats?.followers === 'number'
+        ? stats.followers
+        : 0
     const following =
-      isNemoApp && typeof stats?.following === 'number' ? stats.following : 0
-    const isFollowing = (isNemoApp && stats?.isFollowing) || false
+      isExplorerApp && typeof stats?.following === 'number'
+        ? stats.following
+        : 0
+    const isFollowing = (isExplorerApp && stats?.isFollowing) || false
 
     const handleProfileClick = useCallback(() => {
       handleProfileNavigation(profile, router)
@@ -63,17 +68,18 @@ const ProfileCard = memo(
       router.push(`/namespace/${profile.namespace?.name}`)
     }, [router, profile.namespace?.name])
 
+    const avatarUrl =
+      profile.profile.image || getDicebearUrl(profile.profile.username)
+
     return (
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
         <div className="flex items-start gap-3 h-full">
           <div className="relative flex-shrink-0">
-            <img
-              src={
-                profile.profile.image ||
-                'https://api.dicebear.com/7.x/shapes/svg?seed=' +
-                  profile.profile.username
-              }
-              alt={profile.profile.username}
+            <Image
+              src={avatarUrl}
+              alt={`Avatar for ${profile.profile.username}`}
+              width={48}
+              height={48}
               className="w-12 h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
             />
             {profile.namespace?.faviconURL && (
@@ -99,14 +105,14 @@ const ProfileCard = memo(
                   >
                     @{profile.profile.username}
                   </button>
-                  {isNemoApp && (
+                  {isExplorerApp && (
                     <div className="flex items-center gap-2 text-xs text-green-600 font-mono">
                       <span>Followers: {followers}</span>
                       <span>Following: {following}</span>
                     </div>
                   )}
                 </div>
-                {profile.namespace?.name === 'nemoapp' && (
+                {profile.namespace?.name === EXPLORER_NAMESPACE && (
                   <div className="flex-shrink-0">
                     <FollowButton username={profile.profile.username} />
                   </div>

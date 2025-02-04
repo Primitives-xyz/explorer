@@ -1,4 +1,6 @@
 import { formatLamportsToSol, formatAddress } from '@/utils/transaction'
+import { getSolscanAddressUrl } from '@/lib/constants'
+import { ExternalLinkIcon } from 'lucide-react'
 
 interface Transfer {
   fromUserAccount: string
@@ -24,41 +26,42 @@ export const TransferList = ({
   tokenTransfers,
   sourceWallet,
 }: TransferListProps) => {
+  if (!nativeTransfers && !tokenTransfers) {
+    return null
+  }
+
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       {nativeTransfers
         ?.filter((transfer) => transfer.amount > 0)
         .map((transfer, i) => (
-          <div
-            key={i}
-            className="text-[10px] sm:text-xs text-green-500 font-mono flex flex-wrap items-center gap-1 p-1 rounded hover:bg-green-900/10"
-          >
-            <span className="flex-shrink-0">
-              {transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}
-            </span>
-            <span className="flex-shrink-0 font-medium">
-              {formatLamportsToSol(transfer.amount)} SOL
-            </span>
-            <span className="text-green-700 flex-shrink-0">
-              {transfer.fromUserAccount === sourceWallet ? 'to' : 'from'}
-            </span>
+          <div key={i} className="flex items-center justify-between text-sm">
             <a
-              href={`https://solscan.io/account/${
-                transfer.fromUserAccount === sourceWallet
-                  ? transfer.toUserAccount
-                  : transfer.fromUserAccount
-              }`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-green-600 hover:text-green-400 transition-colors break-all"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {formatAddress(
+              href={getSolscanAddressUrl(
                 transfer.fromUserAccount === sourceWallet
                   ? transfer.toUserAccount
                   : transfer.fromUserAccount,
               )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-green-400 hover:text-green-300"
+            >
+              <span className="font-mono">
+                {formatAddress(
+                  transfer.fromUserAccount === sourceWallet
+                    ? transfer.toUserAccount
+                    : transfer.fromUserAccount,
+                ).slice(0, 4)}
+                ...
+                {formatAddress(
+                  transfer.fromUserAccount === sourceWallet
+                    ? transfer.toUserAccount
+                    : transfer.fromUserAccount,
+                ).slice(-4)}
+              </span>
+              <ExternalLinkIcon className="w-3 h-3" />
             </a>
+            <span>{formatLamportsToSol(transfer.amount)} SOL</span>
           </div>
         ))}
       {tokenTransfers
@@ -70,37 +73,23 @@ export const TransferList = ({
               : transfer.fromUserAccount
 
           return (
-            <div
-              key={i}
-              className="text-[10px] sm:text-xs text-green-500 font-mono flex flex-wrap items-center gap-1 p-1 rounded hover:bg-green-900/10"
-            >
-              <span className="flex-shrink-0">
-                {transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}
-              </span>
-              <span className="flex-shrink-0 font-medium">
+            <div key={i} className="flex items-center justify-between text-sm">
+              <a
+                href={getSolscanAddressUrl(targetAddress)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-green-400 hover:text-green-300"
+              >
+                <span className="font-mono">
+                  {formatAddress(targetAddress).slice(0, 4)}...
+                  {formatAddress(targetAddress).slice(-4)}
+                </span>
+                <ExternalLinkIcon className="w-3 h-3" />
+              </a>
+              <span>
                 {transfer.tokenAmount?.toLocaleString() || 0}{' '}
-                {transfer.mint ? (
-                  <span className="text-green-600">
-                    {formatAddress(transfer.mint)}
-                  </span>
-                ) : (
-                  'Unknown'
-                )}
+                {transfer.mint ? formatAddress(transfer.mint) : 'Unknown'}
               </span>
-              <span className="text-green-700 flex-shrink-0">
-                {transfer.fromUserAccount === sourceWallet ? 'to' : 'from'}
-              </span>
-              {targetAddress && (
-                <a
-                  href={`https://solscan.io/account/${targetAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-600 hover:text-green-400 transition-colors break-all"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {formatAddress(targetAddress)}
-                </a>
-              )}
             </div>
           )
         })}
