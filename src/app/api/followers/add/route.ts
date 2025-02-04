@@ -38,7 +38,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error: any) {
-    console.error('Error processing follow request:', error)
+    // Only log non-404 errors
+    if (!error.message?.includes('status: 404')) {
+      console.error('Error processing follow request:', error)
+    }
 
     // Handle specific error cases
     if (error.message?.includes('status: 404')) {

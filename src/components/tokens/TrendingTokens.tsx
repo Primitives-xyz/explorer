@@ -9,6 +9,7 @@ import { ScrollableContent } from '../common/ScrollableContent'
 import { FilterBar } from '../common/FilterBar'
 import { FilterButton } from '../common/FilterButton'
 import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual'
+import { JupiterSwapModal } from './JupiterSwapModal'
 
 interface TrendingToken {
   address: string
@@ -34,82 +35,104 @@ const TokenCard = memo(
     onClick: () => void
   }) => {
     const router = useRouter()
+    const [showSwapModal, setShowSwapModal] = useState(false)
 
     return (
-      <div
-        className="p-3 hover:bg-green-900/10 transition-all duration-200 cursor-pointer group/item min-h-[85px]"
-        onClick={onClick}
-      >
-        <div className="flex items-start gap-3 h-full">
-          {/* Token Icon */}
-          <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-md group-hover/item:blur-lg transition-all" />
-            {token.logoURI ? (
-              <img
-                src={token.logoURI}
-                alt={token.symbol}
-                className="w-12 h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20 relative z-[1] group-hover/item:ring-green-500/40 transition-all"
-                loading="lazy"
-                onError={(e) => {
-                  ;(e.target as HTMLImageElement).style.display = 'none'
-                }}
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-                <span className="text-green-500 font-mono text-lg">
-                  {token.symbol.slice(0, 2)}
+      <>
+        <div
+          className="p-3 hover:bg-green-900/10 transition-all duration-200 cursor-pointer group/item min-h-[85px]"
+          onClick={onClick}
+        >
+          <div className="flex items-start gap-3 h-full">
+            {/* Token Icon */}
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-md group-hover/item:blur-lg transition-all" />
+              {token.logoURI ? (
+                <img
+                  src={token.logoURI}
+                  alt={token.symbol}
+                  className="w-12 h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20 relative z-[1] group-hover/item:ring-green-500/40 transition-all"
+                  loading="lazy"
+                  onError={(e) => {
+                    ;(e.target as HTMLImageElement).style.display = 'none'
+                  }}
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+                  <span className="text-green-500 font-mono text-lg">
+                    {token.symbol.slice(0, 2)}
+                  </span>
+                </div>
+              )}
+              <div className="absolute -top-1.5 -left-1.5 w-6 h-6 bg-green-900/90 rounded-full flex items-center justify-center ring-2 ring-green-500 shadow-lg z-[2] group-hover/item:scale-110 transition-transform">
+                <span className="text-green-400 text-xs font-mono font-bold">
+                  #{token.rank}
                 </span>
               </div>
-            )}
-            <div className="absolute -top-1.5 -left-1.5 w-6 h-6 bg-green-900/90 rounded-full flex items-center justify-center ring-2 ring-green-500 shadow-lg z-[2] group-hover/item:scale-110 transition-transform">
-              <span className="text-green-400 text-xs font-mono font-bold">
-                #{token.rank}
-              </span>
             </div>
-          </div>
 
-          {/* Token Details */}
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      router.push(`/${token.address}`)
-                    }}
-                    className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate max-w-[200px]"
-                  >
-                    {token.name}
-                  </button>
-                  <span className="text-green-600 text-xs flex-shrink-0">
-                    ${token.symbol}
-                  </span>
+            {/* Token Details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/${token.address}`)
+                      }}
+                      className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate max-w-[200px]"
+                    >
+                      {token.name}
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-600 text-xs flex-shrink-0">
+                        ${token.symbol}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setShowSwapModal(true)
+                        }}
+                        className="text-green-400 text-xs bg-green-900/30 px-2 py-0.5 rounded hover:bg-green-900/50 transition-colors border border-green-500/20 hover:border-green-500/40"
+                      >
+                        Trade
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
+                    <span className="text-green-600/60 text-xs">price:</span>
+                    <span className="text-green-400 font-mono text-xs font-medium">
+                      ${formatNumber(token.price)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
-                  <span className="text-green-600/60 text-xs">price:</span>
-                  <span className="text-green-400 font-mono text-xs font-medium">
-                    ${formatNumber(token.price)}
-                  </span>
-                </div>
-              </div>
 
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md min-w-0">
-                  <span className="text-green-600/60 text-xs flex-shrink-0">
-                    address:
-                  </span>
-                  <TokenAddress address={token.address} />
-                </div>
-                <div className="flex items-center gap-2 text-xs text-green-600 font-mono flex-shrink-0">
-                  <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
-                  <span>Liq: ${formatNumber(token.liquidity)}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md min-w-0">
+                    <span className="text-green-600/60 text-xs flex-shrink-0">
+                      address:
+                    </span>
+                    <TokenAddress address={token.address} />
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-green-600 font-mono flex-shrink-0">
+                    <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
+                    <span>Liq: ${formatNumber(token.liquidity)}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+
+        <JupiterSwapModal
+          isOpen={showSwapModal}
+          onClose={() => setShowSwapModal(false)}
+          tokenAddress={token.address}
+          tokenSymbol={token.symbol}
+          tokenDecimals={token.decimals}
+        />
+      </>
     )
   },
 )

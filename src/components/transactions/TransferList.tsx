@@ -25,17 +25,21 @@ export const TransferList = ({
   sourceWallet,
 }: TransferListProps) => {
   return (
-    <div className="space-y-0.5">
+    <div className="space-y-1">
       {nativeTransfers
         ?.filter((transfer) => transfer.amount > 0)
         .map((transfer, i) => (
           <div
             key={i}
-            className="text-xs text-green-500 font-mono flex items-center gap-1"
+            className="text-[10px] sm:text-xs text-green-500 font-mono flex flex-wrap items-center gap-1 p-1 rounded hover:bg-green-900/10"
           >
-            <span>{transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}</span>
-            <span>{formatLamportsToSol(transfer.amount)} SOL</span>
-            <span className="text-green-700">
+            <span className="flex-shrink-0">
+              {transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}
+            </span>
+            <span className="flex-shrink-0 font-medium">
+              {formatLamportsToSol(transfer.amount)} SOL
+            </span>
+            <span className="text-green-700 flex-shrink-0">
               {transfer.fromUserAccount === sourceWallet ? 'to' : 'from'}
             </span>
             <a
@@ -46,7 +50,7 @@ export const TransferList = ({
               }`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-green-600 hover:text-green-400 transition-colors"
+              className="text-green-600 hover:text-green-400 transition-colors break-all"
               onClick={(e) => e.stopPropagation()}
             >
               {formatAddress(
@@ -68,16 +72,22 @@ export const TransferList = ({
           return (
             <div
               key={i}
-              className="text-xs text-green-500 font-mono flex items-center gap-1"
+              className="text-[10px] sm:text-xs text-green-500 font-mono flex flex-wrap items-center gap-1 p-1 rounded hover:bg-green-900/10"
             >
-              <span>
+              <span className="flex-shrink-0">
                 {transfer.fromUserAccount === sourceWallet ? '↑' : '↓'}
               </span>
-              <span>
+              <span className="flex-shrink-0 font-medium">
                 {transfer.tokenAmount?.toLocaleString() || 0}{' '}
-                {transfer.mint ? `${formatAddress(transfer.mint)}` : 'Unknown'}
+                {transfer.mint ? (
+                  <span className="text-green-600">
+                    {formatAddress(transfer.mint)}
+                  </span>
+                ) : (
+                  'Unknown'
+                )}
               </span>
-              <span className="text-green-700">
+              <span className="text-green-700 flex-shrink-0">
                 {transfer.fromUserAccount === sourceWallet ? 'to' : 'from'}
               </span>
               {targetAddress && (
@@ -85,7 +95,7 @@ export const TransferList = ({
                   href={`https://solscan.io/account/${targetAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-green-600 hover:text-green-400 transition-colors"
+                  className="text-green-600 hover:text-green-400 transition-colors break-all"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {formatAddress(targetAddress)}
