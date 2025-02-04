@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Transaction } from '@/utils/helius/types'
 import { GetFollowingResponse } from '../types'
-import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 
 // Helper to fetch transactions for a single wallet
@@ -37,21 +36,7 @@ export const useFollowingTransactions = (
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
   const [loadedWallets, setLoadedWallets] = useState<Set<string>>(new Set())
   const [totalWallets, setTotalWallets] = useState<number>(0)
-  const { isHolder, isCheckingHolder, startCheck } = useHolderCheck()
   const { walletAddress, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
-
-  // Trigger holder check if needed
-  useEffect(() => {
-    if (
-      walletAddress &&
-      isLoggedIn &&
-      sdkHasLoaded &&
-      isHolder === null &&
-      !isCheckingHolder
-    ) {
-      startCheck()
-    }
-  }, [walletAddress, isLoggedIn, sdkHasLoaded, isHolder, isCheckingHolder])
 
   useEffect(() => {
     // Reset states when dependencies change
@@ -59,19 +44,7 @@ export const useFollowingTransactions = (
     setTotalWallets(following?.profiles?.length ?? 0)
 
     // Don't fetch if not ready
-    if (!following?.profiles?.length || isCheckingHolder) {
-      setAggregatedTransactions([])
-      return
-    }
-
-    // Don't fetch if we know we're not a holder
-    if (isHolder === false) {
-      setAggregatedTransactions([])
-      return
-    }
-
-    // Don't fetch if we don't know holder status yet
-    if (isHolder === null) {
+    if (!following?.profiles?.length) {
       setAggregatedTransactions([])
       return
     }
@@ -121,13 +94,11 @@ export const useFollowingTransactions = (
     }
 
     fetchAllTransactions()
-  }, [following, isHolder, isCheckingHolder, walletAddress])
+  }, [following, walletAddress])
 
   return {
     aggregatedTransactions,
     isLoadingTransactions,
-    isCheckingHolder,
-    isHolder,
     loadedWallets: loadedWallets.size,
     totalWallets,
   }

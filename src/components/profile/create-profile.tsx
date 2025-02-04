@@ -1,7 +1,6 @@
 'use client'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { refreshProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Alert } from '@/components/common/alert'
 import { Modal } from '@/components/common/modal'
@@ -16,7 +15,6 @@ export function CreateProfile({
 }) {
   const { walletAddress, mainUsername, loadingProfiles } = useCurrentWallet()
   const hasProfile = !!mainUsername
-  const { isHolder, isCheckingHolder } = useHolderCheck()
   const [username, setUsername] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -25,12 +23,12 @@ export function CreateProfile({
 
   useEffect(() => {
     // Only show modal if we have a wallet connected, no profile, and is a holder
-    if (walletAddress && !loadingProfiles && !isCheckingHolder) {
+    if (walletAddress && !loadingProfiles) {
       setIsModalOpen(!hasProfile)
     } else {
       setIsModalOpen(false)
     }
-  }, [walletAddress, hasProfile, loadingProfiles, isCheckingHolder])
+  }, [walletAddress, hasProfile, loadingProfiles])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

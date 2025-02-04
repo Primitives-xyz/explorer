@@ -1,6 +1,5 @@
 import { Transaction } from '@/utils/helius/types'
 import { useState, useEffect, useMemo } from 'react'
-import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { TransactionCard } from '@/components/transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
@@ -106,7 +105,6 @@ export const FollowingTransactionFeed = ({
   loadedWallets = 0,
   totalWallets = 0,
 }: FollowingTransactionFeedProps) => {
-  const { isHolder } = useHolderCheck()
   const [expandedTx, setExpandedTx] = useState<string | null>(null)
   const [selectedType, setSelectedType] = useState<TransactionType>('all')
   const {
@@ -153,34 +151,6 @@ export const FollowingTransactionFeed = ({
                 sourceWallet={''}
               />
             ))}
-          </div>
-        </div>
-      </DataContainer>
-    )
-  }
-
-  // If we need to show the holder modal, render that instead
-  if (isHolder === null) {
-    return (
-      <DataContainer title="following_activity" height="large">
-        <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-          <div className="text-green-400 font-mono text-lg mb-4">
-            {`>>> CHECKING FROG HOLDER STATUS...`}
-          </div>
-        </div>
-      </DataContainer>
-    )
-  }
-
-  if (isHolder === false) {
-    return (
-      <DataContainer title="following_activity" height="large">
-        <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-          <div className="text-green-400 font-mono text-lg mb-4">
-            🐸 Frog Holder Access Required
-          </div>
-          <div className="text-green-500 font-mono text-sm max-w-md mb-6">
-            To view transaction activity, you need to be a holder of a Frog NFT.
           </div>
         </div>
       </DataContainer>

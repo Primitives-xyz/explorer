@@ -1,14 +1,9 @@
 'use client'
 
-import { Modal } from '@/components/common/modal'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { useEffect, useRef } from 'react'
-import { FrogHolderRequired } from './FrogHolderRequired'
 
 export function AuthWrapper({ children }: { children: React.ReactNode }) {
-  const { showModal, closeModal, startCheck, isHolder, isCheckingHolder } =
-    useHolderCheck()
   const { sdkHasLoaded, isLoggedIn, walletAddress } = useCurrentWallet()
   const hasInitialized = useRef(false)
 
@@ -18,14 +13,11 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
       !hasInitialized.current &&
       sdkHasLoaded &&
       isLoggedIn &&
-      walletAddress &&
-      isHolder === null &&
-      !isCheckingHolder
+      walletAddress
     ) {
       hasInitialized.current = true
-      startCheck()
     }
-  }, [sdkHasLoaded, isLoggedIn, walletAddress, isHolder, isCheckingHolder])
+  }, [sdkHasLoaded, isLoggedIn, walletAddress])
 
   // Reset initialization flag when wallet disconnects
   useEffect(() => {
@@ -34,16 +26,5 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
     }
   }, [walletAddress, isLoggedIn, sdkHasLoaded])
 
-  return (
-    <>
-      {children}
-      <Modal
-        isOpen={showModal}
-        onClose={closeModal}
-        title="Solana Business Frog Required"
-      >
-        <FrogHolderRequired />
-      </Modal>
-    </>
-  )
+  return <>{children}</>
 }
