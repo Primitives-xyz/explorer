@@ -153,16 +153,19 @@ export function SwapTransactionView({
         {isLoggedIn ? (
           <button
             onClick={() => setShowSwapModal(true)}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors min-w-full"
           >
             Copy Trade
           </button>
         ) : (
-          <DynamicConnectButton>
-            <div className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors cursor-pointer">
+          <div className="min-w-full">
+            <DynamicConnectButton
+              buttonContainerClassName="min-w-full"
+              buttonClassName="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors cursor-pointer min-w-full"
+            >
               Copy Trade
-            </div>
-          </DynamicConnectButton>
+            </DynamicConnectButton>
+          </div>
         )}
       </div>
 

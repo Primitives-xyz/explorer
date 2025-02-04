@@ -5,6 +5,7 @@ import { formatNumber } from '@/utils/format'
 import { TokenAddress } from '../tokens/TokenAddress'
 import { useRouter } from 'next/navigation'
 import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual'
+import { FollowButton } from '../profile/follow-button'
 
 type TimeFrame = 'today' | 'yesterday' | '1W'
 
@@ -116,14 +117,17 @@ const TraderCard = memo(
 
           {/* Trader Details */}
           <div className="flex-1 min-w-0 space-y-4">
-            <div className="flex items-center justify-between">
-              <TokenAddress address={trader.address} />
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <TokenAddress address={trader.address} />
+                <FollowButton username={trader.address} size="sm" />
+              </div>
               <div
                 className={`px-3 py-1 rounded-full text-sm font-medium ${
                   trader.pnl >= 0
                     ? 'bg-green-500/20 text-green-400'
                     : 'bg-red-500/20 text-red-400'
-                }`}
+                } shrink-0`}
               >
                 {trader.pnl >= 0 ? '▲' : '▼'} $
                 {formatNumber(Math.abs(trader.pnl))}

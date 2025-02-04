@@ -6,7 +6,7 @@ async function fetchProfile(url: string): Promise<IProfileResponse | null> {
     const res = await fetch(url)
     if (!res.ok) {
       if (res.status === 404) {
-        // Return null for not found profiles instead of throwing
+        // Return null for not found profiles without logging
         return null
       }
       const errorData = await res.json()
@@ -14,8 +14,10 @@ async function fetchProfile(url: string): Promise<IProfileResponse | null> {
     }
     return await res.json()
   } catch (error) {
-    // Log the error but don't throw it
-    console.error('Error fetching profile:', error)
+    // Only log non-404 errors
+    if (error instanceof Error && !error.message.includes('404')) {
+      console.error('Error fetching profile:', error)
+    }
     return null
   }
 }
