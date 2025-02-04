@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useFollowStats } from '@/hooks/use-follow-stats'
-import { useHolderCheck } from '@/components/auth/hooks/use-holder-check'
 import { FrogHolderRequired } from '../auth/FrogHolderRequired'
 import dynamic from 'next/dynamic'
 import router from 'next/router'
@@ -39,7 +38,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   const isFollowing = stats?.isFollowing ?? false
   const [optimisticFollowing, setOptimisticFollowing] = useState(false)
   const [showHolderModal, setShowHolderModal] = useState(false)
-  const { isHolder, isCheckingHolder } = useHolderCheck()
 
   const buttonClasses = `font-mono rounded transition-colors ${
     size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'
@@ -80,13 +78,13 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   if (mainUsername === username) return null
 
   // Show loading state while initializing
-  if (isLoggedIn && (isCheckingHolder || isLoadingStats)) {
+  if (isLoggedIn && isLoadingStats) {
     return (
       <div
         className={`${buttonClasses} flex items-center gap-1 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
       >
         <LoaderCircle className="animate-spin" size={iconSize} />
-        <span>{isCheckingHolder ? 'Checking holder...' : 'Loading...'}</span>
+        <span>Loading...</span>
       </div>
     )
   }
