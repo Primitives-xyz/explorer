@@ -7,7 +7,7 @@ import type { ReactNode } from 'react'
 export const metadata: Metadata = {
   title:
     process.env.NEXT_PUBLIC_APP_NAME ||
-    'Social Graph Explorer | Tapestry Protocol',
+    'Solana Social Explorer | Tapestry Protocol',
   description:
     process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
     'Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title:
       process.env.NEXT_PUBLIC_APP_NAME ||
-      'Social Graph Explorer | Tapestry Protocol',
+      'Solana Social Explorer | Tapestry Protocol',
     description:
       process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
       'Explore social connections, NFTs, and token holdings on Solana. Discover the social fabric of Web3.',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
         url: `${process.env.NEXT_PUBLIC_TAPESTRY_ASSETS_URL}/explorer-2.png`,
         width: 1200,
         height: 630,
-        alt: 'Social Graph Explorer Interface',
+        alt: 'Solana Social Explorer Interface',
       },
     ],
     siteName: process.env.NEXT_PUBLIC_APP_NAME || 'Tapestry Protocol Explorer',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title:
       process.env.NEXT_PUBLIC_APP_NAME ||
-      'Social Graph Explorer | Tapestry Protocol',
+      'Solana Social Explorer | Tapestry Protocol',
     description:
       process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
       'Explore social connections and wallet analytics on Solana',
