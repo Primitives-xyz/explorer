@@ -66,7 +66,14 @@ export function FollowButton({ username, size = 'sm' }: Props) {
 
   // Handle stats error gracefully without page refresh
   if (!!statsError) {
-    return null
+    console.error('Stats error:', statsError)
+    return (
+      <div
+        className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800`}
+      >
+        Error
+      </div>
+    )
   }
 
   // Early return if viewing own profile
