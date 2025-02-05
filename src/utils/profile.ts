@@ -1,3 +1,6 @@
+import { fetchTapestryServer } from '@/lib/tapestry-server'
+import { FetchMethod } from '@/utils/api'
+
 interface ProfileMetadata {
   image: string | null
   socialCounts: {
@@ -14,10 +17,11 @@ export async function getProfileMetadata(
   username: string,
 ): Promise<ProfileMetadata | null> {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
-    const response = await fetch(`${baseUrl}/profiles/${username}`)
-    const data = await response.json()
+    const endpoint = `profiles/new/${username}`
+    const data = await fetchTapestryServer({
+      endpoint,
+      method: FetchMethod.GET,
+    })
 
     return {
       image: data.profile?.image || null,

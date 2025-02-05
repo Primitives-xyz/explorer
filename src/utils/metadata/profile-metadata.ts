@@ -8,9 +8,8 @@ export async function generateProfileMetadata(
   username: string,
 ): Promise<Metadata> {
   const profileData = await getProfileMetadata(username)
-  console.log('PROFILE DATA', JSON.stringify(profileData, null, 2))
   const title = `@${username}`
-  const description = `Follow @${username} on Explorer to see their activity on Solana`
+  const description = `Follow @${username} on Explorer`
 
   const ogImageUrl = `/api/og?${new URLSearchParams({
     title,
@@ -26,8 +25,6 @@ export async function generateProfileMetadata(
       ? { wallet: profileData.walletAddress }
       : {}),
   }).toString()}`
-
-  console.log('ogImageUrl', ogImageUrl)
 
   return {
     title,

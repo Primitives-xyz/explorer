@@ -97,7 +97,7 @@ export async function generateMetadata({
         return generateTransactionMetadata(cleanId)
 
       case 'profile':
-        return generateProfileMetadata(cleanId)
+        return await generateProfileMetadata(cleanId)
     }
   } catch (error) {
     console.error('Error generating metadata:', error)
