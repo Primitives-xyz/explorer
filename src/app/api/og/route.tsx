@@ -10,11 +10,14 @@ export async function GET(req: NextRequest) {
     const description = searchParams.get('description')
     const image = searchParams.get('image')
 
-    // Fetch and convert SVG to PNG if it's an SVG image
+    // Convert DiceBear SVG URL to PNG URL
     let imageData = image
     if (image?.includes('dicebear')) {
-      // Add size parameter to DiceBear URL
-      imageData = `${image}&size=180`
+      imageData =
+        image
+          .replace('/svg', '/png') // Change endpoint from SVG to PNG
+          .replace('?seed=', '/') + // Change query param format
+        '?size=180' // Add size parameter
     }
 
     return new ImageResponse(
