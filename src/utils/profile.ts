@@ -24,7 +24,13 @@ export async function getProfileMetadata(
 
     const url = `${baseUrl}/profiles/${username}`
     console.log('Fetching profile from URL:', url)
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+    console.log('RESPONSE', response)
+
     const data = await response.json()
 
     return {
