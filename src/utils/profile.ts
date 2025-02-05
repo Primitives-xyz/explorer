@@ -14,17 +14,29 @@ export async function getProfileMetadata(
   username: string,
 ): Promise<ProfileMetadata | null> {
   try {
+    // Use TAPESTRY_URL for server-side requests
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
+      process.env.TAPESTRY_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      'http://localhost:3000'
+    const apiKey = process.env.TAPESTRY_API_KEY
+
+    if (!baseUrl || !apiKey) {
+      console.error('Missing required environment variables for profile fetch')
+      return null
+    }
 
     // Add timeout to the fetch request
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
 
-    const response = await fetch(`${baseUrl}/profiles/${username}`, {
+    const url = `${baseUrl}/profiles/new/${username}`
+    console.log('URL', url)
+    const response = await fetch(url, {
       signal: controller.signal,
       headers: {
         'Cache-Control': 'no-cache',
+        Accept: 'application/json',
       },
     })
 
