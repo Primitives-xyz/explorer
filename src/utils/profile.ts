@@ -19,8 +19,10 @@ export async function getProfileMetadata(
   try {
     console.log('$$$$$$')
     console.log(username)
+    const endpoint = `profiles/new/${username}`
+    console.log('ENDPOINT', endpoint)
     const data = await fetchTapestryServer({
-      endpoint: `profiles/${username}`,
+      endpoint,
       method: FetchMethod.GET,
     })
 
