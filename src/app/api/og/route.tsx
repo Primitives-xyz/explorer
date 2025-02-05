@@ -6,21 +6,37 @@ export const runtime = 'edge'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const title = searchParams.get('title')
+    const title = searchParams.get('title') || 'Explorer'
     const description = searchParams.get('description')
     const image = searchParams.get('image')
     const followers = searchParams.get('followers') || '0'
     const following = searchParams.get('following') || '0'
     const wallet = searchParams.get('wallet') || ''
 
-    // Convert DiceBear SVG URL to PNG URL
+    // Convert DiceBear SVG URL to PNG URL if it exists
     let imageData = image
     if (image?.includes('dicebear')) {
-      imageData =
-        image
-          .replace('/svg', '/png') // Change endpoint from SVG to PNG
-          .replace('?seed=', '/') + // Change query param format
-        '?size=180' // Add size parameter
+      try {
+        imageData = `${image.replace('/svg', '/png').split('?')[0]}?size=180`
+      } catch (error) {
+        console.error('Error transforming DiceBear URL:', error)
+        // Fallback to original URL if transformation fails
+        imageData = image
+      }
+    }
+
+    // Validate image URL if provided
+    if (imageData) {
+      try {
+        const imageResponse = await fetch(imageData)
+        if (!imageResponse.ok) {
+          console.error('Failed to fetch image:', imageResponse.status)
+          imageData = null
+        }
+      } catch (error) {
+        console.error('Error fetching image:', error)
+        imageData = null
+      }
     }
 
     return new ImageResponse(
@@ -64,6 +80,7 @@ export async function GET(req: NextRequest) {
                   background: 'rgba(22, 163, 74, 0.1)',
                 }}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imageData}
                   alt={title || 'Profile Image'}
@@ -90,7 +107,7 @@ export async function GET(req: NextRequest) {
                 wordWrap: 'break-word',
               }}
             >
-              {title || 'Explorer'}
+              {title}
             </div>
 
             {/* Social Stats */}
@@ -184,10 +201,44 @@ export async function GET(req: NextRequest) {
       {
         width: 1200,
         height: 630,
+        headers: {
+          'content-type': 'image/png',
+          'cache-control':
+            'public, max-age=60, s-maxage=60, stale-while-revalidate=60',
+        },
       },
     )
   } catch (e) {
-    console.error(e)
-    return new Response('Failed to generate OG image', { status: 500 })
+    console.error('OG Image generation failed:', e)
+
+    // Return a basic fallback image response
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            display: 'flex',
+            height: '100%',
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#030711',
+            fontSize: 60,
+            fontFamily: 'monospace',
+            color: '#4ade80',
+          }}
+        >
+          Explorer
+        </div>
+      ),
+      {
+        width: 1200,
+        height: 630,
+        headers: {
+          'content-type': 'image/png',
+          'cache-control':
+            'public, max-age=60, s-maxage=60, stale-while-revalidate=60',
+        },
+      },
+    )
   }
 }

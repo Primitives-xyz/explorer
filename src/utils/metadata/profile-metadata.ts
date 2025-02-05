@@ -12,7 +12,12 @@ export async function generateProfileMetadata(
   const title = `@${username}`
   const description = `Follow @${username} on Explorer`
 
-  const ogImageUrl = `/api/og?${new URLSearchParams({
+  // Construct absolute URL for OG image
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  const ogImageUrl = `${baseUrl}/api/og?${new URLSearchParams({
     title,
     description,
     ...(profileData?.image ? { image: profileData.image } : {}),
