@@ -6,6 +6,9 @@ type RouteContext = {
   params: Promise<{ username: string }>
 }
 
+// Add cache configuration
+export const revalidate = 60 // Revalidate every 60 seconds
+
 export async function GET(_req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
@@ -35,6 +38,3 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     )
   }
 }
-
-// Add route configuration for caching behavior
-export const dynamic = 'force-dynamic'
