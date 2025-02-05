@@ -63,7 +63,7 @@ export async function fetchTapestryServer<T = any>({
           throw new Error(`Internal server error: ${errorText}`)
         case 502:
           throw new Error(
-            `Tapestry API is temporarily unavailable - please try again later ${url}`,
+            `Tapestry API is temporarily unavailable - please try again later`,
           )
 
         default:

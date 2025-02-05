@@ -16,7 +16,10 @@ export async function getProfileMetadata(
   try {
     const baseUrl =
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
-    const response = await fetch(`${baseUrl}/profiles/${username}`)
+
+    const url = `${baseUrl}/profiles/${username}`
+    console.log('Fetching profile from URL:', url)
+    const response = await fetch(url)
     const data = await response.json()
 
     return {
