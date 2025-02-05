@@ -16,11 +16,6 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  // Only apply auth middleware for POST requests
-  if (request.method !== 'POST') {
-    return response
-  }
-
   const authToken = request.headers.get('Authorization')
   const jwt = authToken?.split(' ')[1]
 
