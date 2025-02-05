@@ -39,9 +39,11 @@ export async function GET(req: NextRequest) {
       try {
         const response = await fetch(image)
         const svg = await response.text()
-        imageData = `data:image/svg+xml;base64,${Buffer.from(svg).toString(
-          'base64',
-        )}`
+        // Add width and height attributes to the SVG
+        const svgWithSize = svg.replace('<svg', '<svg width="40" height="40"')
+        imageData = `data:image/svg+xml;base64,${Buffer.from(
+          svgWithSize,
+        ).toString('base64')}`
       } catch (error) {
         console.error('Error fetching SVG:', error)
       }
