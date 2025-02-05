@@ -1,4 +1,4 @@
-import { BLOCKCHAIN, IPaginatedResponse } from '@/models/common.models'
+import { BLOCKCHAIN } from '@/models/common.models'
 
 export interface ISocialCounts {
   followers: number

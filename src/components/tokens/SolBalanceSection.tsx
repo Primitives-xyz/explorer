@@ -1,4 +1,4 @@
-import { TokenPortfolioResponse } from '@/types/Token'
+import type { TokenPortfolioResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
 
 interface PortfolioBalanceSectionProps {

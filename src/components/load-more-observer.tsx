@@ -1,38 +1,38 @@
-'use client';
+'use client'
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react'
 
 interface Props {
-  hasMore: boolean;
-  onLoadMore: () => void;
-  loading: boolean;
+  hasMore: boolean
+  onLoadMore: () => void
+  loading: boolean
 }
 
 export function LoadMoreObserver({ hasMore, onLoadMore, loading }: Props) {
-  const observerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          onLoadMore();
+        if (entries[0]?.isIntersecting && hasMore && !loading) {
+          onLoadMore()
         }
       },
-      { threshold: 1.0 }
-    );
+      { threshold: 1.0 },
+    )
 
     if (observerRef.current) {
-      observer.observe(observerRef.current);
+      observer.observe(observerRef.current)
     }
 
     return () => {
       if (observerRef.current) {
-        observer.unobserve(observerRef.current);
+        observer.unobserve(observerRef.current)
       }
-    };
-  }, [hasMore, onLoadMore, loading]);
+    }
+  }, [hasMore, onLoadMore, loading])
 
-  if (!hasMore) return null;
+  if (!hasMore) return null
 
   return (
     <div ref={observerRef} className="h-10 flex items-center justify-center">
@@ -42,5 +42,5 @@ export function LoadMoreObserver({ hasMore, onLoadMore, loading }: Props) {
         <div className="text-gray-500">Load more...</div>
       )}
     </div>
-  );
-} 
+  )
+}

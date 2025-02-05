@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import useSWR, { mutate } from 'swr'
+import { mutate } from 'swr'
 
 interface UseLikeCommentResult {
   likeComment: (

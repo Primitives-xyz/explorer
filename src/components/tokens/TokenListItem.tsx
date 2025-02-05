@@ -1,5 +1,5 @@
 import { formatNumber } from '@/utils/format'
-import { FungibleToken } from '@/utils/helius/types'
+import type { FungibleToken } from '@/utils/helius/types'
 import { TokenAddress } from './TokenAddress'
 import { useRouter } from 'next/navigation'
 

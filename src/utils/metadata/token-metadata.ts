@@ -1,5 +1,5 @@
-import { Metadata } from 'next'
-import { BaseTokenInfo, TokenInfo } from '@/types/Token'
+import type { Metadata } from 'next'
+import type { TokenInfo } from '@/types/Token'
 
 interface TokenMetadataParams {
   token: NonNullable<TokenInfo['result']>

@@ -1,6 +1,6 @@
 'use client'
 
-import { Transaction } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 import { useEffect, useState, useMemo } from 'react'
 import { TransactionCard } from './transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
@@ -22,7 +22,6 @@ export const TransactionSection = ({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
-  const [expandedTx, setExpandedTx] = useState<string | null>(null)
   const [selectedType, setSelectedType] = useState<string>('all')
   const ITEMS_PER_PAGE = 5
 
@@ -52,7 +51,9 @@ export const TransactionSection = ({
         // For pagination, use the last transaction's signature
         if (page > 1 && transactions.length > 0) {
           const lastTransaction = transactions[transactions.length - 1]
-          url.searchParams.set('before', lastTransaction.signature)
+          if (lastTransaction) {
+            url.searchParams.set('before', lastTransaction.signature)
+          }
         }
 
         const response = await fetch(url)

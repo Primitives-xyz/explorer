@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { TransactionSection } from './TransactionSection'
 import { CopyPaste } from './common/copy-paste'
-import { NFTTokenInfo } from '@/types/Token'
+import type { NFTTokenInfo } from '@/types/Token'
 import { useNFTImage } from '@/hooks/use-nft-image'
 import { LoadCircle } from './common/load-circle'
 

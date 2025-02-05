@@ -1,7 +1,40 @@
 import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { Profile } from './api'
+import type { ProfileSearchResult } from '@/types'
 
-export function handleProfileNavigation(profile: Profile, router: any): void {
+function isProfileSearchResult(
+  profile: Profile | ProfileSearchResult,
+): profile is ProfileSearchResult {
+  return (
+    'namespace' in profile &&
+    'profile' in profile &&
+    typeof (profile as ProfileSearchResult).namespace.name === 'string'
+  )
+}
+
+export function handleProfileNavigation(
+  profile: Profile | ProfileSearchResult,
+  router: any,
+): void {
+  // Handle ProfileSearchResult type
+  if (isProfileSearchResult(profile)) {
+    if (profile.namespace.name === EXPLORER_NAMESPACE) {
+      router.push(`/${profile.profile.username}`)
+      return
+    }
+
+    // For other namespaces, redirect to their profile URL if available
+    if (profile.namespace.userProfileURL) {
+      window.open(profile.namespace.userProfileURL, '_blank')
+      return
+    }
+
+    // Fallback to namespace view
+    router.push(`/namespace/${profile.namespace.name}`)
+    return
+  }
+
+  // Handle Profile type
   if (!profile.namespace) {
     console.error('Profile namespace is missing')
     return

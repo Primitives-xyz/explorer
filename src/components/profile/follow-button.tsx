@@ -9,7 +9,6 @@ import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { FrogHolderRequired } from '../auth/FrogHolderRequired'
 import dynamic from 'next/dynamic'
-import router from 'next/router'
 
 const DynamicConnectButton = dynamic(
   () =>

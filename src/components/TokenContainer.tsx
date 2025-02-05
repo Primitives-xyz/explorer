@@ -1,7 +1,6 @@
-import { FungibleToken, NFT } from '@/utils/types'
+import type { FungibleToken, NFT } from '@/utils/types'
 import { NFTSection } from './NFTSection'
 import { TokenSection } from './TokenSection'
-import { TransactionSection } from './TransactionSection'
 
 interface TokenContainerProps {
   walletAddress: string
@@ -82,6 +81,8 @@ export const TokenContainer = ({
   isLoading,
   error,
 }: TokenContainerProps) => {
+  const _v = view
+  console.log('v', _v)
   const filteredNFTs = tokenData?.items
     ? filterNFTs(tokenData.items, tokenType)
     : []

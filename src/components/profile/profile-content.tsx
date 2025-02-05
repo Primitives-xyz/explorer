@@ -14,7 +14,6 @@ import { TokenAddress } from '../tokens/TokenAddress'
 import { Modal } from '../common/modal'
 import { CommentWall } from './CommentWall'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { ProfileInfo } from './ProfileInfo'
 
 interface Props {
@@ -50,8 +49,6 @@ export function ProfileContent({ username }: Props) {
     username,
     mainUsername || undefined,
   )
-
-  const router = useRouter()
 
   const fetcher = async (url: string) => {
     const res = await fetch(url)

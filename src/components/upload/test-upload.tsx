@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast'
 
 export function TestUpload() {
   const { toast } = useToast()
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [_selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isUploading, setIsUploading] = useState(false)
 
   const getUploadUrl = useCallback(

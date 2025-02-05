@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card } from '../common/card'
-import { ProfileData } from './profile-content'
+import type { ProfileData } from './profile-content'
 
 interface ProfileInfoProps {
   profileData: ProfileData

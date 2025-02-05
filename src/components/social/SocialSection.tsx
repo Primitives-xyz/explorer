@@ -28,15 +28,11 @@ interface SocialSectionProps {
 const SocialCard = memo(
   ({ user, type }: { user: SocialUser; type: string }) => {
     const router = useRouter()
-
+    console.log('TYPE', type)
     return (
       <div className="p-3 hover:bg-green-900/10">
         <div className="flex items-center gap-3">
-          <Avatar
-            username={user.username}
-            size={40}
-            className="flex-shrink-0"
-          />
+          <Avatar username={user.username} size={40} />
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
@@ -71,6 +67,7 @@ export function SocialSection({
   error,
   type,
 }: SocialSectionProps) {
+  console.log('error', error)
   if (!users.length && !isLoading) return null
 
   return (

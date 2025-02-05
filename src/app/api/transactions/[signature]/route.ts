@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { isValidTransactionSignature } from '@/utils/validation'
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   context: { params: Promise<{ signature: string }> },
 ) {
   try {

@@ -6,7 +6,7 @@ type RouteContext = {
   params: Promise<{ filename: string }>
 }
 
-export async function POST(request: NextRequest, context: RouteContext) {
+export async function POST(_request: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
     const { filename } = params

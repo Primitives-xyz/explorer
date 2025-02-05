@@ -1,4 +1,4 @@
-import { Profile as ApiProfile } from '@/utils/api'
+import type { Profile as ApiProfile } from '@/utils/api'
 
 export interface Profile {
   id: string

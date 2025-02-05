@@ -5,13 +5,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 
-import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana'
-import { NotificationsButton } from '@dialectlabs/react-ui'
 import '@dialectlabs/react-ui/index.css'
-
-const DAPP_ADDRESS =
-  process.env.NEXT_PUBLIC_DAPP_ADDRESS ||
-  '4M2ktdatcMnziGpyvgNqu6hV2utBMKhkKLJfaUumPM9K'
 
 const DynamicConnectButton = dynamic(
   () =>

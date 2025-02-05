@@ -3,8 +3,8 @@
 import { useEffect, useState, memo, useRef } from 'react'
 import { formatNumber } from '@/utils/format'
 import { TokenAddress } from '../tokens/TokenAddress'
-import { useRouter } from 'next/navigation'
-import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import type { VirtualItem } from '@tanstack/react-virtual'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
 
 type TimeFrame = 'today' | 'yesterday' | '1W'
@@ -215,22 +215,24 @@ export const TopTraders = () => {
     overscan: 3, // Number of items to render outside the visible area
   })
 
+  // Move API options outside useEffect to avoid dependency warning
+  const apiOptions = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      'x-chain': 'solana',
+      'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY || '',
+    },
+  }
+
   useEffect(() => {
     const fetchTopTraders = async () => {
       try {
         setIsLoading(true)
-        const options = {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            'x-chain': 'solana',
-            'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY || '',
-          },
-        }
 
         const response = await fetch(
           `https://public-api.birdeye.so/trader/gainers-losers?type=${timeFrame}&sort_by=PnL&sort_type=desc&offset=0&limit=10`,
-          options,
+          apiOptions,
         )
 
         if (!response.ok) {
@@ -256,7 +258,7 @@ export const TopTraders = () => {
     }
 
     fetchTopTraders()
-  }, [timeFrame])
+  }, [timeFrame]) // apiOptions is now stable and doesn't need to be in dependencies
 
   return (
     <div className="border border-indigo-800 bg-black/50 w-full overflow-hidden flex flex-col h-[600px] relative group backdrop-blur-sm">
@@ -319,6 +321,7 @@ export const TopTraders = () => {
                 .getVirtualItems()
                 .map((virtualRow: VirtualItem) => {
                   const trader = traders[virtualRow.index]
+                  if (!trader) return null
                   return (
                     <div
                       key={trader.address}

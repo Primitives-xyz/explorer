@@ -58,7 +58,6 @@ const ProfileCard = memo(
       isExplorerApp && typeof stats?.following === 'number'
         ? stats.following
         : 0
-    const isFollowing = (isExplorerApp && stats?.isFollowing) || false
 
     const handleProfileClick = useCallback(() => {
       handleProfileNavigation(profile, router)

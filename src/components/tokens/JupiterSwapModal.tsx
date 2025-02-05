@@ -7,7 +7,6 @@ interface JupiterSwapModalProps {
   onClose: () => void
   tokenAddress: string
   tokenSymbol: string
-  tokenDecimals: number
 }
 
 export function JupiterSwapModal({
@@ -15,7 +14,6 @@ export function JupiterSwapModal({
   onClose,
   tokenAddress,
   tokenSymbol,
-  tokenDecimals,
 }: JupiterSwapModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Trade ${tokenSymbol}`}>

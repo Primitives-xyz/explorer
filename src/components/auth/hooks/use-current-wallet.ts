@@ -7,7 +7,6 @@ import {
   useIsLoggedIn,
 } from '@dynamic-labs/sdk-react-core'
 import { useMemo } from 'react'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
 
 export function useCurrentWallet() {
   const { sdkHasLoaded, primaryWallet } = useDynamicContext()
@@ -27,14 +26,6 @@ export function useCurrentWallet() {
         ?.profile?.username || ''
     )
   }, [profiles])
-
-  const mainProfile = useMemo(
-    () =>
-      profiles.find(
-        (profile: any) => profile.namespace.name === EXPLORER_NAMESPACE,
-      ),
-    [profiles],
-  )
 
   if (!isLoggedIn || !sdkHasLoaded || !walletAddress || loadingProfiles)
     return {

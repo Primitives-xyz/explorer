@@ -1,7 +1,6 @@
 import { useFollowWallet } from './hooks/use-follow-wallet'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
-import { UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { Alert } from '../common/alert'
 import dynamic from 'next/dynamic'
 

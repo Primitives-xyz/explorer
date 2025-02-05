@@ -1,15 +1,12 @@
-import { Transaction } from '@/utils/helius/types'
-import { useState, useEffect, useMemo } from 'react'
+import type { Transaction } from '@/utils/helius/types'
+import { useState, useMemo } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { TransactionCard } from '@/components/transactions/TransactionCard'
 import { isSpamTransaction } from '@/utils/transaction'
 import { DataContainer } from '@/components/common/DataContainer'
 import { ScrollableContent } from '@/components/common/ScrollableContent'
-import { FilterBar, FilterBarProps } from '@/components/common/FilterBar'
-import {
-  FilterButton,
-  FilterButtonProps,
-} from '@/components/common/FilterButton'
+import { FilterBar } from '@/components/common/FilterBar'
+import { FilterButton } from '@/components/common/FilterButton'
 import dynamic from 'next/dynamic'
 
 // Extend the existing interfaces to include className
@@ -105,13 +102,9 @@ export const FollowingTransactionFeed = ({
   loadedWallets = 0,
   totalWallets = 0,
 }: FollowingTransactionFeedProps) => {
-  const [expandedTx, setExpandedTx] = useState<string | null>(null)
   const [selectedType, setSelectedType] = useState<TransactionType>('all')
-  const {
-    walletAddress,
-    isLoggedIn: currentIsLoggedIn,
-    sdkHasLoaded: currentSdkHasLoaded,
-  } = useCurrentWallet()
+  console.log({ sdkHasLoaded })
+  const { walletAddress } = useCurrentWallet()
 
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {

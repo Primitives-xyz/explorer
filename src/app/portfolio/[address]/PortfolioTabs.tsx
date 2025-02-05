@@ -1,7 +1,7 @@
 'use client'
 
 import { TokenContainer } from '@/components/TokenContainer'
-import { FungibleToken, NFT } from '@/utils/types'
+import type { FungibleToken, NFT } from '@/utils/types'
 import { useEffect, useState } from 'react'
 import { DataContainer } from '@/components/common/DataContainer'
 import { FilterBar } from '@/components/common/FilterBar'

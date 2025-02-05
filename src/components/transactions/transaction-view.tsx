@@ -1,6 +1,6 @@
 'use client'
 
-import { Transaction } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { TransactionBadge } from './TransactionBadge'

@@ -6,7 +6,7 @@ import { TradingStats } from '../trading/TradingStats'
 import { TapestryPromoSection } from '../tapestry/TapestryPromoSection'
 import { TransactionSection } from '../TransactionSection'
 import { useEffect, useState } from 'react'
-import { TokenPortfolioResponse } from '@/types/Token'
+import type { TokenPortfolioResponse } from '@/types/Token'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
 import { isValidSolanaAddress } from '@/utils/validation'
 
@@ -22,7 +22,8 @@ interface TokenData {
  * Renders a wallet view with portfolio tabs
  */
 export function WalletView({ address }: { address: string }) {
-  const [tokenData, setTokenData] = useState<TokenData | null>(null)
+  const [_tokenData, setTokenData] = useState<TokenData | null>(null)
+
   const [portfolioData, setPortfolioData] = useState<
     TokenPortfolioResponse | undefined
   >(undefined)

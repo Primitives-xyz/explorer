@@ -5,10 +5,9 @@ import { useState } from 'react'
 
 interface TokenAddressProps {
   address: string
-  className?: string
 }
 
-export const TokenAddress = ({ address, className }: TokenAddressProps) => {
+export const TokenAddress = ({ address }: TokenAddressProps) => {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
 

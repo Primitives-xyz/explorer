@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ProfileSearchResult } from '@/types'
+import type { ProfileSearchResult } from '@/types'
 import {
-  SearchHistoryItem,
+  type SearchHistoryItem,
   getRecentSearches,
   addSearchToHistory,
 } from '@/utils/searchHistory'

@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo, memo } from 'react'
-import { TokenResponse } from '@/types/Token'
+import type { TokenResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
 import { TokenAddress } from '../tokens/TokenAddress'
 import {
-  ExtendedTransaction,
+  type ExtendedTransaction,
   findNFTMintFromTokenTransfers,
   findNFTMintFromMetaplexInstructions,
   findNFTMintFromAccounts,
@@ -11,7 +11,7 @@ import {
   isNFTBuyTransaction,
   normalizeTransfers,
 } from '@/utils/nft-transaction'
-import { CompressedNFTMintEvent } from '@/utils/helius/types'
+import type { CompressedNFTMintEvent } from '@/utils/helius/types'
 
 interface NFTTransactionViewProps {
   tx: ExtendedTransaction
@@ -26,7 +26,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
   const [nftInfo, setNftInfo] = useState<TokenResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [detectionMethod, setDetectionMethod] = useState<string>('')
+  const [_detectionMethod, setDetectionMethod] = useState<string>('')
 
   // Memoize expensive computations
   const { instructions, transfers, compressedNFTMintEvent } = useMemo(() => {
@@ -84,10 +84,10 @@ export const NFTTransactionView = memo(function NFTTransactionView({
     // Try to find NFT mint from account data
     const accounts =
       tx.accountData?.map((acc) => acc.account) || tx.accountsInvolved || []
-    mint = findNFTMintFromAccounts(accounts, sourceWallet)
-    if (mint) {
+    const accountMint = findNFTMintFromAccounts(accounts, sourceWallet)
+    if (accountMint) {
       setDetectionMethod('account_data')
-      setNftMint(mint)
+      setNftMint(accountMint)
     }
   }, [tx, sourceWallet, instructions, compressedNFTMintEvent])
 
