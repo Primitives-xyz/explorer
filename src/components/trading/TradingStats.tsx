@@ -177,7 +177,8 @@ export const TradingStats = ({
           const yesterdayEnd = yesterdayStart + oneDaySeconds
           filteredTrades = allTrades.filter(
             (trade) =>
-              trade.block_unix_time >= yesterdayStart! &&
+              //@ts-ignore
+              trade.block_unix_time >= yesterdayStart &&
               trade.block_unix_time < yesterdayEnd,
           )
           console.log('Filtered trades for yesterday:', filteredTrades.length)
