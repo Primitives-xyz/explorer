@@ -9,8 +9,8 @@ export async function fetchTapestryServer<T = any>({
   method?: FetchMethod
   data?: any
 }): Promise<T> {
-  const BASE_URL = 'https://api.usetapestry.dev/api/v1' // process.env.TAPESTRY_URL?.replace(/\/+$/, '')
-  const API_KEY = '4bad1b01-2ac3-4852-8582-f251448dc926' // process.env.TAPESTRY_API_KEY
+  const BASE_URL = process.env.TAPESTRY_URL?.replace(/\/+$/, '')
+  const API_KEY = process.env.TAPESTRY_API_KEY
 
   if (!BASE_URL || !API_KEY) {
     throw new Error(
