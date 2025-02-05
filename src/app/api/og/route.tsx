@@ -33,6 +33,20 @@ export async function GET(req: NextRequest) {
     const description = searchParams.get('description')
     const image = searchParams.get('image')
 
+    // Fetch and convert SVG to PNG if it's an SVG image
+    let imageData = image
+    if (image?.endsWith('svg')) {
+      try {
+        const response = await fetch(image)
+        const svg = await response.text()
+        imageData = `data:image/svg+xml;base64,${Buffer.from(svg).toString(
+          'base64',
+        )}`
+      } catch (error) {
+        console.error('Error fetching SVG:', error)
+      }
+    }
+
     return new ImageResponse(
       (
         <div
@@ -63,7 +77,7 @@ export async function GET(req: NextRequest) {
               height: '100%',
             }}
           >
-            {image && (
+            {imageData && (
               <div
                 style={{
                   marginBottom: '30px',
@@ -74,7 +88,7 @@ export async function GET(req: NextRequest) {
                 }}
               >
                 <img
-                  src={image}
+                  src={imageData}
                   alt={title || 'Profile Image'}
                   style={{
                     width: '180px',
