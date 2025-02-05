@@ -8,7 +8,7 @@ import { CopyPaste } from './common/copy-paste'
 import type { NFTTokenInfo } from '@/types/Token'
 import { useNFTImage } from '@/hooks/use-nft-image'
 import { LoadCircle } from './common/load-circle'
-import { ViewAvatar } from './common/ViewAvatar'
+import { Avatar } from './common/Avatar'
 
 interface NFTDetailsProps {
   id: string
@@ -431,12 +431,17 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
               <div className="flex items-center gap-3">
-                <ViewAvatar 
-                  type="token" 
-                  identifier={tokenInfo.content.metadata.name}
-                  imageUrl={imageUrl || undefined}
-                  size={48}
-                />
+                {imageUrl ? (
+                  <Image
+                    src={imageUrl}
+                    alt={`NFT ${tokenInfo.content.metadata.name}`}
+                    width={48}
+                    height={48}
+                    className="rounded-full border border-green-500"
+                  />
+                ) : (
+                  <Avatar username={tokenInfo.content.metadata.name} size={48} />
+                )}
                 <h1 className="text-4xl font-bold text-green-500 font-mono">
                   {tokenInfo.content.metadata.name}
                 </h1>

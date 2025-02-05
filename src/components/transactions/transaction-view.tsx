@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { TransactionBadge } from './TransactionBadge'
 import { TransactionSignature } from './TransactionSignature'
-import { ViewAvatar } from '../common/ViewAvatar'
+import { Avatar } from '../common/Avatar'
 import { TransactionCard } from './TransactionCard'
 import {
   formatLamportsToSol,
@@ -95,7 +95,7 @@ export default function TransactionDetails({
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <ViewAvatar type="transaction" identifier={signature} size={48} />
+          <Avatar username={signature} size={48} />
           <h1 className="text-2xl font-mono text-green-500">
             Transaction Details
           </h1>
