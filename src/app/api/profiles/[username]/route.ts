@@ -6,6 +6,9 @@ type RouteContext = {
   params: Promise<{ username: string }>
 }
 
+// Add cache configuration
+export const revalidate = 60 // Revalidate every 60 seconds
+
 export async function GET(request: NextRequest, context: RouteContext) {
   let username = ''
 
