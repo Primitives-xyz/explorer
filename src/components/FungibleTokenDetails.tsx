@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { TransactionSection } from './TransactionSection'
 import { JupiterSwapForm } from './transactions/jupiter-swap-form'
 import { Tab } from '@headlessui/react'
+import { ViewAvatar } from './common/ViewAvatar'
 
 export default function FungibleTokenDetails({
   id,
@@ -38,9 +39,17 @@ export default function FungibleTokenDetails({
 
               <div className="flex-1 text-center md:text-left">
                 <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-                  <h1 className="text-4xl font-bold text-green-500 font-mono">
-                    {tokenInfo.content.metadata.name}
-                  </h1>
+                  <div className="flex items-center gap-3">
+                    <ViewAvatar 
+                      type="token" 
+                      identifier={tokenInfo.content.metadata.name}
+                      imageUrl={imageUrl}
+                      size={48}
+                    />
+                    <h1 className="text-4xl font-bold text-green-500 font-mono">
+                      {tokenInfo.content.metadata.name}
+                    </h1>
+                  </div>
                   <div className="flex items-center gap-3">
                     <span className="px-4 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-green-400 font-mono">
                       ${tokenInfo.content.metadata.symbol}
