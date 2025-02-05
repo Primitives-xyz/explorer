@@ -64,17 +64,26 @@ export async function GET(req: NextRequest) {
             }}
           >
             {image && (
-              <img
-                src={image}
-                alt={title || 'Profile Image'}
+              <div
                 style={{
-                  width: '140px',
-                  height: '140px',
-                  borderRadius: '70px',
-                  marginBottom: '20px',
-                  objectFit: 'cover',
+                  marginBottom: '30px',
+                  borderRadius: '100px',
+                  border: '2px solid rgb(22 163 74)',
+                  padding: '4px',
+                  background: 'rgba(22, 163, 74, 0.1)',
                 }}
-              />
+              >
+                <img
+                  src={image}
+                  alt={title || 'Profile Image'}
+                  style={{
+                    width: '180px',
+                    height: '180px',
+                    borderRadius: '90px',
+                    objectFit: 'cover',
+                  }}
+                />
+              </div>
             )}
 
             {/* Title */}
