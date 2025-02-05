@@ -14,10 +14,6 @@ export async function getProfileMetadata(
   username: string,
 ): Promise<ProfileMetadata | null> {
   try {
-    console.log('VERCEL_URL', process.env.VERCEL_URL)
-    console.log('NEXT_PUBLIC_VERCEL_URL', process.env.NEXT_PUBLIC_VERCEL_URL)
-    console.log('NEXT_PUBLIC_APP_URL', process.env.NEXT_PUBLIC_APP_URL)
-
     const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}/api`
       : 'http://localhost:3000/api'

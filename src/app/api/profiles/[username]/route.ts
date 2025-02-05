@@ -26,6 +26,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
       endpoint = `profiles/new/${username}?username=${fromUsername}`
     }
 
+    console.log('ENDPOINT', endpoint)
+
     const data = await fetchTapestryServer({
       endpoint,
       method: FetchMethod.GET,
