@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/profiles/create'],
+  matcher: ['/api/profiles/create', '/api/comments'],
 }
 
 const productionPublicKeys = `-----BEGIN PUBLIC KEY-----

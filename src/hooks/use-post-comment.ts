@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 
 interface PostCommentInput {
   profileId: string
@@ -10,6 +11,7 @@ interface PostCommentInput {
 export function usePostComment() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { authToken } = useDynamicContext()
 
   const postComment = async ({
     profileId,
@@ -40,6 +42,7 @@ export function usePostComment() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
         },
         body: JSON.stringify(body),
       })
