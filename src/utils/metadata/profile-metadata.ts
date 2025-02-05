@@ -10,7 +10,7 @@ export async function generateProfileMetadata(
   const profileData = await getProfileMetadata(username)
   console.log('PROFILE DATA', JSON.stringify(profileData, null, 2))
   const title = `@${username}`
-  const description = `Follow @${username} on Explorer to see their activity on Solana`
+  const description = `Follow @${username} on Explorer`
 
   const ogImageUrl = `/api/og?${new URLSearchParams({
     title,
