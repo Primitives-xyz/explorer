@@ -31,22 +31,6 @@ export async function generateMetadata({
   const defaultMetadata: Metadata = {
     title: `${id} | Explorer`,
     description: `View details for ${id}`,
-    openGraph: {
-      type: 'website',
-      title: `${id} | Explorer`,
-      description: `View details for ${id}`,
-      images: [
-        {
-          url: `/api/og?title=${encodeURIComponent(String(id))}`,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${id} | Explorer`,
-      description: `View details for ${id}`,
-      images: `/api/og?title=${encodeURIComponent(String(id))}`,
-    },
   }
 
   try {
@@ -59,37 +43,11 @@ export async function generateMetadata({
             (g: { group_key: string; group_value: string }) =>
               g.group_key === 'collection',
           )
-          const metadata = generateTokenMetadata({
+          return generateTokenMetadata({
             token: tokenInfo.result,
             imageUrl,
             collection,
           })
-
-          const ogImageUrl = `/api/og?title=${encodeURIComponent(
-            String(metadata.title),
-          )}&description=${encodeURIComponent(
-            String(metadata.description),
-          )}&image=${encodeURIComponent(String(imageUrl))}`
-
-          return {
-            ...metadata,
-            openGraph: {
-              type: 'website',
-              title: metadata.title || '',
-              description: metadata.description || '',
-              images: [
-                {
-                  url: ogImageUrl,
-                },
-              ],
-            },
-            twitter: {
-              card: 'summary_large_image',
-              title: metadata.title || '',
-              description: metadata.description || '',
-              images: ogImageUrl,
-            },
-          }
         }
         break
 
@@ -102,8 +60,6 @@ export async function generateMetadata({
   } catch (error) {
     console.error('Error generating metadata:', error)
   }
-
-  console.log('defaultMetadata', JSON.stringify(defaultMetadata, null, 2))
 
   return defaultMetadata
 }
