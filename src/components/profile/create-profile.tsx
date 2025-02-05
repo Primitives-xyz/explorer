@@ -6,6 +6,7 @@ import { Alert } from '@/components/common/alert'
 import { Modal } from '@/components/common/modal'
 import { Input } from '@/components/form/input'
 import { SubmitButton } from '@/components/form/submit-button'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState } from 'react'
 
 export function CreateProfile({
@@ -20,6 +21,7 @@ export function CreateProfile({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [response, setResponse] = useState<any | null>(null)
+  const { authToken } = useDynamicContext()
 
   useEffect(() => {
     // Only show modal if we have a wallet connected, no profile, and is a holder
@@ -42,6 +44,7 @@ export function CreateProfile({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
           },
           body: JSON.stringify({
             username,
