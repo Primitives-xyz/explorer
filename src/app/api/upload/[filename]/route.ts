@@ -3,24 +3,27 @@ import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { NextResponse, type NextRequest } from 'next/server'
 
 type RouteContext = {
-  params: { filename: string }
+  params: Promise<{ filename: string }>
 }
 
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
+    const params = await context.params
+    const { filename } = params
+
     // Properly await and validate the filename parameter
-    if (!context.params?.filename) {
+    if (!filename) {
       return NextResponse.json(
         { error: 'Filename is required' },
         { status: 400 },
       )
     }
 
-    const filename = decodeURIComponent(context.params.filename)
-    console.log('Generating upload URL for:', filename)
+    const decodedFilename = decodeURIComponent(filename)
+    console.log('Generating upload URL for:', decodedFilename)
 
     const data = await fetchTapestryServer({
-      endpoint: `upload/${encodeURIComponent(filename)}`,
+      endpoint: `upload/${encodeURIComponent(decodedFilename)}`,
       method: FetchMethod.POST,
     })
 
@@ -33,10 +36,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
       )
     }
 
-    console.log('Successfully generated upload URL for:', filename)
+    console.log('Successfully generated upload URL for:', decodedFilename)
     return NextResponse.json({
       postUrl: data.postUrl,
-      filename,
+      filename: decodedFilename,
     })
   } catch (error) {
     console.error('Error processing upload URL request:', error)

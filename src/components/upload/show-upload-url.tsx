@@ -72,7 +72,7 @@ export function ShowUploadUrl() {
         // Construct the final file URL
         const finalFileUrl = createURL({
           domain: `https://${bucketDomain}`,
-          endpoint: filePath,
+          endpoint: filePath || '',
         })
 
         setFileUrl(finalFileUrl)
