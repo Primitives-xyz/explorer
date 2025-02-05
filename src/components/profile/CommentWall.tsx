@@ -53,11 +53,6 @@ export function CommentWall({
     e.preventDefault()
     if (!commentText.trim() || !mainUsername) return
 
-    console.log('replyToCommentId', replyToCommentId)
-    console.log('commentText', commentText)
-    console.log('mainUsername', mainUsername)
-    console.log('username', username)
-
     try {
       await postComment({
         profileId: mainUsername,
