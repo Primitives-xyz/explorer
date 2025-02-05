@@ -73,10 +73,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     )
   }
 
-  console.log('mainUsername', mainUsername)
-  console.log('username', username)
-  console.log('IS SAME', mainUsername === username)
-
   // Early return if viewing own profile
   if (mainUsername === username) return null
 
