@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getProfileImage } from '@/utils/profile'
+import { getProfileMetadata } from '@/utils/profile'
 
 /**
  * Generates metadata for a profile
@@ -7,13 +7,16 @@ import { getProfileImage } from '@/utils/profile'
 export async function generateProfileMetadata(
   username: string,
 ): Promise<Metadata> {
+  const profileData = await getProfileMetadata(username)
   const title = `@${username} | Explorer`
-  const description = `Follow @${username} on Explorer to see their activity on Solana`
-  const profileImage = await getProfileImage(username)
+  const description = profileData?.socialCounts
+    ? `Follow @${username} on Explorer • ${profileData.socialCounts.followers} followers • ${profileData.socialCounts.following} following`
+    : `Follow @${username} on Explorer to see their activity on Solana`
+
   const ogImageUrl = `/api/og?title=${encodeURIComponent(
     title,
   )}&description=${encodeURIComponent(description)}${
-    profileImage ? `&image=${encodeURIComponent(profileImage)}` : ''
+    profileData?.image ? `&image=${encodeURIComponent(profileData.image)}` : ''
   }`
 
   return {
