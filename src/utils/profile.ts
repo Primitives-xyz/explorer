@@ -1,3 +1,6 @@
+import { fetchTapestryServer } from '@/lib/tapestry-server'
+import { FetchMethod } from '@/utils/api'
+
 interface ProfileMetadata {
   image: string | null
   socialCounts: {
@@ -14,20 +17,10 @@ export async function getProfileMetadata(
   username: string,
 ): Promise<ProfileMetadata | null> {
   try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}/api`
-      : 'http://localhost:3000/api'
-
-    const url = `${baseUrl}/profiles/${username}`
-    console.log('Fetching profile from URL:', url)
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-      },
+    const data = await fetchTapestryServer({
+      endpoint: `profiles/${username}`,
+      method: FetchMethod.GET,
     })
-    console.log('RESPONSE from src/utils/profile.ts', response)
-
-    const data = await response.json()
 
     return {
       image: data.profile?.image || null,
