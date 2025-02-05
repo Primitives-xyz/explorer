@@ -1,7 +1,7 @@
 import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
-import { Transaction } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 import fs from 'fs/promises'
 import path from 'path'
 
