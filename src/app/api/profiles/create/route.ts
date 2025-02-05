@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
         walletAddress: ownerWalletAddress,
         blockchain: 'SOLANA',
         execution: 'FAST_UNCONFIRMED',
+        image: `https://api.dicebear.com/7.x/shapes/svg?seed=${username}`,
         properties: [],
       },
     })

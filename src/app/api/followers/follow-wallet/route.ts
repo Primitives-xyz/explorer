@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
           walletAddress: walletToFollow,
           blockchain: 'SOLANA',
           execution: 'FAST_UNCONFIRMED',
+          image: `https://api.dicebear.com/7.x/shapes/svg?seed=${walletToFollow}`,
           properties: [],
         },
       })
