@@ -23,7 +23,6 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "type-check": "tsc --noEmit",
-    "prepare": "husky install",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
