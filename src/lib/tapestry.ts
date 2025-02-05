@@ -1,11 +1,10 @@
-import {
+import type {
   ICreateCommentInput,
   ICreateCommentResponse,
 } from '@/models/comment.models'
 import {
-  IGetSocialResponse,
-  IProfileResponse,
-  ISuggestedProfiles,
+  type IGetSocialResponse,
+  type ISuggestedProfiles,
 } from '@/models/profile.models'
 import { FetchMethod, fetchTapestry } from '@/utils/api'
 

@@ -1,4 +1,4 @@
-import {
+import type {
   Transaction,
   AccountData,
   TransactionEvent,
@@ -85,7 +85,7 @@ export const findNFTMintFromTensorInstructions = (
       coreInnerInstruction.accounts.length >= 3
     ) {
       // The NFT mint is typically the first account in the Core instruction
-      return coreInnerInstruction.accounts[0]
+      return coreInnerInstruction.accounts[0] ?? null
     }
   }
   return null
@@ -145,7 +145,7 @@ export const findNFTMintFromMetaplexInstructions = (
 export const findNFTMintFromAccounts = (
   accounts: string[],
   sourceWallet: string,
-): string | null => {
+): string | null | undefined => {
   const potentialNFTs = accounts.filter(
     (address) =>
       address &&

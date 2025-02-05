@@ -120,7 +120,7 @@ export const getRoyaltyInfo = (tx: any) => {
 
   // Find potential royalty payments (typically 1-10% of total transaction value)
   const royaltyPayments = Object.entries(changes)
-    .filter(([address, amount]) => {
+    .filter(([_address, amount]) => {
       const absAmount = Math.abs(Number(amount))
       const percentage = (absAmount / totalChange) * 100
       // Royalties typically fall between 1-10% of total transaction value

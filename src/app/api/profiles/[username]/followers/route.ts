@@ -6,7 +6,7 @@ type RouteContext = {
   params: Promise<{ username: string }>
 }
 
-export async function GET(req: NextRequest, context: RouteContext) {
+export async function GET(_req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
     const { username } = params

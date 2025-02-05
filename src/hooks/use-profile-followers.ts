@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { IGetSocialResponse } from '@/models/profile.models'
+import type { IGetSocialResponse } from '@/models/profile.models'
 
 async function fetchFollowers(url: string): Promise<IGetSocialResponse> {
   const res = await fetch(url)

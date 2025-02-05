@@ -5,6 +5,7 @@ interface Props {
 }
 
 export function FrogHolderRequired({ variant = 'modal' }: Props) {
+  console.log({ variant })
   return (
     <div className="space-y-4">
       <p className="text-green-400/80">

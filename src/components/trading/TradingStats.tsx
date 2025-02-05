@@ -76,7 +76,7 @@ export const TradingStats = ({
   walletAddress,
   hideTitle = false,
 }: TradingStatsProps) => {
-  const [trades, setTrades] = useState<Trade[]>([])
+  const [_trades, setTrades] = useState<Trade[]>([])
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('7d')
   const [stats, setStats] = useState<TradingStats>({
     totalTrades: 0,
@@ -90,7 +90,6 @@ export const TradingStats = ({
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null)
 
   useEffect(() => {
     const fetchTrades = async () => {
@@ -153,7 +152,8 @@ export const TradingStats = ({
             allTrades = [...allTrades, ...data.data.items]
             // Update the timestamp to fetch the next batch
             lastTimestamp =
-              data.data.items[data.data.items.length - 1].block_unix_time
+              data.data.items[data.data.items.length - 1]?.block_unix_time ||
+              lastTimestamp
             totalFetched += data.data.items.length
           }
 
@@ -177,6 +177,7 @@ export const TradingStats = ({
           const yesterdayEnd = yesterdayStart + oneDaySeconds
           filteredTrades = allTrades.filter(
             (trade) =>
+              //@ts-ignore
               trade.block_unix_time >= yesterdayStart &&
               trade.block_unix_time < yesterdayEnd,
           )

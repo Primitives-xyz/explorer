@@ -1,4 +1,4 @@
-import { PaginatedData } from '@/types/pagination'
+import type { PaginatedData } from '@/types/pagination'
 
 export enum FetchMethod {
   GET = 'GET',

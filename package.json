@@ -1,12 +1,29 @@
 {
-  "name": "tapestry-boilerplate",
+  "name": "tapestry-explorer",
   "version": "0.1.0",
-  "private": true,
+  "description": "A social graph explorer for the Solana blockchain, built with Tapestry Protocol",
+  "private": false,
+  "license": "MIT",
+  "author": {
+    "name": "Tapestry Protocol",
+    "url": "https://tapestry.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tapestry-protocol/explorer"
+  },
+  "bugs": {
+    "url": "https://github.com/tapestry-protocol/explorer/issues"
+  },
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "type-check": "tsc --noEmit",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@dialectlabs/react-sdk-blockchain-solana": "^2.1.1",
@@ -16,6 +33,7 @@
     "@emotion/react": "^11.13.3",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-progress": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.5",
     "@solana/spl-token": "^0.4.9",
     "@solana/wallet-adapter-base": "^0.9.23",
@@ -46,5 +64,19 @@
     "prettier-plugin-organize-imports": "3.2.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.7.2"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "keywords": [
+    "solana",
+    "blockchain",
+    "social-graph",
+    "explorer",
+    "tapestry-protocol",
+    "web3",
+    "nextjs",
+    "react"
+  ]
 }

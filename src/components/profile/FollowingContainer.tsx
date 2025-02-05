@@ -10,7 +10,7 @@ interface ActivityFeedContainerProps {
 export const ActivityFeedContainer = ({
   username,
 }: ActivityFeedContainerProps) => {
-  const { following, loading, error } = useGetFollowing(username)
+  const { following, loading } = useGetFollowing(username)
   const isLoggedIn = useIsLoggedIn()
   const { sdkHasLoaded } = useDynamicContext()
   const {

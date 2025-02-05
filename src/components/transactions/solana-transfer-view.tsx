@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { Transaction } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 
 interface Transfer {
   from: string

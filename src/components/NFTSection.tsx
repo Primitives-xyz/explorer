@@ -1,6 +1,6 @@
 'use client'
 
-import { FungibleToken, NFT } from '@/utils/types'
+import type { FungibleToken, NFT } from '@/utils/types'
 import { useState } from 'react'
 import { ImageModal } from './tokens/ImageModal'
 import { NFTGrid } from './tokens/NFTGrid'
@@ -24,6 +24,7 @@ export const NFTSection = ({
   error,
   items = [],
 }: NFTSectionProps) => {
+  console.log('walletAddress', walletAddress)
   const [selectedImage, setSelectedImage] = useState<{
     url: string
     symbol: string

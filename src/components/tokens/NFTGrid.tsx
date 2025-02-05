@@ -1,13 +1,8 @@
-import { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
+import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useState } from 'react'
 import { TokenAddress } from './TokenAddress'
 import { useRouter } from 'next/navigation'
 import { useNFTImage } from '@/hooks/use-nft-image'
-
-interface Authority {
-  address: string
-  scopes: string[]
-}
 
 interface NFTGridProps {
   tokens: (NFT | TokenWithInscription | FungibleToken)[]
@@ -53,11 +48,7 @@ const NFTImageContainer = ({
   )
 }
 
-export const NFTGrid = ({
-  tokens,
-  onImageClick,
-  onAddressSearch,
-}: NFTGridProps) => {
+export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
   const router = useRouter()
 

@@ -1,30 +1,96 @@
-This is a [Tapestry](https://www.usetapestry.dev/) boilerplate repository, it's a work in progress - as Tapestry is being developed more features will be added to it. Feel free to clone this repository and use it as a template.
+# Tapestry Protocol Explorer
 
-## Getting started
+A social graph explorer for the Solana blockchain, built with [Tapestry Protocol](https://tapestry.dev). Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.
 
-You'll need to add your api key and the tapestry URL to your environment variables - in the file `.env.local`:
+## Features
+
+- 🔍 Explore social connections between wallets
+- 💰 View detailed wallet analytics
+- 🖼️ Browse NFT collections and holdings
+- 📊 Track token balances and transactions
+- 🤝 Follow other wallets and build your network
+- 🌐 Real-time updates for on-chain activity
+
+## Tech Stack
+
+- [Next.js 14](https://nextjs.org/) - React Framework
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [TypeScript](https://www.typescriptlang.org/) - Type Safety
+- [pnpm](https://pnpm.io/) - Package Manager
+- [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/) - Blockchain Interaction
+- [Tapestry Protocol](https://docs.tapestry.dev/) - Social Graph Protocol
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm 8+
+- A Tapestry Protocol API key
+- A Helius RPC URL and API key
+- A Birdeye API key (optional, for token analytics)
+
+## Getting Started
+
+1. Clone the repository:
 
 ```bash
-TAPESTRY_API_KEY=4bad1b01-2ac3-4852-8582-f251448dc926
-TAPESTRY_URL=https://api.usetapestry.dev/api/v1
-
+git clone https://github.com/tapestry-protocol/explorer.git
+cd explorer
 ```
 
-Install the dependencies
+2. Install dependencies:
 
 ```bash
-yarn install
-
+pnpm install
 ```
 
-## Start the app
+3. Copy the example environment file and fill in your values:
 
 ```bash
-yarn dev
-
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Start the development server:
+
+```bash
+pnpm dev
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) with your browser.
+
+## Environment Variables
+
+See [.env.example](.env.example) for all required and optional environment variables.
+
+## Available Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Fix ESLint errors
+- `pnpm format` - Format code with Prettier
+- `pnpm type-check` - Run TypeScript compiler check
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+- Documentation: [https://docs.tapestry.dev](https://docs.tapestry.dev)
+- Discord: [Join our community](https://discord.gg/tapestry)
+- Twitter: [@TapestryProto](https://twitter.com/TapestryProto)
+- Email: support@tapestry.dev
 
 ## Tapestry endpoints
 

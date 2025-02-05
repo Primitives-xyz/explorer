@@ -1,14 +1,14 @@
 'use client'
 
-import { ProfileSearchResult } from '@/types'
+import type { ProfileSearchResult } from '@/types'
 import { handleProfileNavigation } from '@/utils/profile-navigation'
 import {
-  SearchHistoryItem,
+  type SearchHistoryItem,
   addSearchToHistory,
   getRecentSearches,
 } from '@/utils/searchHistory'
 import { useRouter } from 'next/navigation'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, { type ChangeEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 
@@ -23,6 +23,7 @@ export default function SearchBar({
   onClose,
   autoFocus,
 }: SearchBarProps) {
+  console.log({ onClose })
   const router = useRouter()
   const [inputValue, setInputValue] = useState('')
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])

@@ -1,12 +1,11 @@
 'use client'
 
 import { formatNumber } from '@/utils/format'
-import { FungibleTokenDetailsProps } from '@/utils/helius/types'
+import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
 import Image from 'next/image'
 import { TransactionSection } from './TransactionSection'
 import { JupiterSwapForm } from './transactions/jupiter-swap-form'
-import { Disclosure, Tab, Transition } from '@headlessui/react'
-import { ChevronUpIcon } from '@heroicons/react/24/solid'
+import { Tab } from '@headlessui/react'
 
 export default function FungibleTokenDetails({
   id,

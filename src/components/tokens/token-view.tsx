@@ -1,6 +1,6 @@
-import { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
+import type { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 
-import { TokenInfo } from '@/types/Token'
+import type { TokenInfo } from '@/types/Token'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
 import { WalletView } from '../wallet/wallet-view'
 import FungibleTokenDetails from '../FungibleTokenDetails'

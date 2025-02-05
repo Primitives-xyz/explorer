@@ -1,15 +1,12 @@
 import Link from 'next/link'
-import { formatDistanceToNow } from 'date-fns'
-import { formatLamportsToSol } from '@/utils/transaction'
 import { TransactionBadge } from './TransactionBadge'
-import { TransactionSignature } from './TransactionSignature'
 import { TransferList } from './TransferList'
-import { Transaction } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 import { SwapTransactionView } from './swap-transaction-view'
 import { SolanaTransferView } from './solana-transfer-view'
 import { NFTTransactionView } from './nft-transaction-view'
 import { SPLTransferView } from './spl-transfer-view'
-import { ExtendedTransaction } from '@/utils/nft-transaction'
+import type { ExtendedTransaction } from '@/utils/nft-transaction'
 import { memo, useMemo } from 'react'
 
 // Helper function to normalize timestamp

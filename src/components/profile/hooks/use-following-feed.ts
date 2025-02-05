@@ -1,6 +1,6 @@
 import useSWR from 'swr'
-import { Transaction } from '@/utils/helius/types'
-import { GetFollowingResponse } from '../types'
+import type { Transaction } from '@/utils/helius/types'
+import type { GetFollowingResponse } from '../types'
 
 interface FeedResponse {
   profiles: GetFollowingResponse['profiles']

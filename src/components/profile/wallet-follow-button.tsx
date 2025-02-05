@@ -1,7 +1,6 @@
 import { useFollowWallet } from './hooks/use-follow-wallet'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
-import { UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { Alert } from '../common/alert'
 import dynamic from 'next/dynamic'
 
@@ -21,7 +20,6 @@ interface Props {
 export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
   const { followWallet, loading, success } = useFollowWallet()
-  const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
 
   const buttonClasses = `font-mono rounded transition-colors ${
     size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'

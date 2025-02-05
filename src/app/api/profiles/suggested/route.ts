@@ -1,5 +1,5 @@
 // app/api/profiles/suggestedProfiles/route.ts
-import { FetchMethod, fetchTapestry, Profile } from '@/utils/api'
+import { FetchMethod, fetchTapestry, type Profile } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface SuggestedProfilesResponse {

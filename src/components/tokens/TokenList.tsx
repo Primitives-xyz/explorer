@@ -1,4 +1,4 @@
-import { FungibleToken } from '@/utils/types'
+import type { FungibleToken } from '@/utils/types'
 import { useMemo } from 'react'
 import { SortControls } from './SortControls'
 import { TokenListItem } from './TokenListItem'

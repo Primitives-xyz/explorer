@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import SearchBar from './SearchBar'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false)
-  const router = useRouter()
   const pathname = usePathname()
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { formatLamportsToSol } from '@/utils/transaction'
-import { VersionedTransaction, ComputeBudgetProgram } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import type { PriorityLevel } from '@/app/api/priority-fee/route'
 import { useToast } from '@/hooks/use-toast'

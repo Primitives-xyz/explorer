@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Transaction } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 import { formatNumber } from '@/utils/format'
 import Link from 'next/link'
 
@@ -56,7 +56,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
 
       const transfer = tx.tokenTransfers[0]
 
-      if (!transfer.tokenMint) {
+      if (!transfer?.tokenMint) {
         console.log('No token mint found in transfer:', transfer)
         return
       }
@@ -103,8 +103,6 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
   return (
     <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
       {tx.tokenTransfers.map((transfer: TokenTransfer, index: number) => {
-        const isFungibleToken =
-          tokenInfo.tokenInfo?.result.interface === 'FungibleToken'
         const tokenSymbol =
           tokenInfo.tokenInfo?.result.content.metadata.symbol || 'tokens'
         const pricePerToken =

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Transaction } from '@/utils/helius/types'
-import { GetFollowingResponse } from '../types'
+import type { Transaction } from '@/utils/helius/types'
+import type { GetFollowingResponse } from '../types'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 
 // Helper to fetch transactions for a single wallet
@@ -36,7 +36,7 @@ export const useFollowingTransactions = (
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
   const [loadedWallets, setLoadedWallets] = useState<Set<string>>(new Set())
   const [totalWallets, setTotalWallets] = useState<number>(0)
-  const { walletAddress, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
+  const { walletAddress } = useCurrentWallet()
 
   useEffect(() => {
     // Reset states when dependencies change

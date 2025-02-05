@@ -1,7 +1,7 @@
 'use client'
 
 import { formatNumber } from '@/utils/format'
-import { FungibleToken, NFT } from '@/utils/types'
+import type { FungibleToken, NFT } from '@/utils/types'
 import { useState } from 'react'
 import { ImageModal } from './tokens/ImageModal'
 import { NFTGrid } from './tokens/NFTGrid'
