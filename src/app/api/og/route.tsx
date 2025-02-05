@@ -9,6 +9,9 @@ export async function GET(req: NextRequest) {
     const title = searchParams.get('title')
     const description = searchParams.get('description')
     const image = searchParams.get('image')
+    const followers = searchParams.get('followers') || '0'
+    const following = searchParams.get('following') || '0'
+    const wallet = searchParams.get('wallet') || ''
 
     // Convert DiceBear SVG URL to PNG URL
     let imageData = image
@@ -89,6 +92,67 @@ export async function GET(req: NextRequest) {
             >
               {title || 'Explorer'}
             </div>
+
+            {/* Social Stats */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '20px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  color: '#22c55e',
+                  fontSize: 24,
+                  fontFamily: 'monospace',
+                }}
+              >
+                <span style={{ fontSize: 32, fontWeight: 'bold' }}>
+                  {followers}
+                </span>
+                <span>followers</span>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  color: '#22c55e',
+                  fontSize: 24,
+                  fontFamily: 'monospace',
+                }}
+              >
+                <span style={{ fontSize: 32, fontWeight: 'bold' }}>
+                  {following}
+                </span>
+                <span>following</span>
+              </div>
+            </div>
+
+            {/* Wallet Address */}
+            {wallet && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 20,
+                  fontFamily: 'monospace',
+                  color: '#22c55e',
+                  opacity: 0.8,
+                  textAlign: 'center',
+                  maxWidth: '800px',
+                  wordWrap: 'break-word',
+                }}
+              >
+                {wallet.slice(0, 4)}...{wallet.slice(-4)}
+              </div>
+            )}
 
             {/* Description */}
             {description && (

@@ -13,11 +13,20 @@ export async function generateProfileMetadata(
     ? `Follow @${username} on Explorer • ${profileData.socialCounts.followers} followers • ${profileData.socialCounts.following} following`
     : `Follow @${username} on Explorer to see their activity on Solana`
 
-  const ogImageUrl = `/api/og?title=${encodeURIComponent(
+  const ogImageUrl = `/api/og?${new URLSearchParams({
     title,
-  )}&description=${encodeURIComponent(description)}${
-    profileData?.image ? `&image=${encodeURIComponent(profileData.image)}` : ''
-  }`
+    description,
+    ...(profileData?.image ? { image: profileData.image } : {}),
+    ...(profileData?.socialCounts
+      ? {
+          followers: profileData.socialCounts.followers.toString(),
+          following: profileData.socialCounts.following.toString(),
+        }
+      : {}),
+    ...(profileData?.walletAddress
+      ? { wallet: profileData.walletAddress }
+      : {}),
+  }).toString()}`
 
   return {
     title,
