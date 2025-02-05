@@ -14,10 +14,8 @@ export async function getProfileMetadata(
   username: string,
 ): Promise<ProfileMetadata | null> {
   try {
-    // Use TAPESTRY_URL for server-side requests, fallback to Vercel URL or localhost
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api`
-      : 'http://localhost:3000/api'
+    // For client-side requests, we can use relative URLs
+    const baseUrl = '/api'
 
     if (!baseUrl) {
       console.error('Missing required environment variables for profile fetch')
