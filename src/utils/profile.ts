@@ -15,34 +15,24 @@ export async function getProfileMetadata(
 ): Promise<ProfileMetadata | null> {
   try {
     // Use TAPESTRY_URL for server-side requests, fallback to Vercel URL or localhost
-    const baseUrl =
-      process.env.TAPESTRY_URL ||
-      (process.env.NEXT_PUBLIC_VERCEL_URL
-        ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-        : 'http://localhost:3000')
-    const apiKey = process.env.TAPESTRY_API_KEY
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api`
+      : 'http://localhost:3000/api'
 
-    if (!baseUrl || !apiKey) {
+    if (!baseUrl) {
       console.error('Missing required environment variables for profile fetch')
       return null
     }
 
-    // Add timeout to the fetch request
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
-
-    const url = `${baseUrl}/profiles/new/${username}`
+    const url = `${baseUrl}/profiles/${username}`
     console.log('Fetching profile from URL:', url)
 
     const response = await fetch(url, {
-      signal: controller.signal,
       headers: {
         'Cache-Control': 'no-cache',
         Accept: 'application/json',
       },
     })
-
-    clearTimeout(timeoutId)
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
