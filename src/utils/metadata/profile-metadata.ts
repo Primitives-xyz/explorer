@@ -7,7 +7,6 @@ import { getProfileMetadata } from '@/utils/profile'
 export async function generateProfileMetadata(
   username: string,
 ): Promise<Metadata> {
-  console.log('$$ GOING TO REQUEST', username)
   const profileData = await getProfileMetadata(username)
   console.log('PROFILE DATA', JSON.stringify(profileData, null, 2))
   const title = `@${username}`
