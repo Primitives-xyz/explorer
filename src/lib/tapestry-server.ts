@@ -61,6 +61,11 @@ export async function fetchTapestryServer<T = any>({
           throw new Error('Rate limit exceeded - please try again later')
         case 500:
           throw new Error(`Internal server error: ${errorText}`)
+        case 502:
+          throw new Error(
+            `Tapestry API is temporarily unavailable - please try again later ${url}`,
+          )
+
         default:
           throw new Error(
             `HTTP error! status: ${response.status} - ${
