@@ -16,8 +16,30 @@ export async function getProfileMetadata(
   try {
     const baseUrl =
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
-    const response = await fetch(`${baseUrl}/profiles/${username}`)
+
+    // Add timeout to the fetch request
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+
+    const response = await fetch(`${baseUrl}/profiles/${username}`, {
+      signal: controller.signal,
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    })
+
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
     const data = await response.json()
+
+    if (!data || !data.profile) {
+      console.error('Invalid profile data received:', data)
+      return null
+    }
 
     return {
       image: data.profile?.image || null,
@@ -25,7 +47,11 @@ export async function getProfileMetadata(
       walletAddress: data.walletAddress || '',
     }
   } catch (error) {
-    console.error('Error fetching profile metadata:', error)
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Profile metadata request timed out for:', username)
+    } else {
+      console.error('Error fetching profile metadata:', error)
+    }
     return null
   }
 }

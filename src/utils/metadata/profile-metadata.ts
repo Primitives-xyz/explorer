@@ -7,49 +7,64 @@ import { getProfileMetadata } from '@/utils/profile'
 export async function generateProfileMetadata(
   username: string,
 ): Promise<Metadata> {
-  const profileData = await getProfileMetadata(username)
-  console.log('PROFILE DATA', JSON.stringify(profileData, null, 2))
-  const title = `@${username}`
-  const description = `Follow @${username} on Explorer to see their activity on Solana`
+  try {
+    const profileData = await getProfileMetadata(username)
+    if (!profileData) {
+      console.error('No profile data returned for username:', username)
+      return {
+        title: `@${username} | Explorer`,
+        description: `View profile of @${username} on Explorer`,
+      }
+    }
 
-  const ogImageUrl = `/api/og?${new URLSearchParams({
-    title,
-    description,
-    ...(profileData?.image ? { image: profileData.image } : {}),
-    ...(profileData?.socialCounts
-      ? {
-          followers: profileData.socialCounts.followers.toString(),
-          following: profileData.socialCounts.following.toString(),
-        }
-      : {}),
-    ...(profileData?.walletAddress
-      ? { wallet: profileData.walletAddress }
-      : {}),
-  }).toString()}`
+    console.log('Profile metadata generated for:', username, profileData)
 
-  console.log('ogImageUrl', ogImageUrl)
+    const title = `@${username} | Explorer`
+    const description = `Follow @${username} on Explorer to see their activity on Solana`
 
-  return {
-    title,
-    description,
-    openGraph: {
+    const ogImageUrl = `/api/og?${new URLSearchParams({
       title,
       description,
-      type: 'website',
-      siteName: 'Explorer',
-      images: [
-        {
-          url: ogImageUrl,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
+      ...(profileData?.image ? { image: profileData.image } : {}),
+      ...(profileData?.socialCounts
+        ? {
+            followers: profileData.socialCounts.followers.toString(),
+            following: profileData.socialCounts.following.toString(),
+          }
+        : {}),
+      ...(profileData?.walletAddress
+        ? { wallet: profileData.walletAddress }
+        : {}),
+    }).toString()}`
+
+    return {
       title,
       description,
-      creator: '@explorer',
-      site: '@explorer',
-      images: [ogImageUrl],
-    },
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+        siteName: 'Explorer',
+        images: [
+          {
+            url: ogImageUrl,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        creator: '@explorer',
+        site: '@explorer',
+        images: [ogImageUrl],
+      },
+    }
+  } catch (error) {
+    console.error('Error generating profile metadata:', error)
+    return {
+      title: `@${username} | Explorer`,
+      description: `View profile of @${username} on Explorer`,
+    }
   }
 }

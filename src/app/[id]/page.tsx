@@ -51,7 +51,7 @@ export async function generateMetadata({
 
   try {
     switch (routeType) {
-      case 'token':
+      case 'token': {
         const tokenInfo = await fetchTokenInfo(id)
         if (tokenInfo?.result) {
           const imageUrl = resolveTokenImage(tokenInfo.result)
@@ -92,18 +92,22 @@ export async function generateMetadata({
           }
         }
         break
+      }
 
       case 'transaction':
         return generateTransactionMetadata(cleanId)
 
-      case 'profile':
-        return generateProfileMetadata(cleanId)
+      case 'profile': {
+        const profileMetadata = await generateProfileMetadata(cleanId)
+        if (profileMetadata) {
+          return profileMetadata
+        }
+        break
+      }
     }
   } catch (error) {
     console.error('Error generating metadata:', error)
   }
-
-  console.log('defaultMetadata', JSON.stringify(defaultMetadata, null, 2))
 
   return defaultMetadata
 }
