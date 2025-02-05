@@ -153,7 +153,7 @@ export default function FungibleTokenDetails({
               <Tab.Group className="h-full flex flex-col">
                 <Tab.List className="flex space-x-1 border-b border-green-800/40">
                   <Tab
-                    className={({ selected }) =>
+                    className={({ selected }: { selected: boolean }) =>
                       `flex-1 px-6 py-4 text-lg font-mono outline-none ${
                         selected
                           ? 'text-green-500 bg-green-900/20'
@@ -164,7 +164,7 @@ export default function FungibleTokenDetails({
                     Swap SOL
                   </Tab>
                   <Tab
-                    className={({ selected }) =>
+                    className={({ selected }: { selected: boolean }) =>
                       `flex-1 px-6 py-4 text-lg font-mono outline-none ${
                         selected
                           ? 'text-green-500 bg-green-900/20'
