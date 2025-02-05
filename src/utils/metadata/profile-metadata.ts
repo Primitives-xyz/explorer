@@ -8,7 +8,7 @@ export async function generateProfileMetadata(
   username: string,
 ): Promise<Metadata> {
   const profileData = await getProfileMetadata(username)
-  const title = `@${username} | Explorer`
+  const title = `@${username}`
   const description = profileData?.socialCounts
     ? `Follow @${username} on Explorer • ${profileData.socialCounts.followers} followers • ${profileData.socialCounts.following} following`
     : `Follow @${username} on Explorer to see their activity on Solana`
@@ -27,6 +27,8 @@ export async function generateProfileMetadata(
       ? { wallet: profileData.walletAddress }
       : {}),
   }).toString()}`
+
+  console.log(ogImageUrl)
 
   return {
     title,

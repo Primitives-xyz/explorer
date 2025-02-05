@@ -94,45 +94,51 @@ export async function GET(req: NextRequest) {
             </div>
 
             {/* Social Stats */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '20px',
-              }}
-            >
+            {(Number(followers) > 0 || Number(following) > 0) && (
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
-                  color: '#22c55e',
-                  fontSize: 24,
-                  fontFamily: 'monospace',
+                  justifyContent: 'center',
+                  gap: '20px',
                 }}
               >
-                <span style={{ fontSize: 32, fontWeight: 'bold' }}>
-                  {followers}
-                </span>
-                <span>followers</span>
+                {Number(followers) > 0 && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      color: '#22c55e',
+                      fontSize: 24,
+                      fontFamily: 'monospace',
+                    }}
+                  >
+                    <span style={{ fontSize: 32, fontWeight: 'bold' }}>
+                      {followers}
+                    </span>
+                    <span>followers</span>
+                  </div>
+                )}
+                {Number(following) > 0 && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      color: '#22c55e',
+                      fontSize: 24,
+                      fontFamily: 'monospace',
+                    }}
+                  >
+                    <span style={{ fontSize: 32, fontWeight: 'bold' }}>
+                      {following}
+                    </span>
+                    <span>following</span>
+                  </div>
+                )}
               </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  color: '#22c55e',
-                  fontSize: 24,
-                  fontFamily: 'monospace',
-                }}
-              >
-                <span style={{ fontSize: 32, fontWeight: 'bold' }}>
-                  {following}
-                </span>
-                <span>following</span>
-              </div>
-            </div>
+            )}
 
             {/* Wallet Address */}
             {wallet && (
