@@ -7,7 +7,7 @@ type RouteContext = {
 
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
-    const { profileId, commentId } = await request.json()
+    const { profileId } = await request.json()
     const params = await context.params
     const { id } = params
     if (!profileId) {
