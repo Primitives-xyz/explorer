@@ -103,6 +103,8 @@ export async function generateMetadata({
     console.error('Error generating metadata:', error)
   }
 
+  console.log('defaultMetadata', JSON.stringify(defaultMetadata, null, 2))
+
   return defaultMetadata
 }
 
