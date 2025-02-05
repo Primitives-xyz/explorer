@@ -15,7 +15,7 @@ import { ScrollableContent } from './common/ScrollableContent'
 import { FilterBar } from './common/FilterBar'
 import { FilterButton } from './common/FilterButton'
 import { handleProfileNavigation } from '@/utils/profile-navigation'
-import { getDicebearUrl, EXPLORER_NAMESPACE } from '@/lib/constants'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import { Avatar } from './common/Avatar'
 
 interface ProfileWithStats extends Profile {
@@ -66,9 +66,6 @@ const ProfileCard = memo(
     const handleNamespaceClick = useCallback(() => {
       router.push(`/namespace/${profile.namespace?.name}`)
     }, [router, profile.namespace?.name])
-
-    const avatarUrl =
-      profile.profile.image || getDicebearUrl(profile.profile.username)
 
     return (
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
