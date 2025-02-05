@@ -25,7 +25,7 @@ export async function getProfileMetadata(
         Accept: 'application/json',
       },
     })
-    console.log('RESPONSE', response)
+    console.log('RESPONSE from src/utils/profile.ts', response)
 
     const data = await response.json()
 
