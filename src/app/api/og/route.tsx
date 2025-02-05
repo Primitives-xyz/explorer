@@ -12,18 +12,9 @@ export async function GET(req: NextRequest) {
 
     // Fetch and convert SVG to PNG if it's an SVG image
     let imageData = image
-    if (image?.endsWith('svg')) {
-      try {
-        const response = await fetch(image)
-        const svg = await response.text()
-        // Add width and height attributes to the SVG
-        const svgWithSize = svg.replace('<svg', '<svg width="40" height="40"')
-        imageData = `data:image/svg+xml;base64,${Buffer.from(
-          svgWithSize,
-        ).toString('base64')}`
-      } catch (error) {
-        console.error('Error fetching SVG:', error)
-      }
+    if (image?.includes('dicebear')) {
+      // Add size parameter to DiceBear URL
+      imageData = `${image}&size=180`
     }
 
     return new ImageResponse(
@@ -68,9 +59,9 @@ export async function GET(req: NextRequest) {
                 <img
                   src={imageData}
                   alt={title || 'Profile Image'}
+                  width="180"
+                  height="180"
                   style={{
-                    width: '180px',
-                    height: '180px',
                     borderRadius: '90px',
                     objectFit: 'cover',
                   }}
