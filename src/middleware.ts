@@ -15,7 +15,12 @@ export async function middleware(request: NextRequest) {
   if (request.method === 'OPTIONS') {
     return response
   }
-  
+
+  // Only apply auth middleware for POST requests
+  if (request.method !== 'POST') {
+    return response
+  }
+
   const authToken = request.headers.get('Authorization')
   const jwt = authToken?.split(' ')[1]
 
@@ -38,8 +43,8 @@ export async function middleware(request: NextRequest) {
 
     if (verifiedToken.sub) {
       response.headers.set('x-user-id', verifiedToken.sub)
-    }    
-    
+    }
+
     return response
   } catch (error) {
     console.error('Token verification failed: ', error)
@@ -51,7 +56,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/profiles/create'],
+  matcher: ['/api/:path*'],
 }
 
 const productionPublicKeys = `-----BEGIN PUBLIC KEY-----
