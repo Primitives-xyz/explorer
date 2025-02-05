@@ -14,11 +14,12 @@ export async function getProfileMetadata(
   username: string,
 ): Promise<ProfileMetadata | null> {
   try {
-    // Use TAPESTRY_URL for server-side requests
+    // Use TAPESTRY_URL for server-side requests, fallback to Vercel URL or localhost
     const baseUrl =
       process.env.TAPESTRY_URL ||
-      process.env.NEXT_PUBLIC_APP_URL ||
-      'http://localhost:3000'
+      (process.env.NEXT_PUBLIC_VERCEL_URL
+        ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+        : 'http://localhost:3000')
     const apiKey = process.env.TAPESTRY_API_KEY
 
     if (!baseUrl || !apiKey) {
@@ -31,7 +32,8 @@ export async function getProfileMetadata(
     const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
 
     const url = `${baseUrl}/profiles/new/${username}`
-    console.log('URL', url)
+    console.log('Fetching profile from URL:', url)
+
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
