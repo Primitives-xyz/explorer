@@ -3,29 +3,6 @@ import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
-const SolanaIcon = () => (
-  <svg
-    width="42"
-    height="42"
-    viewBox="0 0 42 42"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    style={{
-      position: 'absolute',
-      top: '20px',
-      right: '20px',
-    }}
-  >
-    <rect width="41" height="41" rx="20.5" fill="#000" x=".5" y=".5" />
-    <rect width="41" height="41" rx="20.5" stroke="#333" x=".5" y=".5" />
-    <g fill="#fff">
-      <path d="m14.2503 24.9644c.1223-.1223.2883-.191.4613-.191h15.9615c.2907 0 .4363.3516.2306.5571l-3.154 3.1515c-.1223.1223-.2883.191-.4613.191h-15.9615c-.2907 0-.4363-.3516-.2306-.5572z" />
-      <path d="m14.2503 13.191c.1223-.1223.2883-.191.4613-.191h15.9615c.2907 0 .4363.3516.2306.5571l-3.154 3.1515c-.1223.1222-.2883.1909-.4613.1909h-15.9615c-.2907 0-.4363-.3515-.2306-.5571z" />
-      <path d="m27.7497 19.0401c-.1223-.1223-.2883-.191-.4613-.191h-15.9615c-.2907 0-.4363.3516-.2306.5571l3.154 3.1515c.1223.1223.2883.191.4613.191h15.9615c.2907 0 .4363-.3517.2306-.5572z" />
-    </g>
-  </svg>
-)
-
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
@@ -64,7 +41,6 @@ export async function GET(req: NextRequest) {
             position: 'relative',
           }}
         >
-          <SolanaIcon />
           <div
             style={{
               display: 'flex',
