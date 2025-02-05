@@ -45,6 +45,7 @@
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
+    "jose": "5.9.6",
     "lucide-react": "^0.469.0",
     "next": "15.1.2 ",
     "pino-pretty": "^11.2.2",
