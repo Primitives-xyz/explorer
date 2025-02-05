@@ -23,8 +23,6 @@ export async function fetchTapestryServer<T = any>({
   const separator = cleanEndpoint.includes('?') ? '&' : '?'
   const url = `${BASE_URL}/${cleanEndpoint}${separator}apiKey=${API_KEY}`
 
-  console.log('TAPESTRY-SERVER', url)
-
   try {
     const options: RequestInit = {
       method,
@@ -37,16 +35,7 @@ export async function fetchTapestryServer<T = any>({
     if (data) {
       options.body = JSON.stringify(data)
     }
-
-    console.log('======================')
-    console.log('OPTIONS', options)
-    console.log('URL', url)
-
     const response = await fetch(url, options)
-
-    console.log('======================')
-    console.log('RESPONSE', response)
-
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Tapestry API Error from route: ', url, {

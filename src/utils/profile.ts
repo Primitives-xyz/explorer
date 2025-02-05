@@ -23,9 +23,6 @@ export async function getProfileMetadata(
       method: FetchMethod.GET,
     })
 
-    console.log('$$$$$$')
-    console.log(JSON.stringify(data, null, 2))
-
     return {
       image: data.profile?.image || null,
       socialCounts: data.socialCounts || { followers: 0, following: 0 },
