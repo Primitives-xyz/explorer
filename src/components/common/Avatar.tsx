@@ -9,6 +9,8 @@ interface AvatarProps {
 export function Avatar({ username, size = 32 }: AvatarProps) {
   const dicebearUrl = getDicebearUrl(username)
 
+  console.log('$$$$', dicebearUrl)
+
   return (
     <Image
       src={dicebearUrl}

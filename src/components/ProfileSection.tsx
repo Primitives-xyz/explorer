@@ -16,7 +16,7 @@ import { FilterBar } from './common/FilterBar'
 import { FilterButton } from './common/FilterButton'
 import { handleProfileNavigation } from '@/utils/profile-navigation'
 import { getDicebearUrl, EXPLORER_NAMESPACE } from '@/lib/constants'
-import Image from 'next/image'
+import { Avatar } from './common/Avatar'
 
 interface ProfileWithStats extends Profile {
   followStats?: {
@@ -74,13 +74,7 @@ const ProfileCard = memo(
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
         <div className="flex items-start gap-3 h-full">
           <div className="relative flex-shrink-0">
-            <Image
-              src={avatarUrl}
-              alt={`Avatar for ${profile.profile.username}`}
-              width={48}
-              height={48}
-              className="w-12 h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20"
-            />
+            <Avatar username={profile.profile.username} size={48} />
             {profile.namespace?.faviconURL && (
               <button
                 onClick={handleNamespaceClick}
