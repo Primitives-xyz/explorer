@@ -17,10 +17,15 @@ export async function getProfileMetadata(
   username: string,
 ): Promise<ProfileMetadata | null> {
   try {
+    console.log('$$$$$$')
+    console.log(username)
     const data = await fetchTapestryServer({
       endpoint: `profiles/${username}`,
       method: FetchMethod.GET,
     })
+
+    console.log('$$$$$$')
+    console.log(JSON.stringify(data, null, 2))
 
     return {
       image: data.profile?.image || null,
