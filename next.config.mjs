@@ -4,14 +4,16 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'api.dicebear.com',
+        pathname: '/7.x/shapes/svg/**',
+        port: '',
       },
       {
         protocol: 'https',
-        hostname: 'api.dicebear.com',
-        pathname: '/7.x/**',
-      },
+        hostname: '**',
+      }
     ],
+    dangerouslyAllowSVG: true,
   },
 }
 
