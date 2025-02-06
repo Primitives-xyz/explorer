@@ -12,6 +12,7 @@ export interface CommentItem {
   author?: {
     username: string
     id: string
+    image: string | null
   }
   requestingProfileSocialInfo?: {
     hasLiked: boolean

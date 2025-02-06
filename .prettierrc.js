@@ -7,4 +7,4 @@ module.exports = {
   bracketSpacing: true,
   arrowParens: 'always',
   endOfLine: 'lf',
-} 
+}
