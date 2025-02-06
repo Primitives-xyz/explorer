@@ -1,3 +1,4 @@
+import React from 'react'
 import { Copy } from 'lucide-react'
 
 interface Props {
