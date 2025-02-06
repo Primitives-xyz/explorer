@@ -137,13 +137,13 @@ export function UpdateProfileModal({
                 accept="image/*"
                 disabled={isUploading}
                 className="block w-full text-sm text-green-400
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-green-900/30 file:text-green-400
-                  hover:file:bg-green-900/50
+                  file:mr-4 file:py-1.5 file:px-4
+                  file:rounded-none file:border
+                  file:text-sm file:font-mono
+                  file:bg-transparent file:text-green-400
+                  hover:file:bg-green-900/30 hover:file:border-green-400
                   file:cursor-pointer file:transition-colors
-                  file:border file:border-green-500
+                  file:border-green-500/50
                   disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
