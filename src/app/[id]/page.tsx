@@ -28,7 +28,7 @@ export async function generateMetadata({
   const routeType = determineRouteType(id)
 
   // Default metadata as fallback
-  const defaultMetadata = {
+  const defaultMetadata: Metadata = {
     title: `${id} | Explorer`,
     description: `View details for ${id}`,
   }
@@ -55,7 +55,7 @@ export async function generateMetadata({
         return generateTransactionMetadata(cleanId)
 
       case 'profile':
-        return generateProfileMetadata(cleanId)
+        return await generateProfileMetadata(cleanId)
     }
   } catch (error) {
     console.error('Error generating metadata:', error)

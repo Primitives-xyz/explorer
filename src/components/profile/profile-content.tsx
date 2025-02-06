@@ -15,6 +15,7 @@ import { Modal } from '../common/modal'
 import { CommentWall } from './CommentWall'
 import { useState } from 'react'
 import { ProfileInfo } from './ProfileInfo'
+import { Avatar } from '../common/Avatar'
 
 interface Props {
   username: string
@@ -93,7 +94,10 @@ export function ProfileContent({ username }: Props) {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4">
-            <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
+            <div className="flex items-center gap-4">
+              <Avatar username={username} size={48} />
+              <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
+            </div>
             {!loading && data?.walletAddress && (
               <div className="flex items-center gap-2 text-sm text-green-600 sm:mb-1">
                 owned by <TokenAddress address={data.walletAddress} />
