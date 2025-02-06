@@ -73,12 +73,26 @@ const ProfileCard = memo(
         : 0
 
     const handleProfileClick = useCallback(() => {
-      handleProfileNavigation(profile, router)
+      if (!profile) return // Add guard clause
+      try {
+        handleProfileNavigation(profile, router)
+      } catch (error) {
+        console.error('Error navigating to profile:', error)
+      }
     }, [profile, router])
 
-    const handleNamespaceClick = useCallback(() => {
-      router.push(`/namespace/${profile.namespace?.name}`)
-    }, [router, profile.namespace?.name])
+    const handleNamespaceClick = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation() // Prevent event bubbling
+        if (!profile?.namespace?.name) return // Add guard clause
+        try {
+          router.push(`/namespace/${profile.namespace.name}`)
+        } catch (error) {
+          console.error('Error navigating to namespace:', error)
+        }
+      },
+      [router, profile?.namespace?.name],
+    )
 
     return (
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">

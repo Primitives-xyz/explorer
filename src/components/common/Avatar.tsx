@@ -18,7 +18,30 @@ export function Avatar({
 }: AvatarProps) {
   const [imageError, setImageError] = useState(false)
   const dicebearUrl = getDicebearUrl(username)
-  const finalImageUrl = !imageUrl || imageError ? dicebearUrl : imageUrl
+
+  // Normalize the image URL
+  const normalizeImageUrl = (url: string | null | undefined) => {
+    if (!url) return null
+    // If it's already a dicebear URL, return as is
+    if (url.includes('dicebear')) return url
+    try {
+      // Check if it's a valid URL
+      new URL(url)
+      return url
+    } catch {
+      // If it's a relative path, ensure it starts with a slash
+      if (url.startsWith('/')) return url
+      // If it's just a filename, assume it's in the root
+      if (!url.includes('/')) return `/${url}`
+      // Otherwise treat as relative path
+      return url
+    }
+  }
+
+  const finalImageUrl =
+    !imageUrl || imageError
+      ? dicebearUrl
+      : normalizeImageUrl(imageUrl) || dicebearUrl
 
   return (
     <div

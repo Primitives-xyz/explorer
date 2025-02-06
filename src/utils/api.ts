@@ -37,11 +37,12 @@ export const ITEMS_PER_PAGE = 20
 
 export async function getProfiles(
   walletAddress: string,
+  useIdentities: boolean = false,
   page: number = 1,
 ): Promise<PaginatedData<Profile>> {
   try {
     const response = await fetch(
-      `/api/profiles?walletAddress=${walletAddress}&page=${page}&limit=${ITEMS_PER_PAGE}`,
+      `/api/profiles?walletAddress=${walletAddress}&useIdentities=${useIdentities}&page=${page}&limit=${ITEMS_PER_PAGE}`,
     )
 
     if (!response.ok) {

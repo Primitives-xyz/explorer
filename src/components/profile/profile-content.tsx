@@ -77,7 +77,7 @@ export function ProfileContent({ username }: Props) {
     profiles,
     loading: loadingProfiles,
     error: profilesError,
-  } = useGetProfiles(data?.walletAddress || '')
+  } = useGetProfiles(data?.walletAddress || '', true)
 
   const walletAddressError =
     profilesError?.message === 'Invalid Solana wallet address'

@@ -4,7 +4,6 @@ import { GlobalSearch } from '@/components/GlobalSearch'
 import { AuthWrapper } from '@/components/auth/AuthWrapper'
 import dynamic from 'next/dynamic'
 import type { ReactNode } from 'react'
-import { HolderProvider } from '@/components/auth/hooks/use-holder-context'
 
 const WalletProvider = dynamic(
   () => import('@/components/auth/dynamic-provider').then((mod) => mod.default),
@@ -23,16 +22,14 @@ const Header = dynamic(
 export function ClientLayout({ children }: { children: ReactNode }) {
   return (
     <WalletProvider>
-      <HolderProvider>
-        <AuthWrapper>
-          <ActivityTape />
-          <div className="w-full overflow-hidden">
-            <Header />
-            {children}
-          </div>
-          <GlobalSearch />
-        </AuthWrapper>
-      </HolderProvider>
+      <AuthWrapper>
+        <ActivityTape />
+        <div className="w-full overflow-hidden">
+          <Header />
+          {children}
+        </div>
+        <GlobalSearch />
+      </AuthWrapper>
     </WalletProvider>
   )
 }
