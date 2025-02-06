@@ -134,7 +134,12 @@ export function CommentWall({
                             @{comment.author.username}
                           </span>
                         </Link>
-                        {comment.author && <FollowButton username={comment.author.username} size="sm" />}
+                        {comment.author && (
+                          <FollowButton
+                            username={comment.author.username}
+                            size="sm"
+                          />
+                        )}
                       </div>
                     )}
                     <div className="text-green-300 font-mono">
@@ -216,7 +221,12 @@ export function CommentWall({
                                       @{reply.author.username}
                                     </span>
                                   </Link>
-                                  {reply.author && <FollowButton username={reply.author.username} size="sm" />}
+                                  {reply.author && (
+                                    <FollowButton
+                                      username={reply.author.username}
+                                      size="sm"
+                                    />
+                                  )}
                                 </div>
                               )}
                               <div className="text-green-300 font-mono text-sm">
