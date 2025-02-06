@@ -8,7 +8,8 @@ import { Input } from '@/components/form/input'
 import { SubmitButton } from '@/components/form/submit-button'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState } from 'react'
-
+import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { createURL } from '@/lib/utils'
 export function CreateProfile({
   onProfileCreated,
 }: {
@@ -22,6 +23,8 @@ export function CreateProfile({
   const [error, setError] = useState<string | null>(null)
   const [response, setResponse] = useState<any | null>(null)
   const { authToken } = useDynamicContext()
+  const [fileUrl, setFileUrl] = useState<string>('')
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   useEffect(() => {
     // Only show modal if we have a wallet connected, no profile, and is a holder
@@ -32,6 +35,71 @@ export function CreateProfile({
     }
   }, [walletAddress, hasProfile, loadingProfiles])
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      await getUploadUrl(file)
+    }
+  }
+
+  const getUploadUrl = async (file: File) => {
+    try {
+      setIsUploadingImage(true)
+      setError(null)
+
+      const endpoint = `/api/upload/${encodeURIComponent(file.name)}`
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          Pragma: 'no-cache',
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to get upload URL')
+      }
+
+      if (!data.postUrl) {
+        throw new Error('No upload URL returned from server')
+      }
+
+      // Upload the file
+      const uploadResponse = await fetch(data.postUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      })
+
+      if (!uploadResponse.ok) {
+        const uploadErrorText = await uploadResponse
+          .text()
+          .catch(() => 'No error text available')
+        throw new Error(`Failed to upload image: ${uploadErrorText}`)
+      }
+
+      // Extract the path from the pre-signed URL
+      const url = new URL(data.postUrl)
+      const filePath = url.pathname.split('?')[0] // Remove query parameters
+
+      // Construct the final file URL
+      const finalFileUrl = createURL({
+        domain: process.env.NEXT_PUBLIC_TAPESTRY_ASSETS_URL || '',
+        endpoint: filePath || '',
+      })
+
+      setFileUrl(finalFileUrl)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload image')
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (walletAddress && username) {
@@ -40,15 +108,20 @@ export function CreateProfile({
         setLoading(true)
         setResponse(null)
 
+        // Use uploaded image URL if available, otherwise use Dicebear
+        const imageUrl =
+          fileUrl || `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
+
         const response = await fetch('/api/profiles/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`,
+            Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
             username,
             ownerWalletAddress: walletAddress,
+            profileImageUrl: imageUrl,
           }),
         })
 
@@ -91,8 +164,8 @@ export function CreateProfile({
     >
       <div className="space-y-6">
         <p className="text-green-400/80">
-          Choose a unique username for your profile. This will be your identity
-          in the app.
+          Choose a unique username and optionally upload a profile image. If no
+          image is uploaded, we'll generate one for you.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,7 +186,53 @@ export function CreateProfile({
             </p>
           </div>
 
-          <SubmitButton disabled={loading}>
+          <div className="space-y-2">
+            <label className="block text-sm text-green-500">
+              Profile Image (Optional)
+            </label>
+            <input
+              type="file"
+              onChange={handleFileSelect}
+              accept="image/*"
+              disabled={isUploadingImage}
+              className="block w-full text-sm text-green-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-green-900/30 file:text-green-400
+                hover:file:bg-green-900/50
+                file:cursor-pointer file:transition-colors
+                file:border file:border-green-500
+                disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            {isUploadingImage && (
+              <p className="text-sm text-green-500">Uploading image...</p>
+            )}
+            {fileUrl ? (
+              <div className="mt-2">
+                <img
+                  src={fileUrl}
+                  alt="Profile preview"
+                  className="w-20 h-20 rounded-full object-cover border-2 border-green-500"
+                />
+              </div>
+            ) : (
+              username && (
+                <div className="mt-2">
+                  <img
+                    src={`${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`}
+                    alt="Default avatar preview"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-green-500/50"
+                  />
+                  <p className="text-xs text-green-600 mt-1">
+                    This will be your default avatar if no image is uploaded
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+
+          <SubmitButton disabled={loading || isUploadingImage}>
             {loading ? 'Creating Profile...' : 'Create Profile'}
           </SubmitButton>
         </form>

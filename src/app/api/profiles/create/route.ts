@@ -2,15 +2,17 @@
 import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
+import { DICEBEAR_API_BASE } from '@/lib/constants'
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, ownerWalletAddress } = await req.json()
+    const { username, ownerWalletAddress, profileImageUrl } = await req.json()
 
     // Debug log
     console.log('[Profile Creation Debug]:', {
       username,
       ownerWalletAddress,
+      profileImageUrl,
       apiUrl: process.env.TAPESTRY_URL,
       hasApiKey: !!process.env.TAPESTRY_API_KEY,
     })
@@ -71,6 +73,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Use provided image URL or fallback to Dicebear
+    const image =
+      profileImageUrl || `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
+
     // Attempt to create profile
     const createProfileResponse = await fetchTapestryServer({
       endpoint: 'profiles/findOrCreate',
@@ -80,7 +86,7 @@ export async function POST(req: NextRequest) {
         walletAddress: ownerWalletAddress,
         blockchain: 'SOLANA',
         execution: 'FAST_UNCONFIRMED',
-        image: `https://api.dicebear.com/7.x/shapes/svg?seed=${username}`,
+        image,
         properties: [],
       },
     })
