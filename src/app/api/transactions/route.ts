@@ -6,6 +6,8 @@ import {
 } from '@solanafm/explorer-kit'
 import { getProgramIdl } from '@solanafm/explorer-kit-idls'
 
+const TRANSACTIONS_PER_PAGE = 20
+
 // Helper function to categorize transaction types
 function categorizeTransaction(tx: any) {
   const type = tx.type
@@ -199,8 +201,8 @@ export async function GET(request: NextRequest) {
   }
 
   const url = before
-    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&before=${before}&limit=20`
-    : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=20`
+    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&before=${before}&limit=${TRANSACTIONS_PER_PAGE}`
+    : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=${TRANSACTIONS_PER_PAGE}`
 
   try {
     const response = await fetch(url)
