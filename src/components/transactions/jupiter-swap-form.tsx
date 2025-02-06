@@ -19,13 +19,41 @@ interface JupiterSwapFormProps {
 const PLATFORM_FEE_BPS = 100 // 1% = 100 basis points
 const PLATFORM_FEE_ACCOUNT = 'NAMEPoWfnM4c1F9EoXcUgsQPwXZiy6pYpnTPM71aDwj'
 
-const PRIORITY_LEVELS: { label: string; value: PriorityLevel }[] = [
-  { label: 'Minimum', value: 'Min' },
-  { label: 'Low', value: 'Low' },
-  { label: 'Medium', value: 'Medium' },
-  { label: 'High', value: 'High' },
-  { label: 'Very High', value: 'VeryHigh' },
-  { label: 'Maximum (Unsafe)', value: 'UnsafeMax' },
+const PRIORITY_LEVELS: {
+  label: string
+  value: PriorityLevel
+  description: string
+}[] = [
+  {
+    label: 'Minimum',
+    value: 'Min',
+    description: 'Lowest fees, may fail during congestion',
+  },
+  {
+    label: 'Low',
+    value: 'Low',
+    description: 'Lower fees, suitable for non-urgent swaps',
+  },
+  {
+    label: 'Medium',
+    value: 'Medium',
+    description: 'Balanced fees and success rate',
+  },
+  {
+    label: 'High',
+    value: 'High',
+    description: 'Higher fees, better success rate',
+  },
+  {
+    label: 'Very High',
+    value: 'VeryHigh',
+    description: 'Very high fees, best for urgent swaps',
+  },
+  {
+    label: 'Maximum',
+    value: 'UnsafeMax',
+    description: 'Highest fees, use with caution',
+  },
 ]
 
 export const JupiterSwapForm = ({
@@ -47,6 +75,12 @@ export const JupiterSwapForm = ({
   const [priorityFee, setPriorityFee] = useState<number>(0)
   const [estimatingFee, setEstimatingFee] = useState(false)
   const { primaryWallet, walletAddress } = useCurrentWallet()
+  const [quoteResponse, setQuoteResponse] = useState<any>(null)
+  const [expectedOutput, setExpectedOutput] = useState<string>('')
+  const [priceImpact, setPriceImpact] = useState<string>('')
+  const [routeMap, setRouteMap] = useState<string>('')
+  const [slippageBps, setSlippageBps] = useState<number>(50) // 0.5% default
+  const [isQuoteDetailsOpen, setIsQuoteDetailsOpen] = useState(false)
 
   // Update form when props change
   useEffect(() => {
@@ -117,7 +151,7 @@ export const JupiterSwapForm = ({
       const quoteResponse = await fetch(
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
           `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-          `&slippageBps=50` +
+          `&slippageBps=${slippageBps}` +
           `&platformFeeBps=${PLATFORM_FEE_BPS}`,
       ).then((res) => res.json())
 
@@ -237,6 +271,36 @@ export const JupiterSwapForm = ({
     }
   }
 
+  const fetchQuote = async () => {
+    if (!inputAmount || !inputMint || !outputMint) return
+
+    try {
+      const multiplier = Math.pow(10, inputDecimals)
+      const adjustedAmount = Number(inputAmount) * multiplier
+
+      const response = await fetch(
+        `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
+          `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+          `&slippageBps=${slippageBps}` +
+          `&platformFeeBps=${PLATFORM_FEE_BPS}`,
+      ).then((res) => res.json())
+
+      setQuoteResponse(response)
+      setExpectedOutput(
+        (Number(response.outAmount) / Math.pow(10, 6)).toFixed(6),
+      )
+      setPriceImpact(response.priceImpactPct)
+      // You could also set route visualization here
+    } catch (err) {
+      console.error('Failed to fetch quote:', err)
+      setError('Failed to fetch quote. Please try again.')
+    }
+  }
+
+  useEffect(() => {
+    fetchQuote()
+  }, [inputAmount, inputMint, outputMint, slippageBps])
+
   return (
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
       <div className="flex flex-col gap-2">
@@ -269,24 +333,157 @@ export const JupiterSwapForm = ({
         </div>
 
         <div className="flex items-center gap-2">
+          <label className="text-sm text-green-400">Slippage Tolerance:</label>
           <select
-            className="bg-green-900/20 text-green-100 p-2 rounded flex-1"
+            className="bg-green-900/20 text-green-100 p-2 rounded"
+            value={slippageBps}
+            onChange={(e) => setSlippageBps(Number(e.target.value))}
+          >
+            <option value="10">0.1%</option>
+            <option value="50">0.5%</option>
+            <option value="100">1.0%</option>
+            <option value="200">2.0%</option>
+          </select>
+        </div>
+
+        {quoteResponse && (
+          <div className="space-y-3">
+            {/* Expected Output Card */}
+            <div className="bg-green-900/20 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm text-green-400">
+                    You'll receive approximately
+                  </p>
+                  <p className="text-xl font-semibold">
+                    {expectedOutput} {outputTokenName}
+                  </p>
+                </div>
+                <div className="text-right space-y-1">
+                  <p className="text-sm text-green-400">Rate</p>
+                  <p className="text-sm">
+                    1 {inputTokenName} ≈{' '}
+                    {(Number(expectedOutput) / Number(inputAmount)).toFixed(6)}{' '}
+                    {outputTokenName}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Collapsible Details Section */}
+            <div className="bg-green-900/20 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setIsQuoteDetailsOpen(!isQuoteDetailsOpen)}
+                className="w-full p-3 flex items-center justify-between hover:bg-green-900/30 transition-colors"
+              >
+                <span className="text-sm font-medium">Swap Details</span>
+                <svg
+                  className={`w-5 h-5 transition-transform ${
+                    isQuoteDetailsOpen ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {isQuoteDetailsOpen && (
+                <div className="p-3 space-y-2 border-t border-green-900/30">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-green-400">Price Impact</span>
+                    <span
+                      className={`flex items-center gap-1 ${
+                        Number(priceImpact) > 1
+                          ? 'text-red-400'
+                          : Number(priceImpact) > 0.5
+                          ? 'text-yellow-400'
+                          : 'text-green-400'
+                      }`}
+                    >
+                      {Number(priceImpact) > 1 && (
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
+                        </svg>
+                      )}
+                      {Number(priceImpact).toFixed(2)}%
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-green-400">Platform Fee</span>
+                    <span>{(PLATFORM_FEE_BPS / 100).toFixed(2)}%</span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-green-400">Slippage Tolerance</span>
+                    <span>{(slippageBps / 100).toFixed(2)}%</span>
+                  </div>
+
+                  {quoteResponse.routePlan && (
+                    <div className="pt-2 border-t border-green-900/30">
+                      <p className="text-sm text-green-400 mb-1">Route</p>
+                      <div className="text-xs space-y-1">
+                        {quoteResponse.routePlan.map(
+                          (step: any, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-1"
+                            >
+                              <span>{step.swapInfo.label}</span>
+                              {index < quoteResponse.routePlan.length - 1 && (
+                                <span>→</span>
+                              )}
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm text-green-400">
+            Transaction Priority:
+          </label>
+          <select
+            className="bg-green-900/20 text-green-100 p-2 rounded w-full"
             value={priorityLevel}
             onChange={(e) => setPriorityLevel(e.target.value as PriorityLevel)}
           >
             {PRIORITY_LEVELS.map((level) => (
-              <option key={level.value} value={level.value}>
-                {level.label}
+              <option
+                key={level.value}
+                value={level.value}
+                title={level.description}
+              >
+                {level.label}{' '}
+                {priorityFee > 0 &&
+                  level.value === priorityLevel &&
+                  `(${priorityFee} µ◎)`}
               </option>
             ))}
           </select>
-          <div className="text-xs text-green-500">
-            {estimatingFee
-              ? 'Estimating...'
-              : priorityFee > 0
-              ? `${priorityFee} µ◎`
-              : 'Priority Level'}
-          </div>
         </div>
 
         <button
