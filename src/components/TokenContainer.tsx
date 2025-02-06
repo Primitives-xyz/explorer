@@ -3,7 +3,6 @@ import { NFTSection } from './NFTSection'
 import { TokenSection } from './TokenSection'
 
 interface TokenContainerProps {
-  walletAddress: string
   hasSearched?: boolean
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
@@ -71,7 +70,6 @@ const filterTokens = (items: (FungibleToken | NFT)[]) => {
 }
 
 export const TokenContainer = ({
-  walletAddress,
   hasSearched,
   tokenType = 'all',
   hideTitle = false,

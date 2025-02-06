@@ -61,7 +61,6 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
   const renderContent = () => {
     return (
       <TokenContainer
-        walletAddress={address}
         hasSearched={true}
         tokenType={activeTab}
         hideTitle={true}
