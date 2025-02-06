@@ -216,6 +216,7 @@ export function CommentWall({
                                     <Avatar
                                       username={reply.author.username}
                                       size={20}
+                                      imageUrl={reply.author.image}
                                     />
                                     <span className="text-green-400 font-mono text-sm">
                                       @{reply.author.username}

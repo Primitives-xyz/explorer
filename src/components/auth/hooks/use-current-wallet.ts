@@ -35,7 +35,13 @@ export function useCurrentWallet() {
       isLoggedIn: false,
       sdkHasLoaded: false,
       profiles: [],
+      image: null,
     }
+
+  const mainProfile = profiles?.find(
+    (profile: any) => profile.namespace.name === 'nemoapp',
+  )?.profile
+  const image = mainProfile?.image || null
 
   return {
     walletAddress,
@@ -45,5 +51,6 @@ export function useCurrentWallet() {
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,
+    image,
   }
 }
