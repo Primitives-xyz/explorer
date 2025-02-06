@@ -71,7 +71,11 @@ const ProfileCard = memo(
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
         <div className="flex items-start gap-3 h-full">
           <div className="relative flex-shrink-0">
-            <Avatar username={profile.profile.username} size={48} />
+            <Avatar
+              username={profile.profile.username}
+              size={48}
+              imageUrl={profile.profile.image}
+            />
             {profile.namespace?.faviconURL && (
               <button
                 onClick={handleNamespaceClick}

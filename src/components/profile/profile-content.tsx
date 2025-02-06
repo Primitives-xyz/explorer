@@ -29,6 +29,7 @@ export interface ProfileData {
   }
   profile: {
     created_at: string
+    image: string | null
   }
 }
 
@@ -95,7 +96,11 @@ export function ProfileContent({ username }: Props) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4">
             <div className="flex items-center gap-4">
-              <Avatar username={username} size={48} />
+              <Avatar
+                username={username}
+                size={48}
+                imageUrl={data?.profile.image}
+              />
               <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
             </div>
             {!loading && data?.walletAddress && (

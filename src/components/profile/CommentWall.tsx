@@ -129,12 +129,18 @@ export function CommentWall({
                           <Avatar
                             username={comment.author.username}
                             size={24}
+                            imageUrl={comment.author.image}
                           />
                           <span className="text-green-400 font-mono text-sm">
                             @{comment.author.username}
                           </span>
                         </Link>
-                        {comment.author && <FollowButton username={comment.author.username} size="sm" />}
+                        {comment.author && (
+                          <FollowButton
+                            username={comment.author.username}
+                            size="sm"
+                          />
+                        )}
                       </div>
                     )}
                     <div className="text-green-300 font-mono">
@@ -211,12 +217,18 @@ export function CommentWall({
                                     <Avatar
                                       username={reply.author.username}
                                       size={20}
+                                      imageUrl={reply.author.image}
                                     />
                                     <span className="text-green-400 font-mono text-sm">
                                       @{reply.author.username}
                                     </span>
                                   </Link>
-                                  {reply.author && <FollowButton username={reply.author.username} size="sm" />}
+                                  {reply.author && (
+                                    <FollowButton
+                                      username={reply.author.username}
+                                      size="sm"
+                                    />
+                                  )}
                                 </div>
                               )}
                               <div className="text-green-300 font-mono text-sm">

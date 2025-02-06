@@ -51,4 +51,5 @@ export interface ProfileSearchResult {
     followers: number
     following: number
   }
+  walletAddress?: string
 }

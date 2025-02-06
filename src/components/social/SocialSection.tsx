@@ -10,6 +10,7 @@ interface SocialUser {
   id: string
   created_at: number
   namespace: string
+  image: string | null
   username: string
   bio: string | null
   wallet?: {
@@ -32,7 +33,7 @@ const SocialCard = memo(
     return (
       <div className="p-3 hover:bg-green-900/10">
         <div className="flex items-center gap-3">
-          <Avatar username={user.username} size={40} />
+          <Avatar username={user.username} size={40} imageUrl={user.image} />
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
