@@ -1,6 +1,7 @@
 import { formatNumber } from '@/utils/format'
 import type { Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import type { TokenInfo } from '@/types/Token'
 import Image from 'next/image'
 import { JupiterSwapForm } from './jupiter-swap-form'
@@ -171,7 +172,11 @@ export function SwapTransactionView({
 
       <div className="flex items-center gap-2 p-2 bg-green-900/10 rounded-lg">
         {/* From Token */}
-        <div className="flex-1 flex items-center gap-2">
+        <Link
+          href={`/${fromToken.mint}`}
+          className="flex-1 flex items-center gap-2 hover:opacity-80 transition-opacity"
+          aria-label={`View token ${fromToken.tokenInfo?.result?.content?.metadata?.symbol || fromToken.mint}`}
+        >
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-8 h-8 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
@@ -217,7 +222,7 @@ export function SwapTransactionView({
               )}
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Swap Icon */}
         <div className="flex-shrink-0">
@@ -239,7 +244,11 @@ export function SwapTransactionView({
         </div>
 
         {/* To Token */}
-        <div className="flex-1 flex items-center gap-2">
+        <Link
+          href={`/${toToken.mint}`}
+          className="flex-1 flex items-center gap-2 hover:opacity-80 transition-opacity"
+          aria-label={`View token ${toToken.tokenInfo?.result?.content?.metadata?.symbol || toToken.mint}`}
+        >
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-8 h-8 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
@@ -285,7 +294,7 @@ export function SwapTransactionView({
               )}
             </span>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Modal */}
