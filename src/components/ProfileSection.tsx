@@ -44,6 +44,19 @@ const ProfileCard = memo(
     const { mainUsername } = useCurrentWallet()
     const isExplorerApp = profile.namespace?.name === EXPLORER_NAMESPACE
 
+    const getReadableNamespace = (namespace: any) => {
+      // Special cases for namespace display names
+      const specialNames: Record<string, string> = {
+        nemoapp: 'Explorer',
+        farcaster_external: 'Farcaster',
+        allDomains: 'All Domains',
+      }
+
+      return (
+        specialNames[namespace.name] || namespace.readableName || namespace.name
+      )
+    }
+
     const { stats } = useFollowStats(
       isExplorerApp ? profile.profile.username : '',
       mainUsername || '',
@@ -127,13 +140,17 @@ const ProfileCard = memo(
                   <span className="text-green-600 font-mono text-xs truncate">
                     {profile.profile.bio}
                   </span>
+                </div>
+              )}
+
+              {profile.namespace && (
+                <div className="flex items-center gap-2">
                   <span className="text-green-600/50 text-xs">
                     <button
                       onClick={handleNamespaceClick}
                       className="hover:text-green-500 transition-colors"
                     >
-                      {profile.namespace?.readableName ||
-                        profile.namespace?.name}
+                      {getReadableNamespace(profile.namespace)}
                     </button>
                   </span>
                 </div>
@@ -165,6 +182,19 @@ export const ProfileSection = ({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const getReadableNamespace = (namespace: any) => {
+    // Special cases for namespace display names
+    const specialNames: Record<string, string> = {
+      nemoapp: 'Explorer',
+      farcaster_external: 'Farcaster',
+      allDomains: 'All Domains',
+    }
+
+    return (
+      specialNames[namespace.name] || namespace.readableName || namespace.name
+    )
+  }
 
   // Memoize filtered profiles
   const filteredProfiles = useMemo(() => {
@@ -334,7 +364,7 @@ export const ProfileSection = ({
         {namespaces.map((namespace) => (
           <FilterButton
             key={namespace.name}
-            label={namespace.readableName || namespace.name}
+            label={getReadableNamespace(namespace)}
             isSelected={selectedNamespace === namespace.name}
             onClick={() => setSelectedNamespace(namespace.name)}
             icon={namespace.faviconURL}
