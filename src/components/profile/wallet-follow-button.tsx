@@ -21,16 +21,18 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
   const { followWallet, loading, success } = useFollowWallet()
 
-  const buttonClasses = `font-mono rounded transition-colors ${
-    size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'
+  const buttonClasses = `font-mono rounded-lg transition-all active:scale-95 md:hover:scale-105 ${
+    size === 'lg'
+      ? 'px-6 py-3 text-base'
+      : 'px-4 py-2 text-sm md:px-3 md:py-1.5 md:text-xs'
   }`
-  const iconSize = size === 'lg' ? 16 : 14
+  const iconSize = size === 'lg' ? 18 : 16
 
   // Show loading state while initializing
   if (isLoggedIn && loading) {
     return (
       <div
-        className={`${buttonClasses} flex items-center gap-1 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
+        className={`${buttonClasses} flex items-center justify-center gap-2 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
       >
         <LoaderCircle className="animate-spin" size={iconSize} />
         <span>Loading...</span>
@@ -43,7 +45,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
     return (
       <DynamicConnectButton>
         <div
-          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 cursor-pointer`}
+          className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 cursor-pointer shadow-lg shadow-green-900/20`}
         >
           <UserRoundPlus size={iconSize} />
           Follow Wallet
@@ -70,7 +72,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
       <button
         onClick={handleFollow}
         disabled={loading}
-        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
+        className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 disabled:opacity-50 shadow-lg shadow-green-900/20`}
       >
         <UserRoundPlus size={iconSize} />
         {loading ? 'Following...' : 'Follow Wallet'}

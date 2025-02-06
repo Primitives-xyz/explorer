@@ -45,3 +45,7 @@ export function formatPercentage(num: number): string {
 export function formatUSD(num: number): string {
   return `$${formatNumber(num)}`
 }
+
+export function shortenAddress(address: string, chars = 4): string {
+  return `${address.slice(0, chars)}...${address.slice(-chars)}`
+}

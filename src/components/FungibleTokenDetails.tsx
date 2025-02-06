@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { TransactionSection } from './TransactionSection'
 import { JupiterSwapForm } from './transactions/jupiter-swap-form'
 import { Tab } from '@headlessui/react'
+import { LargestHolders } from './tokens/largest-holders'
 
 export default function FungibleTokenDetails({
   id,
@@ -22,7 +23,7 @@ export default function FungibleTokenDetails({
     <div className="w-full max-w-[100vw] overflow-x-hidden">
       <div className="container mx-auto px-2 md:px-8 py-8">
         {/* Hero Section with Token Identity */}
-        <div className="relative mb-8">
+        <div className="relative mb-4">
           <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />
           <div className="relative flex flex-col p-8 bg-black/40 border border-green-800 rounded-2xl backdrop-blur-sm">
             {/* Token Identity */}
@@ -194,68 +195,104 @@ export default function FungibleTokenDetails({
             </div>
           </div>
 
-          {/* Token Info Section */}
+          {/* Token Details Section */}
           <div className="flex flex-col">
             <h3 className="text-xl font-mono text-green-500 mb-4">
-              Token Info
+              Token Details
             </h3>
-            <div className="flex-1 bg-black/40 border border-green-800/40 rounded-xl p-6 space-y-6">
-              {/* Basic Token Info */}
-              <div className="space-y-3">
-                {[
-                  { label: 'Token Address', value: id },
-                  { label: 'Decimals', value: tokenInfo.token_info.decimals },
-                  {
-                    label: 'Token Program',
-                    value: tokenInfo.token_info.token_program,
-                  },
-                ].map((item, i) => (
-                  <div key={i} className="flex flex-col">
-                    <span className="text-green-500/60 text-sm">
-                      {item.label}
-                    </span>
-                    <span className="font-mono text-green-400 break-all">
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Authority Info */}
-              <div className="pt-4 border-t border-green-800/40">
-                <h4 className="text-lg font-mono text-green-500 mb-3">
-                  Authority
-                </h4>
-                <div className="space-y-4">
-                  {tokenInfo.authorities.map((authority, i) => (
-                    <div key={i} className="space-y-2">
-                      <div className="flex flex-col">
-                        <span className="text-green-500/60 text-sm">
-                          Address
-                        </span>
-                        <span className="font-mono text-green-400 break-all">
-                          {authority.address}
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-green-500/60 text-sm">
-                          Scopes
-                        </span>
-                        <div className="flex flex-wrap gap-2">
-                          {authority.scopes.map((scope, j) => (
-                            <span
-                              key={j}
-                              className="px-2 py-1 bg-green-500/10 rounded-md text-green-400 text-sm"
-                            >
-                              {scope}
-                            </span>
-                          ))}
+            <div className="flex-1 bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
+              <Tab.Group className="h-full flex flex-col">
+                <Tab.List className="flex space-x-1 border-b border-green-800/40">
+                  <Tab
+                    className={({ selected }) =>
+                      `flex-1 px-6 py-4 text-lg font-mono outline-none ${
+                        selected
+                          ? 'text-green-500 bg-green-900/20'
+                          : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
+                      } transition-colors`
+                    }
+                  >
+                    About
+                  </Tab>
+                  <Tab
+                    className={({ selected }) =>
+                      `flex-1 px-6 py-4 text-lg font-mono outline-none ${
+                        selected
+                          ? 'text-green-500 bg-green-900/20'
+                          : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
+                      } transition-colors`
+                    }
+                  >
+                    Token Holders
+                  </Tab>
+                </Tab.List>
+                <Tab.Panels className="h-[350px]">
+                  <Tab.Panel className="h-full overflow-y-auto p-6 space-y-6">
+                    {/* Basic Token Details */}
+                    <div className="space-y-3">
+                      {[
+                        { label: 'Token Address', value: id },
+                        {
+                          label: 'Decimals',
+                          value: tokenInfo.token_info.decimals,
+                        },
+                        {
+                          label: 'Token Program',
+                          value: tokenInfo.token_info.token_program,
+                        },
+                      ].map((item, i) => (
+                        <div key={i} className="flex flex-col">
+                          <span className="text-green-500/60 text-sm">
+                            {item.label}
+                          </span>
+                          <span className="font-mono text-green-400 break-all">
+                            {item.value}
+                          </span>
                         </div>
+                      ))}
+                    </div>
+
+                    {/* Authority Info */}
+                    <div className="pt-4 border-t border-green-800/40">
+                      <h4 className="text-lg font-mono text-green-500 mb-3">
+                        Authority
+                      </h4>
+                      <div className="space-y-4">
+                        {tokenInfo.authorities.map((authority, i) => (
+                          <div key={i} className="space-y-2">
+                            <div className="flex flex-col">
+                              <span className="text-green-500/60 text-sm">
+                                Address
+                              </span>
+                              <span className="font-mono text-green-400 break-all">
+                                {authority.address}
+                              </span>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-green-500/60 text-sm">
+                                Scopes
+                              </span>
+                              <div className="flex flex-wrap gap-2">
+                                {authority.scopes.map((scope, j) => (
+                                  <span
+                                    key={j}
+                                    className="px-2 py-1 bg-green-500/10 rounded-md text-green-400 text-sm"
+                                  >
+                                    {scope}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </Tab.Panel>
+                  <Tab.Panel className="h-full">
+                    <LargestHolders mintAddress={id} totalSupply={supply} />
+                  </Tab.Panel>
+                </Tab.Panels>
+              </Tab.Group>
             </div>
           </div>
         </div>
