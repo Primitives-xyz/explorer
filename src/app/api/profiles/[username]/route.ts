@@ -55,10 +55,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { username: string } },
-) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
@@ -87,10 +84,12 @@ export async function PUT(
     }
 
     const { username, bio, image } = await request.json()
+    const params = await context.params
+    const { username: profileUsername } = params
 
     // Call Tapestry API to update profile using fetchTapestryServer
     const data = await fetchTapestryServer({
-      endpoint: `profiles/${params.username}`,
+      endpoint: `profiles/${profileUsername}`,
       method: FetchMethod.PUT,
       data: {
         username,
