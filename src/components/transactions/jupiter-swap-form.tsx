@@ -353,7 +353,7 @@ export const JupiterSwapForm = ({
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm text-green-400">
-                    You'll receive approximately
+                    You&apos;ll receive approximately
                   </p>
                   <p className="text-xl font-semibold">
                     {expectedOutput} {outputTokenName}
