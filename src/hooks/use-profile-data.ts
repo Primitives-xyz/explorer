@@ -49,13 +49,6 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-const areArraysEqual = (a: any[] | null, b: any[] | null) => {
-  if (a === b) return true
-  if (!a || !b) return false
-  if (a.length !== b.length) return false
-  return JSON.stringify(a) === JSON.stringify(b)
-}
-
 export function useProfileData(username: string, mainUsername?: string | null) {
   const [state, setState] = useState<ProfileState>({ type: 'loading' })
   const prevDataRef = useRef<LoadedState | null>(null)
@@ -81,13 +74,13 @@ export function useProfileData(username: string, mainUsername?: string | null) {
   const {
     followers,
     isLoading: isLoadingFollowers,
-    error: followersError,
+    error: _followersError,
   } = useProfileFollowers(username)
 
   const {
     following,
     isLoading: isLoadingFollowing,
-    error: followingError,
+    error: _followingError,
   } = useProfileFollowing(username)
 
   const { comments, isLoading: isLoadingComments } = useProfileComments(
