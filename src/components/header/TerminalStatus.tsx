@@ -10,7 +10,13 @@ export const TerminalStatus = ({ mainUsername }: TerminalStatusProps) => {
       <div className="flex items-center justify-between text-[10px] text-green-600/80 whitespace-nowrap overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500/80 flex-shrink-0"></div>
-          STATUS: ONLINE | NETWORK: SOLANA | MODE: READ
+          STATUS: ONLINE | NETWORK: SOLANA | $SSE:{' '}
+          <Link
+            href="/H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump"
+            className="text-green-500 hover:opacity-80 transition-opacity"
+          >
+            H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump
+          </Link>
         </div>
         {mainUsername && (
           <Link
