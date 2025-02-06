@@ -25,7 +25,6 @@ export const TransactionSection = ({
   const [newTransactions, setNewTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isCheckingNew, setIsCheckingNew] = useState(false)
   const [page, setPage] = useState(1)
   const [selectedType, setSelectedType] = useState<string>('all')
   const ITEMS_PER_PAGE = 20
@@ -130,7 +129,6 @@ export const TransactionSection = ({
     if (!walletAddress || !hasSearched) return
 
     const checkNewTransactions = async () => {
-      setIsCheckingNew(true)
       try {
         const url = new URL('/api/transactions', window.location.origin)
         url.searchParams.set('address', walletAddress)
@@ -163,8 +161,6 @@ export const TransactionSection = ({
         }
       } catch (error) {
         console.error('Error checking for new transactions:', error)
-      } finally {
-        setIsCheckingNew(false)
       }
     }
 
