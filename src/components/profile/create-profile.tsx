@@ -160,7 +160,7 @@ export function CreateProfile({
     <Modal
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}
-      title="Welcome! Let's Create Your Profile"
+      title="Welcome! Let&apos;s Create Your Profile"
     >
       <div className="space-y-6">
         <p className="text-green-400/80">
