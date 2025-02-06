@@ -105,7 +105,7 @@ This section lists the labels we use to help us track and manage issues and pull
 If you need help, you can:
 
 - Join our [Discord community](https://discord.gg/tapestry)
-- Check out the [documentation](https://docs.tapestry.dev)
+- Check out the [documentation](https://docs.usetapestry.dev)
 - Ask in our GitHub discussions
 
 Thank you for contributing!

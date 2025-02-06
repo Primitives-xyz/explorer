@@ -16,7 +16,7 @@ export const APP_DESCRIPTION =
   process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
   'Explore social connections, NFTs, and token holdings on Solana'
 export const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.tapestry.dev'
+  process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.usetapestry.dev'
 export const APP_TWITTER_HANDLE =
   process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto'
 

@@ -1,6 +1,6 @@
 # Tapestry Protocol Explorer
 
-A social graph explorer for the Solana blockchain, built with [Tapestry Protocol](https://tapestry.dev). Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.
+A social graph explorer for the Solana blockchain, built with [Tapestry Protocol](https://usetapestry.dev). Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.
 
 ## Features
 
@@ -18,7 +18,7 @@ A social graph explorer for the Solana blockchain, built with [Tapestry Protocol
 - [TypeScript](https://www.typescriptlang.org/) - Type Safety
 - [pnpm](https://pnpm.io/) - Package Manager
 - [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/) - Blockchain Interaction
-- [Tapestry Protocol](https://docs.tapestry.dev/) - Social Graph Protocol
+- [Tapestry Protocol](https://docs.usetapestry.dev/) - Social Graph Protocol
 
 ## Prerequisites
 
@@ -87,10 +87,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- Documentation: [https://docs.tapestry.dev](https://docs.tapestry.dev)
+- Documentation: [https://docs.usetapestry.dev](https://docs.usetapestry.dev)
 - Discord: [Join our community](https://discord.gg/tapestry)
 - Twitter: [@TapestryProto](https://twitter.com/TapestryProto)
-- Email: support@tapestry.dev
+- Email: support@usetapestry.dev
 
 ## Tapestry endpoints
 

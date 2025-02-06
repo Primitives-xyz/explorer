@@ -21,7 +21,7 @@ export const metadata: Metadata = {
       process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
       'Explore social connections, NFTs, and token holdings on Solana. Discover the social fabric of Web3.',
     type: 'website',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.tapestry.dev',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.usetapestry.dev',
     images: [
       {
         url: `${process.env.NEXT_PUBLIC_TAPESTRY_ASSETS_URL}/explorer-2.png`,
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical:
-      process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.tapestry.dev',
+      process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.usetapestry.dev',
   },
   icons: {
     icon: '/favicon.png',
