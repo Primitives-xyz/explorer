@@ -85,7 +85,7 @@ const ProfileCard = memo(
               </button>
             )}
           </div>
-          <div className="flex-1 min-w-[240px]">
+          <div className="flex-1 min-w-[360px]">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -273,7 +273,7 @@ export const ProfileSection = ({
       count={filteredProfiles?.length || 0}
       error={error}
       height="large"
-      className="min-w-[320px]"
+      className="min-w-[480px]"
       headerRight={
         <button
           onClick={() => setIsModalOpen(true)}
