@@ -9,7 +9,7 @@ import {
 } from '@/utils/searchHistory'
 import { useRouter } from 'next/navigation'
 import React, { type ChangeEvent, useEffect, useRef, useState } from 'react'
-import { WalletAddressButton } from './common/WalletAddressButton'
+import { TokenAddress } from './tokens/TokenAddress'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 
@@ -194,8 +194,8 @@ export default function SearchBar({
                     <div className="flex-1">
                       <div className="font-mono text-green-400 text-sm flex items-center gap-2">
                         {profile.profile.username}
-                        {profile.wallet?.address && (
-                          <WalletAddressButton address={profile.wallet.address} />
+                        {profile.walletAddress && (
+                          <TokenAddress address={profile.walletAddress} />
                         )}
                       </div>
                       <div className="text-green-600 text-xs flex justify-between">
