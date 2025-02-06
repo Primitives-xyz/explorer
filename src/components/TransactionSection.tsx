@@ -18,12 +18,25 @@ export const TransactionSection = ({
   walletAddress,
   hasSearched,
 }: TransactionSectionProps) => {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  // Use a Map to store unique transactions by signature
+  const [transactionMap, setTransactionMap] = useState<
+    Map<string, Transaction>
+  >(new Map())
+  const [newTransactions, setNewTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [selectedType, setSelectedType] = useState<string>('all')
   const ITEMS_PER_PAGE = 20
+
+  // Convert Map to sorted array for display
+  const transactions = useMemo(() => {
+    return Array.from(transactionMap.values()).sort((a, b) => {
+      const timeA = a.timestamp || 0
+      const timeB = b.timestamp || 0
+      return timeB - timeA // Sort by timestamp, newest first
+    })
+  }, [transactionMap])
 
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
@@ -35,6 +48,19 @@ export const TransactionSection = ({
     })
     return Array.from(types)
   }, [transactions])
+
+  // Helper function to merge transactions into the map
+  const mergeTransactions = (newTxs: Transaction[]) => {
+    setTransactionMap((prevMap) => {
+      const updatedMap = new Map(prevMap)
+      newTxs.forEach((tx) => {
+        if (tx.signature && !isSpamTransaction(tx)) {
+          updatedMap.set(tx.signature, tx)
+        }
+      })
+      return updatedMap
+    })
+  }
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -51,7 +77,7 @@ export const TransactionSection = ({
         // For pagination, use the last transaction's signature
         if (page > 1 && transactions.length > 0) {
           const lastTransaction = transactions[transactions.length - 1]
-          if (lastTransaction) {
+          if (lastTransaction?.signature) {
             url.searchParams.set('before', lastTransaction.signature)
           }
         }
@@ -70,34 +96,18 @@ export const TransactionSection = ({
         // Handle empty response
         if (!Array.isArray(transactionsData) || transactionsData.length === 0) {
           if (page > 1) {
-            // If we're paginating and get no results, we've reached the end
             setPage((prev) => prev - 1)
           }
           setIsLoading(false)
           return
         }
 
-        setTransactions((prevTransactions) => {
-          if (page === 1) return transactionsData
+        if (page === 1) {
+          // Reset the map for new searches
+          setTransactionMap(new Map())
+        }
 
-          // Create a Set of existing signatures for O(1) lookup
-          const existingSignatures = new Set(
-            prevTransactions.map((tx) => tx.signature),
-          )
-
-          // Only add transactions that don't already exist
-          const newTransactions = transactionsData.filter(
-            (tx: Transaction) => !existingSignatures.has(tx.signature),
-          )
-
-          // If no new unique transactions were found, we've reached the end
-          if (newTransactions.length === 0) {
-            setPage((prev) => prev - 1) // Revert the page increment
-            return prevTransactions
-          }
-
-          return [...prevTransactions, ...newTransactions]
-        })
+        mergeTransactions(transactionsData)
       } catch (error) {
         console.error('Error fetching transactions:', error)
         setError(
@@ -105,7 +115,7 @@ export const TransactionSection = ({
             ? error.message
             : 'Failed to fetch transactions.',
         )
-        if (page === 1) setTransactions([])
+        if (page === 1) setTransactionMap(new Map())
       } finally {
         setIsLoading(false)
       }
@@ -114,11 +124,59 @@ export const TransactionSection = ({
     fetchTransactions()
   }, [walletAddress, hasSearched, page])
 
+  // Add polling for new transactions
+  useEffect(() => {
+    if (!walletAddress || !hasSearched) return
+
+    const checkNewTransactions = async () => {
+      try {
+        const url = new URL('/api/transactions', window.location.origin)
+        url.searchParams.set('address', walletAddress)
+        url.searchParams.set('limit', '50')
+
+        if (transactions.length > 0 && transactions[0]?.signature) {
+          url.searchParams.set('after', transactions[0].signature)
+        }
+
+        const response = await fetch(url)
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`)
+
+        const newTxs = await response.json()
+        if (Array.isArray(newTxs) && newTxs.length > 0) {
+          // Filter out transactions we already have in newTransactions
+          const existingNewSignatures = new Set(
+            newTransactions.map((tx) => tx.signature),
+          )
+          const filteredNewTxs = newTxs.filter(
+            (tx) =>
+              !isSpamTransaction(tx) &&
+              !transactionMap.has(tx.signature) &&
+              !existingNewSignatures.has(tx.signature),
+          )
+
+          if (filteredNewTxs.length > 0) {
+            setNewTransactions((prev) => [...filteredNewTxs, ...prev])
+          }
+        }
+      } catch (error) {
+        console.error('Error checking for new transactions:', error)
+      }
+    }
+
+    const interval = setInterval(checkNewTransactions, 8000)
+    return () => clearInterval(interval)
+  }, [walletAddress, hasSearched, transactions, transactionMap])
+
+  const handleLoadNewTransactions = () => {
+    mergeTransactions(newTransactions)
+    setNewTransactions([])
+  }
+
   if (!hasSearched) return null
 
-  // Filter transactions by type and spam
+  // Filter transactions by type
   const filteredTransactions = transactions.filter((tx) => {
-    if (isSpamTransaction(tx)) return false
     if (selectedType === 'all') return true
     return tx.type?.toLowerCase().replace('_', ' ') === selectedType
   })
@@ -139,6 +197,21 @@ export const TransactionSection = ({
           />
         ))}
       </FilterBar>
+
+      {newTransactions.length > 0 && (
+        <button
+          onClick={handleLoadNewTransactions}
+          className="w-full py-2 px-4 bg-green-500/10 hover:bg-green-500/20 text-green-400 font-mono border-y border-green-500/20 mb-2 relative group transition-all duration-300"
+        >
+          <div className="relative flex items-center gap-3">
+            <span className="text-green-500 animate-pulse">●</span>
+            <span>
+              {newTransactions.length} new transaction
+              {newTransactions.length !== 1 ? 's' : ''} available
+            </span>
+          </div>
+        </button>
+      )}
 
       <ScrollableContent
         isLoading={isLoading && filteredTransactions.length === 0}
