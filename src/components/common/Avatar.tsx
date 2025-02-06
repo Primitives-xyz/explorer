@@ -4,7 +4,7 @@ import Image from 'next/image'
 interface AvatarProps {
   username: string
   size?: number
-  imageUrl: string | null
+  imageUrl?: string | null
 }
 
 export function Avatar({ username, size = 32, imageUrl }: AvatarProps) {
