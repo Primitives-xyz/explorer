@@ -19,28 +19,18 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    console.log(
-      `[follow-wallet] Processing follow request for wallet: ${walletToFollow}`,
-    )
-
     // First check if profile exists
-    console.log('[follow-wallet] Checking for existing profile')
+
     const existingProfile = await fetchTapestryServer({
       endpoint: `profiles?walletAddress=${walletToFollow}`,
       method: FetchMethod.GET,
     })
-    console.log(
-      '[follow-wallet] Existing profile check response:',
-      existingProfile,
-    )
 
     let profile = null
     if (existingProfile?.profiles?.[0]) {
       profile = existingProfile.profiles[0]
-      console.log('[follow-wallet] Found existing profile:', profile)
     } else {
       // No profile exists, create one
-      console.log('[follow-wallet] No existing profile found, creating new one')
       const createAttempt = await fetchTapestryServer({
         endpoint: 'profiles/findOrCreate',
         method: FetchMethod.POST,
@@ -53,7 +43,6 @@ export async function POST(req: NextRequest) {
           properties: [],
         },
       })
-      console.log('[follow-wallet] Create profile response:', createAttempt)
 
       if (!createAttempt) {
         throw new Error('Failed to create profile for wallet')
@@ -63,10 +52,8 @@ export async function POST(req: NextRequest) {
     }
 
     const usernameToFollow = profile?.profile?.username || walletToFollow
-    console.log(`[follow-wallet] Final username to follow: ${usernameToFollow}`)
 
     // Now follow the profile
-    console.log('[follow-wallet] Attempting to create follow relationship')
     const followResponse = await fetchTapestryServer({
       endpoint: 'followers/add',
       method: FetchMethod.POST,
@@ -75,7 +62,6 @@ export async function POST(req: NextRequest) {
         endId: usernameToFollow,
       },
     })
-    console.log('[follow-wallet] Follow response:', followResponse)
 
     return NextResponse.json(followResponse)
   } catch (error: any) {

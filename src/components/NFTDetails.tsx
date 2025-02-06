@@ -66,7 +66,6 @@ function NFTImage({ url, name, isLoading, className = '' }: NFTImageProps) {
 
 export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
   const [activeTab, setActiveTab] = useState<NFTTab>('overview')
-  console.log({ tokenInfo })
   const { url: imageUrl, isLoading: imageLoading } = useNFTImage(
     tokenInfo.content,
   )

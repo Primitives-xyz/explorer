@@ -25,17 +25,7 @@ interface TrendingToken {
 
 // Memoized token card component to prevent unnecessary re-renders
 const TokenCard = memo(
-  ({
-    token,
-    isSelected,
-    onClick,
-  }: {
-    token?: TrendingToken
-    isSelected: boolean
-    onClick: () => void
-  }) => {
-    const _t = isSelected
-    console.log('t', _t)
+  ({ token, onClick }: { token?: TrendingToken; onClick: () => void }) => {
     const router = useRouter()
     if (!token) return null
     return (
@@ -242,7 +232,6 @@ export const TrendingTokens = () => {
                 >
                   <TokenCard
                     token={token}
-                    isSelected={selectedToken?.address === token?.address}
                     onClick={() =>
                       setSelectedToken(
                         selectedToken?.address === token?.address

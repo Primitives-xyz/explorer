@@ -40,10 +40,6 @@ export const NFTTransactionView = memo(function NFTTransactionView({
     }
   }, [tx])
 
-  if (tx.type === 'UNKNOWN') {
-    console.log(`[NFTTransactionView] Unknown transaction type:`, { tx })
-  }
-
   // Memoize transaction type calculations
   const { isMint, isBuy, saleAmount } = useMemo(() => {
     const isMint = tx.type === 'COMPRESSED_NFT_MINT' || !!compressedNFTMintEvent

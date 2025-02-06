@@ -59,11 +59,8 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
 
   const handleLogoutClick = async () => {
     try {
-      console.log('Logout clicked, attempting to log out...')
       setShowDropdown(false) // Close dropdown immediately
-      console.log('Calling handleLogOut from Dynamic...')
       await handleLogOut()
-      console.log('Logout successful, redirecting...')
       // Force a page refresh to ensure clean state
       window.location.href = '/'
     } catch (error) {

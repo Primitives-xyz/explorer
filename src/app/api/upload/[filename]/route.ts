@@ -20,7 +20,6 @@ export async function POST(_request: NextRequest, context: RouteContext) {
     }
 
     const decodedFilename = decodeURIComponent(filename)
-    console.log('Generating upload URL for:', decodedFilename)
 
     const data = await fetchTapestryServer({
       endpoint: `upload/${encodeURIComponent(decodedFilename)}`,
@@ -36,7 +35,6 @@ export async function POST(_request: NextRequest, context: RouteContext) {
       )
     }
 
-    console.log('Successfully generated upload URL for:', decodedFilename)
     return NextResponse.json({
       postUrl: data.postUrl,
       filename: decodedFilename,

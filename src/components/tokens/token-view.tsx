@@ -24,7 +24,6 @@ export async function TokenView({ id }: { id: string }) {
 
   // If no token info found, treat as a wallet
   if (!tokenInfo?.result) {
-    console.log('RENDERING WALLET')
     return <WalletView address={id} />
   }
 

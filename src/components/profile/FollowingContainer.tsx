@@ -1,7 +1,7 @@
 import { useGetFollowing } from './hooks/use-get-following'
 import { useFollowingTransactions } from './hooks/use-following-transactions'
 import { FollowingTransactionFeed } from './FollowingTransactionFeed'
-import { useDynamicContext, useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
+import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 
 interface ActivityFeedContainerProps {
   username: string
@@ -12,7 +12,6 @@ export const ActivityFeedContainer = ({
 }: ActivityFeedContainerProps) => {
   const { following, loading } = useGetFollowing(username)
   const isLoggedIn = useIsLoggedIn()
-  const { sdkHasLoaded } = useDynamicContext()
   const {
     aggregatedTransactions,
     isLoadingTransactions,
@@ -25,7 +24,6 @@ export const ActivityFeedContainer = ({
       <FollowingTransactionFeed
         transactions={aggregatedTransactions}
         isLoading={isLoadingTransactions || loading}
-        sdkHasLoaded={sdkHasLoaded}
         isLoggedIn={isLoggedIn}
         loadedWallets={loadedWallets}
         totalWallets={totalWallets}

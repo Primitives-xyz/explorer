@@ -203,7 +203,6 @@ export async function GET(request: NextRequest) {
     : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=5`
 
   try {
-    console.log('Fetching transactions from Helius for address:', address)
     const response = await fetch(url)
     if (!response.ok) {
       console.error('Helius API error:', response.status, await response.text())
@@ -213,17 +212,13 @@ export async function GET(request: NextRequest) {
 
     // Handle empty response from Helius
     if (!Array.isArray(data) || data.length === 0) {
-      console.log('No transactions returned from Helius')
       return NextResponse.json([])
     }
 
-    console.log('Parsing', data.length, 'transactions')
     const parsedData = await parseTransactions(data)
-    console.log('Parsed transaction count:', parsedData?.length || 0)
 
     // Handle case where all transactions were filtered out
     if (!parsedData || parsedData.length === 0) {
-      console.log('All transactions were filtered out')
       return NextResponse.json([])
     }
 

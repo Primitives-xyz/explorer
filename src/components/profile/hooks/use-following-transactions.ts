@@ -13,7 +13,6 @@ async function fetchWalletTransactions(
   try {
     const response = await fetch(url)
     if (!response.ok) {
-      console.log(`Failed to fetch transactions for ${walletId}`)
       return []
     }
     const data = await response.json()
@@ -22,7 +21,6 @@ async function fetchWalletTransactions(
       sourceWallet: walletId, // Add source wallet for tracking
     }))
   } catch (error) {
-    console.log(`Error fetching transactions for ${walletId}:`, error)
     return []
   }
 }

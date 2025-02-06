@@ -15,16 +15,13 @@ import Image from 'next/image'
 
 interface SearchBarProps {
   onPickRecentAddress?: (addr: string) => void
-  onClose?: () => void
   autoFocus?: boolean
 }
 
 export default function SearchBar({
   onPickRecentAddress,
-  onClose,
   autoFocus,
 }: SearchBarProps) {
-  console.log({ onClose })
   const router = useRouter()
   const [inputValue, setInputValue] = useState('')
   const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>([])

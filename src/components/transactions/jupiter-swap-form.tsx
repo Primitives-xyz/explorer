@@ -223,8 +223,6 @@ export const JupiterSwapForm = ({
           duration: 5000,
         })
       }
-
-      console.log(tx)
     } catch (err) {
       console.error('Swap failed:', err)
       toast({

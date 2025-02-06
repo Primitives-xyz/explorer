@@ -6,7 +6,6 @@ import { ImageModal } from './tokens/ImageModal'
 import { NFTGrid } from './tokens/NFTGrid'
 
 interface NFTSectionProps {
-  walletAddress: string
   hasSearched?: boolean
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
@@ -16,7 +15,6 @@ interface NFTSectionProps {
 }
 
 export const NFTSection = ({
-  walletAddress,
   hasSearched,
   tokenType = 'all',
   hideTitle = false,
@@ -24,7 +22,6 @@ export const NFTSection = ({
   error,
   items = [],
 }: NFTSectionProps) => {
-  console.log('walletAddress', walletAddress)
   const [selectedImage, setSelectedImage] = useState<{
     url: string
     symbol: string

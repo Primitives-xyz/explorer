@@ -8,15 +8,6 @@ export async function POST(req: NextRequest) {
   try {
     const { username, ownerWalletAddress, profileImageUrl } = await req.json()
 
-    // Debug log
-    console.log('[Profile Creation Debug]:', {
-      username,
-      ownerWalletAddress,
-      profileImageUrl,
-      apiUrl: process.env.TAPESTRY_URL,
-      hasApiKey: !!process.env.TAPESTRY_API_KEY,
-    })
-
     // Input validation
     if (!username && !ownerWalletAddress) {
       return NextResponse.json(
@@ -96,7 +87,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Debug log successful response
-    console.log('[Profile Creation Success]:', createProfileResponse)
 
     return NextResponse.json(createProfileResponse)
   } catch (error: any) {

@@ -57,7 +57,6 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
       const transfer = tx.tokenTransfers[0]
 
       if (!transfer?.tokenMint) {
-        console.log('No token mint found in transfer:', transfer)
         return
       }
 

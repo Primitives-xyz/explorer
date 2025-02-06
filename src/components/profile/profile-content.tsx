@@ -24,7 +24,6 @@ const SocialModal = memo(function SocialModal({
   title,
   users,
   isLoading,
-  error,
   type,
 }: {
   isOpen: boolean
@@ -32,17 +31,11 @@ const SocialModal = memo(function SocialModal({
   title: string
   users: any[]
   isLoading: boolean
-  error: any
   type: 'followers' | 'following'
 }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <SocialSection
-        users={users}
-        isLoading={isLoading}
-        error={error}
-        type={type}
-      />
+      <SocialSection users={users} isLoading={isLoading} type={type} />
     </Modal>
   )
 })
@@ -80,8 +73,6 @@ export function ProfileContent({ username }: Props) {
     isLoadingComments,
     walletAddressError,
     serverError,
-    followersError,
-    followingError,
   } = useProfileData(username, mainUsername)
 
   const handleEditProfile = useCallback(() => {
@@ -170,7 +161,6 @@ export function ProfileContent({ username }: Props) {
         title={`@${username}'s Followers`}
         users={followers}
         isLoading={isLoadingFollowers}
-        error={followersError}
         type="followers"
       />
 
@@ -180,7 +170,6 @@ export function ProfileContent({ username }: Props) {
         title={`@${username}'s Following`}
         users={following}
         isLoading={isLoadingFollowing}
-        error={followingError}
         type="following"
       />
 
