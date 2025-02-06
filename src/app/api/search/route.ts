@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const url = `${baseUrl}/search/profiles?query=${query}&apiKey=${apiKey}&includeExternalProfiles=true`
+    const url = `${baseUrl}/search/profiles?query=${query}&apiKey=${apiKey}&includeExternalProfiles=true&includeWallet=true`
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',

@@ -9,6 +9,7 @@ import {
 } from '@/utils/searchHistory'
 import { useRouter } from 'next/navigation'
 import React, { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import { WalletAddressButton } from './common/WalletAddressButton'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 
@@ -191,8 +192,11 @@ export default function SearchBar({
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className="font-mono text-green-400 text-sm">
+                      <div className="font-mono text-green-400 text-sm flex items-center gap-2">
                         {profile.profile.username}
+                        {profile.wallet?.address && (
+                          <WalletAddressButton address={profile.wallet.address} />
+                        )}
                       </div>
                       <div className="text-green-600 text-xs flex justify-between">
                         <span className="flex space-x-2">
