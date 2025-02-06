@@ -199,8 +199,8 @@ export async function GET(request: NextRequest) {
   }
 
   const url = before
-    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&before=${before}&limit=5`
-    : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=5`
+    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&before=${before}&limit=20`
+    : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=20`
 
   try {
     const response = await fetch(url)
