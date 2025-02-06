@@ -78,7 +78,6 @@ export const JupiterSwapForm = ({
   const [quoteResponse, setQuoteResponse] = useState<any>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [priceImpact, setPriceImpact] = useState<string>('')
-  const [routeMap, setRouteMap] = useState<string>('')
   const [slippageBps, setSlippageBps] = useState<number>(50) // 0.5% default
   const [isQuoteDetailsOpen, setIsQuoteDetailsOpen] = useState(false)
 
