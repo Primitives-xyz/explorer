@@ -23,7 +23,7 @@ export const TransactionSection = ({
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [selectedType, setSelectedType] = useState<string>('all')
-  const ITEMS_PER_PAGE = 5
+  const ITEMS_PER_PAGE = 20
 
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
