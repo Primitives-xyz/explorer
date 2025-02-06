@@ -10,6 +10,7 @@ import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState } from 'react'
 import { DICEBEAR_API_BASE } from '@/lib/constants'
 import { createURL } from '@/lib/utils'
+
 export function CreateProfile({
   onProfileCreated,
 }: {
@@ -160,12 +161,12 @@ export function CreateProfile({
     <Modal
       isOpen={isModalOpen}
       onClose={() => setIsModalOpen(false)}
-      title="Welcome! Let&apos;s Create Your Profile"
+      title="Welcome! Let&#39;s Create Your Profile"
     >
       <div className="space-y-6">
         <p className="text-green-400/80">
           Choose a unique username and optionally upload a profile image. If no
-          image is uploaded, we'll generate one for you.
+          image is uploaded, we&#39;ll generate one for you.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
