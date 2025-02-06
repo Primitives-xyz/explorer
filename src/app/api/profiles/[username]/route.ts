@@ -1,3 +1,4 @@
+import { verifyAuthToken } from '@/lib/auth'
 import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
@@ -49,6 +50,60 @@ export async function GET(request: NextRequest, context: RouteContext) {
     // Handle other errors
     return NextResponse.json(
       { error: 'Failed to fetch profile' },
+      { status: 500 },
+    )
+  }
+}
+
+export async function PUT(request: NextRequest, context: RouteContext) {
+  try {
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: 'Authorization header missing' },
+        { status: 401 },
+      )
+    }
+
+    const parts = authHeader.split(' ')
+    if (parts.length !== 2 || parts[0] !== 'Bearer') {
+      return NextResponse.json(
+        { error: 'Invalid authorization header format' },
+        { status: 401 },
+      )
+    }
+
+    const token = parts[1]
+    if (!token) {
+      return NextResponse.json({ error: 'Token missing' }, { status: 401 })
+    }
+
+    const verifiedToken = await verifyAuthToken(token)
+    if (!verifiedToken) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    }
+
+    const { username, bio, image } = await request.json()
+    const params = await context.params
+    const { username: profileUsername } = params
+
+    // Call Tapestry API to update profile using fetchTapestryServer
+    const data = await fetchTapestryServer({
+      endpoint: `profiles/${profileUsername}`,
+      method: FetchMethod.PUT,
+      data: {
+        username,
+        bio,
+        image,
+        execution: 'FAST_UNCONFIRMED',
+      },
+    })
+
+    return NextResponse.json(data)
+  } catch (error: any) {
+    console.error('Profile update error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
       { status: 500 },
     )
   }

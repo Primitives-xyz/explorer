@@ -1,12 +1,20 @@
-import React from 'react'
+import React, { memo, useEffect } from 'react'
 import { Card } from '../common/card'
-import type { ProfileData } from './profile-content'
+import type { ProfileData } from '@/hooks/use-profile-data'
 
 interface ProfileInfoProps {
   profileData: ProfileData
 }
 
-export function ProfileInfo({ profileData }: ProfileInfoProps) {
+export const ProfileInfo = memo(function ProfileInfo({
+  profileData,
+}: ProfileInfoProps) {
+  useEffect(() => {
+    console.log('[ProfileInfo] rerender:', {
+      createdAt: profileData.profile?.created_at,
+    })
+  })
+
   return (
     <Card>
       <div className="p-4">
@@ -30,4 +38,4 @@ export function ProfileInfo({ profileData }: ProfileInfoProps) {
       </div>
     </Card>
   )
-}
+})
