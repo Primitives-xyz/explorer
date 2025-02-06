@@ -89,7 +89,6 @@ interface FollowingTransactionFeedProps {
   transactions: Transaction[]
   isLoading: boolean
   isLoggedIn: boolean
-  sdkHasLoaded: boolean
   loadedWallets?: number
   totalWallets?: number
 }
@@ -98,12 +97,10 @@ export const FollowingTransactionFeed = ({
   transactions,
   isLoading,
   isLoggedIn,
-  sdkHasLoaded,
   loadedWallets = 0,
   totalWallets = 0,
 }: FollowingTransactionFeedProps) => {
   const [selectedType, setSelectedType] = useState<TransactionType>('all')
-  console.log({ sdkHasLoaded })
   const { walletAddress } = useCurrentWallet()
 
   // Get unique transaction types from the results

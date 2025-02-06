@@ -170,8 +170,6 @@ export const TradingStats = ({
           }
         }
 
-        console.log('Total trades fetched:', totalFetched)
-
         let filteredTrades = allTrades
         if (timePeriod === 'yesterday' && yesterdayStart !== null) {
           const yesterdayEnd = yesterdayStart + oneDaySeconds
@@ -181,7 +179,6 @@ export const TradingStats = ({
               trade.block_unix_time >= yesterdayStart &&
               trade.block_unix_time < yesterdayEnd,
           )
-          console.log('Filtered trades for yesterday:', filteredTrades.length)
         }
 
         setTrades(filteredTrades)

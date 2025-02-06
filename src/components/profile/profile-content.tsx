@@ -37,16 +37,10 @@ export function ProfileContent({ username }: Props) {
   const { mainUsername } = useCurrentWallet()
   const [showFollowersModal, setShowFollowersModal] = useState(false)
   const [showFollowingModal, setShowFollowingModal] = useState(false)
-  const {
-    followers,
-    isLoading: isLoadingFollowers,
-    error: followersError,
-  } = useProfileFollowers(username)
-  const {
-    following,
-    isLoading: isLoadingFollowing,
-    error: followingError,
-  } = useProfileFollowing(username)
+  const { followers, isLoading: isLoadingFollowers } =
+    useProfileFollowers(username)
+  const { following, isLoading: isLoadingFollowing } =
+    useProfileFollowing(username)
   const { comments, isLoading: isLoadingComments } = useProfileComments(
     username,
     mainUsername || undefined,
@@ -198,7 +192,6 @@ export function ProfileContent({ username }: Props) {
             <SocialSection
               users={followers}
               isLoading={isLoadingFollowers}
-              error={followersError}
               type="followers"
             />
           </Modal>
@@ -212,7 +205,6 @@ export function ProfileContent({ username }: Props) {
             <SocialSection
               users={following}
               isLoading={isLoadingFollowing}
-              error={followingError}
               type="following"
             />
           </Modal>

@@ -40,7 +40,7 @@ export function GlobalSearch() {
         {/* Modal */}
         <div className="inline-block w-full max-w-2xl my-16 text-left align-middle transition-all transform">
           <div className="relative">
-            <SearchBar onClose={() => setIsOpen(false)} autoFocus />
+            <SearchBar autoFocus />
             <div className="absolute top-0 right-0 mt-2 mr-2 text-xs text-green-800 font-mono">
               ESC to close
             </div>

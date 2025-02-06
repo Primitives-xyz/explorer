@@ -29,7 +29,6 @@ export async function middleware(request: NextRequest) {
   const PUBLIC_KEY = productionPublicKeys
   try {
     const publicKey = await importSPKI(PUBLIC_KEY, 'RS256')
-    console.log('Attempting verification with working key...', jwt)
     const { payload } = await jwtVerify(jwt as string, publicKey, {
       algorithms: ['RS256'],
     })

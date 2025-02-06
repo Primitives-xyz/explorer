@@ -7,7 +7,6 @@ interface TokenContainerProps {
   hasSearched?: boolean
   tokenType?: 'all' | 'fungible' | 'nft' | 'compressed' | 'programmable'
   hideTitle?: boolean
-  view?: 'tokens' | 'nfts'
   isLoading: boolean
   tokenData?: TokenData
   error?: string
@@ -76,13 +75,10 @@ export const TokenContainer = ({
   hasSearched,
   tokenType = 'all',
   hideTitle = false,
-  view = 'tokens',
   tokenData,
   isLoading,
   error,
 }: TokenContainerProps) => {
-  const _v = view
-  console.log('v', _v)
   const filteredNFTs = tokenData?.items
     ? filterNFTs(tokenData.items, tokenType)
     : []
@@ -96,7 +92,6 @@ export const TokenContainer = ({
         ) : (
           <div>
             <NFTSection
-              walletAddress={walletAddress}
               hasSearched={hasSearched}
               tokenType={tokenType}
               hideTitle={hideTitle}

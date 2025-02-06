@@ -22,53 +22,47 @@ interface SocialUser {
 interface SocialSectionProps {
   users?: SocialUser[]
   isLoading?: boolean
-  error?: string | null
   type: 'followers' | 'following'
 }
 
-const SocialCard = memo(
-  ({ user, type }: { user: SocialUser; type: string }) => {
-    const router = useRouter()
-    console.log('TYPE', type)
-    return (
-      <div className="p-3 hover:bg-green-900/10">
-        <div className="flex items-center gap-3">
-          <Avatar username={user.username} size={40} imageUrl={user.image} />
+const SocialCard = memo(({ user }: { user: SocialUser; type: string }) => {
+  const router = useRouter()
+  return (
+    <div className="p-3 hover:bg-green-900/10">
+      <div className="flex items-center gap-3">
+        <Avatar username={user.username} size={40} imageUrl={user.image} />
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <button
-                onClick={() => router.push(`/${user.username}`)}
-                className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors"
-              >
-                @{user.username}
-              </button>
-              <div className="flex-shrink-0">
-                <FollowButton username={user.username} size="sm" />
-              </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <button
+              onClick={() => router.push(`/${user.username}`)}
+              className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors"
+            >
+              @{user.username}
+            </button>
+            <div className="flex-shrink-0">
+              <FollowButton username={user.username} size="sm" />
             </div>
-
-            {user.wallet?.id && (
-              <div className="flex items-center text-xs">
-                <TokenAddress address={user.wallet.id} />
-              </div>
-            )}
           </div>
+
+          {user.wallet?.id && (
+            <div className="flex items-center text-xs">
+              <TokenAddress address={user.wallet.id} />
+            </div>
+          )}
         </div>
       </div>
-    )
-  },
-)
+    </div>
+  )
+})
 
 SocialCard.displayName = 'SocialCard'
 
 export function SocialSection({
   users = [],
   isLoading,
-  error,
   type,
 }: SocialSectionProps) {
-  console.log('error', error)
   if (!users.length && !isLoading) return null
 
   return (

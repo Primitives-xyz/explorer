@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useFollowStats } from '@/hooks/use-follow-stats'
-import { FrogHolderRequired } from '../auth/FrogHolderRequired'
 import dynamic from 'next/dynamic'
 
 const DynamicConnectButton = dynamic(
@@ -36,7 +35,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   } = useFollowStats(username, mainUsername)
   const isFollowing = stats?.isFollowing ?? false
   const [optimisticFollowing, setOptimisticFollowing] = useState(false)
-  const [showHolderModal, setShowHolderModal] = useState(false)
 
   const buttonClasses = `font-mono rounded transition-colors ${
     size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'
@@ -236,21 +234,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         <UserRoundPlus size={iconSize} />
         {loading ? 'Following...' : 'Follow'}
       </button>
-
-      {showHolderModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-neutral-900 p-4 rounded-lg border border-neutral-800 max-w-sm mx-auto">
-            <h3 className="text-lg font-semibold mb-2">Holder Required</h3>
-            <FrogHolderRequired variant="inline" />
-            <button
-              onClick={() => setShowHolderModal(false)}
-              className="w-full px-4 py-2 bg-neutral-800 rounded hover:bg-neutral-700 transition-colors mt-4"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </>
   )
 }
