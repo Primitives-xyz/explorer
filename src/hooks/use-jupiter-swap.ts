@@ -41,6 +41,7 @@ export function useJupiterSwap({
   const [priceImpact, setPriceImpact] = useState<string>('')
   const [slippageBps, setSlippageBps] = useState<number>(DEFAULT_SLIPPAGE_BPS)
   const [showTradeLink, setShowTradeLink] = useState(false)
+  const [isFullyConfirmed, setIsFullyConfirmed] = useState(false)
 
   const estimatePriorityFee = async (transaction: string) => {
     try {
@@ -105,6 +106,7 @@ export function useJupiterSwap({
     }
 
     setLoading(true)
+    setIsFullyConfirmed(false)
     try {
       toast({
         title: 'Preparing Swap',
@@ -197,6 +199,7 @@ export function useJupiterSwap({
         await createContentNode(txid.signature)
         showSuccessToast()
         setShowTradeLink(true)
+        setIsFullyConfirmed(true)
       }
     } catch (err) {
       console.error('Swap failed:', err)
@@ -357,6 +360,7 @@ export function useJupiterSwap({
     slippageBps,
     setSlippageBps,
     showTradeLink,
+    isFullyConfirmed,
     handleSwap,
   }
 }

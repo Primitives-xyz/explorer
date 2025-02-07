@@ -33,6 +33,7 @@ export function SwapForm({
     slippageBps,
     setSlippageBps,
     showTradeLink,
+    isFullyConfirmed,
     handleSwap,
   } = useJupiterSwap({
     inputMint,
@@ -51,6 +52,7 @@ export function SwapForm({
           className="bg-green-900/20 text-green-100 p-2 rounded"
           value={inputAmount}
           onChange={(e) => setInputAmount(e.target.value)}
+          disabled={loading || isFullyConfirmed}
         />
 
         <div className="flex items-center gap-2">
@@ -58,6 +60,7 @@ export function SwapForm({
             className="bg-green-900/20 text-green-100 p-2 rounded flex-1"
             value={inputMint}
             onChange={(e) => setInputMint(e.target.value)}
+            disabled={loading || isFullyConfirmed}
           >
             <option value={inputMint}>{inputTokenName}</option>
           </select>
@@ -68,6 +71,7 @@ export function SwapForm({
             className="bg-green-900/20 text-green-100 p-2 rounded flex-1"
             value={outputMint}
             onChange={(e) => setOutputMint(e.target.value)}
+            disabled={loading || isFullyConfirmed}
           >
             <option value={outputMint}>{outputTokenName}</option>
           </select>
@@ -79,6 +83,7 @@ export function SwapForm({
             className="bg-green-900/20 text-green-100 p-2 rounded"
             value={slippageBps}
             onChange={(e) => setSlippageBps(Number(e.target.value))}
+            disabled={loading || isFullyConfirmed}
           >
             {SLIPPAGE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -88,7 +93,7 @@ export function SwapForm({
           </select>
         </div>
 
-        {quoteResponse && (
+        {quoteResponse && !isFullyConfirmed && (
           <div className="space-y-3">
             {/* Expected Output Card */}
             <div className="bg-green-900/20 p-4 rounded-lg">
@@ -120,44 +125,55 @@ export function SwapForm({
           </div>
         )}
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm text-green-400">
-            Transaction Priority:
-          </label>
-          <select
-            className="bg-green-900/20 text-green-100 p-2 rounded w-full"
-            value={priorityLevel}
-            onChange={(e) => setPriorityLevel(e.target.value as PriorityLevel)}
-          >
-            {PRIORITY_LEVELS.map((level) => (
-              <option
-                key={level.value}
-                value={level.value}
-                title={level.description}
-              >
-                {level.label}{' '}
-                {priorityFee > 0 &&
-                  level.value === priorityLevel &&
-                  `(${priorityFee} µ◎)`}
-              </option>
-            ))}
-          </select>
-        </div>
+        {!isFullyConfirmed && (
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-green-400">
+              Transaction Priority:
+            </label>
+            <select
+              className="bg-green-900/20 text-green-100 p-2 rounded w-full"
+              value={priorityLevel}
+              onChange={(e) =>
+                setPriorityLevel(e.target.value as PriorityLevel)
+              }
+              disabled={loading}
+            >
+              {PRIORITY_LEVELS.map((level) => (
+                <option
+                  key={level.value}
+                  value={level.value}
+                  title={level.description}
+                >
+                  {level.label}{' '}
+                  {priorityFee > 0 &&
+                    level.value === priorityLevel &&
+                    `(${priorityFee} µ◎)`}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-        <button
-          onClick={handleSwap}
-          disabled={loading || estimatingFee}
-          className="bg-green-600 hover:bg-green-700 text-white p-2 rounded disabled:opacity-50"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Swapping...</span>
-            </div>
-          ) : (
-            'Execute Swap'
-          )}
-        </button>
+        {!isFullyConfirmed && (
+          <button
+            onClick={handleSwap}
+            disabled={loading || estimatingFee}
+            className="bg-green-600 hover:bg-green-700 text-white p-2 rounded disabled:opacity-50"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>
+                  {txSignature ? 'Confirming Transaction...' : 'Swapping...'}
+                </span>
+              </div>
+            ) : txSignature ? (
+              'Finalizing Swap...'
+            ) : (
+              'Execute Swap'
+            )}
+          </button>
+        )}
 
         {error && <div className="text-red-400 text-sm">{error}</div>}
 

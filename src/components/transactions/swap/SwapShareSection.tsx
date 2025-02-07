@@ -1,4 +1,5 @@
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 interface SwapShareSectionProps {
   txSignature: string
@@ -6,6 +7,7 @@ interface SwapShareSectionProps {
 
 export function SwapShareSection({ txSignature }: SwapShareSectionProps) {
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(
@@ -20,16 +22,37 @@ export function SwapShareSection({ txSignature }: SwapShareSectionProps) {
   }
 
   return (
-    <div className="bg-green-900/20 p-4 rounded-lg space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="text-lg font-semibold text-green-400">
-          Share your trade
+    <div className="bg-green-900/20 p-6 rounded-lg space-y-6">
+      {/* Success Header */}
+      <div className="flex items-center justify-center space-x-3 pb-4">
+        <div className="bg-green-500/20 rounded-full p-2">
+          <svg
+            className="w-8 h-8 text-green-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
         </div>
-        <div className="text-xs text-green-600">Successfully swapped!</div>
+        <div>
+          <h3 className="text-xl font-bold text-green-400">Swap Successful!</h3>
+          <p className="text-green-300/80 text-sm">
+            Your transaction is confirmed
+          </p>
+        </div>
       </div>
 
       {/* Share Link Section */}
       <div className="space-y-2">
+        <div className="text-sm font-medium text-green-400 mb-2">
+          Share your trade
+        </div>
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -97,6 +120,29 @@ export function SwapShareSection({ txSignature }: SwapShareSectionProps) {
             Share on Telegram
           </button>
         </div>
+      </div>
+
+      {/* Swap Again Button */}
+      <div className="pt-4">
+        <button
+          onClick={() => router.push('/trade')}
+          className="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          Swap Again
+        </button>
       </div>
     </div>
   )

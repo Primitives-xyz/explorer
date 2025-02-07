@@ -50,28 +50,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const getBestImage = (properties: any): string => {
-    // Try wallet image first if it's not a dicebear
+    // Try wallet images first if they're not dicebear
     if (
       properties.walletImage &&
       !properties.walletImage.includes('dicebear')
     ) {
       return properties.walletImage
     }
-
-    // Then try token images
-    if (properties.inputTokenImage) {
-      return properties.inputTokenImage
-    }
-    if (properties.outputTokenImage) {
-      return properties.outputTokenImage
-    }
-
-    // Finally try source wallet image if it's not a dicebear
     if (
       properties.sourceWalletImage &&
       !properties.sourceWalletImage.includes('dicebear')
     ) {
       return properties.sourceWalletImage
+    }
+
+    // Then fall back to token images
+    if (properties.outputTokenImage) {
+      return properties.outputTokenImage
+    }
+    if (properties.inputTokenImage) {
+      return properties.inputTokenImage
     }
 
     return ''
@@ -91,14 +89,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `@${properties.sourceWalletUsername}`
     : formatAddress(properties.sourceWallet || '')
 
-  const description = `${copierName} copied ${sourceName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
-  const title = `🔥 ${copierName} copied ${sourceName}'s ${properties.outputTokenSymbol} trade`
+  const description = !properties.sourceWallet
+    ? `${copierName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
+    : `${copierName} copied ${sourceName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
+  const title = !properties.sourceWallet
+    ? `🔥 ${copierName}'s ${properties.outputTokenSymbol} trade`
+    : `🔥 ${copierName} copied ${sourceName}'s ${properties.outputTokenSymbol} trade`
 
   return {
     title,
     description,
     openGraph: {
-      title: `${copierName} just copied ${sourceName}'s ${properties.outputTokenSymbol} move 👀`,
+      title: !properties.sourceWallet
+        ? `${copierName} just made a ${properties.outputTokenSymbol} move 👀`
+        : `${copierName} just copied ${sourceName}'s ${properties.outputTokenSymbol} move 👀`,
       description,
       type: 'article',
       images: [
@@ -106,7 +110,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: getBestImage(properties),
           width: 1200,
           height: 630,
-          alt: `${copierName} copied ${sourceName}'s trade`,
+          alt: !properties.sourceWallet
+            ? `${copierName}'s trade`
+            : `${copierName} copied ${sourceName}'s trade`,
         },
       ],
     },
@@ -158,6 +164,7 @@ export default async function TradePage({ params }: Props) {
     )
     notFound()
   }
+  console.log(properties)
 
   // Create a transaction object that matches what SwapTransactionView expects
   const transaction: Transaction = {
@@ -196,16 +203,22 @@ export default async function TradePage({ params }: Props) {
             ) : (
               formatAddress(properties.walletAddress || '')
             )}{' '}
-            copied this trade from{' '}
-            {properties.sourceWalletUsername ? (
-              <Link
-                href={`/${properties.sourceWalletUsername}`}
-                className="text-green-400 hover:text-green-300 transition-colors"
-              >
-                @{properties.sourceWalletUsername}
-              </Link>
+            {properties.sourceWallet ? (
+              <>
+                copied this trade from{' '}
+                {properties.sourceWalletUsername ? (
+                  <Link
+                    href={`/${properties.sourceWalletUsername}`}
+                    className="text-green-400 hover:text-green-300 transition-colors"
+                  >
+                    @{properties.sourceWalletUsername}
+                  </Link>
+                ) : (
+                  formatAddress(properties.sourceWallet || '')
+                )}
+              </>
             ) : (
-              formatAddress(properties.sourceWallet || '')
+              'made this trade'
             )}
           </p>
 
@@ -238,7 +251,7 @@ export default async function TradePage({ params }: Props) {
                   )}
                   <div>
                     <div className="text-sm text-green-400">
-                      Original Trade by
+                      {properties.sourceWallet ? 'Original Trade by' : 'Trader'}
                     </div>
                     {properties.sourceWalletUsername ? (
                       <Link
@@ -250,10 +263,16 @@ export default async function TradePage({ params }: Props) {
                     ) : (
                       <div className="flex flex-col gap-1">
                         <span className="text-xl font-mono text-green-100">
-                          {formatAddress(properties.sourceWallet || '')}
+                          {formatAddress(
+                            properties.sourceWallet ||
+                              properties.walletAddress ||
+                              '',
+                          )}
                         </span>
                         <Link
-                          href={`https://solscan.io/account/${properties.sourceWallet}`}
+                          href={`https://solscan.io/account/${
+                            properties.sourceWallet || properties.walletAddress
+                          }`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
@@ -268,66 +287,72 @@ export default async function TradePage({ params }: Props) {
               </div>
 
               {/* Trade Arrow */}
-              <div className="flex items-center">
-                <div className="flex flex-col items-center gap-1">
-                  <ArrowRight
-                    className="text-green-500 rotate-0 md:rotate-0"
-                    size={32}
-                  />
-                  <span className="text-xs text-green-400/60">copied by</span>
-                </div>
-              </div>
-
-              {/* Target User (Copier) */}
-              <div className="flex-1">
-                <div className="flex items-center gap-4 justify-center md:justify-end">
-                  <div className="text-right">
-                    <div className="text-sm text-green-400">Copied by</div>
-                    {properties.walletUsername ? (
-                      <Link
-                        href={`/${properties.walletUsername}`}
-                        className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
-                      >
-                        @{properties.walletUsername}
-                      </Link>
-                    ) : (
-                      <div className="flex flex-col gap-1 items-end">
-                        <span className="text-xl font-mono text-green-100">
-                          {formatAddress(properties.walletAddress || '')}
-                        </span>
-                        <Link
-                          href={`https://solscan.io/account/${properties.walletAddress}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
-                        >
-                          View on Solscan
-                          <ExternalLink size={12} />
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                  {properties.walletImage ? (
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
-                      <Image
-                        src={properties.walletImage}
-                        alt={properties.walletUsername || 'Trader'}
-                        fill
-                        className="object-cover"
+              {properties.sourceWallet && (
+                <>
+                  <div className="flex items-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <ArrowRight
+                        className="text-green-500 rotate-0 md:rotate-0"
+                        size={32}
                       />
-                    </div>
-                  ) : (
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
-                      <span className="text-2xl text-green-500">
-                        {(
-                          properties.walletUsername ||
-                          properties.walletAddress?.slice(0, 2)
-                        )?.toUpperCase()}
+                      <span className="text-xs text-green-400/60">
+                        copied by
                       </span>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+
+                  {/* Target User (Copier) */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 justify-center md:justify-end">
+                      <div className="text-right">
+                        <div className="text-sm text-green-400">Copied by</div>
+                        {properties.walletUsername ? (
+                          <Link
+                            href={`/${properties.walletUsername}`}
+                            className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
+                          >
+                            @{properties.walletUsername}
+                          </Link>
+                        ) : (
+                          <div className="flex flex-col gap-1 items-end">
+                            <span className="text-xl font-mono text-green-100">
+                              {formatAddress(properties.walletAddress || '')}
+                            </span>
+                            <Link
+                              href={`https://solscan.io/account/${properties.walletAddress}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
+                            >
+                              View on Solscan
+                              <ExternalLink size={12} />
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                      {properties.walletImage ? (
+                        <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
+                          <Image
+                            src={properties.walletImage}
+                            alt={properties.walletUsername || 'Trader'}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
+                          <span className="text-2xl text-green-500">
+                            {(
+                              properties.walletUsername ||
+                              properties.walletAddress?.slice(0, 2)
+                            )?.toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -335,17 +360,32 @@ export default async function TradePage({ params }: Props) {
         {/* Share Section */}
         <div className="mt-4 flex items-center justify-end gap-4">
           <ShareButton
-            title={`Check out this copied trade on $SSE!`}
-            text={`${
-              properties.walletUsername ||
-              formatAddress(properties.walletAddress || '')
-            } copied ${
-              properties.sourceWalletUsername
-                ? `@${properties.sourceWalletUsername}'s`
-                : `${formatAddress(properties.sourceWallet || '')}'s`
-            } trade: ${properties.inputAmount} ${
-              properties.inputTokenSymbol
-            } ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`}
+            title={`Check out this ${
+              properties.sourceWallet ? 'copied ' : ''
+            }trade on $SSE!`}
+            text={
+              !properties.sourceWallet
+                ? `${
+                    properties.walletUsername ||
+                    formatAddress(properties.walletAddress || '')
+                  }'s trade: ${properties.inputAmount} ${
+                    properties.inputTokenSymbol
+                  } ➔ ${properties.expectedOutput} ${
+                    properties.outputTokenSymbol
+                  }`
+                : `${
+                    properties.walletUsername ||
+                    formatAddress(properties.walletAddress || '')
+                  } copied ${
+                    properties.sourceWalletUsername
+                      ? `@${properties.sourceWalletUsername}'s`
+                      : `${formatAddress(properties.sourceWallet || '')}'s`
+                  } trade: ${properties.inputAmount} ${
+                    properties.inputTokenSymbol
+                  } ➔ ${properties.expectedOutput} ${
+                    properties.outputTokenSymbol
+                  }`
+            }
             className="flex items-center gap-2 bg-green-900/20 px-4 py-2 rounded-lg hover:bg-green-900/30 transition-colors text-green-400"
           >
             <Share2 size={16} />
