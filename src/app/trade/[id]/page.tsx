@@ -12,6 +12,9 @@ import ShareButton from '@/components/share-button'
 // Client wrapper for SwapTransactionView
 const ClientSwapView = dynamic(() => import('./client-swap-view'))
 
+const formatAddress = (address: string) =>
+  `${address.slice(0, 4)}...${address.slice(-4)}`
+
 async function getTradeContent(id: string): Promise<ContentResponse | null> {
   console.log(`[Page] Attempting to fetch trade content for id: ${id}`)
   try {
@@ -63,8 +66,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       return acc
     }, {})
 
-  const description = `Check out this trade where @${properties.sourceWalletUsername} swapped ${properties.inputAmount} ${properties.inputTokenSymbol} for ${properties.expectedOutput} ${properties.outputTokenSymbol}`
-  const title = `${properties.sourceWalletUsername}'s ${properties.inputTokenSymbol}/${properties.outputTokenSymbol} Trade`
+  const copierName = properties.walletUsername
+    ? `@${properties.walletUsername}`
+    : formatAddress(properties.walletAddress || '')
+  const sourceName = properties.sourceWalletUsername
+    ? `@${properties.sourceWalletUsername}`
+    : formatAddress(properties.sourceWallet || '')
+
+  const description = `${copierName} copied ${sourceName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
+  const title = `Copied Trade: ${copierName} × ${sourceName}`
 
   return {
     title,
@@ -78,7 +88,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           url: properties.sourceWalletImage || '',
           width: 1200,
           height: 630,
-          alt: `${properties.sourceWalletUsername}'s trade`,
+          alt: `${copierName} copied ${sourceName}'s trade`,
         },
       ],
     },
@@ -86,7 +96,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      creator: `@${properties.sourceWalletUsername}`,
+      creator: properties.sourceWalletUsername
+        ? `@${properties.sourceWalletUsername}`
+        : undefined,
       images: [properties.sourceWalletImage || ''],
     },
   }
@@ -147,9 +159,6 @@ export default async function TradePage({ params }: Props) {
     balanceChanges: {},
   }
 
-  const formatAddress = (address: string) =>
-    `${address.slice(0, 4)}...${address.slice(-4)}`
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
@@ -158,7 +167,29 @@ export default async function TradePage({ params }: Props) {
           <h1 className="text-3xl font-bold text-green-500 mb-2">
             Trade Details
           </h1>
-          <p className="text-green-400/80 mb-6">View and copy this trade</p>
+          <p className="text-green-400/80 mb-6">
+            {properties.walletUsername ? (
+              <Link
+                href={`/${properties.walletUsername}`}
+                className="text-green-400 hover:text-green-300 transition-colors"
+              >
+                @{properties.walletUsername}
+              </Link>
+            ) : (
+              formatAddress(properties.walletAddress || '')
+            )}{' '}
+            copied this trade from{' '}
+            {properties.sourceWalletUsername ? (
+              <Link
+                href={`/${properties.sourceWalletUsername}`}
+                className="text-green-400 hover:text-green-300 transition-colors"
+              >
+                @{properties.sourceWalletUsername}
+              </Link>
+            ) : (
+              formatAddress(properties.sourceWallet || '')
+            )}
+          </p>
 
           {/* Users Involved Card */}
           <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
@@ -170,7 +201,9 @@ export default async function TradePage({ params }: Props) {
                     <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
                       <Image
                         src={properties.sourceWalletImage}
-                        alt={properties.sourceWalletUsername || 'Trader'}
+                        alt={
+                          properties.sourceWalletUsername || 'Original Trader'
+                        }
                         fill
                         className="object-cover"
                       />
@@ -187,7 +220,7 @@ export default async function TradePage({ params }: Props) {
                   )}
                   <div>
                     <div className="text-sm text-green-400">
-                      Original Trader
+                      Original Trade by
                     </div>
                     {properties.sourceWalletUsername ? (
                       <Link
@@ -231,7 +264,9 @@ export default async function TradePage({ params }: Props) {
               <div className="flex-1">
                 <div className="flex items-center gap-4 justify-center md:justify-end">
                   <div className="text-right">
-                    <div className="text-sm text-green-400">Copied Trade</div>
+                    <div className="text-sm text-green-400">
+                      Copied and executed by
+                    </div>
                     {properties.walletUsername ? (
                       <Link
                         href={`/${properties.walletUsername}`}
@@ -284,8 +319,17 @@ export default async function TradePage({ params }: Props) {
         {/* Share Section */}
         <div className="mt-4 flex items-center justify-end gap-4">
           <ShareButton
-            title={`Check out ${properties.sourceWalletUsername}'s ${properties.inputTokenSymbol}/${properties.outputTokenSymbol} trade!`}
-            text={`${properties.sourceWalletUsername} swapped ${properties.inputAmount} ${properties.inputTokenSymbol} for ${properties.expectedOutput} ${properties.outputTokenSymbol}`}
+            title={`Check out this copied trade on Nemo!`}
+            text={`${
+              properties.walletUsername ||
+              formatAddress(properties.walletAddress || '')
+            } copied ${
+              properties.sourceWalletUsername
+                ? `@${properties.sourceWalletUsername}'s`
+                : `${formatAddress(properties.sourceWallet || '')}'s`
+            } trade: ${properties.inputAmount} ${
+              properties.inputTokenSymbol
+            } ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`}
             className="flex items-center gap-2 bg-green-900/20 px-4 py-2 rounded-lg hover:bg-green-900/30 transition-colors text-green-400"
           >
             <Share2 size={16} />
