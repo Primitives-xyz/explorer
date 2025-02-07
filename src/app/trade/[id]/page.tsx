@@ -4,6 +4,10 @@ import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 import { contentServer } from '@/lib/content-server'
 import type { ContentResponse } from '@/lib/content-server'
+import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowRight, ExternalLink, Share2 } from 'lucide-react'
+import ShareButton from '@/components/share-button'
 
 // Client wrapper for SwapTransactionView
 const ClientSwapView = dynamic(() => import('./client-swap-view'))
@@ -25,6 +29,8 @@ async function getTradeContent(id: string): Promise<ContentResponse | null> {
       propertiesCount: content.result?.properties?.length,
     })
 
+    console.log({ result: content })
+
     return content
   } catch (error) {
     console.error(`[Page] Error fetching trade content for id: ${id}:`, error)
@@ -42,10 +48,51 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params
+  const content = await getTradeContent(resolvedParams.id)
+
+  if (!content || (!content.result?.properties && !content.content)) {
+    return {
+      title: 'Trade Details',
+    }
+  }
+
+  const properties =
+    content.content ||
+    content.result?.properties?.reduce((acc: any, prop: any) => {
+      acc[prop.key] = prop.value
+      return acc
+    }, {})
+
+  const description = `Check out this trade where @${properties.sourceWalletUsername} swapped ${properties.inputAmount} ${properties.inputTokenSymbol} for ${properties.expectedOutput} ${properties.outputTokenSymbol}`
+  const title = `${properties.sourceWalletUsername}'s ${properties.inputTokenSymbol}/${properties.outputTokenSymbol} Trade`
+
   return {
-    title: `Trade ${resolvedParams.id}`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      images: [
+        {
+          url: properties.sourceWalletImage || '',
+          width: 1200,
+          height: 630,
+          alt: `${properties.sourceWalletUsername}'s trade`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      creator: `@${properties.sourceWalletUsername}`,
+      images: [properties.sourceWalletImage || ''],
+    },
   }
 }
+
+// Client component for share functionality
 
 export default async function TradePage({ params }: Props) {
   const resolvedParams = await params
@@ -100,34 +147,225 @@ export default async function TradePage({ params }: Props) {
     balanceChanges: {},
   }
 
+  const formatAddress = (address: string) =>
+    `${address.slice(0, 4)}...${address.slice(-4)}`
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
+      <div className="max-w-6xl mx-auto">
+        {/* Header with Both Users */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-green-500 mb-2">
             Trade Details
           </h1>
-          <p className="text-green-400/80">View and copy this trade</p>
+          <p className="text-green-400/80 mb-6">View and copy this trade</p>
+
+          {/* Users Involved Card */}
+          <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              {/* Source User (Original Trader) */}
+              <div className="flex-1">
+                <div className="flex items-center gap-4 justify-center md:justify-start">
+                  {properties.sourceWalletImage ? (
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
+                      <Image
+                        src={properties.sourceWalletImage}
+                        alt={properties.sourceWalletUsername || 'Trader'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
+                      <span className="text-2xl text-green-500">
+                        {(
+                          properties.sourceWalletUsername ||
+                          properties.sourceWallet?.slice(0, 2)
+                        )?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-sm text-green-400">
+                      Original Trader
+                    </div>
+                    {properties.sourceWalletUsername ? (
+                      <Link
+                        href={`/${properties.sourceWalletUsername}`}
+                        className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
+                      >
+                        @{properties.sourceWalletUsername}
+                      </Link>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xl font-mono text-green-100">
+                          {formatAddress(properties.sourceWallet || '')}
+                        </span>
+                        <Link
+                          href={`https://solscan.io/account/${properties.sourceWallet}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
+                        >
+                          View on Solscan
+                          <ExternalLink size={12} />
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Trade Arrow */}
+              <div className="flex items-center">
+                <div className="flex flex-col items-center gap-1">
+                  <ArrowRight
+                    className="text-green-500 rotate-0 md:rotate-0"
+                    size={32}
+                  />
+                  <span className="text-xs text-green-400/60">copied by</span>
+                </div>
+              </div>
+
+              {/* Target User (Copier) */}
+              <div className="flex-1">
+                <div className="flex items-center gap-4 justify-center md:justify-end">
+                  <div className="text-right">
+                    <div className="text-sm text-green-400">Copied Trade</div>
+                    {properties.walletUsername ? (
+                      <Link
+                        href={`/${properties.walletUsername}`}
+                        className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
+                      >
+                        @{properties.walletUsername}
+                      </Link>
+                    ) : (
+                      <div className="flex flex-col gap-1 items-end">
+                        <span className="text-xl font-mono text-green-100">
+                          {formatAddress(properties.walletAddress || '')}
+                        </span>
+                        <Link
+                          href={`https://solscan.io/account/${properties.walletAddress}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
+                        >
+                          View on Solscan
+                          <ExternalLink size={12} />
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                  {properties.walletImage ? (
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
+                      <Image
+                        src={properties.walletImage}
+                        alt={properties.walletUsername || 'Trader'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
+                      <span className="text-2xl text-green-500">
+                        {(
+                          properties.walletUsername ||
+                          properties.walletAddress?.slice(0, 2)
+                        )?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Trade Card */}
-        <div className="bg-black/40 border border-green-800/40 rounded-xl p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Left Column - Trade Info */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-green-500 mb-4">
-                Trade Information
+        {/* Share Section */}
+        <div className="mt-4 flex items-center justify-end gap-4">
+          <ShareButton
+            title={`Check out ${properties.sourceWalletUsername}'s ${properties.inputTokenSymbol}/${properties.outputTokenSymbol} trade!`}
+            text={`${properties.sourceWalletUsername} swapped ${properties.inputAmount} ${properties.inputTokenSymbol} for ${properties.expectedOutput} ${properties.outputTokenSymbol}`}
+            className="flex items-center gap-2 bg-green-900/20 px-4 py-2 rounded-lg hover:bg-green-900/30 transition-colors text-green-400"
+          >
+            <Share2 size={16} />
+            Share Trade
+          </ShareButton>
+        </div>
+
+        {/* Main Trade Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Column - Trade Details */}
+          <div className="space-y-8">
+            {/* Token Swap Card */}
+            <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-green-500 mb-6">
+                Swap Details
               </h2>
 
-              <div className="space-y-2">
-                <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Timestamp</span>
-                  <span className="text-green-100">
-                    {new Date(Number(properties.timestamp)).toLocaleString()}
-                  </span>
+              {/* From Token */}
+              <div className="bg-green-900/20 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-4 mb-2">
+                  {properties.inputTokenImage && (
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                      <Image
+                        src={properties.inputTokenImage}
+                        alt={properties.inputTokenSymbol}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-sm text-green-400">From</div>
+                    <div className="font-semibold text-green-100">
+                      {properties.inputAmount} {properties.inputTokenSymbol}
+                    </div>
+                  </div>
                 </div>
+                <div className="text-sm text-green-400/60 mt-2">
+                  {properties.inputTokenName}
+                </div>
+              </div>
 
+              {/* Arrow */}
+              <div className="flex justify-center my-4">
+                <ArrowRight className="text-green-500" size={24} />
+              </div>
+
+              {/* To Token */}
+              <div className="bg-green-900/20 rounded-lg p-4">
+                <div className="flex items-center gap-4 mb-2">
+                  {properties.outputTokenImage && (
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                      <Image
+                        src={properties.outputTokenImage}
+                        alt={properties.outputTokenSymbol}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-sm text-green-400">To</div>
+                    <div className="font-semibold text-green-100">
+                      {properties.expectedOutput} {properties.outputTokenSymbol}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-sm text-green-400/60 mt-2">
+                  {properties.outputTokenName}
+                </div>
+              </div>
+            </div>
+
+            {/* Transaction Details Card */}
+            <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-green-500 mb-6">
+                Transaction Details
+              </h2>
+
+              <div className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
                   <span className="text-green-400">Price Impact</span>
                   <span
@@ -142,64 +380,80 @@ export default async function TradePage({ params }: Props) {
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Slippage</span>
+                  <span className="text-green-400">Slippage Tolerance</span>
                   <span className="text-green-100">
                     {(Number(properties.slippageBps) / 100).toFixed(1)}%
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Source Wallet</span>
-                  <span className="text-green-100 font-mono text-sm">
-                    {properties.sourceWallet ? (
-                      <a
-                        href={`https://solscan.io/account/${properties.sourceWallet}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-green-400 transition-colors"
-                      >
-                        {`${properties.sourceWallet.slice(
-                          0,
-                          4,
-                        )}...${properties.sourceWallet.slice(-4)}`}
-                      </a>
-                    ) : (
-                      'Unknown'
-                    )}
+                  <span className="text-green-400">Priority Fee</span>
+                  <span className="text-green-100">
+                    {properties.priorityFee} µ◎
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Transaction</span>
-                  <span className="text-green-100 font-mono text-sm">
-                    <a
-                      href={`https://solscan.io/tx/${
-                        properties.txSignature ||
-                        contentResponse.result?.id ||
-                        resolvedParams.id
-                      }`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-green-400 transition-colors"
-                    >
-                      {`${(
-                        properties.txSignature ||
-                        contentResponse.result?.id ||
-                        resolvedParams.id
-                      ).slice(0, 4)}...${(
-                        properties.txSignature ||
-                        contentResponse.result?.id ||
-                        resolvedParams.id
-                      ).slice(-4)}`}
-                    </a>
+                  <span className="text-green-400">Priority Level</span>
+                  <span className="text-green-100 capitalize">
+                    {properties.priorityLevel}
                   </span>
+                </div>
+
+                <div className="flex justify-between items-center py-2 border-b border-green-900/30">
+                  <span className="text-green-400">Timestamp</span>
+                  <span className="text-green-100">
+                    {new Date(Number(properties.timestamp)).toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center py-2 border-b border-green-900/30">
+                  <span className="text-green-400">Source Wallet</span>
+                  <Link
+                    href={`https://solscan.io/account/${properties.sourceWallet}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-green-100 font-mono text-sm hover:text-green-400 transition-colors group"
+                  >
+                    {formatAddress(properties.sourceWallet)}
+                    <ExternalLink
+                      size={14}
+                      className="opacity-50 group-hover:opacity-100"
+                    />
+                  </Link>
+                </div>
+
+                <div className="flex justify-between items-center py-2 border-b border-green-900/30">
+                  <span className="text-green-400">Transaction</span>
+                  <Link
+                    href={`https://solscan.io/tx/${
+                      properties.txSignature ||
+                      contentResponse.result?.id ||
+                      resolvedParams.id
+                    }`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-green-100 font-mono text-sm hover:text-green-400 transition-colors group"
+                  >
+                    {formatAddress(
+                      properties.txSignature ||
+                        contentResponse.result?.id ||
+                        resolvedParams.id,
+                    )}
+                    <ExternalLink
+                      size={14}
+                      className="opacity-50 group-hover:opacity-100"
+                    />
+                  </Link>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Right Column - Swap Interface */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-green-500 mb-4">
+          {/* Right Column - Copy Trade Interface */}
+          <div className="space-y-4">
+            <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-green-500 mb-6">
                 Copy Trade
               </h2>
               <ClientSwapView
