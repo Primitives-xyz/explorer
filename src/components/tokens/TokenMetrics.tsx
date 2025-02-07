@@ -9,11 +9,21 @@ interface TokenMetricsProps {
   overview: BirdeyeTokenOverview
 }
 
+// Helper function to format price with appropriate decimals
+const formatPrice = (price: number) => {
+  if (price < 0.000001) return price.toFixed(12)
+  if (price < 0.00001) return price.toFixed(10)
+  if (price < 0.0001) return price.toFixed(9)
+  if (price < 0.001) return price.toFixed(8)
+  if (price < 0.01) return price.toFixed(7)
+  return formatNumber(price, 6)
+}
+
 export function TokenMetrics({ overview }: TokenMetricsProps) {
   const metrics = [
     {
       label: 'Price',
-      value: `$${formatNumber(overview.price, 4)}`,
+      value: `$${formatPrice(overview.price)}`,
       change: overview.priceChange24hPercent,
       changeLabel: '24h',
     },
