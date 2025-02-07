@@ -29,9 +29,13 @@ interface TokenDisplay {
 export function SwapTransactionView({
   tx,
   sourceWallet,
+  fromMint,
+  toMint,
 }: {
   tx: Transaction
   sourceWallet: string
+  fromMint?: string
+  toMint?: string
 }) {
   const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
   const [toToken, setToToken] = useState<TokenDisplay | null>(null)
@@ -49,7 +53,6 @@ export function SwapTransactionView({
       ? null
       : toToken?.mint,
   )
-
   useEffect(() => {
     async function loadTokenInfo() {
       // Parse description for initial token info
@@ -59,8 +62,9 @@ export function SwapTransactionView({
       const descParts = tx.description?.split(' ') || []
       const fromAmount = parseFloat(descParts[2] || '0')
       const toAmount = parseFloat(descParts[5] || '0')
-      const fromTokenMint = descParts[3] || ''
-      const toTokenMint = descParts[6] || ''
+      const fromTokenMint = fromMint || descParts[3] || ''
+      const toTokenMint = toMint || descParts[6] || ''
+      console.log({ toMint, fromMint, fromTokenMint, toTokenMint, descParts })
 
       const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
@@ -68,8 +72,8 @@ export function SwapTransactionView({
       const isFromSol = fromTokenMint.toLowerCase() === 'sol'
       const isToSol = toTokenMint.toLowerCase() === 'sol'
 
+      // Handle SOL -> Token swap
       if (isFromSol) {
-        // SOL -> Token swap
         setFromToken({
           mint: SOL_MINT,
           amount: fromAmount,
@@ -81,8 +85,9 @@ export function SwapTransactionView({
             amount: toAmount,
           })
         }
-      } else if (isToSol) {
-        // Token -> SOL swap
+      }
+      // Handle Token -> SOL swap
+      else if (isToSol) {
         setToToken({
           mint: SOL_MINT,
           amount: toAmount,
@@ -95,10 +100,25 @@ export function SwapTransactionView({
           })
         }
       }
+      // Handle Token -> Token swap (including when mints are provided directly)
+      else {
+        if (fromTokenMint) {
+          setFromToken({
+            mint: fromTokenMint,
+            amount: fromAmount,
+          })
+        }
+        if (toTokenMint) {
+          setToToken({
+            mint: toTokenMint,
+            amount: toAmount,
+          })
+        }
+      }
     }
 
     loadTokenInfo()
-  }, [tx, sourceWallet])
+  }, [tx, sourceWallet, fromMint, toMint])
 
   // Update token info when data is loaded
   useEffect(() => {

@@ -22,15 +22,6 @@ async function getTradeContent(id: string): Promise<ContentResponse | null> {
       console.error(`[Page] No content returned for id: ${id}`)
       return null
     }
-
-    // Log the content structure to help debug type mismatches
-    console.log(`[Page] Content structure for id: ${id}:`, {
-      hasResult: !!content.result,
-      resultType: content.result?.properties?.find((p: any) => p.key === 'type')
-        ?.value,
-      propertiesCount: content.result?.properties?.length,
-    })
-
     console.log({ result: content })
 
     return content
@@ -146,12 +137,12 @@ export default async function TradePage({ params }: Props) {
     type: 'SWAP',
     source: 'jupiter',
     fee: 0,
-    feePayer: properties.sourceWallet || '',
+    feePayer: properties.walletAddress || '',
     signature:
       properties.txSignature || contentResponse.result?.id || resolvedParams.id,
     slot: 0,
     timestamp: Number(properties.timestamp),
-    sourceWallet: properties.sourceWallet,
+    sourceWallet: properties.walletAddress,
     nativeTransfers: [],
     tokenTransfers: [],
     accountData: [],
@@ -263,9 +254,7 @@ export default async function TradePage({ params }: Props) {
               <div className="flex-1">
                 <div className="flex items-center gap-4 justify-center md:justify-end">
                   <div className="text-right">
-                    <div className="text-sm text-green-400">
-                      Copied by
-                    </div>
+                    <div className="text-sm text-green-400">Copied by</div>
                     {properties.walletUsername ? (
                       <Link
                         href={`/${properties.walletUsername}`}
@@ -502,6 +491,8 @@ export default async function TradePage({ params }: Props) {
               <ClientSwapView
                 tx={transaction}
                 sourceWallet={properties.walletAddress}
+                fromMint={properties.inputMint}
+                toMint={properties.outputMint}
               />
             </div>
           </div>
