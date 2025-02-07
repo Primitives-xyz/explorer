@@ -195,7 +195,7 @@ export function useJupiterSwap({
         setError('Transaction failed. Please try again.')
       } else {
         await createContentNode(txid.signature)
-        showSuccessToast(txid.signature)
+        showSuccessToast()
         setShowTradeLink(true)
       }
     } catch (err) {
@@ -330,7 +330,7 @@ export function useJupiterSwap({
     }
   }
 
-  const showSuccessToast = (signature: string) => {
+  const showSuccessToast = () => {
     toast({
       title: 'Swap Successful',
       description: 'Transaction confirmed successfully!',
