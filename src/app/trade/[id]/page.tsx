@@ -16,7 +16,6 @@ const formatAddress = (address: string) =>
   `${address.slice(0, 4)}...${address.slice(-4)}`
 
 async function getTradeContent(id: string): Promise<ContentResponse | null> {
-  console.log(`[Page] Attempting to fetch trade content for id: ${id}`)
   try {
     const content = await contentServer.getContentById(id)
     if (!content) {
