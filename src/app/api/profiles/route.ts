@@ -38,26 +38,29 @@ export async function GET(request: Request) {
       }
 
       const identitiesData = await identitiesResponse.json()
+
       // Transform identities data to match profiles shape
-      const transformedIdentities = identitiesData.map((identity: any) => ({
-        profile: {
-          id: identity.id,
-          created_at: identity.created_at,
-          namespace: identity.namespace,
-          username: identity.username,
-          bio: identity.bio || null,
-          image: identity.image || null,
-        },
-        wallet: {
-          address: identity.blockchain === 'SOLANA' ? identity.id : null,
-        },
-        namespace: {
-          name: identity.namespace,
-          readableName: identity.namespace,
-          userProfileURL: '',
-          faviconURL: null,
-        },
-      }))
+      const transformedIdentities = identitiesData.identities.map(
+        (identity: any) => ({
+          profile: {
+            id: identity.profile.id,
+            created_at: identity.profile.created_at,
+            namespace: identity.profile.namespace,
+            username: identity.profile.username,
+            bio: identity.profile.bio || null,
+            image: identity.profile.image || null,
+          },
+          wallet: {
+            address: identity.walletAddress,
+          },
+          namespace: {
+            name: identity.profile.namespace,
+            readableName: identity.profile.namespace,
+            userProfileURL: '',
+            faviconURL: null,
+          },
+        }),
+      )
 
       return NextResponse.json({ profiles: transformedIdentities })
     } else {
