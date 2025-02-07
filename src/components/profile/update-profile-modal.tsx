@@ -152,11 +152,14 @@ export function UpdateProfileModal({
             )}
             {!fileUrl && !currentImage && username && (
               <div className="mt-2">
-                <img
-                  src={`${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`}
-                  alt="Default avatar preview"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-green-500/50"
-                />
+                <div className="relative inline-block w-20 h-20 overflow-hidden rounded-full bg-green-900/20">
+                  <img
+                    src={`${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`}
+                    alt="Default avatar preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 rounded-full ring-1 ring-green-500/20" />
+                </div>
                 <p className="text-xs text-green-600 mt-1">
                   This will be your default avatar if no image is uploaded
                 </p>
