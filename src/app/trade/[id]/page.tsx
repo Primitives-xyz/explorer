@@ -49,6 +49,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
+  const getBestImage = (properties: any): string => {
+    // Try wallet image first if it's not a dicebear
+    if (
+      properties.walletImage &&
+      !properties.walletImage.includes('dicebear')
+    ) {
+      return properties.walletImage
+    }
+
+    // Then try token images
+    if (properties.inputTokenImage) {
+      return properties.inputTokenImage
+    }
+    if (properties.outputTokenImage) {
+      return properties.outputTokenImage
+    }
+
+    // Finally try source wallet image if it's not a dicebear
+    if (
+      properties.sourceWalletImage &&
+      !properties.sourceWalletImage.includes('dicebear')
+    ) {
+      return properties.sourceWalletImage
+    }
+
+    return ''
+  }
+
   const properties =
     content.content ||
     content.result?.properties?.reduce((acc: any, prop: any) => {
@@ -64,18 +92,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : formatAddress(properties.sourceWallet || '')
 
   const description = `${copierName} copied ${sourceName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
-  const title = `Copy Trader: ${copierName} × ${sourceName}`
+  const title = `🔥 ${copierName} copied ${sourceName}'s ${properties.outputTokenSymbol} trade`
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: `${copierName} just copied ${sourceName}'s ${properties.outputTokenSymbol} move 👀`,
       description,
       type: 'article',
       images: [
         {
-          url: properties.sourceWalletImage || '',
+          url: getBestImage(properties),
           width: 1200,
           height: 630,
           alt: `${copierName} copied ${sourceName}'s trade`,
@@ -89,7 +117,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: properties.sourceWalletUsername
         ? `@${properties.sourceWalletUsername}`
         : undefined,
-      images: [properties.sourceWalletImage || ''],
+      images: [getBestImage(properties)],
     },
   }
 }
