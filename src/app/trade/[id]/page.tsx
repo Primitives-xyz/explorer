@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : formatAddress(properties.sourceWallet || '')
 
   const description = `${copierName} copied ${sourceName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
-  const title = `Copied Trade: ${copierName} × ${sourceName}`
+  const title = `Copy Trader: ${copierName} × ${sourceName}`
 
   return {
     title,
@@ -318,7 +318,7 @@ export default async function TradePage({ params }: Props) {
         {/* Share Section */}
         <div className="mt-4 flex items-center justify-end gap-4">
           <ShareButton
-            title={`Check out this copied trade on Nemo!`}
+            title={`Check out this copied trade on $SSE!`}
             text={`${
               properties.walletUsername ||
               formatAddress(properties.walletAddress || '')
