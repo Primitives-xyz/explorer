@@ -1,8 +1,8 @@
 import type { TokenResponse } from '@/types/Token'
 
-const DB_NAME = 'explorer-db'
+const DB_NAME = 'explorer-token-db'
 const STORE_NAME = 'token-info'
-const DB_VERSION = 2 // Increment from current version 1
+const DB_VERSION = 1
 
 export interface TokenCacheItem {
   mint: string

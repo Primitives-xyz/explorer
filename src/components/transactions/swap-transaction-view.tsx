@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { JupiterSwapForm } from './jupiter-swap-form'
 import { Modal } from '@/components/common/modal'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { useTokenInfo } from '@/hooks/use-token-info'
 import dynamic from 'next/dynamic'
 
 const DynamicConnectButton = dynamic(
@@ -37,6 +38,18 @@ export function SwapTransactionView({
   const [showSwapModal, setShowSwapModal] = useState(false)
   const { isLoggedIn } = useCurrentWallet()
 
+  // Add useTokenInfo hooks for both tokens
+  const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
+    fromToken?.mint === 'So11111111111111111111111111111111111111112'
+      ? null
+      : fromToken?.mint,
+  )
+  const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
+    toToken?.mint === 'So11111111111111111111111111111111111111112'
+      ? null
+      : toToken?.mint,
+  )
+
   useEffect(() => {
     async function loadTokenInfo() {
       // Parse description for initial token info
@@ -66,36 +79,7 @@ export function SwapTransactionView({
           setToToken({
             mint: toTokenMint,
             amount: toAmount,
-            loading: true,
           })
-
-          try {
-            const response = await fetch(`/api/token?mint=${toTokenMint}`)
-            if (!response.ok) {
-              throw new Error('Failed to fetch token info')
-            }
-            const tokenInfo = await response.json()
-            setToToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    tokenInfo,
-                    loading: false,
-                  }
-                : null,
-            )
-          } catch (error) {
-            console.error('Error fetching token info:', error)
-            setToToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    loading: false,
-                    error: 'Failed to load token info',
-                  }
-                : null,
-            )
-          }
         }
       } else if (isToSol) {
         // Token -> SOL swap
@@ -108,42 +92,28 @@ export function SwapTransactionView({
           setFromToken({
             mint: fromTokenMint,
             amount: fromAmount,
-            loading: true,
           })
-
-          try {
-            const response = await fetch(`/api/token?mint=${toTokenMint}`)
-            if (!response.ok) {
-              throw new Error('Failed to fetch token info')
-            }
-            const tokenInfo = await response.json()
-            setFromToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    tokenInfo,
-                    loading: false,
-                  }
-                : null,
-            )
-          } catch (error) {
-            console.error('Error fetching token info:', error)
-            setFromToken((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    loading: false,
-                    error: 'Failed to load token info',
-                  }
-                : null,
-            )
-          }
         }
       }
     }
 
     loadTokenInfo()
   }, [tx, sourceWallet])
+
+  // Update token info when data is loaded
+  useEffect(() => {
+    if (fromToken && fromTokenInfo) {
+      setFromToken((prev) =>
+        prev ? { ...prev, tokenInfo: fromTokenInfo } : null,
+      )
+    }
+  }, [fromTokenInfo])
+
+  useEffect(() => {
+    if (toToken && toTokenInfo) {
+      setToToken((prev) => (prev ? { ...prev, tokenInfo: toTokenInfo } : null))
+    }
+  }, [toTokenInfo])
 
   if (!fromToken || !toToken) return null
 
@@ -191,7 +161,7 @@ export function SwapTransactionView({
                   width={20}
                   height={20}
                 />
-              ) : fromToken.loading ? (
+              ) : fromTokenLoading ? (
                 <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
               ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
                 <img
@@ -217,7 +187,7 @@ export function SwapTransactionView({
               {fromToken.mint ===
               'So11111111111111111111111111111111111111112' ? (
                 'SOL'
-              ) : fromToken.loading ? (
+              ) : fromTokenLoading ? (
                 <div className="animate-pulse w-16 h-4 bg-green-500/20 rounded" />
               ) : (
                 fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
@@ -265,7 +235,7 @@ export function SwapTransactionView({
                   width={20}
                   height={20}
                 />
-              ) : toToken.loading ? (
+              ) : toTokenLoading ? (
                 <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
               ) : toToken.tokenInfo?.result?.content?.links?.image ? (
                 <img
@@ -291,7 +261,7 @@ export function SwapTransactionView({
               {toToken.mint ===
               'So11111111111111111111111111111111111111112' ? (
                 'SOL'
-              ) : toToken.loading ? (
+              ) : toTokenLoading ? (
                 <div className="animate-pulse w-16 h-4 bg-green-500/20 rounded" />
               ) : (
                 toToken.tokenInfo?.result?.content?.metadata?.symbol ||
