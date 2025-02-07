@@ -135,5 +135,5 @@ export function LargestHolders({
     </div>
   )
 
-  return <div className="h-[350px]">{content}</div>
+  return <div className="">{content}</div>
 }

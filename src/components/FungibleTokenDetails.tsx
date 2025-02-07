@@ -122,7 +122,7 @@ export default function FungibleTokenDetails({
           {/* Swap Section */}
           <div className="flex flex-col">
             <h3 className="text-xl font-mono text-green-500 mb-4">Swap</h3>
-            <div className="flex-1 bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
+            <div className="flex flex-col h-[500px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
               <Tab.Group className="h-full flex flex-col">
                 <Tab.List className="flex space-x-1 border-b border-green-800/40">
                   <Tab
@@ -148,9 +148,9 @@ export default function FungibleTokenDetails({
                     Swap USDC
                   </Tab>
                 </Tab.List>
-                <Tab.Panels className="flex-1 flex flex-col">
-                  <Tab.Panel className="flex-1 flex flex-col h-full">
-                    <div className="flex-1 p-6">
+                <Tab.Panels className="flex-1 overflow-y-auto">
+                  <Tab.Panel className="h-full p-4">
+                    <div className="h-full overflow-y-auto">
                       <JupiterSwapForm
                         initialInputMint="So11111111111111111111111111111111111111112"
                         initialOutputMint={id}
@@ -161,8 +161,8 @@ export default function FungibleTokenDetails({
                       />
                     </div>
                   </Tab.Panel>
-                  <Tab.Panel className="flex-1 flex flex-col h-full">
-                    <div className="flex-1 p-6">
+                  <Tab.Panel className="h-full p-4">
+                    <div className="h-full overflow-y-auto">
                       <JupiterSwapForm
                         initialInputMint="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
                         initialOutputMint={id}
@@ -182,7 +182,7 @@ export default function FungibleTokenDetails({
             <h3 className="text-xl font-mono text-green-500 mb-4">
               Token Details
             </h3>
-            <div className="flex-1 bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
+            <div className="flex flex-col h-[500px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
               <Tab.Group className="h-full flex flex-col">
                 <Tab.List className="flex space-x-1 border-b border-green-800/40">
                   <Tab
@@ -208,21 +208,25 @@ export default function FungibleTokenDetails({
                     Token Holders
                   </Tab>
                 </Tab.List>
-                <Tab.Panels className="h-[350px]">
-                  <Tab.Panel className="h-full">
-                    <TokenInformation
-                      id={id}
-                      overview={overview}
-                      decimals={tokenInfo.token_info.decimals}
-                      tokenProgram={tokenInfo.token_info.token_program}
-                      authorities={tokenInfo.authorities}
-                    />
+                <Tab.Panels className="flex-1 overflow-y-auto">
+                  <Tab.Panel className="h-full p-4">
+                    <div className="h-full overflow-y-auto">
+                      <TokenInformation
+                        id={id}
+                        overview={overview}
+                        decimals={tokenInfo.token_info.decimals}
+                        tokenProgram={tokenInfo.token_info.token_program}
+                        authorities={tokenInfo.authorities}
+                      />
+                    </div>
                   </Tab.Panel>
-                  <Tab.Panel className="h-full">
-                    <LargestHolders
-                      mintAddress={id}
-                      totalSupply={overview?.supply || 0}
-                    />
+                  <Tab.Panel className="min-h-[500px]">
+                    <div className="p-4">
+                      <LargestHolders
+                        mintAddress={id}
+                        totalSupply={overview?.supply || 0}
+                      />
+                    </div>
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
