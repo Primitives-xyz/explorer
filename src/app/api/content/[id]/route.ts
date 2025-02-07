@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server'
 import { contentServer } from '@/lib/content-server'
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const requestingProfileId = searchParams.get('requestingProfileId')
+  const id = request.url.split('/').pop() as string
 
   try {
     const content = await contentServer.getContentById(
-      params.id,
+      id,
       requestingProfileId || undefined,
     )
     return NextResponse.json(content)
@@ -23,10 +21,8 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PUT(request: Request) {
+  const id = request.url.split('/').pop() as string
   try {
     const body = await request.json()
     const { properties } = body
@@ -38,7 +34,7 @@ export async function PUT(
       )
     }
 
-    const content = await contentServer.updateContent(params.id, properties)
+    const content = await contentServer.updateContent(id, properties)
     return NextResponse.json(content)
   } catch (error: any) {
     console.error('Error updating content:', error)
@@ -49,12 +45,10 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function DELETE(request: Request) {
+  const id = request.url.split('/').pop() as string
   try {
-    await contentServer.deleteContent(params.id)
+    await contentServer.deleteContent(id)
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('Error deleting content:', error)
