@@ -264,7 +264,7 @@ export default async function TradePage({ params }: Props) {
                 <div className="flex items-center gap-4 justify-center md:justify-end">
                   <div className="text-right">
                     <div className="text-sm text-green-400">
-                      Copied and executed by
+                      Copied by
                     </div>
                     {properties.walletUsername ? (
                       <Link
