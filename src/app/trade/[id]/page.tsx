@@ -501,7 +501,7 @@ export default async function TradePage({ params }: Props) {
               </h2>
               <ClientSwapView
                 tx={transaction}
-                sourceWallet={properties.sourceWallet}
+                sourceWallet={properties.walletAddress}
               />
             </div>
           </div>
