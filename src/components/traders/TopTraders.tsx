@@ -303,8 +303,32 @@ export const TopTraders = () => {
   return (
     <div className="border border-indigo-800 bg-black/50 w-full overflow-hidden flex flex-col h-[600px] relative group backdrop-blur-sm">
       {/* Header */}
-      <div className="border-b border-indigo-800 p-4 flex-shrink-0 bg-black/20">
-        <div className="flex justify-between items-center">
+      <div className="border-b border-indigo-800 p-3 flex-shrink-0 bg-black/20">
+        {/* Mobile Layout */}
+        <div className="flex sm:hidden flex-col gap-2">
+          <div className="text-indigo-500 text-sm font-mono flex items-center gap-2">
+            <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+            {'>'} top_traders
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {(['today', 'yesterday', '1W'] as TimeFrame[]).map((tf) => (
+              <button
+                key={tf}
+                onClick={() => setTimeFrame(tf)}
+                className={`text-xs font-mono px-2.5 py-1 rounded-full transition-all ${
+                  timeFrame === tf
+                    ? 'bg-indigo-500 text-black'
+                    : 'text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/40'
+                }`}
+              >
+                {tf.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden sm:flex items-center justify-between">
           <div className="text-indigo-500 text-sm font-mono flex items-center gap-2">
             <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
             {'>'} top_traders
