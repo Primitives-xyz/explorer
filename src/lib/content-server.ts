@@ -12,7 +12,34 @@ export interface Content {
 }
 
 export interface ContentResponse {
-  content: Content
+  result?: {
+    id: string
+    created_at: number
+    properties: ContentProperties[]
+  }
+  content?: {
+    outputTokenName: string
+    inputTokenSymbol: string
+    inputTokenDecimals: string
+    txSignature: string
+    created_at: number
+    inputAmount: string
+    outputMint: string
+    priceImpact: string
+    type: string
+    outputTokenImage: string
+    slippageBps: string
+    outputTokenDecimals: string
+    inputMint: string
+    outputTokenSymbol: string
+    namespace: string
+    inputTokenImage: string
+    expectedOutput: string
+    id: string
+    sourceWallet: string
+    inputTokenName: string
+    timestamp: string
+  }
   socialCounts: {
     likeCount: number
     commentCount: number

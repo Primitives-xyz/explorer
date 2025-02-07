@@ -13,6 +13,7 @@ interface JupiterSwapFormProps {
   inputTokenName?: string
   outputTokenName?: string
   inputDecimals?: number
+  sourceWallet?: string
 }
 
 // Platform fee configuration
@@ -63,6 +64,7 @@ export const JupiterSwapForm = ({
   inputTokenName = 'SOL',
   outputTokenName = 'USDC',
   inputDecimals = 9,
+  sourceWallet,
 }: JupiterSwapFormProps) => {
   const { toast } = useToast()
   const [inputAmount, setInputAmount] = useState(initialAmount)
@@ -74,12 +76,13 @@ export const JupiterSwapForm = ({
   const [priorityLevel, setPriorityLevel] = useState<PriorityLevel>('Medium')
   const [priorityFee, setPriorityFee] = useState<number>(0)
   const [estimatingFee, setEstimatingFee] = useState(false)
-  const { primaryWallet, walletAddress } = useCurrentWallet()
+  const { primaryWallet, walletAddress, mainUsername } = useCurrentWallet()
   const [quoteResponse, setQuoteResponse] = useState<any>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [priceImpact, setPriceImpact] = useState<string>('')
   const [slippageBps, setSlippageBps] = useState<number>(50) // 0.5% default
   const [isQuoteDetailsOpen, setIsQuoteDetailsOpen] = useState(false)
+  const [showTradeLink, setShowTradeLink] = useState(false)
 
   // Update form when props change
   useEffect(() => {
@@ -238,6 +241,122 @@ export const JupiterSwapForm = ({
         })
         setError('Transaction failed. Please try again.')
       } else {
+        // Create content node for the swap
+        try {
+          // Fetch token details for both input and output tokens
+          const [inputTokenResponse, outputTokenResponse] = await Promise.all([
+            fetch(`/api/token?mint=${inputMint}`),
+            fetch(`/api/token?mint=${outputMint}`),
+          ])
+
+          const inputTokenData = await inputTokenResponse.json()
+          const outputTokenData = await outputTokenResponse.json()
+
+          const response = await fetch('/api/content', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: txid.signature,
+              profileId: mainUsername,
+              properties: [
+                {
+                  key: 'type',
+                  value: 'swap',
+                },
+                {
+                  key: 'inputMint',
+                  value: inputMint,
+                },
+                {
+                  key: 'outputMint',
+                  value: outputMint,
+                },
+                {
+                  key: 'inputAmount',
+                  value: inputAmount,
+                },
+                {
+                  key: 'expectedOutput',
+                  value: expectedOutput,
+                },
+                {
+                  key: 'priceImpact',
+                  value: priceImpact,
+                },
+                {
+                  key: 'inputTokenName',
+                  value: inputTokenName,
+                },
+                {
+                  key: 'outputTokenName',
+                  value: outputTokenName,
+                },
+                // Input token details
+                {
+                  key: 'inputTokenSymbol',
+                  value:
+                    inputTokenData?.result?.content?.metadata?.symbol ||
+                    inputTokenName,
+                },
+                {
+                  key: 'inputTokenImage',
+                  value: inputTokenData?.result?.content?.links?.image || '',
+                },
+                {
+                  key: 'inputTokenDecimals',
+                  value: String(
+                    inputTokenData?.result?.token_info?.decimals ||
+                      inputDecimals,
+                  ),
+                },
+                // Output token details
+                {
+                  key: 'outputTokenSymbol',
+                  value:
+                    outputTokenData?.result?.content?.metadata?.symbol ||
+                    outputTokenName,
+                },
+                {
+                  key: 'outputTokenImage',
+                  value: outputTokenData?.result?.content?.links?.image || '',
+                },
+                {
+                  key: 'outputTokenDecimals',
+                  value: String(
+                    outputTokenData?.result?.token_info?.decimals || 6,
+                  ),
+                },
+                // Transaction details
+                {
+                  key: 'txSignature',
+                  value: txid.signature,
+                },
+                {
+                  key: 'timestamp',
+                  value: String(Date.now()),
+                },
+                {
+                  key: 'slippageBps',
+                  value: String(slippageBps),
+                },
+                // Source wallet information
+                {
+                  key: 'sourceWallet',
+                  value: sourceWallet || '',
+                },
+              ],
+            }),
+          })
+
+          if (!response.ok) {
+            console.error('Failed to create content node for swap')
+          }
+        } catch (err) {
+          console.error('Error creating content node:', err)
+        }
+
         // Show success toast
         toast({
           title: 'Swap Successful',
@@ -245,16 +364,39 @@ export const JupiterSwapForm = ({
             <div>
               Successfully swapped {inputAmount} {inputTokenName} to{' '}
               {outputTokenName}
-              <div className="mt-2">
-                <a href={`/${txid.signature}`} className="text-sm underline">
-                  View Transaction
-                </a>
+              <div className="mt-2 space-y-2">
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`/trade/${txid.signature}`}
+                    className="text-sm underline"
+                  >
+                    View Transaction
+                  </a>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/trade/${txid.signature}`,
+                      )
+                      toast({
+                        title: 'Link Copied',
+                        description: 'Trade link copied to clipboard',
+                        variant: 'success',
+                        duration: 2000,
+                      })
+                    }}
+                    className="text-sm px-2 py-1 bg-green-800/50 hover:bg-green-800/70 rounded-md transition-colors"
+                  >
+                    Copy Link
+                  </button>
+                </div>
               </div>
             </div>
           ),
           variant: 'success',
-          duration: 5000,
+          duration: 10000,
         })
+        setShowTradeLink(true)
       }
     } catch (err) {
       console.error('Swap failed:', err)
@@ -495,16 +637,47 @@ export const JupiterSwapForm = ({
 
         {error && <div className="text-red-400 text-sm">{error}</div>}
         {txSignature && (
-          <div className="text-green-400 text-sm">
-            Transaction:{' '}
-            <a
-              href={`https://solscan.io/tx/${txSignature}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              View on Solscan
-            </a>
+          <div className="space-y-3">
+            <div className="text-green-400 text-sm">
+              Transaction:{' '}
+              <a
+                href={`https://solscan.io/tx/${txSignature}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                View on Solscan
+              </a>
+            </div>
+            {showTradeLink && (
+              <div className="bg-green-900/20 p-3 rounded-lg space-y-2">
+                <div className="text-sm text-green-400">Share your trade:</div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${window.location.origin}/trade/${txSignature}`}
+                    className="flex-1 bg-green-900/20 text-green-100 p-2 rounded text-sm"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/trade/${txSignature}`,
+                      )
+                      toast({
+                        title: 'Link Copied',
+                        description: 'Trade link copied to clipboard',
+                        variant: 'success',
+                        duration: 2000,
+                      })
+                    }}
+                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm transition-colors"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

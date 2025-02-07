@@ -35,20 +35,28 @@ export async function fetchTapestryServer<T = any>({
     if (data) {
       options.body = JSON.stringify(data)
     }
+
     const response = await fetch(url, options)
+
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Tapestry API Error from route: ', url, {
+      console.error('[Tapestry] API Error:', {
         status: response.status,
         statusText: response.statusText,
         endpoint: cleanEndpoint,
         error: errorText,
+        url: url.replace(API_KEY, '***'), // Redact API key from logs
       })
 
       // Handle specific status codes
       switch (response.status) {
         case 404:
-          throw new Error(`API endpoint not found: ${cleanEndpoint}`)
+          console.error(
+            `[Tapestry] Resource not found at endpoint: ${cleanEndpoint}`,
+          )
+          throw new Error(
+            `API endpoint or resource not found: ${cleanEndpoint}`,
+          )
         case 401:
           throw new Error('Invalid API key or unauthorized access')
         case 403:
@@ -63,7 +71,6 @@ export async function fetchTapestryServer<T = any>({
           throw new Error(
             `Tapestry API is temporarily unavailable - please try again later`,
           )
-
         default:
           throw new Error(
             `HTTP error! status: ${response.status} - ${
@@ -77,7 +84,7 @@ export async function fetchTapestryServer<T = any>({
     return responseData
   } catch (error: any) {
     // Log the full error for debugging
-    console.error('Tapestry Server Error:', {
+    console.error('[Tapestry] Server Error:', {
       error: error.message,
       stack: error.stack,
       endpoint: cleanEndpoint,

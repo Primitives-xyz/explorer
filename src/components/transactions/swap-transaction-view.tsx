@@ -175,7 +175,10 @@ export function SwapTransactionView({
         <Link
           href={`/${fromToken.mint}`}
           className="flex-1 flex items-center gap-2 hover:opacity-80 transition-opacity"
-          aria-label={`View token ${fromToken.tokenInfo?.result?.content?.metadata?.symbol || fromToken.mint}`}
+          aria-label={`View token ${
+            fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
+            fromToken.mint
+          }`}
         >
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
@@ -247,7 +250,9 @@ export function SwapTransactionView({
         <Link
           href={`/${toToken.mint}`}
           className="flex-1 flex items-center gap-2 hover:opacity-80 transition-opacity"
-          aria-label={`View token ${toToken.tokenInfo?.result?.content?.metadata?.symbol || toToken.mint}`}
+          aria-label={`View token ${
+            toToken.tokenInfo?.result?.content?.metadata?.symbol || toToken.mint
+          }`}
         >
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
@@ -327,6 +332,7 @@ export function SwapTransactionView({
               ? fromToken.tokenInfo.result.token_info?.decimals ?? 9
               : 9
           }
+          sourceWallet={sourceWallet}
         />
       </Modal>
     </div>

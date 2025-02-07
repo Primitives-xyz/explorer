@@ -158,6 +158,7 @@ export default function FungibleTokenDetails({
                         inputTokenName="SOL"
                         outputTokenName={tokenInfo.content.metadata.symbol}
                         inputDecimals={9}
+                        sourceWallet=""
                       />
                     </div>
                   </Tab.Panel>
@@ -169,6 +170,7 @@ export default function FungibleTokenDetails({
                         inputTokenName="USDC"
                         outputTokenName={tokenInfo.content.metadata.symbol}
                         inputDecimals={6}
+                        sourceWallet=""
                       />
                     </div>
                   </Tab.Panel>
