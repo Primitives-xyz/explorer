@@ -16,7 +16,6 @@ const formatAddress = (address: string) =>
   `${address.slice(0, 4)}...${address.slice(-4)}`
 
 async function getTradeContent(id: string): Promise<ContentResponse | null> {
-  console.log(`[Page] Attempting to fetch trade content for id: ${id}`)
   try {
     const content = await contentServer.getContentById(id)
     if (!content) {
@@ -65,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : formatAddress(properties.sourceWallet || '')
 
   const description = `${copierName} copied ${sourceName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
-  const title = `Copied Trade: ${copierName} × ${sourceName}`
+  const title = `Copy Trader: ${copierName} × ${sourceName}`
 
   return {
     title,
@@ -258,9 +257,7 @@ export default async function TradePage({ params }: Props) {
               <div className="flex-1">
                 <div className="flex items-center gap-4 justify-center md:justify-end">
                   <div className="text-right">
-                    <div className="text-sm text-green-400">
-                      Copied and executed by
-                    </div>
+                    <div className="text-sm text-green-400">Copied by</div>
                     {properties.walletUsername ? (
                       <Link
                         href={`/${properties.walletUsername}`}
@@ -313,7 +310,7 @@ export default async function TradePage({ params }: Props) {
         {/* Share Section */}
         <div className="mt-4 flex items-center justify-end gap-4">
           <ShareButton
-            title={`Check out this copied trade on Nemo!`}
+            title={`Check out this copied trade on $SSE!`}
             text={`${
               properties.walletUsername ||
               formatAddress(properties.walletAddress || '')
