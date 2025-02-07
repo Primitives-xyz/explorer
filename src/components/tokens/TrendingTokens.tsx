@@ -41,21 +41,21 @@ const TokenCard = memo(
               <img
                 src={token.logoURI}
                 alt={token.symbol}
-                className="w-12 h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20 relative z-[1] group-hover/item:ring-green-500/40 transition-all"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20 relative z-[1] group-hover/item:ring-green-500/40 transition-all"
                 loading="lazy"
                 onError={(e) => {
                   ;(e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
             ) : (
-              <div className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-                <span className="text-green-500 font-mono text-lg">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+                <span className="text-green-500 font-mono text-base sm:text-lg">
                   {token.symbol.slice(0, 2)}
                 </span>
               </div>
             )}
-            <div className="absolute -top-1.5 -left-1.5 w-6 h-6 bg-green-900/90 rounded-full flex items-center justify-center ring-2 ring-green-500 shadow-lg z-[2] group-hover/item:scale-110 transition-transform">
-              <span className="text-green-400 text-xs font-mono font-bold">
+            <div className="absolute -top-1.5 -left-1.5 w-5 h-5 sm:w-6 sm:h-6 bg-green-900/90 rounded-full flex items-center justify-center ring-2 ring-green-500 shadow-lg z-[2] group-hover/item:scale-110 transition-transform">
+              <span className="text-green-400 text-[10px] sm:text-xs font-mono font-bold">
                 #{token.rank}
               </span>
             </div>
@@ -63,7 +63,8 @@ const TokenCard = memo(
 
           {/* Token Details */}
           <div className="flex-1 min-w-0">
-            <div className="flex flex-col gap-1.5">
+            {/* Desktop Layout */}
+            <div className="hidden sm:flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <button
@@ -98,6 +99,40 @@ const TokenCard = memo(
                   <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
                   <span>Liq: ${formatNumber(token.liquidity)}</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Mobile Layout */}
+            <div className="flex sm:hidden flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    router.push(`/${token.address}`)
+                  }}
+                  className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate max-w-[120px]"
+                >
+                  {token.name}
+                </button>
+                <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
+                  <span className="text-green-400 font-mono text-xs font-medium">
+                    ${formatNumber(token.price)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-1.5">
+                <div className="min-w-0 flex-1">
+                  <TokenAddress address={token.address} />
+                </div>
+                <span className="text-green-600 text-xs flex-shrink-0">
+                  ${token.symbol}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 text-[10px] text-green-600 font-mono">
+                <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
+                <span>Liq: ${formatNumber(token.liquidity)}</span>
               </div>
             </div>
           </div>

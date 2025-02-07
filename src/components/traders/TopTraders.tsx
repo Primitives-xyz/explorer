@@ -24,17 +24,23 @@ const StatCard = memo(
     value,
     additionalInfo,
     color,
+    className,
   }: {
     label: string
     value: string | number
     additionalInfo?: string
     color?: string
+    className?: string
   }) => (
-    <div className="bg-black/30 p-3 rounded-lg border border-indigo-800/30 hover:border-indigo-500/50 transition-all h-[90px] flex flex-col">
-      <div className="flex flex-col flex-1">
-        <div className="text-indigo-400 text-xs">{label}</div>
+    <div
+      className={`bg-black/30 p-1.5 sm:p-2 rounded-lg border border-indigo-800/30 hover:border-indigo-500/50 transition-all h-[60px] sm:h-[70px] flex flex-col ${
+        className || ''
+      }`}
+    >
+      <div className="flex flex-col flex-1 min-w-0">
+        <div className="text-indigo-400 text-[10px]">{label}</div>
         <div
-          className={`font-mono text-base font-medium truncate mt-1 ${
+          className={`font-mono text-xs sm:text-sm font-medium truncate mt-0.5 ${
             color || 'text-white'
           }`}
         >
@@ -42,7 +48,7 @@ const StatCard = memo(
         </div>
       </div>
       {additionalInfo && (
-        <div className="text-indigo-400/60 text-[11px] leading-tight break-words w-full">
+        <div className="text-indigo-400/60 text-[8px] sm:text-[10px] leading-tight break-words w-full truncate">
           {additionalInfo}
         </div>
       )}
@@ -77,117 +83,151 @@ const TraderCard = memo(
 
     return (
       <div
-        className={`p-4 transition-all duration-200 cursor-pointer ${
+        className={`p-3 transition-all duration-200 cursor-pointer ${
           isSelected ? 'bg-indigo-900/20' : 'hover:bg-indigo-900/10'
         }`}
         onClick={onClick}
       >
-        <div className="flex items-start gap-4">
-          {/* Rank Badge */}
-          <div className="relative">
-            <div
-              className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-                index === 0
-                  ? 'bg-yellow-500/20 ring-yellow-500/50'
-                  : index === 1
-                  ? 'bg-gray-300/20 ring-gray-300/50'
-                  : index === 2
-                  ? 'bg-amber-600/20 ring-amber-600/50'
-                  : 'bg-indigo-900/20 ring-indigo-500/20'
-              } ring-1`}
-            >
+        <div className="flex flex-col gap-2">
+          <div className="flex items-start gap-3">
+            {/* Rank Badge */}
+            <div className="relative flex-shrink-0">
               <div
-                className={`font-mono text-xl font-bold ${
+                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center ${
                   index === 0
-                    ? 'text-yellow-500'
+                    ? 'bg-yellow-500/20 ring-yellow-500/50'
                     : index === 1
-                    ? 'text-gray-300'
+                    ? 'bg-gray-300/20 ring-gray-300/50'
                     : index === 2
-                    ? 'text-amber-600'
-                    : 'text-indigo-400'
-                }`}
+                    ? 'bg-amber-600/20 ring-amber-600/50'
+                    : 'bg-indigo-900/20 ring-indigo-500/20'
+                } ring-1`}
               >
-                #{index + 1}
+                <div
+                  className={`font-mono text-base sm:text-lg font-bold ${
+                    index === 0
+                      ? 'text-yellow-500'
+                      : index === 1
+                      ? 'text-gray-300'
+                      : index === 2
+                      ? 'text-amber-600'
+                      : 'text-indigo-400'
+                  }`}
+                >
+                  #{index + 1}
+                </div>
+              </div>
+              <div className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 bg-indigo-500 rounded-full flex items-center justify-center">
+                <span className="text-black text-[10px] sm:text-xs">⚡</span>
               </div>
             </div>
-            <div className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
-              <span className="text-black text-xs">⚡</span>
+
+            {/* Trader Details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                {/* Desktop Layout */}
+                <div className="hidden sm:flex flex-1 items-center justify-between min-w-0">
+                  <div className="min-w-0">
+                    <TokenAddress address={trader.address} />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        trader.pnl >= 0
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-red-500/20 text-red-400'
+                      } shrink-0`}
+                    >
+                      {trader.pnl >= 0 ? '▲' : '▼'} $
+                      {formatNumber(Math.abs(trader.pnl))}
+                    </div>
+                    <WalletFollowButton
+                      walletAddress={trader.address}
+                      size="sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Mobile Layout */}
+                <div className="flex sm:hidden flex-1 items-center justify-between min-w-0">
+                  <div className="min-w-0">
+                    <TokenAddress address={trader.address} />
+                  </div>
+                  <div
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      trader.pnl >= 0
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-red-500/20 text-red-400'
+                    } shrink-0`}
+                  >
+                    {trader.pnl >= 0 ? '▲' : '▼'} $
+                    {formatNumber(Math.abs(trader.pnl))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-1.5">
+                <StatCard
+                  label="PNL/Trade"
+                  value={
+                    trader.trade_count > 0
+                      ? `$${formatNumber(Math.abs(pnlPerTrade))}`
+                      : trader.pnl !== 0
+                      ? 'Unrealized'
+                      : 'No trades'
+                  }
+                  additionalInfo={
+                    trader.trade_count > 0
+                      ? 'Average Profit per Trade'
+                      : trader.pnl !== 0
+                      ? `$${formatNumber(Math.abs(trader.pnl))} total`
+                      : 'No trading activity'
+                  }
+                  color={trader.pnl >= 0 ? 'text-green-400' : 'text-red-400'}
+                />
+                <StatCard
+                  label="Volume"
+                  value={
+                    trader.volume > 0
+                      ? `$${formatNumber(trader.volume)}`
+                      : trader.pnl !== 0
+                      ? 'Holding'
+                      : 'No volume'
+                  }
+                  additionalInfo={
+                    trader.volume > 0
+                      ? 'Total Trading Volume'
+                      : trader.pnl !== 0
+                      ? 'Position value change'
+                      : 'No trading activity'
+                  }
+                />
+                <StatCard
+                  label="Trades"
+                  value={
+                    trader.trade_count > 0
+                      ? formatNumber(trader.trade_count)
+                      : trader.pnl !== 0
+                      ? 'Holding'
+                      : '0'
+                  }
+                  additionalInfo={
+                    trader.trade_count > 0
+                      ? `Avg. Size $${formatNumber(avgTradeSize)}`
+                      : trader.pnl !== 0
+                      ? 'Position-based PNL'
+                      : 'No trades yet'
+                  }
+                />
+              </div>
             </div>
           </div>
 
-          {/* Trader Details */}
-          <div className="flex-1 min-w-0 space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <TokenAddress address={trader.address} />
-                <WalletFollowButton walletAddress={trader.address} size="sm" />
-              </div>
-              <div
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  trader.pnl >= 0
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-red-500/20 text-red-400'
-                } shrink-0`}
-              >
-                {trader.pnl >= 0 ? '▲' : '▼'} $
-                {formatNumber(Math.abs(trader.pnl))}
-              </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-2">
-              <StatCard
-                label="PNL/Trade"
-                value={
-                  trader.trade_count > 0
-                    ? `$${formatNumber(Math.abs(pnlPerTrade))}`
-                    : trader.pnl !== 0
-                    ? 'Unrealized'
-                    : 'No trades'
-                }
-                additionalInfo={
-                  trader.trade_count > 0
-                    ? 'Average Profit per Trade'
-                    : trader.pnl !== 0
-                    ? `$${formatNumber(Math.abs(trader.pnl))} total`
-                    : 'No trading activity'
-                }
-                color={trader.pnl >= 0 ? 'text-green-400' : 'text-red-400'}
-              />
-              <StatCard
-                label="Volume"
-                value={
-                  trader.volume > 0
-                    ? `$${formatNumber(trader.volume)}`
-                    : trader.pnl !== 0
-                    ? 'Holding'
-                    : 'No volume'
-                }
-                additionalInfo={
-                  trader.volume > 0
-                    ? 'Total Trading Volume'
-                    : trader.pnl !== 0
-                    ? 'Position value change'
-                    : 'No trading activity'
-                }
-              />
-              <StatCard
-                label="Trades"
-                value={
-                  trader.trade_count > 0
-                    ? formatNumber(trader.trade_count)
-                    : trader.pnl !== 0
-                    ? 'Holding'
-                    : '0'
-                }
-                additionalInfo={
-                  trader.trade_count > 0
-                    ? `Avg. Size $${formatNumber(avgTradeSize)}`
-                    : trader.pnl !== 0
-                    ? 'Position-based PNL'
-                    : 'No trades yet'
-                }
-              />
+          {/* Mobile Follow Button */}
+          <div className="sm:hidden flex justify-center">
+            <div className="w-full max-w-[200px]  hover:bg-indigo-900/40 transition-colors rounded-lg">
+              <WalletFollowButton walletAddress={trader.address} size="sm" />
             </div>
           </div>
         </div>
