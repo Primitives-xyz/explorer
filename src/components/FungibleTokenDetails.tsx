@@ -1,29 +1,36 @@
 'use client'
 
-import { formatNumber } from '@/utils/format'
 import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
 import Image from 'next/image'
 import { TransactionSection } from './TransactionSection'
 import { JupiterSwapForm } from './transactions/jupiter-swap-form'
 import { Tab } from '@headlessui/react'
 import { LargestHolders } from './tokens/largest-holders'
+import { useBirdeyeTokenOverview } from '@/hooks/use-birdeye-token-overview'
+import { TokenMetrics } from './tokens/TokenMetrics'
+import { TokenInformation } from './tokens/TokenInformation'
+import {
+  GlobeAltIcon,
+  ChatBubbleLeftRightIcon as DiscordIcon,
+  ArrowUpRightIcon as TwitterIcon,
+} from '@heroicons/react/24/outline'
+import { Skeleton } from './ui/skeleton'
 
 export default function FungibleTokenDetails({
   id,
   tokenInfo,
 }: FungibleTokenDetailsProps) {
+  const { overview, isLoading } = useBirdeyeTokenOverview(id)
   const imageUrl =
-    tokenInfo.content?.links?.image || tokenInfo.content?.files?.[0]?.uri
-  const supply =
-    tokenInfo.token_info.supply / Math.pow(10, tokenInfo.token_info.decimals)
-  const marketCap =
-    supply * (tokenInfo.token_info.price_info?.price_per_token || 0)
+    overview?.logoURI ||
+    tokenInfo.content?.links?.image ||
+    tokenInfo.content?.files?.[0]?.uri
 
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden">
       <div className="container mx-auto px-2 md:px-8 py-8">
         {/* Hero Section with Token Identity */}
-        <div className="relative mb-4">
+        <div className="relative mb-8">
           <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />
           <div className="relative flex flex-col p-8 bg-black/40 border border-green-800 rounded-2xl backdrop-blur-sm">
             {/* Token Identity */}
@@ -52,87 +59,61 @@ export default function FungibleTokenDetails({
                   </div>
                 </div>
 
-                <p className="text-green-400/70 max-w-2xl">
-                  {tokenInfo.content.metadata.description}
+                <p className="text-green-400/70 max-w-2xl mb-4">
+                  {overview?.extensions?.description ||
+                    tokenInfo.content.metadata.description}
                 </p>
+
+                {overview && (
+                  <div className="flex flex-wrap gap-4">
+                    {overview.extensions.website && (
+                      <a
+                        href={overview.extensions.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
+                      >
+                        <GlobeAltIcon className="w-5 h-5" />
+                        <span>Website</span>
+                      </a>
+                    )}
+                    {overview.extensions.discord && (
+                      <a
+                        href={overview.extensions.discord}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
+                      >
+                        <DiscordIcon className="w-5 h-5" />
+                        <span>Discord</span>
+                      </a>
+                    )}
+                    {overview.extensions.twitter && (
+                      <a
+                        href={overview.extensions.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
+                      >
+                        <TwitterIcon className="w-5 h-5" />
+                        <span>Twitter</span>
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-green-800/40">
-              <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-green-500/5 border border-green-500/10 group-hover:border-green-500/20 transition-colors">
-                  <span className="text-2xl text-green-500">$</span>
-                </div>
-                <div>
-                  <h3 className="text-green-500/60 text-sm font-mono">Price</h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-green-400 font-mono group-hover:text-green-300 transition-colors">
-                      $
-                      {formatNumber(
-                        tokenInfo.token_info.price_info?.price_per_token || 0,
-                        4,
-                      )}
-                    </span>
-                    <span className="text-green-500/60 text-sm">
-                      {tokenInfo.token_info.price_info?.currency}
-                    </span>
-                  </div>
-                </div>
+            {/* Token Metrics */}
+            {isLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="h-24 bg-green-900/20" />
+                ))}
               </div>
-
-              <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-green-500/5 border border-green-500/10 group-hover:border-green-500/20 transition-colors">
-                  <svg
-                    className="w-6 h-6 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-green-500/60 text-sm font-mono">
-                    Market Cap
-                  </h3>
-                  <div className="text-2xl font-bold text-green-400 font-mono group-hover:text-green-300 transition-colors">
-                    ${formatNumber(marketCap)}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-green-500/5 border border-green-500/10 group-hover:border-green-500/20 transition-colors">
-                  <svg
-                    className="w-6 h-6 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-green-500/60 text-sm font-mono">
-                    Supply
-                  </h3>
-                  <div className="text-2xl font-bold text-green-400 font-mono group-hover:text-green-300 transition-colors">
-                    {formatNumber(supply)}
-                  </div>
-                </div>
-              </div>
-            </div>
+            ) : overview ? (
+              <TokenMetrics overview={overview} />
+            ) : null}
           </div>
         </div>
 
@@ -228,69 +209,20 @@ export default function FungibleTokenDetails({
                   </Tab>
                 </Tab.List>
                 <Tab.Panels className="h-[350px]">
-                  <Tab.Panel className="h-full overflow-y-auto p-6 space-y-6">
-                    {/* Basic Token Details */}
-                    <div className="space-y-3">
-                      {[
-                        { label: 'Token Address', value: id },
-                        {
-                          label: 'Decimals',
-                          value: tokenInfo.token_info.decimals,
-                        },
-                        {
-                          label: 'Token Program',
-                          value: tokenInfo.token_info.token_program,
-                        },
-                      ].map((item, i) => (
-                        <div key={i} className="flex flex-col">
-                          <span className="text-green-500/60 text-sm">
-                            {item.label}
-                          </span>
-                          <span className="font-mono text-green-400 break-all">
-                            {item.value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Authority Info */}
-                    <div className="pt-4 border-t border-green-800/40">
-                      <h4 className="text-lg font-mono text-green-500 mb-3">
-                        Authority
-                      </h4>
-                      <div className="space-y-4">
-                        {tokenInfo.authorities.map((authority, i) => (
-                          <div key={i} className="space-y-2">
-                            <div className="flex flex-col">
-                              <span className="text-green-500/60 text-sm">
-                                Address
-                              </span>
-                              <span className="font-mono text-green-400 break-all">
-                                {authority.address}
-                              </span>
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-green-500/60 text-sm">
-                                Scopes
-                              </span>
-                              <div className="flex flex-wrap gap-2">
-                                {authority.scopes.map((scope, j) => (
-                                  <span
-                                    key={j}
-                                    className="px-2 py-1 bg-green-500/10 rounded-md text-green-400 text-sm"
-                                  >
-                                    {scope}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                  <Tab.Panel className="h-full">
+                    <TokenInformation
+                      id={id}
+                      overview={overview}
+                      decimals={tokenInfo.token_info.decimals}
+                      tokenProgram={tokenInfo.token_info.token_program}
+                      authorities={tokenInfo.authorities}
+                    />
                   </Tab.Panel>
                   <Tab.Panel className="h-full">
-                    <LargestHolders mintAddress={id} totalSupply={supply} />
+                    <LargestHolders
+                      mintAddress={id}
+                      totalSupply={overview?.supply || 0}
+                    />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
@@ -326,8 +258,6 @@ export default function FungibleTokenDetails({
             </div>
           </div>
         </div>
-
-        {/* End of component */}
       </div>
     </div>
   )
