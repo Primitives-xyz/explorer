@@ -131,6 +131,7 @@ export interface Transaction {
   slot: number
   timestamp: number
   sourceWallet?: string
+  sourceWalletUsername?: string
   nativeTransfers: {
     fromUserAccount: string
     toUserAccount: string
@@ -154,6 +155,8 @@ export interface Transaction {
   balanceChanges: {
     [address: string]: number
   }
+  inputMint?: string
+  outputMint?: string
 }
 
 export interface FungibleTokenDetailsProps {

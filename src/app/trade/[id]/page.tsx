@@ -16,21 +16,13 @@ const formatAddress = (address: string) =>
   `${address.slice(0, 4)}...${address.slice(-4)}`
 
 async function getTradeContent(id: string): Promise<ContentResponse | null> {
+  console.log(`[Page] Attempting to fetch trade content for id: ${id}`)
   try {
     const content = await contentServer.getContentById(id)
     if (!content) {
       console.error(`[Page] No content returned for id: ${id}`)
       return null
     }
-
-    // Log the content structure to help debug type mismatches
-    console.log(`[Page] Content structure for id: ${id}:`, {
-      hasResult: !!content.result,
-      resultType: content.result?.properties?.find((p: any) => p.key === 'type')
-        ?.value,
-      propertiesCount: content.result?.properties?.length,
-    })
-
     console.log({ result: content })
 
     return content
@@ -140,22 +132,25 @@ export default async function TradePage({ params }: Props) {
     notFound()
   }
 
-  // Create a transaction object that matches what SwapTransactionView expects
+  // not the person they copied from
   const transaction: Transaction = {
     description: `wallet swapped ${properties.inputAmount} ${properties.inputTokenSymbol} for ${properties.expectedOutput} ${properties.outputTokenSymbol}`,
     type: 'SWAP',
     source: 'jupiter',
     fee: 0,
-    feePayer: properties.sourceWallet || '',
+    feePayer: properties.walletAddress || '',
     signature:
       properties.txSignature || contentResponse.result?.id || resolvedParams.id,
     slot: 0,
     timestamp: Number(properties.timestamp),
-    sourceWallet: properties.sourceWallet,
+    sourceWallet: properties.walletAddress,
+    sourceWalletUsername: properties.walletUsername,
     nativeTransfers: [],
     tokenTransfers: [],
     accountData: [],
     balanceChanges: {},
+    inputMint: properties.inputMint,
+    outputMint: properties.outputMint,
   }
 
   return (

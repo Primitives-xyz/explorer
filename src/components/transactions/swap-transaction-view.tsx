@@ -59,40 +59,52 @@ export function SwapTransactionView({
       const descParts = tx.description?.split(' ') || []
       const fromAmount = parseFloat(descParts[2] || '0')
       const toAmount = parseFloat(descParts[5] || '0')
-      const fromTokenMint = descParts[3] || ''
-      const toTokenMint = descParts[6] || ''
 
       const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
-      // Check if this is a SOL -> Token swap or Token -> SOL swap
-      const isFromSol = fromTokenMint.toLowerCase() === 'sol'
-      const isToSol = toTokenMint.toLowerCase() === 'sol'
-
-      if (isFromSol) {
-        // SOL -> Token swap
+      // Use the mints from the transaction object if available
+      if (tx.inputMint && tx.outputMint) {
         setFromToken({
-          mint: SOL_MINT,
+          mint: tx.inputMint,
           amount: fromAmount,
         })
-
-        if (toTokenMint) {
-          setToToken({
-            mint: toTokenMint,
-            amount: toAmount,
-          })
-        }
-      } else if (isToSol) {
-        // Token -> SOL swap
         setToToken({
-          mint: SOL_MINT,
+          mint: tx.outputMint,
           amount: toAmount,
         })
+      } else {
+        // Fallback to parsing from description
+        const fromTokenMint = descParts[3] || ''
+        const toTokenMint = descParts[6] || ''
+        const isFromSol = fromTokenMint.toLowerCase() === 'sol'
+        const isToSol = toTokenMint.toLowerCase() === 'sol'
 
-        if (fromTokenMint) {
+        if (isFromSol) {
+          // SOL -> Token swap
           setFromToken({
-            mint: fromTokenMint,
+            mint: SOL_MINT,
             amount: fromAmount,
           })
+
+          if (toTokenMint) {
+            setToToken({
+              mint: toTokenMint,
+              amount: toAmount,
+            })
+          }
+        } else if (isToSol) {
+          // Token -> SOL swap
+          setToToken({
+            mint: SOL_MINT,
+            amount: toAmount,
+          })
+
+          if (fromTokenMint) {
+            setFromToken({
+              mint: fromTokenMint,
+              amount: fromAmount,
+            })
+          }
         }
       }
     }
