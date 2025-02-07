@@ -56,3 +56,5 @@ export const getTensorTradeUrl = (collection: string) =>
   `${TENSOR_BASE}/trade/${collection}`
 export const getDicebearUrl = (seed: string) =>
   `${DICEBEAR_API_BASE}/shapes/svg?seed=${seed}`
+
+export const SOL_MINT = 'So11111111111111111111111111111111111111112'
