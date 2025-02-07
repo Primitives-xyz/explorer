@@ -12,7 +12,7 @@ export function SubmitButton({ children, disabled, ...props }: Props) {
     <button
       type="submit"
       disabled={disabled}
-      className={`w-full px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+      className={`w-full px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors ${
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       }`}
       {...props}
