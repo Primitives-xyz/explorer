@@ -3,7 +3,7 @@ import type { PriorityLevelOption } from '@/types/jupiter'
 // Platform fee configuration
 export const PLATFORM_FEE_BPS = 100 // 1% = 100 basis points
 export const PLATFORM_FEE_ACCOUNT =
-  'NAMEPoWfnM4c1F9EoXcUgsQPwXZiy6pYpnTPM71aDwj'
+  '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 
 export const DEFAULT_SLIPPAGE_BPS = 50 // 0.5% default
 export const DEFAULT_PRIORITY_LEVEL = 'Medium'

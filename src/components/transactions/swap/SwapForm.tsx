@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ArrowLeftRight } from 'lucide-react'
 import { useJupiterSwap } from '@/hooks/use-jupiter-swap'
 import { SwapQuoteDetails } from './SwapQuoteDetails'
 import { SwapShareSection } from './SwapShareSection'
@@ -18,6 +18,8 @@ export function SwapForm({
   const [inputAmount, setInputAmount] = useState(initialAmount)
   const [inputMint, setInputMint] = useState(initialInputMint)
   const [outputMint, setOutputMint] = useState(initialOutputMint)
+  const [currentInputToken, setCurrentInputToken] = useState(inputTokenName)
+  const [currentOutputToken, setCurrentOutputToken] = useState(outputTokenName)
 
   const {
     loading,
@@ -35,6 +37,7 @@ export function SwapForm({
     showTradeLink,
     isFullyConfirmed,
     handleSwap,
+    resetQuoteState,
   } = useJupiterSwap({
     inputMint,
     outputMint,
@@ -42,6 +45,18 @@ export function SwapForm({
     inputDecimals,
     sourceWallet,
   })
+
+  const handleSwapDirection = () => {
+    // Reset all quote-related state first
+    resetQuoteState()
+    setInputAmount('')
+
+    // Then swap the tokens
+    setInputMint(outputMint)
+    setOutputMint(inputMint)
+    setCurrentInputToken(currentOutputToken)
+    setCurrentOutputToken(currentInputToken)
+  }
 
   return (
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
@@ -62,10 +77,17 @@ export function SwapForm({
             onChange={(e) => setInputMint(e.target.value)}
             disabled={loading || isFullyConfirmed}
           >
-            <option value={inputMint}>{inputTokenName}</option>
+            <option value={inputMint}>{currentInputToken}</option>
           </select>
 
-          <span className="text-green-400">→</span>
+          <button
+            onClick={handleSwapDirection}
+            disabled={loading || isFullyConfirmed}
+            className="bg-green-900/20 hover:bg-green-900/30 p-2 rounded-full transition-colors"
+            title="Swap direction"
+          >
+            <ArrowLeftRight className="h-4 w-4 text-green-400" />
+          </button>
 
           <select
             className="bg-green-900/20 text-green-100 p-2 rounded flex-1"
@@ -73,7 +95,7 @@ export function SwapForm({
             onChange={(e) => setOutputMint(e.target.value)}
             disabled={loading || isFullyConfirmed}
           >
-            <option value={outputMint}>{outputTokenName}</option>
+            <option value={outputMint}>{currentOutputToken}</option>
           </select>
         </div>
 
@@ -103,15 +125,15 @@ export function SwapForm({
                     You&apos;ll receive approximately
                   </p>
                   <p className="text-xl font-semibold">
-                    {expectedOutput} {outputTokenName}
+                    {expectedOutput} {currentOutputToken}
                   </p>
                 </div>
                 <div className="text-right space-y-1">
                   <p className="text-sm text-green-400">Rate</p>
                   <p className="text-sm">
-                    1 {inputTokenName} ≈{' '}
+                    1 {currentInputToken} ≈{' '}
                     {(Number(expectedOutput) / Number(inputAmount)).toFixed(6)}{' '}
-                    {outputTokenName}
+                    {currentOutputToken}
                   </p>
                 </div>
               </div>

@@ -66,7 +66,7 @@ export default function FungibleTokenDetails({
 
                 {overview && (
                   <div className="flex flex-wrap gap-4">
-                    {overview.extensions.website && (
+                    {overview.extensions?.website && (
                       <a
                         href={overview.extensions.website}
                         target="_blank"
@@ -77,7 +77,7 @@ export default function FungibleTokenDetails({
                         <span>Website</span>
                       </a>
                     )}
-                    {overview.extensions.discord && (
+                    {overview.extensions?.discord && (
                       <a
                         href={overview.extensions.discord}
                         target="_blank"
@@ -88,7 +88,7 @@ export default function FungibleTokenDetails({
                         <span>Discord</span>
                       </a>
                     )}
-                    {overview.extensions.twitter && (
+                    {overview.extensions?.twitter && (
                       <a
                         href={overview.extensions.twitter}
                         target="_blank"

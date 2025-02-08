@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { VersionedTransaction } from '@solana/web3.js'
 import { isSolanaWallet } from '@dynamic-labs/solana'
@@ -42,6 +42,51 @@ export function useJupiterSwap({
   const [slippageBps, setSlippageBps] = useState<number>(DEFAULT_SLIPPAGE_BPS)
   const [showTradeLink, setShowTradeLink] = useState(false)
   const [isFullyConfirmed, setIsFullyConfirmed] = useState(false)
+
+  const resetQuoteState = useCallback(() => {
+    setQuoteResponse(null)
+    setExpectedOutput('')
+    setPriceImpact('')
+    setError('')
+  }, [])
+
+  const checkAndCreateTokenAccount = async (
+    mintAddress: string,
+    walletAddress: string,
+  ) => {
+    try {
+      const response = await fetch(
+        `/api/tokens/account?mintAddress=${mintAddress}&walletAddress=${walletAddress}`,
+      )
+      const data = await response.json()
+
+      if (data.status === 'requires_creation') {
+        // Create the token account
+        const transaction = VersionedTransaction.deserialize(
+          Buffer.from(data.transaction, 'base64'),
+        )
+
+        if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+          throw new Error('Wallet not connected')
+        }
+
+        const signer = await primaryWallet.getSigner()
+        const txid = await signer.signAndSendTransaction(transaction)
+
+        // Wait for confirmation
+        const connection = await primaryWallet.getConnection()
+        await connection.confirmTransaction({
+          signature: txid.signature,
+          ...(await connection.getLatestBlockhash()),
+        })
+      }
+
+      return data.tokenAccount
+    } catch (err) {
+      console.error('Error checking/creating token account:', err)
+      throw err
+    }
+  }
 
   const estimatePriorityFee = async (transaction: string) => {
     try {
@@ -110,20 +155,27 @@ export function useJupiterSwap({
     try {
       toast({
         title: 'Preparing Swap',
-        description: 'Fetching the best quote for your swap...',
+        description: 'Setting up your swap...',
         variant: 'pending',
         duration: 2000,
       })
 
-      const multiplier = Math.pow(10, inputDecimals)
-      const adjustedAmount = Number(inputAmount) * multiplier
-
-      const quoteResponse = await fetch(
-        `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-          `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-          `&slippageBps=${slippageBps}` +
-          `&platformFeeBps=${PLATFORM_FEE_BPS}`,
-      ).then((res) => res.json())
+      // Run token account check and quote fetching in parallel
+      const [feeTokenAccount, quoteResponse] = await Promise.all([
+        // Check and create token account for the output token (platform fee)
+        checkAndCreateTokenAccount(outputMint, PLATFORM_FEE_ACCOUNT),
+        // Fetch quote in parallel
+        (async () => {
+          const multiplier = Math.pow(10, inputDecimals)
+          const adjustedAmount = Number(inputAmount) * multiplier
+          return fetch(
+            `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
+              `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+              `&slippageBps=${slippageBps}` +
+              `&platformFeeBps=${PLATFORM_FEE_BPS}`,
+          ).then((res) => res.json())
+        })(),
+      ])
 
       toast({
         title: 'Building Transaction',
@@ -141,10 +193,7 @@ export function useJupiterSwap({
             quoteResponse,
             userPublicKey: walletAddress,
             wrapAndUnwrapSol: true,
-            platformFee: {
-              feeBps: PLATFORM_FEE_BPS,
-              feeAccount: PLATFORM_FEE_ACCOUNT,
-            },
+            feeAccount: feeTokenAccount,
             computeUnitPriceMicroLamports: priorityFee,
           }),
         },
@@ -362,5 +411,6 @@ export function useJupiterSwap({
     showTradeLink,
     isFullyConfirmed,
     handleSwap,
+    resetQuoteState,
   }
 }
