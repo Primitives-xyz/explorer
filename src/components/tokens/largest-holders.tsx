@@ -54,7 +54,7 @@ const HolderRow = ({
         </div>
         <div className="flex items-center gap-2 min-w-0">
           <Link
-            href={`/wallet/${holder.address}`}
+            href={`/${holder.address}`}
             className="font-mono text-green-400 text-sm min-w-[120px] truncate hover:text-green-300 transition-colors"
           >
             {isCurrentWallet ? 'Your Wallet' : shortenAddress(holder.address)}
