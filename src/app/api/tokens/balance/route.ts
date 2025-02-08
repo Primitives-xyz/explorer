@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from '@solana/web3.js'
 import { NextResponse } from 'next/server'
-import { TOKEN_PROGRAM_ID, getAssociatedTokenAddress } from '@solana/spl-token'
+import { getAssociatedTokenAddress } from '@solana/spl-token'
 
 const RPC_ENDPOINT =
   process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
