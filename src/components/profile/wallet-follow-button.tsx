@@ -121,7 +121,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
       setOptimisticFollowing(false)
       toast({
         title: 'Error',
-        description: error || 'Failed to follow wallet. Please try again.',
+        description: 'Failed to follow wallet. Please try again.',
         variant: 'error',
         duration: 5000,
       })
@@ -151,7 +151,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
       setOptimisticFollowing(true)
       toast({
         title: 'Error',
-        description: error || 'Failed to unfollow wallet. Please try again.',
+        description: 'Failed to unfollow wallet. Please try again.',
         variant: 'error',
         duration: 5000,
       })
