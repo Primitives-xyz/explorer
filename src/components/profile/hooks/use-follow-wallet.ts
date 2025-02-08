@@ -49,5 +49,41 @@ export const useFollowWallet = () => {
     }
   }
 
-  return { followWallet, loading, error, success, data }
+  const unfollowWallet = async ({
+    followerUsername,
+    walletToFollow,
+  }: FollowWalletProps) => {
+    setLoading(true)
+    setError(null)
+    setData(null)
+    setSuccess(false)
+
+    try {
+      const response = await fetch('/api/followers/unfollow-wallet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          followerUsername,
+          walletToFollow,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to unfollow wallet')
+      }
+
+      setData(result)
+      setSuccess(true)
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { followWallet, unfollowWallet, loading, error, success, data }
 }
