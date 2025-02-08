@@ -24,14 +24,14 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  'group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md border p-4 pr-6 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full',
+  'group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md border p-4 pr-6 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full font-mono',
   {
     variants: {
       variant: {
-        default: 'border bg-background text-foreground',
-        success: 'border-green-500 bg-green-50 text-green-600',
-        pending: 'border-yellow-500 bg-yellow-50 text-yellow-600',
-        error: 'border-red-500 bg-red-50 text-red-600',
+        default: 'border-neutral-800 bg-neutral-900/30 text-neutral-400',
+        success: 'border-green-800 bg-green-900/30 text-green-400',
+        pending: 'border-yellow-800 bg-yellow-900/30 text-yellow-400',
+        error: 'border-red-800 bg-red-900/30 text-red-400',
       },
     },
     defaultVariants: {
@@ -77,7 +77,7 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      'absolute right-1 top-1 rounded-md p-1 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100',
+      'absolute right-1 top-1 rounded-md p-1 opacity-0 transition-opacity hover:text-neutral-300 focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 text-neutral-500',
       className,
     )}
     toast-close=""

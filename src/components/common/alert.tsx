@@ -5,22 +5,25 @@ interface AlertProps {
   type?: 'success' | 'error' | 'info'
   message: string
   duration?: number
+  onClose?: () => void
 }
 
 export const Alert = ({
   type = 'info',
   message,
   duration = 5000,
+  onClose,
 }: AlertProps) => {
   const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false)
+      onClose?.()
     }, duration)
 
     return () => clearTimeout(timer)
-  }, [duration])
+  }, [duration, onClose])
 
   if (!visible) return null
 
@@ -43,7 +46,13 @@ export const Alert = ({
           {type === 'info' && 'Info!'}
         </strong>
         <span className="block sm:inline ml-2">{message}</span>
-        <button onClick={() => setVisible(false)} className="ml-4">
+        <button
+          onClick={() => {
+            setVisible(false)
+            onClose?.()
+          }}
+          className="ml-4"
+        >
           <X size={20} />
         </button>
       </div>

@@ -121,10 +121,13 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id })
 
+  const duration = props.duration || TOAST_REMOVE_DELAY
+
   dispatch({
     type: 'ADD_TOAST',
     toast: {
       ...props,
+      duration,
       id,
       open: true,
       onOpenChange: (open: boolean) => {
@@ -132,6 +135,9 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+
+  // Add to remove queue immediately
+  addToRemoveQueue(id, duration)
 
   return {
     id: id,

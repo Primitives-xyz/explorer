@@ -1,10 +1,10 @@
 import { useFollowWallet } from './hooks/use-follow-wallet'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { UserRoundPlus, UserRoundCheck, LoaderCircle } from 'lucide-react'
-import { Alert } from '../common/alert'
 import dynamic from 'next/dynamic'
 import { useWalletFollowStats } from '@/hooks/use-wallet-follow-stats'
 import { useState, useEffect } from 'react'
+import { useToast } from '@/hooks/use-toast'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -21,7 +21,7 @@ interface Props {
 
 export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
-  const { followWallet, unfollowWallet, loading } = useFollowWallet()
+  const { followWallet, unfollowWallet, loading, success } = useFollowWallet()
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
   const {
     isFollowing,
@@ -31,8 +31,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   const [optimisticFollowing, setOptimisticFollowing] = useState<
     boolean | null
   >(null)
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false)
-  const [alertMessage, setAlertMessage] = useState('')
+  const { toast } = useToast()
 
   const buttonClasses = `font-mono rounded-lg transition-all active:scale-95 md:hover:scale-105 ${
     size === 'lg'
@@ -40,6 +39,17 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
       : 'px-4 py-2 text-sm md:px-3 md:py-1.5 md:text-xs'
   }`
   const iconSize = size === 'lg' ? 18 : 16
+
+  // Watch for success state changes
+  useEffect(() => {
+    if (success) {
+      toast({
+        title: 'Success',
+        description: 'Successfully followed wallet!',
+        variant: 'default',
+      })
+    }
+  }, [success, toast])
 
   // Initialize optimistic state when actual state is loaded
   useEffect(() => {
@@ -56,7 +66,6 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   useEffect(() => {
     setOptimisticFollowing(null)
     setShowUnfollowConfirm(false)
-    setShowSuccessAlert(false)
     mutateStats()
   }, [walletAddress, mainUsername, mutateStats])
 
@@ -84,7 +93,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
           className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 cursor-pointer shadow-lg shadow-green-900/20`}
         >
           <UserRoundPlus size={iconSize} />
-          Follow Wallet
+          Connect Wallet
         </div>
       </DynamicConnectButton>
     )
@@ -100,14 +109,22 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
         followerUsername: mainUsername,
         walletToFollow: walletAddress,
       })
-      setShowSuccessAlert(true)
-      setAlertMessage('Successfully followed wallet!')
+      toast({
+        title: 'Success',
+        description: 'Successfully followed wallet!',
+        variant: 'success',
+        duration: 5000,
+      })
       mutateStats()
     } catch (error) {
       console.error('Failed to follow wallet:', error)
       setOptimisticFollowing(false)
-      setShowSuccessAlert(true)
-      setAlertMessage('Failed to follow wallet. Please try again.')
+      toast({
+        title: 'Error',
+        description: 'Failed to follow wallet. Please try again.',
+        variant: 'error',
+        duration: 5000,
+      })
     }
   }
 
@@ -121,15 +138,23 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
         followerUsername: mainUsername,
         walletToFollow: walletAddress,
       })
-      setShowSuccessAlert(true)
-      setAlertMessage('Successfully unfollowed wallet')
+      toast({
+        title: 'Success',
+        description: 'Successfully unfollowed wallet!',
+        variant: 'success',
+        duration: 5000,
+      })
       setShowUnfollowConfirm(false)
       mutateStats()
     } catch (error) {
       console.error('Failed to unfollow wallet:', error)
       setOptimisticFollowing(true)
-      setShowSuccessAlert(true)
-      setAlertMessage('Failed to unfollow wallet. Please try again.')
+      toast({
+        title: 'Error',
+        description: 'Failed to unfollow wallet. Please try again.',
+        variant: 'error',
+        duration: 5000,
+      })
     }
   }
 
@@ -141,14 +166,19 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
             <button
               onClick={handleUnfollow}
               disabled={loading}
-              className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50`}
+              className={`${buttonClasses} flex items-center justify-center gap-2 bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50`}
             >
-              {loading ? 'Unfollowing...' : 'Confirm Unfollow'}
+              {loading ? (
+                <LoaderCircle className="animate-spin" size={iconSize} />
+              ) : (
+                <UserRoundPlus size={iconSize} />
+              )}
+              {loading ? 'Unfollowing...' : 'Confirm'}
             </button>
             <button
               onClick={() => setShowUnfollowConfirm(false)}
               disabled={loading}
-              className={`${buttonClasses} bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50`}
+              className={`${buttonClasses} flex items-center justify-center gap-2 bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50`}
             >
               Cancel
             </button>
@@ -173,17 +203,13 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
         disabled={loading}
         className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 disabled:opacity-50 shadow-lg shadow-green-900/20`}
       >
-        <UserRoundPlus size={iconSize} />
+        {loading ? (
+          <LoaderCircle className="animate-spin" size={iconSize} />
+        ) : (
+          <UserRoundPlus size={iconSize} />
+        )}
         {loading ? 'Following...' : 'Follow Wallet'}
       </button>
-
-      {showSuccessAlert && (
-        <Alert
-          type={alertMessage.includes('Failed') ? 'error' : 'success'}
-          message={alertMessage}
-          duration={5000}
-        />
-      )}
     </>
   )
 }
