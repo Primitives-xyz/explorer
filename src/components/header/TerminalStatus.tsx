@@ -1,10 +1,15 @@
 import Link from 'next/link'
+import { TokenBalance } from './TokenBalance'
 
 interface TerminalStatusProps {
   mainUsername?: string | null
+  walletAddress?: string
 }
 
-export const TerminalStatus = ({ mainUsername }: TerminalStatusProps) => {
+export const TerminalStatus = ({
+  mainUsername,
+  walletAddress,
+}: TerminalStatusProps) => {
   return (
     <div className="w-full bg-black/20 px-3 py-1.5 border border-green-800/30 rounded-sm overflow-hidden">
       <div className="flex items-center justify-between text-[10px] text-green-600/80 whitespace-nowrap overflow-x-auto scrollbar-none">
@@ -17,6 +22,12 @@ export const TerminalStatus = ({ mainUsername }: TerminalStatusProps) => {
           >
             H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump
           </Link>
+          {walletAddress && (
+            <span className="text-green-600/80">
+              {' '}
+              (Balance: <TokenBalance walletAddress={walletAddress} />)
+            </span>
+          )}
         </div>
         {mainUsername && (
           <Link

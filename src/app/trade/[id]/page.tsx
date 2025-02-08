@@ -50,28 +50,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const getBestImage = (properties: any): string => {
-    // Try wallet images first if they're not dicebear
+    // Only use the trader's wallet image if it exists and is not dicebear
     if (
       properties.walletImage &&
       !properties.walletImage.includes('dicebear')
     ) {
       return properties.walletImage
     }
-    if (
-      properties.sourceWalletImage &&
-      !properties.sourceWalletImage.includes('dicebear')
-    ) {
-      return properties.sourceWalletImage
-    }
-
-    // Then fall back to token images
-    if (properties.outputTokenImage) {
-      return properties.outputTokenImage
-    }
-    if (properties.inputTokenImage) {
-      return properties.inputTokenImage
-    }
-
     return ''
   }
 
