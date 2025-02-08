@@ -186,6 +186,8 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const address = searchParams.get('address')
   const before = searchParams.get('before')
+  // Get type(s) - can be comma-separated list
+  const type = searchParams.get('type')
 
   if (!address) {
     return NextResponse.json({ error: 'Address is required' }, { status: 400 })
@@ -193,37 +195,38 @@ export async function GET(request: NextRequest) {
 
   const apiKey = process.env.HELIUS_API_KEY
   if (!apiKey) {
-    console.error('Helius API key is not configured')
     return NextResponse.json(
       { error: 'Helius API key not configured' },
       { status: 500 },
     )
   }
 
-  const url = before
-    ? `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&before=${before}&limit=${TRANSACTIONS_PER_PAGE}`
-    : `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=${TRANSACTIONS_PER_PAGE}`
+  // Build URL exactly as per Helius docs
+  let url = `https://api.helius.xyz/v0/addresses/${address}/transactions?api-key=${apiKey}&limit=${TRANSACTIONS_PER_PAGE}`
+
+  // Add type parameter if provided (Helius accepts comma-separated types)
+  if (type) {
+    url += `&type=${type}`
+  }
+
+  // Add before parameter if provided for pagination
+  if (before) {
+    url += `&before=${before}`
+  }
 
   try {
     const response = await fetch(url)
     if (!response.ok) {
-      console.error('Helius API error:', response.status, await response.text())
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
 
-    // Handle empty response from Helius
+    // Handle empty response
     if (!Array.isArray(data) || data.length === 0) {
       return NextResponse.json([])
     }
 
     const parsedData = await parseTransactions(data)
-
-    // Handle case where all transactions were filtered out
-    if (!parsedData || parsedData.length === 0) {
-      return NextResponse.json([])
-    }
-
     return NextResponse.json(parsedData)
   } catch (error) {
     console.error('Error fetching transactions:', error)
