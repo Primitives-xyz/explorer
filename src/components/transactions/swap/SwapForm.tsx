@@ -153,7 +153,7 @@ export function SwapForm({
               Transaction Priority:
             </label>
             <select
-              className="bg-green-900/20 text-green-100 p-2 rounded w-full"
+              className="bg-green-900/20 text-green-100 p-2 rounded w-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               value={priorityLevel}
               onChange={(e) =>
                 setPriorityLevel(e.target.value as PriorityLevel)
