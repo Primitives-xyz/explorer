@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import type { TokenPortfolioResponse } from '@/types/Token'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
 import { isValidSolanaAddress } from '@/utils/validation'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 
 interface TokenData {
   nativeBalance: {
@@ -23,7 +24,7 @@ interface TokenData {
  */
 export function WalletView({ address }: { address: string }) {
   const [_tokenData, setTokenData] = useState<TokenData | null>(null)
-
+  const { walletAddress } = useCurrentWallet()
   const [portfolioData, setPortfolioData] = useState<
     TokenPortfolioResponse | undefined
   >(undefined)
@@ -109,7 +110,9 @@ export function WalletView({ address }: { address: string }) {
         <h1 className="text-xl sm:text-2xl font-mono text-green-500 break-all">
           Wallet: {address}
         </h1>
-        <WalletFollowButton walletAddress={address} size="lg" />
+        {walletAddress !== address && (
+          <WalletFollowButton walletAddress={address} size="lg" />
+        )}
       </div>
 
       {/* Top section */}
