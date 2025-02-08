@@ -143,6 +143,7 @@ export const TransactionCard = memo(function TransactionCard({
         {tx.source !== 'MAGIC_EDEN' &&
           tx.source !== 'SOLANA_PROGRAM_LIBRARY' &&
           tx.type !== 'COMPRESSED_NFT_MINT' &&
+          tx.type !== 'SWAP' &&
           tx.type !== 'TRANSFER' && (
             <div className="text-xs sm:text-sm text-green-300 font-mono break-words">
               {tx.description || 'No description available'}
