@@ -9,15 +9,13 @@ async function fetchProfile(url: string): Promise<IProfileResponse | null> {
         // Return null for not found profiles without logging
         return null
       }
-      const errorData = await res.json()
-      throw new Error(errorData.error || 'Failed to fetch profile')
+      // Don't parse error data or log errors for non-404 responses
+      // Just return null to handle gracefully
+      return null
     }
     return await res.json()
   } catch (error) {
-    // Only log non-404 errors
-    if (error instanceof Error && !error.message.includes('404')) {
-      console.error('Error fetching profile:', error)
-    }
+    // Return null for any fetch errors without logging
     return null
   }
 }
@@ -38,6 +36,7 @@ export function useFollowStats(username: string, fromUsername: string) {
       revalidateOnReconnect: false,
       dedupingInterval: 30000, // 30 seconds
       revalidateIfStale: false,
+      shouldRetryOnError: false, // Prevent retries on error
     },
   )
 

@@ -104,11 +104,12 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
 
     setOptimisticFollowing(true)
 
-    try {
-      await followWallet({
-        followerUsername: mainUsername,
-        walletToFollow: walletAddress,
-      })
+    const success = await followWallet({
+      followerUsername: mainUsername,
+      walletToFollow: walletAddress,
+    })
+
+    if (success) {
       toast({
         title: 'Success',
         description: 'Successfully followed wallet!',
@@ -116,12 +117,11 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
         duration: 5000,
       })
       mutateStats()
-    } catch (error) {
-      console.error('Failed to follow wallet:', error)
+    } else {
       setOptimisticFollowing(false)
       toast({
         title: 'Error',
-        description: 'Failed to follow wallet. Please try again.',
+        description: error || 'Failed to follow wallet. Please try again.',
         variant: 'error',
         duration: 5000,
       })
@@ -133,11 +133,12 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
 
     setOptimisticFollowing(false)
 
-    try {
-      await unfollowWallet({
-        followerUsername: mainUsername,
-        walletToFollow: walletAddress,
-      })
+    const success = await unfollowWallet({
+      followerUsername: mainUsername,
+      walletToFollow: walletAddress,
+    })
+
+    if (success) {
       toast({
         title: 'Success',
         description: 'Successfully unfollowed wallet!',
@@ -146,12 +147,11 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
       })
       setShowUnfollowConfirm(false)
       mutateStats()
-    } catch (error) {
-      console.error('Failed to unfollow wallet:', error)
+    } else {
       setOptimisticFollowing(true)
       toast({
         title: 'Error',
-        description: 'Failed to unfollow wallet. Please try again.',
+        description: error || 'Failed to unfollow wallet. Please try again.',
         variant: 'error',
         duration: 5000,
       })
