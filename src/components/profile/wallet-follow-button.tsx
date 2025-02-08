@@ -21,7 +21,7 @@ interface Props {
 
 export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
-  const { followWallet, unfollowWallet, loading, success } = useFollowWallet()
+  const { followWallet, unfollowWallet, loading } = useFollowWallet()
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
   const {
     isFollowing,

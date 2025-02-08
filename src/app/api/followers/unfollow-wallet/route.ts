@@ -6,12 +6,6 @@ interface UnfollowWalletRequestBody {
   followerUsername: string
   walletToFollow: string
 }
-
-interface TapestryResponse {
-  error?: string
-  [key: string]: any
-}
-
 export async function POST(req: NextRequest) {
   try {
     const { followerUsername, walletToFollow }: UnfollowWalletRequestBody =
