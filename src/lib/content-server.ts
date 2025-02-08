@@ -71,7 +71,6 @@ export const contentServer = {
     pageSize,
     profileId,
     requestingProfileId,
-    namespace = 'primitives',
   }: {
     orderByField?: string
     orderByDirection?: 'ASC' | 'DESC'
@@ -89,8 +88,8 @@ export const contentServer = {
     if (profileId) params.append('profileId', profileId)
     if (requestingProfileId)
       params.append('requestingProfileId', requestingProfileId)
-    if (namespace) params.append('namespace', namespace)
 
+    console.log('params: ', params.toString())
     return fetchTapestryServer({
       endpoint: `contents?${params.toString()}`,
       method: FetchMethod.GET,
