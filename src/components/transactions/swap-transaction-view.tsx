@@ -176,17 +176,6 @@ export function SwapTransactionView({
                   {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
                 </Link>
               )}
-              <div className="flex items-center gap-2 text-xs text-green-500/60">
-                <Link
-                  href={`https://solscan.io/account/${sourceWallet}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 hover:text-green-400 transition-colors"
-                >
-                  <ExternalLink size={10} />
-                  View on Solscan
-                </Link>
-              </div>
             </div>
           </div>
           {!isOwnTrade && (
