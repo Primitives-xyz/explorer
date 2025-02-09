@@ -208,14 +208,16 @@ export function ProfileContent({ username }: Props) {
         type="following"
       />
 
-      <UpdateProfileModal
-        isOpen={showUpdateModal}
-        onClose={handleCloseUpdate}
-        currentUsername={username}
-        currentBio={profileData?.profile.bio}
-        currentImage={profileData?.profile.image}
-        onProfileUpdated={handleProfileUpdated}
-      />
+      {!!profileData && (
+        <UpdateProfileModal
+          isOpen={showUpdateModal}
+          onClose={handleCloseUpdate}
+          currentUsername={username}
+          currentBio={profileData?.profile.bio}
+          currentImage={profileData?.profile.image}
+          onProfileUpdated={handleProfileUpdated}
+        />
+      )}
     </div>
   )
 }

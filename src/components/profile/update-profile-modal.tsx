@@ -116,7 +116,7 @@ export function UpdateProfileModal({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               name="bio"
-              placeholder="Tell us about yourself"
+              placeholder={bio || 'Tell us about yourself'}
               className="w-full"
             />
           </div>
