@@ -41,7 +41,12 @@ export const ProfileHeader = memo(function ProfileHeader({
               size={48}
               imageUrl={profileData?.profile.image}
             />
-            <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
+            <div>
+              <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
+              {profileData?.profile.bio && (
+                <p className="text-sm text-green-600 mt-1">{profileData.profile.bio}</p>
+              )}
+            </div>
           </div>
           {!isLoading && profileData?.walletAddress && (
             <div className="flex items-center gap-2 text-sm text-green-600 sm:mb-1">
