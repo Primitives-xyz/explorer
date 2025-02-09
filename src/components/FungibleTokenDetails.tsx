@@ -122,60 +122,20 @@ export default function FungibleTokenDetails({
           {/* Swap Section */}
           <div className="flex flex-col">
             <h3 className="text-xl font-mono text-green-500 mb-4">Swap</h3>
-            <div className="flex flex-col h-[500px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
-              <Tab.Group className="h-full flex flex-col">
-                <Tab.List className="flex space-x-1 border-b border-green-800/40">
-                  <Tab
-                    className={({ selected }) =>
-                      `flex-1 px-6 py-4 text-lg font-mono outline-none ${
-                        selected
-                          ? 'text-green-500 bg-green-900/20'
-                          : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
-                      } transition-colors`
-                    }
-                  >
-                    Swap SOL
-                  </Tab>
-                  <Tab
-                    className={({ selected }) =>
-                      `flex-1 px-6 py-4 text-lg font-mono outline-none ${
-                        selected
-                          ? 'text-green-500 bg-green-900/20'
-                          : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
-                      } transition-colors`
-                    }
-                  >
-                    Swap USDC
-                  </Tab>
-                </Tab.List>
-                <Tab.Panels className="flex-1 overflow-y-auto">
-                  <Tab.Panel className="h-full p-4">
-                    <div className="h-full overflow-y-auto">
-                      <JupiterSwapForm
-                        initialInputMint="So11111111111111111111111111111111111111112"
-                        initialOutputMint={id}
-                        initialAmount="0.01"
-                        inputTokenName="SOL"
-                        outputTokenName={tokenInfo.content.metadata.symbol}
-                        inputDecimals={9}
-                        sourceWallet=""
-                      />
-                    </div>
-                  </Tab.Panel>
-                  <Tab.Panel className="h-full p-4">
-                    <div className="h-full overflow-y-auto">
-                      <JupiterSwapForm
-                        initialInputMint="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-                        initialOutputMint={id}
-                        inputTokenName="USDC"
-                        outputTokenName={tokenInfo.content.metadata.symbol}
-                        inputDecimals={6}
-                        sourceWallet=""
-                      />
-                    </div>
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
+            <div className="flex flex-col h-[675px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
+              <div className="h-full p-4">
+                <div className="h-full overflow-y-auto">
+                  <JupiterSwapForm
+                    initialInputMint="So11111111111111111111111111111111111111112"
+                    initialOutputMint={id}
+                    initialAmount="0.01"
+                    inputTokenName="SOL"
+                    outputTokenName={tokenInfo.content.metadata.symbol}
+                    inputDecimals={9}
+                    sourceWallet=""
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -184,7 +144,7 @@ export default function FungibleTokenDetails({
             <h3 className="text-xl font-mono text-green-500 mb-4">
               Token Details
             </h3>
-            <div className="flex flex-col h-[500px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
+            <div className="flex flex-col h-[675px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
               <Tab.Group className="h-full flex flex-col">
                 <Tab.List className="flex space-x-1 border-b border-green-800/40">
                   <Tab

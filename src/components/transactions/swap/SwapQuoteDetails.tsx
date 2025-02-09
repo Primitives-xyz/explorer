@@ -21,12 +21,19 @@ export function SwapQuoteDetails({
   const platformFeeUSDC = swapValueUSDC * (PLATFORM_FEE_BPS / 10000) // 1% of USD value
   const sseFee = sseFeeAmount ? Number(sseFeeAmount) / Math.pow(10, 6) : 0
 
-  console.log('SwapQuoteDetails Fee Display:', {
-    swapValueUSDC,
-    platformFeeUSDC,
-    sseFeeAmount,
-    sseFee,
-  })
+  // Format price impact to be more concise
+  const formatPriceImpact = (impact: string | null) => {
+    if (!impact) return '0%'
+    const num = Number(impact)
+    if (num < 0.01) return '< 0.01%'
+    return num.toFixed(2) + '%'
+  }
+
+  // Format USDC amounts to be more concise
+  const formatUSDC = (amount: number) => {
+    if (amount < 0.01) return '< $0.01'
+    return '$' + amount.toFixed(2)
+  }
 
   return (
     <div className="space-y-2">
@@ -36,15 +43,15 @@ export function SwapQuoteDetails({
           {useSSEForFees ? (
             <div className="flex flex-col items-end">
               <span className="text-sm line-through text-green-400/50">
-                {platformFeeUSDC.toFixed(6)} USDC ({PLATFORM_FEE_BPS / 100}%)
+                {formatUSDC(platformFeeUSDC)} ({PLATFORM_FEE_BPS / 100}%)
               </span>
               <span className="text-sm text-green-400">
-                {sseFee.toFixed(6)} SSE ({PLATFORM_FEE_BPS / 200}%)
+                {sseFee.toFixed(2)} SSE ({PLATFORM_FEE_BPS / 200}%)
               </span>
             </div>
           ) : (
             <span className="text-sm">
-              {platformFeeUSDC.toFixed(6)} USDC ({PLATFORM_FEE_BPS / 100}%)
+              {formatUSDC(platformFeeUSDC)} ({PLATFORM_FEE_BPS / 100}%)
             </span>
           )}
         </div>
@@ -52,7 +59,11 @@ export function SwapQuoteDetails({
 
       <div className="flex items-center justify-between">
         <span className="text-sm text-green-400">Price Impact</span>
-        <span className="text-sm">{priceImpact}%</span>
+        <span
+          className={`text-sm ${Number(priceImpact) > 1 ? 'text-red-400' : ''}`}
+        >
+          {formatPriceImpact(priceImpact)}
+        </span>
       </div>
 
       <div className="flex items-center justify-between">
