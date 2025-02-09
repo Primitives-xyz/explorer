@@ -50,7 +50,15 @@ const fetcher = async (url: string): Promise<ProfileData> => {
   if (!data.walletAddress) {
     throw new Error('Invalid profile data: missing walletAddress')
   }
-  return data
+  // Ensure profile data is properly structured
+  return {
+    ...data,
+    profile: {
+      created_at: data.profile?.created_at || new Date().toISOString(),
+      image: data.profile?.image || null,
+      bio: data.profile?.bio || ''
+    }
+  }
 }
 
 export function useProfileData(username: string, mainUsername?: string | null) {
@@ -131,13 +139,10 @@ export function useProfileData(username: string, mainUsername?: string | null) {
       data: {
         walletAddress: data.walletAddress,
         socialCounts: data.socialCounts,
-        profile: data.profile ? {
-          ...data.profile,
-          bio: data.profile.bio || undefined  // Keep bio optional
-        } : {
-          created_at: new Date().toISOString(),
-          image: null,
-          bio: undefined
+        profile: {
+          created_at: data.profile?.created_at || new Date().toISOString(),
+          image: data.profile?.image || null,
+          bio: data.profile?.bio || ''  // Default to empty string if bio is undefined
         }
       },
       profiles,
