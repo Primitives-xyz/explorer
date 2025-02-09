@@ -82,6 +82,12 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
       >
         [SEARCH]
       </button>
+      <Link
+        href="/trade"
+        className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
+      >
+        [TRADE]
+      </Link>
       {!walletAddress && (
         <div className="flex-shrink-0">
           <DynamicConnectButton>{WalletConnectButton}</DynamicConnectButton>
@@ -89,12 +95,6 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
       )}
       {walletAddress && (
         <>
-          <Link
-            href="/trade"
-            className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
-          >
-            [TRADE]
-          </Link>
           <Link
             href={`/${walletAddress}`}
             className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
