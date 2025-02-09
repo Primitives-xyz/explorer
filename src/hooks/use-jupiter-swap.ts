@@ -118,10 +118,12 @@ export function useJupiterSwap({
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
           `&outputMint=${outputMint}&amount=${adjustedAmount}` +
           `&slippageBps=${slippageBps}` +
-          // Only add platformFeeBps if not using SSE fees
+          // Add platformFeeBps only when not using SSE fees (since SSE fees are handled via SPL transfer)
           `${
             platformFeeBps !== 0
-              ? `&platformFeeBps=${platformFeeBps ?? PLATFORM_FEE_BPS}`
+              ? `&platformFeeBps=${
+                  platformFeeBps ?? PLATFORM_FEE_BPS
+                }&feeAccount=${PLATFORM_FEE_ACCOUNT}`
               : ''
           }`,
       ).then((res) => res.json())
@@ -209,7 +211,9 @@ export function useJupiterSwap({
       const [feeTokenAccount, sseTokenAccount, quoteResponse] =
         await Promise.all([
           // Check and create token account for the output token (platform fee)
-          checkAndCreateTokenAccount(outputMint, PLATFORM_FEE_ACCOUNT),
+          platformFeeBps !== 0
+            ? checkAndCreateTokenAccount(outputMint, walletAddress)
+            : Promise.resolve(null),
           // Check and create SSE token account for the user if using SSE for fees
           platformFeeBps === 0
             ? checkAndCreateTokenAccount(SSE_TOKEN_MINT, walletAddress)
@@ -222,10 +226,12 @@ export function useJupiterSwap({
               `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
                 `&outputMint=${outputMint}&amount=${adjustedAmount}` +
                 `&slippageBps=${slippageBps}` +
-                // Only add platformFeeBps if not using SSE fees
+                // Add platformFeeBps only when not using SSE fees (since SSE fees are handled via SPL transfer)
                 `${
                   platformFeeBps !== 0
-                    ? `&platformFeeBps=${platformFeeBps ?? PLATFORM_FEE_BPS}`
+                    ? `&platformFeeBps=${
+                        platformFeeBps ?? PLATFORM_FEE_BPS
+                      }&feeAccount=${PLATFORM_FEE_ACCOUNT}`
                     : ''
                 }`,
             ).then((res) => res.json())
@@ -287,7 +293,8 @@ export function useJupiterSwap({
         body: JSON.stringify({
           quoteResponse,
           walletAddress,
-          feeTokenAccount,
+          feeTokenAccount: platformFeeBps !== 0 ? feeTokenAccount : undefined,
+          mintAddress: outputMint,
           sseTokenAccount: platformFeeBps === 0 ? sseTokenAccount : undefined,
           sseFeeAmount: platformFeeBps === 0 ? currentSseFeeAmount : undefined,
         }),

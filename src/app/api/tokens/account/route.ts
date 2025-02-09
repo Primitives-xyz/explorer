@@ -98,6 +98,7 @@ export async function GET(request: Request) {
       { maxRetries: 5 },
     )
     console.log('Transaction sent...')
+
     // Wait for confirmation
     const confirmation = await connection.confirmTransaction(
       {

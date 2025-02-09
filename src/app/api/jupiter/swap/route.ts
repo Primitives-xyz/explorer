@@ -22,7 +22,10 @@ interface SwapRequest {
   sseTokenAccount?: string
   sseFeeAmount?: string
   priorityFee?: number
+  mintAddress: string
 }
+
+const FEE_WALLET = '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 
 // Helper function to deserialize instructions from Jupiter
 const deserializeInstruction = (instruction: any): TransactionInstruction => {
@@ -114,7 +117,15 @@ export async function POST(request: Request) {
       sseTokenAccount,
       sseFeeAmount,
       priorityFee,
+      mintAddress,
     } = (await request.json()) as SwapRequest
+
+    // Get the ATA for the output token
+    const associatedTokenAddress = await getAssociatedTokenAddress(
+      new PublicKey(mintAddress),
+      new PublicKey(FEE_WALLET),
+      false, // Don't allow owner off curve
+    )
 
     // Get swap instructions from Jupiter with platform fees properly configured
     const swapResponse = await fetch(
@@ -127,11 +138,15 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           quoteResponse,
           userPublicKey: walletAddress,
-
           prioritizationFeeLamports: priorityFee,
           dynamicComputeUnitLimit: true,
           dynamicSlippage: true,
-          useSharedAccounts: true,
+          useSharedAccounts: false,
+          // Add feeAccount when not using SSE fees (SSE fees are handled via SPL transfer)
+          ...(!sseTokenAccount &&
+            !sseFeeAmount && {
+              feeAccount: associatedTokenAddress.toString(),
+            }),
         }),
       },
     ).then((res) => res.json())
