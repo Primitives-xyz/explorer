@@ -7,6 +7,7 @@ import { SwapQuoteDetails } from './SwapQuoteDetails'
 import { SwapShareSection } from './SwapShareSection'
 import { PRIORITY_LEVELS, SLIPPAGE_OPTIONS } from '@/constants/jupiter'
 import type { JupiterSwapFormProps, PriorityLevel } from '@/types/jupiter'
+import { TokenSearch } from './TokenSearch'
 
 // SSE token mint address
 const SSE_MINT = 'SSEswapfK71dRNrqpXf7sPJyVRXHkz9PApdh8bRrst'
@@ -46,6 +47,8 @@ export function SwapForm({
   const [useSSEForFees, setUseSSEForFees] = useState(false)
   const [currentInputDecimals, setCurrentInputDecimals] =
     useState(inputDecimals)
+  const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
+  const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
 
   // Add token info hooks
   const inputTokenInfo = useTokenInfo(inputMint)
@@ -159,6 +162,27 @@ export function SwapForm({
   // Show loading overlay when refreshing quote
   const showLoadingState = loading || isFullyConfirmed
 
+  const handleInputTokenSelect = (token: {
+    address: string
+    symbol: string
+    name: string
+    decimals: number
+  }) => {
+    setInputMint(token.address)
+    setCurrentInputToken(token.symbol)
+    setCurrentInputDecimals(token.decimals)
+  }
+
+  const handleOutputTokenSelect = (token: {
+    address: string
+    symbol: string
+    name: string
+    decimals: number
+  }) => {
+    setOutputMint(token.address)
+    setCurrentOutputToken(token.symbol)
+  }
+
   return (
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
       <div className="flex flex-col gap-2">
@@ -206,23 +230,20 @@ export function SwapForm({
 
         <div className="flex items-center gap-2">
           <div className="flex-1 relative">
-            <select
-              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full appearance-none"
-              value={inputMint}
-              onChange={(e) => setInputMint(e.target.value)}
+            <button
+              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full text-left flex items-center gap-2 hover:bg-green-900/30 transition-colors"
+              onClick={() => setShowInputTokenSearch(true)}
               disabled={showLoadingState}
             >
-              <option value={inputMint}>
-                {inputTokenInfo.symbol || currentInputToken}
-              </option>
-            </select>
-            {inputTokenInfo.image && (
-              <img
-                src={inputTokenInfo.image}
-                alt={inputTokenInfo.symbol || currentInputToken}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
-              />
-            )}
+              {inputTokenInfo.image && (
+                <img
+                  src={inputTokenInfo.image}
+                  alt={inputTokenInfo.symbol || currentInputToken}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
+                />
+              )}
+              <span>{inputTokenInfo.symbol || currentInputToken}</span>
+            </button>
           </div>
 
           <button
@@ -235,23 +256,20 @@ export function SwapForm({
           </button>
 
           <div className="flex-1 relative">
-            <select
-              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full appearance-none"
-              value={outputMint}
-              onChange={(e) => setOutputMint(e.target.value)}
+            <button
+              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full text-left flex items-center gap-2 hover:bg-green-900/30 transition-colors"
+              onClick={() => setShowOutputTokenSearch(true)}
               disabled={showLoadingState}
             >
-              <option value={outputMint}>
-                {outputTokenInfo.symbol || currentOutputToken}
-              </option>
-            </select>
-            {outputTokenInfo.image && (
-              <img
-                src={outputTokenInfo.image}
-                alt={outputTokenInfo.symbol || currentOutputToken}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
-              />
-            )}
+              {outputTokenInfo.image && (
+                <img
+                  src={outputTokenInfo.image}
+                  alt={outputTokenInfo.symbol || currentOutputToken}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
+                />
+              )}
+              <span>{outputTokenInfo.symbol || currentOutputToken}</span>
+            </button>
           </div>
         </div>
 
@@ -528,6 +546,20 @@ export function SwapForm({
           <SwapShareSection txSignature={txSignature} />
         )}
       </div>
+
+      {/* Token Search Modals */}
+      {showInputTokenSearch && (
+        <TokenSearch
+          onSelect={handleInputTokenSelect}
+          onClose={() => setShowInputTokenSearch(false)}
+        />
+      )}
+      {showOutputTokenSearch && (
+        <TokenSearch
+          onSelect={handleOutputTokenSelect}
+          onClose={() => setShowOutputTokenSearch(false)}
+        />
+      )}
     </div>
   )
 }

@@ -25,7 +25,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     <WalletProvider>
       <AuthWrapper>
         <ActivityTape />
-        <div className="w-full overflow-hidden bg-black text-green-400 font-mono">
+        <div className="w-full overflow-hidden bg-black text-green-400 font-mono min-h-dvh ">
           <Header />
           {children}
         </div>
