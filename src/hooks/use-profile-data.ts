@@ -124,10 +124,15 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     const newState: LoadedState = {
       type: 'loaded',
       data: {
-        ...data,
-        profile: {
+        walletAddress: data.walletAddress || '',  // Ensure walletAddress is always initialized
+        socialCounts: data.socialCounts,  // Keep existing socialCounts if any
+        profile: data.profile ? {
           ...data.profile,
-          bio: data.profile?.bio || null  // Ensure bio is properly mapped
+          bio: data.profile.bio || null  // Ensure bio is properly mapped
+        } : {
+          created_at: new Date().toISOString(),
+          image: null,
+          bio: null
         }
       },
       profiles,
