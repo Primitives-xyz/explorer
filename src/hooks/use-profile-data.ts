@@ -29,7 +29,7 @@ interface LoadingState {
 
 interface LoadedState {
   type: 'loaded'
-  data: ProfileData
+  data: ProfileData  // Use the same type as the API response
   profiles: any[] | null
   followers: any[]
   following: any[]
@@ -136,13 +136,10 @@ export function useProfileData(username: string, mainUsername?: string | null) {
       data: {
         walletAddress: data.walletAddress,
         socialCounts: data.socialCounts,
-        profile: data.profile ? {
-          ...data.profile,
-          bio: data.profile.bio || null  // Ensure bio is properly mapped
-        } : {
-          created_at: new Date().toISOString(),
-          image: null,
-          bio: null
+        profile: {
+          created_at: data.profile?.created_at || new Date().toISOString(),
+          image: data.profile?.image || null,
+          bio: data.profile?.bio || null
         }
       },
       profiles,
