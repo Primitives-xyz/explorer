@@ -45,37 +45,6 @@ export function TokenSearch({
   const inputRef = useRef<HTMLInputElement>(null)
   const [isGlobalSearchActive, setIsGlobalSearchActive] = useState(false)
 
-  useEffect(() => {
-    // Focus input on mount
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-  }, [])
-
-  useEffect(() => {
-    const handleGlobalSearch = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        setIsGlobalSearchActive(true)
-      }
-    }
-
-    const handleGlobalSearchClose = () => {
-      setIsGlobalSearchActive(false)
-    }
-
-    window.addEventListener('keydown', handleGlobalSearch)
-    window.addEventListener('globalSearchClose', handleGlobalSearchClose)
-
-    return () => {
-      window.removeEventListener('keydown', handleGlobalSearch)
-      window.removeEventListener('globalSearchClose', handleGlobalSearchClose)
-    }
-  }, [])
-
-  if (hideWhenGlobalSearch && isGlobalSearchActive) {
-    return null
-  }
-
   const sortResults = (results: TokenSearchResult[]) => {
     return [...results].sort((a, b) => {
       switch (sortBy) {
@@ -145,12 +114,43 @@ export function TokenSearch({
     }
   }
 
+  useEffect(() => {
+    // Focus input on mount
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleGlobalSearch = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        setIsGlobalSearchActive(true)
+      }
+    }
+
+    const handleGlobalSearchClose = () => {
+      setIsGlobalSearchActive(false)
+    }
+
+    window.addEventListener('keydown', handleGlobalSearch)
+    window.addEventListener('globalSearchClose', handleGlobalSearchClose)
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalSearch)
+      window.removeEventListener('globalSearchClose', handleGlobalSearchClose)
+    }
+  }, [])
+
   const debouncedSearch = debounce(searchTokens, 300)
 
   useEffect(() => {
     debouncedSearch(searchQuery)
     return () => debouncedSearch.cancel()
   }, [searchQuery])
+
+  if (hideWhenGlobalSearch && isGlobalSearchActive) {
+    return null
+  }
 
   const handleSelect = (token: TokenSearchResult) => {
     onSelect({
