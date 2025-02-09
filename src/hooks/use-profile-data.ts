@@ -39,7 +39,7 @@ interface ErrorState {
 
 type ProfileState = LoadingState | LoadedState | ErrorState
 
-const fetcher = async (url: string): Promise<TapestryProfileResponse> => {
+const fetcher = async (url: string): Promise<ProfileData> => {
   const res = await fetch(url)
   if (res.status === 500) {
     window.location.href = '/'
@@ -58,7 +58,7 @@ export function useProfileData(username: string, mainUsername?: string | null) {
   const prevDataRef = useRef<LoadedState | null>(null)
   const isInitialLoadRef = useRef(true)
 
-  const { data, isLoading } = useSWR<TapestryProfileResponse>(
+  const { data, isLoading } = useSWR<ProfileData>(
     `/api/profiles/${username}?fromUsername=${mainUsername}`,
     fetcher,
     {
