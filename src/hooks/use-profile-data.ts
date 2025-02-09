@@ -125,9 +125,13 @@ export function useProfileData(username: string, mainUsername?: string | null) {
       type: 'loaded',
       data: {
         ...data,
-        profile: {
+        profile: data.profile ? {
           ...data.profile,
-          bio: data.profile?.bio || null  // Ensure bio is properly mapped
+          bio: data.profile.bio || null  // Ensure bio is properly mapped
+        } : {
+          created_at: new Date().toISOString(),
+          image: null,
+          bio: null
         }
       },
       profiles,
