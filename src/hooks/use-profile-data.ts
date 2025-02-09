@@ -6,7 +6,7 @@ import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 export interface ProfileData {
-  walletAddress: string
+  walletAddress: string  // Required field
   socialCounts?: {
     followers: number
     following: number
@@ -16,6 +16,11 @@ export interface ProfileData {
     image: string | null
     bio: string | null  // Changed from optional to nullable to match Tapestry API
   }
+}
+
+// Ensure all required fields are present in the response
+export type TapestryProfileResponse = Omit<ProfileData, 'walletAddress'> & {
+  walletAddress: string
 }
 
 interface LoadingState {
@@ -39,14 +44,18 @@ interface ErrorState {
 
 type ProfileState = LoadingState | LoadedState | ErrorState
 
-const fetcher = async (url: string) => {
+const fetcher = async (url: string): Promise<TapestryProfileResponse> => {
   const res = await fetch(url)
   if (res.status === 500) {
     window.location.href = '/'
     throw new Error('Server error')
   }
   if (!res.ok) throw new Error('Failed to fetch profile')
-  return res.json()
+  const data = await res.json()
+  if (!data.walletAddress) {
+    throw new Error('Invalid profile data: missing walletAddress')
+  }
+  return data
 }
 
 export function useProfileData(username: string, mainUsername?: string | null) {
@@ -54,7 +63,7 @@ export function useProfileData(username: string, mainUsername?: string | null) {
   const prevDataRef = useRef<LoadedState | null>(null)
   const isInitialLoadRef = useRef(true)
 
-  const { data, isLoading } = useSWR<ProfileData>(
+  const { data, isLoading } = useSWR<TapestryProfileResponse>(
     `/api/profiles/${username}?fromUsername=${mainUsername}`,
     fetcher,
     {
@@ -118,21 +127,19 @@ export function useProfileData(username: string, mainUsername?: string | null) {
 
     // Only proceed if we have the main profile data
     if (!data) {
+      setState({ type: 'loading' })
       return
     }
 
     const newState: LoadedState = {
       type: 'loaded',
       data: {
-        walletAddress: data.walletAddress || '',  // Ensure walletAddress is always initialized
-        socialCounts: data.socialCounts,  // Keep existing socialCounts if any
-        profile: data.profile ? {
-          ...data.profile,
-          bio: data.profile.bio || null  // Ensure bio is properly mapped
-        } : {
-          created_at: new Date().toISOString(),
-          image: null,
-          bio: null
+        walletAddress: data.walletAddress,
+        socialCounts: data.socialCounts,
+        profile: {
+          created_at: data.profile?.created_at || new Date().toISOString(),
+          image: data.profile?.image || null,
+          bio: data.profile?.bio || null
         }
       },
       profiles,
