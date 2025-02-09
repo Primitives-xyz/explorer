@@ -136,10 +136,13 @@ export function useProfileData(username: string, mainUsername?: string | null) {
       data: {
         walletAddress: data.walletAddress,
         socialCounts: data.socialCounts,
-        profile: {
-          created_at: data.profile?.created_at || new Date().toISOString(),
-          image: data.profile?.image || null,
-          bio: data.profile?.bio || null
+        profile: data.profile ? {
+          ...data.profile,
+          bio: data.profile.bio || null  // Ensure bio is properly mapped
+        } : {
+          created_at: new Date().toISOString(),
+          image: null,
+          bio: null
         }
       },
       profiles,
@@ -172,7 +175,11 @@ export function useProfileData(username: string, mainUsername?: string | null) {
 
   // Keep the debug logs
   useEffect(() => {
-    console.log('[useProfileData] state changed:', state)
+    console.log('[useProfileData] state changed:', {
+      state,
+      bio: state.type === 'loaded' ? state.data.profile?.bio : undefined,
+      profile: state.type === 'loaded' ? state.data.profile : undefined
+    })
   }, [state])
 
   // Transform state into the expected return type
