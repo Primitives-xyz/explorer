@@ -75,7 +75,7 @@ export async function addPriorityFee(
     console.error('Failed to add priority fee, using default:', error)
     // Fallback to default fee of 100 microLamports
     const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 15000,
+      microLamports: 45000,
     })
     transaction.instructions.unshift(priorityFeeInstruction)
   }

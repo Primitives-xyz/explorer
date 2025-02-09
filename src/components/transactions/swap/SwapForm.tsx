@@ -384,7 +384,7 @@ export function SwapForm({
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <div className="text-sm text-green-500 mb-1">
-                    You'll receive
+                    You&apos;ll receive
                   </div>
                   <div className="flex items-center gap-2">
                     {outputTokenInfo.image && (
