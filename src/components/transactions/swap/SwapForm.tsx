@@ -8,6 +8,16 @@ import { SwapShareSection } from './SwapShareSection'
 import { PRIORITY_LEVELS, SLIPPAGE_OPTIONS } from '@/constants/jupiter'
 import type { JupiterSwapFormProps, PriorityLevel } from '@/types/jupiter'
 import { TokenSearch } from './TokenSearch'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import dynamic from 'next/dynamic'
+
+const DynamicConnectButton = dynamic(
+  () =>
+    import('@dynamic-labs/sdk-react-core').then(
+      (mod) => mod.DynamicConnectButton,
+    ),
+  { ssr: false },
+)
 
 // SSE token mint address
 const SSE_MINT = 'SSEswapfK71dRNrqpXf7sPJyVRXHkz9PApdh8bRrst'
@@ -54,6 +64,8 @@ export function SwapForm({
   const inputTokenInfo = useTokenInfo(inputMint)
   const outputTokenInfo = useTokenInfo(outputMint)
   const sseTokenInfo = useTokenInfo(SSE_MINT)
+
+  const { isLoggedIn } = useCurrentWallet()
 
   // Update input decimals when input token changes
   useEffect(() => {
@@ -514,24 +526,36 @@ export function SwapForm({
 
         {/* Swap Button */}
         {!isFullyConfirmed && (
-          <button
-            onClick={handleSwap}
-            disabled={showLoadingState}
-            className="bg-green-600 hover:bg-green-700 text-white p-2 rounded disabled:opacity-50 mt-2"
-          >
-            {showLoadingState ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>
-                  {txSignature ? 'Confirming Transaction...' : 'Swapping...'}
-                </span>
-              </div>
-            ) : txSignature ? (
-              'Finalizing Swap...'
+          <>
+            {!isLoggedIn ? (
+              <DynamicConnectButton>
+                <div className="bg-green-600 hover:bg-green-700 text-white p-2 rounded disabled:opacity-50 mt-2 w-full text-center cursor-pointer">
+                  Connect Wallet to Swap
+                </div>
+              </DynamicConnectButton>
             ) : (
-              'Execute Swap'
+              <button
+                onClick={handleSwap}
+                disabled={showLoadingState}
+                className="bg-green-600 hover:bg-green-700 text-white p-2 rounded disabled:opacity-50 mt-2 w-full"
+              >
+                {showLoadingState ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>
+                      {txSignature
+                        ? 'Confirming Transaction...'
+                        : 'Swapping...'}
+                    </span>
+                  </div>
+                ) : txSignature ? (
+                  'Finalizing Swap...'
+                ) : (
+                  'Execute Swap'
+                )}
+              </button>
             )}
-          </button>
+          </>
         )}
 
         {error && (
