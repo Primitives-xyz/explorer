@@ -29,18 +29,7 @@ interface LoadingState {
 
 interface LoadedState {
   type: 'loaded'
-  data: {
-    walletAddress: string
-    socialCounts?: {
-      followers: number
-      following: number
-    }
-    profile: Required<{
-      created_at: string
-      image: string | null
-      bio: string | null
-    }>
-  }
+  data: ProfileData
   profiles: any[] | null
   followers: any[]
   following: any[]
@@ -145,12 +134,11 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     const newState: LoadedState = {
       type: 'loaded',
       data: {
-        walletAddress: data.walletAddress,
-        socialCounts: data.socialCounts,
+        ...data,
         profile: {
-          created_at: data.profile?.created_at ?? new Date().toISOString(),
-          image: data.profile?.image ?? null,
-          bio: data.profile?.bio ?? null
+          created_at: data.profile?.created_at || new Date().toISOString(),
+          image: data.profile?.image || null,
+          bio: data.profile?.bio || null
         }
       },
       profiles,
