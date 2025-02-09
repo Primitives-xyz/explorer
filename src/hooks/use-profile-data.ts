@@ -6,7 +6,7 @@ import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 export interface ProfileData {
-  walletAddress: string  // Required field
+  walletAddress: string
   socialCounts?: {
     followers: number
     following: number
@@ -14,13 +14,8 @@ export interface ProfileData {
   profile: {
     created_at: string
     image: string | null
-    bio: string | null  // Changed from optional to nullable to match Tapestry API
+    bio?: string  // Keep as optional string to match existing patterns
   }
-}
-
-// Ensure all required fields are present in the response
-export type TapestryProfileResponse = Omit<ProfileData, 'walletAddress'> & {
-  walletAddress: string
 }
 
 interface LoadingState {
@@ -134,14 +129,12 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     const newState: LoadedState = {
       type: 'loaded',
       data: {
-        walletAddress: data.walletAddress,
-        socialCounts: data.socialCounts,
+        ...data,
         profile: {
-          created_at: data.profile?.created_at || new Date().toISOString(),
-          image: data.profile?.image || null,
-          bio: data.profile?.bio || null
+          ...data.profile,
+          bio: data.profile?.bio || ''  // Keep bio as optional string, default to empty string
         }
-      } satisfies ProfileData,
+      },
       profiles,
       followers: followers || [],
       following: following || [],
