@@ -12,6 +12,7 @@ import {
   DEFAULT_PRIORITY_LEVEL,
   DEFAULT_SLIPPAGE_BPS,
 } from '@/constants/jupiter'
+import { useTokenInfo } from './use-token-info'
 
 interface UseJupiterSwapParams {
   inputMint: string
@@ -47,6 +48,7 @@ export function useJupiterSwap({
   const [isQuoteRefreshing, setIsQuoteRefreshing] = useState(false)
   const { ssePrice } = useSSEPrice()
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
+  const outputTokenInfo = useTokenInfo(outputMint)
 
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
@@ -107,8 +109,10 @@ export function useJupiterSwap({
         setLoading(true)
       }
 
-      const multiplier = Math.pow(10, inputDecimals)
-      const adjustedAmount = Number(inputAmount) * multiplier
+      // Use input decimals for amount calculation
+      const adjustedAmount = Math.floor(
+        Number(inputAmount) * Math.pow(10, inputDecimals),
+      )
 
       const response = await fetch(
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
@@ -123,8 +127,10 @@ export function useJupiterSwap({
       ).then((res) => res.json())
 
       setQuoteResponse(response)
+      // Use the output token's decimals for formatting
+      const outputDecimals = outputTokenInfo.decimals ?? 9
       setExpectedOutput(
-        (Number(response.outAmount) / Math.pow(10, 6)).toFixed(6),
+        (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString(),
       )
       setPriceImpact(response.priceImpactPct)
 
