@@ -14,7 +14,7 @@ export interface ProfileData {
   profile: {
     created_at: string
     image: string | null
-    bio?: string
+    bio: string | null  // Changed from optional to nullable to match Tapestry API
   }
 }
 
@@ -123,7 +123,13 @@ export function useProfileData(username: string, mainUsername?: string | null) {
 
     const newState: LoadedState = {
       type: 'loaded',
-      data,
+      data: {
+        ...data,
+        profile: {
+          ...data.profile,
+          bio: data.profile?.bio || null  // Ensure bio is properly mapped
+        }
+      },
       profiles,
       followers: followers || [],
       following: following || [],
