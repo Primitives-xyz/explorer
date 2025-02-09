@@ -14,7 +14,7 @@ export interface ProfileData {
   profile: {
     created_at: string
     image: string | null
-    bio?: string  // Keep as optional string to match existing patterns
+    bio: string  // Make bio required to match Tapestry API
   }
 }
 
@@ -129,14 +129,12 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     const newState: LoadedState = {
       type: 'loaded',
       data: {
-        ...data,
-        profile: data.profile ? {
-          ...data.profile,
-          bio: data.profile.bio || ''  // Keep bio as optional string, default to empty string
-        } : {
-          created_at: new Date().toISOString(),
-          image: null,
-          bio: ''
+        walletAddress: data.walletAddress,
+        socialCounts: data.socialCounts,
+        profile: {
+          created_at: data.profile?.created_at || new Date().toISOString(),
+          image: data.profile?.image || null,
+          bio: data.profile?.bio || ''  // Default to empty string if bio is undefined
         }
       },
       profiles,
