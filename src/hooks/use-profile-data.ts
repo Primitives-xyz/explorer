@@ -123,12 +123,19 @@ export function useProfileData(username: string, mainUsername?: string | null) {
 
     const newState: LoadedState = {
       type: 'loaded',
-      data: {
+      data: data ? {
         ...data,
         profile: data.profile ? {
           ...data.profile,
           bio: data.profile.bio || null  // Ensure bio is properly mapped
         } : {
+          created_at: new Date().toISOString(),
+          image: null,
+          bio: null
+        }
+      } : {
+        walletAddress: '',
+        profile: {
           created_at: new Date().toISOString(),
           image: null,
           bio: null
