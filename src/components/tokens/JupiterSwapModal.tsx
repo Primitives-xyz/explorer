@@ -57,7 +57,7 @@ export function JupiterSwapModal({
           <Tab.Panel className="flex-1 flex flex-col h-full">
             <div className="flex-1 p-6">
               <JupiterSwapForm
-                initialInputMint="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                initialInputMint="H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump"
                 initialOutputMint={tokenAddress}
                 inputTokenName="USDC"
                 outputTokenName={tokenSymbol}

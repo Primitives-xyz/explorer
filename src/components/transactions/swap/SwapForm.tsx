@@ -35,8 +35,8 @@ const LoadingDots = () => {
 
 export function SwapForm({
   initialInputMint = 'So11111111111111111111111111111111111111112',
-  initialOutputMint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-  initialAmount = '',
+  initialOutputMint = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump',
+  initialAmount = '0.01',
   inputTokenName = 'SOL',
   outputTokenName = 'USDC',
   inputDecimals = 9,
@@ -65,7 +65,7 @@ export function SwapForm({
   const outputTokenInfo = useTokenInfo(outputMint)
   const sseTokenInfo = useTokenInfo(SSE_MINT)
 
-  const { isLoggedIn } = useCurrentWallet()
+  const { isLoggedIn, sdkHasLoaded } = useCurrentWallet()
 
   // Update input decimals when input token changes
   useEffect(() => {
@@ -304,9 +304,9 @@ export function SwapForm({
                     )}
                     <p className="text-xl font-semibold min-w-[120px]">
                       {isQuoteRefreshing ? (
-                        <span className="text-green-400/70">
-                          Updating
-                          <LoadingDots />
+                        <span className="text-green-400/70 animate-pulse">
+                          {expectedOutput || '0'}{' '}
+                          {outputTokenInfo.symbol || currentOutputToken}
                         </span>
                       ) : quoteResponse ? (
                         `${expectedOutput} ${
@@ -322,9 +322,17 @@ export function SwapForm({
                   <p className="text-sm text-green-400">Rate</p>
                   <p className="text-sm min-w-[120px]">
                     {isQuoteRefreshing ? (
-                      <span className="text-green-400/70">
-                        Updating
-                        <LoadingDots />
+                      <span className="text-green-400/70 animate-pulse">
+                        {`1 ${inputTokenInfo.symbol || currentInputToken} ≈ ${
+                          quoteResponse
+                            ? (
+                                Number(quoteResponse.outAmount) /
+                                Math.pow(10, outputTokenInfo.decimals ?? 9) /
+                                (Number(quoteResponse.inAmount) /
+                                  Math.pow(10, currentInputDecimals))
+                              ).toFixed(9)
+                            : '0'
+                        } ${outputTokenInfo.symbol || currentOutputToken}`}
                       </span>
                     ) : (
                       `1 ${inputTokenInfo.symbol || currentInputToken} ≈ ${
@@ -515,11 +523,10 @@ export function SwapForm({
           </div>
         )}
 
-        {!quoteResponse && effectiveAmount && (
-          <div className="bg-green-900/20 p-2 rounded text-center">
-            <span className="text-green-500/50">
-              Fetching quote
-              <LoadingDots />
+        {!quoteResponse && effectiveAmount && isQuoteRefreshing && (
+          <div className="bg-green-900/20 p-2 rounded text-center opacity-70">
+            <span className="text-green-400 text-sm">
+              Finding best route...
             </span>
           </div>
         )}
@@ -527,7 +534,28 @@ export function SwapForm({
         {/* Swap Button */}
         {!isFullyConfirmed && (
           <>
-            {!isLoggedIn ? (
+            {!sdkHasLoaded ? (
+              <div className="mt-2 bg-green-900/20 rounded-lg p-3 border border-green-400/20">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="relative w-5 h-5">
+                    <div className="absolute inset-0 border-2 border-green-400/20 rounded-full"></div>
+                    <div className="absolute inset-0 border-2 border-green-400 rounded-full border-t-transparent animate-spin"></div>
+                  </div>
+                  <span className="text-green-400/70 text-sm font-medium">
+                    Checking wallet status
+                    <span className="inline-flex ml-1">
+                      <span className="animate-pulse">.</span>
+                      <span className="animate-pulse animation-delay-200">
+                        .
+                      </span>
+                      <span className="animate-pulse animation-delay-400">
+                        .
+                      </span>
+                    </span>
+                  </span>
+                </div>
+              </div>
+            ) : !isLoggedIn ? (
               <DynamicConnectButton>
                 <div className="bg-green-600 hover:bg-green-700 text-white p-2 rounded disabled:opacity-50 mt-2 w-full text-center cursor-pointer">
                   Connect Wallet to Swap
@@ -539,17 +567,15 @@ export function SwapForm({
                 disabled={showLoadingState}
                 className="bg-green-600 hover:bg-green-700 text-white p-2 rounded disabled:opacity-50 mt-2 w-full"
               >
-                {showLoadingState ? (
+                {loading ? (
                   <div className="flex items-center justify-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>
                       {txSignature
-                        ? 'Confirming Transaction...'
-                        : 'Swapping...'}
+                        ? 'Confirming Transaction on Solana...'
+                        : `Swapping ${currentInputToken} to ${currentOutputToken}...`}
                     </span>
                   </div>
-                ) : txSignature ? (
-                  'Finalizing Swap...'
                 ) : (
                   'Execute Swap'
                 )}
