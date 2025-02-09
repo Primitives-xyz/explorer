@@ -6,6 +6,7 @@ export interface JupiterSwapFormProps {
   outputTokenName?: string
   inputDecimals?: number
   sourceWallet?: string
+  hideWhenGlobalSearch?: boolean
 }
 
 export type PriorityLevel =

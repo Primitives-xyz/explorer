@@ -41,6 +41,7 @@ export function SwapForm({
   outputTokenName = 'USDC',
   inputDecimals = 9,
   sourceWallet,
+  hideWhenGlobalSearch,
 }: JupiterSwapFormProps) {
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
   const [effectiveAmount, setEffectiveAmount] = useState(initialAmount)
@@ -602,12 +603,14 @@ export function SwapForm({
         <TokenSearch
           onSelect={handleInputTokenSelect}
           onClose={() => setShowInputTokenSearch(false)}
+          hideWhenGlobalSearch={hideWhenGlobalSearch}
         />
       )}
       {showOutputTokenSearch && (
         <TokenSearch
           onSelect={handleOutputTokenSelect}
           onClose={() => setShowOutputTokenSearch(false)}
+          hideWhenGlobalSearch={hideWhenGlobalSearch}
         />
       )}
     </div>

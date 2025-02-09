@@ -14,6 +14,7 @@ interface TokenSearchProps {
     logoURI?: string
   }) => void
   onClose: () => void
+  hideWhenGlobalSearch?: boolean
 }
 
 interface TokenSearchResult {
@@ -30,7 +31,11 @@ interface TokenSearchResult {
 
 type SortOption = 'marketcap' | 'volume' | 'name'
 
-export function TokenSearch({ onSelect, onClose }: TokenSearchProps) {
+export function TokenSearch({
+  onSelect,
+  onClose,
+  hideWhenGlobalSearch,
+}: TokenSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<TokenSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -38,6 +43,7 @@ export function TokenSearch({ onSelect, onClose }: TokenSearchProps) {
   const [sortBy, setSortBy] = useState<SortOption>('marketcap')
   const [verifiedOnly, setVerifiedOnly] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [isGlobalSearchActive, setIsGlobalSearchActive] = useState(false)
 
   useEffect(() => {
     // Focus input on mount
@@ -45,6 +51,30 @@ export function TokenSearch({ onSelect, onClose }: TokenSearchProps) {
       inputRef.current.focus()
     }
   }, [])
+
+  useEffect(() => {
+    const handleGlobalSearch = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        setIsGlobalSearchActive(true)
+      }
+    }
+
+    const handleGlobalSearchClose = () => {
+      setIsGlobalSearchActive(false)
+    }
+
+    window.addEventListener('keydown', handleGlobalSearch)
+    window.addEventListener('globalSearchClose', handleGlobalSearchClose)
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalSearch)
+      window.removeEventListener('globalSearchClose', handleGlobalSearchClose)
+    }
+  }, [])
+
+  if (hideWhenGlobalSearch && isGlobalSearchActive) {
+    return null
+  }
 
   const sortResults = (results: TokenSearchResult[]) => {
     return [...results].sort((a, b) => {
