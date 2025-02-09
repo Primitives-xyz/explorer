@@ -20,6 +20,11 @@ export async function getPriorityFeeEstimate(
     throw new Error('HELIUS_API_KEY is not configured')
   }
 
+  // Serialize the transaction and encode it properly for the API
+  const serializedTransaction = Buffer.from(
+    transaction.serialize({ verifySignatures: false }),
+  ).toString('base64')
+
   const response = await fetch(HELIUS_RPC_URL, {
     method: 'POST',
     headers: {
@@ -31,9 +36,7 @@ export async function getPriorityFeeEstimate(
       method: 'getPriorityFeeEstimate',
       params: [
         {
-          transaction: transaction
-            .serialize({ verifySignatures: false })
-            .toString('base64'),
+          transaction: serializedTransaction,
           options: {
             ...options,
             priorityLevel,
@@ -69,6 +72,11 @@ export async function addPriorityFee(
     // Add the priority fee instruction at the beginning of the transaction
     transaction.instructions.unshift(priorityFeeInstruction)
   } catch (error) {
-    console.error('Failed to add priority fee:', error)
+    console.error('Failed to add priority fee, using default:', error)
+    // Fallback to default fee of 100 microLamports
+    const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 100,
+    })
+    transaction.instructions.unshift(priorityFeeInstruction)
   }
 }
