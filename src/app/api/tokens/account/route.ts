@@ -5,6 +5,7 @@ import {
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
 import bs58 from 'bs58'
+import { addPriorityFee } from '@/utils/priority-fee'
 
 const RPC_ENDPOINT =
   process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
@@ -86,6 +87,9 @@ export async function GET(request: Request) {
       lastValidBlockHeight,
     }).add(instruction)
 
+    // Add priority fee to the transaction
+    await addPriorityFee(transaction, 'Medium')
+
     // Sign and send the transaction
     transaction.sign(payer)
     console.log('Sending transaction...')
@@ -95,11 +99,14 @@ export async function GET(request: Request) {
     )
     console.log('Transaction sent...')
     // Wait for confirmation
-    const confirmation = await connection.confirmTransaction({
-      signature,
-      blockhash,
-      lastValidBlockHeight,
-    })
+    const confirmation = await connection.confirmTransaction(
+      {
+        signature,
+        blockhash,
+        lastValidBlockHeight,
+      },
+      'confirmed',
+    )
     console.log('Transaction confirmed...')
     if (confirmation.value.err) {
       throw new Error(

@@ -4,10 +4,12 @@ import type { PriorityLevelOption } from '@/types/jupiter'
 export const PLATFORM_FEE_BPS = 100 // 1% = 100 basis points
 export const PLATFORM_FEE_ACCOUNT =
   '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
+export const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
 
 export const DEFAULT_SLIPPAGE_BPS = 50 // 0.5% default
 export const DEFAULT_PRIORITY_LEVEL = 'Medium'
 
+// Priority level options
 export const PRIORITY_LEVELS: PriorityLevelOption[] = [
   {
     label: 'Minimum',
@@ -41,9 +43,10 @@ export const PRIORITY_LEVELS: PriorityLevelOption[] = [
   },
 ]
 
+// Slippage options in basis points
 export const SLIPPAGE_OPTIONS = [
-  { value: 10, label: '0.1%' },
-  { value: 50, label: '0.5%' },
-  { value: 100, label: '1.0%' },
-  { value: 200, label: '2.0%' },
+  { label: '0.1%', value: 10 },
+  { label: '0.5%', value: 50 },
+  { label: '1.0%', value: 100 },
+  { label: '2.0%', value: 200 },
 ]
