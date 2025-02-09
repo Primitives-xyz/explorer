@@ -7,7 +7,7 @@ export default async function PortfolioPage({ params }: { params: Params }) {
   const { address } = resolvedParams
 
   return (
-    <div className="min-h-[100dvh] w-[100dvw] overflow-x-hidden bg-black text-green-400 font-mono">
+    <div className="min-h-[100dvh] w-[100dvw] overflow-x-hidden ">
       <div className="flex-grow p-4 w-full overflow-x-hidden">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
