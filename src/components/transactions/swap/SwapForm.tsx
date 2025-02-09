@@ -10,6 +10,7 @@ import type { JupiterSwapFormProps, PriorityLevel } from '@/types/jupiter'
 import { TokenSearch } from './TokenSearch'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import dynamic from 'next/dynamic'
+import { useTokenBalance } from '@/hooks/use-token-balance'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -66,7 +67,19 @@ export function SwapForm({
   const outputTokenInfo = useTokenInfo(outputMint)
   const sseTokenInfo = useTokenInfo(SSE_MINT)
 
-  const { isLoggedIn, sdkHasLoaded } = useCurrentWallet()
+  const { isLoggedIn, sdkHasLoaded, walletAddress } = useCurrentWallet()
+
+  // Add token balance hooks for both tokens
+  const {
+    balance: inputBalance,
+    rawBalance: rawInputBalance,
+    loading: inputBalanceLoading,
+  } = useTokenBalance(walletAddress, inputMint)
+  const {
+    balance: outputBalance,
+    rawBalance: rawOutputBalance,
+    loading: outputBalanceLoading,
+  } = useTokenBalance(walletAddress, outputMint)
 
   // Update input decimals when input token changes
   useEffect(() => {
@@ -196,6 +209,17 @@ export function SwapForm({
     setCurrentOutputToken(token.symbol)
   }
 
+  // Helper function to format large numbers with K/M suffix
+  const formatLargeNumber = (num: number) => {
+    if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(2) + 'M'
+    }
+    if (num >= 1_000) {
+      return (num / 1_000).toFixed(2) + 'K'
+    }
+    return num.toFixed(2)
+  }
+
   return (
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
       <div className="flex flex-col gap-2">
@@ -244,18 +268,25 @@ export function SwapForm({
         <div className="flex items-center gap-2">
           <div className="flex-1 relative">
             <button
-              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full text-left flex items-center gap-2 hover:bg-green-900/30 transition-colors"
+              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors"
               onClick={() => setShowInputTokenSearch(true)}
               disabled={showLoadingState}
             >
-              {inputTokenInfo.image && (
-                <img
-                  src={inputTokenInfo.image}
-                  alt={inputTokenInfo.symbol || currentInputToken}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
-                />
+              <div className="flex items-center gap-2">
+                {inputTokenInfo.image && (
+                  <img
+                    src={inputTokenInfo.image}
+                    alt={inputTokenInfo.symbol || currentInputToken}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
+                  />
+                )}
+                <span>{inputTokenInfo.symbol || currentInputToken}</span>
+              </div>
+              {isLoggedIn && (
+                <span className="text-sm text-green-400">
+                  {inputBalanceLoading ? '...' : `You have: ${inputBalance}`}
+                </span>
               )}
-              <span>{inputTokenInfo.symbol || currentInputToken}</span>
             </button>
           </div>
 
@@ -270,18 +301,25 @@ export function SwapForm({
 
           <div className="flex-1 relative">
             <button
-              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full text-left flex items-center gap-2 hover:bg-green-900/30 transition-colors"
+              className="bg-green-900/20 text-green-100 p-2 pl-10 rounded w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors"
               onClick={() => setShowOutputTokenSearch(true)}
               disabled={showLoadingState}
             >
-              {outputTokenInfo.image && (
-                <img
-                  src={outputTokenInfo.image}
-                  alt={outputTokenInfo.symbol || currentOutputToken}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
-                />
+              <div className="flex items-center gap-2">
+                {outputTokenInfo.image && (
+                  <img
+                    src={outputTokenInfo.image}
+                    alt={outputTokenInfo.symbol || currentOutputToken}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
+                  />
+                )}
+                <span>{outputTokenInfo.symbol || currentOutputToken}</span>
+              </div>
+              {isLoggedIn && (
+                <span className="text-sm text-green-400">
+                  {outputBalanceLoading ? '...' : `Current: ${outputBalance}`}
+                </span>
               )}
-              <span>{outputTokenInfo.symbol || currentOutputToken}</span>
             </button>
           </div>
         </div>
@@ -292,9 +330,7 @@ export function SwapForm({
             <div className="bg-green-900/20 p-4 rounded-lg relative">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm text-green-400">
-                    You&apos;ll receive approximately
-                  </p>
+                  <p className="text-sm text-green-400">You&apos;ll receive</p>
                   <div className="flex items-center gap-2">
                     {outputTokenInfo.image && (
                       <img
@@ -306,18 +342,39 @@ export function SwapForm({
                     <p className="text-xl font-semibold min-w-[120px]">
                       {isQuoteRefreshing ? (
                         <span className="text-green-400/70 animate-pulse">
-                          {expectedOutput || '0'}{' '}
+                          {expectedOutput
+                            ? parseFloat(expectedOutput).toLocaleString(
+                                undefined,
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                },
+                              )
+                            : '0'}{' '}
                           {outputTokenInfo.symbol || currentOutputToken}
                         </span>
                       ) : quoteResponse ? (
-                        `${expectedOutput} ${
-                          outputTokenInfo.symbol || currentOutputToken
-                        }`
+                        `${parseFloat(expectedOutput).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )} ${outputTokenInfo.symbol || currentOutputToken}`
                       ) : (
                         `0 ${outputTokenInfo.symbol || currentOutputToken}`
                       )}
                     </p>
                   </div>
+                  {isLoggedIn && !outputBalanceLoading && quoteResponse && (
+                    <p className="text-sm text-green-400">
+                      After swap:{' '}
+                      {formatLargeNumber(
+                        rawOutputBalance + parseFloat(expectedOutput || '0'),
+                      )}{' '}
+                      {outputTokenInfo.symbol || currentOutputToken}
+                    </p>
+                  )}
                 </div>
                 <div className="text-right space-y-1">
                   <p className="text-sm text-green-400">Rate</p>
@@ -331,7 +388,10 @@ export function SwapForm({
                                 Math.pow(10, outputTokenInfo.decimals ?? 9) /
                                 (Number(quoteResponse.inAmount) /
                                   Math.pow(10, currentInputDecimals))
-                              ).toFixed(9)
+                              ).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
                             : '0'
                         } ${outputTokenInfo.symbol || currentOutputToken}`}
                       </span>
@@ -343,7 +403,10 @@ export function SwapForm({
                               Math.pow(10, outputTokenInfo.decimals ?? 9) /
                               (Number(quoteResponse.inAmount) /
                                 Math.pow(10, currentInputDecimals))
-                            ).toFixed(9)
+                            ).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
                           : '0'
                       } ${outputTokenInfo.symbol || currentOutputToken}`
                     )}
