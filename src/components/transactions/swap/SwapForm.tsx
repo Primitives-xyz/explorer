@@ -70,11 +70,8 @@ export function SwapForm({
   const { isLoggedIn, sdkHasLoaded, walletAddress } = useCurrentWallet()
 
   // Add token balance hooks for both tokens
-  const {
-    balance: inputBalance,
-    rawBalance: rawInputBalance,
-    loading: inputBalanceLoading,
-  } = useTokenBalance(walletAddress, inputMint)
+  const { balance: inputBalance, loading: inputBalanceLoading } =
+    useTokenBalance(walletAddress, inputMint)
   const {
     balance: outputBalance,
     rawBalance: rawOutputBalance,
