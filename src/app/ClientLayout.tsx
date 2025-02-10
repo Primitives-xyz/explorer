@@ -2,6 +2,7 @@
 import { ActivityTape } from '@/components/ActivityTape'
 import { GlobalSearch } from '@/components/GlobalSearch'
 import { AuthWrapper } from '@/components/auth/AuthWrapper'
+import { CreateProfile } from '@/components/profile/create-profile'
 import dynamic from 'next/dynamic'
 import type { ReactNode } from 'react'
 
@@ -24,11 +25,12 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     <WalletProvider>
       <AuthWrapper>
         <ActivityTape />
-        <div className="w-full overflow-hidden">
+        <div className="w-full overflow-hidden bg-black text-green-400 font-mono min-h-dvh ">
           <Header />
           {children}
         </div>
         <GlobalSearch />
+        <CreateProfile />
       </AuthWrapper>
     </WalletProvider>
   )

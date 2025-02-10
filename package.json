@@ -46,6 +46,7 @@
     "@solanafm/explorer-kit-idls": "^1.1.3",
     "@tanstack/react-virtual": "^3.11.2",
     "@vercel/og": "0.6.5",
+    "bs58": "6.0.0",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
@@ -55,11 +56,12 @@
     "pino-pretty": "^11.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-sigma.min.css": "link:@react-sigma/core/lib/react-sigma.min.css",
+    "sonner": "1.7.4",
     "swr": "^2.3.0",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@types/bn.js": "5.1.6",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

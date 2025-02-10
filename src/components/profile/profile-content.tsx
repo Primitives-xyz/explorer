@@ -12,6 +12,9 @@ import { UpdateProfileModal } from './update-profile-modal'
 import { ProfileHeader } from './profile-header'
 import { ProfileStats } from './profile-stats'
 import { useProfileData } from '@/hooks/use-profile-data'
+import { ProfileContentFeed } from './ProfileContentFeed'
+import { cn } from '@/lib/utils'
+import { useTargetWallet } from '@/hooks/use-target-wallet'
 
 interface Props {
   username: string
@@ -60,6 +63,15 @@ export function ProfileContent({ username }: Props) {
   const [showFollowersModal, setShowFollowersModal] = useState(false)
   const [showFollowingModal, setShowFollowingModal] = useState(false)
   const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [activeTab, setActiveTab] = useState<'comments' | 'swaps'>('comments')
+
+  const {
+    targetWalletAddress,
+    isLoading: isLoadingWallet,
+    walletAddressError,
+    serverError,
+    isOwnWallet,
+  } = useTargetWallet(username)
 
   const {
     profileData,
@@ -71,8 +83,6 @@ export function ProfileContent({ username }: Props) {
     isLoadingFollowers,
     isLoadingFollowing,
     isLoadingComments,
-    walletAddressError,
-    serverError,
   } = useProfileData(username, mainUsername)
 
   const handleEditProfile = useCallback(() => {
@@ -108,17 +118,20 @@ export function ProfileContent({ username }: Props) {
     throw new Error('Server error')
   }
 
-  const isOwnProfile = mainUsername === username
+  const tabs = [
+    { id: 'comments', label: 'Comments' },
+    { id: 'swaps', label: 'Swaps' },
+  ] as const
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <ProfileHeader
         username={username}
         profileData={profileData}
-        isLoading={isLoading}
+        isLoading={isLoading || isLoadingWallet}
         walletAddressError={walletAddressError}
         onEditProfile={handleEditProfile}
-        isOwnProfile={isOwnProfile}
+        isOwnProfile={isOwnWallet}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -130,11 +143,39 @@ export function ProfileContent({ username }: Props) {
             onFollowingClick={handleFollowingClick}
           />
 
-          <CommentWall
-            username={username}
-            isLoading={isLoadingComments}
-            comments={comments}
-          />
+          <Card>
+            <div className="border-b border-green-900/20">
+              <nav className="flex" aria-label="Tabs">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+                      activeTab === tab.id
+                        ? 'border-green-500 text-green-400'
+                        : 'border-transparent text-gray-400 hover:text-green-400 hover:border-green-400/50',
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            <div className="p-4">
+              {activeTab === 'comments' ? (
+                <CommentWall
+                  username={username}
+                  isLoading={isLoadingComments}
+                  comments={comments}
+                  targetWalletAddress={targetWalletAddress}
+                />
+              ) : (
+                <ProfileContentFeed username={username} />
+              )}
+            </div>
+          </Card>
         </div>
 
         <div className="space-y-6">
@@ -145,7 +186,7 @@ export function ProfileContent({ username }: Props) {
           )}
 
           <ProfileSection
-            walletAddress={profileData?.walletAddress}
+            walletAddress={targetWalletAddress}
             hasSearched={!isLoading}
             isLoadingProfileData={isLoading}
             profileData={{ profiles: profiles || [] }}
@@ -173,14 +214,16 @@ export function ProfileContent({ username }: Props) {
         type="following"
       />
 
-      <UpdateProfileModal
-        isOpen={showUpdateModal}
-        onClose={handleCloseUpdate}
-        currentUsername={username}
-        currentBio={profileData?.profile.bio}
-        currentImage={profileData?.profile.image}
-        onProfileUpdated={handleProfileUpdated}
-      />
+      {!!profileData && (
+        <UpdateProfileModal
+          isOpen={showUpdateModal}
+          onClose={handleCloseUpdate}
+          currentUsername={username}
+          currentBio={profileData?.profile.bio}
+          currentImage={profileData?.profile.image}
+          onProfileUpdated={handleProfileUpdated}
+        />
+      )}
     </div>
   )
 }

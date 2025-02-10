@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
 import type { Transaction } from '@/utils/helius/types'
 import { formatNumber } from '@/utils/format'
 import Link from 'next/link'
+import { useTokenInfo } from '@/hooks/use-token-info'
+import type { TokenResponse, FungibleTokenInfo } from '@/types/Token'
 
 interface TokenTransfer {
   tokenMint: string
@@ -15,87 +16,21 @@ interface SPLTransferViewProps {
   sourceWallet: string
 }
 
-interface TokenDisplay {
-  loading: boolean
-  error?: string
-  tokenInfo?: {
-    jsonrpc: string
-    result: {
-      interface: string
-      id: string
-      content: {
-        metadata: {
-          name: string
-          symbol: string
-        }
-        links?: {
-          image?: string
-        }
-      }
-      token_info?: {
-        symbol: string
-        decimals: number
-        supply?: number
-        price_info?: {
-          price_per_token: number
-          currency: string
-        }
-      }
-    }
-  } | null
+// Helper function to check if token is fungible
+const isFungibleToken = (
+  data: TokenResponse | null,
+): data is TokenResponse & { result: FungibleTokenInfo } => {
+  return (
+    data?.result?.interface === 'FungibleToken' ||
+    data?.result?.interface === 'FungibleAsset'
+  )
 }
 
 export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
-  const [tokenInfo, setTokenInfo] = useState<TokenDisplay | null>(null)
+  const tokenMint = tx.tokenTransfers?.[0]?.tokenMint
+  const { data: tokenInfo, loading } = useTokenInfo(tokenMint)
 
-  useEffect(() => {
-    const loadTokenInfo = async () => {
-      if (!tx.tokenTransfers?.length) {
-        return
-      }
-
-      const transfer = tx.tokenTransfers[0]
-
-      if (!transfer?.tokenMint) {
-        return
-      }
-
-      setTokenInfo((prev) =>
-        prev ? { ...prev, loading: true } : { loading: true },
-      )
-
-      try {
-        const response = await fetch(`/api/token?mint=${transfer.tokenMint}`)
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch token info')
-        }
-
-        const data = await response.json()
-
-        setTokenInfo((prev) => ({
-          ...(prev || {}),
-          loading: false,
-          tokenInfo: data,
-        }))
-      } catch (error) {
-        console.error('Error fetching token info:', error)
-        setTokenInfo((prev) =>
-          prev
-            ? {
-                ...prev,
-                loading: false,
-                error: 'Failed to load token info',
-              }
-            : null,
-        )
-      }
-    }
-
-    loadTokenInfo()
-  }, [tx])
-
-  if (!tx.tokenTransfers?.length || !tokenInfo) {
+  if (!tx.tokenTransfers?.length) {
     return null
   }
 
@@ -103,9 +38,10 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
     <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
       {tx.tokenTransfers.map((transfer: TokenTransfer, index: number) => {
         const tokenSymbol =
-          tokenInfo.tokenInfo?.result.content.metadata.symbol || 'tokens'
-        const pricePerToken =
-          tokenInfo.tokenInfo?.result.token_info?.price_info?.price_per_token
+          tokenInfo?.result.content.metadata.symbol || 'tokens'
+        const pricePerToken = isFungibleToken(tokenInfo)
+          ? tokenInfo.result.token_info?.price_info?.price_per_token
+          : undefined
         const totalValue = pricePerToken
           ? transfer.amount * pricePerToken
           : null
@@ -116,11 +52,11 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
             <div className="relative">
               <div className="absolute inset-0 bg-green-500/5 rounded-xl filter blur-sm"></div>
               <div className="w-12 h-12 rounded-xl bg-black/20 ring-1 ring-green-500/10 flex items-center justify-center relative z-[1]">
-                {tokenInfo.loading ? (
+                {loading ? (
                   <div className="animate-pulse w-8 h-8 bg-green-500/20 rounded-lg" />
-                ) : tokenInfo.tokenInfo?.result.content.links?.image ? (
+                ) : tokenInfo?.result.content.links?.image ? (
                   <img
-                    src={tokenInfo.tokenInfo.result.content.links.image}
+                    src={tokenInfo.result.content.links.image}
                     alt={tokenSymbol}
                     className="w-8 h-8 rounded-lg object-cover"
                     onError={(e) => {

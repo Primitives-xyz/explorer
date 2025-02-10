@@ -1,7 +1,5 @@
 'use client'
 
-import { Layout } from '@/components/Layout'
-import { CreateProfile } from '@/components/profile/create-profile'
 import { ProfileSection } from '@/components/ProfileSection'
 import SearchBar from '@/components/SearchBar'
 import { TopTraders } from '@/components/traders/TopTraders'
@@ -62,35 +60,32 @@ export default function Home() {
 
   // Called when user clicks the [EXECUTE] button from the child form
   return (
-    <Layout>
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
-        <SearchBar onPickRecentAddress={searchAddress} />
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
+      <SearchBar onPickRecentAddress={searchAddress} />
 
-        {/* Grid layout for ProfileSection and TrendingTokens */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <ActivityFeedContainer username={mainUsername} />
-          </div>
-          <div className="lg:col-span-1">
-            <ProfileSection
-              walletAddress={''}
-              hasSearched={hasSearched}
-              profileData={profileData}
-              error={error}
-              isLoadingProfileData={isLoadingProfileData}
-            />
-          </div>
+      {/* Grid layout for ProfileSection and TrendingTokens */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <ActivityFeedContainer username={mainUsername} />
         </div>
-
-        {/* Token results */}
-
-        {/* Following list for logged-in users */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <TrendingTokens />
-          <TopTraders />
+        <div className="lg:col-span-1">
+          <ProfileSection
+            walletAddress={''}
+            hasSearched={hasSearched}
+            profileData={profileData}
+            error={error}
+            isLoadingProfileData={isLoadingProfileData}
+          />
         </div>
       </div>
-      <CreateProfile />
-    </Layout>
+
+      {/* Token results */}
+
+      {/* Following list for logged-in users */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TrendingTokens />
+        <TopTraders />
+      </div>
+    </div>
   )
 }

@@ -23,31 +23,97 @@ export const useFollowWallet = () => {
     setSuccess(false)
 
     try {
-      const response = await fetch('/api/followers/follow-wallet', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          followerUsername,
-          walletToFollow,
-        }),
-      })
+      let response
+      try {
+        response = await fetch('/api/followers/follow-wallet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            followerUsername,
+            walletToFollow,
+          }),
+        })
+      } catch (fetchError) {
+        setError('Network error - please check your connection')
+        return false
+      }
 
-      const result = await response.json()
+      let result
+      try {
+        result = await response.json()
+      } catch (parseError) {
+        setError('Invalid response from server')
+        return false
+      }
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to follow wallet')
+        setError(result.error || 'Failed to follow wallet')
+        return false
       }
 
       setData(result)
       setSuccess(true)
+      return true
     } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+      setError('Something went wrong')
+      return false
     } finally {
       setLoading(false)
     }
   }
 
-  return { followWallet, loading, error, success, data }
+  const unfollowWallet = async ({
+    followerUsername,
+    walletToFollow,
+  }: FollowWalletProps) => {
+    setLoading(true)
+    setError(null)
+    setData(null)
+    setSuccess(false)
+
+    try {
+      let response
+      try {
+        response = await fetch('/api/followers/unfollow-wallet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            followerUsername,
+            walletToFollow,
+          }),
+        })
+      } catch (fetchError) {
+        setError('Network error - please check your connection')
+        return false
+      }
+
+      let result
+      try {
+        result = await response.json()
+      } catch (parseError) {
+        setError('Invalid response from server')
+        return false
+      }
+
+      if (!response.ok) {
+        setError(result.error || 'Failed to unfollow wallet')
+        return false
+      }
+
+      setData(result)
+      setSuccess(true)
+      return true
+    } catch (err: any) {
+      setError('Something went wrong')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { followWallet, unfollowWallet, loading, error, success, data }
 }

@@ -1,8 +1,7 @@
 import type { Transaction } from '@/utils/helius/types'
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { TransactionCard } from '@/components/transactions/TransactionCard'
-import { isSpamTransaction } from '@/utils/transaction'
 import { DataContainer } from '@/components/common/DataContainer'
 import { ScrollableContent } from '@/components/common/ScrollableContent'
 import { FilterBar } from '@/components/common/FilterBar'
@@ -39,51 +38,31 @@ const MOCK_TRANSACTIONS: Partial<Transaction>[] = [
   {
     type: 'SWAP',
     source: 'JUPITER',
-    description: 'Whale.sol swapped 1000 SOL for 13,240 USDC on Jupiter',
+    description: 'Swapped 10 SOL for 138.42 USDC on Jupiter',
     timestamp: Date.now() / 1000,
     signature: '3xR5Zqx9vK7u8k4Y',
-    sourceWallet: 'Whale.sol',
+    sourceWallet: 'trader.sol',
     fee: 5000,
-    feePayer: 'Whale.sol',
-    slot: 123456789,
-    nativeTransfers: [],
-    tokenTransfers: [],
-    accountData: [],
-    balanceChanges: {},
   },
   {
-    type: 'NFT_SALE',
-    source: 'MAGIC_EDEN',
-    description: 'Mad Lads #1337 sold for 45 SOL',
+    type: 'SWAP',
+    source: 'ORCA',
+    description: 'Swapped 500 USDC for 2.85 SOL on Orca',
     timestamp: Date.now() / 1000 - 300,
     signature: '7pL2Mqn8dR4w9j6X',
-    sourceWallet: 'MadLads.sol',
+    sourceWallet: 'whale.sol',
     fee: 5000,
-    feePayer: 'MadLads.sol',
-    slot: 123456790,
-    nativeTransfers: [],
-    tokenTransfers: [],
-    accountData: [],
-    balanceChanges: {},
   },
   {
-    type: 'TRANSFER',
-    source: 'SYSTEM_PROGRAM',
-    description: 'DeGods.sol transferred 50,000 USDC to BeansDAO.sol',
+    type: 'SWAP',
+    source: 'RAYDIUM',
+    description: 'Swapped 1000 RAY for 45 SOL on Raydium',
     timestamp: Date.now() / 1000 - 600,
     signature: '2kN9Xqp5vM3r7h4W',
-    sourceWallet: 'DeGods.sol',
+    sourceWallet: 'dex.sol',
     fee: 5000,
-    feePayer: 'DeGods.sol',
-    slot: 123456791,
-    nativeTransfers: [],
-    tokenTransfers: [],
-    accountData: [],
-    balanceChanges: {},
   },
 ]
-
-type TransactionType = string
 
 interface FollowingTransactionFeedProps {
   transactions: Transaction[]
@@ -91,6 +70,8 @@ interface FollowingTransactionFeedProps {
   isLoggedIn: boolean
   loadedWallets?: number
   totalWallets?: number
+  selectedType: string
+  setSelectedType: (type: string) => void
 }
 
 export const FollowingTransactionFeed = ({
@@ -99,20 +80,36 @@ export const FollowingTransactionFeed = ({
   isLoggedIn,
   loadedWallets = 0,
   totalWallets = 0,
+  selectedType,
+  setSelectedType,
 }: FollowingTransactionFeedProps) => {
-  const [selectedType, setSelectedType] = useState<TransactionType>('all')
   const { walletAddress } = useCurrentWallet()
 
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
-    const types = new Set(['all'])
-    transactions.forEach((tx) => {
-      if (!isSpamTransaction(tx) && tx.type) {
-        types.add(tx.type.toLowerCase().replace('_', ' '))
-      }
-    })
-    return Array.from(types)
-  }, [transactions])
+    return [
+      { value: 'all', label: 'All' },
+      { value: 'swap', label: 'Swaps' },
+      { value: 'transfer', label: 'Transfers' },
+      { value: 'compressed_nft_mint', label: 'cNFT Mints' },
+    ]
+  }, [])
+
+  // Helper to format the loading/empty text
+  const getDisplayText = (type: string) => {
+    switch (type) {
+      case 'all':
+        return 'TRANSACTIONS'
+      case 'swap':
+        return 'SWAP TRANSACTIONS'
+      case 'transfer':
+        return 'TRANSFERS'
+      case 'compressed_nft_mint':
+        return 'CNFT MINTS'
+      default:
+        return 'TRANSACTIONS'
+    }
+  }
 
   // If not logged in, show the preview with CTA
   if (!isLoggedIn) {
@@ -147,13 +144,6 @@ export const FollowingTransactionFeed = ({
     )
   }
 
-  // Filter transactions by type and spam
-  const filteredTransactions = transactions.filter((tx) => {
-    if (isSpamTransaction(tx)) return false
-    if (selectedType === 'all') return true
-    return tx.type?.toLowerCase().replace('_', ' ') === selectedType
-  })
-
   const headerRight = isLoading && totalWallets > 0 && (
     <div className="text-xs text-green-600 font-mono">
       ({loadedWallets}/{totalWallets} wallets)
@@ -163,7 +153,7 @@ export const FollowingTransactionFeed = ({
   return (
     <DataContainer
       title="following_activity"
-      count={filteredTransactions.length}
+      count={transactions.length}
       height="large"
       headerRight={headerRight}
       className="sm:min-w-[500px] min-w-full"
@@ -171,24 +161,24 @@ export const FollowingTransactionFeed = ({
       <FilterBar className="flex-wrap gap-2">
         {transactionTypes.map((type) => (
           <FilterButton
-            key={type}
-            label={type === 'all' ? 'All' : type}
-            isSelected={selectedType === type}
-            onClick={() => setSelectedType(type)}
+            key={type.value}
+            label={type.label}
+            isSelected={selectedType === type.value}
+            onClick={() => setSelectedType(type.value)}
             className="text-sm"
           />
         ))}
       </FilterBar>
 
       <ScrollableContent
-        isLoading={isLoading && filteredTransactions.length === 0}
-        isEmpty={filteredTransactions.length === 0}
-        loadingText=">>> LOADING TRANSACTIONS..."
-        emptyText=">>> NO RECENT ACTIVITY"
+        isLoading={isLoading}
+        isEmpty={!isLoading && transactions.length === 0}
+        loadingText={`>>> LOADING ${getDisplayText(selectedType)}...`}
+        emptyText={`>>> NO ${getDisplayText(selectedType)} FOUND`}
       >
         <div className="divide-y divide-green-800/30">
-          {isLoading && filteredTransactions.length === 0 ? (
-            // Show loading skeletons when no transactions are loaded yet
+          {isLoading ? (
+            // Show loading skeletons
             Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="p-2 animate-pulse">
                 <div className="flex flex-col gap-2">
@@ -200,18 +190,13 @@ export const FollowingTransactionFeed = ({
             ))
           ) : (
             <>
-              {filteredTransactions.map((tx, index) => (
+              {transactions.map((tx, index) => (
                 <TransactionCard
                   key={`${tx.signature}-${index}`}
                   transaction={tx}
                   sourceWallet={tx.sourceWallet || walletAddress || ''}
                 />
               ))}
-              {isLoading && (
-                <div className="p-4 text-center text-green-600 font-mono">
-                  {'>>> LOADING MORE TRANSACTIONS...'}
-                </div>
-              )}
             </>
           )}
         </div>

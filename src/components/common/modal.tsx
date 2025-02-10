@@ -1,14 +1,22 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { cn } from '@/lib/utils'
 
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
   children: React.ReactNode
   title?: string
+  className?: string
 }
 
-export function Modal({ isOpen, onClose, children, title }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  children,
+  title,
+  className,
+}: ModalProps) {
   const modalRoot = useRef<Element | null>(null)
 
   useEffect(() => {
@@ -42,10 +50,17 @@ export function Modal({ isOpen, onClose, children, title }: ModalProps) {
       />
 
       {/* Modal Content */}
-      <div className="relative z-10 w-full max-w-lg bg-black/90 border border-green-500/20 rounded-lg shadow-xl">
+      <div
+        className={cn(
+          'relative z-10 w-full max-w-lg md:max-w-2xl lg:max-w-4xl bg-black/90 border border-green-500/20 rounded-lg shadow-xl',
+          className,
+        )}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-green-500/20">
-          <h2 className="text-lg font-medium text-green-400">{title}</h2>
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-green-500/20">
+          <h2 className="text-lg md:text-xl font-medium text-green-400">
+            {title}
+          </h2>
           <button
             onClick={onClose}
             className="text-green-400 hover:text-green-300 transition-colors"
@@ -67,7 +82,7 @@ export function Modal({ isOpen, onClose, children, title }: ModalProps) {
         </div>
 
         {/* Body */}
-        <div className="p-4">{children}</div>
+        <div className="p-4 md:p-6">{children}</div>
       </div>
     </div>,
     modalRoot.current,

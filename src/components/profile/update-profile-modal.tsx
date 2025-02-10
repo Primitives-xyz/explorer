@@ -116,7 +116,7 @@ export function UpdateProfileModal({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               name="bio"
-              placeholder="Tell us about yourself"
+              placeholder={bio || 'Tell us about yourself'}
               className="w-full"
             />
           </div>
@@ -137,13 +137,13 @@ export function UpdateProfileModal({
                 accept="image/*"
                 disabled={isUploading}
                 className="block w-full text-sm text-green-400
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-green-900/30 file:text-green-400
-                  hover:file:bg-green-900/50
+                  file:mr-4 file:py-1.5 file:px-4
+                  file:rounded-none file:border
+                  file:text-sm file:font-mono
+                  file:bg-transparent file:text-green-400
+                  hover:file:bg-green-900/30 hover:file:border-green-400
                   file:cursor-pointer file:transition-colors
-                  file:border file:border-green-500
+                  file:border-green-500/50
                   disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
@@ -152,11 +152,14 @@ export function UpdateProfileModal({
             )}
             {!fileUrl && !currentImage && username && (
               <div className="mt-2">
-                <img
-                  src={`${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`}
-                  alt="Default avatar preview"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-green-500/50"
-                />
+                <div className="relative inline-block w-20 h-20 overflow-hidden rounded-full bg-green-900/20">
+                  <img
+                    src={`${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`}
+                    alt="Default avatar preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 rounded-full ring-1 ring-green-500/20" />
+                </div>
                 <p className="text-xs text-green-600 mt-1">
                   This will be your default avatar if no image is uploaded
                 </p>

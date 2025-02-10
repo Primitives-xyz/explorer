@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 
 async function getConnectionFromProfile(username: string) {
   const url = `${process.env.TAPESTRY_URL}/profiles/visualize-blink/${username}?apiKey=${process.env.TAPESTRY_API_KEY}`
+
   const response = await fetch(url)
 
   return response.json()

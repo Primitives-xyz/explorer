@@ -17,6 +17,8 @@ export const ActivityFeedContainer = ({
     isLoadingTransactions,
     loadedWallets,
     totalWallets,
+    selectedType,
+    setSelectedType,
   } = useFollowingTransactions(following)
 
   return (
@@ -27,6 +29,8 @@ export const ActivityFeedContainer = ({
         isLoggedIn={isLoggedIn}
         loadedWallets={loadedWallets}
         totalWallets={totalWallets}
+        selectedType={selectedType}
+        setSelectedType={setSelectedType}
       />
     </div>
   )

@@ -1,9 +1,7 @@
 'use client'
 
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
 
 import '@dialectlabs/react-ui/index.css'
 
@@ -26,28 +24,6 @@ interface UserActionsProps {
 }
 
 export const UserActions = ({ walletAddress }: UserActionsProps) => {
-  const { handleLogOut } = useDynamicContext()
-  const [showDropdown, setShowDropdown] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        !buttonRef.current?.contains(event.target as Node)
-      ) {
-        setShowDropdown(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
-
   const handleSearchClick = () => {
     const event = new KeyboardEvent('keydown', {
       key: 'k',
@@ -55,18 +31,6 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
       bubbles: true,
     })
     document.dispatchEvent(event)
-  }
-
-  const handleLogoutClick = async () => {
-    try {
-      setShowDropdown(false) // Close dropdown immediately
-      await handleLogOut()
-      // Force a page refresh to ensure clean state
-      window.location.href = '/'
-    } catch (error) {
-      console.error('Failed to logout:', error)
-      // Optionally show an error message to the user
-    }
   }
 
   return (
@@ -88,47 +52,24 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
       >
         [SEARCH]
       </button>
+      <Link
+        href="/trade"
+        className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
+      >
+        [TRADE]
+      </Link>
       {!walletAddress && (
         <div className="flex-shrink-0">
           <DynamicConnectButton>{WalletConnectButton}</DynamicConnectButton>
         </div>
       )}
       {walletAddress && (
-        <>
-          <Link
-            href={`/${walletAddress}`}
-            className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
-          >
-            [PORTFOLIO]
-          </Link>
-          <div className="relative" ref={dropdownRef}>
-            <button
-              ref={buttonRef}
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="px-3 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
-            >
-              •••
-            </button>
-            {showDropdown && buttonRef.current && (
-              <div
-                style={{
-                  position: 'fixed',
-                  top: buttonRef.current.getBoundingClientRect().bottom + 2,
-                  left: buttonRef.current.getBoundingClientRect().right - 192,
-                  zIndex: 99999,
-                }}
-                className="w-48 rounded-sm border border-green-500/50 bg-black py-1 shadow-lg"
-              >
-                <button
-                  onClick={handleLogoutClick}
-                  className="block w-full px-4 py-2 text-left text-sm text-green-400 hover:bg-green-900/30 transition-colors"
-                >
-                  [LOGOUT]
-                </button>
-              </div>
-            )}
-          </div>
-        </>
+        <Link
+          href={`/${walletAddress}`}
+          className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
+        >
+          [PORTFOLIO]
+        </Link>
       )}
     </div>
   )

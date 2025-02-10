@@ -13,6 +13,10 @@ import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid'
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
 import { useProfileComments } from '@/hooks/use-profile-comments'
+import { useCommentFee } from '@/hooks/use-comment-fee'
+import { useToast } from '@/hooks/use-toast'
+import type { PriorityLevel } from '@/types/jupiter'
+import { PRIORITY_LEVELS } from '@/constants/jupiter'
 import dynamic from 'next/dynamic'
 
 const DynamicConnectButton = dynamic(
@@ -27,24 +31,28 @@ interface Props {
   username: string
   comments?: CommentItem[]
   isLoading?: boolean
+  targetWalletAddress?: string
 }
 
 export function CommentWall({
   username,
   comments = [],
   isLoading = false,
+  targetWalletAddress,
 }: Props) {
   const [commentText, setCommentText] = useState('')
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null)
+  const [priorityLevel, setPriorityLevel] = useState<PriorityLevel>('Medium')
   const { postComment, isLoading: postCommentLoading, error } = usePostComment()
   const { mainUsername } = useCurrentWallet()
+  const { processCommentFee, isProcessing: isProcessingFee } = useCommentFee()
+  const { toast } = useToast()
   const {
     likeComment,
     unlikeComment,
     isLoading: likeLoading,
   } = useCommentLikes()
 
-  // Add the useProfileComments hook to get access to mutate
   const { mutate: refreshComments } = useProfileComments(
     username,
     mainUsername || undefined,
@@ -52,19 +60,51 @@ export function CommentWall({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!commentText.trim() || !mainUsername) return
+    if (!commentText.trim() || !mainUsername || !targetWalletAddress) return
 
     try {
+      // First process the SSE payment
+      toast({
+        title: 'Processing Payment',
+        description: 'Please approve the SSE payment transaction...',
+        variant: 'pending',
+        duration: 5000,
+      })
+
+      await processCommentFee(targetWalletAddress, priorityLevel)
+
+      toast({
+        title: 'Payment Successful',
+        description: 'Posting your comment...',
+        variant: 'pending',
+        duration: 2000,
+      })
+
+      // Then post the comment
       await postComment({
         profileId: mainUsername,
         targetProfileId: username,
         text: commentText.trim(),
         ...(replyToCommentId && { commentId: replyToCommentId }),
       })
+
       setCommentText('') // Clear the input on success
       setReplyToCommentId(null) // Clear reply state
-    } catch (err) {
+
+      toast({
+        title: 'Comment Posted',
+        description: 'Your comment has been posted successfully!',
+        variant: 'success',
+        duration: 5000,
+      })
+    } catch (err: any) {
       console.error('Failed to post comment:', err)
+      toast({
+        title: 'Error',
+        description: err.message || 'Failed to post comment',
+        variant: 'error',
+        duration: 5000,
+      })
     } finally {
       // Always refresh comments, even if there was an error
       await refreshComments()
@@ -94,7 +134,12 @@ export function CommentWall({
   return (
     <Card>
       <div className="p-4">
-        <h3 className="text-lg font-mono text-green-400 mb-4">Comment Wall</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-mono text-green-400">Comment Wall</h3>
+          <div className="text-sm text-green-600 font-mono">
+            100 SSE per comment
+          </div>
+        </div>
         <div className="space-y-4">
           {/* Comments List */}
           <div className="space-y-3 mb-4">
@@ -284,9 +329,9 @@ export function CommentWall({
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="Write a reply..."
                             className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3 text-green-400 font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
-                            disabled={postCommentLoading}
+                            disabled={postCommentLoading || isProcessingFee}
                           />
-                          {postCommentLoading && (
+                          {(postCommentLoading || isProcessingFee) && (
                             <div className="absolute right-3 top-3">
                               <LoadCircle />
                             </div>
@@ -295,10 +340,18 @@ export function CommentWall({
                         <div className="flex justify-end">
                           <button
                             type="submit"
-                            disabled={postCommentLoading || !commentText.trim()}
+                            disabled={
+                              postCommentLoading ||
+                              isProcessingFee ||
+                              !commentText.trim()
+                            }
                             className="px-4 py-2 bg-green-900/30 text-green-400 font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
-                            {postCommentLoading ? 'Posting...' : 'Post Reply'}
+                            {isProcessingFee
+                              ? 'Processing...'
+                              : postCommentLoading
+                              ? 'Posting...'
+                              : 'Post Reply'}
                           </button>
                         </div>
                       </form>
@@ -318,21 +371,57 @@ export function CommentWall({
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write a comment..."
                   className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3 text-green-400 font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
-                  disabled={postCommentLoading}
+                  disabled={postCommentLoading || isProcessingFee}
                 />
-                {postCommentLoading && (
+                {(postCommentLoading || isProcessingFee) && (
                   <div className="absolute right-3 top-3">
                     <LoadCircle />
                   </div>
                 )}
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-green-600 font-mono">
+                    {isProcessingFee
+                      ? 'Processing payment...'
+                      : '80% goes to profile owner'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={priorityLevel}
+                      onChange={(e) =>
+                        setPriorityLevel(e.target.value as PriorityLevel)
+                      }
+                      className="bg-green-900/20 text-green-400 text-sm font-mono rounded border border-green-800/50 px-2 py-1"
+                      disabled={postCommentLoading || isProcessingFee}
+                    >
+                      {PRIORITY_LEVELS.map((level) => (
+                        <option
+                          key={level.value}
+                          value={level.value}
+                          title={level.description}
+                        >
+                          {level.label}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="text-xs text-green-600 font-mono">
+                      Priority
+                    </span>
+                  </div>
+                </div>
                 <button
                   type="submit"
-                  disabled={postCommentLoading || !commentText.trim()}
+                  disabled={
+                    postCommentLoading || isProcessingFee || !commentText.trim()
+                  }
                   className="px-4 py-2 bg-green-900/30 text-green-400 font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {postCommentLoading ? 'Posting...' : 'Post Comment'}
+                  {isProcessingFee
+                    ? 'Processing...'
+                    : postCommentLoading
+                    ? 'Posting...'
+                    : 'Post Comment'}
                 </button>
               </div>
             </form>

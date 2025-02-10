@@ -3,7 +3,7 @@ export interface SearchHistoryItem {
   timestamp: number
 }
 
-const DB_NAME = 'explorer-db'
+const DB_NAME = 'explorer-search-db'
 const STORE_NAME = 'search-history'
 const DB_VERSION = 1
 

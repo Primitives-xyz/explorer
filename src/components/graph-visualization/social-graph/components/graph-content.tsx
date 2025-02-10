@@ -1,13 +1,8 @@
 'use client'
 
-import {
-  SigmaContainer,
-  useCamera,
-  useLoadGraph,
-  useRegisterEvents,
-} from '@react-sigma/core'
+import { useCamera, useLoadGraph, useRegisterEvents } from '@react-sigma/core'
 import Graph from 'graphology'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   EDGE_SIZE,
   NODE_SIZE,
@@ -15,8 +10,6 @@ import {
   NODE_SIZE_PROFILE,
 } from '../social-graph.constants'
 
-import { SocialGraphControls } from './SocialGraphControls'
-import { SocialGraphLayout } from './SocialGraphLayout'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import type {
   IGraph,
@@ -26,10 +19,9 @@ import type {
 interface Props {
   data: IGraph
   username: string
-  setCurrentUsername: (username?: string) => void
 }
 
-function SocialGraphContent({ data, username, setCurrentUsername }: Props) {
+export function GraphContent({ data, username }: Props) {
   const loadGraph = useLoadGraph()
   const registerEvents = useRegisterEvents()
   const { mainUsername } = useCurrentWallet()
@@ -110,11 +102,8 @@ function SocialGraphContent({ data, username, setCurrentUsername }: Props) {
         //   duration: 500,
         //   factor: 10,
         // })
-        setCurrentUsername(nodeData.label)
       },
-      clickStage: () => {
-        setCurrentUsername(undefined)
-      },
+      clickStage: () => {},
       enterNode: () => {
         document.body.style.cursor = 'pointer'
       },
@@ -131,36 +120,10 @@ function SocialGraphContent({ data, username, setCurrentUsername }: Props) {
     isProfileNode,
     isOwnNode,
     registerEvents,
-    setCurrentUsername,
     getNodeSize,
     gotoNode,
     zoomIn,
   ])
 
   return null
-}
-
-export default function SocialGraph({
-  data,
-  username,
-}: Omit<Props, 'setCurrentUsername'>) {
-  const [currentUsername, setCurrentUsername] = useState<string>()
-
-  return (
-    <SigmaContainer
-      className="w-full h-full !bg-transparent"
-      settings={{
-        allowInvalidContainer: true,
-        renderLabels: false,
-      }}
-    >
-      <SocialGraphContent
-        data={data}
-        username={username}
-        setCurrentUsername={setCurrentUsername}
-      />
-      <SocialGraphLayout />
-      <SocialGraphControls />
-    </SigmaContainer>
-  )
 }

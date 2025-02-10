@@ -8,6 +8,9 @@ import { NFTTransactionView } from './nft-transaction-view'
 import { SPLTransferView } from './spl-transfer-view'
 import type { ExtendedTransaction } from '@/utils/nft-transaction'
 import { memo, useMemo } from 'react'
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import { Avatar } from '@/components/common/Avatar'
+import type { Profile } from '@/utils/api'
 
 // Helper function to normalize timestamp
 const normalizeTimestamp = (timestamp: number) => {
@@ -78,6 +81,12 @@ export const TransactionCard = memo(function TransactionCard({
     [tx],
   )
 
+  // Add profile lookup for source wallet
+  const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
+  const sourceProfile = sourceProfiles?.find(
+    (p: Profile) => p.namespace.name === 'nemoapp',
+  )?.profile
+
   return (
     <div className="p-2 sm:p-3 hover:bg-green-900/10 transition-all duration-200">
       <div className="flex flex-col gap-2">
@@ -91,12 +100,29 @@ export const TransactionCard = memo(function TransactionCard({
             </Link>
             <TransactionBadge type={tx.type} source={tx.source} />
             {sourceWallet && (
-              <Link href={`/${sourceWallet}`}>
-                <span className="text-gray-300 font-mono text-xs px-2 py-0.5 bg-gray-900/20 rounded border border-gray-800/30 hover:border-gray-700/40 transition-colors">
-                  <span className="text-gray-400">wallet:</span>{' '}
-                  {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
-                </span>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Avatar
+                  username={sourceProfile?.username || sourceWallet}
+                  size={20}
+                  imageUrl={sourceProfile?.image}
+                />
+                {sourceProfile?.username ? (
+                  <Link
+                    href={`/${sourceProfile.username}`}
+                    className="text-gray-300 hover:text-green-400 transition-colors text-xs"
+                  >
+                    @{sourceProfile.username}
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/${sourceWallet}`}
+                    className="text-gray-300 font-mono text-xs px-2 py-0.5 bg-gray-900/20 rounded border border-gray-800/30 hover:border-gray-700/40 transition-colors"
+                  >
+                    <span className="text-gray-400">wallet:</span>{' '}
+                    {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                  </Link>
+                )}
+              </div>
             )}
           </div>
           <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono">
@@ -143,6 +169,7 @@ export const TransactionCard = memo(function TransactionCard({
         {tx.source !== 'MAGIC_EDEN' &&
           tx.source !== 'SOLANA_PROGRAM_LIBRARY' &&
           tx.type !== 'COMPRESSED_NFT_MINT' &&
+          tx.type !== 'SWAP' &&
           tx.type !== 'TRANSFER' && (
             <div className="text-xs sm:text-sm text-green-300 font-mono break-words">
               {tx.description || 'No description available'}
