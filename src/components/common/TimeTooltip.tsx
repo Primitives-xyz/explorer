@@ -6,7 +6,11 @@ interface TimeTooltipProps {
   isHovered: boolean
 }
 
-export const TimeTooltip = ({ timestamp, children, isHovered }: TimeTooltipProps) => {
+export const TimeTooltip = ({
+  timestamp,
+  children,
+  isHovered,
+}: TimeTooltipProps) => {
   const date = new Date(timestamp)
   const fullDate = date.toLocaleString('en-US', {
     month: 'short',
@@ -15,19 +19,25 @@ export const TimeTooltip = ({ timestamp, children, isHovered }: TimeTooltipProps
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
-    timeZoneName: 'short'
+    timeZoneName: 'short',
   })
 
   return (
-    <div 
+    <div
       className="relative inline-block"
       role="tooltip"
       tabIndex={0}
       aria-label={`Full timestamp: ${fullDate}`}
     >
       {children}
-      <div 
-        className={`${isHovered ? 'visible' : 'invisible'} absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[9999]`}
+      <div
+        className={`${
+          isHovered ? 'opacity-100' : 'opacity-0'
+        } fixed transform -translate-x-1/2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[99999] pointer-events-none transition-opacity duration-200`}
+        style={{
+          left: 'var(--tooltip-x, 50%)',
+          top: 'var(--tooltip-y, 0)',
+        }}
         role="tooltip"
         aria-hidden={!isHovered}
       >
