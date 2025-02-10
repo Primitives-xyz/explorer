@@ -33,7 +33,7 @@ export const TimeTooltip = ({
       <div
         className={`${
           isHovered ? 'opacity-100' : 'opacity-0'
-        } absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[99999] pointer-events-none transition-opacity duration-200`}
+        } absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[99999] pointer-events-none transition-opacity duration-200`}
         role="tooltip"
         aria-hidden={!isHovered}
       >
