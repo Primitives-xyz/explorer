@@ -21,18 +21,6 @@ export const ProfileInfo = memo(function ProfileInfo({
         <h3 className="text-lg font-mono text-green-400 mb-4">Profile Info</h3>
         <div className="space-y-2 text-sm font-mono">
           <div className="flex justify-between">
-            <span className="text-green-600">Followers</span>
-            <span className="text-green-400">
-              {profileData.socialCounts?.followers || 0}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-green-600">Following</span>
-            <span className="text-green-400">
-              {profileData.socialCounts?.following || 0}
-            </span>
-          </div>
-          <div className="flex justify-between">
             <span className="text-green-600">Created</span>
             <span className="text-green-400">
               {new Date(profileData.profile?.created_at).getFullYear()}
