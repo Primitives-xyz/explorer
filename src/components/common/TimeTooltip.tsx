@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useRef, useEffect } from 'react'
 
 interface TimeTooltipProps {
   timestamp: number
@@ -11,6 +11,9 @@ export const TimeTooltip = ({
   children,
   isHovered,
 }: TimeTooltipProps) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
+
   const date = new Date(timestamp)
   const fullDate = date.toLocaleString('en-US', {
     month: 'short',
@@ -22,18 +25,31 @@ export const TimeTooltip = ({
     timeZoneName: 'short',
   })
 
+  useEffect(() => {
+    if (isHovered && containerRef.current && tooltipRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      const centerX = rect.left + rect.width / 2
+      const topY = rect.top
+
+      tooltipRef.current.style.setProperty('--tooltip-x', `${centerX}px`)
+      tooltipRef.current.style.setProperty('--tooltip-y', `${topY}px`)
+    }
+  }, [isHovered])
+
   return (
     <div
-      className="relative inline-block"
+      ref={containerRef}
+      className="inline-block"
       role="tooltip"
       tabIndex={0}
       aria-label={`Full timestamp: ${fullDate}`}
     >
       {children}
       <div
+        ref={tooltipRef}
         className={`${
           isHovered ? 'opacity-100' : 'opacity-0'
-        } absolute -top-12 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[9999999] pointer-events-none transition-opacity duration-200`}
+        } fixed transform -translate-x-1/2 -translate-y-full mt-1 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[9999999] pointer-events-none transition-opacity duration-200`}
         role="tooltip"
         aria-hidden={!isHovered}
       >
