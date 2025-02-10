@@ -6,12 +6,41 @@ import {
   useUserWallets,
   useIsLoggedIn,
 } from '@dynamic-labs/sdk-react-core'
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 
 export function useCurrentWallet() {
-  const { sdkHasLoaded, primaryWallet } = useDynamicContext()
+  const { sdkHasLoaded: dynamicSdkHasLoaded, primaryWallet } =
+    useDynamicContext()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
+  const [forceSdkLoaded, setForceSdkLoaded] = useState(false)
+
+  // Add timeout to force sdkHasLoaded after 5 seconds
+  useEffect(() => {
+    console.log('Dynamic SDK Load Status:', {
+      dynamicSdkHasLoaded,
+      forceSdkLoaded,
+      primaryWallet: !!primaryWallet,
+      isLoggedIn,
+      userWallets: !!userWallets?.length,
+    })
+
+    const timeoutId = setTimeout(() => {
+      if (!dynamicSdkHasLoaded) {
+        console.warn('SDK load timeout reached, forcing loaded state')
+        setForceSdkLoaded(true)
+      }
+    }, 5000) // 5 second timeout
+
+    return () => {
+      clearTimeout(timeoutId)
+      console.log('Cleanup: SDK load timeout cleared')
+    }
+  }, [dynamicSdkHasLoaded, primaryWallet, isLoggedIn, userWallets])
+
+  // Consider SDK loaded if either Dynamic reports it as loaded or we hit the timeout
+  const sdkHasLoaded = dynamicSdkHasLoaded || forceSdkLoaded
+
   // Basic wallet state
   const walletAddress = useMemo(
     () => (sdkHasLoaded && isLoggedIn ? userWallets[0]?.address || '' : ''),
@@ -27,16 +56,18 @@ export function useCurrentWallet() {
     )
   }, [profiles])
 
-  if (!isLoggedIn || !sdkHasLoaded || !walletAddress || loadingProfiles)
+  // Return early with proper SDK loaded state
+  if (!isLoggedIn || !walletAddress || loadingProfiles) {
     return {
       walletAddress: '',
       mainUsername: '',
-      loadingProfiles: false,
-      isLoggedIn: false,
-      sdkHasLoaded: false,
+      loadingProfiles,
+      isLoggedIn,
+      sdkHasLoaded, // Keep the actual SDK loaded state
       profiles: [],
       image: null,
     }
+  }
 
   const mainProfile = profiles?.find(
     (profile: any) => profile.namespace.name === 'nemoapp',
