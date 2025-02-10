@@ -1,12 +1,12 @@
-import { useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 
 interface TimeTooltipProps {
   timestamp: number
   children: ReactNode
+  isHovered: boolean
 }
 
-export const TimeTooltip = ({ timestamp, children }: TimeTooltipProps) => {
-  const [isHovered, setIsHovered] = useState(false)
+export const TimeTooltip = ({ timestamp, children, isHovered }: TimeTooltipProps) => {
   const date = new Date(timestamp)
   const fullDate = date.toLocaleString('en-US', {
     month: 'short',
@@ -21,10 +21,6 @@ export const TimeTooltip = ({ timestamp, children }: TimeTooltipProps) => {
   return (
     <div 
       className="relative inline-block"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onFocus={() => setIsHovered(true)}
-      onBlur={() => setIsHovered(false)}
       role="tooltip"
       tabIndex={0}
       aria-label={`Full timestamp: ${fullDate}`}
