@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 
 interface TimeTooltipProps {
   timestamp: number
@@ -6,6 +6,7 @@ interface TimeTooltipProps {
 }
 
 export const TimeTooltip = ({ timestamp, children }: TimeTooltipProps) => {
+  const [isHovered, setIsHovered] = useState(false)
   const date = new Date(timestamp)
   const fullDate = date.toLocaleString('en-US', {
     month: 'short',
@@ -18,9 +19,13 @@ export const TimeTooltip = ({ timestamp, children }: TimeTooltipProps) => {
   })
 
   return (
-    <div className="group relative inline-block">
+    <div 
+      className="relative inline-block"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {children}
-      <div className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap">
+      <div className={`${isHovered ? 'visible' : 'invisible'} absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap`}>
         {fullDate}
       </div>
     </div>
