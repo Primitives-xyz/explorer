@@ -10,10 +10,8 @@ import type { ExtendedTransaction } from '@/utils/nft-transaction'
 import { memo, useMemo } from 'react'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/Avatar'
-import { TimeTooltip } from '@/components/common/TimeTooltip'
+import { TimeDisplay } from '@/components/common/TimeDisplay'
 import type { Profile } from '@/utils/api'
-
-import { formatTimeAgo, normalizeTimestamp } from '@/utils/time'
 
 // Move helper function outside component to prevent recreation
 const transformToExtendedTransaction = (
@@ -48,9 +46,8 @@ export const TransactionCard = memo(function TransactionCard({
   sourceWallet,
 }: TransactionCardProps) {
   // Memoize expensive computations and transformations
-  const { formattedTime, extendedTransaction } = useMemo(
+  const { extendedTransaction } = useMemo(
     () => ({
-      formattedTime: formatTimeAgo(new Date(normalizeTimestamp(tx.timestamp))),
       extendedTransaction: transformToExtendedTransaction(tx),
     }),
     [tx],
@@ -101,26 +98,7 @@ export const TransactionCard = memo(function TransactionCard({
             )}
           </div>
           <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono">
-            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-green-900/20 rounded border border-green-800/30">
-              <svg
-                className="w-3 h-3 text-green-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <TimeTooltip timestamp={normalizeTimestamp(tx.timestamp)}>
-                <span className="text-green-400 whitespace-nowrap">
-                  {formattedTime}
-                </span>
-              </TimeTooltip>
-            </div>
+            <TimeDisplay timestamp={tx.timestamp} />
             {tx.fee && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 bg-green-900/20 rounded border border-green-800/30">
                 <svg
