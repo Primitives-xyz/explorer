@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react'
+import { PortalTooltip } from './PortalTooltip'
 
 interface TimeTooltipProps {
   timestamp: number
@@ -19,20 +20,8 @@ export const TimeTooltip = ({ timestamp, children, isHovered }: TimeTooltipProps
   })
 
   return (
-    <div 
-      className="relative inline-block"
-      role="tooltip"
-      tabIndex={0}
-      aria-label={`Full timestamp: ${fullDate}`}
-    >
+    <PortalTooltip isVisible={isHovered} content={fullDate}>
       {children}
-      <div 
-        className={`${isHovered ? 'visible' : 'invisible'} absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[9999]`}
-        role="tooltip"
-        aria-hidden={!isHovered}
-      >
-        {fullDate}
-      </div>
-    </div>
+    </PortalTooltip>
   )
 }
