@@ -6,6 +6,7 @@ import {
   VersionedTransaction,
   ComputeBudgetProgram,
   Transaction,
+  Keypair,
 } from '@solana/web3.js'
 import {
   TOKEN_PROGRAM_ID,
@@ -13,6 +14,8 @@ import {
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
 import type { PriorityLevel } from '@/types/jupiter'
+import { createATAIfNotExists } from '@/utils/token'
+import bs58 from 'bs58'
 
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY
@@ -110,17 +113,60 @@ export async function POST(request: Request) {
         ),
       ])
 
-    // Check if accounts exist
+    // Check if accounts exist and create them if they don't
     const [sourceInfo, ownerInfo, feeInfo] = await Promise.all([
       connection.getAccountInfo(sourceTokenAccount),
       connection.getAccountInfo(ownerTokenAccount),
       connection.getAccountInfo(feeTokenAccount),
     ])
 
-    if (!sourceInfo || !ownerInfo || !feeInfo) {
-      throw new Error(
-        'One or more SSE token accounts not found. Please ensure all accounts exist.',
+    // Get the payer's keypair for creating ATAs if needed
+    const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
+    if (!PRIVATE_KEY) {
+      throw new Error('PAYER_PRIVATE_KEY is not set')
+    }
+    const secretKey = bs58.decode(PRIVATE_KEY)
+    const payer = Keypair.fromSecretKey(secretKey)
+
+    // Create missing ATAs if needed
+    const ataCreationPromises = []
+
+    if (!sourceInfo) {
+      ataCreationPromises.push(
+        createATAIfNotExists(
+          connection,
+          payer,
+          new PublicKey(SSE_TOKEN_MINT),
+          new PublicKey(walletAddress),
+        ),
       )
+    }
+
+    if (!ownerInfo) {
+      ataCreationPromises.push(
+        createATAIfNotExists(
+          connection,
+          payer,
+          new PublicKey(SSE_TOKEN_MINT),
+          new PublicKey(targetWalletAddress),
+        ),
+      )
+    }
+
+    if (!feeInfo) {
+      ataCreationPromises.push(
+        createATAIfNotExists(
+          connection,
+          payer,
+          new PublicKey(SSE_TOKEN_MINT),
+          new PublicKey(FEE_WALLET),
+        ),
+      )
+    }
+
+    // Wait for all ATA creations to complete if any were needed
+    if (ataCreationPromises.length > 0) {
+      await Promise.all(ataCreationPromises)
     }
 
     // Create transfer instructions

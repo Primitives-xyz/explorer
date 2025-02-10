@@ -53,7 +53,14 @@ export async function getPriorityFeeEstimate(
     throw new Error(data.error.message)
   }
 
-  return data.result
+  // Ensure we have a valid priority fee value
+  const priorityFee = data.result?.priorityFeeLevels?.[priorityLevel]
+  if (typeof priorityFee !== 'number' || isNaN(priorityFee)) {
+    // Default to a reasonable priority fee if the API doesn't return a valid value
+    return BigInt(45000)
+  }
+
+  return BigInt(Math.ceil(priorityFee))
 }
 
 export async function addPriorityFee(
@@ -61,8 +68,10 @@ export async function addPriorityFee(
   priorityLevel: PriorityLevel = 'Medium',
 ) {
   try {
-    const estimate = await getPriorityFeeEstimate(transaction, priorityLevel)
-    const microLamports = estimate.priorityFeeLevels[priorityLevel]
+    const microLamports = await getPriorityFeeEstimate(
+      transaction,
+      priorityLevel,
+    )
 
     // Add a ComputeBudgetProgram instruction to set the compute unit price
     const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
@@ -73,7 +82,7 @@ export async function addPriorityFee(
     transaction.instructions.unshift(priorityFeeInstruction)
   } catch (error) {
     console.error('Failed to add priority fee, using default:', error)
-    // Fallback to default fee of 100 microLamports
+    // Fallback to default fee of 45000 microLamports (based on recent successful transactions)
     const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
       microLamports: 45000,
     })
