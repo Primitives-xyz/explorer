@@ -1,7 +1,6 @@
 'use client'
 
 import { SigmaContainer } from '@react-sigma/core'
-import { useState } from 'react'
 import { SocialGraphControls } from './social-graph-controls'
 import { SocialGraphLayout } from './social-graph-layout'
 
@@ -11,7 +10,6 @@ import { GraphContent } from '@/components/graph-visualization/social-graph/comp
 interface Props {
   data: IGraph
   username: string
-  setCurrentUsername: (username?: string) => void
 }
 
 export default function GraphContentContainer({ data, username }: Props) {
