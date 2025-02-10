@@ -46,18 +46,18 @@ export const ProfileHeader = memo(function ProfileHeader({
               {profileData?.profile.bio && (
                 <p className="text-sm text-green-600 mt-1">{profileData.profile.bio}</p>
               )}
-            </div>
-          </div>
-          {!isLoading && profileData?.walletAddress && (
-            <div className="flex items-center gap-2 text-sm text-green-600 sm:mb-1">
-              owned by <TokenAddress address={profileData.walletAddress} />
-              {walletAddressError && (
-                <span className="text-red-500 font-mono text-xs">
-                  (Invalid wallet address)
-                </span>
+              {!isLoading && profileData?.walletAddress && (
+                <div className="flex items-center gap-2 text-sm text-green-600 mt-2">
+                  owned by <TokenAddress address={profileData.walletAddress} />
+                  {walletAddressError && (
+                    <span className="text-red-500 font-mono text-xs">
+                      (Invalid wallet address)
+                    </span>
+                  )}
+                </div>
               )}
             </div>
-          )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {isOwnProfile && (
