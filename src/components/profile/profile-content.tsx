@@ -14,6 +14,7 @@ import { ProfileStats } from './profile-stats'
 import { useProfileData } from '@/hooks/use-profile-data'
 import { ProfileContentFeed } from './ProfileContentFeed'
 import { cn } from '@/lib/utils'
+import { useTargetWallet } from '@/hooks/use-target-wallet'
 
 interface Props {
   username: string
@@ -65,6 +66,14 @@ export function ProfileContent({ username }: Props) {
   const [activeTab, setActiveTab] = useState<'comments' | 'swaps'>('comments')
 
   const {
+    targetWalletAddress,
+    isLoading: isLoadingWallet,
+    walletAddressError,
+    serverError,
+    isOwnWallet,
+  } = useTargetWallet(username)
+
+  const {
     profileData,
     profiles,
     followers,
@@ -74,8 +83,6 @@ export function ProfileContent({ username }: Props) {
     isLoadingFollowers,
     isLoadingFollowing,
     isLoadingComments,
-    walletAddressError,
-    serverError,
   } = useProfileData(username, mainUsername)
 
   const handleEditProfile = useCallback(() => {
@@ -111,8 +118,6 @@ export function ProfileContent({ username }: Props) {
     throw new Error('Server error')
   }
 
-  const isOwnProfile = mainUsername === username
-
   const tabs = [
     { id: 'comments', label: 'Comments' },
     { id: 'swaps', label: 'Swaps' },
@@ -123,10 +128,10 @@ export function ProfileContent({ username }: Props) {
       <ProfileHeader
         username={username}
         profileData={profileData}
-        isLoading={isLoading}
+        isLoading={isLoading || isLoadingWallet}
         walletAddressError={walletAddressError}
         onEditProfile={handleEditProfile}
-        isOwnProfile={isOwnProfile}
+        isOwnProfile={isOwnWallet}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -164,6 +169,7 @@ export function ProfileContent({ username }: Props) {
                   username={username}
                   isLoading={isLoadingComments}
                   comments={comments}
+                  targetWalletAddress={targetWalletAddress}
                 />
               ) : (
                 <ProfileContentFeed username={username} />
@@ -180,7 +186,7 @@ export function ProfileContent({ username }: Props) {
           )}
 
           <ProfileSection
-            walletAddress={profileData?.walletAddress}
+            walletAddress={targetWalletAddress}
             hasSearched={!isLoading}
             isLoadingProfileData={isLoading}
             profileData={{ profiles: profiles || [] }}
