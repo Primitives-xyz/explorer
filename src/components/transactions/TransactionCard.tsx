@@ -10,6 +10,7 @@ import type { ExtendedTransaction } from '@/utils/nft-transaction'
 import { memo, useMemo } from 'react'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/Avatar'
+import { TimeTooltip } from '@/components/common/TimeTooltip'
 import type { Profile } from '@/utils/api'
 
 // Helper function to normalize timestamp
@@ -140,9 +141,11 @@ export const TransactionCard = memo(function TransactionCard({
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span className="text-green-400 whitespace-nowrap">
-                {formattedTime}
-              </span>
+              <TimeTooltip timestamp={normalizeTimestamp(tx.timestamp)}>
+                <span className="text-green-400 whitespace-nowrap">
+                  {formattedTime}
+                </span>
+              </TimeTooltip>
             </div>
             {tx.fee && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 bg-green-900/20 rounded border border-green-800/30">
