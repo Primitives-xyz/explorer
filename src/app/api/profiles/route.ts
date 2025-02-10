@@ -54,11 +54,17 @@ export async function GET(request: Request) {
             address: identity.walletAddress,
           },
           namespace: {
-            name: identity.namespace.name,
-            readableName: identity.namespace.readableName,
-            userProfileURL: identity.namespace.userProfileURL,
-            faviconURL: identity.namespace.faviconURL,
+            name: identity.profile.namespace,
+            readableName: identity.profile.namespace,
+            userProfileURL: '',
+            faviconURL: null,
           },
+          // namespace: {
+          //   name: identity.profile.namespace,
+          //   readableName: identity.namespace.readableName,
+          //   userProfileURL: identity.namespace.userProfileURL,
+          //   faviconURL: identity.namespace.faviconURL,
+          // },
         }),
       )
 
