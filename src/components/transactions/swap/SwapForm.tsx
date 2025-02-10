@@ -5,12 +5,14 @@ import { useJupiterSwap } from '@/hooks/use-jupiter-swap'
 import { useTokenInfo } from '@/hooks/use-token-info'
 import { SwapQuoteDetails } from './SwapQuoteDetails'
 import { SwapShareSection } from './SwapShareSection'
-import { PRIORITY_LEVELS, SLIPPAGE_OPTIONS } from '@/constants/jupiter'
-import type { JupiterSwapFormProps, PriorityLevel } from '@/types/jupiter'
+import type { JupiterSwapFormProps } from '@/types/jupiter'
 import { TokenSearch } from './TokenSearch'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import dynamic from 'next/dynamic'
 import { useTokenBalance } from '@/hooks/use-token-balance'
+import { TokenSelectButton } from './TokenSelectButton'
+import { AmountInput } from './AmountInput'
+import { SwapSettings } from './SwapSettings'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -70,8 +72,11 @@ export function SwapForm({
   const { isLoggedIn, sdkHasLoaded, walletAddress } = useCurrentWallet()
 
   // Add token balance hooks for both tokens
-  const { balance: inputBalance, loading: inputBalanceLoading } =
-    useTokenBalance(walletAddress, inputMint)
+  const {
+    balance: inputBalance,
+    rawBalance: inputRawBalance,
+    loading: inputBalanceLoading,
+  } = useTokenBalance(walletAddress, inputMint)
   const {
     balance: outputBalance,
     rawBalance: rawOutputBalance,
@@ -224,116 +229,46 @@ export function SwapForm({
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
       <div className="flex flex-col gap-3">
         {/* Amount Input */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-green-500">Amount</div>
-            {isLoggedIn && !inputBalanceLoading && (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    if (!inputBalance) return
-                    const value =
-                      parseFloat(inputBalance.replace(/[KM]/g, '')) / 2
-                    setDisplayAmount(value.toString())
-                    updateEffectiveAmount(value.toString())
-                  }}
-                  className="text-xs bg-green-900/20 hover:bg-green-900/30 text-green-400 px-3 py-1 rounded transition-colors"
-                >
-                  HALF
-                </button>
-                <button
-                  onClick={() => {
-                    if (!inputBalance) return
-                    const value = inputBalance.replace(/[KM]/g, '')
-                    setDisplayAmount(value)
-                    updateEffectiveAmount(value)
-                  }}
-                  className="text-xs bg-green-900/20 hover:bg-green-900/30 text-green-400 px-3 py-1 rounded transition-colors"
-                >
-                  MAX
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="relative">
-            <input
-              ref={inputRef}
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              className={`bg-green-900/20 text-2xl text-green-100 p-3 rounded-lg w-full font-medium placeholder:text-green-500/50 ${
-                inputError ? 'border border-red-500' : ''
-              }`}
-              value={displayAmount}
-              onFocus={(e) => {
-                e.preventDefault()
-                const pos = e.target.selectionStart
-                requestAnimationFrame(() => {
-                  e.target.focus()
-                  e.target.setSelectionRange(pos, pos)
-                })
-              }}
-              onChange={(e) => {
-                const value = e.target.value
-                if (
-                  value === '' ||
-                  value === '.' ||
-                  /^[0]?\.[0-9]*$/.test(value) ||
-                  /^[0-9]*\.?[0-9]*$/.test(value)
-                ) {
-                  const cursorPosition = e.target.selectionStart
-                  setDisplayAmount(value)
-                  updateEffectiveAmount(value)
-                  window.setTimeout(() => {
-                    e.target.focus()
-                    e.target.setSelectionRange(cursorPosition, cursorPosition)
-                  }, 0)
-                }
-              }}
-              disabled={showLoadingState}
-            />
-            {isLoggedIn && !inputBalanceLoading && inputBalance && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-green-500/70">
-                Balance: {inputBalance}
-              </div>
-            )}
-          </div>
-          {inputError && (
-            <p className="text-red-400 text-sm mt-1 ml-1">{inputError}</p>
-          )}
-        </div>
+        <AmountInput
+          value={displayAmount}
+          onChange={setDisplayAmount}
+          onEffectiveAmountChange={setEffectiveAmount}
+          balance={inputBalance}
+          isLoggedIn={isLoggedIn}
+          isBalanceLoading={inputBalanceLoading}
+          disabled={showLoadingState}
+          onHalf={() => {
+            if (!inputRawBalance) return
+
+            // Calculate half and round to 2 decimal places
+            const halfValue = Math.floor((inputRawBalance * 100) / 2) / 100
+            setDisplayAmount(halfValue.toFixed(2))
+            updateEffectiveAmount(halfValue.toFixed(2))
+          }}
+          onMax={() => {
+            if (!inputRawBalance) return
+
+            // Round to 2 decimal places
+            const value = Math.floor(inputRawBalance * 100) / 100
+            setDisplayAmount(value.toFixed(2))
+            updateEffectiveAmount(value.toFixed(2))
+          }}
+          error={inputError}
+          validateAmount={validateAmount}
+        />
 
         {/* Token Selection */}
         <div className="flex items-center gap-2">
           <div className="flex-1">
-            <button
-              className="bg-green-900/20 text-green-100 p-3 rounded-lg w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors group"
-              onClick={() => setShowInputTokenSearch(true)}
+            <TokenSelectButton
+              tokenInfo={inputTokenInfo}
+              currentToken={currentInputToken}
+              balance={inputBalance}
+              isBalanceLoading={inputBalanceLoading}
+              isLoggedIn={isLoggedIn}
               disabled={showLoadingState}
-            >
-              <div className="flex items-center gap-3">
-                {inputTokenInfo.image && (
-                  <img
-                    src={inputTokenInfo.image}
-                    alt={inputTokenInfo.symbol || currentInputToken}
-                    className="w-7 h-7 rounded-full"
-                  />
-                )}
-                <div>
-                  <div className="font-medium">
-                    {inputTokenInfo.symbol || currentInputToken}
-                  </div>
-                  {isLoggedIn && (
-                    <div className="text-sm text-green-500">
-                      {inputBalanceLoading ? '...' : inputBalance}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="opacity-50 group-hover:opacity-100 transition-opacity">
-                <ArrowLeftRight className="h-4 w-4 rotate-90" />
-              </div>
-            </button>
+              onClick={() => setShowInputTokenSearch(true)}
+            />
           </div>
 
           <button
@@ -346,34 +281,15 @@ export function SwapForm({
           </button>
 
           <div className="flex-1">
-            <button
-              className="bg-green-900/20 text-green-100 p-3 rounded-lg w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors group"
-              onClick={() => setShowOutputTokenSearch(true)}
+            <TokenSelectButton
+              tokenInfo={outputTokenInfo}
+              currentToken={currentOutputToken}
+              balance={outputBalance}
+              isBalanceLoading={outputBalanceLoading}
+              isLoggedIn={isLoggedIn}
               disabled={showLoadingState}
-            >
-              <div className="flex items-center gap-3">
-                {outputTokenInfo.image && (
-                  <img
-                    src={outputTokenInfo.image}
-                    alt={outputTokenInfo.symbol || currentOutputToken}
-                    className="w-7 h-7 rounded-full"
-                  />
-                )}
-                <div>
-                  <div className="font-medium">
-                    {outputTokenInfo.symbol || currentOutputToken}
-                  </div>
-                  {isLoggedIn && (
-                    <div className="text-sm text-green-500">
-                      {outputBalanceLoading ? '...' : outputBalance}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="opacity-50 group-hover:opacity-100 transition-opacity">
-                <ArrowLeftRight className="h-4 w-4 rotate-90" />
-              </div>
-            </button>
+              onClick={() => setShowOutputTokenSearch(true)}
+            />
           </div>
         </div>
 
@@ -448,45 +364,13 @@ export function SwapForm({
               </div>
 
               {/* Settings Section */}
-              <div className="flex items-center gap-4 pt-4 border-t border-green-900/20">
-                <div className="flex-1">
-                  <div className="text-sm text-green-500 mb-2">Slippage</div>
-                  <select
-                    className="bg-green-900/20 text-green-100 p-2 rounded w-full"
-                    value={slippageBps}
-                    onChange={(e) => setSlippageBps(Number(e.target.value))}
-                    disabled={showLoadingState}
-                  >
-                    {SLIPPAGE_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex-1">
-                  <div className="text-sm text-green-500 mb-2">Priority</div>
-                  <select
-                    className="bg-green-900/20 text-green-100 p-2 rounded w-full"
-                    value={priorityLevel}
-                    onChange={(e) =>
-                      setPriorityLevel(e.target.value as PriorityLevel)
-                    }
-                    disabled={showLoadingState}
-                  >
-                    {PRIORITY_LEVELS.map((level) => (
-                      <option
-                        key={level.value}
-                        value={level.value}
-                        title={level.description}
-                      >
-                        {level.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              <SwapSettings
+                slippageBps={slippageBps}
+                onSlippageChange={setSlippageBps}
+                priorityLevel={priorityLevel}
+                onPriorityChange={setPriorityLevel}
+                disabled={showLoadingState}
+              />
 
               {/* Route Information & Fees */}
               <div className="mt-4 space-y-3">
