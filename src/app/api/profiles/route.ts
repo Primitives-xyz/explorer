@@ -54,10 +54,10 @@ export async function GET(request: Request) {
             address: identity.walletAddress,
           },
           namespace: {
-            name: identity.profile.namespace,
-            readableName: identity.profile.namespace,
-            userProfileURL: '',
-            faviconURL: null,
+            name: identity.namespace.name,
+            readableName: identity.namespace.readableName,
+            userProfileURL: identity.namespace.userProfileURL,
+            faviconURL: identity.namespace.faviconURL,
           },
         }),
       )
@@ -65,6 +65,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ profiles: transformedIdentities })
     } else {
       // For regular profile fetching, use profiles endpoint
+      // TODO: shouldIncludeExternalProfiles was deprecated and no longer exists in tapestry. It should get from the identities.
       const apiUrl = walletAddress
         ? `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`
         : `${BASE_URL}/profiles?apiKey=${API_KEY}`
