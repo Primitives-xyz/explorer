@@ -27,7 +27,7 @@ export const TimeTooltip = ({ timestamp, children, isHovered }: TimeTooltipProps
     >
       {children}
       <div 
-        className={`${isHovered ? 'visible' : 'invisible'} absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap`}
+        className={`${isHovered ? 'visible' : 'invisible'} absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[9999]`}
         role="tooltip"
         aria-hidden={!isHovered}
       >
