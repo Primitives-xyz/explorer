@@ -23,9 +23,18 @@ export const TimeTooltip = ({ timestamp, children }: TimeTooltipProps) => {
       className="relative inline-block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
+      role="tooltip"
+      tabIndex={0}
+      aria-label={`Full timestamp: ${fullDate}`}
     >
       {children}
-      <div className={`${isHovered ? 'visible' : 'invisible'} absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap`}>
+      <div 
+        className={`${isHovered ? 'visible' : 'invisible'} absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap`}
+        role="tooltip"
+        aria-hidden={!isHovered}
+      >
         {fullDate}
       </div>
     </div>
