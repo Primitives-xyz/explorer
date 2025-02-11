@@ -13,6 +13,10 @@ import { useTokenBalance } from '@/hooks/use-token-balance'
 import { TokenSelectButton } from './TokenSelectButton'
 import { AmountInput } from './AmountInput'
 import { SwapSettings } from './SwapSettings'
+import {
+  DEFAULT_PRIORITY_LEVEL,
+  DEFAULT_SLIPPAGE_BPS,
+} from '@/constants/jupiter'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -223,6 +227,25 @@ export function SwapForm({
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
+  }
+
+  const handleReset = () => {
+    // Reset all form states
+    setDisplayAmount('')
+    setEffectiveAmount('')
+    setInputError(null)
+    if (debouncedUpdate) clearTimeout(debouncedUpdate)
+    resetQuoteState()
+    // Reset to initial values
+    setInputMint(initialInputMint)
+    setOutputMint(initialOutputMint)
+    setCurrentInputToken(inputTokenName)
+    setCurrentOutputToken(outputTokenName)
+    setCurrentInputDecimals(inputDecimals)
+    setUseSSEForFees(false)
+    setPriorityLevel(DEFAULT_PRIORITY_LEVEL)
+    setSlippageBps(DEFAULT_SLIPPAGE_BPS)
+    setIsRouteInfoOpen(false)
   }
 
   return (
@@ -530,7 +553,7 @@ export function SwapForm({
         )}
 
         {txSignature && showTradeLink && (
-          <SwapShareSection txSignature={txSignature} />
+          <SwapShareSection txSignature={txSignature} onReset={handleReset} />
         )}
       </div>
 

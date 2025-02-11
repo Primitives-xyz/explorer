@@ -55,6 +55,10 @@ export function useJupiterSwap({
     setExpectedOutput('')
     setPriceImpact('')
     setError('')
+    setTxSignature('')
+    setShowTradeLink(false)
+    setIsFullyConfirmed(false)
+    setIsQuoteRefreshing(false)
   }, [])
 
   const checkAndCreateTokenAccount = async (
