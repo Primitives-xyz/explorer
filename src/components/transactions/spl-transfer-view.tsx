@@ -93,7 +93,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                     <>
                       From:{' '}
                       <Link
-                        href={`/portfolio/${transfer.from}`}
+                        href={route('address', { id: transfer.from })}
                         className="hover:text-green-500 transition-colors"
                       >
                         {transfer.from?.slice(0, 4)}...

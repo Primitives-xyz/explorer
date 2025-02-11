@@ -1,5 +1,6 @@
 'use client'
 
+import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
 import { memo } from 'react'
 import { Avatar } from '../common/Avatar'
@@ -35,7 +36,9 @@ const SocialCard = memo(({ user }: { user: SocialUser; type: string }) => {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <button
-              onClick={() => router.push(`/${user.username}`)}
+              onClick={() =>
+                router.push(route('address', { id: user.username }))
+              }
               className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors"
             >
               @{user.username}

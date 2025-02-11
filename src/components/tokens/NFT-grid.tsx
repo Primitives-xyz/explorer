@@ -1,4 +1,5 @@
 import { useNFTImage } from '@/hooks/use-nft-image'
+import { route } from '@/utils/routes'
 import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -137,14 +138,16 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
             {/* Token Info */}
             <div className="space-y-2">
               <button
-                onClick={() => router.push(`/${token.id}`)}
+                onClick={() => router.push(route('address', { id: token.id }))}
                 className="text-green-400 font-mono text-base truncate font-semibold group-hover:text-green-300 transition-colors w-full text-left hover:text-green-200"
               >
                 {name}
               </button>
               {symbol && (
                 <button
-                  onClick={() => router.push(`/${token.id}`)}
+                  onClick={() =>
+                    router.push(route('address', { id: token.id }))
+                  }
                   className="text-green-600 font-mono text-sm group-hover:text-green-500 transition-colors w-full text-left hover:text-green-400"
                 >
                   {symbol}
