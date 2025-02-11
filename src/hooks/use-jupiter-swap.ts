@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { VersionedTransaction, Connection } from '@solana/web3.js'
-import { isSolanaWallet } from '@dynamic-labs/solana'
-import { useToast } from '@/hooks/use-toast'
-import { useSSEPrice } from './use-sse-price'
-import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
 import {
-  PLATFORM_FEE_BPS,
-  PLATFORM_FEE_ACCOUNT,
-  SSE_TOKEN_MINT,
   DEFAULT_PRIORITY_LEVEL,
   DEFAULT_SLIPPAGE_BPS,
+  PLATFORM_FEE_ACCOUNT,
+  PLATFORM_FEE_BPS,
+  SSE_TOKEN_MINT,
 } from '@/constants/jupiter'
+import { useToast } from '@/hooks/use-toast'
+import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
+import { isSolanaWallet } from '@dynamic-labs/solana'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { useCallback, useEffect, useState } from 'react'
+import { useSSEPrice } from './use-sse-price'
 import { useTokenInfo } from './use-token-info'
 
 interface UseJupiterSwapParams {
@@ -36,7 +36,7 @@ export function useJupiterSwap({
   const [error, setError] = useState('')
   const [txSignature, setTxSignature] = useState('')
   const [priorityLevel, setPriorityLevel] = useState<PriorityLevel>(
-    DEFAULT_PRIORITY_LEVEL,
+    DEFAULT_PRIORITY_LEVEL
   )
   const { primaryWallet, walletAddress, mainUsername } = useCurrentWallet()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
@@ -59,11 +59,11 @@ export function useJupiterSwap({
 
   const checkAndCreateTokenAccount = async (
     mintAddress: string,
-    walletAddress: string,
+    walletAddress: string
   ) => {
     try {
       const response = await fetch(
-        `/api/tokens/account?mintAddress=${mintAddress}&walletAddress=${walletAddress}`,
+        `/api/tokens/account?mintAddress=${mintAddress}&walletAddress=${walletAddress}`
       )
       const data = await response.json()
 
@@ -77,7 +77,7 @@ export function useJupiterSwap({
 
         // Create the token account
         const transaction = VersionedTransaction.deserialize(
-          Buffer.from(data.transaction, 'base64'),
+          Buffer.from(data.transaction, 'base64')
         )
 
         if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -132,7 +132,7 @@ export function useJupiterSwap({
 
       // Use input decimals for amount calculation
       const adjustedAmount = Math.floor(
-        Number(inputAmount) * Math.pow(10, inputDecimals),
+        Number(inputAmount) * Math.pow(10, inputDecimals)
       )
 
       const QUOTE_URL =
@@ -153,7 +153,7 @@ export function useJupiterSwap({
       // Use the output token's decimals for formatting
       const outputDecimals = outputTokenInfo.decimals ?? 9
       setExpectedOutput(
-        (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString(),
+        (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString()
       )
       setPriceImpact(response.priceImpactPct)
 
@@ -174,7 +174,7 @@ export function useJupiterSwap({
 
           // Convert to base units (6 decimals)
           const currentSseFeeAmount = Math.floor(
-            sseAmount * Math.pow(10, 6),
+            sseAmount * Math.pow(10, 6)
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
 
@@ -288,7 +288,7 @@ export function useJupiterSwap({
 
           // Convert to base units (6 decimals)
           currentSseFeeAmount = Math.floor(
-            sseAmount * Math.pow(10, 6),
+            sseAmount * Math.pow(10, 6)
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
 
@@ -337,7 +337,7 @@ export function useJupiterSwap({
       }
 
       const transaction = VersionedTransaction.deserialize(
-        Buffer.from(response.transaction, 'base64'),
+        Buffer.from(response.transaction, 'base64')
       )
 
       if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -413,22 +413,22 @@ export function useJupiterSwap({
       const [sourceWalletProfiles, walletProfiles] = await Promise.all([
         sourceWallet
           ? fetch(`/api/profiles?walletAddress=${sourceWallet}`).then((res) =>
-              res.json(),
+              res.json()
             )
           : Promise.resolve({ profiles: [] }),
         walletAddress
           ? fetch(`/api/profiles?walletAddress=${walletAddress}`).then((res) =>
-              res.json(),
+              res.json()
             )
           : Promise.resolve({ profiles: [] }),
       ])
 
       // Get main profiles (nemoapp namespace) for both wallets
       const sourceProfile = sourceWalletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp',
+        (p: any) => p.namespace.name === 'nemoapp'
       )?.profile
       const walletProfile = walletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp',
+        (p: any) => p.namespace.name === 'nemoapp'
       )?.profile
 
       // Fetch token information
@@ -467,7 +467,7 @@ export function useJupiterSwap({
             {
               key: 'inputTokenDecimals',
               value: String(
-                inputTokenData?.result?.token_info?.decimals || inputDecimals,
+                inputTokenData?.result?.token_info?.decimals || inputDecimals
               ),
             },
             {

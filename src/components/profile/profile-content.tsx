@@ -1,20 +1,20 @@
 'use client'
 
-import { useState, useCallback, memo } from 'react'
-import { Card } from '../common/card'
+import { useProfileData } from '@/hooks/use-profile-data'
+import { useTargetWallet } from '@/hooks/use-target-wallet'
+import { cn } from '@/lib/utils'
+import { memo, useCallback, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
-import { ProfileSection } from '../ProfileSection'
-import { SocialSection } from '../social/SocialSection'
+import { Card } from '../common/card'
 import { Modal } from '../common/modal'
-import { CommentWall } from './CommentWall'
-import { ProfileInfo } from './ProfileInfo'
-import { UpdateProfileModal } from './update-profile-modal'
+import { ProfileSection } from '../profile-section'
+import { SocialSection } from '../social/social-section'
+import { CommentWall } from './comment-wall'
+import { ProfileContentFeed } from './profile-content-feed'
 import { ProfileHeader } from './profile-header'
 import { ProfileStats } from './profile-stats'
-import { useProfileData } from '@/hooks/use-profile-data'
-import { ProfileContentFeed } from './ProfileContentFeed'
-import { cn } from '@/lib/utils'
-import { useTargetWallet } from '@/hooks/use-target-wallet'
+import { ProfileInfo } from './ProfileInfo'
+import { UpdateProfileModal } from './update-profile-modal'
 
 interface Props {
   username: string
@@ -154,7 +154,7 @@ export function ProfileContent({ username }: Props) {
                       'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
                       activeTab === tab.id
                         ? 'border-green-500 text-green-400'
-                        : 'border-transparent text-gray-400 hover:text-green-400 hover:border-green-400/50',
+                        : 'border-transparent text-gray-400 hover:text-green-400 hover:border-green-400/50'
                     )}
                   >
                     {tab.label}

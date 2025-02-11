@@ -22,7 +22,9 @@ export function Input({
       id={id}
       type={type}
       value={value}
-      className={`bg-transparent border border-foreground p-2 w-full ${className || ''}`}
+      className={`bg-transparent border border-foreground p-2 w-full ${
+        className || ''
+      }`}
       placeholder={placeholder}
       name={name}
       onChange={onChange}

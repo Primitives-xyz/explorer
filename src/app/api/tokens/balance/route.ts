@@ -1,6 +1,6 @@
+import { getAssociatedTokenAddress } from '@solana/spl-token'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { NextResponse } from 'next/server'
-import { getAssociatedTokenAddress } from '@solana/spl-token'
 
 const RPC_ENDPOINT =
   process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
           error:
             'Missing required parameters. Need either tokenAccount or both walletAddress and mintAddress',
         },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       // Find the associated token account for the wallet and mint
       tokenAccountToQuery = await getAssociatedTokenAddress(
         new PublicKey(mintAddress!),
-        new PublicKey(walletAddress!),
+        new PublicKey(walletAddress!)
       )
 
       // Check if the token account exists
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
             headers: {
               'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60',
             },
-          },
+          }
         )
       }
     }
@@ -71,13 +71,13 @@ export async function GET(request: Request) {
         headers: {
           'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60', // Cache for 1 minute with stale-while-revalidate
         },
-      },
+      }
     )
   } catch (error) {
     console.error('Error fetching token balance:', error)
     return NextResponse.json(
       { error: `Failed to fetch token balance: ${error}` },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

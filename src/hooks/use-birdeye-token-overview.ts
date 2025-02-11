@@ -54,7 +54,7 @@ export function useBirdeyeTokenOverview(address: string) {
     {
       refreshInterval: 7500, // Refresh every 7.5 seconds
       revalidateOnFocus: false, // Disable revalidation on focus since we're polling
-    },
+    }
   )
 
   return {

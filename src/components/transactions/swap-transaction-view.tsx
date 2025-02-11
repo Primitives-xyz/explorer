@@ -1,25 +1,26 @@
-import { formatNumber } from '@/utils/format'
-import type { Transaction } from '@/utils/helius/types'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import type { TokenInfo } from '@/types/Token'
-import type { Profile } from '@/utils/api'
-import Image from 'next/image'
-import { JupiterSwapForm } from './jupiter-swap-form'
-import { Modal } from '@/components/common/modal'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { useTokenInfo } from '@/hooks/use-token-info'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/Avatar'
+import { Modal } from '@/components/common/modal'
+import { useTokenInfo } from '@/hooks/use-token-info'
+import type { TokenInfo } from '@/types/Token'
+import type { Profile } from '@/utils/api'
+import { formatNumber } from '@/utils/format'
+import type { Transaction } from '@/utils/helius/types'
+import { route } from '@/utils/routes'
 import { ExternalLink } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { JupiterSwapForm } from './jupiter-swap-form'
 
 const DynamicConnectButton = dynamic(
   () =>
     import('@dynamic-labs/sdk-react-core').then(
-      (mod) => mod.DynamicConnectButton,
+      (mod) => mod.DynamicConnectButton
     ),
-  { ssr: false },
+  { ssr: false }
 )
 
 interface TokenDisplay {
@@ -49,19 +50,19 @@ export function SwapTransactionView({
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
-    (p: Profile) => p.namespace.name === 'nemoapp',
+    (p: Profile) => p.namespace.name === 'nemoapp'
   )?.profile
 
   // Add useTokenInfo hooks for both tokens
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
     fromToken?.mint === 'So11111111111111111111111111111111111111112'
       ? null
-      : fromToken?.mint,
+      : fromToken?.mint
   )
   const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
     toToken?.mint === 'So11111111111111111111111111111111111111112'
       ? null
-      : toToken?.mint,
+      : toToken?.mint
   )
   useEffect(() => {
     async function loadTokenInfo() {
@@ -134,7 +135,7 @@ export function SwapTransactionView({
   useEffect(() => {
     if (fromToken && fromTokenInfo) {
       setFromToken((prev) =>
-        prev ? { ...prev, tokenInfo: fromTokenInfo } : null,
+        prev ? { ...prev, tokenInfo: fromTokenInfo } : null
       )
     }
   }, [fromTokenInfo])
@@ -163,14 +164,14 @@ export function SwapTransactionView({
             <div className="flex flex-col">
               {sourceProfile?.username ? (
                 <Link
-                  href={`/${sourceProfile.username}`}
+                  href={route('address', { id: sourceProfile.username })}
                   className="text-sm font-semibold text-green-400 hover:text-green-300 transition-colors"
                 >
                   @{sourceProfile.username}
                 </Link>
               ) : (
                 <Link
-                  href={`/${sourceWallet}`}
+                  href={route('address', { id: sourceWallet })}
                   className="text-sm font-mono text-green-400 hover:text-green-300 transition-colors"
                 >
                   {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
@@ -214,7 +215,7 @@ export function SwapTransactionView({
           {/* From Token */}
           <div className="flex-1">
             <Link
-              href={`/${fromToken.mint}`}
+              href={route('address', { id: fromToken.mint })}
               className="flex items-center gap-3 p-2 bg-black/20 rounded-lg hover:bg-black/30 transition-colors group"
             >
               <div className="relative">
@@ -260,7 +261,7 @@ export function SwapTransactionView({
                   ) : (
                     fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
                     `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(
-                      -4,
+                      -4
                     )}`
                   )}
                 </span>
@@ -294,7 +295,7 @@ export function SwapTransactionView({
           {/* To Token */}
           <div className="flex-1">
             <Link
-              href={`/${toToken.mint}`}
+              href={route('address', { id: toToken.mint })}
               className="flex items-center gap-3 p-2 bg-black/20 rounded-lg hover:bg-black/30 transition-colors group"
             >
               <div className="relative">

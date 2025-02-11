@@ -1,8 +1,6 @@
-import { ClientLayout } from './ClientLayout'
-import { Toaster } from '@/components/toast/toaster'
+import { Metadata } from 'next'
+import { ReactNode } from 'react'
 import './globals.css'
-import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title:
@@ -72,17 +70,10 @@ export const metadata: Metadata = {
   },
 }
 
-interface RootLayoutProps {
+type Props = {
   children: ReactNode
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
-  return (
-    <html lang="en">
-      <body>
-        <Toaster />
-        <ClientLayout>{children}</ClientLayout>
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: Props) {
+  return children
 }

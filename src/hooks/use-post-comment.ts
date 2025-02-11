@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { useState } from 'react'
 
 interface PostCommentInput {
   profileId: string

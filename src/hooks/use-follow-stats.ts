@@ -1,5 +1,5 @@
-import useSWR from 'swr'
 import type { IProfileResponse } from '@/models/profile.models'
+import useSWR from 'swr'
 
 async function fetchProfile(url: string): Promise<IProfileResponse | null> {
   try {
@@ -37,7 +37,7 @@ export function useFollowStats(username: string, fromUsername: string) {
       dedupingInterval: 30000, // 30 seconds
       revalidateIfStale: false,
       shouldRetryOnError: false, // Prevent retries on error
-    },
+    }
   )
 
   return {

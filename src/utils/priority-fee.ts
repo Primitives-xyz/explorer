@@ -1,4 +1,4 @@
-import { Transaction, ComputeBudgetProgram } from '@solana/web3.js'
+import { ComputeBudgetProgram, Transaction } from '@solana/web3.js'
 
 export type PriorityLevel =
   | 'Min'
@@ -14,7 +14,7 @@ const HELIUS_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY
 export async function getPriorityFeeEstimate(
   transaction: Transaction,
   priorityLevel: PriorityLevel = 'Medium',
-  options = {},
+  options = {}
 ) {
   if (!HELIUS_API_KEY) {
     throw new Error('HELIUS_API_KEY is not configured')
@@ -22,7 +22,7 @@ export async function getPriorityFeeEstimate(
 
   // Serialize the transaction and encode it properly for the API
   const serializedTransaction = Buffer.from(
-    transaction.serialize({ verifySignatures: false }),
+    transaction.serialize({ verifySignatures: false })
   ).toString('base64')
 
   const response = await fetch(HELIUS_RPC_URL, {
@@ -65,12 +65,12 @@ export async function getPriorityFeeEstimate(
 
 export async function addPriorityFee(
   transaction: Transaction,
-  priorityLevel: PriorityLevel = 'Medium',
+  priorityLevel: PriorityLevel = 'Medium'
 ) {
   try {
     const microLamports = await getPriorityFeeEstimate(
       transaction,
-      priorityLevel,
+      priorityLevel
     )
 
     // Add a ComputeBudgetProgram instruction to set the compute unit price

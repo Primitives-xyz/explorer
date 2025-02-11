@@ -22,14 +22,14 @@ export async function GET(request: Request) {
   if (!walletAddress) {
     return NextResponse.json(
       { error: 'Wallet address is required' },
-      { status: 400 },
+      { status: 400 }
     )
   }
 
   if (!process.env.RPC_URL) {
     return NextResponse.json(
       { error: 'RPC URL is not configured' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   if (!address) {
     return NextResponse.json(
       { error: 'Token address is required' },
-      { status: 400 },
+      { status: 400 }
     )
   }
 
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
         error:
           'Birdeye API key is not configured. Please set NEXT_PUBLIC_BIRDEYE_API_KEY in your environment variables.',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         next: {
           revalidate: CACHE_DURATION,
         },
-      },
+      }
     )
 
     if (!response.ok) {
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
     const headers = new Headers()
     headers.set(
       'Cache-Control',
-      `s-maxage=${CACHE_DURATION}, stale-while-revalidate`,
+      `s-maxage=${CACHE_DURATION}, stale-while-revalidate`
     )
 
     return NextResponse.json(data, {
@@ -65,7 +65,7 @@ export async function GET(request: Request) {
     console.error('Error fetching token overview:', error)
     return NextResponse.json(
       { error: 'Failed to fetch token overview' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

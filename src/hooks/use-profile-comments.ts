@@ -42,7 +42,7 @@ async function fetchComments(url: string): Promise<GetCommentsResponse> {
 
 export function useProfileComments(
   username: string | null,
-  mainUsername?: string,
+  mainUsername?: string
 ) {
   const url = username
     ? `/api/profiles/${username}/comments${
@@ -61,7 +61,7 @@ export function useProfileComments(
       refreshInterval: 0, // Disable auto-refresh
       dedupingInterval: 0, // Disable deduping
       fallbackData: { comments: [], page: 1, pageSize: 10 },
-    },
+    }
   )
 
   return {
