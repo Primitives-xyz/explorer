@@ -68,6 +68,13 @@ export function useJupiterSwap({
       const data = await response.json()
 
       if (data.status === 'requires_creation') {
+        toast({
+          title: 'Creating Token Account',
+          description: 'Setting up required token account for fees...',
+          variant: 'pending',
+          duration: 5000,
+        })
+
         // Create the token account
         const transaction = VersionedTransaction.deserialize(
           Buffer.from(data.transaction, 'base64'),
@@ -86,11 +93,25 @@ export function useJupiterSwap({
           signature: txid.signature,
           ...(await connection.getLatestBlockhash()),
         })
+
+        toast({
+          title: 'Token Account Created',
+          description: 'Successfully set up the required token account.',
+          variant: 'success',
+          duration: 3000,
+        })
       }
 
       return data.tokenAccount
     } catch (err) {
       console.error('Error checking/creating token account:', err)
+      toast({
+        title: 'Token Account Error',
+        description:
+          'Failed to set up required token account. Please try again.',
+        variant: 'error',
+        duration: 5000,
+      })
       throw err
     }
   }
@@ -118,14 +139,11 @@ export function useJupiterSwap({
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
           `&outputMint=${outputMint}&amount=${adjustedAmount}` +
           `&slippageBps=${slippageBps}` +
-          // Add platformFeeBps only when not using SSE fees (since SSE fees are handled via SPL transfer)
-          `${
-            platformFeeBps !== 0
-              ? `&platformFeeBps=${
-                  platformFeeBps ?? PLATFORM_FEE_BPS
-                }&feeAccount=${PLATFORM_FEE_ACCOUNT}`
-              : ''
-          }`,
+          // Always add a 1 bps platform fee, even when using SSE fees
+          `&platformFeeBps=${
+            platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+          }` +
+          `&feeAccount=${PLATFORM_FEE_ACCOUNT}`,
       ).then((res) => res.json())
 
       setQuoteResponse(response)
@@ -202,41 +220,48 @@ export function useJupiterSwap({
     try {
       toast({
         title: 'Preparing Swap',
-        description: 'Setting up your swap...',
+        description:
+          platformFeeBps === 0
+            ? 'Setting up SSE fee accounts...'
+            : 'Setting up fee accounts...',
         variant: 'pending',
         duration: 2000,
       })
 
       // Run token account checks and quote fetching in parallel
-      const [feeTokenAccount, sseTokenAccount, quoteResponse] =
-        await Promise.all([
-          // Check and create token account for the output token (platform fee)
-          platformFeeBps !== 0
-            ? checkAndCreateTokenAccount(outputMint, walletAddress)
-            : Promise.resolve(null),
-          // Check and create SSE token account for the user if using SSE for fees
+      const [outputFeeAta, sseFeeAta, quoteResponse] = await Promise.all([
+        // Always check for output token fee ATA since we're always using a platform fee (1 bps for SSE)
+        checkAndCreateTokenAccount(outputMint, PLATFORM_FEE_ACCOUNT),
+        // Check and create SSE token account for platform fees if using SSE for fees
+        platformFeeBps === 0
+          ? checkAndCreateTokenAccount(SSE_TOKEN_MINT, PLATFORM_FEE_ACCOUNT)
+          : Promise.resolve(null),
+        // Fetch quote in parallel
+        (async () => {
+          const multiplier = Math.pow(10, inputDecimals)
+          const adjustedAmount = Number(inputAmount) * multiplier
+          return fetch(
+            `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
+              `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+              `&slippageBps=${slippageBps}` +
+              // Always add a 1 bps platform fee, even when using SSE fees
+              `&platformFeeBps=${
+                platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+              }` +
+              `&feeAccount=${PLATFORM_FEE_ACCOUNT}`,
+          ).then((res) => res.json())
+        })(),
+      ])
+
+      toast({
+        title: 'Fee Accounts Ready',
+        description:
           platformFeeBps === 0
-            ? checkAndCreateTokenAccount(SSE_TOKEN_MINT, walletAddress)
-            : Promise.resolve(null),
-          // Fetch quote in parallel
-          (async () => {
-            const multiplier = Math.pow(10, inputDecimals)
-            const adjustedAmount = Number(inputAmount) * multiplier
-            return fetch(
-              `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-                `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-                `&slippageBps=${slippageBps}` +
-                // Add platformFeeBps only when not using SSE fees (since SSE fees are handled via SPL transfer)
-                `${
-                  platformFeeBps !== 0
-                    ? `&platformFeeBps=${
-                        platformFeeBps ?? PLATFORM_FEE_BPS
-                      }&feeAccount=${PLATFORM_FEE_ACCOUNT}`
-                    : ''
-                }`,
-            ).then((res) => res.json())
-          })(),
-        ])
+            ? 'SSE fee accounts are set up and ready'
+            : 'Fee accounts are set up and ready',
+        variant: 'success',
+        duration: 2000,
+      })
 
       // Calculate SSE fee amount if using SSE for fees
       let currentSseFeeAmount = '0'
@@ -293,9 +318,9 @@ export function useJupiterSwap({
         body: JSON.stringify({
           quoteResponse,
           walletAddress,
-          feeTokenAccount: platformFeeBps !== 0 ? feeTokenAccount : undefined,
+          feeTokenAccount: platformFeeBps !== 0 ? outputFeeAta : undefined,
           mintAddress: outputMint,
-          sseTokenAccount: platformFeeBps === 0 ? sseTokenAccount : undefined,
+          sseTokenAccount: platformFeeBps === 0 ? sseFeeAta : undefined,
           sseFeeAmount: platformFeeBps === 0 ? currentSseFeeAmount : undefined,
         }),
       }).then((res) => res.json())
