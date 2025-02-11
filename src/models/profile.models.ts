@@ -31,6 +31,23 @@ export interface IGetSocialResponse {
   pageSize: number
 }
 
+export interface IGetProfilesResponse {
+  namespace: {
+    name: string
+    readableName: string
+    faviconURL?: string | null
+  }
+  profile: {
+    blockchain: string
+    namespace: string
+    id: string
+    username: string
+    image: string
+    hasSeenProfileSetupModal?: boolean
+  }
+  wallet: { address: string }
+}
+
 export interface ISuggestedProfile {
   namespaces: {
     name: string
@@ -43,6 +60,7 @@ export interface ISuggestedProfile {
     id: string
     username: string
     image: string
+
   }
   wallet: { address: string }
 }

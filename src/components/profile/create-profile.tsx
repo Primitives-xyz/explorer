@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react'
 import { DICEBEAR_API_BASE } from '@/lib/constants'
 import { useFileUpload } from '@/hooks/use-file-upload'
 import { cn } from '@/lib/utils'
+import type { IGetProfilesResponse } from '@/models/profile.models'
 
 type FormStep = 'username' | 'details'
 
@@ -39,12 +40,14 @@ interface SuggestedUsername {
   image?: string | null
 }
 
+const MAX_DAYS_SHOW_UPDATE_PROFILE_MODAL = 5;
+
 export function CreateProfile({
   onProfileCreated,
 }: {
   onProfileCreated?: () => void
 }) {
-  const { walletAddress, mainUsername, loadingProfiles } = useCurrentWallet()
+  const { walletAddress, mainUsername, loadingProfiles, profiles } = useCurrentWallet()
   const [username, setUsername] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -139,6 +142,34 @@ export function CreateProfile({
       }
     }
   }
+  const updateProfileSetupModalShownStatus = async (walletAddress: string) => {
+    try {
+      const response = await fetch(`api/profiles/${walletAddress}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({
+          username: walletAddress,
+          properties: [{
+            key: 'hasSeenProfileSetupModal', value: true
+          }]
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || data.details || 'Failed to update profile',
+        )
+     } 
+    } catch (error) {
+      console.error('Failed to update modal count:', error);
+      // Optionally handle the error
+    }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -201,17 +232,47 @@ export function CreateProfile({
     const validValue = value.toLowerCase().replace(/[^a-z0-9]/g, '')
     setUsername(validValue)
   }
-
   const handleSuggestedUsernameClick = (suggestedUsername: string) => {
     setUsername(suggestedUsername)
   }
 
+  const checkIfProfileIsSetup =  () => {
+    if(!walletAddress) return true; // if no wallet we don't show the modal
+    
+    const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
+    const profile = profiles.find((profile: IGetProfilesResponse) => {
+      return profile.namespace.name == 'nemoapp' && profile.profile.username === mainUsername
+    })
+
+    if(profile?.profile.hasSeenProfileSetupModal) return true
+    if (mainUsername === walletAddress) {
+      const initialTimestamp = localStorage.getItem(`${MODAL_CREATE_PROFILE_PREFIX}${walletAddress}`);
+      const currentTime = Date.now();
+      
+      // If this is the first time showing the modal, set the initial timestamp
+      if (!initialTimestamp) {
+        localStorage.setItem(`${MODAL_CREATE_PROFILE_PREFIX}${walletAddress}`, currentTime.toString());
+        return false;
+      }
+      
+      // Calculate the difference in days
+      const daysSinceFirstShow = (currentTime - parseInt(initialTimestamp)) / (1000 * 60 * 60 * 24);
+      
+      // If it's been more than X days, update the backend and stop showing the modal
+      if (daysSinceFirstShow > MAX_DAYS_SHOW_UPDATE_PROFILE_MODAL) {
+        void updateProfileSetupModalShownStatus(mainUsername); // asynchronously update the backend
+        return true; 
+      }
+    }
+    
+    return false;
+  }
+
+  if(checkIfProfileIsSetup()) return null;
+  
   const handleImageSelect = (imageUrl: string) => {
     setSelectedImageUrl(imageUrl)
   }
-
-  // Only render if we have a wallet connected and no username
-  if (!walletAddress || mainUsername) return null
 
   return (
     <Modal
