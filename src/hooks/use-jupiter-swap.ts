@@ -380,6 +380,15 @@ export function useJupiterSwap({
           priorityLevel,
           walletAddress,
           inputDecimals,
+          usdcFeeAmount: quoteResponse.swapUsdValue
+            ? (
+                Number(quoteResponse.swapUsdValue) *
+                (platformFeeBps === 1
+                  ? PLATFORM_FEE_BPS / 20000
+                  : PLATFORM_FEE_BPS / 10000)
+              ) // Divide by 20000 for SSE swaps to get half
+                .toString()
+            : '0',
         })
         setShowTradeLink(true)
         setIsFullyConfirmed(true)

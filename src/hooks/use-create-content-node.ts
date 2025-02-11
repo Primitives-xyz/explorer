@@ -13,6 +13,7 @@ interface CreateContentNodeParams {
   priorityLevel: string
   walletAddress?: string
   inputDecimals: number
+  usdcFeeAmount?: string
 }
 
 export function useCreateContentNode() {
@@ -30,6 +31,7 @@ export function useCreateContentNode() {
     priorityLevel,
     walletAddress,
     inputDecimals,
+    usdcFeeAmount,
   }: CreateContentNodeParams) => {
     try {
       // Fetch profiles for both wallets
@@ -78,6 +80,7 @@ export function useCreateContentNode() {
         walletAddress: walletAddress || '',
         walletUsername: walletProfile?.username || '',
         walletImage: walletProfile?.image || '',
+        usdcFeeAmount: usdcFeeAmount || '0',
 
         // Token information
         inputTokenSymbol:
