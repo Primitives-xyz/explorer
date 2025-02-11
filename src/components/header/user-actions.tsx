@@ -1,6 +1,5 @@
 'use client'
 
-import { LanguageSwitcher } from '@/components/header/language-switcher'
 import { route } from '@/utils/routes'
 import '@dialectlabs/react-ui/index.css'
 import { useTranslations } from 'next-intl'
@@ -64,7 +63,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
           {t('header.portfolio')}
         </Link>
       )}
-      <LanguageSwitcher />
+      {/* <LanguageSwitcher /> */}
     </div>
   )
 }
