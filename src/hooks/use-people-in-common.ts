@@ -1,22 +1,5 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { FetchMethod, fetchTapestry } from '@/utils/api'
 import useSWR from 'swr'
-
-interface Profile {
-  id: string
-  username: string
-  image: string
-  role: string
-  namespace: string
-  bio: string
-  created_at: number
-}
-
-interface TokenOwnersResponse {
-  profiles: Profile[]
-  page: number
-  pageSize: number
-}
 
 interface PersonInCommon {
   username: string
@@ -33,6 +16,15 @@ interface PaginationOptions {
   pageSize?: number
 }
 
+async function fetchTokenOwners(url: string): Promise<PeopleInCommonResponse> {
+  const res = await fetch(url)
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.error || 'Failed to fetch token owners')
+  }
+  return res.json()
+}
+
 export function usePeopleInCommon(
   tokenMint: string,
   { page = 1, pageSize = 1000 }: PaginationOptions = {},
@@ -43,34 +35,7 @@ export function usePeopleInCommon(
     tokenMint
       ? `/api/tokens/${tokenMint}/holders?requestorId=${mainUsername}&page=${page}&pageSize=${pageSize}`
       : null,
-    async (url: string) => {
-      try {
-        const response = await fetchTapestry<TokenOwnersResponse>({
-          endpoint: `profiles/token-owners/${tokenMint}?page=${page}&pageSize=${pageSize}${
-            mainUsername ? `&requestorId=${mainUsername}` : ''
-          }`,
-          method: FetchMethod.GET,
-        })
-
-        if (!response) {
-          throw new Error('No response received from API')
-        }
-
-        // Transform the response to match what PeopleInCommonSection expects
-        const transformedResponse: PeopleInCommonResponse = {
-          profiles: response.profiles.map((profile) => ({
-            username: profile.username,
-            image: profile.image,
-          })),
-          totalAmount: response.profiles.length,
-        }
-
-        return transformedResponse
-      } catch (error) {
-        console.error('[usePeopleInCommon Error]:', error)
-        throw error
-      }
-    },
+    fetchTokenOwners,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,

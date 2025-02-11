@@ -2,9 +2,9 @@ import type { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 
 import type { TokenInfo } from '@/types/Token'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
-import { WalletView } from '../wallet/wallet-view'
-import FungibleTokenDetails from '../FungibleTokenDetails'
 import NFTDetails from '../NFTDetails'
+import { WalletView } from '../wallet/wallet-view'
+import { FungibleTokenDetailsWrapper } from './FungibleTokenDetailsWrapper'
 
 /**
  * Handles token-related views
@@ -33,7 +33,7 @@ export async function TokenView({ id }: { id: string }) {
 
   if (isFungibleToken || isFungibleAsset) {
     return (
-      <FungibleTokenDetails
+      <FungibleTokenDetailsWrapper
         id={id}
         tokenInfo={tokenInfo.result as FungibleTokenInfo}
       />
