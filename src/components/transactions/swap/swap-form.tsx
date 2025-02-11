@@ -225,6 +225,24 @@ export function SwapForm({
     })
   }
 
+  const handleReset = () => {
+    // Reset all form state
+    setDisplayAmount(initialAmount)
+    setEffectiveAmount(initialAmount)
+    setInputMint(initialInputMint)
+    setOutputMint(initialOutputMint)
+    setCurrentInputToken(inputTokenName)
+    setCurrentOutputToken(outputTokenName)
+    setCurrentInputDecimals(inputDecimals)
+    setUseSSEForFees(false)
+    setInputError(null)
+    resetQuoteState()
+    // Reset the success section visibility
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }
+
   return (
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
       <div className="flex flex-col gap-3">
@@ -530,7 +548,7 @@ export function SwapForm({
         )}
 
         {txSignature && showTradeLink && (
-          <SwapShareSection txSignature={txSignature} />
+          <SwapShareSection txSignature={txSignature} onReset={handleReset} />
         )}
       </div>
 

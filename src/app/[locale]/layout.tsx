@@ -14,13 +14,12 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))
 }
 
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: {
+export default async function LocaleLayout(props: {
   children: React.ReactNode
   params: { locale: string }
 }) {
+  const locale = props.params.locale
+
   if (!routing.locales.includes(locale as any)) {
     notFound()
   }
@@ -36,7 +35,7 @@ export default async function LocaleLayout({
               <ActivityTape />
               <div className="w-full overflow-hidden bg-black text-green-400 font-mono min-h-dvh">
                 <Header />
-                {children}
+                {props.children}
               </div>
               <GlobalSearch />
               <CreateProfile />

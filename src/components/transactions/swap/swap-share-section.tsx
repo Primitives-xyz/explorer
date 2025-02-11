@@ -1,14 +1,15 @@
 import { useToast } from '@/hooks/use-toast'
-import { route } from '@/utils/routes'
-import { useRouter } from 'next/navigation'
 
 interface SwapShareSectionProps {
   txSignature: string
+  onReset: () => void
 }
 
-export function SwapShareSection({ txSignature }: SwapShareSectionProps) {
+export function SwapShareSection({
+  txSignature,
+  onReset,
+}: SwapShareSectionProps) {
   const { toast } = useToast()
-  const router = useRouter()
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(
@@ -126,7 +127,7 @@ export function SwapShareSection({ txSignature }: SwapShareSectionProps) {
       {/* Swap Again Button */}
       <div className="pt-4">
         <button
-          onClick={() => router.push(route('trade'))}
+          onClick={onReset}
           className="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
         >
           <svg
