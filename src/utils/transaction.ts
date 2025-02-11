@@ -214,7 +214,7 @@ export async function confirmTransactionFast(
 
     if (!status) {
       // If status is null, transaction hasn't been seen yet - wait a bit and retry
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await new Promise((resolve) => setTimeout(resolve, 300))
       continue
     }
 
@@ -232,6 +232,6 @@ export async function confirmTransactionFast(
 
     // If we're here, transaction is confirmed but not at our desired status yet
     // Poll faster than the default confirmTransaction
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 150))
   }
 }

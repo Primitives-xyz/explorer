@@ -23,7 +23,7 @@ const HELIUS_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY
 const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
 const FEE_WALLET = '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 const COMMENT_FEE_AMOUNT = 100_000_000 // 100 SSE (assuming 6 decimals)
-const DEFAULT_COMPUTE_UNIT_LIMIT = 200_000
+const DEFAULT_COMPUTE_UNIT_LIMIT = 15_000
 
 interface CommentFeeRequest {
   walletAddress: string // Commenter's wallet

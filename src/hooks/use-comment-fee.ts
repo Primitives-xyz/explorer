@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { VersionedTransaction } from '@solana/web3.js'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import type { PriorityLevel } from '@/types/jupiter'
@@ -50,7 +50,7 @@ export function useCommentFee() {
       const txid = await signer.signAndSendTransaction(transaction)
 
       // Wait for confirmation using our custom fast confirmation
-      const connection = await primaryWallet.getConnection()
+      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
       await confirmTransactionFast(connection, txid.signature, 'confirmed')
 
       return txid.signature
