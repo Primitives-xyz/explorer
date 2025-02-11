@@ -122,16 +122,10 @@ const ProfileCard = memo(
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleProfileClick}
-                    className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold"
+                    className="text-green-400 font-mono text-sm bg-green-900/20 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold"
                   >
                     @{profile.profile.username}
                   </button>
-                  {isExplorerApp && (
-                    <div className="flex items-center gap-2 text-xs text-green-600 font-mono">
-                      <span>Followers: {followers}</span>
-                      <span>Following: {following}</span>
-                    </div>
-                  )}
                 </div>
                 {profile.namespace?.name === EXPLORER_NAMESPACE && (
                   <div className="flex-shrink-0">
@@ -140,9 +134,16 @@ const ProfileCard = memo(
                 )}
               </div>
 
+              {isExplorerApp && (
+                <div className="flex items-center gap-2 text-xs text-green-600 font-mono">
+                  <span>Followers: {followers}</span>
+                  <span>Following: {following}</span>
+                </div>
+              )}
+
               <div className="flex items-center gap-2">
                 {profile.wallet?.address && (
-                  <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md">
+                  <div className="flex items-center gap-1.5 bg-black/30 py-0.5 rounded-md">
                     <span className="text-green-600/60 text-xs">address:</span>
                     <TokenAddress address={profile.wallet.address} />
                   </div>

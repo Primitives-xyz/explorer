@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Card } from '../common/card'
 import { FollowButton } from './follow-button'
+import { TimeDisplay } from '@/components/common/TimeDisplay'
 import { usePostComment } from '@/hooks/use-post-comment'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { Alert } from '../common/alert'
@@ -193,9 +194,10 @@ export function CommentWall({
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <div className="text-green-600 font-mono text-xs">
-                        {new Date(
-                          comment.comment.created_at,
-                        ).toLocaleDateString()}
+                        <TimeDisplay
+                          timestamp={new Date(comment.comment.created_at).getTime()}
+                          textColor="text-green-600"
+                        />
                       </div>
                       <div className="flex items-center gap-3">
                         {mainUsername && (
@@ -281,9 +283,10 @@ export function CommentWall({
                               </div>
                               <div className="flex items-center justify-between mt-2">
                                 <div className="text-green-600 font-mono text-xs">
-                                  {new Date(
-                                    reply.comment.created_at,
-                                  ).toLocaleDateString()}
+                                  <TimeDisplay
+                                    timestamp={new Date(reply.comment.created_at).getTime()}
+                                    textColor="text-green-600"
+                                  />
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <button
