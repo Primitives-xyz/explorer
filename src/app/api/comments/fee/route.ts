@@ -74,9 +74,17 @@ async function getPriorityFeeEstimate(
     throw new Error(data.error.message)
   }
 
+  console.log('Full API Response:', JSON.stringify(data, null, 2))
+  console.log('Priority Fee Levels:', data.result?.priorityFeeLevels)
+  console.log('Selected Priority Level:', priorityLevel)
+
   // Ensure we have a valid priority fee value
-  const priorityFee = data.result?.priorityFeeLevels?.[priorityLevel]
+  const priorityFee =
+    data.result?.priorityFeeLevels?.[priorityLevel.toLowerCase()]
+  console.log('Selected Priority Fee:', priorityFee)
+
   if (typeof priorityFee !== 'number' || isNaN(priorityFee)) {
+    console.log('Invalid priority fee value, defaulting to 1000')
     // Default to a reasonable priority fee if the API doesn't return a valid value
     return BigInt(1000)
   }
