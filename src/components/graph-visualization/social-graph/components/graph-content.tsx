@@ -55,11 +55,11 @@ export function GraphContent({ data, username }: Props) {
   const getBackgroundColor = useCallback(
     (node: INode) => {
       if (isProfileNode(node)) {
-        return '#ffd966' // yellow
+        return '#4ade80' // green
       }
 
       if (isOwnNode(node)) {
-        return '#cc66ff' // purple
+        return '#9ca3af' // gray
       }
 
       return '#ffffff' // white

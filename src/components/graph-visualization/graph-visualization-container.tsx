@@ -5,32 +5,22 @@ import { GraphContainer } from '@/components/graph-visualization/social-graph/co
 import { useGetConnectionFromProfile } from '@/hooks/use-get-connection-from-profile'
 
 export function GraphVisualizationContainer() {
-  const { isLoggedIn, mainUsername } = useCurrentWallet()
-  //const { data, loading } = useGetConnectionFromProfile(mainUsername)
-
+  const { isLoggedIn, mainUsername, loadingProfiles } = useCurrentWallet()
   const { data, loading } = useGetConnectionFromProfile('nehemiah')
 
   console.log({ data })
 
-  if (!isLoggedIn) {
-    return (
-      <div className="h-[600px] w-full flex items-center justify-center">
-        <p>connect your wallet</p>
-      </div>
-    )
-  }
-
-  if (!mainUsername) {
-    return (
-      <div className="h-[600px] w-full flex items-center justify-center">
-        <p>you don't have a username linked to your wallet</p>
-      </div>
-    )
-  }
-
   return (
-    <div className="h-[600px] w-full flex items-center justify-center">
-      {loading ? '...' : <GraphContainer username={'nehemiah'} />}
+    <div className="h-[600px] w-full flex items-center justify-center border-green-500 border">
+      {loadingProfiles || loading ? (
+        '...'
+      ) : !isLoggedIn ? (
+        <p>connect your wallet</p>
+      ) : !mainUsername ? (
+        <p>you don't have a username linked to your wallet</p>
+      ) : (
+        <GraphContainer username={'nehemiah'} />
+      )}
     </div>
   )
 }
