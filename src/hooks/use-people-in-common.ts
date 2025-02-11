@@ -18,8 +18,13 @@ interface TokenOwnersResponse {
   pageSize: number
 }
 
+interface PersonInCommon {
+  username: string
+  image: string
+}
+
 interface PeopleInCommonResponse {
-  profiles: Profile[]
+  profiles: PersonInCommon[]
   totalAmount: number
 }
 
@@ -38,7 +43,7 @@ export function usePeopleInCommon(
     tokenMint
       ? `/api/tokens/${tokenMint}/holders?requestorId=${mainUsername}&page=${page}&pageSize=${pageSize}`
       : null,
-    async () => {
+    async (url: string) => {
       try {
         const response = await fetchTapestry<TokenOwnersResponse>({
           endpoint: `profiles/token-owners/${tokenMint}?page=${page}&pageSize=${pageSize}${
@@ -52,15 +57,15 @@ export function usePeopleInCommon(
         }
 
         // Transform the response to match what PeopleInCommonSection expects
-        return {
+        const transformedResponse: PeopleInCommonResponse = {
           profiles: response.profiles.map((profile) => ({
-            ...profile,
-            // Keep only the fields needed by PeopleInCommonSection
             username: profile.username,
             image: profile.image,
           })),
           totalAmount: response.profiles.length,
         }
+
+        return transformedResponse
       } catch (error) {
         console.error('[usePeopleInCommon Error]:', error)
         throw error
