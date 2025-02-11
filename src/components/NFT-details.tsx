@@ -1,14 +1,14 @@
 'use client'
 
+import { CopyPaste } from '@/components/common/copy-paste'
+import { LoadCircle } from '@/components/common/load-circle'
+import { TransactionSection } from '@/components/transaction-section'
 import { useNFTImage } from '@/hooks/use-nft-image'
 import type { NFTTokenInfo } from '@/types/Token'
 import { route } from '@/utils/routes'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
-import { CopyPaste } from './common/copy-paste'
-import { LoadCircle } from './common/load-circle'
-import { TransactionSection } from './transaction-section'
 
 interface NFTDetailsProps {
   id: string
