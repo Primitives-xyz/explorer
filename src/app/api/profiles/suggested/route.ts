@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (!walletAddress) {
     return NextResponse.json(
       { error: 'Owner wallet address is required' },
-      { status: 400 },
+      { status: 400 }
     )
   }
 
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     console.error('Error fetching suggested profiles:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch suggested profiles' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

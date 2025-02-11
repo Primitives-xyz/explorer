@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!followerUser || !followeeUser) {
       return NextResponse.json(
         { error: 'followerUser and followeeUser are required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     if (response.error) {
       return NextResponse.json(
         { error: response.error || 'Failed to unfollow user' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     console.error('Error processing unfollow request:', error)
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

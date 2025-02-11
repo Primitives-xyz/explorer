@@ -1,6 +1,6 @@
+import { cn } from '@/lib/utils'
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { cn } from '@/lib/utils'
 
 interface ModalProps {
   isOpen: boolean
@@ -53,7 +53,7 @@ export function Modal({
       <div
         className={cn(
           'relative z-10 w-full max-w-lg md:max-w-2xl lg:max-w-4xl bg-black/90 border border-green-500/20 rounded-lg shadow-xl',
-          className,
+          className
         )}
       >
         {/* Header */}
@@ -85,6 +85,6 @@ export function Modal({
         <div className="p-4 md:p-6">{children}</div>
       </div>
     </div>,
-    modalRoot.current,
+    modalRoot.current
   )
 }

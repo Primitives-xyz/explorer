@@ -1,12 +1,12 @@
+import { useFileUpload } from '@/hooks/use-file-upload'
+import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { useState } from 'react'
+import { Alert } from '../common/alert'
+import { Avatar } from '../common/Avatar'
 import { Modal } from '../common/modal'
 import { Input } from '../form/input'
 import { SubmitButton } from '../form/submit-button'
-import { Alert } from '../common/alert'
-import { useFileUpload } from '@/hooks/use-file-upload'
-import { useState } from 'react'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
-import { Avatar } from '../common/Avatar'
 
 interface UpdateProfileModalProps {
   isOpen: boolean
@@ -66,7 +66,7 @@ export function UpdateProfileModal({
 
       if (!response.ok) {
         throw new Error(
-          data.error || data.details || 'Failed to update profile',
+          data.error || data.details || 'Failed to update profile'
         )
       }
 

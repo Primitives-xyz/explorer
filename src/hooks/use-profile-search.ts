@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
 import type { ProfileSearchResult } from '@/types'
+import { route } from '@/utils/routes'
 import {
   type SearchHistoryItem,
-  getRecentSearches,
   addSearchToHistory,
+  getRecentSearches,
 } from '@/utils/searchHistory'
 import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 
 export function useProfileSearch() {
   const [searchInput, setSearchInput] = useState('')
@@ -27,13 +28,13 @@ export function useProfileSearch() {
     if (!searchInput.trim()) return
 
     await addSearchToHistory(searchInput)
-    router.push(`/${searchInput}`)
+    router.push(route('address', { id: searchInput }))
     setSearchInput('')
   }
 
   const handleRecentSearchClick = async (address: string) => {
     await addSearchToHistory(address)
-    router.push(`/${address}`)
+    router.push(route('address', { id: address }))
     setSearchInput('')
   }
 
@@ -46,7 +47,7 @@ export function useProfileSearch() {
     setIsLoading(true)
     try {
       const response = await fetch(
-        `/api/search?query=${encodeURIComponent(query)}`,
+        `/api/search?query=${encodeURIComponent(query)}`
       )
       const data = await response.json()
       setSearchResults(data.profiles)

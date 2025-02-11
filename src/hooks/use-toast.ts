@@ -1,7 +1,7 @@
 'use client'
 
-import * as React from 'react'
 import type { ToastActionElement, ToastProps } from '@/components/toast/toast'
+import * as React from 'react'
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 5000
@@ -55,7 +55,7 @@ const reducer = (state: State, action: any): State => {
       return {
         ...state,
         toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? { ...t, ...action.toast } : t,
+          t.id === action.toast.id ? { ...t, ...action.toast } : t
         ),
       }
 
@@ -78,7 +78,7 @@ const reducer = (state: State, action: any): State => {
                 ...t,
                 open: false,
               }
-            : t,
+            : t
         ),
       }
     }

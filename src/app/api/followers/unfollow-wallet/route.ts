@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     if (!followerUsername || !walletToFollow) {
       return NextResponse.json(
         { error: 'followerUsername and walletToFollow are required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     if (unfollowResponse.error) {
       return NextResponse.json(
         { error: unfollowResponse.error || 'Failed to unfollow wallet' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     console.error('Error processing unfollow wallet request:', error)
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

@@ -1,6 +1,6 @@
 import { getDicebearUrl } from '@/lib/constants'
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 import { useState } from 'react'
 
 interface AvatarProps {
@@ -47,7 +47,7 @@ export function Avatar({
     <div
       className={cn(
         'relative inline-block overflow-hidden rounded-full bg-green-900/20',
-        className,
+        className
       )}
       style={{ width: size, height: size }}
     >

@@ -1,20 +1,20 @@
-import { NextResponse } from 'next/server'
-import {
-  Connection,
-  PublicKey,
-  TransactionMessage,
-  VersionedTransaction,
-  AddressLookupTableAccount,
-  TransactionInstruction,
-  Keypair,
-} from '@solana/web3.js'
+import { createATAIfNotExists } from '@/utils/token'
 import {
   TOKEN_PROGRAM_ID,
   createTransferInstruction,
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
-import { createATAIfNotExists } from '@/utils/token'
+import {
+  AddressLookupTableAccount,
+  Connection,
+  Keypair,
+  PublicKey,
+  TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
+} from '@solana/web3.js'
 import bs58 from 'bs58'
+import { NextResponse } from 'next/server'
 
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
@@ -45,14 +45,14 @@ const deserializeInstruction = (instruction: any): TransactionInstruction => {
 
 // Helper function to get address lookup table accounts
 const getAddressLookupTableAccounts = async (
-  keys: string[],
+  keys: string[]
 ): Promise<AddressLookupTableAccount[]> => {
   if (!keys.length) return []
 
   try {
     const addressLookupTableAccountInfos =
       await connection.getMultipleAccountsInfo(
-        keys.map((key) => new PublicKey(key)),
+        keys.map((key) => new PublicKey(key))
       )
 
     if (!addressLookupTableAccountInfos.length) {
@@ -71,7 +71,7 @@ const getAddressLookupTableAccounts = async (
         } catch (error: any) {
           console.error(
             `Failed to deserialize lookup table account ${addressLookupTableAddress}:`,
-            error,
+            error
           )
         }
       }
@@ -86,7 +86,7 @@ const getAddressLookupTableAccounts = async (
 // Helper function to simulate transaction
 const simulateTransaction = async (
   transaction: VersionedTransaction,
-  addressLookupTableAccounts: AddressLookupTableAccount[],
+  addressLookupTableAccounts: AddressLookupTableAccount[]
 ): Promise<void> => {
   try {
     const response = await connection.simulateTransaction(transaction, {
@@ -95,7 +95,7 @@ const simulateTransaction = async (
       accounts: {
         encoding: 'base64',
         addresses: addressLookupTableAccounts.map((account) =>
-          account.key.toBase58(),
+          account.key.toBase58()
         ),
       },
     })
@@ -103,7 +103,7 @@ const simulateTransaction = async (
     if (response.value.err) {
       console.error('Simulation error:', response.value.logs)
       throw new Error(
-        `Transaction simulation failed: ${JSON.stringify(response.value.err)}`,
+        `Transaction simulation failed: ${JSON.stringify(response.value.err)}`
       )
     }
   } catch (error: any) {
@@ -127,12 +127,12 @@ export async function POST(request: Request) {
     const associatedTokenAddress = await getAssociatedTokenAddress(
       new PublicKey(mintAddress),
       new PublicKey(FEE_WALLET),
-      false, // Don't allow owner off curve
+      false // Don't allow owner off curve
     )
 
     // Verify output token ATA exists, if not create it
     const outputAtaInfo = await connection.getAccountInfo(
-      associatedTokenAddress,
+      associatedTokenAddress
     )
     if (!outputAtaInfo) {
       // Get the payer's keypair for creating ATAs
@@ -149,14 +149,14 @@ export async function POST(request: Request) {
         payer,
         new PublicKey(mintAddress),
         new PublicKey(FEE_WALLET),
-        'High', // Use high priority for platform fee ATA
+        'High' // Use high priority for platform fee ATA
       )
     }
 
     // If using SSE fees, verify SSE fee ATA exists
     if (sseTokenAccount) {
       const sseAtaInfo = await connection.getAccountInfo(
-        new PublicKey(sseTokenAccount),
+        new PublicKey(sseTokenAccount)
       )
       if (!sseAtaInfo) {
         // Get the payer's keypair for creating ATAs if not already done
@@ -173,7 +173,7 @@ export async function POST(request: Request) {
           payer,
           new PublicKey(SSE_TOKEN_MINT),
           new PublicKey(walletAddress),
-          'High', // Use high priority for SSE token ATA
+          'High' // Use high priority for SSE token ATA
         )
       }
     }
@@ -196,7 +196,7 @@ export async function POST(request: Request) {
           // Always include fee account since we're always using a platform fee
           feeAccount: associatedTokenAddress.toString(),
         }),
-      },
+      }
     ).then((res) => res.json())
 
     if (swapResponse.error) {
@@ -205,7 +205,7 @@ export async function POST(request: Request) {
 
     // Get lookup table accounts
     const addressLookupTableAccounts = await getAddressLookupTableAccounts(
-      swapResponse.addressLookupTableAddresses || [],
+      swapResponse.addressLookupTableAddresses || []
     )
 
     // Get the latest blockhash
@@ -216,7 +216,7 @@ export async function POST(request: Request) {
     if (sseTokenAccount && sseFeeAmount) {
       const sourceTokenAccount = await getAssociatedTokenAddress(
         new PublicKey(SSE_TOKEN_MINT),
-        new PublicKey(walletAddress),
+        new PublicKey(walletAddress)
       )
 
       console.log('SSE Transfer Details:')
@@ -235,18 +235,18 @@ export async function POST(request: Request) {
         'Source Account Info:',
         sourceInfo ? 'exists' : 'not found',
         sourceInfo?.data.length || 0,
-        'bytes',
+        'bytes'
       )
       console.log(
         'Destination Account Info:',
         destInfo ? 'exists' : 'not found',
         destInfo?.data.length || 0,
-        'bytes',
+        'bytes'
       )
 
       if (!sourceInfo || !destInfo) {
         throw new Error(
-          'SSE token accounts not found. Please ensure both source and destination accounts exist.',
+          'SSE token accounts not found. Please ensure both source and destination accounts exist.'
         )
       }
 
@@ -256,7 +256,7 @@ export async function POST(request: Request) {
         new PublicKey(walletAddress), // owner
         BigInt(sseFeeAmount), // amount
         [], // multisigners
-        TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID
       )
 
       console.log('SSE Transfer Instruction created:', {
@@ -273,7 +273,7 @@ export async function POST(request: Request) {
       recentBlockhash: blockhash,
       instructions: [
         ...(swapResponse.computeBudgetInstructions || []).map(
-          deserializeInstruction,
+          deserializeInstruction
         ),
         ...(swapResponse.setupInstructions || []).map(deserializeInstruction),
         ...(swapResponse.tokenLedgerInstruction
@@ -302,7 +302,7 @@ export async function POST(request: Request) {
     console.error('Error building swap transaction:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to build swap transaction' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

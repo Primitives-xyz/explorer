@@ -30,7 +30,7 @@ export function useGetFollowing(username: string) {
         throw new Error('Failed to fetch following')
       }
       return res.json()
-    },
+    }
   )
 
   return {

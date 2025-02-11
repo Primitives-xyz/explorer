@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   _request: Request,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params
 
   if (!process.env.RPC_URL) {
     return NextResponse.json(
       { error: 'RPC URL is not configured' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 

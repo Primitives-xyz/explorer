@@ -1,8 +1,8 @@
-import { memo, useEffect } from 'react'
-import { TokenAddress } from '../tokens/TokenAddress'
-import { Avatar } from '../common/Avatar'
-import { FollowButton } from './follow-button'
 import type { ProfileData } from '@/hooks/use-profile-data'
+import { memo, useEffect } from 'react'
+import { Avatar } from '../common/Avatar'
+import { TokenAddress } from '../tokens/token-address'
+import { FollowButton } from './follow-button'
 
 interface ProfileHeaderProps {
   username: string
@@ -44,7 +44,9 @@ export const ProfileHeader = memo(function ProfileHeader({
             <div>
               <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
               {profileData?.profile.bio && (
-                <p className="text-sm text-green-600 mt-1">{profileData.profile.bio}</p>
+                <p className="text-sm text-green-600 mt-1">
+                  {profileData.profile.bio}
+                </p>
               )}
               {!isLoading && profileData?.walletAddress && (
                 <div className="flex items-center gap-2 text-sm text-green-600 mt-2">

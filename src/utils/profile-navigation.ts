@@ -1,9 +1,10 @@
 import { EXPLORER_NAMESPACE } from '@/lib/constants'
-import type { Profile } from './api'
 import type { ProfileSearchResult } from '@/types'
+import { route } from '@/utils/routes'
+import type { Profile } from './api'
 
 function isProfileSearchResult(
-  profile: Profile | ProfileSearchResult,
+  profile: Profile | ProfileSearchResult
 ): profile is ProfileSearchResult {
   return (
     'namespace' in profile &&
@@ -14,12 +15,12 @@ function isProfileSearchResult(
 
 export function handleProfileNavigation(
   profile: Profile | ProfileSearchResult,
-  router: any,
+  router: any
 ): void {
   // Handle ProfileSearchResult type
   if (isProfileSearchResult(profile)) {
     if (profile.namespace.name === EXPLORER_NAMESPACE) {
-      router.push(`/${profile.profile.username}`)
+      router.push(route('address', { id: profile.profile.username }))
       return
     }
 
@@ -31,7 +32,7 @@ export function handleProfileNavigation(
     }
 
     // Fallback to namespace view
-    router.push(`/namespace/${profile.namespace.name}`)
+    router.push(route('namespace', { namespace: profile.namespace.name }))
     return
   }
 
@@ -43,7 +44,7 @@ export function handleProfileNavigation(
 
   // Explorer app is the namespace for the explorer app, redirect to in-app profile.
   if (profile.namespace.name === EXPLORER_NAMESPACE) {
-    router.push(`/${profile.profile.username}`)
+    router.push(route('address', { id: profile.profile.username }))
     return
   }
 
@@ -55,5 +56,5 @@ export function handleProfileNavigation(
   }
 
   // Fallback to namespace view
-  router.push(`/namespace/${profile.namespace.name}`)
+  router.push(route('namespace', { namespace: profile.namespace.name }))
 }
