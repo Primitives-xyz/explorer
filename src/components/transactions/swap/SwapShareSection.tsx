@@ -1,5 +1,4 @@
 import { useToast } from '@/hooks/use-toast'
-import { useRouter } from 'next/navigation'
 
 interface SwapShareSectionProps {
   txSignature: string
@@ -11,7 +10,6 @@ export function SwapShareSection({
   onReset,
 }: SwapShareSectionProps) {
   const { toast } = useToast()
-  const router = useRouter()
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(
