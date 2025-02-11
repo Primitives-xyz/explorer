@@ -2,7 +2,7 @@
 
 import { usePeopleInCommon } from '@/hooks/use-people-in-common'
 import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
-import FungibleTokenDetails from '../FungibleTokenDetails'
+import FungibleTokenDetails from '../fungible-token-details'
 
 export function FungibleTokenDetailsWrapper({
   id,
