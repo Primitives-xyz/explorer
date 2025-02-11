@@ -6,6 +6,7 @@ import { Card } from '@/components/common/card'
 import { Input } from '@/components/form/input'
 import { SubmitButton } from '@/components/form/submit-button'
 import { useSuggested } from '@/components/get-suggested/hooks/use-suggested'
+import { route } from '@/utils/routes'
 import { X } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -13,7 +14,7 @@ import { useEffect, useState } from 'react'
 export function GetSuggested() {
   const { walletAddress, loadingProfiles, sdkHasLoaded } = useCurrentWallet()
   const [ownerWalletAddress, setOwnerWalletAddress] = useState(
-    walletAddress || '',
+    walletAddress || ''
   )
   const [showAlert, setShowAlert] = useState(false)
 
@@ -74,7 +75,7 @@ export function GetSuggested() {
             Object.entries(profiles).map(([key, item]: [string, any]) => {
               const username = item.profile.username
               return (
-                <Link href={`/${username}`} key={key}>
+                <Link href={route('address', { id: username })} key={key}>
                   <Card>
                     <h2 className="text-xl mb-2">{username}</h2>
                     {item.namespaces.map((val: any, idx: any) => {

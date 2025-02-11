@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { VersionedTransaction } from '@solana/web3.js'
-import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import type { PriorityLevel } from '@/types/jupiter'
 import { confirmTransactionFast } from '@/utils/transaction'
+import { isSolanaWallet } from '@dynamic-labs/solana'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { useState } from 'react'
 
 export function useCommentFee() {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -12,7 +12,7 @@ export function useCommentFee() {
 
   const processCommentFee = async (
     targetWalletAddress: string,
-    priorityLevel: PriorityLevel = 'Medium',
+    priorityLevel: PriorityLevel = 'Medium'
   ) => {
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
       throw new Error('Wallet not connected')
@@ -43,14 +43,14 @@ export function useCommentFee() {
 
       // Deserialize and sign the transaction
       const transaction = VersionedTransaction.deserialize(
-        Buffer.from(response.transaction, 'base64'),
+        Buffer.from(response.transaction, 'base64')
       )
 
       const signer = await primaryWallet.getSigner()
       const txid = await signer.signAndSendTransaction(transaction)
 
       // Wait for confirmation using our custom fast confirmation
-      const connection = await primaryWallet.getConnection()
+      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
       await confirmTransactionFast(connection, txid.signature, 'confirmed')
 
       return txid.signature

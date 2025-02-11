@@ -1,4 +1,4 @@
-import { Transaction, ComputeBudgetProgram } from '@solana/web3.js'
+import { ComputeBudgetProgram, Transaction } from '@solana/web3.js'
 
 export type PriorityLevel =
   | 'Min'
@@ -10,20 +10,23 @@ export type PriorityLevel =
 
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY
 const HELIUS_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
+const DEFAULT_COMPUTE_UNIT_LIMIT = 15_000
 
 export async function getPriorityFeeEstimate(
   transaction: Transaction,
-  priorityLevel: PriorityLevel = 'Medium',
-  options = {},
+  priorityLevel: PriorityLevel = 'Medium'
 ) {
   if (!HELIUS_API_KEY) {
     throw new Error('HELIUS_API_KEY is not configured')
   }
 
-  // Serialize the transaction and encode it properly for the API
-  const serializedTransaction = Buffer.from(
-    transaction.serialize({ verifySignatures: false }),
-  ).toString('base64')
+  // Extract account keys from the transaction
+  const accountKeys = transaction.instructions
+    .flatMap((ix) => [
+      ix.programId.toString(),
+      ...ix.keys.map((key) => key.pubkey.toString()),
+    ])
+    .filter((value, index, self) => self.indexOf(value) === index) // Remove duplicates
 
   const response = await fetch(HELIUS_RPC_URL, {
     method: 'POST',
@@ -36,9 +39,8 @@ export async function getPriorityFeeEstimate(
       method: 'getPriorityFeeEstimate',
       params: [
         {
-          transaction: serializedTransaction,
+          accountKeys,
           options: {
-            ...options,
             priorityLevel,
             includeAllPriorityFeeLevels: true,
           },
@@ -53,10 +55,16 @@ export async function getPriorityFeeEstimate(
     throw new Error(data.error.message)
   }
 
+  console.log('Priority Fee Levels:', data.result?.priorityFeeLevels)
+  console.log('Selected Priority Level:', priorityLevel)
+
   // Ensure we have a valid priority fee value
-  const priorityFee = data.result?.priorityFeeLevels?.[priorityLevel]
+  const priorityFee =
+    data.result?.priorityFeeLevels?.[priorityLevel.toLowerCase()]
+  console.log('Selected Priority Fee:', priorityFee)
+
   if (typeof priorityFee !== 'number' || isNaN(priorityFee)) {
-    // Default to a reasonable priority fee if the API doesn't return a valid value
+    console.log('Invalid priority fee value, defaulting to 45000')
     return BigInt(45000)
   }
 
@@ -65,27 +73,37 @@ export async function getPriorityFeeEstimate(
 
 export async function addPriorityFee(
   transaction: Transaction,
-  priorityLevel: PriorityLevel = 'Medium',
+  priorityLevel: PriorityLevel = 'Medium'
 ) {
   try {
     const microLamports = await getPriorityFeeEstimate(
       transaction,
-      priorityLevel,
+      priorityLevel
     )
 
-    // Add a ComputeBudgetProgram instruction to set the compute unit price
-    const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports,
-    })
+    // Add compute budget instructions
+    const computeBudgetInstructions = [
+      ComputeBudgetProgram.setComputeUnitLimit({
+        units: DEFAULT_COMPUTE_UNIT_LIMIT,
+      }),
+      ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports,
+      }),
+    ]
 
-    // Add the priority fee instruction at the beginning of the transaction
-    transaction.instructions.unshift(priorityFeeInstruction)
+    // Add the compute budget instructions at the beginning of the transaction
+    transaction.instructions.unshift(...computeBudgetInstructions)
   } catch (error) {
     console.error('Failed to add priority fee, using default:', error)
-    // Fallback to default fee of 45000 microLamports (based on recent successful transactions)
-    const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 45000,
-    })
-    transaction.instructions.unshift(priorityFeeInstruction)
+    // Fallback to default compute budget settings
+    const computeBudgetInstructions = [
+      ComputeBudgetProgram.setComputeUnitLimit({
+        units: DEFAULT_COMPUTE_UNIT_LIMIT,
+      }),
+      ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 45000,
+      }),
+    ]
+    transaction.instructions.unshift(...computeBudgetInstructions)
   }
 }

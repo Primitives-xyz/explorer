@@ -1,8 +1,8 @@
-import { useCallback, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 export function useDebounce<T extends (...args: any[]) => any>(
   callback: T,
-  delay: number,
+  delay: number
 ): [(...args: Parameters<T>) => void, () => void] {
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
@@ -16,7 +16,7 @@ export function useDebounce<T extends (...args: any[]) => any>(
         await callback(...args)
       }, delay)
     },
-    [callback, delay],
+    [callback, delay]
   )
 
   const cancel = useCallback(() => {

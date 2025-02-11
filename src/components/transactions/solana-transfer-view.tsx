@@ -1,6 +1,7 @@
+import type { Transaction } from '@/utils/helius/types'
+import { route } from '@/utils/routes'
 import Image from 'next/image'
 import Link from 'next/link'
-import type { Transaction } from '@/utils/helius/types'
 
 interface Transfer {
   from: string
@@ -65,7 +66,7 @@ export function SolanaTransferView({
                   <>
                     To:{' '}
                     <Link
-                      href={`/${transfer.to}`}
+                      href={route('address', { id: transfer.to })}
                       className="hover:text-green-400 transition-colors"
                     >
                       {transfer.to.slice(0, 4)}...{transfer.to.slice(-4)}
@@ -75,7 +76,7 @@ export function SolanaTransferView({
                   <>
                     From:{' '}
                     <Link
-                      href={`/${transfer.from}`}
+                      href={route('address', { id: transfer.from })}
                       className="hover:text-green-400 transition-colors"
                     >
                       {transfer.from.slice(0, 4)}...{transfer.from.slice(-4)}

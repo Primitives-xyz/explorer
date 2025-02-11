@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { contentServer } from '@/lib/content-server'
+import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -9,13 +9,13 @@ export async function GET(request: Request) {
   console.log(
     `[API] Fetching content for id: ${id}, requestingProfileId: ${
       requestingProfileId || 'none'
-    }`,
+    }`
   )
 
   try {
     const content = await contentServer.getContentById(
       id,
-      requestingProfileId || undefined,
+      requestingProfileId || undefined
     )
 
     if (!content) {
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     console.error(`[API] Error stack:`, error.stack)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch content' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
@@ -44,7 +44,7 @@ export async function PUT(request: Request) {
     if (!properties || !Array.isArray(properties)) {
       return NextResponse.json(
         { error: 'Properties array is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -54,7 +54,7 @@ export async function PUT(request: Request) {
     console.error('Error updating content:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to update content' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
@@ -68,7 +68,7 @@ export async function DELETE(request: Request) {
     console.error('Error deleting content:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to delete content' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

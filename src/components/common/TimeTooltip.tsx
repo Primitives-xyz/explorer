@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode, useRef, useEffect } from 'react'
+import { type ReactNode, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 interface TimeTooltipProps {
@@ -33,7 +33,7 @@ const TooltipPortal = ({
     >
       {fullDate}
     </div>,
-    document.body,
+    document.body
   )
 }
 

@@ -9,11 +9,11 @@ import { Alert } from '@/components/common/alert'
 import { Modal } from '@/components/common/modal'
 import { Input } from '@/components/form/input'
 import { SubmitButton } from '@/components/form/submit-button'
+import { useFileUpload } from '@/hooks/use-file-upload'
+import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState } from 'react'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
-import { useFileUpload } from '@/hooks/use-file-upload'
-import { cn } from '@/lib/utils'
 
 type FormStep = 'username' | 'details'
 
@@ -60,7 +60,7 @@ export function CreateProfile({
   const { profiles: suggestedProfiles, loading: loadingSuggestions } =
     useGetProfiles(
       walletAddress || '',
-      true, // useIdentities = true
+      true // useIdentities = true
     )
 
   // Group usernames by their base name to find duplicates
@@ -103,8 +103,8 @@ export function CreateProfile({
     new Set(
       suggestedUsernames
         .map((profile) => profile.image)
-        .filter((image): image is string => !!image),
-    ),
+        .filter((image): image is string => !!image)
+    )
   )
 
   // Get unique suggested bios from all profiles
@@ -116,9 +116,9 @@ export function CreateProfile({
           (bio): bio is string =>
             !!bio &&
             bio.trim() !== '' &&
-            !bio.toLowerCase().includes('highest score'),
-        ),
-    ),
+            !bio.toLowerCase().includes('highest score')
+        )
+    )
   )
 
   // For testing purposes, we'll show the modal whenever wallet is connected
@@ -179,7 +179,7 @@ export function CreateProfile({
 
         if (!response.ok) {
           throw new Error(
-            data.error || data.details || 'Failed to create profile',
+            data.error || data.details || 'Failed to create profile'
           )
         }
 
@@ -280,7 +280,7 @@ export function CreateProfile({
                         const isRelatedToSelected =
                           username &&
                           relatedUsernames.some(
-                            (related) => related.username === username,
+                            (related) => related.username === username
                           )
 
                         return (
@@ -460,7 +460,7 @@ export function CreateProfile({
                                   'relative group rounded-full overflow-hidden border-2 transition-all duration-200',
                                   selectedImageUrl === imageUrl
                                     ? 'border-green-500 ring-2 ring-green-500/20'
-                                    : 'border-green-500/20 hover:border-green-500/50',
+                                    : 'border-green-500/20 hover:border-green-500/50'
                                 )}
                               >
                                 <img
@@ -479,7 +479,7 @@ export function CreateProfile({
                               type="button"
                               onClick={() =>
                                 handleImageSelect(
-                                  `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`,
+                                  `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                                 )
                               }
                               className={cn(
@@ -487,7 +487,7 @@ export function CreateProfile({
                                 selectedImageUrl ===
                                   `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                                   ? 'border-green-500 ring-2 ring-green-500/20'
-                                  : 'border-green-500/20 hover:border-green-500/50',
+                                  : 'border-green-500/20 hover:border-green-500/50'
                               )}
                             >
                               <img
@@ -509,7 +509,7 @@ export function CreateProfile({
                             type="button"
                             onClick={() =>
                               handleImageSelect(
-                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`,
+                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                               )
                             }
                             className={cn(
@@ -517,7 +517,7 @@ export function CreateProfile({
                               selectedImageUrl ===
                                 `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                                 ? 'border-green-500 ring-2 ring-green-500/20'
-                                : 'border-green-500/20 hover:border-green-500/50',
+                                : 'border-green-500/20 hover:border-green-500/50'
                             )}
                           >
                             <img

@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { contentServer } from '@/lib/content-server'
+import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     console.error('Error fetching contents:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch contents' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     if (!id || !profileId) {
       return NextResponse.json(
         { error: 'Missing required fields: id and profileId' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     console.error('Error creating content:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to create content' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

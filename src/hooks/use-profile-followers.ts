@@ -1,5 +1,5 @@
-import useSWR from 'swr'
 import type { IGetSocialResponse } from '@/models/profile.models'
+import useSWR from 'swr'
 
 async function fetchFollowers(url: string): Promise<IGetSocialResponse> {
   const res = await fetch(url)
@@ -20,7 +20,7 @@ export function useProfileFollowers(username: string | null) {
       dedupingInterval: 30000, // 30 seconds
       revalidateIfStale: false,
       fallbackData: { profiles: [], page: 1, pageSize: 10 },
-    },
+    }
   )
 
   return {

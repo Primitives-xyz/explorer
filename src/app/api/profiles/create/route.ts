@@ -1,8 +1,8 @@
 // app/api/profiles/create/route.ts
+import { DICEBEAR_API_BASE } from '@/lib/constants'
 import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,35 +12,35 @@ export async function POST(req: NextRequest) {
     if (!username && !ownerWalletAddress) {
       return NextResponse.json(
         { error: 'Both username and wallet address are required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
     if (!username) {
       return NextResponse.json(
         { error: 'Username is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
     if (!ownerWalletAddress) {
       return NextResponse.json(
         { error: 'Wallet address is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
     if (username.length < 3) {
       return NextResponse.json(
         { error: 'Username must be at least 3 characters long' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
     if (username.length > 30) {
       return NextResponse.json(
         { error: 'Username must not exceed 30 characters' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -49,18 +49,18 @@ export async function POST(req: NextRequest) {
         {
           error: 'Username can only contain letters, numbers, and underscores',
         },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
     // Verify environment variables
     if (!process.env.TAPESTRY_API_KEY || !process.env.TAPESTRY_URL) {
       console.error(
-        '[Profile Creation Error]: Missing required environment variables',
+        '[Profile Creation Error]: Missing required environment variables'
       )
       return NextResponse.json(
         { error: 'Server configuration error' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
           details:
             'The Tapestry API endpoint for profile creation is not available. Please verify the API endpoint: profiles/findOrCreate',
         },
-        { status: 404 },
+        { status: 404 }
       )
     }
 
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
           details:
             'Failed to authenticate with the Tapestry API. Please check your API key.',
         },
-        { status: 401 },
+        { status: 401 }
       )
     }
 
@@ -127,14 +127,14 @@ export async function POST(req: NextRequest) {
     if (error.message?.includes('already exists')) {
       return NextResponse.json(
         { error: 'This username is already taken' },
-        { status: 409 },
+        { status: 409 }
       )
     }
 
     if (error.message?.includes('Invalid wallet address')) {
       return NextResponse.json(
         { error: 'The provided wallet address is invalid' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
           details:
             'Failed to connect to the Tapestry API. Please try again later.',
         },
-        { status: 503 },
+        { status: 503 }
       )
     }
 
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
         error: 'Failed to create profile',
         details: error.message || 'An unexpected error occurred',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

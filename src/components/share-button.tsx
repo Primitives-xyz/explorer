@@ -1,9 +1,9 @@
 'use client'
 
+import { Copy, Link2, MessageCircle, Share2, Twitter } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Copy, Share2, Twitter, Link2, MessageCircle } from 'lucide-react'
-import { useState, useEffect } from 'react'
 
 interface ShareButtonProps {
   title: string
@@ -60,7 +60,7 @@ export default function ShareButton({
 
   const handleTwitterShare = () => {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      text,
+      text
     )}&url=${encodeURIComponent(shareUrl)}`
     window.open(twitterUrl, '_blank')
     setShowDropdown(false)
@@ -68,7 +68,7 @@ export default function ShareButton({
 
   const handleTelegramShare = () => {
     const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(
-      shareUrl,
+      shareUrl
     )}&text=${encodeURIComponent(text)}`
     window.open(telegramUrl, '_blank')
     setShowDropdown(false)

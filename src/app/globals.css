@@ -74,7 +74,7 @@ body {
 }
 
 /* necessary to make the button have the same height as connect walled + search */
-.dialect> * > button {
+.dialect > * > button {
   height: 34px !important;
 }
 

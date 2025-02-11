@@ -1,6 +1,6 @@
 import type {
-  Transaction,
   AccountData,
+  Transaction,
   TransactionEvent,
 } from '@/utils/helius/types'
 
@@ -61,7 +61,7 @@ export interface ExtendedTransaction
 }
 
 export const findNFTMintFromTensorInstructions = (
-  instructions: Instruction[],
+  instructions: Instruction[]
 ): string | null => {
   // Find the Tensor buyCore instruction
   const tensorInstruction = instructions?.find(
@@ -69,15 +69,15 @@ export const findNFTMintFromTensorInstructions = (
       ix.programId === 'TCMPhJdwDryooaGtiocG1u3xcYbRpiJzb283XfCZsDp' &&
       ix.innerInstructions?.some(
         (inner) =>
-          inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d',
-      ),
+          inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d'
+      )
   )
 
   if (tensorInstruction?.innerInstructions) {
     // Find the Core instruction and get the NFT mint from its accounts
     const coreInnerInstruction = tensorInstruction.innerInstructions.find(
       (inner) =>
-        inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d',
+        inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d'
     )
 
     if (
@@ -92,7 +92,7 @@ export const findNFTMintFromTensorInstructions = (
 }
 
 export const findNFTMintFromTokenTransfers = (
-  tx: ExtendedTransaction,
+  tx: ExtendedTransaction
 ): string | null => {
   // First check if this is a Tensor transaction
   if (tx.source === 'TENSOR') {
@@ -102,7 +102,7 @@ export const findNFTMintFromTokenTransfers = (
   // Fallback to existing token transfer logic
   if (!tx.tokenTransfers?.length) return null
   const nftTransfer = tx.tokenTransfers.find(
-    (t) => t.tokenStandard === 'NonFungible',
+    (t) => t.tokenStandard === 'NonFungible'
   )
   return nftTransfer?.mint || null
 }
@@ -110,21 +110,21 @@ export const findNFTMintFromTokenTransfers = (
 export const findNFTMintFromMetaplexInstructions = (
   instructions: Instruction[],
   sourceWallet: string,
-  accountsInvolved?: string[],
+  accountsInvolved?: string[]
 ): string | null => {
   const metaplexInstruction = instructions?.find(
     (ix) =>
       ix.programId === 'M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K' &&
       ix.innerInstructions?.some(
         (inner) =>
-          inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d',
-      ),
+          inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d'
+      )
   )
 
   if (metaplexInstruction) {
     const coreInnerInstruction = metaplexInstruction.innerInstructions?.find(
       (inner) =>
-        inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d',
+        inner.programId === 'CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d'
     )
 
     if (coreInnerInstruction?.accounts) {
@@ -134,7 +134,7 @@ export const findNFTMintFromMetaplexInstructions = (
             accountsInvolved?.includes(acc) &&
             acc !== sourceWallet &&
             !acc.startsWith('1111') &&
-            !isSystemAccount(acc),
+            !isSystemAccount(acc)
         ) || null
       )
     }
@@ -144,14 +144,14 @@ export const findNFTMintFromMetaplexInstructions = (
 
 export const findNFTMintFromAccounts = (
   accounts: string[],
-  sourceWallet: string,
+  sourceWallet: string
 ): string | null | undefined => {
   const potentialNFTs = accounts.filter(
     (address) =>
       address &&
       !address.startsWith('1111') &&
       address !== sourceWallet &&
-      !isSystemAccount(address),
+      !isSystemAccount(address)
   )
 
   return potentialNFTs.length > 0 ? potentialNFTs[0] : null
@@ -179,7 +179,7 @@ export const getSaleAmount = (transfers: Transfer[]): number => {
 
 export const isNFTBuyTransaction = (
   tx: ExtendedTransaction,
-  sourceWallet: string,
+  sourceWallet: string
 ): boolean => {
   // For Tensor transactions, check if it's a buyCore instruction
   if (tx.source === 'TENSOR') {
@@ -187,7 +187,7 @@ export const isNFTBuyTransaction = (
       tx.parsedInstructions?.some(
         (ix) =>
           ix.programId === 'TCMPhJdwDryooaGtiocG1u3xcYbRpiJzb283XfCZsDp' &&
-          ix.decodedData?.name === 'buyCore',
+          ix.decodedData?.name === 'buyCore'
       ) || false
     )
   }

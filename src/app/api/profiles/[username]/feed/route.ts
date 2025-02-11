@@ -1,8 +1,8 @@
 import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
-import { NextRequest, NextResponse } from 'next/server'
 import type { Transaction } from '@/utils/helius/types'
 import fs from 'fs/promises'
+import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 
 type RouteContext = {
@@ -23,7 +23,7 @@ interface TransactionStats {
 
 // Helper to fetch transactions for a single wallet
 async function fetchWalletTransactions(
-  walletId: string,
+  walletId: string
 ): Promise<Transaction[]> {
   const apiKey = process.env.RPC_URL?.split('api-key=')[1]
   if (!apiKey) {
@@ -50,7 +50,7 @@ async function fetchWalletTransactions(
 
 function calculateTransactionStats(
   transactions: Transaction[],
-  walletIds: string[],
+  walletIds: string[]
 ): TransactionStats {
   const stats: TransactionStats = {
     totalVolume: 0,
@@ -105,7 +105,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     if (!username) {
       return NextResponse.json(
         { error: 'Username is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -130,7 +130,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
 
     // Fetch transactions for all wallets concurrently
     const transactionArrays = await Promise.all(
-      walletIds.map(fetchWalletTransactions),
+      walletIds.map(fetchWalletTransactions)
     )
 
     // Flatten and sort by timestamp
@@ -186,7 +186,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     console.error('Error fetching feed:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch feed' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

@@ -1,5 +1,5 @@
-import { Connection } from '@solana/web3.js'
 import type { TransactionConfirmationStatus } from '@solana/web3.js'
+import { Connection } from '@solana/web3.js'
 
 export const LAMPORTS_PER_SOL = 1000000000
 
@@ -17,7 +17,7 @@ export const formatLamportsToSol = (lamports: number) => {
 
 export const formatTokenAmount = (
   amount: string | number,
-  decimals: number = 9,
+  decimals: number = 9
 ) => {
   const value = Number(amount) / Math.pow(10, decimals)
   return value.toLocaleString(undefined, {
@@ -101,7 +101,7 @@ export const isSpamTransaction = (tx: any) => {
   ) {
     // Check if all transfers are tiny amounts (less than 0.001 SOL)
     const allTinyTransfers = tx.nativeTransfers.every(
-      (transfer: any) => Math.abs(transfer.amount / LAMPORTS_PER_SOL) < 0.001,
+      (transfer: any) => Math.abs(transfer.amount / LAMPORTS_PER_SOL) < 0.001
     )
     if (allTinyTransfers) return true
   }
@@ -118,7 +118,7 @@ export const getRoyaltyInfo = (tx: any) => {
   const changes = tx.balanceChanges || {}
   const totalChange = Object.values(changes).reduce(
     (sum: number, val: any) => Math.abs(sum) + Math.abs(Number(val)),
-    0,
+    0
   )
 
   // Find potential royalty payments (typically 1-10% of total transaction value)
@@ -155,7 +155,7 @@ export const getNFTTransactionRole = (address: string, tx: any) => {
   // Get royalty info to identify royalty receivers
   const royaltyInfo = getRoyaltyInfo(tx)
   const isRoyaltyReceiver = royaltyInfo?.payments.some(
-    (p) => p.address === address,
+    (p) => p.address === address
   )
 
   if (isRoyaltyReceiver) return 'royalty'
@@ -200,7 +200,7 @@ export async function confirmTransactionFast(
   connection: Connection,
   signature: string,
   desiredConfirmationStatus: ConfirmationStatus = 'confirmed',
-  timeout = 30000, // 30 seconds default timeout
+  timeout = 30000 // 30 seconds default timeout
 ): Promise<SignatureStatus> {
   const startTime = Date.now()
 
@@ -214,7 +214,7 @@ export async function confirmTransactionFast(
 
     if (!status) {
       // If status is null, transaction hasn't been seen yet - wait a bit and retry
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await new Promise((resolve) => setTimeout(resolve, 300))
       continue
     }
 
@@ -232,6 +232,6 @@ export async function confirmTransactionFast(
 
     // If we're here, transaction is confirmed but not at our desired status yet
     // Poll faster than the default confirmTransaction
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 150))
   }
 }

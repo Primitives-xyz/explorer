@@ -61,7 +61,7 @@ export async function POST(request: Request) {
             ? error.message
             : 'Failed to estimate priority fee',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

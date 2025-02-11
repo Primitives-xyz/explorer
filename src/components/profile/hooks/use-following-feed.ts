@@ -1,5 +1,5 @@
-import useSWR from 'swr'
 import type { Transaction } from '@/utils/helius/types'
+import useSWR from 'swr'
 import type { GetFollowingResponse } from '../types'
 
 interface FeedResponse {
@@ -22,7 +22,7 @@ export function useFollowingFeed(username: string) {
       revalidateOnReconnect: false,
       dedupingInterval: 30000, // 30 seconds
       revalidateIfStale: false,
-    },
+    }
   )
 
   return {

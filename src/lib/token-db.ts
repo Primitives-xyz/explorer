@@ -46,7 +46,7 @@ export async function cacheTokenInfo(tokenInfo: TokenCacheItem): Promise<void> {
 }
 
 export async function getCachedTokenInfo(
-  mint: string,
+  mint: string
 ): Promise<TokenCacheItem | null> {
   const db = await initTokenDB()
   return new Promise((resolve, reject) => {

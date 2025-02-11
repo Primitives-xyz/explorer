@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from 'react'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { VersionedTransaction, Connection } from '@solana/web3.js'
-import { isSolanaWallet } from '@dynamic-labs/solana'
-import { useToast } from '@/hooks/use-toast'
-import { useSSEPrice } from './use-sse-price'
-import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
 import {
-  PLATFORM_FEE_BPS,
-  PLATFORM_FEE_ACCOUNT,
-  SSE_TOKEN_MINT,
   DEFAULT_PRIORITY_LEVEL,
   DEFAULT_SLIPPAGE_BPS,
+  PLATFORM_FEE_ACCOUNT,
+  PLATFORM_FEE_BPS,
+  SSE_TOKEN_MINT,
 } from '@/constants/jupiter'
+import { useToast } from '@/hooks/use-toast'
+import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
+import { isSolanaWallet } from '@dynamic-labs/solana'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { useCallback, useEffect, useState } from 'react'
+import { useSSEPrice } from './use-sse-price'
 import { useTokenInfo } from './use-token-info'
 
 interface UseJupiterSwapParams {
@@ -29,14 +29,14 @@ export function useJupiterSwap({
   inputAmount,
   inputDecimals,
   sourceWallet,
-  platformFeeBps,
+  platformFeeBps = PLATFORM_FEE_BPS,
 }: UseJupiterSwapParams) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txSignature, setTxSignature] = useState('')
   const [priorityLevel, setPriorityLevel] = useState<PriorityLevel>(
-    DEFAULT_PRIORITY_LEVEL,
+    DEFAULT_PRIORITY_LEVEL
   )
   const { primaryWallet, walletAddress, mainUsername } = useCurrentWallet()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
@@ -49,28 +49,39 @@ export function useJupiterSwap({
   const { ssePrice } = useSSEPrice()
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const outputTokenInfo = useTokenInfo(outputMint)
-
+  console.log({ platformFeeBps })
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
     setExpectedOutput('')
     setPriceImpact('')
     setError('')
+    // Reset transaction state
+    setTxSignature('')
+    setShowTradeLink(false)
+    setIsFullyConfirmed(false)
   }, [])
 
   const checkAndCreateTokenAccount = async (
     mintAddress: string,
-    walletAddress: string,
+    walletAddress: string
   ) => {
     try {
       const response = await fetch(
-        `/api/tokens/account?mintAddress=${mintAddress}&walletAddress=${walletAddress}`,
+        `/api/tokens/account?mintAddress=${mintAddress}&walletAddress=${walletAddress}`
       )
       const data = await response.json()
 
       if (data.status === 'requires_creation') {
+        toast({
+          title: 'Creating Token Account',
+          description: 'Setting up required token account for fees...',
+          variant: 'pending',
+          duration: 5000,
+        })
+
         // Create the token account
         const transaction = VersionedTransaction.deserialize(
-          Buffer.from(data.transaction, 'base64'),
+          Buffer.from(data.transaction, 'base64')
         )
 
         if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -86,11 +97,25 @@ export function useJupiterSwap({
           signature: txid.signature,
           ...(await connection.getLatestBlockhash()),
         })
+
+        toast({
+          title: 'Token Account Created',
+          description: 'Successfully set up the required token account.',
+          variant: 'success',
+          duration: 3000,
+        })
       }
 
       return data.tokenAccount
     } catch (err) {
       console.error('Error checking/creating token account:', err)
+      toast({
+        title: 'Token Account Error',
+        description:
+          'Failed to set up required token account. Please try again.',
+        variant: 'error',
+        duration: 5000,
+      })
       throw err
     }
   }
@@ -111,33 +136,33 @@ export function useJupiterSwap({
 
       // Use input decimals for amount calculation
       const adjustedAmount = Math.floor(
-        Number(inputAmount) * Math.pow(10, inputDecimals),
+        Number(inputAmount) * Math.pow(10, inputDecimals)
       )
 
-      const response = await fetch(
+      const QUOTE_URL =
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-          `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-          `&slippageBps=${slippageBps}` +
-          // Add platformFeeBps only when not using SSE fees (since SSE fees are handled via SPL transfer)
-          `${
-            platformFeeBps !== 0
-              ? `&platformFeeBps=${
-                  platformFeeBps ?? PLATFORM_FEE_BPS
-                }&feeAccount=${PLATFORM_FEE_ACCOUNT}`
-              : ''
-          }`,
-      ).then((res) => res.json())
+        `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+        `&slippageBps=${slippageBps}` +
+        // Always add a 1 bps platform fee, even when using SSE fees
+        `&platformFeeBps=${
+          platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+        }` +
+        `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
+
+      console.log({ QUOTE_URL })
+
+      const response = await fetch(QUOTE_URL).then((res) => res.json())
 
       setQuoteResponse(response)
       // Use the output token's decimals for formatting
       const outputDecimals = outputTokenInfo.decimals ?? 9
       setExpectedOutput(
-        (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString(),
+        (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString()
       )
       setPriceImpact(response.priceImpactPct)
 
       // Calculate SSE fee amount if using SSE for fees
-      if (platformFeeBps === 0 && ssePrice) {
+      if (platformFeeBps === 1 && ssePrice) {
         try {
           // Get the input amount in USDC terms using the quote's USD value
           const swapValueUSDC = Number(response.swapUsdValue ?? '0')
@@ -153,7 +178,7 @@ export function useJupiterSwap({
 
           // Convert to base units (6 decimals)
           const currentSseFeeAmount = Math.floor(
-            sseAmount * Math.pow(10, 6),
+            sseAmount * Math.pow(10, 6)
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
 
@@ -192,7 +217,7 @@ export function useJupiterSwap({
       return
     }
 
-    if (platformFeeBps === 0 && !ssePrice) {
+    if (platformFeeBps === 1 && !ssePrice) {
       setError('Unable to calculate SSE fee. Please try again.')
       return
     }
@@ -202,45 +227,56 @@ export function useJupiterSwap({
     try {
       toast({
         title: 'Preparing Swap',
-        description: 'Setting up your swap...',
+        description:
+          platformFeeBps === 1
+            ? 'Setting up SSE fee accounts...'
+            : 'Setting up fee accounts...',
         variant: 'pending',
         duration: 2000,
       })
 
       // Run token account checks and quote fetching in parallel
-      const [feeTokenAccount, sseTokenAccount, quoteResponse] =
-        await Promise.all([
-          // Check and create token account for the output token (platform fee)
-          platformFeeBps !== 0
-            ? checkAndCreateTokenAccount(outputMint, walletAddress)
-            : Promise.resolve(null),
-          // Check and create SSE token account for the user if using SSE for fees
+      const [outputFeeAta, sseFeeAta, quoteResponse] = await Promise.all([
+        // Always check for output token fee ATA since we're always using a platform fee (1 bps for SSE)
+        checkAndCreateTokenAccount(outputMint, PLATFORM_FEE_ACCOUNT),
+        // Check and create SSE token account for platform fees if using SSE for fees
+        platformFeeBps === 1
+          ? checkAndCreateTokenAccount(SSE_TOKEN_MINT, PLATFORM_FEE_ACCOUNT)
+          : Promise.resolve(null),
+        // Fetch quote in parallel
+        (async () => {
+          const multiplier = Math.pow(10, inputDecimals)
+          const adjustedAmount = Number(inputAmount) * multiplier
+
+          const QUOTE_2_URL =
+            `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
+            `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+            `&slippageBps=${slippageBps}` +
+            // Always add a 1 bps platform fee, even when using SSE fees
+            `&platformFeeBps=${
+              platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+            }` +
+            `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
+
+          console.log({ QUOTE_2_URL })
+
+          return fetch(QUOTE_2_URL).then((res) => res.json())
+        })(),
+      ])
+
+      toast({
+        title: 'Fee Accounts Ready',
+        description:
           platformFeeBps === 0
-            ? checkAndCreateTokenAccount(SSE_TOKEN_MINT, walletAddress)
-            : Promise.resolve(null),
-          // Fetch quote in parallel
-          (async () => {
-            const multiplier = Math.pow(10, inputDecimals)
-            const adjustedAmount = Number(inputAmount) * multiplier
-            return fetch(
-              `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-                `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-                `&slippageBps=${slippageBps}` +
-                // Add platformFeeBps only when not using SSE fees (since SSE fees are handled via SPL transfer)
-                `${
-                  platformFeeBps !== 0
-                    ? `&platformFeeBps=${
-                        platformFeeBps ?? PLATFORM_FEE_BPS
-                      }&feeAccount=${PLATFORM_FEE_ACCOUNT}`
-                    : ''
-                }`,
-            ).then((res) => res.json())
-          })(),
-        ])
+            ? 'SSE fee accounts are set up and ready'
+            : 'Fee accounts are set up and ready',
+        variant: 'success',
+        duration: 2000,
+      })
 
       // Calculate SSE fee amount if using SSE for fees
       let currentSseFeeAmount = '0'
-      if (platformFeeBps === 0 && ssePrice && quoteResponse) {
+      if (platformFeeBps === 1 && ssePrice && quoteResponse) {
         try {
           // Get the input amount in USDC terms using the quote's USD value
           const swapValueUSDC = Number(quoteResponse.swapUsdValue ?? '0')
@@ -256,7 +292,7 @@ export function useJupiterSwap({
 
           // Convert to base units (6 decimals)
           currentSseFeeAmount = Math.floor(
-            sseAmount * Math.pow(10, 6),
+            sseAmount * Math.pow(10, 6)
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
 
@@ -293,10 +329,10 @@ export function useJupiterSwap({
         body: JSON.stringify({
           quoteResponse,
           walletAddress,
-          feeTokenAccount: platformFeeBps !== 0 ? feeTokenAccount : undefined,
+          feeTokenAccount: outputFeeAta,
           mintAddress: outputMint,
-          sseTokenAccount: platformFeeBps === 0 ? sseTokenAccount : undefined,
-          sseFeeAmount: platformFeeBps === 0 ? currentSseFeeAmount : undefined,
+          sseTokenAccount: platformFeeBps === 1 ? sseFeeAta : undefined,
+          sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
         }),
       }).then((res) => res.json())
 
@@ -305,7 +341,7 @@ export function useJupiterSwap({
       }
 
       const transaction = VersionedTransaction.deserialize(
-        Buffer.from(response.transaction, 'base64'),
+        Buffer.from(response.transaction, 'base64')
       )
 
       if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -324,11 +360,12 @@ export function useJupiterSwap({
 
       setTxSignature(txid.signature)
 
-      toast({
+      // Create a persistent toast for confirmation with a very long duration
+      const confirmToast = toast({
         title: 'Confirming Transaction',
         description: 'Waiting for confirmation...',
         variant: 'pending',
-        duration: 5000,
+        duration: 1000000000, // Very long duration to ensure it stays visible
       })
 
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
@@ -336,6 +373,9 @@ export function useJupiterSwap({
         signature: txid.signature,
         ...(await connection.getLatestBlockhash()),
       })
+
+      // Dismiss the confirmation toast before showing the result
+      confirmToast.dismiss()
 
       if (tx.value.err) {
         toast({
@@ -346,8 +386,14 @@ export function useJupiterSwap({
         })
         setError('Transaction failed. Please try again.')
       } else {
+        toast({
+          title: 'Transaction Successful',
+          description:
+            'The swap transaction was successful. Creating Shareable link..',
+          variant: 'success',
+          duration: 5000,
+        })
         await createContentNode(txid.signature)
-        showSuccessToast()
         setShowTradeLink(true)
         setIsFullyConfirmed(true)
       }
@@ -371,22 +417,22 @@ export function useJupiterSwap({
       const [sourceWalletProfiles, walletProfiles] = await Promise.all([
         sourceWallet
           ? fetch(`/api/profiles?walletAddress=${sourceWallet}`).then((res) =>
-              res.json(),
+              res.json()
             )
           : Promise.resolve({ profiles: [] }),
         walletAddress
           ? fetch(`/api/profiles?walletAddress=${walletAddress}`).then((res) =>
-              res.json(),
+              res.json()
             )
           : Promise.resolve({ profiles: [] }),
       ])
 
       // Get main profiles (nemoapp namespace) for both wallets
       const sourceProfile = sourceWalletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp',
+        (p: any) => p.namespace.name === 'nemoapp'
       )?.profile
       const walletProfile = walletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp',
+        (p: any) => p.namespace.name === 'nemoapp'
       )?.profile
 
       // Fetch token information
@@ -425,7 +471,7 @@ export function useJupiterSwap({
             {
               key: 'inputTokenDecimals',
               value: String(
-                inputTokenData?.result?.token_info?.decimals || inputDecimals,
+                inputTokenData?.result?.token_info?.decimals || inputDecimals
               ),
             },
             {
@@ -480,15 +526,6 @@ export function useJupiterSwap({
     } catch (err) {
       console.error('Error creating content node:', err)
     }
-  }
-
-  const showSuccessToast = () => {
-    toast({
-      title: 'Swap Successful',
-      description: 'Transaction confirmed successfully!',
-      variant: 'success',
-      duration: 5000,
-    })
   }
 
   useEffect(() => {

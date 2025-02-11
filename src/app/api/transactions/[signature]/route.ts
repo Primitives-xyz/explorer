@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { isValidTransactionSignature } from '@/utils/validation'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   _request: NextRequest,
-  context: { params: Promise<{ signature: string }> },
+  context: { params: Promise<{ signature: string }> }
 ) {
   try {
     const { signature } = await context.params
@@ -11,7 +11,7 @@ export async function GET(
     if (!signature || !isValidTransactionSignature(signature)) {
       return NextResponse.json(
         { error: 'Invalid transaction signature' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -19,7 +19,7 @@ export async function GET(
     if (!HELIUS_API_KEY) {
       return NextResponse.json(
         { error: 'Helius API key not configured' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -31,13 +31,13 @@ export async function GET(
         body: JSON.stringify({
           transactions: [signature],
         }),
-      },
+      }
     )
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
       throw new Error(
-        errorData.error || `Failed to fetch transaction: ${response.status}`,
+        errorData.error || `Failed to fetch transaction: ${response.status}`
       )
     }
 
@@ -45,7 +45,7 @@ export async function GET(
     if (!data || !Array.isArray(data) || data.length === 0) {
       return NextResponse.json(
         { error: 'Transaction not found' },
-        { status: 404 },
+        { status: 404 }
       )
     }
 
@@ -60,7 +60,7 @@ export async function GET(
             ? error.message
             : 'Failed to fetch transaction details',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

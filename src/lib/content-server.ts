@@ -98,7 +98,7 @@ export const contentServer = {
 
   async getContentById(
     id: string,
-    requestingProfileId?: string,
+    requestingProfileId?: string
   ): Promise<ContentResponse> {
     const params = new URLSearchParams()
     if (requestingProfileId)
@@ -137,7 +137,7 @@ export const contentServer = {
 
   async updateContent(
     id: string,
-    properties: ContentProperties[],
+    properties: ContentProperties[]
   ): Promise<Content> {
     return fetchTapestryServer({
       endpoint: `contents/${id}`,

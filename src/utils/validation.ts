@@ -16,10 +16,10 @@ export function isValidTransactionSignature(signature: string): boolean {
 
 export function isValidUrl(url: string): boolean {
   try {
-    new URL(url);
-    return true;
+    new URL(url)
+    return true
   } catch (error) {
-    return false;
+    return false
   }
 }
 
@@ -50,4 +50,3 @@ export type RouteType = 'transaction' | 'token' | 'profile'
 
 // Types
 export type IdParams = Promise<{ id: string }>
-
