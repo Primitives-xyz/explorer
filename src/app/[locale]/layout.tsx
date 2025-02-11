@@ -4,11 +4,11 @@ import WalletProvider from '@/components/auth/wallet-provider'
 import { GlobalSearch } from '@/components/global-search'
 import { Header } from '@/components/header-container/header'
 import { CreateProfile } from '@/components/profile/create-profile'
+import { Toaster } from '@/components/toast/toaster'
 import { locales } from '@/i18n'
 import { routing } from '@/i18n/routing'
 import { NextIntlClientProvider } from 'next-intl'
 import { notFound } from 'next/navigation'
-import { Toaster } from 'sonner'
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))
