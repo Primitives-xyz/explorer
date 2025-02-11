@@ -3,11 +3,12 @@ import type { Transaction } from '@/utils/helius/types'
 import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 import { contentServer } from '@/lib/content-server'
-import type { ContentResponse } from '@/lib/content-server'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ExternalLink, Share2 } from 'lucide-react'
 import ShareButton from '@/components/share-button'
+import type { TransactionContent } from '@/types/content'
+import { getTransactionDisplayData, isCopiedSwap } from '@/types/content'
 
 // Client wrapper for SwapTransactionView
 const ClientSwapView = dynamic(() => import('./client-swap-view'))
@@ -15,16 +16,107 @@ const ClientSwapView = dynamic(() => import('./client-swap-view'))
 const formatAddress = (address: string) =>
   `${address.slice(0, 4)}...${address.slice(-4)}`
 
-async function getTradeContent(id: string): Promise<ContentResponse | null> {
+interface RawContentResponse {
+  content?: {
+    type: string
+    inputMint: string
+    outputMint: string
+    inputAmount: string
+    expectedOutput: string
+    priceImpact: string
+    slippageBps: string
+    txSignature: string
+    timestamp: string
+    sourceWallet?: string
+
+    // Token information
+    inputTokenSymbol: string
+    inputTokenImage: string
+    inputTokenDecimals: string
+    inputTokenName: string
+    outputTokenSymbol: string
+    outputTokenImage: string
+    outputTokenDecimals: string
+    outputTokenName: string
+
+    // Wallet information
+    walletAddress: string
+    walletUsername?: string
+    walletImage?: string
+    sourceWalletUsername?: string
+    sourceWalletImage?: string
+  }
+}
+
+async function getTradeContent(
+  id: string,
+): Promise<{ content: TransactionContent } | null> {
   try {
-    const content = await contentServer.getContentById(id)
-    if (!content) {
+    const response = (await contentServer.getContentById(
+      id,
+    )) as RawContentResponse
+    if (!response?.content) {
       console.error(`[Page] No content returned for id: ${id}`)
       return null
     }
-    console.log({ result: content })
 
-    return content
+    // Transform the raw content into our expected TransactionContent type
+    const rawContent = response.content
+    const transactionType = rawContent.sourceWallet
+      ? ('copied' as const)
+      : ('direct' as const)
+
+    // Create the base content that's common to both types
+    const baseContent = {
+      type: 'swap' as const,
+      inputMint: rawContent.inputMint || '',
+      outputMint: rawContent.outputMint || '',
+      inputAmount: rawContent.inputAmount || '',
+      expectedOutput: rawContent.expectedOutput || '',
+      priceImpact: rawContent.priceImpact || '',
+      slippageBps: rawContent.slippageBps || '',
+      priorityLevel: 'default' as const,
+      txSignature: rawContent.txSignature || '',
+      timestamp: rawContent.timestamp || Date.now().toString(),
+
+      // Token information
+      inputTokenSymbol: rawContent.inputTokenSymbol || '',
+      inputTokenImage: rawContent.inputTokenImage || '',
+      inputTokenDecimals: rawContent.inputTokenDecimals || '',
+      inputTokenName: rawContent.inputTokenName || '',
+      inputTokenDescription: '',
+
+      outputTokenSymbol: rawContent.outputTokenSymbol || '',
+      outputTokenImage: rawContent.outputTokenImage || '',
+      outputTokenDecimals: rawContent.outputTokenDecimals || '',
+      outputTokenName: rawContent.outputTokenName || '',
+      outputTokenDescription: '',
+
+      // Wallet information
+      walletAddress: rawContent.walletAddress || '',
+      walletUsername: rawContent.walletUsername,
+      walletImage: rawContent.walletImage,
+    }
+
+    // Create the final content object based on whether it's a copied trade or direct trade
+    const content: TransactionContent =
+      transactionType === 'copied'
+        ? {
+            ...baseContent,
+            transactionType: 'copied',
+            sourceWallet: rawContent.sourceWallet || '',
+            sourceWalletUsername: rawContent.sourceWalletUsername,
+            sourceWalletImage: rawContent.sourceWalletImage,
+          }
+        : {
+            ...baseContent,
+            transactionType: 'direct',
+            sourceWallet: '',
+            sourceWalletUsername: '',
+            sourceWalletImage: '',
+          }
+
+    return { content }
   } catch (error) {
     console.error(`[Page] Error fetching trade content for id: ${id}:`, error)
     console.error(
@@ -41,63 +133,53 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params
-  const content = await getTradeContent(resolvedParams.id)
+  const contentResponse = await getTradeContent(resolvedParams.id)
 
-  if (!content || (!content.result?.properties && !content.content)) {
+  if (!contentResponse?.content) {
     return {
       title: 'Trade Details',
     }
   }
 
-  const getBestImage = (properties: any): string => {
+  const content = contentResponse.content
+  const displayData = getTransactionDisplayData(content)
+  const getBestImage = () => {
     // Only use the trader's wallet image if it exists and is not dicebear
-    if (
-      properties.walletImage &&
-      !properties.walletImage.includes('dicebear')
-    ) {
-      return properties.walletImage
+    if (content.walletImage && !content.walletImage.includes('dicebear')) {
+      return content.walletImage
     }
     return ''
   }
 
-  const properties =
-    content.content ||
-    content.result?.properties?.reduce((acc: any, prop: any) => {
-      acc[prop.key] = prop.value
-      return acc
-    }, {})
+  const description =
+    displayData.type === 'copied'
+      ? `${displayData.copier} copied ${displayData.sourceUser}'s trade: ${displayData.amount} ➔ ${displayData.output}`
+      : `${displayData.trader}'s trade: ${displayData.amount} ➔ ${displayData.output}`
 
-  const copierName = properties.walletUsername
-    ? `@${properties.walletUsername}`
-    : formatAddress(properties.walletAddress || '')
-  const sourceName = properties.sourceWalletUsername
-    ? `@${properties.sourceWalletUsername}`
-    : formatAddress(properties.sourceWallet || '')
-
-  const description = !properties.sourceWallet
-    ? `${copierName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
-    : `${copierName} copied ${sourceName}'s trade: ${properties.inputAmount} ${properties.inputTokenSymbol} ➔ ${properties.expectedOutput} ${properties.outputTokenSymbol}`
-  const title = !properties.sourceWallet
-    ? `🔥 ${copierName}'s ${properties.outputTokenSymbol} trade`
-    : `🔥 ${copierName} copied ${sourceName}'s ${properties.outputTokenSymbol} trade`
+  const title =
+    displayData.type === 'copied'
+      ? `🔥 ${displayData.copier} copied ${displayData.sourceUser}'s ${content.outputTokenSymbol} trade`
+      : `🔥 ${displayData.trader}'s ${content.outputTokenSymbol} trade`
 
   return {
     title,
     description,
     openGraph: {
-      title: !properties.sourceWallet
-        ? `${copierName} just made a ${properties.outputTokenSymbol} move 👀`
-        : `${copierName} just copied ${sourceName}'s ${properties.outputTokenSymbol} move 👀`,
+      title:
+        displayData.type === 'copied'
+          ? `${displayData.copier} just copied ${displayData.sourceUser}'s ${content.outputTokenSymbol} move 👀`
+          : `${displayData.trader} just made a ${content.outputTokenSymbol} move 👀`,
       description,
       type: 'article',
       images: [
         {
-          url: getBestImage(properties),
+          url: getBestImage(),
           width: 1200,
           height: 630,
-          alt: !properties.sourceWallet
-            ? `${copierName}'s trade`
-            : `${copierName} copied ${sourceName}'s trade`,
+          alt:
+            displayData.type === 'copied'
+              ? `${displayData.copier} copied ${displayData.sourceUser}'s trade`
+              : `${displayData.trader}'s trade`,
         },
       ],
     },
@@ -105,22 +187,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      creator: properties.sourceWalletUsername
-        ? `@${properties.sourceWalletUsername}`
-        : undefined,
-      images: [getBestImage(properties)],
+      creator:
+        displayData.type === 'copied' ? displayData.sourceUser : undefined,
+      images: [getBestImage()],
     },
   }
 }
-
-// Client component for share functionality
 
 export default async function TradePage({ params }: Props) {
   const resolvedParams = await params
   console.log(`[Page] Rendering trade page for id: ${resolvedParams.id}`)
   const contentResponse = await getTradeContent(resolvedParams.id)
 
-  if (!contentResponse) {
+  if (!contentResponse?.content) {
     console.error(
       `[Page] Content response invalid for id: ${resolvedParams.id}. Content:`,
       contentResponse,
@@ -128,41 +207,20 @@ export default async function TradePage({ params }: Props) {
     notFound()
   }
 
-  // Handle both old and new content formats
-  let properties: Record<string, any> = {}
-
-  if (contentResponse.result?.properties) {
-    // Old format with properties array
-    properties = contentResponse.result.properties.reduce(
-      (acc: any, prop: any) => {
-        acc[prop.key] = prop.value
-        return acc
-      },
-      {},
-    )
-  } else if (contentResponse.content) {
-    // New format with direct content object
-    properties = contentResponse.content
-  } else {
-    console.error(
-      `[Page] Invalid content structure for id: ${resolvedParams.id}`,
-    )
-    notFound()
-  }
-  console.log(properties)
+  const content = contentResponse.content
+  const displayData = getTransactionDisplayData(content)
 
   // Create a transaction object that matches what SwapTransactionView expects
   const transaction: Transaction = {
-    description: `wallet swapped ${properties.inputAmount} ${properties.inputTokenSymbol} for ${properties.expectedOutput} ${properties.outputTokenSymbol}`,
+    description: `wallet swapped ${content.inputAmount} ${content.inputTokenSymbol} for ${content.expectedOutput} ${content.outputTokenSymbol}`,
     type: 'SWAP',
     source: 'jupiter',
     fee: 0,
-    feePayer: properties.walletAddress || '',
-    signature:
-      properties.txSignature || contentResponse.result?.id || resolvedParams.id,
+    feePayer: content.walletAddress,
+    signature: content.txSignature,
     slot: 0,
-    timestamp: Number(properties.timestamp),
-    sourceWallet: properties.walletAddress,
+    timestamp: Number(content.timestamp),
+    sourceWallet: content.walletAddress,
     nativeTransfers: [],
     tokenTransfers: [],
     accountData: [],
@@ -178,28 +236,28 @@ export default async function TradePage({ params }: Props) {
             Trade Details
           </h1>
           <p className="text-green-400/80 mb-6">
-            {properties.walletUsername ? (
+            {content.walletUsername ? (
               <Link
-                href={`/${properties.walletUsername}`}
+                href={`/${content.walletUsername}`}
                 className="text-green-400 hover:text-green-300 transition-colors"
               >
-                @{properties.walletUsername}
+                @{content.walletUsername}
               </Link>
             ) : (
-              formatAddress(properties.walletAddress || '')
+              formatAddress(content.walletAddress)
             )}{' '}
-            {properties.sourceWallet ? (
+            {isCopiedSwap(content) ? (
               <>
                 copied this trade from{' '}
-                {properties.sourceWalletUsername ? (
+                {content.sourceWalletUsername ? (
                   <Link
-                    href={`/${properties.sourceWalletUsername}`}
+                    href={`/${content.sourceWalletUsername}`}
                     className="text-green-400 hover:text-green-300 transition-colors"
                   >
-                    @{properties.sourceWalletUsername}
+                    @{content.sourceWalletUsername}
                   </Link>
                 ) : (
-                  formatAddress(properties.sourceWallet || '')
+                  formatAddress(content.sourceWallet)
                 )}
               </>
             ) : (
@@ -213,13 +271,33 @@ export default async function TradePage({ params }: Props) {
               {/* Source User (Original Trader) */}
               <div className="flex-1">
                 <div className="flex items-center gap-4 justify-center md:justify-start">
-                  {properties.sourceWalletImage ? (
+                  {isCopiedSwap(content) ? (
+                    content.sourceWalletImage ? (
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
+                        <Image
+                          src={content.sourceWalletImage}
+                          alt={
+                            content.sourceWalletUsername || 'Original Trader'
+                          }
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
+                        <span className="text-2xl text-green-500">
+                          {(
+                            content.sourceWalletUsername ||
+                            content.sourceWallet.slice(0, 2)
+                          ).toUpperCase()}
+                        </span>
+                      </div>
+                    )
+                  ) : content.walletImage ? (
                     <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
                       <Image
-                        src={properties.sourceWalletImage}
-                        alt={
-                          properties.sourceWalletUsername || 'Original Trader'
-                        }
+                        src={content.walletImage}
+                        alt={content.walletUsername || 'Trader'}
                         fill
                         className="object-cover"
                       />
@@ -228,36 +306,54 @@ export default async function TradePage({ params }: Props) {
                     <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
                       <span className="text-2xl text-green-500">
                         {(
-                          properties.sourceWalletUsername ||
-                          properties.sourceWallet?.slice(0, 2)
-                        )?.toUpperCase()}
+                          content.walletUsername ||
+                          content.walletAddress.slice(0, 2)
+                        ).toUpperCase()}
                       </span>
                     </div>
                   )}
                   <div>
                     <div className="text-sm text-green-400">
-                      {properties.sourceWallet ? 'Original Trade by' : 'Trader'}
+                      {isCopiedSwap(content) ? 'Original Trade by' : 'Trader'}
                     </div>
-                    {properties.sourceWalletUsername ? (
+                    {isCopiedSwap(content) ? (
+                      content.sourceWalletUsername ? (
+                        <Link
+                          href={`/${content.sourceWalletUsername}`}
+                          className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
+                        >
+                          @{content.sourceWalletUsername}
+                        </Link>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xl font-mono text-green-100">
+                            {formatAddress(content.sourceWallet)}
+                          </span>
+                          <Link
+                            href={`https://solscan.io/account/${content.sourceWallet}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
+                          >
+                            View on Solscan
+                            <ExternalLink size={12} />
+                          </Link>
+                        </div>
+                      )
+                    ) : content.walletUsername ? (
                       <Link
-                        href={`/${properties.sourceWalletUsername}`}
+                        href={`/${content.walletUsername}`}
                         className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
                       >
-                        @{properties.sourceWalletUsername}
+                        @{content.walletUsername}
                       </Link>
                     ) : (
                       <div className="flex flex-col gap-1">
                         <span className="text-xl font-mono text-green-100">
-                          {formatAddress(
-                            properties.sourceWallet ||
-                              properties.walletAddress ||
-                              '',
-                          )}
+                          {formatAddress(content.walletAddress)}
                         </span>
                         <Link
-                          href={`https://solscan.io/account/${
-                            properties.sourceWallet || properties.walletAddress
-                          }`}
+                          href={`https://solscan.io/account/${content.walletAddress}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
@@ -272,7 +368,7 @@ export default async function TradePage({ params }: Props) {
               </div>
 
               {/* Trade Arrow */}
-              {properties.sourceWallet && (
+              {isCopiedSwap(content) && (
                 <>
                   <div className="flex items-center">
                     <div className="flex flex-col items-center gap-1">
@@ -291,20 +387,20 @@ export default async function TradePage({ params }: Props) {
                     <div className="flex items-center gap-4 justify-center md:justify-end">
                       <div className="text-right">
                         <div className="text-sm text-green-400">Copied by</div>
-                        {properties.walletUsername ? (
+                        {content.walletUsername ? (
                           <Link
-                            href={`/${properties.walletUsername}`}
+                            href={`/${content.walletUsername}`}
                             className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
                           >
-                            @{properties.walletUsername}
+                            @{content.walletUsername}
                           </Link>
                         ) : (
                           <div className="flex flex-col gap-1 items-end">
                             <span className="text-xl font-mono text-green-100">
-                              {formatAddress(properties.walletAddress || '')}
+                              {formatAddress(content.walletAddress)}
                             </span>
                             <Link
-                              href={`https://solscan.io/account/${properties.walletAddress}`}
+                              href={`https://solscan.io/account/${content.walletAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
@@ -315,11 +411,11 @@ export default async function TradePage({ params }: Props) {
                           </div>
                         )}
                       </div>
-                      {properties.walletImage ? (
+                      {content.walletImage ? (
                         <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500">
                           <Image
-                            src={properties.walletImage}
-                            alt={properties.walletUsername || 'Trader'}
+                            src={content.walletImage}
+                            alt={content.walletUsername || 'Trader'}
                             fill
                             className="object-cover"
                           />
@@ -328,9 +424,9 @@ export default async function TradePage({ params }: Props) {
                         <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
                           <span className="text-2xl text-green-500">
                             {(
-                              properties.walletUsername ||
-                              properties.walletAddress?.slice(0, 2)
-                            )?.toUpperCase()}
+                              content.walletUsername ||
+                              content.walletAddress.slice(0, 2)
+                            ).toUpperCase()}
                           </span>
                         </div>
                       )}
@@ -346,30 +442,12 @@ export default async function TradePage({ params }: Props) {
         <div className="mt-4 flex items-center justify-end gap-4">
           <ShareButton
             title={`Check out this ${
-              properties.sourceWallet ? 'copied ' : ''
+              isCopiedSwap(content) ? 'copied ' : ''
             }trade on $SSE!`}
             text={
-              !properties.sourceWallet
-                ? `${
-                    properties.walletUsername ||
-                    formatAddress(properties.walletAddress || '')
-                  }'s trade: ${properties.inputAmount} ${
-                    properties.inputTokenSymbol
-                  } ➔ ${properties.expectedOutput} ${
-                    properties.outputTokenSymbol
-                  }`
-                : `${
-                    properties.walletUsername ||
-                    formatAddress(properties.walletAddress || '')
-                  } copied ${
-                    properties.sourceWalletUsername
-                      ? `@${properties.sourceWalletUsername}'s`
-                      : `${formatAddress(properties.sourceWallet || '')}'s`
-                  } trade: ${properties.inputAmount} ${
-                    properties.inputTokenSymbol
-                  } ➔ ${properties.expectedOutput} ${
-                    properties.outputTokenSymbol
-                  }`
+              displayData.type === 'copied'
+                ? `${displayData.copier} copied ${displayData.sourceUser}'s trade: ${displayData.amount} ➔ ${displayData.output}`
+                : `${displayData.trader}'s trade: ${displayData.amount} ➔ ${displayData.output}`
             }
             className="flex items-center gap-2 bg-green-900/20 px-4 py-2 rounded-lg hover:bg-green-900/30 transition-colors text-green-400"
           >
@@ -391,11 +469,11 @@ export default async function TradePage({ params }: Props) {
               {/* From Token */}
               <div className="bg-green-900/20 rounded-lg p-4 mb-4">
                 <div className="flex items-center gap-4 mb-2">
-                  {properties.inputTokenImage && (
+                  {content.inputTokenImage && (
                     <div className="relative w-8 h-8 rounded-full overflow-hidden">
                       <Image
-                        src={properties.inputTokenImage}
-                        alt={properties.inputTokenSymbol}
+                        src={content.inputTokenImage}
+                        alt={content.inputTokenSymbol}
                         fill
                         className="object-cover"
                       />
@@ -404,12 +482,12 @@ export default async function TradePage({ params }: Props) {
                   <div>
                     <div className="text-sm text-green-400">From</div>
                     <div className="font-semibold text-green-100">
-                      {properties.inputAmount} {properties.inputTokenSymbol}
+                      {displayData.amount}
                     </div>
                   </div>
                 </div>
                 <div className="text-sm text-green-400/60 mt-2">
-                  {properties.inputTokenName}
+                  {content.inputTokenName}
                 </div>
               </div>
 
@@ -421,11 +499,11 @@ export default async function TradePage({ params }: Props) {
               {/* To Token */}
               <div className="bg-green-900/20 rounded-lg p-4">
                 <div className="flex items-center gap-4 mb-2">
-                  {properties.outputTokenImage && (
+                  {content.outputTokenImage && (
                     <div className="relative w-8 h-8 rounded-full overflow-hidden">
                       <Image
-                        src={properties.outputTokenImage}
-                        alt={properties.outputTokenSymbol}
+                        src={content.outputTokenImage}
+                        alt={content.outputTokenSymbol}
                         fill
                         className="object-cover"
                       />
@@ -434,12 +512,12 @@ export default async function TradePage({ params }: Props) {
                   <div>
                     <div className="text-sm text-green-400">To</div>
                     <div className="font-semibold text-green-100">
-                      {properties.expectedOutput} {properties.outputTokenSymbol}
+                      {displayData.output}
                     </div>
                   </div>
                 </div>
                 <div className="text-sm text-green-400/60 mt-2">
-                  {properties.outputTokenName}
+                  {content.outputTokenName}
                 </div>
               </div>
             </div>
@@ -455,76 +533,45 @@ export default async function TradePage({ params }: Props) {
                   <span className="text-green-400">Price Impact</span>
                   <span
                     className={`${
-                      Number(properties.priceImpact) > 1
+                      Number(content.priceImpact) > 1
                         ? 'text-red-400'
                         : 'text-green-100'
                     }`}
                   >
-                    {Number(properties.priceImpact).toFixed(2)}%
+                    {displayData.priceImpact}%
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
                   <span className="text-green-400">Slippage Tolerance</span>
                   <span className="text-green-100">
-                    {(Number(properties.slippageBps) / 100).toFixed(1)}%
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Priority Fee</span>
-                  <span className="text-green-100">
-                    {properties.priorityFee} µ◎
+                    {displayData.slippage}%
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
                   <span className="text-green-400">Priority Level</span>
                   <span className="text-green-100 capitalize">
-                    {properties.priorityLevel}
+                    {content.priorityLevel}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
                   <span className="text-green-400">Timestamp</span>
                   <span className="text-green-100">
-                    {new Date(Number(properties.timestamp)).toLocaleString()}
+                    {displayData.timestamp.toLocaleString()}
                   </span>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Source Wallet</span>
-                  <Link
-                    href={`https://solscan.io/account/${properties.sourceWallet}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-green-100 font-mono text-sm hover:text-green-400 transition-colors group"
-                  >
-                    {formatAddress(properties.sourceWallet)}
-                    <ExternalLink
-                      size={14}
-                      className="opacity-50 group-hover:opacity-100"
-                    />
-                  </Link>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
                   <span className="text-green-400">Transaction</span>
                   <Link
-                    href={`https://solscan.io/tx/${
-                      properties.txSignature ||
-                      contentResponse.result?.id ||
-                      resolvedParams.id
-                    }`}
+                    href={`https://solscan.io/tx/${content.txSignature}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-green-100 font-mono text-sm hover:text-green-400 transition-colors group"
                   >
-                    {formatAddress(
-                      properties.txSignature ||
-                        contentResponse.result?.id ||
-                        resolvedParams.id,
-                    )}
+                    {formatAddress(content.txSignature)}
                     <ExternalLink
                       size={14}
                       className="opacity-50 group-hover:opacity-100"
@@ -543,9 +590,9 @@ export default async function TradePage({ params }: Props) {
               </h2>
               <ClientSwapView
                 tx={transaction}
-                sourceWallet={properties.walletAddress}
-                fromMint={properties.inputMint}
-                toMint={properties.outputMint}
+                sourceWallet={content.walletAddress}
+                fromMint={content.inputMint}
+                toMint={content.outputMint}
               />
             </div>
           </div>

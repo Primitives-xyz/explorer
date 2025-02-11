@@ -4,6 +4,7 @@ import { VersionedTransaction, Connection } from '@solana/web3.js'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useToast } from '@/hooks/use-toast'
 import { useSSEPrice } from './use-sse-price'
+import { useCreateContentNode } from './use-create-content-node'
 import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
 import {
   PLATFORM_FEE_BPS,
@@ -32,13 +33,14 @@ export function useJupiterSwap({
   platformFeeBps = PLATFORM_FEE_BPS,
 }: UseJupiterSwapParams) {
   const { toast } = useToast()
+  const { createContentNode } = useCreateContentNode()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txSignature, setTxSignature] = useState('')
   const [priorityLevel, setPriorityLevel] = useState<PriorityLevel>(
     DEFAULT_PRIORITY_LEVEL,
   )
-  const { primaryWallet, walletAddress, mainUsername } = useCurrentWallet()
+  const { primaryWallet, walletAddress } = useCurrentWallet()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [priceImpact, setPriceImpact] = useState<string>('')
@@ -366,7 +368,19 @@ export function useJupiterSwap({
           variant: 'success',
           duration: 5000,
         })
-        await createContentNode(txid.signature)
+        await createContentNode({
+          signature: txid.signature,
+          inputMint,
+          outputMint,
+          inputAmount,
+          expectedOutput,
+          priceImpact,
+          slippageBps,
+          sourceWallet,
+          priorityLevel,
+          walletAddress,
+          inputDecimals,
+        })
         setShowTradeLink(true)
         setIsFullyConfirmed(true)
       }
@@ -381,123 +395,6 @@ export function useJupiterSwap({
       setError('Swap transaction failed. Please try again.')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const createContentNode = async (signature: string) => {
-    try {
-      // Fetch profiles for both wallets
-      const [sourceWalletProfiles, walletProfiles] = await Promise.all([
-        sourceWallet
-          ? fetch(`/api/profiles?walletAddress=${sourceWallet}`).then((res) =>
-              res.json(),
-            )
-          : Promise.resolve({ profiles: [] }),
-        walletAddress
-          ? fetch(`/api/profiles?walletAddress=${walletAddress}`).then((res) =>
-              res.json(),
-            )
-          : Promise.resolve({ profiles: [] }),
-      ])
-
-      // Get main profiles (nemoapp namespace) for both wallets
-      const sourceProfile = sourceWalletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp',
-      )?.profile
-      const walletProfile = walletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp',
-      )?.profile
-
-      // Fetch token information
-      const [inputTokenResponse, outputTokenResponse] = await Promise.all([
-        fetch(`/api/token?mint=${inputMint}`),
-        fetch(`/api/token?mint=${outputMint}`),
-      ])
-
-      const inputTokenData = await inputTokenResponse.json()
-      const outputTokenData = await outputTokenResponse.json()
-
-      // Create content node with enhanced information
-      await fetch('/api/content', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: signature,
-          profileId: mainUsername,
-          properties: [
-            { key: 'type', value: 'swap' },
-            { key: 'inputMint', value: inputMint },
-            { key: 'outputMint', value: outputMint },
-            { key: 'inputAmount', value: inputAmount },
-            { key: 'expectedOutput', value: expectedOutput },
-            { key: 'priceImpact', value: priceImpact },
-            {
-              key: 'inputTokenSymbol',
-              value: inputTokenData?.result?.content?.metadata?.symbol || '',
-            },
-            {
-              key: 'inputTokenImage',
-              value: inputTokenData?.result?.content?.links?.image || '',
-            },
-            {
-              key: 'inputTokenDecimals',
-              value: String(
-                inputTokenData?.result?.token_info?.decimals || inputDecimals,
-              ),
-            },
-            {
-              key: 'outputTokenSymbol',
-              value: outputTokenData?.result?.content?.metadata?.symbol || '',
-            },
-            {
-              key: 'outputTokenImage',
-              value: outputTokenData?.result?.content?.links?.image || '',
-            },
-            {
-              key: 'outputTokenDecimals',
-              value: String(outputTokenData?.result?.token_info?.decimals || 6),
-            },
-            { key: 'txSignature', value: signature },
-            { key: 'timestamp', value: String(Date.now()) },
-            { key: 'slippageBps', value: String(slippageBps) },
-            { key: 'sourceWallet', value: sourceWallet || '' },
-            { key: 'priorityLevel', value: priorityLevel },
-            { key: 'walletAddress', value: walletAddress },
-            // Add profile information for source wallet
-            {
-              key: 'sourceWalletUsername',
-              value: sourceProfile?.username || '',
-            },
-            { key: 'sourceWalletImage', value: sourceProfile?.image || '' },
-            // Add profile information for wallet address
-            { key: 'walletUsername', value: walletProfile?.username || '' },
-            { key: 'walletImage', value: walletProfile?.image || '' },
-            // Add token metadata
-            {
-              key: 'inputTokenName',
-              value: inputTokenData?.result?.content?.metadata?.name || '',
-            },
-            {
-              key: 'inputTokenDescription',
-              value:
-                inputTokenData?.result?.content?.metadata?.description || '',
-            },
-            {
-              key: 'outputTokenName',
-              value: outputTokenData?.result?.content?.metadata?.name || '',
-            },
-            {
-              key: 'outputTokenDescription',
-              value:
-                outputTokenData?.result?.content?.metadata?.description || '',
-            },
-          ],
-        }),
-      })
-    } catch (err) {
-      console.error('Error creating content node:', err)
     }
   }
 
