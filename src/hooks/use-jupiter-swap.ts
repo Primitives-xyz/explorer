@@ -49,7 +49,6 @@ export function useJupiterSwap({
   const { ssePrice } = useSSEPrice()
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const outputTokenInfo = useTokenInfo(outputMint)
-  console.log({ platformFeeBps })
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
     setExpectedOutput('')
@@ -149,8 +148,6 @@ export function useJupiterSwap({
         }` +
         `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
 
-      console.log({ QUOTE_URL })
-
       const response = await fetch(QUOTE_URL).then((res) => res.json())
 
       setQuoteResponse(response)
@@ -181,17 +178,6 @@ export function useJupiterSwap({
             sseAmount * Math.pow(10, 6),
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
-
-          console.log('SSE Fee Calculation (Quote):', {
-            swapValueUSDC,
-            inputAmountUSDC,
-            platformFeeUSDC,
-            halfFeeUSDC,
-            ssePrice,
-            sseAmount,
-            currentSseFeeAmount,
-            explanation: `${halfFeeUSDC} USDC / ${ssePrice} USDC/SSE = ${sseAmount} SSE`,
-          })
         } catch (err) {
           console.error('Error calculating SSE fee during quote:', err)
           setSseFeeAmount('0')
@@ -258,8 +244,6 @@ export function useJupiterSwap({
             }` +
             `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
 
-          console.log({ QUOTE_2_URL })
-
           return fetch(QUOTE_2_URL).then((res) => res.json())
         })(),
       ])
@@ -295,17 +279,6 @@ export function useJupiterSwap({
             sseAmount * Math.pow(10, 6),
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
-
-          console.log('SSE Fee Calculation:', {
-            swapValueUSDC,
-            inputAmountUSDC,
-            platformFeeUSDC,
-            halfFeeUSDC,
-            ssePrice,
-            sseAmount,
-            currentSseFeeAmount,
-            explanation: `${halfFeeUSDC} USDC / ${ssePrice} USDC/SSE = ${sseAmount} SSE`,
-          })
         } catch (err) {
           console.error('Error calculating SSE fee:', err)
           currentSseFeeAmount = '0'
