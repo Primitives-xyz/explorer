@@ -32,7 +32,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     // Transform the response to match our expected format
     return NextResponse.json({
       profiles: response.profiles || [],
-      totalAmount: response.total || 0,
+      totalAmount: response.profiles?.length || 0,
     })
   } catch (error: any) {
     console.error('[Token Holders API Error]:', {
