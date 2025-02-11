@@ -29,7 +29,7 @@ export function useJupiterSwap({
   inputAmount,
   inputDecimals,
   sourceWallet,
-  platformFeeBps,
+  platformFeeBps = PLATFORM_FEE_BPS,
 }: UseJupiterSwapParams) {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
@@ -49,7 +49,7 @@ export function useJupiterSwap({
   const { ssePrice } = useSSEPrice()
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const outputTokenInfo = useTokenInfo(outputMint)
-
+  console.log({ platformFeeBps })
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
     setExpectedOutput('')
@@ -135,16 +135,19 @@ export function useJupiterSwap({
         Number(inputAmount) * Math.pow(10, inputDecimals),
       )
 
-      const response = await fetch(
+      const QUOTE_URL =
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-          `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-          `&slippageBps=${slippageBps}` +
-          // Always add a 1 bps platform fee, even when using SSE fees
-          `&platformFeeBps=${
-            platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-          }` +
-          `&feeAccount=${PLATFORM_FEE_ACCOUNT}`,
-      ).then((res) => res.json())
+        `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+        `&slippageBps=${slippageBps}` +
+        // Always add a 1 bps platform fee, even when using SSE fees
+        `&platformFeeBps=${
+          platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+        }` +
+        `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
+
+      console.log({ QUOTE_URL })
+
+      const response = await fetch(QUOTE_URL).then((res) => res.json())
 
       setQuoteResponse(response)
       // Use the output token's decimals for formatting
@@ -155,7 +158,7 @@ export function useJupiterSwap({
       setPriceImpact(response.priceImpactPct)
 
       // Calculate SSE fee amount if using SSE for fees
-      if (platformFeeBps === 0 && ssePrice) {
+      if (platformFeeBps === 1 && ssePrice) {
         try {
           // Get the input amount in USDC terms using the quote's USD value
           const swapValueUSDC = Number(response.swapUsdValue ?? '0')
@@ -210,7 +213,7 @@ export function useJupiterSwap({
       return
     }
 
-    if (platformFeeBps === 0 && !ssePrice) {
+    if (platformFeeBps === 1 && !ssePrice) {
       setError('Unable to calculate SSE fee. Please try again.')
       return
     }
@@ -221,7 +224,7 @@ export function useJupiterSwap({
       toast({
         title: 'Preparing Swap',
         description:
-          platformFeeBps === 0
+          platformFeeBps === 1
             ? 'Setting up SSE fee accounts...'
             : 'Setting up fee accounts...',
         variant: 'pending',
@@ -233,23 +236,27 @@ export function useJupiterSwap({
         // Always check for output token fee ATA since we're always using a platform fee (1 bps for SSE)
         checkAndCreateTokenAccount(outputMint, PLATFORM_FEE_ACCOUNT),
         // Check and create SSE token account for platform fees if using SSE for fees
-        platformFeeBps === 0
+        platformFeeBps === 1
           ? checkAndCreateTokenAccount(SSE_TOKEN_MINT, PLATFORM_FEE_ACCOUNT)
           : Promise.resolve(null),
         // Fetch quote in parallel
         (async () => {
           const multiplier = Math.pow(10, inputDecimals)
           const adjustedAmount = Number(inputAmount) * multiplier
-          return fetch(
+
+          const QUOTE_2_URL =
             `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-              `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-              `&slippageBps=${slippageBps}` +
-              // Always add a 1 bps platform fee, even when using SSE fees
-              `&platformFeeBps=${
-                platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-              }` +
-              `&feeAccount=${PLATFORM_FEE_ACCOUNT}`,
-          ).then((res) => res.json())
+            `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+            `&slippageBps=${slippageBps}` +
+            // Always add a 1 bps platform fee, even when using SSE fees
+            `&platformFeeBps=${
+              platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+            }` +
+            `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
+
+          console.log({ QUOTE_2_URL })
+
+          return fetch(QUOTE_2_URL).then((res) => res.json())
         })(),
       ])
 
@@ -265,7 +272,7 @@ export function useJupiterSwap({
 
       // Calculate SSE fee amount if using SSE for fees
       let currentSseFeeAmount = '0'
-      if (platformFeeBps === 0 && ssePrice && quoteResponse) {
+      if (platformFeeBps === 1 && ssePrice && quoteResponse) {
         try {
           // Get the input amount in USDC terms using the quote's USD value
           const swapValueUSDC = Number(quoteResponse.swapUsdValue ?? '0')
@@ -318,10 +325,10 @@ export function useJupiterSwap({
         body: JSON.stringify({
           quoteResponse,
           walletAddress,
-          feeTokenAccount: platformFeeBps !== 0 ? outputFeeAta : undefined,
+          feeTokenAccount: outputFeeAta,
           mintAddress: outputMint,
-          sseTokenAccount: platformFeeBps === 0 ? sseFeeAta : undefined,
-          sseFeeAmount: platformFeeBps === 0 ? currentSseFeeAmount : undefined,
+          sseTokenAccount: platformFeeBps === 1 ? sseFeeAta : undefined,
+          sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
         }),
       }).then((res) => res.json())
 
@@ -349,11 +356,12 @@ export function useJupiterSwap({
 
       setTxSignature(txid.signature)
 
-      toast({
+      // Create a persistent toast for confirmation with a very long duration
+      const confirmToast = toast({
         title: 'Confirming Transaction',
         description: 'Waiting for confirmation...',
         variant: 'pending',
-        duration: 5000,
+        duration: 1000000000, // Very long duration to ensure it stays visible
       })
 
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
@@ -361,6 +369,9 @@ export function useJupiterSwap({
         signature: txid.signature,
         ...(await connection.getLatestBlockhash()),
       })
+
+      // Dismiss the confirmation toast before showing the result
+      confirmToast.dismiss()
 
       if (tx.value.err) {
         toast({
@@ -371,8 +382,14 @@ export function useJupiterSwap({
         })
         setError('Transaction failed. Please try again.')
       } else {
+        toast({
+          title: 'Transaction Successful',
+          description:
+            'The swap transaction was successful. Creating Shareable link..',
+          variant: 'success',
+          duration: 5000,
+        })
         await createContentNode(txid.signature)
-        showSuccessToast()
         setShowTradeLink(true)
         setIsFullyConfirmed(true)
       }
@@ -505,15 +522,6 @@ export function useJupiterSwap({
     } catch (err) {
       console.error('Error creating content node:', err)
     }
-  }
-
-  const showSuccessToast = () => {
-    toast({
-      title: 'Swap Successful',
-      description: 'Transaction confirmed successfully!',
-      variant: 'success',
-      duration: 5000,
-    })
   }
 
   useEffect(() => {

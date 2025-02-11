@@ -213,6 +213,7 @@ export async function POST(request: Request) {
 
     // Create SSE transfer instruction if sseTokenAccount and sseFeeAmount are provided
     let sseTransferInstruction: TransactionInstruction | null = null
+    console.log({ sseTokenAccount, sseFeeAmount })
     if (sseTokenAccount && sseFeeAmount) {
       const sourceTokenAccount = await getAssociatedTokenAddress(
         new PublicKey(SSE_TOKEN_MINT),

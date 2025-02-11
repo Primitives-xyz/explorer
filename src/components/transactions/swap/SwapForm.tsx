@@ -87,7 +87,7 @@ export function SwapForm({
   useEffect(() => {
     setCurrentInputDecimals(inputTokenInfo.decimals ?? inputDecimals)
   }, [inputTokenInfo.decimals, inputDecimals])
-
+  console.log({ useSSEForFees })
   const {
     loading,
     error,
@@ -111,7 +111,7 @@ export function SwapForm({
     inputAmount: effectiveAmount,
     inputDecimals: currentInputDecimals,
     sourceWallet,
-    platformFeeBps: useSSEForFees ? 0 : undefined,
+    platformFeeBps: useSSEForFees ? 1 : undefined,
   })
 
   // Add useEffect for initial focus
