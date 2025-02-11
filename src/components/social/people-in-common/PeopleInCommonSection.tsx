@@ -29,15 +29,22 @@ export const PeopleInCommonSection = ({
           </div>
         ))}
       </div>
-      {totalAmount > 3 && (
-        <span className="text-sm text-gray-300">
-          {topUsers
-            .slice(0, 3)
-            .map((user) => `@${user.username}`)
-            .join(', ')}{' '}
-          and {totalAmount - 3} others own {tokenName}
-        </span>
-      )}
+      <span className="text-sm text-gray-300">
+        {totalAmount > 3 ? (
+          <>
+            {topUsers
+              .slice(0, 3)
+              .map((user) => `@${user.username}`)
+              .join(', ')}{' '}
+            and {totalAmount - 3} others own {tokenName}
+          </>
+        ) : (
+          <>
+            {topUsers.map((user) => `@${user.username}`).join(', ')} owns{' '}
+            {tokenName}
+          </>
+        )}
+      </span>
     </div>
   )
 }
