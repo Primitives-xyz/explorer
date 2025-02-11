@@ -2,18 +2,24 @@ import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { FetchMethod, fetchTapestry } from '@/utils/api'
 import useSWR from 'swr'
 
-interface PersonInCommon {
+interface Profile {
+  id: string
   username: string
   image: string
+  role: string
+  namespace: string
+  bio: string
+  created_at: number
 }
 
 interface TokenOwnersResponse {
-  profiles: PersonInCommon[]
-  total: number
+  profiles: Profile[]
+  page: number
+  pageSize: number
 }
 
 interface PeopleInCommonResponse {
-  profiles: PersonInCommon[]
+  profiles: Profile[]
   totalAmount: number
 }
 
@@ -45,9 +51,15 @@ export function usePeopleInCommon(
           throw new Error('No response received from API')
         }
 
+        // Transform the response to match what PeopleInCommonSection expects
         return {
-          profiles: response.profiles || [],
-          totalAmount: response.total || 0,
+          profiles: response.profiles.map((profile) => ({
+            ...profile,
+            // Keep only the fields needed by PeopleInCommonSection
+            username: profile.username,
+            image: profile.image,
+          })),
+          totalAmount: response.profiles.length,
         }
       } catch (error) {
         console.error('[usePeopleInCommon Error]:', error)
