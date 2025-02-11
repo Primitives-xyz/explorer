@@ -51,7 +51,7 @@ export async function GET(request: Request) {
             image: identity.profile.image || null,
           },
           wallet: {
-            address: identity.walletAddress,
+            address: identity?.wallet?.address,
           },
 
           namespace: {
