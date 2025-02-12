@@ -223,9 +223,13 @@ export function SwapForm({
     if (num >= 1_000) {
       return (num / 1_000).toFixed(2) + 'K'
     }
+    // Handle small numbers with more decimal places
+    if (num < 0.001) {
+      return num.toFixed(6)
+    }
     return num.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 6,
+      maximumFractionDigits: 6,
     })
   }
 
@@ -361,21 +365,21 @@ export function SwapForm({
                     {isQuoteRefreshing ? (
                       <span className="text-green-400/70 animate-pulse">
                         {quoteResponse
-                          ? formatLargeNumber(
+                          ? (
                               Number(quoteResponse.outAmount) /
-                                Math.pow(10, outputTokenInfo.decimals ?? 9) /
-                                (Number(quoteResponse.inAmount) /
-                                  Math.pow(10, currentInputDecimals))
-                            )
+                              Math.pow(10, outputTokenInfo.decimals ?? 9) /
+                              (Number(quoteResponse.inAmount) /
+                                Math.pow(10, currentInputDecimals))
+                            ).toFixed(6)
                           : '0'}
                       </span>
                     ) : quoteResponse ? (
-                      formatLargeNumber(
+                      (
                         Number(quoteResponse.outAmount) /
-                          Math.pow(10, outputTokenInfo.decimals ?? 9) /
-                          (Number(quoteResponse.inAmount) /
-                            Math.pow(10, currentInputDecimals))
-                      )
+                        Math.pow(10, outputTokenInfo.decimals ?? 9) /
+                        (Number(quoteResponse.inAmount) /
+                          Math.pow(10, currentInputDecimals))
+                      ).toFixed(6)
                     ) : (
                       '0'
                     )}
