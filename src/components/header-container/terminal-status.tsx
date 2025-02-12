@@ -1,5 +1,6 @@
 import { route } from '@/utils/routes'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { TokenBalance } from './token-balance'
@@ -22,6 +23,8 @@ export const TerminalStatus = ({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const { handleLogOut } = useDynamicContext()
+
+  const t = useTranslations()
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -55,10 +58,10 @@ export const TerminalStatus = ({
       <div className="flex items-center justify-between text-[10px] text-green-600/80 whitespace-nowrap">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           <div className="w-2 h-2 rounded-full bg-green-500/80 flex-shrink-0"></div>
-          <span className="hidden sm:inline">
-            STATUS: ONLINE | NETWORK: SOLANA |
+          <span className="hidden sm:inline uppercase">
+            {t('header.terminal.title')}
           </span>
-          <span>$SSE: </span>
+          <span className="uppercase">${t('header.terminal.sse')}: </span>
           <Link
             href={route('address', { id: tokenAddress })}
             className="text-green-500 hover:opacity-80 transition-opacity"
@@ -70,7 +73,8 @@ export const TerminalStatus = ({
           {walletAddress && (
             <span className="text-green-600/80">
               {' '}
-              (Bal: <TokenBalance walletAddress={walletAddress} />)
+              ({t('header.terminal.balance')}:{' '}
+              <TokenBalance walletAddress={walletAddress} />)
             </span>
           )}
         </div>
@@ -80,7 +84,7 @@ export const TerminalStatus = ({
               href={route('address', { id: mainUsername })}
               className="font-bold text-green-500 hover:opacity-80 transition-opacity flex-shrink-0"
             >
-              USER: {mainUsername}
+              {t('header.terminal.user')}: {mainUsername}
             </Link>
             <button
               ref={buttonRef}
@@ -112,9 +116,9 @@ export const TerminalStatus = ({
                     e.stopPropagation()
                     handleLogoutClick()
                   }}
-                  className="w-full px-2 py-1 text-left text-green-400 hover:bg-green-900/30 transition-colors whitespace-nowrap"
+                  className="uppercase w-full px-2 py-1 text-left text-green-400 hover:bg-green-900/30 transition-colors whitespace-nowrap"
                 >
-                  [LOGOUT]
+                  {t('header.logout')}
                 </button>
               </div>
             )}

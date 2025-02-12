@@ -15,12 +15,6 @@ const DynamicConnectButton = dynamic(
   { ssr: false }
 )
 
-const WalletConnectButton = (
-  <div className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer">
-    [CONNECT WALLET]
-  </div>
-) as React.ReactElement
-
 interface UserActionsProps {
   walletAddress?: string
 }
@@ -53,7 +47,11 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
       </Link>
       {!walletAddress && (
         <div className="flex-shrink-0">
-          <DynamicConnectButton>{WalletConnectButton}</DynamicConnectButton>
+          <DynamicConnectButton>
+            <div className="uppercase px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer">
+              {t('header.connectWallet')}
+            </div>
+          </DynamicConnectButton>
         </div>
       )}
       {walletAddress && (

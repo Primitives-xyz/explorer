@@ -1,7 +1,40 @@
 {
+  "common": {
+    "followers": "followers",
+    "following": "following",
+    "loading": "loading"
+  },
   "header": {
+    "title" : "solana_social_explorer",
     "search": "search",
     "trade": "trade",
-    "portfolio": "portfolio"
+    "portfolio": "portfolio",
+    "connectWallet": "connect wallet",
+    "logout": "logout",
+    "terminal" : {
+      "title": "STATUS: ONLINE | NETWORK: SOLANA |",
+      "user": "USER",
+      "sse": "sse",
+      "balance": "Bal"
+    }
+  },
+  "searchBar": {
+    "all": "all",
+    "profiles": "profiles",
+    "tokens": "tokens",
+    "recent": "recent",
+    "profileMatches": "profile matches",
+    "more": "more",
+    "tokenMatches": "token matches",
+    "mCap": "MCap",
+    "volume": "Vol",
+    "m": "M",
+    "recentSearches": "recent searches",
+    "system": "system",
+    "searchUsername": "Search a username or wallet address...",
+    "navigatingTo": "NAVIGATING TO",
+    "readyToAnalyze": "READY TO ANALYZE",
+    "awaitingInput": "AWAITING INPUT",
+    "execute": "execute"
   }
 }
