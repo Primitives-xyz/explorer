@@ -5,21 +5,37 @@ import type { Metadata } from 'next'
  */
 export function generateTransactionMetadata(signature: string): Metadata {
   const truncatedSignature = signature.slice(0, 8)
+  const title = `Transaction ${truncatedSignature}... | Explorer`
+  const description = `View details for Solana transaction ${signature}`
+
+  const ogImageUrl = `/api/og?${new URLSearchParams({
+    title,
+    description,
+    type: 'transaction',
+    signature,
+  }).toString()}`
 
   return {
-    title: `Transaction ${truncatedSignature}... | Explorer`,
-    description: `View details for Solana transaction ${signature}`,
+    title,
+    description,
     openGraph: {
-      title: `Transaction ${truncatedSignature}... | Explorer`,
-      description: `View details for Solana transaction ${signature}`,
+      title,
+      description,
       type: 'article',
       siteName: 'Explorer',
+      images: [
+        {
+          url: ogImageUrl,
+        },
+      ],
     },
     twitter: {
-      card: 'summary',
-      title: `Transaction ${truncatedSignature}... | Explorer`,
-      description: `View details for Solana transaction ${signature}`,
+      card: 'summary_large_image',
+      title,
+      description,
       creator: '@explorer',
+      site: '@explorer',
+      images: [ogImageUrl],
     },
   }
 }
