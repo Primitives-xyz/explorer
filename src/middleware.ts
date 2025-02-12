@@ -1,13 +1,59 @@
 import { importSPKI, jwtVerify } from 'jose'
-import createMiddleware from 'next-intl/middleware'
-import { NextRequest, NextResponse } from 'next/server'
-import { routing } from './i18n/routing'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-const intlMiddleware = createMiddleware(routing)
+interface JWTPayload {
+  sub?: string
+  role?: string
+  [key: string]: unknown
+}
 
-const protectedRoutes = ['/api/profiles/create', '/api/comments']
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next()
 
-const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+  // Handle preflight requests immediately
+  if (request.method === 'OPTIONS') {
+    return response
+  }
+
+  const authToken = request.headers.get('Authorization')
+  const jwt = authToken?.split(' ')[1]
+
+  if (!jwt) {
+    return NextResponse.json(
+      { error: 'Authentication required' },
+      { status: 401 }
+    )
+  }
+
+  const PUBLIC_KEY = productionPublicKeys
+  try {
+    const publicKey = await importSPKI(PUBLIC_KEY, 'RS256')
+    const { payload } = await jwtVerify(jwt as string, publicKey, {
+      algorithms: ['RS256'],
+    })
+
+    const verifiedToken = payload as unknown as JWTPayload
+
+    if (verifiedToken.sub) {
+      response.headers.set('x-user-id', verifiedToken.sub)
+    }
+
+    return response
+  } catch (error) {
+    console.error('Token verification failed: ', error)
+    return NextResponse.json(
+      { error: 'Invalid or expired token' },
+      { status: 401 }
+    )
+  }
+}
+
+export const config = {
+  matcher: ['/api/profiles/create', '/api/comments'],
+}
+
+const productionPublicKeys = `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwrZbf3IEzHI2Tc+exxnG
 RDLdmo0kN4mAxcxRnwZazJ398SCc6P6KBWaYMFQUrGRGYUhjGmcum7S6tqYkC986
 ym4O4t/Mn3rbMD7FYFsYaUWqyliHtqkqd0C4yTZnXwdxCVythIdzcQkSzwIqQiEp
@@ -21,50 +67,3 @@ J8/OgjzalEBt7zq4izutIyIxeDrRonD2iJm/PnnLkfyNqUKHAdN++AfOeDZKuiJj
 dlHpYWSZl9sKq8MdoooDRR+ZRZxgGarQ6hLg0RPVe+BwUY3yLxSmV2N2CkB0nQie
 ehm15ZdHPujneQHiIWc3g8cCAwEAAQ==
 -----END PUBLIC KEY-----`
-
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-
-  if (!protectedRoutes.includes(pathname)) {
-    return intlMiddleware(request)
-  }
-
-  if (request.method === 'OPTIONS') {
-    return new NextResponse(null, { status: 200 })
-  }
-
-  const authToken = request.headers.get('Authorization')
-  const jwt = authToken?.split(' ')[1]
-
-  if (!jwt) {
-    return NextResponse.json(
-      { error: 'Authentication required' },
-      { status: 401 }
-    )
-  }
-
-  try {
-    const publicKey = await importSPKI(PUBLIC_KEY, 'RS256')
-    const { payload } = await jwtVerify(jwt, publicKey, {
-      algorithms: ['RS256'],
-    })
-
-    const verifiedToken = payload as { sub?: string; role?: string }
-
-    const response = NextResponse.next()
-    if (verifiedToken.sub) {
-      response.headers.set('x-user-id', verifiedToken.sub)
-    }
-    return response
-  } catch (error) {
-    console.error('Token verification failed:', error)
-    return NextResponse.json(
-      { error: 'Invalid or expired token' },
-      { status: 401 }
-    )
-  }
-}
-
-export const config = {
-  matcher: ['/', '/(de|en)/:path*', '/api/profiles/create', '/api/comments'],
-}

@@ -1,8 +1,8 @@
 'use client'
 
+import FungibleTokenDetails from '@/components/fungible-token-details'
 import { usePeopleInCommon } from '@/hooks/use-people-in-common'
 import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
-import FungibleTokenDetails from '../FungibleTokenDetails'
 
 export function FungibleTokenDetailsWrapper({
   id,

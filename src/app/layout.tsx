@@ -1,5 +1,13 @@
+import { ActivityTape } from '@/components/activity-tape'
+import { AuthWrapper } from '@/components/auth/auth-wrapper'
+import WalletProvider from '@/components/auth/wallet-provider'
+import { GlobalSearch } from '@/components/global-search'
+import { Header } from '@/components/header-container/header'
+import { CreateProfile } from '@/components/profile/create-profile'
 import { Metadata } from 'next'
-import { ReactNode } from 'react'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -70,10 +78,35 @@ export const metadata: Metadata = {
   },
 }
 
-type Props = {
-  children: ReactNode
-}
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const locale = await getLocale()
 
-export default function RootLayout({ children }: Props) {
-  return children
+  console.log('locale', locale)
+
+  const messages = await getMessages()
+
+  return (
+    <html lang={locale}>
+      <body>
+        <NextIntlClientProvider messages={messages}>
+          <WalletProvider>
+            <AuthWrapper>
+              <Toaster />
+              <ActivityTape />
+              <div className="w-full overflow-hidden bg-black text-green-400 font-mono min-h-dvh">
+                <Header />
+                {children}
+              </div>
+              <GlobalSearch />
+              <CreateProfile />
+            </AuthWrapper>
+          </WalletProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  )
 }
