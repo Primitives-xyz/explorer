@@ -11,9 +11,14 @@ export async function generateProfileMetadata(
   const title = `@${username}`
   const description = `Follow @${username} on Explorer`
 
+  // Truncate bio after 2 lines if needed
+  const truncatedBio = profileData?.bio
+    ? profileData.bio.split('\n').slice(0, 2).join('\n')
+    : null
+
   const ogImageUrl = `/api/og?${new URLSearchParams({
     title,
-    description,
+    ...(truncatedBio ? { description: truncatedBio } : { description }),
     ...(profileData?.image ? { image: profileData.image } : {}),
     ...(profileData?.socialCounts
       ? {
