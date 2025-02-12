@@ -46,7 +46,7 @@ export const PeopleInCommonSection = ({
                 {index < 2 && ', '}
               </>
             ))}{' '}
-            and {totalAmount - 3} others you follow
+            and {totalAmount - 3} {totalAmount - 3 === 1 ? 'other' : 'others'} you follow
           </>
         ) : (
           <>
