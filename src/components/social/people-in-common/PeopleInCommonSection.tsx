@@ -9,19 +9,17 @@ interface PersonInCommon {
 interface PeopleInCommonSectionProps {
   topUsers: PersonInCommon[]
   totalAmount: number
-  tokenName: string
 }
 
 const UserLink = ({ username }: { username: string }) => (
-  <Link href={`/${username}`} className="hover:underline text-inherit">
+  <a href={`/${username}`} className="hover:underline text-inherit">
     @{username}
-  </Link>
+  </a>
 )
 
 export const PeopleInCommonSection = ({
   topUsers,
   totalAmount,
-  tokenName,
 }: PeopleInCommonSectionProps) => {
   return (
     <div className="flex items-center gap-1">
@@ -36,26 +34,20 @@ export const PeopleInCommonSection = ({
           </div>
         ))}
       </div>
+
       <span className="text-sm">
-        {totalAmount > 3 ? (
+        owned by{' '}
+        {topUsers.slice(0, 3).map((user, index) => (
           <>
-            {topUsers.slice(0, 3).map((user, index) => (
-              <>
-                <UserLink key={user.username} username={user.username} />
-                {index < 2 && ', '}
-              </>
-            ))}{' '}
-            and {totalAmount - 3} others you follow own {tokenName}
+            <UserLink key={user.username} username={user.username} />
+            {index < Math.min(3, topUsers.length) - 1 && ', '}
           </>
-        ) : (
+        ))}
+        {totalAmount > 3 && (
           <>
-            {topUsers.map((user, index) => (
-              <>
-                <UserLink key={user.username} username={user.username} />
-                {index < topUsers.length - 1 && ', '}
-              </>
-            ))}{' '}
-            owns {tokenName}
+            {' '}
+            and {totalAmount - 3}{' '}
+            {totalAmount - 3 === 1 ? 'other' : 'others'} you follow
           </>
         )}
       </span>
