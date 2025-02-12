@@ -19,8 +19,7 @@ export async function GET(req: NextRequest) {
     const following = searchParams.get('following') || '0'
     const wallet = searchParams.get('wallet') || ''
 
-    // Truncate description and bio if needed
-    const truncatedDescription = truncateLines(description)
+    // Truncate bio if needed
     const truncatedBio = truncateLines(bio)
 
     // Convert DiceBear SVG URL to PNG URL
@@ -190,7 +189,7 @@ export async function GET(req: NextRequest) {
             )}
 
             {/* Description */}
-            {truncatedDescription && (
+            {description && (
               <div
                 style={{
                   display: 'flex',
@@ -204,7 +203,7 @@ export async function GET(req: NextRequest) {
                   wordWrap: 'break-word',
                 }}
               >
-                {truncatedDescription}
+                {description}
               </div>
             )}
           </div>
