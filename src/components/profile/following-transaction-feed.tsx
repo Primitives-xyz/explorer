@@ -5,6 +5,7 @@ import { FilterButton } from '@/components/common/FilterButton'
 import { ScrollableContent } from '@/components/common/scrollable-content'
 import { TransactionCard } from '@/components/transactions/transaction-card'
 import type { Transaction } from '@/utils/helius/types'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useMemo } from 'react'
 
@@ -85,13 +86,18 @@ export const FollowingTransactionFeed = ({
 }: FollowingTransactionFeedProps) => {
   const { walletAddress } = useCurrentWallet()
 
+  const t = useTranslations()
+
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
     return [
-      { value: 'all', label: 'All' },
-      { value: 'swap', label: 'Swaps' },
-      { value: 'transfer', label: 'Transfers' },
-      { value: 'compressed_nft_mint', label: 'cNFT Mints' },
+      { value: 'all', label: t('following-transaction.all') },
+      { value: 'swap', label: t('following-transaction.swap') },
+      { value: 'transfer', label: t('following-transaction.transfer') },
+      {
+        value: 'compressed_nft_mint',
+        label: t('following-transaction.compressed_nft_mint'),
+      },
     ]
   }, [])
 

@@ -9,7 +9,7 @@
     "search": "search",
     "trade": "trade",
     "portfolio": "portfolio",
-    "connectWallet": "connect wallet",
+    "connect_wallet": "connect wallet",
     "logout": "logout",
     "terminal" : {
       "title": "STATUS: ONLINE | NETWORK: SOLANA |",
@@ -18,23 +18,29 @@
       "balance": "Bal"
     }
   },
-  "searchBar": {
+  "search_bar": {
     "all": "all",
     "profiles": "profiles",
     "tokens": "tokens",
     "recent": "recent",
-    "profileMatches": "profile matches",
+    "profile_matches": "profile matches",
     "more": "more",
-    "tokenMatches": "token matches",
-    "mCap": "MCap",
+    "token_matches": "token matches",
+    "m_cap": "MCap",
     "volume": "Vol",
     "m": "M",
-    "recentSearches": "recent searches",
+    "recent_searches": "recent searches",
     "system": "system",
-    "searchUsername": "Search a username or wallet address...",
-    "navigatingTo": "NAVIGATING TO",
-    "readyToAnalyze": "READY TO ANALYZE",
-    "awaitingInput": "AWAITING INPUT",
+    "search_username": "Search a username or wallet address...",
+    "navigating_to": "NAVIGATING TO",
+    "ready_to_analyze": "READY TO ANALYZE",
+    "awaiting_input": "AWAITING INPUT",
     "execute": "execute"
+  },
+  "following-transaction": {
+    "all": "All",
+    "swap": "Swaps",
+    "transfer": "Transfers",
+    "compressed_nft_mint": "cNFT Mints"
   }
 }
