@@ -1,9 +1,9 @@
-import useSWR from 'swr'
-import { useProfileFollowers } from './use-profile-followers'
-import { useProfileFollowing } from './use-profile-following'
-import { useProfileComments } from './use-profile-comments'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import useSWR from 'swr'
+import { useProfileComments } from './use-profile-comments'
+import { useProfileFollowers } from './use-profile-followers'
+import { useProfileFollowing } from './use-profile-following'
 
 export interface ProfileData {
   walletAddress: string
@@ -62,7 +62,7 @@ export function useProfileData(username: string, mainUsername?: string | null) {
       revalidateOnReconnect: false,
       dedupingInterval: 5000,
       refreshInterval: 10000,
-    },
+    }
   )
 
   const {
@@ -85,7 +85,7 @@ export function useProfileData(username: string, mainUsername?: string | null) {
 
   const { comments, isLoading: isLoadingComments } = useProfileComments(
     username,
-    mainUsername || undefined,
+    mainUsername || undefined
   )
 
   const isLoading_All =

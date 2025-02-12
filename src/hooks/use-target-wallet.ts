@@ -1,6 +1,6 @@
-import { useProfileData } from './use-profile-data'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useMemo } from 'react'
+import { useProfileData } from './use-profile-data'
 
 export function useTargetWallet(username: string) {
   const { mainUsername } = useCurrentWallet()
@@ -22,6 +22,6 @@ export function useTargetWallet(username: string) {
       serverError,
       mainUsername,
       username,
-    ],
+    ]
   )
 }

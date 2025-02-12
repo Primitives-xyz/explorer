@@ -1,13 +1,14 @@
 'use client'
 
-import { ProfileSection } from '@/components/ProfileSection'
-import SearchBar from '@/components/SearchBar'
-import { TopTraders } from '@/components/traders/TopTraders'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { ProfileSection } from '@/components/profile-section'
+import { ActivityFeedContainer } from '@/components/profile/following-container'
+import SearchBar from '@/components/search-bar'
+import { TrendingTokens } from '@/components/tokens/trending-tokens'
+import { TopTraders } from '@/components/traders/top-traders'
+import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { ActivityFeedContainer } from '@/components/profile/FollowingContainer'
-import { TrendingTokens } from '@/components/tokens/TrendingTokens'
 
 interface ProfileData {
   profiles: any[]
@@ -50,7 +51,7 @@ export default function Home() {
   const searchAddress = async (address: string) => {
     setHasSearched(true)
     try {
-      router.push(`/${address}`)
+      router.push(route('address', { id: address }))
     } catch (err) {
       console.error('Error fetching tokens:', err)
       setError('Failed to fetch tokens.')
@@ -60,7 +61,7 @@ export default function Home() {
 
   // Called when user clicks the [EXECUTE] button from the child form
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
+    <div className="py-4 sm:py-8 space-y-4 sm:space-y-8">
       <SearchBar onPickRecentAddress={searchAddress} />
 
       {/* Grid layout for ProfileSection and TrendingTokens */}

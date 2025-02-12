@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { checkSolanaBusinessFrogHolder } from '@/utils/helius/das-api'
+import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   try {
@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     if (!address) {
       return NextResponse.json(
         { error: 'Wallet address is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     console.error('Error checking holder status:', error)
     return NextResponse.json(
       { error: 'Failed to check holder status' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

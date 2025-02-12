@@ -1,6 +1,6 @@
+import { cacheTokenInfo, getCachedTokenInfo } from '@/lib/token-db'
+import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
 import { useEffect, useState } from 'react'
-import type { TokenResponse, FungibleTokenInfo } from '@/types/Token'
-import { getCachedTokenInfo, cacheTokenInfo } from '@/lib/token-db'
 
 const CACHE_DURATION = 30_000 // 30 seconds cache duration
 
@@ -80,7 +80,7 @@ export function useTokenInfo(mint?: string | null) {
 
   // Helper function to check if token is fungible
   const isFungibleToken = (
-    data: TokenResponse | null,
+    data: TokenResponse | null
   ): data is TokenResponse & { result: FungibleTokenInfo } => {
     return (
       data?.result?.interface === 'FungibleToken' ||

@@ -1,17 +1,20 @@
-import { notFound } from 'next/navigation'
-import type { Transaction } from '@/utils/helius/types'
-import dynamic from 'next/dynamic'
-import type { Metadata } from 'next'
-import { contentServer } from '@/lib/content-server'
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, ExternalLink, Share2 } from 'lucide-react'
 import ShareButton from '@/components/share-button'
+import { contentServer } from '@/lib/content-server'
 import type { TransactionContent } from '@/types/content'
 import { getTransactionDisplayData, isCopiedSwap } from '@/types/content'
+import type { Transaction } from '@/utils/helius/types'
+import { route } from '@/utils/routes'
+import { ArrowRight, ExternalLink, Share2 } from 'lucide-react'
+import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 // Client wrapper for SwapTransactionView
-const ClientSwapView = dynamic(() => import('./client-swap-view'))
+const ClientSwapView = dynamic(
+  () => import('@/components/trade/client-swap-view')
+)
 
 const formatAddress = (address: string) =>
   `${address.slice(0, 4)}...${address.slice(-4)}`
@@ -49,11 +52,11 @@ interface RawContentResponse {
 }
 
 async function getTradeContent(
-  id: string,
+  id: string
 ): Promise<{ content: TransactionContent } | null> {
   try {
     const response = (await contentServer.getContentById(
-      id,
+      id
     )) as RawContentResponse
     if (!response?.content) {
       console.error(`[Page] No content returned for id: ${id}`)
@@ -121,7 +124,7 @@ async function getTradeContent(
     console.error(`[Page] Error fetching trade content for id: ${id}:`, error)
     console.error(
       `[Page] Error stack:`,
-      error instanceof Error ? error.stack : 'No stack trace',
+      error instanceof Error ? error.stack : 'No stack trace'
     )
     return null
   }
@@ -202,7 +205,7 @@ export default async function TradePage({ params }: Props) {
   if (!contentResponse?.content) {
     console.error(
       `[Page] Content response invalid for id: ${resolvedParams.id}. Content:`,
-      contentResponse,
+      contentResponse
     )
     notFound()
   }
@@ -228,7 +231,7 @@ export default async function TradePage({ params }: Props) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <div className="max-w-6xl mx-auto">
         {/* Header with Both Users */}
         <div className="mb-8">
@@ -238,7 +241,7 @@ export default async function TradePage({ params }: Props) {
           <p className="text-green-400/80 mb-6">
             {content.walletUsername ? (
               <Link
-                href={`/${content.walletUsername}`}
+                href={route('address', { id: content.walletUsername })}
                 className="text-green-400 hover:text-green-300 transition-colors"
               >
                 @{content.walletUsername}
@@ -251,7 +254,9 @@ export default async function TradePage({ params }: Props) {
                 copied this trade from{' '}
                 {content.sourceWalletUsername ? (
                   <Link
-                    href={`/${content.sourceWalletUsername}`}
+                    href={route('address', {
+                      id: content.sourceWalletUsername,
+                    })}
                     className="text-green-400 hover:text-green-300 transition-colors"
                   >
                     @{content.sourceWalletUsername}
@@ -319,7 +324,9 @@ export default async function TradePage({ params }: Props) {
                     {isCopiedSwap(content) ? (
                       content.sourceWalletUsername ? (
                         <Link
-                          href={`/${content.sourceWalletUsername}`}
+                          href={route('address', {
+                            id: content.sourceWalletUsername,
+                          })}
                           className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
                         >
                           @{content.sourceWalletUsername}
@@ -342,7 +349,7 @@ export default async function TradePage({ params }: Props) {
                       )
                     ) : content.walletUsername ? (
                       <Link
-                        href={`/${content.walletUsername}`}
+                        href={route('address', { id: content.walletUsername })}
                         className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
                       >
                         @{content.walletUsername}
@@ -389,7 +396,9 @@ export default async function TradePage({ params }: Props) {
                         <div className="text-sm text-green-400">Copied by</div>
                         {content.walletUsername ? (
                           <Link
-                            href={`/${content.walletUsername}`}
+                            href={route('address', {
+                              id: content.walletUsername,
+                            })}
                             className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
                           >
                             @{content.walletUsername}

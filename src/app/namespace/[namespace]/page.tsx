@@ -88,10 +88,8 @@ export default function NamespacePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-green-500 p-8">
-        <div className="container mx-auto">
-          <div className="text-center font-mono">
-            {'>>> LOADING NAMESPACE DATA...'}
-          </div>
+        <div className="text-center font-mono">
+          {'>>> LOADING NAMESPACE DATA...'}
         </div>
       </div>
     )
@@ -100,101 +98,90 @@ export default function NamespacePage() {
   if (!namespace) {
     return (
       <div className="min-h-screen bg-black text-green-500 p-8">
-        <div className="container mx-auto">
-          <div className="text-center font-mono">
-            {'>>> NAMESPACE NOT FOUND'}
-          </div>
-        </div>
+        <div className="text-center font-mono">{'>>> NAMESPACE NOT FOUND'}</div>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-black text-green-500 p-8">
-      <div className="container mx-auto">
-        {/* Namespace Header */}
-        <div className="border border-green-800 bg-black/50 p-6 rounded-lg mb-8">
-          <div className="flex items-center gap-4">
-            {namespace.faviconURL && (
-              <img
-                src={namespace.faviconURL}
-                alt={namespace.readableName}
-                className="w-16 h-16 rounded-lg bg-black/40 ring-1 ring-green-500/20"
-              />
-            )}
-            <div>
-              <h1 className="text-2xl font-mono text-green-400">
-                {namespace.readableName}
-              </h1>
-              <p className="text-sm font-mono text-green-600">
-                Created {new Date(namespace.createdAt).toLocaleDateString()}
-              </p>
-            </div>
+      {/* Namespace Header */}
+      <div className="border border-green-800 bg-black/50 p-6 rounded-lg mb-8">
+        <div className="flex items-center gap-4">
+          {namespace.faviconURL && (
+            <img
+              src={namespace.faviconURL}
+              alt={namespace.readableName}
+              className="w-16 h-16 rounded-lg bg-black/40 ring-1 ring-green-500/20"
+            />
+          )}
+          <div>
+            <h1 className="text-2xl font-mono text-green-400">
+              {namespace.readableName}
+            </h1>
+            <p className="text-sm font-mono text-green-600">
+              Created {new Date(namespace.createdAt).toLocaleDateString()}
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
-            <div className="text-sm font-mono text-green-600">
-              Total Profiles
-            </div>
-            <div className="text-2xl font-mono text-green-400">
-              {profiles.length}
-            </div>
-          </div>
-          <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
-            <div className="text-sm font-mono text-green-600">
-              Active This Week
-            </div>
-            <div className="text-2xl font-mono text-green-400">
-              {Math.floor(profiles.length * 0.8)}
-            </div>
-          </div>
-          <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
-            <div className="text-sm font-mono text-green-600">
-              Total Interactions
-            </div>
-            <div className="text-2xl font-mono text-green-400">
-              {Math.floor(Math.random() * 1000)}
-            </div>
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
+          <div className="text-sm font-mono text-green-600">Total Profiles</div>
+          <div className="text-2xl font-mono text-green-400">
+            {profiles.length}
           </div>
         </div>
-
-        {/* Profiles Section */}
-        <div className="border border-green-800 bg-black/50 rounded-lg">
-          <div className="border-b border-green-800 p-4">
-            <h2 className="font-mono text-green-400">Recent Profiles</h2>
+        <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
+          <div className="text-sm font-mono text-green-600">
+            Active This Week
           </div>
-          <div className="divide-y divide-green-800/30">
-            {profiles.map((profile) => (
-              <div
-                key={profile.profile.id}
-                className="p-4 hover:bg-green-900/10"
-              >
-                <div className="flex items-center gap-4">
-                  <img
-                    src={
-                      profile.profile.image ||
-                      `https://api.dicebear.com/7.x/shapes/svg?seed=${profile.profile.username}`
-                    }
-                    alt={profile.profile.username}
-                    className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20"
-                  />
-                  <div>
-                    <div className="font-mono text-green-400">
-                      @{profile.profile.username}
-                    </div>
-                    {profile.profile.bio && (
-                      <div className="text-sm font-mono text-green-600">
-                        {profile.profile.bio}
-                      </div>
-                    )}
+          <div className="text-2xl font-mono text-green-400">
+            {Math.floor(profiles.length * 0.8)}
+          </div>
+        </div>
+        <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
+          <div className="text-sm font-mono text-green-600">
+            Total Interactions
+          </div>
+          <div className="text-2xl font-mono text-green-400">
+            {Math.floor(Math.random() * 1000)}
+          </div>
+        </div>
+      </div>
+
+      {/* Profiles Section */}
+      <div className="border border-green-800 bg-black/50 rounded-lg">
+        <div className="border-b border-green-800 p-4">
+          <h2 className="font-mono text-green-400">Recent Profiles</h2>
+        </div>
+        <div className="divide-y divide-green-800/30">
+          {profiles.map((profile) => (
+            <div key={profile.profile.id} className="p-4 hover:bg-green-900/10">
+              <div className="flex items-center gap-4">
+                <img
+                  src={
+                    profile.profile.image ||
+                    `https://api.dicebear.com/7.x/shapes/svg?seed=${profile.profile.username}`
+                  }
+                  alt={profile.profile.username}
+                  className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20"
+                />
+                <div>
+                  <div className="font-mono text-green-400">
+                    @{profile.profile.username}
                   </div>
+                  {profile.profile.bio && (
+                    <div className="text-sm font-mono text-green-600">
+                      {profile.profile.bio}
+                    </div>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

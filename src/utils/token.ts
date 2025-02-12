@@ -1,11 +1,16 @@
-import { Connection, PublicKey, Transaction, Keypair } from '@solana/web3.js'
 import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
+import {
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+} from '@solana/web3.js'
 import { addPriorityFee } from './priority-fee'
 import { confirmTransactionFast } from './transaction'
-import { ComputeBudgetProgram } from '@solana/web3.js'
 
 /**
  * Creates an Associated Token Account (ATA) if it doesn't exist
@@ -27,13 +32,13 @@ export async function createATAIfNotExists(
     | 'Medium'
     | 'High'
     | 'VeryHigh'
-    | 'UnsafeMax' = 'Medium',
+    | 'UnsafeMax' = 'Medium'
 ): Promise<{ ata: PublicKey; wasCreated: boolean }> {
   // Get the ATA address
   const ata = await getAssociatedTokenAddress(
     mint,
     owner,
-    false, // Don't allow owner off curve
+    false // Don't allow owner off curve
   )
 
   // Check if the account already exists
@@ -47,7 +52,7 @@ export async function createATAIfNotExists(
     payer.publicKey, // payer
     ata, // associated token account address
     owner, // owner
-    mint, // token mint
+    mint // token mint
   )
 
   // Get recent blockhash
@@ -77,7 +82,7 @@ export async function createATAIfNotExists(
   transaction.sign(payer)
   const signature = await connection.sendRawTransaction(
     transaction.serialize(),
-    { maxRetries: 5 },
+    { maxRetries: 5 }
   )
 
   console.log('ATA Creation Transaction sent:', signature)

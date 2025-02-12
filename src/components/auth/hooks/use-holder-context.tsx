@@ -1,16 +1,16 @@
 'use client'
 
+import { Cache } from '@/utils/cache'
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
-  useMemo,
-  useCallback,
 } from 'react'
 import { useCurrentWallet } from './use-current-wallet'
-import { Cache } from '@/utils/cache'
 
 // Create a singleton cache instance for holder status with 24 hour TTL
 const holderCache = new Cache<{
@@ -101,7 +101,7 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
             `/api/holders?address=${encodeURIComponent(address)}`,
             {
               signal: abortControllerRef.current?.signal,
-            },
+            }
           )
           const data = await response.json()
           return data.isHolder
@@ -159,7 +159,7 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [walletAddress],
+    [walletAddress]
   )
 
   // Cleanup function for abort controller
@@ -256,7 +256,7 @@ export function HolderProvider({ children }: { children: React.ReactNode }) {
       walletAddress,
       startCheck,
       closeModal,
-    ],
+    ]
   )
 
   return (

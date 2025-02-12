@@ -5,12 +5,12 @@ interface UseLikeCommentResult {
   likeComment: (
     commentId: string,
     profileId: string,
-    username: string,
+    username: string
   ) => Promise<void>
   unlikeComment: (
     commentId: string,
     profileId: string,
-    username: string,
+    username: string
   ) => Promise<void>
   isLoading: boolean
   error: string | null
@@ -23,7 +23,7 @@ export function useCommentLikes(): UseLikeCommentResult {
   const likeComment = async (
     commentId: string,
     profileId: string,
-    username: string,
+    username: string
   ) => {
     setIsLoading(true)
     setError(null)
@@ -65,7 +65,7 @@ export function useCommentLikes(): UseLikeCommentResult {
             comments: updatedComments,
           }
         },
-        false, // Don't revalidate yet
+        false // Don't revalidate yet
       )
 
       const response = await fetch(`/api/comments/${commentId}/like`, {
@@ -96,7 +96,7 @@ export function useCommentLikes(): UseLikeCommentResult {
   const unlikeComment = async (
     commentId: string,
     profileId: string,
-    username: string,
+    username: string
   ) => {
     setIsLoading(true)
     setError(null)
@@ -128,7 +128,7 @@ export function useCommentLikes(): UseLikeCommentResult {
                   ...comment.socialCounts,
                   likeCount: Math.max(
                     0,
-                    (comment.socialCounts?.likeCount || 0) - 1,
+                    (comment.socialCounts?.likeCount || 0) - 1
                   ),
                 },
               }
@@ -141,7 +141,7 @@ export function useCommentLikes(): UseLikeCommentResult {
             comments: updatedComments,
           }
         },
-        false, // Don't revalidate yet
+        false // Don't revalidate yet
       )
 
       const response = await fetch(`/api/comments/${commentId}/unlike`, {

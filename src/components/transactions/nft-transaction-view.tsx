@@ -1,17 +1,17 @@
-import { useEffect, useState, useMemo, memo } from 'react'
-import { formatNumber } from '@/utils/format'
-import { TokenAddress } from '../tokens/TokenAddress'
 import { useTokenInfo } from '@/hooks/use-token-info'
+import { formatNumber } from '@/utils/format'
+import type { CompressedNFTMintEvent } from '@/utils/helius/types'
 import {
   type ExtendedTransaction,
-  findNFTMintFromTokenTransfers,
-  findNFTMintFromMetaplexInstructions,
   findNFTMintFromAccounts,
+  findNFTMintFromMetaplexInstructions,
+  findNFTMintFromTokenTransfers,
   getSaleAmount,
   isNFTBuyTransaction,
   normalizeTransfers,
 } from '@/utils/nft-transaction'
-import type { CompressedNFTMintEvent } from '@/utils/helius/types'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { TokenAddress } from '../tokens/token-address'
 
 interface NFTTransactionViewProps {
   tx: ExtendedTransaction
@@ -33,7 +33,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
       transfers: normalizeTransfers(tx),
       compressedNFTMintEvent: tx.events?.find(
         (event): event is CompressedNFTMintEvent =>
-          event.type === 'COMPRESSED_NFT_MINT',
+          event.type === 'COMPRESSED_NFT_MINT'
       ),
     }
   }, [tx])
@@ -67,7 +67,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
     mint = findNFTMintFromMetaplexInstructions(
       instructions,
       sourceWallet,
-      tx.accountsInvolved,
+      tx.accountsInvolved
     )
     if (mint) {
       setDetectionMethod('metaplex_core')
@@ -169,14 +169,14 @@ export const NFTTransactionView = memo(function NFTTransactionView({
 
               {/* Collection Tag */}
               {nftInfo?.result?.grouping?.find(
-                (g) => g.group_key === 'collection',
+                (g) => g.group_key === 'collection'
               )?.group_value && (
                 <div className="flex items-center gap-1">
                   <span>Collection:</span>
                   <TokenAddress
                     address={
                       nftInfo.result.grouping.find(
-                        (g) => g.group_key === 'collection',
+                        (g) => g.group_key === 'collection'
                       )!.group_value
                     }
                   />

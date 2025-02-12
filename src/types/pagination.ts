@@ -1,6 +1,6 @@
 export interface PaginatedData<T> {
-  items: T[];
-  hasMore: boolean;
-  page?: number;
-  pageSize?: number;
-} 
+  items: T[]
+  hasMore: boolean
+  page?: number
+  pageSize?: number
+}

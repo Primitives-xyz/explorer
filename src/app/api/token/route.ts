@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
+import { NextResponse } from 'next/server'
 
 export const revalidate = 10 // Cache for 10 seconds
 
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
         headers: {
           'Cache-Control': 'no-store',
         },
-      },
+      }
     )
   }
 
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
           headers: {
             'Cache-Control': 'no-store',
           },
-        },
+        }
       )
     }
 
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
         headers: {
           'Cache-Control': 'no-store',
         },
-      },
+      }
     )
   }
 }

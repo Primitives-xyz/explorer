@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { contentServer } from '@/lib/content-server'
+import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
@@ -9,14 +9,14 @@ export async function POST(request: Request) {
     if (!ids || !Array.isArray(ids)) {
       return NextResponse.json(
         { error: 'Array of content IDs is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
     if (ids.length > 20) {
       return NextResponse.json(
         { error: 'Maximum of 20 content IDs allowed' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     console.error('Error fetching batch contents:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch batch contents' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

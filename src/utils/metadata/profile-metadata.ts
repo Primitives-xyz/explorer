@@ -1,11 +1,11 @@
-import type { Metadata } from 'next'
 import { getProfileMetadata } from '@/utils/profile'
+import type { Metadata } from 'next'
 
 /**
  * Generates metadata for a profile
  */
 export async function generateProfileMetadata(
-  username: string,
+  username: string
 ): Promise<Metadata> {
   const profileData = await getProfileMetadata(username)
   const title = `@${username}`

@@ -1,22 +1,22 @@
-import { NextResponse } from 'next/server'
-import {
-  Connection,
-  PublicKey,
-  VersionedTransaction,
-  Keypair,
-} from '@solana/web3.js'
-import { getAssociatedTokenAddress } from '@solana/spl-token'
-import { createATAIfNotExists } from '@/utils/token'
-import bs58 from 'bs58'
 import { JUPITER_CONFIG } from '@/config/jupiter'
 import {
+  buildTransactionMessage,
+  createSSETransferInstruction,
   fetchSwapInstructions,
   getAddressLookupTableAccounts,
   simulateTransaction,
-  createSSETransferInstruction,
-  buildTransactionMessage,
 } from '@/services/jupiter'
 import type { SwapRouteResponse } from '@/types/jupiter-service'
+import { createATAIfNotExists } from '@/utils/token'
+import { getAssociatedTokenAddress } from '@solana/spl-token'
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  VersionedTransaction,
+} from '@solana/web3.js'
+import bs58 from 'bs58'
+import { NextResponse } from 'next/server'
 
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
@@ -31,7 +31,7 @@ interface SwapRequest {
 }
 
 export async function POST(
-  request: Request,
+  request: Request
 ): Promise<NextResponse<SwapRouteResponse | { error: string }>> {
   try {
     const {
@@ -47,12 +47,12 @@ export async function POST(
     const associatedTokenAddress = await getAssociatedTokenAddress(
       new PublicKey(mintAddress),
       new PublicKey(JUPITER_CONFIG.FEE_WALLET),
-      false,
+      false
     )
 
     // Verify output token ATA exists, if not create it
     const outputAtaInfo = await connection.getAccountInfo(
-      associatedTokenAddress,
+      associatedTokenAddress
     )
     if (!outputAtaInfo) {
       const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
@@ -67,14 +67,14 @@ export async function POST(
         payer,
         new PublicKey(mintAddress),
         new PublicKey(JUPITER_CONFIG.FEE_WALLET),
-        'High',
+        'High'
       )
     }
 
     // If using SSE fees, verify SSE fee ATA exists
     if (sseTokenAccount) {
       const sseAtaInfo = await connection.getAccountInfo(
-        new PublicKey(sseTokenAccount),
+        new PublicKey(sseTokenAccount)
       )
       if (!sseAtaInfo) {
         const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
@@ -89,7 +89,7 @@ export async function POST(
           payer,
           new PublicKey(JUPITER_CONFIG.SSE_TOKEN_MINT),
           new PublicKey(walletAddress),
-          'High',
+          'High'
         )
       }
     }
@@ -105,7 +105,7 @@ export async function POST(
     // Get lookup table accounts
     const addressLookupTableAccounts = await getAddressLookupTableAccounts(
       connection,
-      swapResponse.addressLookupTableAddresses || [],
+      swapResponse.addressLookupTableAddresses || []
     )
 
     // Get the latest blockhash
@@ -116,7 +116,7 @@ export async function POST(
     if (sseTokenAccount && sseFeeAmount) {
       const sourceTokenAccount = await getAssociatedTokenAddress(
         new PublicKey(JUPITER_CONFIG.SSE_TOKEN_MINT),
-        new PublicKey(walletAddress),
+        new PublicKey(walletAddress)
       )
 
       sseTransferInstruction = await createSSETransferInstruction(
@@ -124,7 +124,7 @@ export async function POST(
         sourceTokenAccount,
         new PublicKey(sseTokenAccount),
         new PublicKey(walletAddress),
-        sseFeeAmount,
+        sseFeeAmount
       )
     }
 
@@ -134,7 +134,7 @@ export async function POST(
       blockhash,
       swapResponse,
       sseTransferInstruction,
-      addressLookupTableAccounts,
+      addressLookupTableAccounts
     )
 
     const transaction = new VersionedTransaction(message)
@@ -143,7 +143,7 @@ export async function POST(
     await simulateTransaction(
       connection,
       transaction,
-      addressLookupTableAccounts,
+      addressLookupTableAccounts
     )
 
     return NextResponse.json({
@@ -156,7 +156,7 @@ export async function POST(
     console.error('Error building swap transaction:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to build swap transaction' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

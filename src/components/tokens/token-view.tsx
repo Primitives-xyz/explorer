@@ -1,10 +1,10 @@
+import NFTDetails from '@/components/NFT-details'
+import { FungibleTokenDetailsWrapper } from '@/components/tokens/FungibleTokenDetailsWrapper'
+import { WalletView } from '@/components/wallet/wallet-view'
 import type { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 
 import type { TokenInfo } from '@/types/Token'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
-import NFTDetails from '../NFTDetails'
-import { WalletView } from '../wallet/wallet-view'
-import { FungibleTokenDetailsWrapper } from './FungibleTokenDetailsWrapper'
 
 /**
  * Handles token-related views

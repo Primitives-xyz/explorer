@@ -16,7 +16,7 @@ export const useSuggested = () => {
 
     try {
       const response = await fetch(
-        `/api/profiles/suggested?walletAddress=${walletAddress}`,
+        `/api/profiles/suggested?walletAddress=${walletAddress}`
       )
 
       if (!response.ok) {
