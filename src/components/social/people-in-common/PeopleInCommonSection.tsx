@@ -9,7 +9,6 @@ interface PersonInCommon {
 interface PeopleInCommonSectionProps {
   topUsers: PersonInCommon[]
   totalAmount: number
-  tokenName: string
 }
 
 const UserLink = ({ username }: { username: string }) => (
@@ -21,7 +20,6 @@ const UserLink = ({ username }: { username: string }) => (
 export const PeopleInCommonSection = ({
   topUsers,
   totalAmount,
-  tokenName,
 }: PeopleInCommonSectionProps) => {
   return (
     <div className="flex items-center gap-1">
