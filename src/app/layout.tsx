@@ -4,11 +4,10 @@ import WalletProvider from '@/components/auth/wallet-provider'
 import { GlobalSearch } from '@/components/global-search'
 import { Header } from '@/components/header-container/header'
 import { CreateProfile } from '@/components/profile/create-profile'
+import { Toaster } from '@/components/toast/toaster'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-
-import { Toaster } from '@/components/toast/toaster'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -85,8 +84,6 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const locale = await getLocale()
-
-  console.log('locale', locale)
 
   const messages = await getMessages()
 
