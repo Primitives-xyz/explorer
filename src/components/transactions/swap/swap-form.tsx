@@ -215,18 +215,13 @@ export function SwapForm({
     setCurrentOutputToken(token.symbol)
   }
 
-  // Helper function to format large numbers with K/M suffix
+  // Updated helper function to show full decimal precision
   const formatLargeNumber = (num: number) => {
-    if (num >= 1_000_000) {
-      return (num / 1_000_000).toFixed(2) + 'M'
+    // Handle very small numbers with exponential notation
+    if (num !== 0 && Math.abs(num) < 0.0001) {
+      return num.toExponential(4)
     }
-    if (num >= 1_000) {
-      return (num / 1_000).toFixed(2) + 'K'
-    }
-    // Handle small numbers with more decimal places
-    if (num < 0.001) {
-      return num.toFixed(6)
-    }
+    // Show up to 6 decimal places for regular numbers
     return num.toLocaleString(undefined, {
       minimumFractionDigits: 6,
       maximumFractionDigits: 6,
