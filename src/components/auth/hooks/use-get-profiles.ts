@@ -21,7 +21,7 @@ export const useGetProfiles = (
   }
 
   const key = walletAddress
-    ? `/api/profiles?walletAddress=${walletAddress}&useIdentities=${useIdentities}`
+    ? `/api/identities/${walletAddress}/profiles?page=0&pageSize=20`
     : null
 
   const {
@@ -52,6 +52,6 @@ export const refreshProfiles = (
   useIdentities: boolean = false
 ) => {
   return mutate(
-    `/api/profiles?walletAddress=${walletAddress}&useIdentities=${useIdentities}`
+    `/api/identities/${walletAddress}/profiles?page=0&pageSize=20`
   )
 }
