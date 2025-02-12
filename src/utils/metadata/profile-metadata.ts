@@ -18,7 +18,8 @@ export async function generateProfileMetadata(
 
   const ogImageUrl = `/api/og?${new URLSearchParams({
     title,
-    ...(truncatedBio ? { description: truncatedBio } : { description }),
+    description,
+    ...(profileData?.bio ? { bio: profileData.bio } : {}),
     ...(profileData?.image ? { image: profileData.image } : {}),
     ...(profileData?.socialCounts
       ? {
