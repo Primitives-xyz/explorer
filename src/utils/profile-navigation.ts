@@ -26,7 +26,9 @@ export function handleProfileNavigation(
 
     // For other namespaces, redirect to their profile URL if available
     if (profile.namespace.userProfileURL) {
-      const url = `${profile.namespace.userProfileURL}${profile.profile.username}`
+      const url = `${profile.namespace.userProfileURL.replace(/\/?$/, '/')}${
+        profile.profile.username
+      }`
       window.open(url, '_blank')
       return
     }
@@ -50,7 +52,9 @@ export function handleProfileNavigation(
 
   // For other namespaces, redirect to their profile URL if available
   if (profile.namespace.userProfileURL) {
-    const url = `${profile.namespace.userProfileURL}${profile.profile.username}`
+    const url = `${profile.namespace.userProfileURL.replace(/\/?$/, '/')}${
+      profile.profile.username
+    }`
     window.open(url, '_blank')
     return
   }

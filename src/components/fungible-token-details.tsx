@@ -1,5 +1,12 @@
 'use client'
 
+import { PeopleInCommonSection } from '@/components/social/people-in-common/PeopleInCommonSection'
+import { LargestHolders } from '@/components/tokens/largest-holders'
+import { TokenInformation } from '@/components/tokens/token-information'
+import { TokenMetrics } from '@/components/tokens/token-metrics'
+import { TransactionSection } from '@/components/transaction-section'
+import { JupiterSwapForm } from '@/components/transactions/jupiter-swap-form'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useBirdeyeTokenOverview } from '@/hooks/use-birdeye-token-overview'
 import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
 import { Tab } from '@headlessui/react'
@@ -9,17 +16,29 @@ import {
   ArrowUpRightIcon as TwitterIcon,
 } from '@heroicons/react/24/outline'
 import Image from 'next/image'
-import { LargestHolders } from './tokens/largest-holders'
-import { TokenInformation } from './tokens/token-information'
-import { TokenMetrics } from './tokens/token-metrics'
-import { TransactionSection } from './transaction-section'
-import { JupiterSwapForm } from './transactions/jupiter-swap-form'
-import { Skeleton } from './ui/skeleton'
+
+// Define the people in common data type
+interface PeopleInCommonData {
+  topUsers: Array<{ username: string; image: string }>
+  totalAmount: number
+  isLoading: boolean
+}
+
+// Create a new type that combines the original token info with people in common data
+type EnhancedTokenInfo = FungibleTokenDetailsProps['tokenInfo'] & {
+  peopleInCommon?: PeopleInCommonData
+}
+
+// Create the enhanced props type
+interface EnhancedFungibleTokenDetailsProps {
+  id: string
+  tokenInfo: EnhancedTokenInfo
+}
 
 export default function FungibleTokenDetails({
   id,
   tokenInfo,
-}: FungibleTokenDetailsProps) {
+}: EnhancedFungibleTokenDetailsProps) {
   const { overview, isLoading } = useBirdeyeTokenOverview(id)
   const imageUrl =
     overview?.logoURI ||
@@ -113,6 +132,22 @@ export default function FungibleTokenDetails({
               </div>
             ) : overview ? (
               <TokenMetrics overview={overview} />
+            ) : null}
+
+            {/* People in Common Section */}
+            {tokenInfo.peopleInCommon?.isLoading ? (
+              <div className="mt-6">
+                <Skeleton className="h-12 bg-green-900/20" />
+              </div>
+            ) : tokenInfo.peopleInCommon?.topUsers &&
+              tokenInfo.peopleInCommon.topUsers.length > 0 ? (
+              <div className="mt-6">
+                <PeopleInCommonSection
+                  topUsers={tokenInfo.peopleInCommon.topUsers}
+                  totalAmount={tokenInfo.peopleInCommon.totalAmount}
+                  tokenName={tokenInfo.content.metadata.name}
+                />
+              </div>
             ) : null}
           </div>
         </div>

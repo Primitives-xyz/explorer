@@ -6,10 +6,14 @@ import { SwapSettings } from '@/components/transactions/swap/swap-settings'
 import { SwapShareSection } from '@/components/transactions/swap/swap-share-section'
 import { TokenSearch } from '@/components/transactions/swap/token-search'
 import { TokenSelectButton } from '@/components/transactions/swap/token-select-button'
+import {
+  DEFAULT_PRIORITY_LEVEL,
+  DEFAULT_SLIPPAGE_BPS,
+} from '@/constants/jupiter'
 import { useJupiterSwap } from '@/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/hooks/use-token-balance'
 import { useTokenInfo } from '@/hooks/use-token-info'
-import type { JupiterSwapFormProps } from '@/types/jupiter'
+import { JupiterSwapFormProps } from '@/types/jupiter'
 import { ArrowLeftRight, Loader2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
@@ -223,6 +227,25 @@ export function SwapForm({
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
+  }
+
+  const handleReset = () => {
+    // Reset all form states
+    setDisplayAmount('')
+    setEffectiveAmount('')
+    setInputError(null)
+    if (debouncedUpdate) clearTimeout(debouncedUpdate)
+    resetQuoteState()
+    // Reset to initial values
+    setInputMint(initialInputMint)
+    setOutputMint(initialOutputMint)
+    setCurrentInputToken(inputTokenName)
+    setCurrentOutputToken(outputTokenName)
+    setCurrentInputDecimals(inputDecimals)
+    setUseSSEForFees(false)
+    setPriorityLevel(DEFAULT_PRIORITY_LEVEL)
+    setSlippageBps(DEFAULT_SLIPPAGE_BPS)
+    setIsRouteInfoOpen(false)
   }
 
   return (
@@ -530,7 +553,7 @@ export function SwapForm({
         )}
 
         {txSignature && showTradeLink && (
-          <SwapShareSection txSignature={txSignature} />
+          <SwapShareSection txSignature={txSignature} onReset={handleReset} />
         )}
       </div>
 

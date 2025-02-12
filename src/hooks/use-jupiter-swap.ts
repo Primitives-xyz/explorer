@@ -11,6 +11,7 @@ import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useCallback, useEffect, useState } from 'react'
+import { useCreateContentNode } from './use-create-content-node'
 import { useSSEPrice } from './use-sse-price'
 import { useTokenInfo } from './use-token-info'
 
@@ -32,13 +33,14 @@ export function useJupiterSwap({
   platformFeeBps = PLATFORM_FEE_BPS,
 }: UseJupiterSwapParams) {
   const { toast } = useToast()
+  const { createContentNode } = useCreateContentNode()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [txSignature, setTxSignature] = useState('')
   const [priorityLevel, setPriorityLevel] = useState<PriorityLevel>(
     DEFAULT_PRIORITY_LEVEL
   )
-  const { primaryWallet, walletAddress, mainUsername } = useCurrentWallet()
+  const { primaryWallet, walletAddress } = useCurrentWallet()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [priceImpact, setPriceImpact] = useState<string>('')
@@ -49,12 +51,15 @@ export function useJupiterSwap({
   const { ssePrice } = useSSEPrice()
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const outputTokenInfo = useTokenInfo(outputMint)
-  console.log({ platformFeeBps })
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
     setExpectedOutput('')
     setPriceImpact('')
     setError('')
+    setTxSignature('')
+    setShowTradeLink(false)
+    setIsFullyConfirmed(false)
+    setIsQuoteRefreshing(false)
   }, [])
 
   const checkAndCreateTokenAccount = async (
@@ -145,8 +150,6 @@ export function useJupiterSwap({
         }` +
         `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
 
-      console.log({ QUOTE_URL })
-
       const response = await fetch(QUOTE_URL).then((res) => res.json())
 
       setQuoteResponse(response)
@@ -177,17 +180,6 @@ export function useJupiterSwap({
             sseAmount * Math.pow(10, 6)
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
-
-          console.log('SSE Fee Calculation (Quote):', {
-            swapValueUSDC,
-            inputAmountUSDC,
-            platformFeeUSDC,
-            halfFeeUSDC,
-            ssePrice,
-            sseAmount,
-            currentSseFeeAmount,
-            explanation: `${halfFeeUSDC} USDC / ${ssePrice} USDC/SSE = ${sseAmount} SSE`,
-          })
         } catch (err) {
           console.error('Error calculating SSE fee during quote:', err)
           setSseFeeAmount('0')
@@ -254,8 +246,6 @@ export function useJupiterSwap({
             }` +
             `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
 
-          console.log({ QUOTE_2_URL })
-
           return fetch(QUOTE_2_URL).then((res) => res.json())
         })(),
       ])
@@ -291,17 +281,6 @@ export function useJupiterSwap({
             sseAmount * Math.pow(10, 6)
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
-
-          console.log('SSE Fee Calculation:', {
-            swapValueUSDC,
-            inputAmountUSDC,
-            platformFeeUSDC,
-            halfFeeUSDC,
-            ssePrice,
-            sseAmount,
-            currentSseFeeAmount,
-            explanation: `${halfFeeUSDC} USDC / ${ssePrice} USDC/SSE = ${sseAmount} SSE`,
-          })
         } catch (err) {
           console.error('Error calculating SSE fee:', err)
           currentSseFeeAmount = '0'
@@ -389,7 +368,28 @@ export function useJupiterSwap({
           variant: 'success',
           duration: 5000,
         })
-        await createContentNode(txid.signature)
+        await createContentNode({
+          signature: txid.signature,
+          inputMint,
+          outputMint,
+          inputAmount,
+          expectedOutput,
+          priceImpact,
+          slippageBps,
+          sourceWallet,
+          priorityLevel,
+          walletAddress,
+          inputDecimals,
+          usdcFeeAmount: quoteResponse.swapUsdValue
+            ? (
+                Number(quoteResponse.swapUsdValue) *
+                (platformFeeBps === 1
+                  ? PLATFORM_FEE_BPS / 20000
+                  : PLATFORM_FEE_BPS / 10000)
+              ) // Divide by 20000 for SSE swaps to get half
+                .toString()
+            : '0',
+        })
         setShowTradeLink(true)
         setIsFullyConfirmed(true)
       }
@@ -404,123 +404,6 @@ export function useJupiterSwap({
       setError('Swap transaction failed. Please try again.')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const createContentNode = async (signature: string) => {
-    try {
-      // Fetch profiles for both wallets
-      const [sourceWalletProfiles, walletProfiles] = await Promise.all([
-        sourceWallet
-          ? fetch(`/api/profiles?walletAddress=${sourceWallet}`).then((res) =>
-              res.json()
-            )
-          : Promise.resolve({ profiles: [] }),
-        walletAddress
-          ? fetch(`/api/profiles?walletAddress=${walletAddress}`).then((res) =>
-              res.json()
-            )
-          : Promise.resolve({ profiles: [] }),
-      ])
-
-      // Get main profiles (nemoapp namespace) for both wallets
-      const sourceProfile = sourceWalletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp'
-      )?.profile
-      const walletProfile = walletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp'
-      )?.profile
-
-      // Fetch token information
-      const [inputTokenResponse, outputTokenResponse] = await Promise.all([
-        fetch(`/api/token?mint=${inputMint}`),
-        fetch(`/api/token?mint=${outputMint}`),
-      ])
-
-      const inputTokenData = await inputTokenResponse.json()
-      const outputTokenData = await outputTokenResponse.json()
-
-      // Create content node with enhanced information
-      await fetch('/api/content', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: signature,
-          profileId: mainUsername,
-          properties: [
-            { key: 'type', value: 'swap' },
-            { key: 'inputMint', value: inputMint },
-            { key: 'outputMint', value: outputMint },
-            { key: 'inputAmount', value: inputAmount },
-            { key: 'expectedOutput', value: expectedOutput },
-            { key: 'priceImpact', value: priceImpact },
-            {
-              key: 'inputTokenSymbol',
-              value: inputTokenData?.result?.content?.metadata?.symbol || '',
-            },
-            {
-              key: 'inputTokenImage',
-              value: inputTokenData?.result?.content?.links?.image || '',
-            },
-            {
-              key: 'inputTokenDecimals',
-              value: String(
-                inputTokenData?.result?.token_info?.decimals || inputDecimals
-              ),
-            },
-            {
-              key: 'outputTokenSymbol',
-              value: outputTokenData?.result?.content?.metadata?.symbol || '',
-            },
-            {
-              key: 'outputTokenImage',
-              value: outputTokenData?.result?.content?.links?.image || '',
-            },
-            {
-              key: 'outputTokenDecimals',
-              value: String(outputTokenData?.result?.token_info?.decimals || 6),
-            },
-            { key: 'txSignature', value: signature },
-            { key: 'timestamp', value: String(Date.now()) },
-            { key: 'slippageBps', value: String(slippageBps) },
-            { key: 'sourceWallet', value: sourceWallet || '' },
-            { key: 'priorityLevel', value: priorityLevel },
-            { key: 'walletAddress', value: walletAddress },
-            // Add profile information for source wallet
-            {
-              key: 'sourceWalletUsername',
-              value: sourceProfile?.username || '',
-            },
-            { key: 'sourceWalletImage', value: sourceProfile?.image || '' },
-            // Add profile information for wallet address
-            { key: 'walletUsername', value: walletProfile?.username || '' },
-            { key: 'walletImage', value: walletProfile?.image || '' },
-            // Add token metadata
-            {
-              key: 'inputTokenName',
-              value: inputTokenData?.result?.content?.metadata?.name || '',
-            },
-            {
-              key: 'inputTokenDescription',
-              value:
-                inputTokenData?.result?.content?.metadata?.description || '',
-            },
-            {
-              key: 'outputTokenName',
-              value: outputTokenData?.result?.content?.metadata?.name || '',
-            },
-            {
-              key: 'outputTokenDescription',
-              value:
-                outputTokenData?.result?.content?.metadata?.description || '',
-            },
-          ],
-        }),
-      })
-    } catch (err) {
-      console.error('Error creating content node:', err)
     }
   }
 
