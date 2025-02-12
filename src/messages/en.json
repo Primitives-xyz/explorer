@@ -2,7 +2,23 @@
   "common": {
     "followers": "followers",
     "following": "following",
-    "loading": "loading"
+    "follow": "follow",
+    "unfollow": "unfollow",
+    "unfollowing": "unfollowing",
+    "loading": "loading",
+    "wallet": "wallet",
+    "wallets": "wallets",
+    "no": "no",
+    "found": "found",
+    "count": "count",
+    "address": "address",
+    "all": "all",
+    "copied": "copied",
+    "copy": "copy",
+    "error": "Error",
+    "volume": "Vol",
+    "liquidity": "Liq",
+    "price": "price"
   },
   "header": {
     "title" : "solana_social_explorer",
@@ -27,7 +43,6 @@
     "more": "more",
     "token_matches": "token matches",
     "m_cap": "MCap",
-    "volume": "Vol",
     "m": "M",
     "recent_searches": "recent searches",
     "system": "system",
@@ -37,10 +52,52 @@
     "awaiting_input": "AWAITING INPUT",
     "execute": "execute"
   },
-  "following-transaction": {
+  "following_transaction": {
+    "title": "following_activity",
     "all": "All",
     "swap": "Swaps",
     "transfer": "Transfers",
-    "compressed_nft_mint": "cNFT Mints"
+    "compressed_nft_mint": "cNFT Mints",
+    "create_a_profile_to_follow": "Create a profile to follow wallets onchain and see their swaps in real time!",
+    "create_profile": "Create Profile",
+    "transactions": "transactions",
+    "swap_transactions": "swap transactions",
+    "transfers": "transfers",
+    "cnft_mints": "cnft mints"
+  },
+  "profile_info": {
+    "title": "profile_info",
+    "create_new_profile": "Create New Profile",
+    "create_a_blink_profile": "Create A .Blink Profile",
+    "create_a_sol_profile": "Create a .Sol Profile",
+    "explore_all_domains": "Explore All Domains",
+    "create_a_nimbus_app": "Create a Nimbus App",
+    "fetching_profiles": ">>> FETCHING PROFILES...",
+    "no_profile_found": ">>> NO PROFILES FOUND"
+  },
+  "trending_tokens": {
+    "title": "trending_tokens",
+    "volume_24h": "Volume 24h",
+    "rank": "Rank",
+    "liquidity": "Liquidity",
+    "fetching_trending_tokens": ">>> FETCHING TRENDING TOKENS...",
+    "no_tokens_found": ">>> NO TOKENS FOUND"
+  },
+  "success": {
+    "followed_successfully" : "Followed successfully!"
+  },
+  "error": {
+    "error_navigating_to_profile": "Error navigating to profile",
+    "error_navigating_to_namespace": "Error navigating to namespace",
+    "failed_to_fetch_profiles": "Failed to fetch profiles",
+    "stats_error": "Stats error",
+    "failed_to_revalidate_after_follow": "Failed to revalidate after follow",
+    "failed_to_follow": "Failed to follow",
+    "failed_to_revalidate_after_unfollow": "Failed to revalidate after unfollow",
+    "failed_to_unfollow": "Failed to unfollow",
+    "error_fetching_trending_tokens": "Error fetching trending tokens",
+    "failed_to_fetch_tokens": "Failed to fetch tokens",
+    "api_request_failed": "API request failed",
+    "failed_to_fetch_trending_tokens": "Failed to fetch trending tokens"
   }
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { route } from '@/utils/routes'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -11,6 +12,8 @@ interface TokenAddressProps {
 export const TokenAddress = ({ address }: TokenAddressProps) => {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
+
+  const t = useTranslations()
 
   const truncatedAddress = `${address.slice(0, 4)}...${address.slice(-4)}`
   const displayAddress = truncatedAddress
@@ -45,7 +48,7 @@ export const TokenAddress = ({ address }: TokenAddressProps) => {
             : 'text-green-600/70 hover:text-green-500 hover:bg-green-900/20'
         } rounded`}
       >
-        {copied ? '[copied!]' : '[copy]'}
+        {copied ? `[${t('common.copied')}!]` : `[${t('common.copy')}]`}
       </button>
     </div>
   )

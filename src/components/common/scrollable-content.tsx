@@ -43,12 +43,12 @@ export const ScrollableContent = ({
           <div
             className={`w-8 h-8 border-2 ${colors.border} border-t-transparent rounded-full animate-spin`}
           />
-          <div className={`${colors.text} font-mono animate-pulse`}>
+          <div className={`${colors.text} uppercase font-mono animate-pulse`}>
             {loadingText}
           </div>
         </div>
       ) : isEmpty ? (
-        <div className="p-4 text-center text-green-600 font-mono">
+        <div className="uppercase p-4 text-center text-green-600 font-mono">
           {emptyText}
         </div>
       ) : (

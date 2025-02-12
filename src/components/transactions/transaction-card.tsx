@@ -5,6 +5,7 @@ import type { Profile } from '@/utils/api'
 import type { Transaction } from '@/utils/helius/types'
 import type { ExtendedTransaction } from '@/utils/nft-transaction'
 import { route } from '@/utils/routes'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { memo, useMemo } from 'react'
 import { NFTTransactionView } from './nft-transaction-view'
@@ -54,6 +55,8 @@ export const TransactionCard = memo(function TransactionCard({
     [tx]
   )
 
+  const t = useTranslations()
+
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
@@ -91,7 +94,7 @@ export const TransactionCard = memo(function TransactionCard({
                     href={route('address', { id: sourceWallet })}
                     className="text-gray-300 font-mono text-xs px-2 py-0.5 bg-gray-900/20 rounded border border-gray-800/30 hover:border-gray-700/40 transition-colors"
                   >
-                    <span className="text-gray-400">wallet:</span>{' '}
+                    <span className="text-gray-400">{t('common.wallet')}:</span>{' '}
                     {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
                   </Link>
                 )}

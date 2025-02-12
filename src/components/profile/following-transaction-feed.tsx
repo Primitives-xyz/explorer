@@ -91,12 +91,12 @@ export const FollowingTransactionFeed = ({
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
     return [
-      { value: 'all', label: t('following-transaction.all') },
-      { value: 'swap', label: t('following-transaction.swap') },
-      { value: 'transfer', label: t('following-transaction.transfer') },
+      { value: 'all', label: t('following_transaction.all') },
+      { value: 'swap', label: t('following_transaction.swap') },
+      { value: 'transfer', label: t('following_transaction.transfer') },
       {
         value: 'compressed_nft_mint',
-        label: t('following-transaction.compressed_nft_mint'),
+        label: t('following_transaction.compressed_nft_mint'),
       },
     ]
   }, [])
@@ -105,32 +105,31 @@ export const FollowingTransactionFeed = ({
   const getDisplayText = (type: string) => {
     switch (type) {
       case 'all':
-        return 'TRANSACTIONS'
+        return t('following_transaction.transactions')
       case 'swap':
-        return 'SWAP TRANSACTIONS'
+        return t('following_transaction.swap_transactions')
       case 'transfer':
-        return 'TRANSFERS'
+        return t('following_transaction.transfers')
       case 'compressed_nft_mint':
-        return 'CNFT MINTS'
+        return t('following_transaction.cnft_mints')
       default:
-        return 'TRANSACTIONS'
+        return t('following_transaction.transactions')
     }
   }
 
   // If not logged in, show the preview with CTA
   if (!isLoggedIn) {
     return (
-      <DataContainer title="following_activity" height="large">
+      <DataContainer title={t('following_transaction.title')} height="large">
         <div className="relative">
           {/* Create Profile CTA */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4">
             <h3 className="text-green-400 font-mono text-lg mb-4">
-              Create a profile to follow wallets onchain and see their swaps in
-              real time!
+              {t('following_transaction.create_a_profile_to_follow')}
             </h3>
             <DynamicConnectButton>
               <div className="px-6 py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer">
-                Create Profile
+                {t('following_transaction.create_profile')}
               </div>
             </DynamicConnectButton>
           </div>
@@ -152,13 +151,13 @@ export const FollowingTransactionFeed = ({
 
   const headerRight = isLoading && totalWallets > 0 && (
     <div className="text-xs text-green-600 font-mono">
-      ({loadedWallets}/{totalWallets} wallets)
+      ({loadedWallets}/{totalWallets} {t('common.wallets')})
     </div>
   )
 
   return (
     <DataContainer
-      title="following_activity"
+      title={t('following_transaction.title')}
       count={transactions.length}
       height="large"
       headerRight={headerRight}
@@ -179,8 +178,12 @@ export const FollowingTransactionFeed = ({
       <ScrollableContent
         isLoading={isLoading}
         isEmpty={!isLoading && transactions.length === 0}
-        loadingText={`>>> LOADING ${getDisplayText(selectedType)}...`}
-        emptyText={`>>> NO ${getDisplayText(selectedType)} FOUND`}
+        loadingText={`>>> ${t('common.loading')} ${getDisplayText(
+          selectedType
+        )}...`}
+        emptyText={`>>> ${t('common.no')} ${getDisplayText(selectedType)} ${t(
+          'common.found'
+        )}`}
       >
         <div className="divide-y divide-green-800/30">
           {isLoading ? (

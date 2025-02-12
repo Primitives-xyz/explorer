@@ -2,7 +2,23 @@
   "common": {
     "followers": "粉丝",
     "following": "关注",
-    "loading": "加载中"
+    "follow": "关注",
+    "unfollow": "取消关注",
+    "unfollowing": "取消关注中",
+    "loading": "加载中",
+    "wallet": "钱包",
+    "wallets": "钱包",
+    "no": "无",
+    "found": "找到",
+    "count": "数量",
+    "address": "地址",
+    "all": "全部",
+    "copied": "已复制",
+    "copy": "复制",
+    "error": "错误",
+    "volume": "交易量",
+    "liquidity": "流动性",
+    "price": "价格"
   },
   "header": {
     "title": "solana_social_explorer",
@@ -15,7 +31,7 @@
       "title": "状态：在线 | 网络：Solana |",
       "user": "用户",
       "sse": "sse",
-      "balance": "余"
+      "balance": "余额"
     }
   },
   "search_bar": {
@@ -27,7 +43,6 @@
     "more": "更多",
     "token_matches": "代币匹配",
     "m_cap": "市值",
-    "volume": "交易量",
     "m": "百万",
     "recent_searches": "最近搜索",
     "system": "系统",
@@ -37,10 +52,52 @@
     "awaiting_input": "等待输入",
     "execute": "执行"
   },
-  "following-transaction": {
+  "following_transaction": {
+    "title": "关注动态",
     "all": "全部",
     "swap": "兑换",
     "transfer": "转账",
-    "compressed_nft_mint": "cNFT 铸造"
+    "compressed_nft_mint": "cNFT 铸造",
+    "create_a_profile_to_follow": "创建个人资料，关注链上钱包，并实时查看他们的兑换记录！",
+    "create_profile": "创建个人资料",
+    "transactions": "交易",
+    "swap_transactions": "兑换交易",
+    "transfers": "转账",
+    "cnft_mints": "cNFT 铸造"
+  },
+  "profile_info": {
+    "title": "个人资料信息",
+    "create_new_profile": "创建新个人资料",
+    "create_a_blink_profile": "创建 .Blink 个人资料",
+    "create_a_sol_profile": "创建 .Sol 个人资料",
+    "explore_all_domains": "探索所有域名",
+    "create_a_nimbus_app": "创建 Nimbus 应用",
+    "fetching_profiles": ">>> 正在获取个人资料...",
+    "no_profile_found": ">>> 未找到个人资料"
+  },
+  "trending_tokens": {
+    "title": "热门代币",
+    "volume_24h": "24小时交易量",
+    "rank": "排名",
+    "liquidity": "流动性",
+    "fetching_trending_tokens": ">>> 正在获取热门代币...",
+    "no_tokens_found": ">>> 未找到代币"
+  },
+  "success": {
+    "followed_successfully": "关注成功！"
+  },
+  "error": {
+    "error_navigating_to_profile": "导航到个人资料时出错",
+    "error_navigating_to_namespace": "导航到命名空间时出错",
+    "failed_to_fetch_profiles": "获取个人资料失败",
+    "stats_error": "统计数据错误",
+    "failed_to_revalidate_after_follow": "关注后重新验证失败",
+    "failed_to_follow": "关注失败",
+    "failed_to_revalidate_after_unfollow": "取消关注后重新验证失败",
+    "failed_to_unfollow": "取消关注失败",
+    "error_fetching_trending_tokens": "获取热门代币时出错",
+    "failed_to_fetch_tokens": "获取代币失败",
+    "api_request_failed": "API 请求失败",
+    "failed_to_fetch_trending_tokens": "获取热门代币失败"
   }
 }

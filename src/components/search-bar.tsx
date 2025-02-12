@@ -595,7 +595,7 @@ export default function SearchBar({
                                     <>
                                       <span className="text-green-800">•</span>
                                       <span className="text-green-500/90">
-                                        {t('search_bar.volume')}: $
+                                        {t('common.volume')}: $
                                         {(token.volume_24h_usd / 1e6).toFixed(
                                           2
                                         )}
