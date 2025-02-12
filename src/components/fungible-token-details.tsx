@@ -47,7 +47,7 @@ export default function FungibleTokenDetails({
 
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden">
-      <div className="container mx-auto px-2 md:px-8 py-8">
+      <div className="px-2 md:px-8 py-8">
         {/* Hero Section with Token Identity */}
         <div className="relative mb-8">
           <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />

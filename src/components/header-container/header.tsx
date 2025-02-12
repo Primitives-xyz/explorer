@@ -10,7 +10,7 @@ export function Header() {
 
   return (
     <div className="w-full border-b border-green-800/50">
-      <div className="max-w-6xl mx-auto px-4 w-full">
+      <div className="mx-auto w-full">
         <div className="flex flex-col gap-4 pb-4 pt-2 w-full overflow-hidden">
           <TerminalStatus
             mainUsername={mainUsername}

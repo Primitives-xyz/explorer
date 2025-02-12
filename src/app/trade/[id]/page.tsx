@@ -13,7 +13,7 @@ import { notFound } from 'next/navigation'
 
 // Client wrapper for SwapTransactionView
 const ClientSwapView = dynamic(
-  () => import('../../../../components/trade/client-swap-view')
+  () => import('@/components/trade/client-swap-view')
 )
 
 const formatAddress = (address: string) =>
@@ -231,7 +231,7 @@ export default async function TradePage({ params }: Props) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <div className="max-w-6xl mx-auto">
         {/* Header with Both Users */}
         <div className="mb-8">

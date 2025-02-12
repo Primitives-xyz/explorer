@@ -68,7 +68,7 @@ export default function TransactionDetails({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-8">
+      <div className="py-8">
         <div className="text-green-500 font-mono text-center">
           Loading transaction details...
         </div>
@@ -78,7 +78,7 @@ export default function TransactionDetails({
 
   if (error || !transaction) {
     return (
-      <div className="container mx-auto p-8">
+      <div className="py-8">
         <div className="text-red-500 font-mono text-center">
           {error || 'Transaction not found'}
         </div>
@@ -87,7 +87,7 @@ export default function TransactionDetails({
   }
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="py-8">
       <div className="mb-8 border border-green-800/40 rounded-xl bg-black/40">
         <TransactionCard transaction={transaction} sourceWallet="" />
       </div>

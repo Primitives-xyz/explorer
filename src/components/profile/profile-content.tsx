@@ -124,7 +124,7 @@ export function ProfileContent({ username }: Props) {
   ] as const
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="py-8">
       <ProfileHeader
         username={username}
         profileData={profileData}

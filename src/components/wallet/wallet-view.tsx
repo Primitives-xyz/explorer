@@ -97,7 +97,7 @@ export function WalletView({ address }: { address: string }) {
   // Show error state if wallet address is invalid
   if (error === 'Invalid Solana wallet address') {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         <div className="text-red-500 font-mono">
           Invalid wallet address: {address}
         </div>
@@ -106,7 +106,7 @@ export function WalletView({ address }: { address: string }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="py-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <h1 className="text-xl sm:text-2xl font-mono text-green-500 break-all">
           Wallet: {address}

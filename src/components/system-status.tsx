@@ -56,23 +56,21 @@ export const SystemStatus = () => {
 
   return (
     <footer className="sticky bottom-0 border-t border-green-800 bg-black/90 backdrop-blur-sm py-1 px-2">
-      <div className="container mx-auto">
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-mono">
-          <StatDisplay label="TPS" value={stats.tps} />
-          <StatDisplay label="SLOT" value={stats.slot} />
-          <StatDisplay
-            label="BLOCK_TIME"
-            value={stats.blockTime}
-            format={(val) => `${val}s`}
-          />
-          <StatDisplay label="NODES" value={stats.nodeCount} />
-          <StatDisplay
-            label="TOTAL_STAKE"
-            value={stats.totalStake}
-            format={(val) => `${val.toLocaleString()} SOL`}
-          />
-          <div className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-75"></div>
-        </div>
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-mono">
+        <StatDisplay label="TPS" value={stats.tps} />
+        <StatDisplay label="SLOT" value={stats.slot} />
+        <StatDisplay
+          label="BLOCK_TIME"
+          value={stats.blockTime}
+          format={(val) => `${val}s`}
+        />
+        <StatDisplay label="NODES" value={stats.nodeCount} />
+        <StatDisplay
+          label="TOTAL_STAKE"
+          value={stats.totalStake}
+          format={(val) => `${val.toLocaleString()} SOL`}
+        />
+        <div className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-75"></div>
       </div>
     </footer>
   )

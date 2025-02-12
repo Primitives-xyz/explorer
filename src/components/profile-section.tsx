@@ -119,10 +119,10 @@ const ProfileCard = memo(
           <div className="flex-1 min-w-0">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-3/5">
                   <button
                     onClick={handleProfileClick}
-                    className="text-green-400 font-mono text-sm bg-green-900/20 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold"
+                    className="text-green-400 font-mono text-sm bg-green-900/20 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate"
                   >
                     @{profile.profile.username}
                   </button>

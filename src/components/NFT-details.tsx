@@ -413,7 +413,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
   )
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="py-8">
       {/* Hero Section with NFT Identity */}
       <div className="relative mb-12">
         <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />
