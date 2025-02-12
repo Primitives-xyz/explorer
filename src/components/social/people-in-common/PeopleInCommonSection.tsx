@@ -45,7 +45,7 @@ export const PeopleInCommonSection = ({
                 {index < 2 && ', '}
               </>
             ))}{' '}
-            and {totalAmount - 3} others own {tokenName}
+            and {totalAmount - 3} others you follow own {tokenName}
           </>
         ) : (
           <>
