@@ -39,8 +39,7 @@ export const PeopleInCommonSection = ({
       <span className="text-sm">
         {totalAmount > 3 ? (
           <>
-            owned by
-            
+            owned by{' '}
             {topUsers.slice(0, 3).map((user, index) => (
               <>
                 <UserLink key={user.username} username={user.username} />
@@ -51,12 +50,13 @@ export const PeopleInCommonSection = ({
           </>
         ) : (
           <>
+            owned by{' '}
             {topUsers.map((user, index) => (
               <>
                 <UserLink key={user.username} username={user.username} />
                 {index < topUsers.length - 1 && ', '}
               </>
-            ))}{' '}
+            ))}
           </>
         )}
       </span>
