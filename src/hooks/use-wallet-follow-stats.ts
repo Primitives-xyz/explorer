@@ -2,7 +2,7 @@ import { useFollowStats } from './use-follow-stats'
 
 export function useWalletFollowStats(
   walletAddress: string,
-  fromUsername: string | null,
+  fromUsername: string | null
 ) {
   console.log('🎣 useWalletFollowStats hook called:', {
     walletAddress,
@@ -11,7 +11,7 @@ export function useWalletFollowStats(
 
   const { stats, isLoading, error, mutate } = useFollowStats(
     walletAddress,
-    fromUsername || '',
+    fromUsername || ''
   )
 
   return {

@@ -1,19 +1,19 @@
 import { ProfileContent } from '@/components/profile/profile-content'
+import { TokenView } from '@/components/tokens/token-view'
 import TransactionDetails from '@/components/transactions/transaction-view'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
-import type { Metadata } from 'next'
 import {
-  determineRouteType,
-  type RouteType,
-  type IdParams as Params,
-} from '@/utils/validation'
-import { TokenView } from '@/components/tokens/token-view'
-import {
+  generateProfileMetadata,
   generateTokenMetadata,
   generateTransactionMetadata,
-  generateProfileMetadata,
   resolveTokenImage,
 } from '@/utils/metadata'
+import {
+  determineRouteType,
+  type IdParams as Params,
+  type RouteType,
+} from '@/utils/validation'
+import type { Metadata } from 'next'
 
 /**
  * Generates metadata for the page based on the ID parameter
@@ -41,7 +41,7 @@ export async function generateMetadata({
           const imageUrl = resolveTokenImage(tokenInfo.result)
           const collection = tokenInfo.result.grouping?.find(
             (g: { group_key: string; group_value: string }) =>
-              g.group_key === 'collection',
+              g.group_key === 'collection'
           )
           return generateTokenMetadata({
             token: tokenInfo.result,

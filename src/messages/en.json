@@ -1,0 +1,47 @@
+{
+  "common": {
+    "followers": "followers",
+    "following": "following",
+    "loading": "loading"
+  },
+  "header": {
+    "title" : "solana_social_explorer",
+    "search": "search",
+    "trade": "trade",
+    "portfolio": "portfolio",
+    "graph": "graph",
+    "connect_wallet": "connect wallet",
+    "logout": "logout",
+    "terminal" : {
+      "title": "STATUS: ONLINE | NETWORK: SOLANA |",
+      "user": "USER",
+      "sse": "sse",
+      "balance": "Bal"
+    }
+  },
+  "search_bar": {
+    "all": "all",
+    "profiles": "profiles",
+    "tokens": "tokens",
+    "recent": "recent",
+    "profile_matches": "profile matches",
+    "more": "more",
+    "token_matches": "token matches",
+    "m_cap": "MCap",
+    "volume": "Vol",
+    "m": "M",
+    "recent_searches": "recent searches",
+    "system": "system",
+    "search_username": "Search a username or wallet address...",
+    "navigating_to": "NAVIGATING TO",
+    "ready_to_analyze": "READY TO ANALYZE",
+    "awaiting_input": "AWAITING INPUT",
+    "execute": "execute"
+  },
+  "following-transaction": {
+    "all": "All",
+    "swap": "Swaps",
+    "transfer": "Transfers",
+    "compressed_nft_mint": "cNFT Mints"
+  }
+}

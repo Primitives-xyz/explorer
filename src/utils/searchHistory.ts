@@ -45,7 +45,7 @@ export async function addSearchToHistory(walletAddress: string): Promise<void> {
 }
 
 export async function getRecentSearches(
-  limit = 5,
+  limit = 5
 ): Promise<SearchHistoryItem[]> {
   const db = await initDB()
   return new Promise((resolve, reject) => {

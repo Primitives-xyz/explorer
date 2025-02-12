@@ -1,8 +1,9 @@
-import type { Transaction } from '@/utils/helius/types'
-import { formatNumber } from '@/utils/format'
-import Link from 'next/link'
 import { useTokenInfo } from '@/hooks/use-token-info'
-import type { TokenResponse, FungibleTokenInfo } from '@/types/Token'
+import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
+import { formatNumber } from '@/utils/format'
+import type { Transaction } from '@/utils/helius/types'
+import { route } from '@/utils/routes'
+import Link from 'next/link'
 
 interface TokenTransfer {
   tokenMint: string
@@ -18,7 +19,7 @@ interface SPLTransferViewProps {
 
 // Helper function to check if token is fungible
 const isFungibleToken = (
-  data: TokenResponse | null,
+  data: TokenResponse | null
 ): data is TokenResponse & { result: FungibleTokenInfo } => {
   return (
     data?.result?.interface === 'FungibleToken' ||
@@ -92,7 +93,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                     <>
                       From:{' '}
                       <Link
-                        href={`/portfolio/${transfer.from}`}
+                        href={route('address', { id: transfer.from })}
                         className="hover:text-green-500 transition-colors"
                       >
                         {transfer.from?.slice(0, 4)}...
@@ -103,7 +104,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                     <>
                       To:{' '}
                       <Link
-                        href={`/${transfer.to}`}
+                        href={route('address', { id: transfer.to })}
                         className="hover:text-green-500 transition-colors"
                       >
                         {transfer.to?.slice(0, 4)}...{transfer.to?.slice(-4)}

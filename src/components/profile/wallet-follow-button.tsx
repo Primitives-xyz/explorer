@@ -1,17 +1,17 @@
-import { useFollowWallet } from './hooks/use-follow-wallet'
-import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
-import { UserRoundPlus, UserRoundCheck, LoaderCircle } from 'lucide-react'
-import dynamic from 'next/dynamic'
-import { useWalletFollowStats } from '@/hooks/use-wallet-follow-stats'
-import { useState, useEffect } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { useWalletFollowStats } from '@/hooks/use-wallet-follow-stats'
+import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
+import { useFollowWallet } from './hooks/use-follow-wallet'
 
 const DynamicConnectButton = dynamic(
   () =>
     import('@dynamic-labs/sdk-react-core').then(
-      (mod) => mod.DynamicConnectButton,
+      (mod) => mod.DynamicConnectButton
     ),
-  { ssr: false },
+  { ssr: false }
 )
 
 interface Props {

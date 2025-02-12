@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (!followerUsername || !walletToFollow) {
       return NextResponse.json(
         { error: 'followerUsername and walletToFollow are required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     if (error.message?.includes('status: 404')) {
       return NextResponse.json(
         { error: 'Follow endpoint not found' },
-        { status: 404 },
+        { status: 404 }
       )
     }
 
@@ -84,13 +84,13 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: 'Authentication failed' },
-        { status: 401 },
+        { status: 401 }
       )
     }
 
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

@@ -1,16 +1,16 @@
 'use client'
 
 import type { Transaction } from '@/utils/helius/types'
-import { useEffect, useState } from 'react'
-import { formatDistanceToNow } from 'date-fns'
-import { TransactionBadge } from './TransactionBadge'
-import { TransactionSignature } from './TransactionSignature'
-import { TransactionCard } from './TransactionCard'
 import {
   formatLamportsToSol,
   formatTokenAmount,
   getTokenSymbol,
 } from '@/utils/transaction'
+import { formatDistanceToNow } from 'date-fns'
+import { useEffect, useState } from 'react'
+import { TransactionBadge } from './transaction-badge'
+import { TransactionCard } from './transaction-card'
+import { TransactionSignature } from './transaction-signature'
 
 interface TransactionDetailsProps {
   signature: string
@@ -45,7 +45,7 @@ export default function TransactionDetails({
           throw new Error(
             typeof data.error === 'object'
               ? JSON.stringify(data.error)
-              : data.error,
+              : data.error
           )
         }
 
@@ -68,7 +68,7 @@ export default function TransactionDetails({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-8">
+      <div className="py-8">
         <div className="text-green-500 font-mono text-center">
           Loading transaction details...
         </div>
@@ -78,7 +78,7 @@ export default function TransactionDetails({
 
   if (error || !transaction) {
     return (
-      <div className="container mx-auto p-8">
+      <div className="py-8">
         <div className="text-red-500 font-mono text-center">
           {error || 'Transaction not found'}
         </div>
@@ -87,7 +87,7 @@ export default function TransactionDetails({
   }
 
   return (
-    <div className="container mx-auto p-8">
+    <div className="py-8">
       <div className="mb-8 border border-green-800/40 rounded-xl bg-black/40">
         <TransactionCard transaction={transaction} sourceWallet="" />
       </div>
@@ -144,7 +144,7 @@ export default function TransactionDetails({
             .filter(
               (acc) =>
                 acc.nativeBalanceChange !== 0 ||
-                acc.tokenBalanceChanges.length > 0,
+                acc.tokenBalanceChanges.length > 0
             )
             .map((account, index) => (
               <div
@@ -192,7 +192,7 @@ export default function TransactionDetails({
                         {amount > 0 ? '+' : ''}
                         {formatTokenAmount(
                           change.rawTokenAmount.tokenAmount,
-                          change.rawTokenAmount.decimals,
+                          change.rawTokenAmount.decimals
                         )}{' '}
                         {getTokenSymbol(change.mint)}
                       </span>

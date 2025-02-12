@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
-import type { Transaction } from '@/utils/helius/types'
-import type { GetFollowingResponse } from '../types'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import type { Transaction } from '@/utils/helius/types'
+import { useEffect, useState } from 'react'
+import type { GetFollowingResponse } from '../types'
 
 // Helper to fetch transactions for a single wallet
 async function fetchWalletTransactions(
   walletId: string,
-  type?: string,
+  type?: string
 ): Promise<Transaction[]> {
   const url = new URL('/api/transactions', window.location.origin)
   url.searchParams.set('address', walletId)
@@ -38,7 +38,7 @@ async function fetchWalletTransactions(
 }
 
 export const useFollowingTransactions = (
-  following: GetFollowingResponse | undefined,
+  following: GetFollowingResponse | undefined
 ) => {
   const [aggregatedTransactions, setAggregatedTransactions] = useState<
     Transaction[]
@@ -73,7 +73,7 @@ export const useFollowingTransactions = (
         const fetchPromises = walletIds.map(async (walletId) => {
           const transactions = await fetchWalletTransactions(
             walletId,
-            selectedType,
+            selectedType
           )
           transactionsByWallet[walletId] = transactions
           setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))

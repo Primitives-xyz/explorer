@@ -18,7 +18,7 @@ export function LoadMoreObserver({ hasMore, onLoadMore, loading }: Props) {
           onLoadMore()
         }
       },
-      { threshold: 1.0 },
+      { threshold: 1.0 }
     )
 
     if (observerRef.current) {

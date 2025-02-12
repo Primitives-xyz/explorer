@@ -1,6 +1,7 @@
 'use client'
 
 import { CopyPaste } from '@/components/common/copy-paste'
+import { route } from '@/utils/routes'
 import Link from 'next/link'
 
 interface Props {
@@ -11,7 +12,10 @@ interface Props {
 export function ProfileInfos({ username, walletAddress }: Props) {
   return (
     <>
-      <Link href={`/${username}`} className="w-full font-bold">
+      <Link
+        href={route('address', { id: username })}
+        className="w-full font-bold"
+      >
         <h2 className="text-xl">{username}</h2>
       </Link>
       <div className="flex items-center space-x-4">

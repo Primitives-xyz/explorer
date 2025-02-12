@@ -14,7 +14,7 @@ export async function fetchTapestryServer<T = any>({
 
   if (!BASE_URL || !API_KEY) {
     throw new Error(
-      'Missing required environment variables: TAPESTRY_URL or TAPESTRY_API_KEY',
+      'Missing required environment variables: TAPESTRY_URL or TAPESTRY_API_KEY'
     )
   }
   const cleanEndpoint = endpoint.replace(/^\/+/, '')
@@ -52,16 +52,16 @@ export async function fetchTapestryServer<T = any>({
       switch (response.status) {
         case 404:
           console.error(
-            `[Tapestry] Resource not found at endpoint: ${cleanEndpoint}`,
+            `[Tapestry] Resource not found at endpoint: ${cleanEndpoint}`
           )
           throw new Error(
-            `API endpoint or resource not found: ${cleanEndpoint}`,
+            `API endpoint or resource not found: ${cleanEndpoint}`
           )
         case 401:
           throw new Error('Invalid API key or unauthorized access')
         case 403:
           throw new Error(
-            'Access forbidden - please check your API permissions',
+            'Access forbidden - please check your API permissions'
           )
         case 429:
           throw new Error('Rate limit exceeded - please try again later')
@@ -69,13 +69,13 @@ export async function fetchTapestryServer<T = any>({
           throw new Error(`Internal server error: ${errorText}`)
         case 502:
           throw new Error(
-            `Tapestry API is temporarily unavailable - please try again later`,
+            `Tapestry API is temporarily unavailable - please try again later`
           )
         default:
           throw new Error(
             `HTTP error! status: ${response.status} - ${
               errorText || response.statusText
-            }`,
+            }`
           )
       }
     }

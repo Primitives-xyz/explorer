@@ -3,10 +3,10 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import {
   useDynamicContext,
-  useUserWallets,
   useIsLoggedIn,
+  useUserWallets,
 } from '@dynamic-labs/sdk-react-core'
-import { useMemo, useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export function useCurrentWallet() {
   const { sdkHasLoaded: dynamicSdkHasLoaded, primaryWallet } =
@@ -44,7 +44,7 @@ export function useCurrentWallet() {
   // Basic wallet state
   const walletAddress = useMemo(
     () => (sdkHasLoaded && isLoggedIn ? userWallets[0]?.address || '' : ''),
-    [userWallets, sdkHasLoaded, isLoggedIn],
+    [userWallets, sdkHasLoaded, isLoggedIn]
   )
   const { profiles, loading: loadingProfiles } = useGetProfiles(walletAddress)
 
@@ -70,7 +70,7 @@ export function useCurrentWallet() {
   }
 
   const mainProfile = profiles?.find(
-    (profile: any) => profile.namespace.name === 'nemoapp',
+    (profile: any) => profile.namespace.name === 'nemoapp'
   )?.profile
   const image = mainProfile?.image || null
 

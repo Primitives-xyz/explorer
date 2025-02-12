@@ -1,21 +1,21 @@
-import { NextResponse } from 'next/server'
-import {
-  Connection,
-  PublicKey,
-  TransactionMessage,
-  VersionedTransaction,
-  ComputeBudgetProgram,
-  Transaction,
-  Keypair,
-} from '@solana/web3.js'
+import type { PriorityLevel } from '@/types/jupiter'
+import { createATAIfNotExists } from '@/utils/token'
 import {
   TOKEN_PROGRAM_ID,
   createTransferInstruction,
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
-import type { PriorityLevel } from '@/types/jupiter'
-import { createATAIfNotExists } from '@/utils/token'
+import {
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  PublicKey,
+  Transaction,
+  TransactionMessage,
+  VersionedTransaction,
+} from '@solana/web3.js'
 import bs58 from 'bs58'
+import { NextResponse } from 'next/server'
 
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY
@@ -33,7 +33,7 @@ interface CommentFeeRequest {
 
 async function getPriorityFeeEstimate(
   transaction: Transaction,
-  priorityLevel: PriorityLevel = 'Medium',
+  priorityLevel: PriorityLevel = 'Medium'
 ) {
   if (!HELIUS_API_KEY) {
     throw new Error('HELIUS_API_KEY is not configured')
@@ -109,15 +109,15 @@ export async function POST(request: Request) {
       await Promise.all([
         getAssociatedTokenAddress(
           new PublicKey(SSE_TOKEN_MINT),
-          new PublicKey(walletAddress),
+          new PublicKey(walletAddress)
         ),
         getAssociatedTokenAddress(
           new PublicKey(SSE_TOKEN_MINT),
-          new PublicKey(targetWalletAddress),
+          new PublicKey(targetWalletAddress)
         ),
         getAssociatedTokenAddress(
           new PublicKey(SSE_TOKEN_MINT),
-          new PublicKey(FEE_WALLET),
+          new PublicKey(FEE_WALLET)
         ),
       ])
 
@@ -145,8 +145,8 @@ export async function POST(request: Request) {
           connection,
           payer,
           new PublicKey(SSE_TOKEN_MINT),
-          new PublicKey(walletAddress),
-        ),
+          new PublicKey(walletAddress)
+        )
       )
     }
 
@@ -156,8 +156,8 @@ export async function POST(request: Request) {
           connection,
           payer,
           new PublicKey(SSE_TOKEN_MINT),
-          new PublicKey(targetWalletAddress),
-        ),
+          new PublicKey(targetWalletAddress)
+        )
       )
     }
 
@@ -167,8 +167,8 @@ export async function POST(request: Request) {
           connection,
           payer,
           new PublicKey(SSE_TOKEN_MINT),
-          new PublicKey(FEE_WALLET),
-        ),
+          new PublicKey(FEE_WALLET)
+        )
       )
     }
 
@@ -184,7 +184,7 @@ export async function POST(request: Request) {
       new PublicKey(walletAddress),
       BigInt(ownerAmount),
       [],
-      TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID
     )
 
     const feeTransferInstruction = createTransferInstruction(
@@ -193,7 +193,7 @@ export async function POST(request: Request) {
       new PublicKey(walletAddress),
       BigInt(feeAmount),
       [],
-      TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID
     )
 
     // Create a legacy transaction to estimate priority fees
@@ -208,7 +208,7 @@ export async function POST(request: Request) {
     // Get priority fee estimate
     const priorityFee = await getPriorityFeeEstimate(
       legacyTransaction,
-      priorityLevel,
+      priorityLevel
     )
 
     // Create compute budget instructions with safe type conversion
@@ -245,7 +245,7 @@ export async function POST(request: Request) {
     console.error('Error building comment fee transaction:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to build comment fee transaction' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

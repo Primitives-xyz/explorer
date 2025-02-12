@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
   if (!jwt) {
     return NextResponse.json(
       { error: 'Authentication required' },
-      { status: 401 },
+      { status: 401 }
     )
   }
 
@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
     console.error('Token verification failed: ', error)
     return NextResponse.json(
       { error: 'Invalid or expired token' },
-      { status: 401 },
+      { status: 401 }
     )
   }
 }

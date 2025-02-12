@@ -1,15 +1,16 @@
 'use client'
-import PortfolioTabs from '@/app/portfolio/[address]/PortfolioTabs'
-import { ProfileSection } from '../ProfileSection'
-import { PortfolioBalanceSection } from '../tokens/SolBalanceSection'
-import { TradingStats } from '../trading/TradingStats'
-import { TapestryPromoSection } from '../tapestry/TapestryPromoSection'
-import { TransactionSection } from '../TransactionSection'
-import { useEffect, useState } from 'react'
+
+import PortfolioTabs from '@/components/portfolio/portfolio-tabs'
 import type { TokenPortfolioResponse } from '@/types/Token'
-import { WalletFollowButton } from '../profile/wallet-follow-button'
 import { isValidSolanaAddress } from '@/utils/validation'
+import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
+import { ProfileSection } from '../profile-section'
+import { WalletFollowButton } from '../profile/wallet-follow-button'
+import { TapestryPromoSection } from '../tapestry/tapestry-promo-section'
+import { PortfolioBalanceSection } from '../tokens/sol-balance-section'
+import { TradingStats } from '../trading/trading-stats'
+import { TransactionSection } from '../transaction-section'
 
 interface TokenData {
   nativeBalance: {
@@ -48,7 +49,7 @@ export function WalletView({ address }: { address: string }) {
       try {
         // Fetch token data
         const tokenResponse = await fetch(
-          `/api/tokens?address=${address}&type=all`,
+          `/api/tokens?address=${address}&type=all`
         )
         if (!tokenResponse.ok) {
           throw new Error(`HTTP error! status: ${tokenResponse.status}`)
@@ -71,11 +72,11 @@ export function WalletView({ address }: { address: string }) {
 
         const portfolioResponse = await fetch(
           `https://public-api.birdeye.so/v1/wallet/token_list?wallet=${address}`,
-          portfolioOptions,
+          portfolioOptions
         )
         if (!portfolioResponse.ok) {
           throw new Error(
-            `Portfolio HTTP error! status: ${portfolioResponse.status}`,
+            `Portfolio HTTP error! status: ${portfolioResponse.status}`
           )
         }
         const portfolioResult = await portfolioResponse.json()
@@ -83,7 +84,7 @@ export function WalletView({ address }: { address: string }) {
       } catch (error) {
         console.error('Error fetching data:', error)
         setError(
-          error instanceof Error ? error.message : 'Failed to fetch data',
+          error instanceof Error ? error.message : 'Failed to fetch data'
         )
       } finally {
         setIsLoading(false)
@@ -96,7 +97,7 @@ export function WalletView({ address }: { address: string }) {
   // Show error state if wallet address is invalid
   if (error === 'Invalid Solana wallet address') {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         <div className="text-red-500 font-mono">
           Invalid wallet address: {address}
         </div>
@@ -105,7 +106,7 @@ export function WalletView({ address }: { address: string }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="py-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <h1 className="text-xl sm:text-2xl font-mono text-green-500 break-all">
           Wallet: {address}

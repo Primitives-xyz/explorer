@@ -1,6 +1,6 @@
+import type { ProfileData } from '@/hooks/use-profile-data'
 import { memo, useEffect } from 'react'
 import { Card } from '../common/card'
-import type { ProfileData } from '@/hooks/use-profile-data'
 
 interface ProfileStatsProps {
   profileData?: ProfileData

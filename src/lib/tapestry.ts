@@ -39,7 +39,7 @@ export const createProfile = async ({
 
     if (!/^[a-zA-Z0-9_]+$/.test(username)) {
       throw new Error(
-        'Username can only contain letters, numbers, and underscores',
+        'Username can only contain letters, numbers, and underscores'
       )
     }
 
@@ -57,7 +57,7 @@ export const createProfile = async ({
 
     if (!createProfileResponse) {
       throw new Error(
-        'Failed to create profile - no response received from server',
+        'Failed to create profile - no response received from server'
       )
     }
 
@@ -88,7 +88,7 @@ export const createProfile = async ({
     throw new Error(
       `Failed to create profile: ${
         error.message || 'An unexpected error occurred'
-      }`,
+      }`
     )
   }
 }

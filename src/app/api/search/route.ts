@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   if (!query) {
     return NextResponse.json(
       { error: 'Query parameter is required' },
-      { status: 400 },
+      { status: 400 }
     )
   }
 
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     console.error('Profile search error:', error)
     return NextResponse.json(
       { error: 'Failed to search profiles' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

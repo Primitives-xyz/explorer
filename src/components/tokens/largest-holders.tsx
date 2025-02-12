@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
 import { formatNumber, shortenAddress } from '@/utils/format'
+import { route } from '@/utils/routes'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
-import Link from 'next/link'
 
 interface TokenHolder {
   address: string
@@ -18,7 +19,7 @@ interface LargestHoldersProps {
 // Simple fetch function
 async function fetchHolders(mintAddress: string): Promise<TokenHolder[]> {
   const response = await fetch(
-    `/api/tokens/largest-holders?mintAddress=${mintAddress}`,
+    `/api/tokens/largest-holders?mintAddress=${mintAddress}`
   )
   if (!response.ok) {
     throw new Error('Failed to fetch holders')
@@ -54,7 +55,7 @@ const HolderRow = ({
         </div>
         <div className="flex items-center gap-2 min-w-0">
           <Link
-            href={`/${holder.address}`}
+            href={route('address', { id: holder.address })}
             className="font-mono text-green-400 text-sm min-w-[120px] truncate hover:text-green-300 transition-colors"
           >
             {isCurrentWallet ? 'Your Wallet' : shortenAddress(holder.address)}
@@ -98,7 +99,7 @@ export function LargestHolders({
         console.error('Error fetching token holders:', error)
         if (isMounted) {
           setError(
-            error instanceof Error ? error.message : 'Failed to fetch holders',
+            error instanceof Error ? error.message : 'Failed to fetch holders'
           )
         }
       } finally {

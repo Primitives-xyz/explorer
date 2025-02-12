@@ -14,7 +14,7 @@ interface ProfileMetadata {
  * Gets the profile metadata for a given username
  */
 export async function getProfileMetadata(
-  username: string,
+  username: string
 ): Promise<ProfileMetadata | null> {
   try {
     const endpoint = `profiles/new/${username}`
