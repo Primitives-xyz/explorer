@@ -20,8 +20,8 @@ const UserLink = ({ username }: { username: string }) => (
 
 export const PeopleInCommonSection = ({
   topUsers,
-  totalAmount,
-  tokenName,
+  totalAmount
+  
 }: PeopleInCommonSectionProps) => {
   return (
     <div className="flex items-center gap-1">
