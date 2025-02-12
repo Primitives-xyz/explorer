@@ -61,6 +61,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
           {t('header.portfolio')}
         </Link>
       )}
+
       {/* <LanguageSwitcher /> */}
     </div>
   )

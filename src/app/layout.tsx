@@ -7,7 +7,8 @@ import { CreateProfile } from '@/components/profile/create-profile'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-import { Toaster } from 'sonner'
+
+import { Toaster } from '@/components/toast/toaster'
 import './globals.css'
 
 export const metadata: Metadata = {
