@@ -20,8 +20,9 @@ export const useGetProfiles = (
     return data.profiles
   }
 
+  const endpoint = useIdentities ? '/api/identity' : '/api/profiles'
   const key = walletAddress
-    ? `/api/profiles?walletAddress=${walletAddress}&useIdentities=${useIdentities}`
+    ? `${endpoint}?walletAddress=${walletAddress}`
     : null
 
   const {
@@ -51,7 +52,6 @@ export const refreshProfiles = (
   walletAddress: string,
   useIdentities: boolean = false
 ) => {
-  return mutate(
-    `/api/profiles?walletAddress=${walletAddress}&useIdentities=${useIdentities}`
-  )
+  const endpoint = useIdentities ? '/api/identity' : '/api/profiles'
+  return mutate(`${endpoint}?walletAddress=${walletAddress}`)
 }
