@@ -17,7 +17,7 @@ export function GraphVisualizationContainer() {
       ) : !isLoggedIn ? (
         <p>connect your wallet</p>
       ) : !mainUsername ? (
-        <p>you don't have a username linked to your wallet</p>
+        <p>you don‘t have a username linked to your wallet</p>
       ) : (
         <GraphContainer username={'nehemiah'} />
       )}
