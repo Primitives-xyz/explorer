@@ -160,7 +160,10 @@ export function CreateProfile({
     })
 
     if(profile?.profile.hasSeenProfileSetupModal) return true
-    if (mainUsername === walletAddress || mainUsername=='bcahjidbuwzhqic7ajnnlcqf') {
+    
+    if (!mainUsername 
+      || mainUsername === walletAddress 
+      || walletAddress.substring(0, 30).toLowerCase() == mainUsername.toLowerCase()) { // username only allows first 30 chars so it might be a substring of the walletAddress. Also username depending where its created can be lowercase
       const initialTimestamp = localStorage.getItem(`${MODAL_CREATE_PROFILE_PREFIX}${walletAddress}`);
       const currentTime = Date.now();
       
@@ -178,6 +181,7 @@ export function CreateProfile({
         void updateProfileSetupModalShownStatus(mainUsername); // asynchronously update the backend
         return true; 
       }
+
       return false;
     }
     return true;
