@@ -679,7 +679,7 @@ export default function SearchBar({
   }
 
   return (
-    <div className="w-full max-w-2xl sm:max-w-3xl mx-auto mb-2 sm:mb-8">
+    <div className="w-full max-w-2xl sm:max-w-3xl mx-auto mb-2 sm:mb-4">
       <div className=" text-[10px] sm:text-xs mb-1 sm:mb-2 font-mono px-2 sm:px-0">
         <p>
           <span className="opacity-60 uppercase">

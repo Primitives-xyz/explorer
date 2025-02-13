@@ -61,11 +61,11 @@ export default function Home() {
 
   // Called when user clicks the [EXECUTE] button from the child form
   return (
-    <div className="py-4 sm:py-8 space-y-4 sm:space-y-8">
+    <div className="py-4 sm:py-8 space-y-2 ">
       <SearchBar onPickRecentAddress={searchAddress} />
 
       {/* Grid layout for ProfileSection and TrendingTokens */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         <div className="lg:col-span-2">
           <ActivityFeedContainer username={mainUsername} />
         </div>
@@ -83,7 +83,7 @@ export default function Home() {
       {/* Token results */}
 
       {/* Following list for logged-in users */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <TrendingTokens />
         <TopTraders />
       </div>
