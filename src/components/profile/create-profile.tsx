@@ -123,25 +123,6 @@ export function CreateProfile({
         ),
     ),
   )
-
-  // For testing purposes, we'll show the modal whenever wallet is connected
-  const shouldShowModal = !!walletAddress && !loadingProfiles && !mainUsername
-
-  useEffect(() => {
-    setIsModalOpen(shouldShowModal)
-  }, [shouldShowModal])
-
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      try {
-        const uploadedUrl = await uploadFile(file)
-        setSelectedImageUrl(uploadedUrl)
-      } catch (err) {
-        console.error('Error uploading file:', err)
-      }
-    }
-  }
   const updateProfileSetupModalShownStatus = async (walletAddress: string) => {
     try {
       const response = await fetch(`api/profiles/${walletAddress}`, {
@@ -170,6 +151,56 @@ export function CreateProfile({
       // Optionally handle the error
     }
 };
+
+  const isProfileSetup =  () => {
+    const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
+
+    const profile = profiles.find((profile: IGetProfilesResponse) => {
+      return profile.namespace.name == 'nemoapp' && profile.profile.username === mainUsername
+    })
+
+    if(profile?.profile.hasSeenProfileSetupModal) return true
+    if (mainUsername === walletAddress || mainUsername=='bcahjidbuwzhqic7ajnnlcqf') {
+      const initialTimestamp = localStorage.getItem(`${MODAL_CREATE_PROFILE_PREFIX}${walletAddress}`);
+      const currentTime = Date.now();
+      
+      // If this is the first time showing the modal, set the initial timestamp
+      if (!initialTimestamp) {
+        localStorage.setItem(`${MODAL_CREATE_PROFILE_PREFIX}${walletAddress}`, currentTime.toString());
+        return false;
+      }
+      
+      // Calculate the difference in days
+      const daysSinceFirstShow = (currentTime - parseInt(initialTimestamp)) / (1000 * 60 * 60 * 24);
+      
+      // If it's been more than 5 days, update the backend and stop showing the modal
+      if (daysSinceFirstShow > MAX_DAYS_SHOW_UPDATE_PROFILE_MODAL) {
+        void updateProfileSetupModalShownStatus(mainUsername); // asynchronously update the backend
+        return true; 
+      }
+      return false;
+    }
+    return true;
+  }
+
+  // For testing purposes, we'll show the modal whenever wallet is connected
+  const shouldShowModal = !!walletAddress && !loadingProfiles && !isProfileSetup()
+
+  useEffect(() => {
+    setIsModalOpen(shouldShowModal)
+  }, [shouldShowModal])
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      try {
+        const uploadedUrl = await uploadFile(file)
+        setSelectedImageUrl(uploadedUrl)
+      } catch (err) {
+        console.error('Error uploading file:', err)
+      }
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -236,39 +267,6 @@ export function CreateProfile({
     setUsername(suggestedUsername)
   }
 
-  const checkIfProfileIsSetup =  () => {
-    if(!walletAddress) return true; // if no wallet we don't show the modal
-    
-    const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
-    const profile = profiles.find((profile: IGetProfilesResponse) => {
-      return profile.namespace.name == 'nemoapp' && profile.profile.username === mainUsername
-    })
-
-    if(profile?.profile.hasSeenProfileSetupModal) return true
-    if (mainUsername === walletAddress) {
-      const initialTimestamp = localStorage.getItem(`${MODAL_CREATE_PROFILE_PREFIX}${walletAddress}`);
-      const currentTime = Date.now();
-      
-      // If this is the first time showing the modal, set the initial timestamp
-      if (!initialTimestamp) {
-        localStorage.setItem(`${MODAL_CREATE_PROFILE_PREFIX}${walletAddress}`, currentTime.toString());
-        return false;
-      }
-      
-      // Calculate the difference in days
-      const daysSinceFirstShow = (currentTime - parseInt(initialTimestamp)) / (1000 * 60 * 60 * 24);
-      
-      // If it's been more than X days, update the backend and stop showing the modal
-      if (daysSinceFirstShow > MAX_DAYS_SHOW_UPDATE_PROFILE_MODAL) {
-        void updateProfileSetupModalShownStatus(mainUsername); // asynchronously update the backend
-        return true; 
-      }
-    }
-    
-    return false;
-  }
-
-  if(checkIfProfileIsSetup()) return null;
   
   const handleImageSelect = (imageUrl: string) => {
     setSelectedImageUrl(imageUrl)
