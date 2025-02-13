@@ -267,23 +267,23 @@ export function TokenSearch({
               ref={inputRef}
               type="text"
               placeholder="Search tokens..."
-              className="w-full bg-black/80 text-green-100 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+              className="w-full bg-black/80  p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 " />
           </div>
 
           {/* Filter and Sort Options */}
           <div className="flex flex-col gap-2 mt-2">
             {/* Verified Toggle */}
             <div className="flex items-center gap-2">
-              <label className="flex items-center gap-2 text-sm text-green-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm  cursor-pointer">
                 <input
                   type="checkbox"
                   checked={verifiedOnly}
                   onChange={(e) => setVerifiedOnly(e.target.checked)}
-                  className="rounded border-green-800 text-green-600 focus:ring-green-600 bg-black/80"
+                  className="rounded border-green-800  focus:ring-green-600 bg-black/80"
                 />
                 Verified tokens only
               </label>
@@ -296,7 +296,7 @@ export function TokenSearch({
                 className={`text-xs px-2 py-1 rounded ${
                   sortBy === 'marketcap'
                     ? 'bg-green-600 text-white'
-                    : 'bg-green-900/40 text-green-400'
+                    : 'bg-green-900/40 '
                 }`}
               >
                 Market Cap
@@ -306,7 +306,7 @@ export function TokenSearch({
                 className={`text-xs px-2 py-1 rounded ${
                   sortBy === 'volume'
                     ? 'bg-green-600 text-white'
-                    : 'bg-green-900/40 text-green-400'
+                    : 'bg-green-900/40 '
                 }`}
               >
                 Volume
@@ -316,7 +316,7 @@ export function TokenSearch({
                 className={`text-xs px-2 py-1 rounded ${
                   sortBy === 'name'
                     ? 'bg-green-600 text-white'
-                    : 'bg-green-900/40 text-green-400'
+                    : 'bg-green-900/40 '
                 }`}
               >
                 Name
@@ -329,7 +329,7 @@ export function TokenSearch({
         <div className="max-h-[400px] overflow-y-auto bg-black/95">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
-              <Loader2 className="h-6 w-6 animate-spin text-green-500" />
+              <Loader2 className="h-6 w-6 animate-spin " />
             </div>
           ) : error ? (
             <div className="p-4 text-red-400 text-center bg-red-950/20">
@@ -356,7 +356,7 @@ export function TokenSearch({
                       </div>
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-green-950 ring-1 ring-green-800/50 flex items-center justify-center">
-                        <span className="text-green-400 text-sm font-medium">
+                        <span className=" text-sm font-medium">
                           {(token.symbol || '??').slice(0, 2)}
                         </span>
                       </div>
@@ -369,25 +369,21 @@ export function TokenSearch({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-green-100">
-                        {token.symbol}
-                      </span>
-                      <span className="text-green-400/80 text-sm truncate">
-                        {token.name}
-                      </span>
+                      <span className="font-medium ">{token.symbol}</span>
+                      <span className="/80 text-sm truncate">{token.name}</span>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <div className="text-sm text-green-300/90 font-medium">
+                      <div className="text-sm /90 font-medium">
                         {formatPrice(token.price)}
                       </div>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-green-500/90 font-medium">
+                        <span className="/90 font-medium">
                           MCap: {formatMarketCap(token.market_cap)}
                         </span>
                         {token.volume_24h_usd > 0 && (
                           <>
-                            <span className="text-green-800">•</span>
-                            <span className="text-green-500/90">
+                            <span className="">•</span>
+                            <span className="/90">
                               Vol: $
                               {(token.volume_24h_usd / 1e6).toLocaleString(
                                 undefined,
@@ -406,11 +402,9 @@ export function TokenSearch({
               ))}
             </div>
           ) : searchQuery ? (
-            <div className="p-4 text-green-400 text-center">
-              No tokens found
-            </div>
+            <div className="p-4  text-center">No tokens found</div>
           ) : (
-            <div className="p-4 text-green-400 text-center">
+            <div className="p-4  text-center">
               Start typing to search for tokens
             </div>
           )}
@@ -420,7 +414,7 @@ export function TokenSearch({
         <div className="p-4 border-t border-green-800 bg-green-950/50">
           <button
             onClick={onClose}
-            className="w-full bg-green-950 hover:bg-green-900 text-green-100 p-2 rounded transition-colors font-medium"
+            className="w-full bg-green-950 hover:bg-green-900  p-2 rounded transition-colors font-medium"
           >
             Close
           </button>

@@ -67,7 +67,7 @@ export const TransactionCard = memo(function TransactionCard({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <Link href={route('address', { id: tx.signature })}>
-              <span className="text-green-300 font-mono text-xs sm:text-sm font-bold px-2 py-0.5 bg-green-900/20 rounded border border-green-800/30 hover:border-green-700/40 transition-colors">
+              <span className=" font-mono text-xs sm:text-sm font-bold px-2 py-0.5 bg-green-900/20 rounded border border-green-800/30 hover:border-green-700/40 transition-colors">
                 {tx.signature.slice(0, 4)}...{tx.signature.slice(-4)}
               </span>
             </Link>
@@ -82,7 +82,7 @@ export const TransactionCard = memo(function TransactionCard({
                 {sourceProfile?.username ? (
                   <Link
                     href={route('address', { id: sourceProfile.username })}
-                    className="text-gray-300 hover:text-green-400 transition-colors text-xs"
+                    className="text-gray-300 hover: transition-colors text-xs"
                   >
                     @{sourceProfile.username}
                   </Link>
@@ -103,7 +103,7 @@ export const TransactionCard = memo(function TransactionCard({
             {tx.fee && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 bg-green-900/20 rounded border border-green-800/30">
                 <svg
-                  className="w-3 h-3 text-green-500"
+                  className="w-3 h-3 "
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -115,7 +115,7 @@ export const TransactionCard = memo(function TransactionCard({
                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="text-green-400">{Number(tx.fee)} SOL</span>
+                <span className="">{Number(tx.fee)} SOL</span>
               </div>
             )}
           </div>
@@ -127,7 +127,7 @@ export const TransactionCard = memo(function TransactionCard({
           tx.type !== 'COMPRESSED_NFT_MINT' &&
           tx.type !== 'SWAP' &&
           tx.type !== 'TRANSFER' && (
-            <div className="text-xs sm:text-sm text-green-300 font-mono break-words">
+            <div className="text-xs sm:text-sm  font-mono break-words">
               {tx.description || 'No description available'}
             </div>
           )}

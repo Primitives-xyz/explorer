@@ -124,7 +124,7 @@ export const FollowingTransactionFeed = ({
         <div className="relative">
           {/* Create Profile CTA */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <h3 className="text-green-400 font-mono text-lg mb-4">
+            <h3 className=" font-mono text-lg mb-4">
               Create a profile to follow wallets onchain and see their swaps in
               real time!
             </h3>
@@ -151,7 +151,7 @@ export const FollowingTransactionFeed = ({
   }
 
   const headerRight = isLoading && totalWallets > 0 && (
-    <div className="text-xs text-green-600 font-mono">
+    <div className="text-xs  font-mono">
       ({loadedWallets}/{totalWallets} wallets)
     </div>
   )

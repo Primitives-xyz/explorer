@@ -21,7 +21,7 @@ export function LanguageSwitcher() {
     <select
       value={locale}
       onChange={changeLanguage}
-      className="px-3 h-[34px] border border-green-500/50 bg-black text-green-400 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer uppercase"
+      className="px-3 h-[34px] border border-green-500/50 bg-black  hover:border-green-400 font-mono text-sm transition-colors cursor-pointer uppercase"
     >
       {locales.map((locale) => (
         <option key={locale} value={locale}>

@@ -299,7 +299,7 @@ export function SwapForm({
             className="bg-green-900/20 hover:bg-green-900/30 p-3 rounded-lg transition-colors"
             title="Swap direction"
           >
-            <ArrowLeftRight className="h-5 w-5 text-green-400" />
+            <ArrowLeftRight className="h-5 w-5 " />
           </button>
 
           <div className="flex-1">
@@ -321,9 +321,7 @@ export function SwapForm({
             <div className="bg-green-900/20 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div className="text-sm text-green-500 mb-1">
-                    You&apos;ll receive
-                  </div>
+                  <div className="text-sm  mb-1">You&apos;ll receive</div>
                   <div className="flex items-center gap-2">
                     {outputTokenInfo.image && (
                       <img
@@ -334,7 +332,7 @@ export function SwapForm({
                     )}
                     <div className="text-2xl font-semibold">
                       {isQuoteRefreshing ? (
-                        <span className="text-green-400/70 animate-pulse">
+                        <span className="/70 animate-pulse">
                           {formatLargeNumber(parseFloat(expectedOutput || '0'))}
                         </span>
                       ) : quoteResponse ? (
@@ -345,7 +343,7 @@ export function SwapForm({
                     </div>
                   </div>
                   {isLoggedIn && !outputBalanceLoading && quoteResponse && (
-                    <div className="text-sm text-green-500 mt-1">
+                    <div className="text-sm  mt-1">
                       After:{' '}
                       {formatLargeNumber(
                         rawOutputBalance + parseFloat(expectedOutput || '0')
@@ -355,10 +353,10 @@ export function SwapForm({
                 </div>
 
                 <div className="text-right">
-                  <div className="text-sm text-green-500 mb-1">Rate</div>
+                  <div className="text-sm  mb-1">Rate</div>
                   <div className="font-medium">
                     {isQuoteRefreshing ? (
-                      <span className="text-green-400/70 animate-pulse">
+                      <span className="/70 animate-pulse">
                         {quoteResponse
                           ? (
                               Number(quoteResponse.outAmount) /
@@ -379,7 +377,7 @@ export function SwapForm({
                       '0'
                     )}
                   </div>
-                  <div className="text-sm text-green-500/70">
+                  <div className="text-sm /70">
                     per {inputTokenInfo.symbol || currentInputToken}
                   </div>
                 </div>
@@ -400,11 +398,11 @@ export function SwapForm({
                   onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
                   className="flex items-center justify-between w-full p-3 bg-green-900/20 rounded-lg hover:bg-green-900/30 transition-colors"
                 >
-                  <span className="text-sm font-medium text-green-400">
+                  <span className="text-sm font-medium ">
                     Route Information & Fees
                   </span>
                   <svg
-                    className={`w-5 h-5 text-green-400 transition-transform ${
+                    className={`w-5 h-5  transition-transform ${
                       isRouteInfoOpen ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -425,28 +423,22 @@ export function SwapForm({
                     {isQuoteRefreshing ? (
                       <>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-green-400">
-                            Network Fee
-                          </span>
-                          <span className="text-green-400/70">
+                          <span className="text-sm ">Network Fee</span>
+                          <span className="/70">
                             Updating
                             <LoadingDots />
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-green-400">
-                            Price Impact
-                          </span>
-                          <span className="text-green-400/70">
+                          <span className="text-sm ">Price Impact</span>
+                          <span className="/70">
                             Updating
                             <LoadingDots />
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-green-400">
-                            Minimum Received
-                          </span>
-                          <span className="text-green-400/70">
+                          <span className="text-sm ">Minimum Received</span>
+                          <span className="/70">
                             Updating
                             <LoadingDots />
                           </span>
@@ -475,7 +467,7 @@ export function SwapForm({
                       setUseSSEForFees(e.target.checked)
                       resetQuoteState()
                     }}
-                    className="w-5 h-5 rounded bg-green-900/20 border-green-400 text-green-400 focus:ring-green-400"
+                    className="w-5 h-5 rounded bg-green-900/20 border-green-400  focus:ring-green-400"
                   />
                   <div className="flex items-center gap-3">
                     {sseTokenInfo.image && (
@@ -487,7 +479,7 @@ export function SwapForm({
                     )}
                     <div>
                       <div className="font-medium">Pay fees with SSE</div>
-                      <div className="text-sm text-green-500/70">
+                      <div className="text-sm /70">
                         Get 50% off on transaction fees
                       </div>
                     </div>
@@ -508,7 +500,7 @@ export function SwapForm({
                     <div className="absolute inset-0 border-2 border-green-400/20 rounded-full"></div>
                     <div className="absolute inset-0 border-2 border-green-400 rounded-full border-t-transparent animate-spin"></div>
                   </div>
-                  <span className="text-green-400/70 text-sm font-medium">
+                  <span className="/70 text-sm font-medium">
                     Checking wallet status
                     <LoadingDots />
                   </span>

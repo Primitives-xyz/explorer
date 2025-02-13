@@ -23,8 +23,8 @@ export function JupiterSwapModal({
             className={({ selected }) =>
               `flex-1 px-6 py-4 text-lg font-mono outline-none ${
                 selected
-                  ? 'text-green-500 bg-green-900/20'
-                  : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
+                  ? ' bg-green-900/20'
+                  : '/60 hover:/80 hover:bg-green-900/10'
               } transition-colors`
             }
           >
@@ -34,8 +34,8 @@ export function JupiterSwapModal({
             className={({ selected }) =>
               `flex-1 px-6 py-4 text-lg font-mono outline-none ${
                 selected
-                  ? 'text-green-500 bg-green-900/20'
-                  : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
+                  ? ' bg-green-900/20'
+                  : '/60 hover:/80 hover:bg-green-900/10'
               } transition-colors`
             }
           >

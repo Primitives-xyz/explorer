@@ -131,7 +131,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                 <div>
                   <Link
                     href={route('address', { id: item.authorProfile.username })}
-                    className="text-green-400 hover:text-green-300 font-semibold"
+                    className=" hover: font-semibold"
                   >
                     @{item.authorProfile.username}
                   </Link>
@@ -144,7 +144,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
               {/* Link to trade details */}
               <Link
                 href={route('tradeId', { id: item.content.id })}
-                className="text-green-500 hover:text-green-400 text-sm"
+                className=" hover: text-sm"
               >
                 View Details <ExternalLink size={12} className="inline" />
               </Link>
@@ -167,7 +167,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                     )}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-green-400">
+                    <div className="text-sm font-medium ">
                       {item.content.inputAmount}{' '}
                       {item.content.inputTokenSymbol ||
                         item.content.inputTokenName}
@@ -176,7 +176,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                 </div>
 
                 {/* Arrow */}
-                <ArrowRight className="text-green-500" size={20} />
+                <ArrowRight className="" size={20} />
 
                 {/* Output Token */}
                 <div className="flex items-center space-x-2">
@@ -192,7 +192,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                     )}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-green-400">
+                    <div className="text-sm font-medium ">
                       {item.content.expectedOutput}{' '}
                       {item.content.outputTokenSymbol ||
                         item.content.outputTokenName}
@@ -206,9 +206,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                 <span className="text-gray-400">Impact: </span>
                 <span
                   className={
-                    Number(item.content.priceImpact) > 1
-                      ? 'text-red-400'
-                      : 'text-green-400'
+                    Number(item.content.priceImpact) > 1 ? 'text-red-400' : ''
                   }
                 >
                   {Number(item.content.priceImpact).toFixed(2)}%

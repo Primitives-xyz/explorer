@@ -90,7 +90,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
     return (
       <DynamicConnectButton>
         <div
-          className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 cursor-pointer shadow-lg shadow-green-900/20`}
+          className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30  border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 cursor-pointer shadow-lg shadow-green-900/20`}
         >
           <UserRoundPlus size={iconSize} />
           Connect Wallet
@@ -201,7 +201,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
       <button
         onClick={handleFollow}
         disabled={loading}
-        className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 disabled:opacity-50 shadow-lg shadow-green-900/20`}
+        className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30  border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 disabled:opacity-50 shadow-lg shadow-green-900/20`}
       >
         {loading ? (
           <LoaderCircle className="animate-spin" size={iconSize} />

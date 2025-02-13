@@ -56,16 +56,12 @@ export function TokenMetrics({ overview }: TokenMetricsProps) {
           key={index}
           className="flex flex-col p-4 bg-black/20 border border-green-800/40 rounded-xl hover:border-green-500/40 transition-colors"
         >
-          <span className="text-green-500/60 text-sm font-mono mb-1">
-            {metric.label}
-          </span>
-          <span className="text-xl font-bold text-green-400 font-mono">
-            {metric.value}
-          </span>
+          <span className="/60 text-sm font-mono mb-1">{metric.label}</span>
+          <span className="text-xl font-bold  font-mono">{metric.value}</span>
           {metric.change !== undefined && (
             <div
               className={`flex items-center gap-1 mt-1 ${
-                metric.change >= 0 ? 'text-green-500' : 'text-red-500'
+                metric.change >= 0 ? '' : 'text-red-500'
               }`}
             >
               {metric.change >= 0 ? (

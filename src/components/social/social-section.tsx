@@ -39,7 +39,7 @@ const SocialCard = memo(({ user }: { user: SocialUser; type: string }) => {
               onClick={() =>
                 router.push(route('address', { id: user.username }))
               }
-              className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors"
+              className=" font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors"
             >
               @{user.username}
             </button>
@@ -72,11 +72,11 @@ export function SocialSection({
     <div className="border border-green-800 bg-black/50 rounded-lg overflow-hidden">
       <div className="border-b border-green-800 p-3 bg-black/20">
         <div className="flex items-center justify-between">
-          <div className="text-green-500 text-sm font-mono flex items-center gap-2">
+          <div className=" text-sm font-mono flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             {'>'} {type}
           </div>
-          <div className="text-xs text-green-600 font-mono bg-green-900/20 px-2 py-1 rounded-full">
+          <div className="text-xs  font-mono bg-green-900/20 px-2 py-1 rounded-full">
             COUNT: {users.length}
           </div>
         </div>
@@ -84,13 +84,11 @@ export function SocialSection({
 
       <div className="max-h-[300px] overflow-y-auto divide-y divide-green-800/30">
         {isLoading ? (
-          <div className="p-4 text-center text-green-600 font-mono animate-pulse">
+          <div className="p-4 text-center  font-mono animate-pulse">
             Loading...
           </div>
         ) : users.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
-            No {type} found
-          </div>
+          <div className="p-4 text-center  font-mono">No {type} found</div>
         ) : (
           users.map((user) => (
             <SocialCard key={user.id} user={user} type={type} />

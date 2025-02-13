@@ -89,14 +89,12 @@ export default function ShareButton({
           {/* Quick Copy Button */}
           <div className="p-3 flex items-center justify-between border-b border-green-800/40">
             <div className="flex-1">
-              <div className="text-xs text-green-400 mb-1">Quick Copy</div>
-              <div className="text-sm text-green-100">
-                Copy link to clipboard
-              </div>
+              <div className="text-xs  mb-1">Quick Copy</div>
+              <div className="text-sm ">Copy link to clipboard</div>
             </div>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-2 px-3 py-1.5 bg-green-900/20 hover:bg-green-900/30 rounded-md transition-colors text-green-400"
+              className="flex items-center gap-2 px-3 py-1.5 bg-green-900/20 hover:bg-green-900/30 rounded-md transition-colors "
             >
               <Copy size={14} />
               <span className="text-sm">Copy</span>
@@ -105,12 +103,10 @@ export default function ShareButton({
 
           {/* URL Preview */}
           <div className="p-3 border-b border-green-800/40">
-            <div className="text-xs text-green-400 mb-1">Share URL</div>
+            <div className="text-xs  mb-1">Share URL</div>
             <div className="flex items-center gap-2 bg-black/50 p-2 rounded-md">
-              <Link2 size={14} className="text-green-400 flex-shrink-0" />
-              <div className="flex-1 truncate text-sm text-green-100">
-                {shareUrl}
-              </div>
+              <Link2 size={14} className=" flex-shrink-0" />
+              <div className="flex-1 truncate text-sm ">{shareUrl}</div>
             </div>
           </div>
 
@@ -119,24 +115,24 @@ export default function ShareButton({
             {hasShareApi && (
               <button
                 onClick={handleShare}
-                className="w-full flex items-center gap-3 px-3 py-2 text-green-100 hover:bg-green-900/30 rounded-md transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2  hover:bg-green-900/30 rounded-md transition-colors"
               >
-                <Share2 size={16} className="text-green-400" />
+                <Share2 size={16} className="" />
                 <span>Share...</span>
               </button>
             )}
             <button
               onClick={handleTwitterShare}
-              className="w-full flex items-center gap-3 px-3 py-2 text-green-100 hover:bg-green-900/30 rounded-md transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2  hover:bg-green-900/30 rounded-md transition-colors"
             >
-              <Twitter size={16} className="text-green-400" />
+              <Twitter size={16} className="" />
               <span>Share on Twitter</span>
             </button>
             <button
               onClick={handleTelegramShare}
-              className="w-full flex items-center gap-3 px-3 py-2 text-green-100 hover:bg-green-900/30 rounded-md transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2  hover:bg-green-900/30 rounded-md transition-colors"
             >
-              <MessageCircle size={16} className="text-green-400" />
+              <MessageCircle size={16} className="" />
               <span>Share on Telegram</span>
             </button>
           </div>
