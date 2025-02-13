@@ -86,7 +86,9 @@ export const ActivityTape = () => {
   return (
     <div className="border-b border-green-800 bg-black/50 overflow-hidden group">
       <div className="p-1.5 flex items-center gap-2 font-mono">
-        <div className="flex-none  text-xs">{'>'} network_feed.log</div>
+        <div className="flex-none  text-xs text-[color:var(--text-header)]">
+          {'>'} network_feed.log
+        </div>
         <div className="flex-1 overflow-hidden whitespace-nowrap">
           <div className="animate-scroll group-hover:pause inline-flex gap-8 text-xs">
             {[...FAKE_ACTIVITIES, ...FAKE_ACTIVITIES].map((activity, i) => (

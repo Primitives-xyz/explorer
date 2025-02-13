@@ -58,7 +58,7 @@ export const TerminalStatus = ({
       <div className="flex items-center justify-between text-[10px] /80 whitespace-nowrap">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           <div className="w-2 h-2 rounded-full bg-green-500/80 flex-shrink-0"></div>
-          <span className="hidden sm:inline uppercase text-[color:var(--text-header)]">
+          <span className="hidden sm:inline uppercase ">
             {t('header.terminal.title')}
           </span>
           <span className="uppercase">${t('header.terminal.sse')}: </span>
