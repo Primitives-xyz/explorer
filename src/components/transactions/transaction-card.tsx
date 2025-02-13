@@ -1,9 +1,10 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { Avatar } from '@/components/common/Avatar'
+import { Avatar } from '@/components/common/avatar'
 import { TimeDisplay } from '@/components/common/time-display'
 import { useTransactionType } from '@/hooks/use-transaction-type'
 import type { Profile } from '@/utils/api'
 import { route } from '@/utils/routes'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { memo, useMemo } from 'react'
 import { NFTTransactionView } from './nft-transaction-view'
@@ -31,6 +32,8 @@ export const TransactionCard = memo(function TransactionCard({
     }),
     [tx]
   )
+
+  const t = useTranslations()
 
   const {
     isComment,
@@ -128,14 +131,13 @@ export const TransactionCard = memo(function TransactionCard({
         </div>
 
         {/* Transaction Description */}
-        {tx.description &&
-          !isComment &&
-          !isSwap &&
-          !isSolanaTransfer &&
-          !isSPLTransfer &&
-          !isNFTTransaction && (
-            <div className="text-xs sm:text-sm font-mono break-words">
-              {tx.description}
+        {tx.source !== 'MAGIC_EDEN' &&
+          tx.source !== 'SOLANA_PROGRAM_LIBRARY' &&
+          tx.type !== 'COMPRESSED_NFT_MINT' &&
+          tx.type !== 'SWAP' &&
+          tx.type !== 'TRANSFER' && (
+            <div className="text-xs sm:text-sm text-green-300 font-mono break-words">
+              {tx.description || t('transaction_log.no_description_available')}
             </div>
           )}
 

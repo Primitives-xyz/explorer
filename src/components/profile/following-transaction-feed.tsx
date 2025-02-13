@@ -1,7 +1,7 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { DataContainer } from '@/components/common/DataContainer'
-import { FilterBar } from '@/components/common/FilterBar'
-import { FilterButton } from '@/components/common/FilterButton'
+import { DataContainer } from '@/components/common/data-container'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
 import { ScrollableContent } from '@/components/common/scrollable-content'
 import { TransactionCard } from '@/components/transactions/transaction-card'
 import type { Transaction } from '@/utils/helius/types'
@@ -10,14 +10,14 @@ import dynamic from 'next/dynamic'
 import { useMemo } from 'react'
 
 // Extend the existing interfaces to include className
-declare module '@/components/common/FilterBar' {
+declare module '@/components/common/filter-bar' {
   export interface FilterBarProps {
     children: React.ReactNode
     className?: string
   }
 }
 
-declare module '@/components/common/FilterButton' {
+declare module '@/components/common/filter-button' {
   export interface FilterButtonProps {
     label: string
     isSelected: boolean

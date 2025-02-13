@@ -1,6 +1,7 @@
 'use client'
 
 import type { FungibleToken, NFT } from '@/utils/types'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ImageModal } from './tokens/image-modal'
 import { NFTGrid } from './tokens/NFT-grid'
@@ -27,6 +28,8 @@ export const NFTSection = ({
     symbol: string
   } | null>(null)
 
+  const t = useTranslations('tokens')
+
   const shouldShowContent =
     isLoading || items.length > 0 || (hasSearched && items.length === 0)
 
@@ -35,15 +38,15 @@ export const NFTSection = ({
   const getTitle = () => {
     switch (tokenType) {
       case 'fungible':
-        return 'fungible_tokens'
+        return t('portfolio.fungible_tokens')
       case 'nft':
-        return 'regular_nfts'
+        return t('portfolio.regular_nfts')
       case 'compressed':
-        return 'compressed_nfts'
+        return t('portfolio.compressed_nfts')
       case 'programmable':
-        return 'programmable_nfts'
+        return t('portfolio.programmable_nfts')
       default:
-        return 'all_tokens'
+        return t('portfolio.all_tokens')
     }
   }
 
@@ -62,7 +65,9 @@ export const NFTSection = ({
 
       {error && (
         <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
-          <span>! ERROR: {error}</span>
+          <span className="uppercase">
+            ! {t('common.error')}: {error}
+          </span>
         </div>
       )}
 
@@ -100,12 +105,12 @@ export const NFTSection = ({
         }}
       >
         {isLoading ? (
-          <div className="p-4 text-center  font-mono">
-            {'>>> FETCHING TOKENS...'}
+          <div className="p-4 text-center text-green-600 font-mono">
+            {t('portfolio.fetching_tokens')}
           </div>
         ) : items.length === 0 ? (
-          <div className="p-4 text-center  font-mono">
-            {'>>> NO TOKENS FOUND'}
+          <div className="p-4 text-center text-green-600 font-mono">
+            {t('portfolio.no_tokens_found')}
           </div>
         ) : (
           <NFTGrid

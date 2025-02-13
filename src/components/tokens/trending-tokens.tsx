@@ -1,16 +1,17 @@
 'use client'
 
+import { DataContainer } from '@/components/common/data-container'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
+import { ScrollableContent } from '@/components/common/scrollable-content'
+import { TokenAddress } from '@/components/tokens/token-address'
 import { formatNumber } from '@/utils/format'
 import { route } from '@/utils/routes'
 import type { VirtualItem } from '@tanstack/react-virtual'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { memo, useEffect, useRef, useState } from 'react'
-import { DataContainer } from '../common/DataContainer'
-import { FilterBar } from '../common/FilterBar'
-import { FilterButton } from '../common/FilterButton'
-import { ScrollableContent } from '../common/scrollable-content'
-import { TokenAddress } from './token-address'
 
 interface TrendingToken {
   address: string
@@ -28,7 +29,11 @@ interface TrendingToken {
 const TokenCard = memo(
   ({ token, onClick }: { token?: TrendingToken; onClick: () => void }) => {
     const router = useRouter()
+
+    const t = useTranslations()
+
     if (!token) return null
+
     return (
       <div
         className="p-3 hover:bg-green-900/10 transition-all duration-200 cursor-pointer group/item min-h-[85px]"
@@ -94,9 +99,13 @@ const TokenCard = memo(
                   <span className="/60 text-xs flex-shrink-0">address:</span>
                   <TokenAddress address={token.address} />
                 </div>
-                <div className="flex items-center gap-2 text-xs  font-mono flex-shrink-0">
-                  <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
-                  <span>Liq: ${formatNumber(token.liquidity)}</span>
+                <div className="flex items-center gap-2 text-xs text-green-600 font-mono flex-shrink-0">
+                  <span>
+                    {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
+                  </span>
+                  <span>
+                    {t('common.liquidity')}: ${formatNumber(token.liquidity)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -127,9 +136,13 @@ const TokenCard = memo(
                 <span className=" text-xs flex-shrink-0">${token.symbol}</span>
               </div>
 
-              <div className="flex items-center justify-between gap-2 text-[10px]  font-mono">
-                <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
-                <span>Liq: ${formatNumber(token.liquidity)}</span>
+              <div className="flex items-center justify-between gap-2 text-[10px] text-green-600 font-mono">
+                <span>
+                  {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
+                </span>
+                <span>
+                  {t('common.liquidity')}: ${formatNumber(token.liquidity)}
+                </span>
               </div>
             </div>
           </div>
