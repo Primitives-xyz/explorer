@@ -18,7 +18,7 @@ export const FilterButton = ({
   const colorClasses = {
     green: {
       selected: 'bg-green-500 text-black',
-      unselected: 'text-green-500 hover:bg-green-500/10',
+      unselected: ' hover:bg-green-500/10',
     },
     indigo: {
       selected: 'bg-indigo-500 text-black',

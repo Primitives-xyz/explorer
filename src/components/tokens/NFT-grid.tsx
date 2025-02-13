@@ -41,7 +41,7 @@ const NFTImageContainer = ({
           onError={onImageError}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center text-green-600/50 text-lg">
+        <div className="w-full h-full flex items-center justify-center /50 text-lg">
           No Image
         </div>
       )}
@@ -122,7 +122,7 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
           >
             {/* Compressed Badge */}
             {token.compressed && (
-              <div className="absolute top-3 right-3 bg-green-900/80 text-green-300 text-xs px-2 py-1 rounded-full z-10">
+              <div className="absolute top-3 right-3 bg-green-900/80  text-xs px-2 py-1 rounded-full z-10">
                 Compressed
               </div>
             )}
@@ -139,7 +139,7 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
             <div className="space-y-2">
               <button
                 onClick={() => router.push(route('address', { id: token.id }))}
-                className="text-green-400 font-mono text-base truncate font-semibold group-hover:text-green-300 transition-colors w-full text-left hover:text-green-200"
+                className=" font-mono text-base truncate font-semibold group-hover: transition-colors w-full text-left hover:"
               >
                 {name}
               </button>
@@ -148,23 +148,22 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
                   onClick={() =>
                     router.push(route('address', { id: token.id }))
                   }
-                  className="text-green-600 font-mono text-sm group-hover:text-green-500 transition-colors w-full text-left hover:text-green-400"
+                  className=" font-mono text-sm group-hover: transition-colors w-full text-left hover:"
                 >
                   {symbol}
                 </button>
               )}
-              <div className="text-green-600/80 font-mono text-xs flex items-center gap-1">
-                <span className="text-green-600/50">NFT:</span>
+              <div className="/80 font-mono text-xs flex items-center gap-1">
+                <span className="/50">NFT:</span>
                 <TokenAddress address={token.id} />
               </div>
-              <div className="text-green-600/80 font-mono text-xs group-hover:text-green-500/80 transition-colors">
-                <span className="text-green-600/50">Creator:</span>{' '}
-                {formatCreators(creators)}
+              <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
+                <span className="/50">Creator:</span> {formatCreators(creators)}
               </div>
 
               {/* Supply Info for NFTs */}
               {isNFT(token) && token.supply && token.supply.editionNumber && (
-                <div className="text-green-600/80 font-mono text-xs group-hover:text-green-500/80 transition-colors">
+                <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
                   Edition: {token.supply.editionNumber}
                   {token.supply.printMaxSupply
                     ? ` / ${token.supply.printMaxSupply}`
@@ -174,10 +173,10 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
 
               {/* Balance Info for Fungible Tokens */}
               {isFungible(token) && (
-                <div className="text-green-600/80 font-mono text-xs group-hover:text-green-500/80 transition-colors">
+                <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
                   Balance: {token.balance.toLocaleString()}
                   {token.price > 0 && (
-                    <div className="text-green-500 group-hover:text-green-400 transition-colors">
+                    <div className=" group-hover: transition-colors">
                       ≈ $
                       {(token.price * token.balance).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
@@ -191,10 +190,10 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
               {/* Inscription Info */}
               {isInscription(token) && (
                 <div className="mt-2 p-1.5 bg-green-900/20 rounded-md group-hover:bg-green-900/30 transition-colors">
-                  <div className="text-green-500 font-mono text-xs group-hover:text-green-400 transition-colors">
+                  <div className=" font-mono text-xs group-hover: transition-colors">
                     Inscription #{token.inscription.order}
                   </div>
-                  <div className="text-green-600/80 font-mono text-xs truncate group-hover:text-green-500/80 transition-colors">
+                  <div className="/80 font-mono text-xs truncate group-hover:/80 transition-colors">
                     {token.inscription.contentType}
                   </div>
                 </div>
@@ -203,7 +202,7 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
               {/* Attributes */}
               <div className="flex flex-wrap gap-1 mt-2">
                 {token.mutable && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20 text-green-500 rounded group-hover:bg-green-900/30 group-hover:text-green-400 transition-colors">
+                  <span className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20  rounded group-hover:bg-green-900/30 group-hover: transition-colors">
                     Mutable
                   </span>
                 )}
@@ -213,12 +212,12 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
                   </span>
                 )}
                 {token.compressed && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20 text-green-500 rounded group-hover:bg-green-900/30 group-hover:text-green-400 transition-colors">
+                  <span className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20  rounded group-hover:bg-green-900/30 group-hover: transition-colors">
                     Compressed
                   </span>
                 )}
                 {isFungible(token) && token.associatedTokenAddress && (
-                  <div className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20 text-green-500 rounded group-hover:bg-green-900/30 group-hover:text-green-400 transition-colors">
+                  <div className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20  rounded group-hover:bg-green-900/30 group-hover: transition-colors">
                     ATA: <TokenAddress address={token.associatedTokenAddress} />
                   </div>
                 )}

@@ -35,7 +35,7 @@ export const PortfolioBalanceSection = ({
       {/* Header */}
       {!hideTitle && (
         <div className="border-b border-green-800 p-3 flex-shrink-0 bg-black/30">
-          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+          <div className=" text-sm font-mono whitespace-nowrap">
             {'>'} portfolio_balance
           </div>
         </div>
@@ -62,27 +62,23 @@ export const PortfolioBalanceSection = ({
               <div className="h-5 w-28 bg-green-800/30 rounded"></div>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-green-800">
-              <div className="text-green-600/50">TOTAL</div>
+              <div className="/50">TOTAL</div>
               <div className="h-5 w-28 bg-green-800/30 rounded"></div>
             </div>
           </div>
         ) : (
           <div className="flex flex-col space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-green-400">
-                {formatNumber(solBalance)} SOL
-              </span>
-              <span className="text-green-600">${formatNumber(solValue)}</span>
+              <span className="">{formatNumber(solBalance)} SOL</span>
+              <span className="">${formatNumber(solValue)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-green-400">{tokenCount} Tokens</span>
-              <span className="text-green-600">
-                ${formatNumber(otherTokensValue)}
-              </span>
+              <span className="">{tokenCount} Tokens</span>
+              <span className="">${formatNumber(otherTokensValue)}</span>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-green-800">
-              <span className="text-green-400">Total</span>
-              <span className="text-green-600">${formatNumber(totalUsd)}</span>
+              <span className="">Total</span>
+              <span className="">${formatNumber(totalUsd)}</span>
             </div>
           </div>
         )}

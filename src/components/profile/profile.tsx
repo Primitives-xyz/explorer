@@ -73,10 +73,8 @@ export function Profile({ username }: Props) {
     return (
       <Card>
         <div className="p-4 text-center">
-          <div className="text-green-600">Profile not found</div>
-          {error && (
-            <div className="text-sm text-green-500/60 mt-1">{error}</div>
-          )}
+          <div className="">Profile not found</div>
+          {error && <div className="text-sm /60 mt-1">{error}</div>}
         </div>
       </Card>
     )

@@ -19,9 +19,9 @@ export function SwapSettings({
   return (
     <div className="flex items-center gap-4 pt-4 border-t border-green-900/20">
       <div className="flex-1">
-        <div className="text-sm text-green-500 mb-2">Slippage</div>
+        <div className="text-sm  mb-2">Slippage</div>
         <select
-          className="bg-green-900/20 text-green-100 p-2 rounded w-full"
+          className="bg-green-900/20  p-2 rounded w-full"
           value={slippageBps}
           onChange={(e) => onSlippageChange(Number(e.target.value))}
           disabled={disabled}
@@ -35,9 +35,9 @@ export function SwapSettings({
       </div>
 
       <div className="flex-1">
-        <div className="text-sm text-green-500 mb-2">Priority</div>
+        <div className="text-sm  mb-2">Priority</div>
         <select
-          className="bg-green-900/20 text-green-100 p-2 rounded w-full"
+          className="bg-green-900/20  p-2 rounded w-full"
           value={priorityLevel}
           onChange={(e) => onPriorityChange(e.target.value as PriorityLevel)}
           disabled={disabled}

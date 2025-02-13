@@ -43,8 +43,8 @@ function NFTImage({ url, name, isLoading, className = '' }: NFTImageProps) {
         className={`${className} bg-gradient-to-br from-green-950/40 to-black/40 flex items-center justify-center p-4`}
       >
         <div className="text-center">
-          <div className="text-green-500 text-4xl mb-2">🖼️</div>
-          <div className="text-green-400/60 font-mono text-sm break-words">
+          <div className=" text-4xl mb-2">🖼️</div>
+          <div className="/60 font-mono text-sm break-words">
             {name || 'NFT'}
           </div>
         </div>
@@ -75,8 +75,8 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
     const isActive = activeTab === tab
     return `px-4 py-2 font-mono text-sm transition-all duration-300 relative ${
       isActive
-        ? 'text-green-300 bg-green-500/10 border border-green-500/30'
-        : 'text-green-600 hover:text-green-500 hover:bg-green-500/10'
+        ? ' bg-green-500/10 border border-green-500/30'
+        : ' hover: hover:bg-green-500/10'
     }`
   }
 
@@ -85,24 +85,22 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
       {/* Key Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl hover:border-green-600/40 transition-all group">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">
-            Ownership Model
-          </h3>
-          <div className="text-xl font-bold text-green-400 font-mono group-hover:text-green-300 transition-colors capitalize">
+          <h3 className="/60 text-sm font-mono mb-2">Ownership Model</h3>
+          <div className="text-xl font-bold  font-mono group-hover: transition-colors capitalize">
             {tokenInfo.ownership.ownership_model}
           </div>
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl hover:border-green-600/40 transition-all group">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">NFT Type</h3>
-          <div className="text-xl font-bold text-green-400 font-mono group-hover:text-green-300 transition-colors">
+          <h3 className="/60 text-sm font-mono mb-2">NFT Type</h3>
+          <div className="text-xl font-bold  font-mono group-hover: transition-colors">
             {tokenInfo.compression?.compressed ? 'Compressed' : 'Regular'} NFT
           </div>
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl hover:border-green-600/40 transition-all group">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">Royalty</h3>
-          <div className="text-xl font-bold text-green-400 font-mono group-hover:text-green-300 transition-colors">
+          <h3 className="/60 text-sm font-mono mb-2">Royalty</h3>
+          <div className="text-xl font-bold  font-mono group-hover: transition-colors">
             {tokenInfo.royalty?.percent || 0}%
           </div>
         </div>
@@ -114,7 +112,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
         <div className="space-y-6">
           {/* NFT Info */}
           <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-            <h3 className="text-xl font-mono text-green-500 mb-4">NFT Info</h3>
+            <h3 className="text-xl font-mono  mb-4">NFT Info</h3>
             <div className="space-y-3">
               {[
                 { label: 'NFT Address', value: id },
@@ -132,7 +130,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                         href={`https://www.tensor.trade/trade/${value}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2 py-1 text-xs font-mono bg-green-900/30 text-green-400 hover:bg-green-900/50 transition-colors rounded-md flex items-center gap-1"
+                        className="px-2 py-1 text-xs font-mono bg-green-900/30  hover:bg-green-900/50 transition-colors rounded-md flex items-center gap-1"
                       >
                         <svg
                           viewBox="0 0 500 500"
@@ -154,21 +152,17 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                 },
               ].map((item, i) => (
                 <div key={i} className="flex flex-col">
-                  <span className="text-green-500/60 text-sm">
-                    {item.label}
-                  </span>
+                  <span className="/60 text-sm">{item.label}</span>
                   <div className="flex items-center gap-2">
                     {item.label === 'NFT Address' || item.label === 'Owner' ? (
                       <Link
                         href={route('address', { id: item.value })}
-                        className="font-mono text-green-400 break-all hover:text-green-300 transition-colors"
+                        className="font-mono  break-all hover: transition-colors"
                       >
                         {item.value}
                       </Link>
                     ) : (
-                      <span className="font-mono text-green-400 break-all">
-                        {item.value}
-                      </span>
+                      <span className="font-mono  break-all">{item.value}</span>
                     )}
                     {(item.label === 'NFT Address' ||
                       item.label === 'Owner' ||
@@ -185,9 +179,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
 
           {/* Authorities */}
           <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-            <h3 className="text-xl font-mono text-green-500 mb-4">
-              Authorities
-            </h3>
+            <h3 className="text-xl font-mono  mb-4">Authorities</h3>
             <div className="space-y-3">
               {tokenInfo.authorities.map(
                 (
@@ -195,21 +187,19 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                   i: number
                 ) => (
                   <div key={i} className="flex flex-col">
-                    <span className="text-green-500/60 text-sm">Address</span>
+                    <span className="/60 text-sm">Address</span>
                     <Link
                       href={route('address', { id: authority.address })}
-                      className="font-mono text-green-400 break-all hover:text-green-300 transition-colors"
+                      className="font-mono  break-all hover: transition-colors"
                     >
                       {authority.address}
                     </Link>
-                    <span className="text-green-500/60 text-sm mt-1">
-                      Scopes
-                    </span>
+                    <span className="/60 text-sm mt-1">Scopes</span>
                     <div className="flex flex-wrap gap-2">
                       {authority.scopes.map((scope: string, j: number) => (
                         <span
                           key={j}
-                          className="px-2 py-1 bg-green-500/10 rounded-md text-green-400 text-sm"
+                          className="px-2 py-1 bg-green-500/10 rounded-md  text-sm"
                         >
                           {scope}
                         </span>
@@ -227,9 +217,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
           {/* Attributes */}
           {tokenInfo.content.metadata.attributes && (
             <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-              <h3 className="text-xl font-mono text-green-500 mb-4">
-                Attributes
-              </h3>
+              <h3 className="text-xl font-mono  mb-4">Attributes</h3>
               <div className="grid grid-cols-2 gap-4">
                 {tokenInfo.content.metadata.attributes.map(
                   (
@@ -240,10 +228,10 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                       key={index}
                       className="p-3 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
                     >
-                      <h4 className="text-green-500/60 text-xs mb-1 font-mono">
+                      <h4 className="/60 text-xs mb-1 font-mono">
                         {attr.trait_type}
                       </h4>
-                      <p className="text-green-400 font-mono group-hover:text-green-300 transition-colors">
+                      <p className=" font-mono group-hover: transition-colors">
                         {attr.value}
                       </p>
                     </div>
@@ -256,9 +244,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
           {/* Creators */}
           {tokenInfo.creators && tokenInfo.creators.length > 0 && (
             <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-              <h3 className="text-xl font-mono text-green-500 mb-4">
-                Creators
-              </h3>
+              <h3 className="text-xl font-mono  mb-4">Creators</h3>
               <div className="space-y-3">
                 {tokenInfo.creators.map(
                   (
@@ -273,16 +259,16 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                       <div className="flex justify-between items-center">
                         <Link
                           href={route('address', { id: creator.address })}
-                          className="font-mono text-green-400 break-all hover:text-green-300 transition-colors"
+                          className="font-mono  break-all hover: transition-colors"
                         >
                           {creator.address}
                         </Link>
                         <div className="flex items-center gap-2">
-                          <span className="text-green-500/60 text-sm">
+                          <span className="/60 text-sm">
                             {creator.share || 0}%
                           </span>
                           {creator.verified && (
-                            <span className="text-green-400 text-xs">✓</span>
+                            <span className=" text-xs">✓</span>
                           )}
                         </div>
                       </div>
@@ -302,8 +288,8 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
       {/* JSON URI */}
       {tokenInfo.content.$schema && (
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h4 className="text-green-500/60 text-sm font-mono mb-2">Schema</h4>
-          <div className="font-mono text-green-400 break-all text-sm">
+          <h4 className="/60 text-sm font-mono mb-2">Schema</h4>
+          <div className="font-mono  break-all text-sm">
             {tokenInfo.content.$schema}
           </div>
         </div>
@@ -312,7 +298,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
       {/* Files */}
       {tokenInfo.content.files && tokenInfo.content.files.length > 0 && (
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h4 className="text-green-500/60 text-sm font-mono mb-4">Files</h4>
+          <h4 className="/60 text-sm font-mono mb-4">Files</h4>
           <div className="space-y-4">
             {tokenInfo.content.files.map(
               (
@@ -325,29 +311,21 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div>
-                      <span className="text-green-500/60 text-xs font-mono">
-                        URI
-                      </span>
-                      <div className="font-mono text-green-400 break-all text-sm">
+                      <span className="/60 text-xs font-mono">URI</span>
+                      <div className="font-mono  break-all text-sm">
                         {file.uri}
                       </div>
                     </div>
                     {file.type && (
                       <div>
-                        <span className="text-green-500/60 text-xs font-mono">
-                          Type
-                        </span>
-                        <div className="font-mono text-green-400 text-sm">
-                          {file.type}
-                        </div>
+                        <span className="/60 text-xs font-mono">Type</span>
+                        <div className="font-mono  text-sm">{file.type}</div>
                       </div>
                     )}
                     {file.cdn_uri && (
                       <div className="md:col-span-2">
-                        <span className="text-green-500/60 text-xs font-mono">
-                          CDN URI
-                        </span>
-                        <div className="font-mono text-green-400 break-all text-sm">
+                        <span className="/60 text-xs font-mono">CDN URI</span>
+                        <div className="font-mono  break-all text-sm">
                           {file.cdn_uri}
                         </div>
                       </div>
@@ -363,9 +341,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
       {/* Compression Info */}
       {tokenInfo.compression && (
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h4 className="text-green-500/60 text-sm font-mono mb-4">
-            Compression Details
-          </h4>
+          <h4 className="/60 text-sm font-mono mb-4">Compression Details</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
@@ -397,10 +373,8 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
               (item, i) =>
                 item.value && (
                   <div key={i} className="space-y-1">
-                    <span className="text-green-500/60 text-xs font-mono">
-                      {item.label}
-                    </span>
-                    <div className="font-mono text-green-400 break-all text-sm">
+                    <span className="/60 text-xs font-mono">{item.label}</span>
+                    <div className="font-mono  break-all text-sm">
                       {item.value}
                     </div>
                   </div>
@@ -429,22 +403,22 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
 
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-              <h1 className="text-4xl font-bold text-green-500 font-mono">
+              <h1 className="text-4xl font-bold  font-mono">
                 {tokenInfo.content.metadata.name}
               </h1>
               <div className="flex items-center gap-3">
                 {tokenInfo.content.metadata.symbol && (
-                  <span className="px-4 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-green-400 font-mono">
+                  <span className="px-4 py-1 bg-green-500/10 border border-green-500/20 rounded-full  font-mono">
                     {tokenInfo.content.metadata.symbol}
                   </span>
                 )}
-                <span className="text-xs px-3 py-1 bg-green-900/30 rounded-full text-green-400/80 font-mono">
+                <span className="text-xs px-3 py-1 bg-green-900/30 rounded-full /80 font-mono">
                   {tokenInfo.interface}
                 </span>
               </div>
             </div>
 
-            <p className="text-green-400/70 max-w-2xl">
+            <p className="/70 max-w-2xl">
               {tokenInfo.content.metadata.description}
             </p>
 
@@ -453,7 +427,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                 href={tokenInfo.content.links.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block mt-4 text-green-500 hover:text-green-400 transition-colors font-mono text-sm"
+                className="inline-block mt-4  hover: transition-colors font-mono text-sm"
               >
                 View External Link →
               </a>

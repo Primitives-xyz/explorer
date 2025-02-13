@@ -22,6 +22,15 @@ interface FollowingProfileListProps {
   error: any
 }
 
+const FollowingContainer = ({ children }: { children: React.ReactNode }) => (
+  <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
+    <div className="border-b border-green-800 p-2">
+      <div className="text-sm font-mono">{'>'} following</div>
+    </div>
+    {children}
+  </div>
+)
+
 export const FollowingProfileList = ({
   profiles,
   loading,
@@ -31,54 +40,36 @@ export const FollowingProfileList = ({
 
   if (loading) {
     return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-        <div className="border-b border-green-800 p-2">
-          <div className="text-green-500 text-sm font-mono">
-            {'>'} following
-          </div>
-        </div>
-        <div className="p-4 text-center text-green-600 font-mono">
+      <FollowingContainer>
+        <div className="p-4 text-center font-mono">
           {'>>> LOADING FOLLOWING LIST...'}
         </div>
-      </div>
+      </FollowingContainer>
     )
   }
 
   if (error) {
     return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-        <div className="border-b border-green-800 p-2">
-          <div className="text-green-500 text-sm font-mono">
-            {'>'} following
-          </div>
-        </div>
+      <FollowingContainer>
         <div className="p-4 text-center text-red-500 font-mono">
           {'>>> ERROR LOADING FOLLOWING LIST'}
         </div>
-      </div>
+      </FollowingContainer>
     )
   }
 
   if (!profiles?.length) {
     return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-        <div className="border-b border-green-800 p-2">
-          <div className="text-green-500 text-sm font-mono">
-            {'>'} following
-          </div>
-        </div>
-        <div className="p-4 text-center text-green-600 font-mono">
+      <FollowingContainer>
+        <div className="p-4 text-center font-mono">
           {'>>> NOT FOLLOWING ANYONE YET'}
         </div>
-      </div>
+      </FollowingContainer>
     )
   }
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-      <div className="border-b border-green-800 p-2">
-        <div className="text-green-500 text-sm font-mono">{'>'} following</div>
-      </div>
+    <FollowingContainer>
       <div className="divide-y divide-green-800/30">
         {profiles.map((profile) => {
           const walletId = profile.wallet?.id
@@ -98,7 +89,7 @@ export const FollowingProfileList = ({
                       onClick={() =>
                         router.push(route('address', { id: profile.username }))
                       }
-                      className="font-mono text-green-400 hover:text-green-300 transition-colors"
+                      className="font-mono hover: transition-colors"
                     >
                       @{profile.username}
                     </button>
@@ -109,7 +100,7 @@ export const FollowingProfileList = ({
                         onClick={() =>
                           router.push(route('address', { id: walletId }))
                         }
-                        className="text-green-600 font-mono text-sm hover:text-green-500 transition-colors"
+                        className="font-mono text-sm hover: transition-colors"
                       >
                         {walletId.slice(0, 4)}...{walletId.slice(-4)}
                       </button>
@@ -117,7 +108,7 @@ export const FollowingProfileList = ({
                         onClick={() => {
                           navigator.clipboard.writeText(walletId)
                         }}
-                        className="text-green-600/50 hover:text-green-400/80 text-xs font-mono bg-green-900/20 px-1.5 py-0.5 rounded transition-colors"
+                        className="/50 hover:/80 text-xs font-mono bg-green-900/20 px-1.5 py-0.5 rounded transition-colors"
                       >
                         [copy]
                       </button>
@@ -129,6 +120,6 @@ export const FollowingProfileList = ({
           )
         })}
       </div>
-    </div>
+    </FollowingContainer>
   )
 }

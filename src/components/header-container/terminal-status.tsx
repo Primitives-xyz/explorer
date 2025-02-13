@@ -55,23 +55,23 @@ export const TerminalStatus = ({
 
   return (
     <div className="w-full bg-black/20 px-3 py-1.5 border border-green-800/30 rounded-sm">
-      <div className="flex items-center justify-between text-[10px] text-green-600/80 whitespace-nowrap">
+      <div className="flex items-center justify-between text-[10px] /80 whitespace-nowrap">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           <div className="w-2 h-2 rounded-full bg-green-500/80 flex-shrink-0"></div>
-          <span className="hidden sm:inline uppercase">
+          <span className="hidden sm:inline uppercase ">
             {t('header.terminal.title')}
           </span>
           <span className="uppercase">${t('header.terminal.sse')}: </span>
           <Link
             href={route('address', { id: tokenAddress })}
-            className="text-green-500 hover:opacity-80 transition-opacity"
+            className=" hover:opacity-80 transition-opacity"
             title={tokenAddress}
           >
             <span className="sm:hidden">{shortenAddress(tokenAddress)}</span>
             <span className="hidden sm:inline">{tokenAddress}</span>
           </Link>
           {walletAddress && (
-            <span className="text-green-600/80">
+            <span className="/80">
               {' '}
               ({t('header.terminal.balance')}:{' '}
               <TokenBalance walletAddress={walletAddress} />)
@@ -82,7 +82,7 @@ export const TerminalStatus = ({
           <div className="flex items-center gap-1 relative flex-shrink-0">
             <Link
               href={route('address', { id: mainUsername })}
-              className="font-bold text-green-500 hover:opacity-80 transition-opacity flex-shrink-0"
+              className="font-bold  hover:opacity-80 transition-opacity flex-shrink-0"
             >
               {t('header.terminal.user')}: {mainUsername}
             </Link>
@@ -93,7 +93,7 @@ export const TerminalStatus = ({
                 console.log('Dots clicked, current state:', showDropdown)
                 setShowDropdown(!showDropdown)
               }}
-              className="text-green-400 hover:text-green-300 transition-colors px-1 flex-shrink-0 cursor-pointer"
+              className=" hover: transition-colors px-1 flex-shrink-0 cursor-pointer"
             >
               <div className="flex flex-col gap-0.5">
                 <div className="w-1 h-1 rounded-full bg-current"></div>
@@ -116,7 +116,7 @@ export const TerminalStatus = ({
                     e.stopPropagation()
                     handleLogoutClick()
                   }}
-                  className="uppercase w-full px-2 py-1 text-left text-green-400 hover:bg-green-900/30 transition-colors whitespace-nowrap"
+                  className="uppercase w-full px-2 py-1 text-left  hover:bg-green-900/30 transition-colors whitespace-nowrap"
                 >
                   {t('header.logout')}
                 </button>

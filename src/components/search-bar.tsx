@@ -372,8 +372,8 @@ export default function SearchBar({
                 className={`flex-1 p-2 text-xs font-mono transition-colors uppercase
                           ${
                             activeTab === 'all'
-                              ? 'bg-green-900/40 text-green-400 border-b-2 border-green-500'
-                              : 'text-green-600 hover:bg-green-900/20'
+                              ? 'bg-green-900/40  border-b-2 border-green-500'
+                              : ' hover:bg-green-900/20'
                           }`}
               >
                 {t('search_bar.all')}{' '}
@@ -384,8 +384,8 @@ export default function SearchBar({
                 className={`uppercase flex-1 p-2 text-xs font-mono transition-colors flex items-center justify-center gap-2
                           ${
                             activeTab === 'profiles'
-                              ? 'bg-green-900/40 text-green-400 border-b-2 border-green-500'
-                              : 'text-green-600 hover:bg-green-900/20'
+                              ? 'bg-green-900/40  border-b-2 border-green-500'
+                              : ' hover:bg-green-900/20'
                           }`}
               >
                 <Users className="w-3 h-3" />
@@ -396,8 +396,8 @@ export default function SearchBar({
                 className={`uppercase flex-1 p-2 text-xs font-mono transition-colors flex items-center justify-center gap-2
                           ${
                             activeTab === 'tokens'
-                              ? 'bg-green-900/40 text-green-400 border-b-2 border-green-500'
-                              : 'text-green-600 hover:bg-green-900/20'
+                              ? 'bg-green-900/40  border-b-2 border-green-500'
+                              : ' hover:bg-green-900/20'
                           }`}
               >
                 <Coins className="w-3 h-3" />
@@ -409,8 +409,8 @@ export default function SearchBar({
                   className={`uppercase flex-1 p-2 text-xs font-mono transition-colors
                             ${
                               activeTab === 'recent'
-                                ? 'bg-green-900/40 text-green-400 border-b-2 border-green-500'
-                                : 'text-green-600 hover:bg-green-900/20'
+                                ? 'bg-green-900/40  border-b-2 border-green-500'
+                                : ' hover:bg-green-900/20'
                             }`}
                 >
                   {t('search_bar.recent')}
@@ -422,7 +422,7 @@ export default function SearchBar({
             <div className="max-h-[60vh] overflow-y-auto bg-black/95 backdrop-blur-sm divide-y divide-green-800/30">
               {isLoading ? (
                 <div className="flex items-center justify-center p-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-green-500" />
+                  <Loader2 className="h-6 w-6 animate-spin " />
                 </div>
               ) : (
                 <>
@@ -431,14 +431,14 @@ export default function SearchBar({
                     searchResults.length > 0 && (
                       <div className="divide-y divide-green-800/30">
                         {activeTab === 'all' && (
-                          <div className="p-2 text-xs text-green-600 font-mono bg-green-900/20 flex justify-between items-center">
+                          <div className="p-2 text-xs  font-mono bg-green-900/20 flex justify-between items-center">
                             <span className="uppercase">
                               {t('search_bar.profile_matches')}
                             </span>
                             {searchResults.length > MAX_ITEMS_IN_ALL_TAB && (
                               <button
                                 onClick={() => setActiveTab('profiles')}
-                                className="text-green-400 hover:text-green-300"
+                                className=" hover:"
                               >
                                 +{searchResults.length - MAX_ITEMS_IN_ALL_TAB}{' '}
                                 {t('search_bar.more')}
@@ -477,7 +477,7 @@ export default function SearchBar({
                               )}
                             </div>
                             <div className="flex-1">
-                              <div className="font-mono text-green-400 text-sm flex items-center gap-2">
+                              <div className="font-mono  text-sm flex items-center gap-2">
                                 {profile.profile.username}
                                 {profile.walletAddress && (
                                   <TokenAddress
@@ -485,7 +485,7 @@ export default function SearchBar({
                                   />
                                 )}
                               </div>
-                              <div className="text-green-600 text-xs flex justify-between">
+                              <div className=" text-xs flex justify-between">
                                 <span className="flex space-x-2">
                                   {profile.namespace.faviconURL && (
                                     <div className="w-4 h-4 rounded-full bg-green-900/20 relative overflow-hidden">
@@ -516,14 +516,14 @@ export default function SearchBar({
                     tokenResults.length > 0 && (
                       <div className="divide-y divide-green-800/30">
                         {activeTab === 'all' && (
-                          <div className="p-2 text-xs text-green-600 font-mono bg-green-900/20 flex justify-between items-center">
+                          <div className="p-2 text-xs  font-mono bg-green-900/20 flex justify-between items-center">
                             <span className="uppercase">
                               {t('search_bar.token_matches')}
                             </span>
                             {tokenResults.length > MAX_ITEMS_IN_ALL_TAB && (
                               <button
                                 onClick={() => setActiveTab('tokens')}
-                                className="text-green-400 hover:text-green-300"
+                                className=" hover:"
                               >
                                 +{tokenResults.length - MAX_ITEMS_IN_ALL_TAB}{' '}
                                 {t('search_bar.more')}
@@ -563,7 +563,7 @@ export default function SearchBar({
                                   className="object-cover"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-green-400">
+                                <div className="w-full h-full flex items-center justify-center ">
                                   {token.symbol.slice(0, 2)}
                                 </div>
                               )}
@@ -575,26 +575,26 @@ export default function SearchBar({
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-green-100">
+                                <span className="font-medium ">
                                   {token.symbol}
                                 </span>
-                                <span className="text-green-400/80 text-sm truncate">
+                                <span className="/80 text-sm truncate">
                                   {token.name}
                                 </span>
                               </div>
                               <div className="flex flex-col gap-0.5">
-                                <div className="text-sm text-green-300/90 font-medium">
+                                <div className="text-sm /90 font-medium">
                                   {formatPrice(token.price)}
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
-                                  <span className="text-green-500/90">
+                                  <span className="/90">
                                     {t('search_bar.m_cap')}:{' '}
                                     {formatMarketCap(token.market_cap)}
                                   </span>
                                   {token.volume_24h_usd > 0 && (
                                     <>
-                                      <span className="text-green-800">•</span>
-                                      <span className="text-green-500/90">
+                                      <span className="">•</span>
+                                      <span className="/90">
                                         {t('search_bar.volume')}: $
                                         {(token.volume_24h_usd / 1e6).toFixed(
                                           2
@@ -615,14 +615,14 @@ export default function SearchBar({
                     recentSearches.length > 0 && (
                       <div>
                         {activeTab === 'all' && (
-                          <div className="p-2 text-xs text-green-600 font-mono bg-green-900/20 flex justify-between items-center">
+                          <div className="p-2 text-xs  font-mono bg-green-900/20 flex justify-between items-center">
                             <span className="uppercase">
                               {t('search_bar.recent_searches')}
                             </span>
                             {recentSearches.length > MAX_ITEMS_IN_ALL_TAB && (
                               <button
                                 onClick={() => setActiveTab('recent')}
-                                className="text-green-400 hover:text-green-300"
+                                className=" hover:"
                               >
                                 +{recentSearches.length - MAX_ITEMS_IN_ALL_TAB}{' '}
                                 {t('search_bar.more')}
@@ -659,10 +659,10 @@ export default function SearchBar({
                                          : ''
                                      }`}
                           >
-                            <div className="font-mono text-green-400 text-sm">
+                            <div className="font-mono  text-sm">
                               {search.walletAddress}
                             </div>
-                            <div className="text-green-600 text-xs">
+                            <div className=" text-xs">
                               {new Date(search.timestamp).toLocaleDateString()}
                             </div>
                           </div>
@@ -679,8 +679,8 @@ export default function SearchBar({
   }
 
   return (
-    <div className="w-full max-w-2xl sm:max-w-3xl mx-auto mb-2 sm:mb-8">
-      <div className="text-green-500 text-[10px] sm:text-xs mb-1 sm:mb-2 font-mono px-2 sm:px-0">
+    <div className="w-full max-w-2xl sm:max-w-3xl mx-auto mb-2 sm:mb-4">
+      <div className=" text-[10px] sm:text-xs mb-1 sm:mb-2 font-mono px-2 sm:px-0">
         <p>
           <span className="opacity-60 uppercase">
             {t('search_bar.system')}:
@@ -695,7 +695,7 @@ export default function SearchBar({
             ref={searchBarRef}
             className="relative flex items-center gap-1 sm:gap-2 bg-black/30 border border-green-800 p-1 sm:p-2"
           >
-            <span className="text-green-500 font-mono text-sm">$</span>
+            <span className=" font-mono text-sm">$</span>
             <input
               ref={inputRef}
               type="text"
@@ -704,7 +704,7 @@ export default function SearchBar({
               onChange={handleInputChange}
               onFocus={() => setShowDropdown(true)}
               disabled={isNavigating}
-              className="flex-1 bg-transparent font-mono text-green-400 placeholder-green-800 
+              className="flex-1 bg-transparent font-mono  placeholder-green-800 
                        focus:outline-none focus:ring-0 border-none text-xs sm:text-sm min-w-0
                        disabled:opacity-50"
             />
@@ -712,7 +712,7 @@ export default function SearchBar({
             <button
               type="submit"
               disabled={!inputValue || isNavigating}
-              className="uppercase px-2 sm:px-4 py-1 font-mono text-xs sm:text-sm border border-green-600 text-green-400
+              className="uppercase px-2 sm:px-4 py-1 font-mono text-xs sm:text-sm border border-green-600 
                        hover:bg-green-900/20 disabled:opacity-50 disabled:hover:bg-transparent
                        transition-colors duration-150 whitespace-nowrap"
             >
@@ -726,18 +726,18 @@ export default function SearchBar({
 
           <div className="absolute mt-1 sm:mt-2 left-0 right-0 text-[10px] sm:text-xs font-mono">
             {isNavigating ? (
-              <span className="text-green-600 animate-pulse">
+              <span className=" animate-pulse">
                 {`>>>`} {t('search_bar.navigating_to')} {inputValue.slice(0, 8)}
                 ...
               </span>
             ) : inputValue ? (
-              <span className="text-green-600">
+              <span className="">
                 {`>>>`} {t('search_bar.ready_to_analyze')}{' '}
                 {inputValue.slice(0, 8)}
                 ...
               </span>
             ) : (
-              <span className="text-green-800">
+              <span className="">
                 {`>>>`}_ {t('search_bar.awaiting_input')}
               </span>
             )}

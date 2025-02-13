@@ -44,7 +44,7 @@ export const TransferList = ({
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-green-400 hover:text-green-300"
+              className="flex items-center gap-1  hover:"
             >
               <span className="font-mono">
                 {formatAddress(
@@ -78,7 +78,7 @@ export const TransferList = ({
                 href={getSolscanAddressUrl(targetAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-green-400 hover:text-green-300"
+                className="flex items-center gap-1  hover:"
               >
                 <span className="font-mono">
                   {formatAddress(targetAddress).slice(0, 4)}...

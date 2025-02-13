@@ -153,8 +153,8 @@ export function ProfileContent({ username }: Props) {
                     className={cn(
                       'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
                       activeTab === tab.id
-                        ? 'border-green-500 text-green-400'
-                        : 'border-transparent text-gray-400 hover:text-green-400 hover:border-green-400/50'
+                        ? 'border-green-500 '
+                        : 'border-transparent text-gray-400 hover: hover:border-green-400/50'
                     )}
                   >
                     {tab.label}

@@ -25,7 +25,7 @@ export function TokenInformation({
     <div className="h-full overflow-y-auto p-6 space-y-6">
       {/* Market Information */}
       <div className="space-y-3">
-        <h4 className="text-lg font-mono text-green-500 mb-3">Market Info</h4>
+        <h4 className="text-lg font-mono  mb-3">Market Info</h4>
         {[
           { label: 'Token Address', value: id },
           { label: 'Decimals', value: decimals },
@@ -46,10 +46,8 @@ export function TokenInformation({
           },
         ].map((item, i) => (
           <div key={i} className="flex flex-col">
-            <span className="text-green-500/60 text-sm">{item.label}</span>
-            <span className="font-mono text-green-400 break-all">
-              {item.value}
-            </span>
+            <span className="/60 text-sm">{item.label}</span>
+            <span className="font-mono  break-all">{item.value}</span>
           </div>
         ))}
       </div>
@@ -57,7 +55,7 @@ export function TokenInformation({
       {/* Social Links */}
       {overview?.extensions && (
         <div className="pt-4 border-t border-green-800/40">
-          <h4 className="text-lg font-mono text-green-500 mb-3">Links</h4>
+          <h4 className="text-lg font-mono  mb-3">Links</h4>
           <div className="space-y-3">
             {[
               {
@@ -84,14 +82,12 @@ export function TokenInformation({
               .filter((item) => item.value)
               .map((item, i) => (
                 <div key={i} className="flex flex-col">
-                  <span className="text-green-500/60 text-sm">
-                    {item.label}
-                  </span>
+                  <span className="/60 text-sm">{item.label}</span>
                   <a
                     href={item.value}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono text-green-400 hover:text-green-300 transition-colors break-all"
+                    className="font-mono  hover: transition-colors break-all"
                   >
                     {item.value}
                   </a>
@@ -103,23 +99,23 @@ export function TokenInformation({
 
       {/* Authority Info */}
       <div className="pt-4 border-t border-green-800/40">
-        <h4 className="text-lg font-mono text-green-500 mb-3">Authority</h4>
+        <h4 className="text-lg font-mono  mb-3">Authority</h4>
         <div className="space-y-4">
           {authorities.map((authority, i) => (
             <div key={i} className="space-y-2">
               <div className="flex flex-col">
-                <span className="text-green-500/60 text-sm">Address</span>
-                <span className="font-mono text-green-400 break-all">
+                <span className="/60 text-sm">Address</span>
+                <span className="font-mono  break-all">
                   {authority.address}
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-green-500/60 text-sm">Scopes</span>
+                <span className="/60 text-sm">Scopes</span>
                 <div className="flex flex-wrap gap-2">
                   {authority.scopes.map((scope: string, j: number) => (
                     <span
                       key={j}
-                      className="px-2 py-1 bg-green-500/10 rounded-md text-green-400 text-sm"
+                      className="px-2 py-1 bg-green-500/10 rounded-md  text-sm"
                     >
                       {scope}
                     </span>

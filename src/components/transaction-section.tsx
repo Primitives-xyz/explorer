@@ -201,10 +201,10 @@ export const TransactionSection = ({
       {newTransactions.length > 0 && (
         <button
           onClick={handleLoadNewTransactions}
-          className="w-full py-2 px-4 bg-green-500/10 hover:bg-green-500/20 text-green-400 font-mono border-y border-green-500/20 mb-2 relative group transition-all duration-300"
+          className="w-full py-2 px-4 bg-green-500/10 hover:bg-green-500/20  font-mono border-y border-green-500/20 mb-2 relative group transition-all duration-300"
         >
           <div className="relative flex items-center gap-3">
-            <span className="text-green-500 animate-pulse">●</span>
+            <span className=" animate-pulse">●</span>
             <span>
               {newTransactions.length} new transaction
               {newTransactions.length !== 1 ? 's' : ''} available
@@ -228,7 +228,7 @@ export const TransactionSection = ({
             />
           ))}
           {isLoading && page > 1 && (
-            <div className="p-4 text-center text-green-600 font-mono">
+            <div className="p-4 text-center  font-mono">
               {'>>> LOADING MORE TRANSACTIONS...'}
             </div>
           )}
@@ -237,7 +237,7 @@ export const TransactionSection = ({
 
       {!isLoading && transactions.length > 0 && (
         <button
-          className="w-full p-1 text-xs text-green-600 hover:text-green-500 font-mono border-t border-green-800 transition-colors duration-200"
+          className="w-full p-1 text-xs  hover: font-mono border-t border-green-800 transition-colors duration-200"
           onClick={() => setPage((prev) => prev + 1)}
           disabled={isLoading}
         >
