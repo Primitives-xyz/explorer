@@ -8,7 +8,7 @@ interface DataContainerProps {
   className?: string
   headerRight?: ReactNode
   accentColor?: 'green' | 'indigo'
-  height?: 'normal' | 'large'
+  height?: 'normal' | 'large' | 'max'
 }
 
 export const DataContainer = ({

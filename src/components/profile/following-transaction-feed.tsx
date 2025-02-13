@@ -121,22 +121,9 @@ export const FollowingTransactionFeed = ({
   if (!isLoggedIn) {
     return (
       <DataContainer title="following_activity" height="large">
-        <div className="relative">
-          {/* Create Profile CTA */}
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <h3 className=" font-mono text-lg mb-4">
-              Create a profile to follow wallets onchain and see their swaps in
-              real time!
-            </h3>
-            <DynamicConnectButton>
-              <div className="px-6 py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer">
-                Create Profile
-              </div>
-            </DynamicConnectButton>
-          </div>
-
-          {/* Blurred mock transactions */}
-          <div className="divide-y divide-green-800/30 blur-sm">
+        <div className="relative h-full flex flex-col">
+          {/* Blurred mock transactions in background */}
+          <div className="absolute inset-0 divide-y divide-green-800/30 blur-sm">
             {MOCK_TRANSACTIONS.map((tx, i) => (
               <TransactionCard
                 key={i}
@@ -144,6 +131,19 @@ export const FollowingTransactionFeed = ({
                 sourceWallet={''}
               />
             ))}
+          </div>
+
+          {/* Create Profile CTA */}
+          <div className="relative flex-1 flex flex-col items-center justify-center bg-background-80/95 backdrop-blur-sm px-4 py-8 sm:p-4 text-center z-10">
+            <h3 className="font-mono text-base sm:text-lg mb-6 sm:mb-4 max-w-[280px] sm:max-w-none">
+              Create a profile to follow wallets onchain and see their swaps in
+              real time!
+            </h3>
+            <DynamicConnectButton>
+              <div className="px-4 sm:px-6 py-3 sm:py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer text-sm sm:text-base">
+                Create Profile
+              </div>
+            </DynamicConnectButton>
           </div>
         </div>
       </DataContainer>

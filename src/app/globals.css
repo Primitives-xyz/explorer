@@ -65,6 +65,7 @@
 
 :root {
   --background: #292c31;
+  --background-80: #292c31cc;
   --foreground: #fff;
   --text-body: #f5f8fd;
   --text-header: #97ef83;

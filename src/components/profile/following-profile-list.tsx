@@ -22,6 +22,15 @@ interface FollowingProfileListProps {
   error: any
 }
 
+const FollowingContainer = ({ children }: { children: React.ReactNode }) => (
+  <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
+    <div className="border-b border-green-800 p-2">
+      <div className="text-sm font-mono">{'>'} following</div>
+    </div>
+    {children}
+  </div>
+)
+
 export const FollowingProfileList = ({
   profiles,
   loading,
@@ -31,48 +40,36 @@ export const FollowingProfileList = ({
 
   if (loading) {
     return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-        <div className="border-b border-green-800 p-2">
-          <div className=" text-sm font-mono">{'>'} following</div>
-        </div>
-        <div className="p-4 text-center  font-mono">
+      <FollowingContainer>
+        <div className="p-4 text-center font-mono">
           {'>>> LOADING FOLLOWING LIST...'}
         </div>
-      </div>
+      </FollowingContainer>
     )
   }
 
   if (error) {
     return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-        <div className="border-b border-green-800 p-2">
-          <div className=" text-sm font-mono">{'>'} following</div>
-        </div>
+      <FollowingContainer>
         <div className="p-4 text-center text-red-500 font-mono">
           {'>>> ERROR LOADING FOLLOWING LIST'}
         </div>
-      </div>
+      </FollowingContainer>
     )
   }
 
   if (!profiles?.length) {
     return (
-      <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-        <div className="border-b border-green-800 p-2">
-          <div className=" text-sm font-mono">{'>'} following</div>
-        </div>
-        <div className="p-4 text-center  font-mono">
+      <FollowingContainer>
+        <div className="p-4 text-center font-mono">
           {'>>> NOT FOLLOWING ANYONE YET'}
         </div>
-      </div>
+      </FollowingContainer>
     )
   }
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden">
-      <div className="border-b border-green-800 p-2">
-        <div className=" text-sm font-mono">{'>'} following</div>
-      </div>
+    <FollowingContainer>
       <div className="divide-y divide-green-800/30">
         {profiles.map((profile) => {
           const walletId = profile.wallet?.id
@@ -92,7 +89,7 @@ export const FollowingProfileList = ({
                       onClick={() =>
                         router.push(route('address', { id: profile.username }))
                       }
-                      className="font-mono  hover: transition-colors"
+                      className="font-mono hover: transition-colors"
                     >
                       @{profile.username}
                     </button>
@@ -103,7 +100,7 @@ export const FollowingProfileList = ({
                         onClick={() =>
                           router.push(route('address', { id: walletId }))
                         }
-                        className=" font-mono text-sm hover: transition-colors"
+                        className="font-mono text-sm hover: transition-colors"
                       >
                         {walletId.slice(0, 4)}...{walletId.slice(-4)}
                       </button>
@@ -123,6 +120,6 @@ export const FollowingProfileList = ({
           )
         })}
       </div>
-    </div>
+    </FollowingContainer>
   )
 }
