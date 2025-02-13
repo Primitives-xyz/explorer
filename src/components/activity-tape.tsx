@@ -226,7 +226,7 @@ export const ActivityTape = () => {
                         {activity.amountSuffix}
                         {activity.isSSEBuy && (
                           <Image
-                            src="/sse.png"
+                            src="/images/sse.png"
                             alt="SSE"
                             width={16}
                             height={16}
