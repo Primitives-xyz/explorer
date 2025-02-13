@@ -1,5 +1,5 @@
 import { TimeDisplay } from '@/components/common/time-display'
-import { PRIORITY_LEVELS } from '@/constants/jupiter'
+import { getPriorityLevels } from '@/constants/jupiter'
 import { useCommentFee } from '@/hooks/use-comment-fee'
 import { useCommentLikes } from '@/hooks/use-comment-likes'
 import { usePostComment } from '@/hooks/use-post-comment'
@@ -409,7 +409,7 @@ export function CommentWall({
                       className="bg-green-900/20 text-green-400 text-sm font-mono rounded border border-green-800/50 px-2 py-1"
                       disabled={postCommentLoading || isProcessingFee}
                     >
-                      {PRIORITY_LEVELS.map((level) => (
+                      {getPriorityLevels().map((level) => (
                         <option
                           key={level.value}
                           value={level.value}

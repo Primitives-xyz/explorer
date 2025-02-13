@@ -103,7 +103,7 @@ const TokenCard = memo(
                 </div>
                 <div className="flex items-center gap-2 text-xs text-green-600 font-mono flex-shrink-0">
                   <span>
-                    {t('common.volume')}: ${formatNumber(token.volume24hUSD)}
+                    {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
                   </span>
                   <span>
                     {t('common.liquidity')}: ${formatNumber(token.liquidity)}
@@ -142,7 +142,7 @@ const TokenCard = memo(
 
               <div className="flex items-center justify-between gap-2 text-[10px] text-green-600 font-mono">
                 <span>
-                  {t('common.volume')}: ${formatNumber(token.volume24hUSD)}
+                  {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
                 </span>
                 <span>
                   {t('common.liquidity')}: ${formatNumber(token.liquidity)}

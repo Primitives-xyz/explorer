@@ -7,6 +7,7 @@ import {
   getTokenSymbol,
 } from '@/utils/transaction'
 import { formatDistanceToNow } from 'date-fns'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { TransactionBadge } from './transaction-badge'
 import { TransactionCard } from './transaction-card'
@@ -28,6 +29,8 @@ export default function TransactionDetails({
     isLoading: true,
     error: null,
   })
+
+  const t = useTranslations()
 
   useEffect(() => {
     if (!signature) return
@@ -55,7 +58,9 @@ export default function TransactionDetails({
           transaction: null,
           isLoading: false,
           error:
-            err instanceof Error ? err.message : 'Failed to fetch transaction',
+            err instanceof Error
+              ? err.message
+              : t('error.failed_to_fetch_transaction'),
         })
       }
     }
@@ -70,7 +75,7 @@ export default function TransactionDetails({
     return (
       <div className="py-8">
         <div className="text-green-500 font-mono text-center">
-          Loading transaction details...
+          {t('transaction_log.loading_transaction_details')}
         </div>
       </div>
     )
@@ -80,7 +85,7 @@ export default function TransactionDetails({
     return (
       <div className="py-8">
         <div className="text-red-500 font-mono text-center">
-          {error || 'Transaction not found'}
+          {error || t('error.transaction_not_found')}
         </div>
       </div>
     )
@@ -94,7 +99,7 @@ export default function TransactionDetails({
 
       <div className="mb-8">
         <h1 className="text-2xl font-mono text-green-500 mb-2">
-          Transaction Details
+          {t('transaction_log.transaction_details')}
         </h1>
         <TransactionSignature signature={signature} />
       </div>
@@ -102,7 +107,7 @@ export default function TransactionDetails({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
           <h3 className="text-green-500/60 text-sm font-mono mb-2">
-            Timestamp
+            {t('transaction_log.timestamp')}
           </h3>
           <div className="text-xl font-mono text-green-400">
             {formatDistanceToNow(new Date(transaction.timestamp * 1000))} ago
@@ -110,7 +115,9 @@ export default function TransactionDetails({
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">Type</h3>
+          <h3 className="text-green-500/60 text-sm font-mono mb-2">
+            {t('transaction_log.type')}
+          </h3>
           <TransactionBadge
             type={transaction.type}
             source={transaction.source}
@@ -119,7 +126,9 @@ export default function TransactionDetails({
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">Fee</h3>
+          <h3 className="text-green-500/60 text-sm font-mono mb-2">
+            {t('transaction_log.fee')}
+          </h3>
           <div className="text-xl font-mono text-green-400">
             {formatLamportsToSol(transaction.fee)} SOL
           </div>
@@ -128,16 +137,17 @@ export default function TransactionDetails({
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
         <h3 className="text-green-500/60 text-sm font-mono mb-2">
-          Description
+          {t('transaction_log.description')}
         </h3>
         <div className="text-green-400 font-mono">
-          {transaction.description || 'No description available'}
+          {transaction.description ||
+            t('transaction_log.no_description_available')}
         </div>
       </div>
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
         <h3 className="text-green-500/60 text-sm font-mono mb-4">
-          Account Changes
+          {t('transaction_log.account_changes')}
         </h3>
         <div className="space-y-3">
           {transaction.accountData

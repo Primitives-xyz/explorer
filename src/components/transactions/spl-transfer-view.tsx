@@ -3,6 +3,7 @@ import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 interface TokenTransfer {
@@ -34,6 +35,8 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
   if (!tx.tokenTransfers?.length) {
     return null
   }
+
+  const t = useTranslations()
 
   return (
     <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
@@ -82,7 +85,9 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                       isReceiving ? 'text-green-500' : 'text-red-500'
                     }`}
                   >
-                    {isReceiving ? 'Received' : 'Sent'}
+                    {isReceiving
+                      ? t('transaction_log.received')
+                      : t('transaction_log.sent')}
                   </span>
                   <span className="text-green-600 font-mono text-sm">
                     {tokenSymbol}
@@ -91,7 +96,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                 <span className="text-green-600/60 font-mono text-xs">
                   {isReceiving ? (
                     <>
-                      From:{' '}
+                      {t('transaction_log.from')}:{' '}
                       <Link
                         href={route('address', { id: transfer.from })}
                         className="hover:text-green-500 transition-colors"
@@ -102,7 +107,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                     </>
                   ) : (
                     <>
-                      To:{' '}
+                      {t('transaction_log.to')}:{' '}
                       <Link
                         href={route('address', { id: transfer.to })}
                         className="hover:text-green-500 transition-colors"

@@ -131,7 +131,7 @@ export const TransactionCard = memo(function TransactionCard({
           tx.type !== 'SWAP' &&
           tx.type !== 'TRANSFER' && (
             <div className="text-xs sm:text-sm text-green-300 font-mono break-words">
-              {tx.description || 'No description available'}
+              {tx.description || t('transaction_log.no_description_available')}
             </div>
           )}
 
