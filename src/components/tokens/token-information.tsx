@@ -1,5 +1,6 @@
 import type { BirdeyeTokenOverview } from '@/hooks/use-birdeye-token-overview'
 import { formatNumber } from '@/utils/format'
+import { TokenAddress } from './token-address'
 
 interface Authority {
   address: string
@@ -27,7 +28,6 @@ export function TokenInformation({
       <div className="space-y-3">
         <h4 className="text-lg font-mono  mb-3">Market Info</h4>
         {[
-          { label: 'Token Address', value: id },
           { label: 'Decimals', value: decimals },
           { label: 'Token Program', value: tokenProgram },
           { label: 'Markets', value: overview?.numberMarkets || 'N/A' },
@@ -52,50 +52,54 @@ export function TokenInformation({
         ))}
       </div>
 
-      {/* Social Links */}
-      {overview?.extensions && (
-        <div className="pt-4 border-t border-green-800/40">
-          <h4 className="text-lg font-mono  mb-3">Links</h4>
-          <div className="space-y-3">
-            {[
-              {
-                label: 'Website',
-                value: overview.extensions.website,
-              },
-              {
-                label: 'Twitter',
-                value: overview.extensions.twitter,
-              },
-              {
-                label: 'Discord',
-                value: overview.extensions.discord,
-              },
-              {
-                label: 'Telegram',
-                value: overview.extensions.telegram || undefined,
-              },
-              {
-                label: 'Medium',
-                value: overview.extensions.medium,
-              },
-            ]
-              .filter((item) => item.value)
-              .map((item, i) => (
-                <div key={i} className="flex flex-col">
-                  <span className="/60 text-sm">{item.label}</span>
-                  <a
-                    href={item.value}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono  hover: transition-colors break-all"
-                  >
-                    {item.value}
-                  </a>
-                </div>
-              ))}
+      {/* Social Links and Token Address */}
+      <div className="pt-4 border-t border-green-800/40">
+        <h4 className="text-lg font-mono  mb-3">Links</h4>
+        <div className="space-y-3">
+          {/* Token Address */}
+          <div className="flex flex-col">
+            <span className="/60 text-sm">Token Address</span>
+            <TokenAddress address={id} />
           </div>
+          {/* Social Links */}
+          {overview?.extensions && [
+            {
+              label: 'Website',
+              value: overview.extensions.website,
+            },
+            {
+              label: 'Twitter',
+              value: overview.extensions.twitter,
+            },
+            {
+              label: 'Discord',
+              value: overview.extensions.discord,
+            },
+            {
+              label: 'Telegram',
+              value: overview.extensions.telegram || undefined,
+            },
+            {
+              label: 'Medium',
+              value: overview.extensions.medium,
+            },
+          ]
+            .filter((item) => item.value)
+            .map((item, i) => (
+              <div key={i} className="flex flex-col">
+                <span className="/60 text-sm">{item.label}</span>
+                <a
+                  href={item.value}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono  hover: transition-colors break-all"
+                >
+                  {item.value}
+                </a>
+              </div>
+            ))}
         </div>
-      )}
+      </div>
 
       {/* Authority Info */}
       <div className="pt-4 border-t border-green-800/40">
