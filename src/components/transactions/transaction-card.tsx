@@ -1,9 +1,8 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/Avatar'
 import { TimeDisplay } from '@/components/common/time-display'
+import { useTransactionType } from '@/hooks/use-transaction-type'
 import type { Profile } from '@/utils/api'
-import type { Transaction } from '@/utils/helius/types'
-import type { ExtendedTransaction } from '@/utils/nft-transaction'
 import { route } from '@/utils/routes'
 import Link from 'next/link'
 import { memo, useMemo } from 'react'
@@ -12,40 +11,19 @@ import { SolanaTransferView } from './solana-transfer-view'
 import { SPLTransferView } from './spl-transfer-view'
 import { SwapTransactionView } from './swap-transaction-view'
 import { TransactionBadge } from './transaction-badge'
+import { TransactionCommentView } from './transaction-comment-view'
+import {
+  BaseTransactionDisplayProps,
+  transformToExtendedTransaction,
+} from './transaction-utils'
 import { TransferList } from './transfer-list'
 
-// Move helper function outside component to prevent recreation
-const transformToExtendedTransaction = (
-  tx: Transaction
-): ExtendedTransaction => ({
-  ...tx,
-  tokenTransfers:
-    tx.tokenTransfers?.map((transfer) => ({
-      fromTokenAccount: transfer.fromTokenAccount,
-      toTokenAccount: transfer.toTokenAccount,
-      fromUserAccount: transfer.fromUserAccount,
-      toUserAccount: transfer.toUserAccount,
-      tokenAmount: transfer.tokenAmount,
-      mint: transfer.tokenMint,
-      tokenStandard: transfer.tokenStandard,
-    })) || [],
-  transfers:
-    tx.nativeTransfers?.map((transfer) => ({
-      from: transfer.fromUserAccount,
-      to: transfer.toUserAccount,
-      amount: transfer.amount,
-    })) || [],
-})
-
-interface TransactionCardProps {
-  transaction: Transaction
-  sourceWallet: string
-}
+const COMMISSION_WALLET = '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 
 export const TransactionCard = memo(function TransactionCard({
   transaction: tx,
   sourceWallet,
-}: TransactionCardProps) {
+}: BaseTransactionDisplayProps) {
   // Memoize expensive computations and transformations
   const { extendedTransaction } = useMemo(
     () => ({
@@ -54,11 +32,39 @@ export const TransactionCard = memo(function TransactionCard({
     [tx]
   )
 
+  const {
+    isComment,
+    isSwap,
+    isSolanaTransfer,
+    isSPLTransfer,
+    isNFTTransaction,
+  } = useTransactionType(tx)
+
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
     (p: Profile) => p.namespace.name === 'nemoapp'
   )?.profile
+
+  // For comments, we want to show the destination as the wallet receiving 80%
+  const destinationWallet = isComment
+    ? tx.tokenTransfers?.find((t) => t.to !== COMMISSION_WALLET)?.to
+    : tx.nativeTransfers?.[0]?.toUserAccount
+
+  // If this is a comment, use the TransactionCommentView
+  if (isComment) {
+    return (
+      <div className="p-2 sm:p-3 hover:bg-green-900/10 transition-all duration-200">
+        <TransactionCommentView
+          tx={tx}
+          sourceWallet={sourceWallet}
+          destinationWallet={destinationWallet}
+          amount={100} // Total amount (80 + 20)
+          tokenSymbol="SSE"
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="p-2 sm:p-3 hover:bg-green-900/10 transition-all duration-200">
@@ -122,39 +128,36 @@ export const TransactionCard = memo(function TransactionCard({
         </div>
 
         {/* Transaction Description */}
-        {tx.source !== 'MAGIC_EDEN' &&
-          tx.source !== 'SOLANA_PROGRAM_LIBRARY' &&
-          tx.type !== 'COMPRESSED_NFT_MINT' &&
-          tx.type !== 'SWAP' &&
-          tx.type !== 'TRANSFER' && (
-            <div className="text-xs sm:text-sm  font-mono break-words">
-              {tx.description || 'No description available'}
+        {tx.description &&
+          !isComment &&
+          !isSwap &&
+          !isSolanaTransfer &&
+          !isSPLTransfer &&
+          !isNFTTransaction && (
+            <div className="text-xs sm:text-sm font-mono break-words">
+              {tx.description}
             </div>
           )}
 
         {/* Custom Views Container */}
         <div className="space-y-2">
           {/* Custom Swap View for SWAP transactions */}
-          {tx.type === 'SWAP' && (
+          {isSwap && (
             <SwapTransactionView tx={tx} sourceWallet={sourceWallet} />
           )}
 
           {/* Custom Solana Transfer View for SYSTEM_PROGRAM transfers */}
-          {tx.source === 'SYSTEM_PROGRAM' && tx.type === 'TRANSFER' && (
+          {isSolanaTransfer && (
             <SolanaTransferView tx={tx} sourceWallet={sourceWallet} />
           )}
 
           {/* Custom SPL Token Transfer View for SOLANA_PROGRAM_LIBRARY transfers */}
-          {(tx.source === 'SOLANA_PROGRAM_LIBRARY' ||
-            tx.source === 'PHANTOM') &&
-            tx.type === 'TRANSFER' && (
-              <SPLTransferView tx={tx} sourceWallet={sourceWallet} />
-            )}
+          {isSPLTransfer && (
+            <SPLTransferView tx={tx} sourceWallet={sourceWallet} />
+          )}
 
           {/* NFT Transaction View for MAGIC_EDEN and TENSOR */}
-          {(tx.source === 'MAGIC_EDEN' ||
-            tx.source === 'TENSOR' ||
-            tx.type === 'COMPRESSED_NFT_MINT') && (
+          {isNFTTransaction && (
             <NFTTransactionView
               tx={extendedTransaction}
               sourceWallet={sourceWallet}
@@ -162,14 +165,13 @@ export const TransactionCard = memo(function TransactionCard({
           )}
 
           {/* Transfers */}
-          {tx.source !== 'SYSTEM_PROGRAM' &&
-            tx.source !== 'SOLANA_PROGRAM_LIBRARY' && (
-              <TransferList
-                nativeTransfers={tx.nativeTransfers}
-                tokenTransfers={tx.tokenTransfers}
-                sourceWallet={sourceWallet}
-              />
-            )}
+          {!isComment && !isSolanaTransfer && !isSPLTransfer && (
+            <TransferList
+              nativeTransfers={tx.nativeTransfers}
+              tokenTransfers={tx.tokenTransfers}
+              sourceWallet={sourceWallet}
+            />
+          )}
         </div>
       </div>
     </div>

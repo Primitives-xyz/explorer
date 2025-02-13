@@ -4,17 +4,57 @@ import { formatNumber } from '@/utils/format'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import Link from 'next/link'
+import { TransactionCommentView } from './transaction-comment-view'
 
-interface TokenTransfer {
+// Legacy format
+interface TokenTransferLegacy {
   tokenMint: string
   from: string
   to: string
   amount: number
 }
 
+// New format from Helius
+interface TokenTransferHelius {
+  fromTokenAccount: string
+  toTokenAccount: string
+  fromUserAccount: string
+  toUserAccount: string
+  tokenAmount: number
+  mint: string
+  tokenStandard: string
+}
+
+type TokenTransfer = TokenTransferLegacy | TokenTransferHelius
+
 interface SPLTransferViewProps {
   tx: Transaction
   sourceWallet: string
+}
+
+// Helper function to check if token transfer is Helius format
+const isHeliusFormat = (
+  transfer: TokenTransfer
+): transfer is TokenTransferHelius => {
+  return 'mint' in transfer && 'fromUserAccount' in transfer
+}
+
+// Helper function to normalize token transfer data
+const normalizeTokenTransfer = (transfer: TokenTransfer) => {
+  if (isHeliusFormat(transfer)) {
+    return {
+      mint: transfer.mint,
+      amount: transfer.tokenAmount,
+      from: transfer.fromUserAccount,
+      to: transfer.toUserAccount,
+    }
+  }
+  return {
+    mint: transfer.tokenMint,
+    amount: transfer.amount,
+    from: transfer.from,
+    to: transfer.to,
+  }
 }
 
 // Helper function to check if token is fungible
@@ -27,26 +67,69 @@ const isFungibleToken = (
   )
 }
 
+// Helper function to detect comment commission
+const isCommentCommission = (transfers: TokenTransfer[]) => {
+  if (transfers.length !== 2) return false
+
+  const normalized = transfers.map(normalizeTokenTransfer)
+  const commissionWallet = '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
+
+  return (
+    normalized.some((t) => t.to === commissionWallet && t.amount === 20) &&
+    normalized.some((t) => t.to !== commissionWallet && t.amount === 80)
+  )
+}
+
 export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
-  const tokenMint = tx.tokenTransfers?.[0]?.tokenMint
+  const tokenMint = isHeliusFormat(tx.tokenTransfers?.[0])
+    ? tx.tokenTransfers[0].mint
+    : tx.tokenTransfers?.[0]?.tokenMint
   const { data: tokenInfo, loading } = useTokenInfo(tokenMint)
 
   if (!tx.tokenTransfers?.length) {
     return null
   }
 
+  const isComment = isCommentCommission(tx.tokenTransfers)
+
+  // If this is a comment transaction, use the TransactionCommentView
+  if (isComment) {
+    // Find the destination wallet (the one receiving 80%)
+    const destinationWallet = tx.tokenTransfers
+      .map(normalizeTokenTransfer)
+      .find((t) => t.amount === 80)?.to
+
+    // Get the total amount (100 SSE)
+    const totalAmount = tx.tokenTransfers.reduce(
+      (sum, t) => sum + normalizeTokenTransfer(t).amount,
+      0
+    )
+
+    return (
+      <TransactionCommentView
+        tx={tx}
+        sourceWallet={sourceWallet}
+        destinationWallet={destinationWallet}
+        amount={totalAmount}
+        tokenSymbol={tokenInfo?.result.content.metadata.symbol || 'SSE'}
+      />
+    )
+  }
+
+  // Regular SPL transfer view
   return (
     <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
       {tx.tokenTransfers.map((transfer: TokenTransfer, index: number) => {
+        const normalized = normalizeTokenTransfer(transfer)
         const tokenSymbol =
           tokenInfo?.result.content.metadata.symbol || 'tokens'
         const pricePerToken = isFungibleToken(tokenInfo)
           ? tokenInfo.result.token_info?.price_info?.price_per_token
           : undefined
         const totalValue = pricePerToken
-          ? transfer.amount * pricePerToken
+          ? normalized.amount * pricePerToken
           : null
-        const isReceiving = transfer.to === sourceWallet
+        const isReceiving = normalized.to === sourceWallet
 
         return (
           <div key={index} className="flex items-center gap-4">
@@ -91,21 +174,22 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                     <>
                       From:{' '}
                       <Link
-                        href={route('address', { id: transfer.from })}
+                        href={route('address', { id: normalized.from })}
                         className="hover: transition-colors"
                       >
-                        {transfer.from?.slice(0, 4)}...
-                        {transfer.from?.slice(-4)}
+                        {normalized.from?.slice(0, 4)}...
+                        {normalized.from?.slice(-4)}
                       </Link>
                     </>
                   ) : (
                     <>
                       To:{' '}
                       <Link
-                        href={route('address', { id: transfer.to })}
+                        href={route('address', { id: normalized.to })}
                         className="hover: transition-colors"
                       >
-                        {transfer.to?.slice(0, 4)}...{transfer.to?.slice(-4)}
+                        {normalized.to?.slice(0, 4)}...
+                        {normalized.to?.slice(-4)}
                       </Link>
                     </>
                   )}
@@ -114,7 +198,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
 
               <div className="flex flex-col items-end gap-0.5">
                 <span className=" font-mono font-medium">
-                  {formatNumber(transfer.amount)} {tokenSymbol}
+                  {formatNumber(normalized.amount)} {tokenSymbol}
                 </span>
                 {totalValue && (
                   <span className="/60 font-mono text-xs">

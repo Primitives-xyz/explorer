@@ -89,7 +89,10 @@ export default function TransactionDetails({
   return (
     <div className="py-8">
       <div className="mb-8 border border-green-800/40 rounded-xl bg-black/40">
-        <TransactionCard transaction={transaction} sourceWallet="" />
+        <TransactionCard
+          transaction={transaction}
+          sourceWallet={transaction.feePayer || ''}
+        />
       </div>
 
       <div className="mb-8">
