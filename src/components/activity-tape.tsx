@@ -75,20 +75,18 @@ export const ActivityTape = () => {
   const getHighlightColor = (highlight: string) => {
     switch (highlight) {
       case 'positive':
-        return 'text-green-400'
+        return ''
       case 'negative':
         return 'text-red-400'
       default:
-        return 'text-green-300'
+        return ''
     }
   }
 
   return (
     <div className="border-b border-green-800 bg-black/50 overflow-hidden group">
       <div className="p-1.5 flex items-center gap-2 font-mono">
-        <div className="flex-none text-green-600 text-xs">
-          {'>'} network_feed.log
-        </div>
+        <div className="flex-none  text-xs">{'>'} network_feed.log</div>
         <div className="flex-1 overflow-hidden whitespace-nowrap">
           <div className="animate-scroll group-hover:pause inline-flex gap-8 text-xs">
             {[...FAKE_ACTIVITIES, ...FAKE_ACTIVITIES].map((activity, i) => (
@@ -96,7 +94,7 @@ export const ActivityTape = () => {
                 key={i}
                 className="flex items-center gap-2 transition-opacity hover:opacity-80"
               >
-                <span className="text-green-500 bg-green-900/20 px-1.5 py-0.5 rounded">
+                <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
                   {activity.action}
                 </span>
                 <span className={getHighlightColor(activity.highlight)}>
@@ -111,11 +109,11 @@ export const ActivityTape = () => {
                     {activity.amount}
                   </span>
                 )}
-                <span className="text-green-600">({activity.wallet})</span>
-                <span className="text-green-500 text-opacity-60">
+                <span className="">({activity.wallet})</span>
+                <span className=" text-opacity-60">
                   {formatTimeAgo(activity.timestamp)}
                 </span>
-                <span className="text-green-800">•</span>
+                <span className="">•</span>
               </div>
             ))}
           </div>

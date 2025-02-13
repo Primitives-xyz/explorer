@@ -42,14 +42,12 @@ export const ProfileHeader = memo(function ProfileHeader({
               imageUrl={profileData?.profile.image}
             />
             <div>
-              <h1 className="text-4xl font-mono text-green-400">@{username}</h1>
+              <h1 className="text-4xl font-mono ">@{username}</h1>
               {profileData?.profile.bio && (
-                <p className="text-sm text-green-600 mt-1">
-                  {profileData.profile.bio}
-                </p>
+                <p className="text-sm  mt-1">{profileData.profile.bio}</p>
               )}
               {!isLoading && profileData?.walletAddress && (
-                <div className="flex items-center gap-2 text-sm text-green-600 mt-2">
+                <div className="flex items-center gap-2 text-sm  mt-2">
                   owned by <TokenAddress address={profileData.walletAddress} />
                   {walletAddressError && (
                     <span className="text-red-500 font-mono text-xs">
@@ -65,7 +63,7 @@ export const ProfileHeader = memo(function ProfileHeader({
           {isOwnProfile && (
             <button
               onClick={onEditProfile}
-              className="px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors"
+              className="px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors"
             >
               Edit Profile
             </button>

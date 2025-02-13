@@ -29,7 +29,7 @@ export function SwapShareSection({
       <div className="flex items-center justify-center space-x-3 pb-4">
         <div className="bg-green-500/20 rounded-full p-2">
           <svg
-            className="w-8 h-8 text-green-500"
+            className="w-8 h-8 "
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -43,24 +43,20 @@ export function SwapShareSection({
           </svg>
         </div>
         <div>
-          <h3 className="text-xl font-bold text-green-400">Swap Successful!</h3>
-          <p className="text-green-300/80 text-sm">
-            Your transaction is confirmed
-          </p>
+          <h3 className="text-xl font-bold ">Swap Successful!</h3>
+          <p className="/80 text-sm">Your transaction is confirmed</p>
         </div>
       </div>
 
       {/* Share Link Section */}
       <div className="space-y-2">
-        <div className="text-sm font-medium text-green-400 mb-2">
-          Share your trade
-        </div>
+        <div className="text-sm font-medium  mb-2">Share your trade</div>
         <div className="flex items-center gap-2">
           <input
             type="text"
             readOnly
             value={`${process.env.NEXT_PUBLIC_APP_URL}/trade/${txSignature}`}
-            className="flex-1 bg-green-900/20 text-green-100 p-3 rounded-lg text-sm font-mono"
+            className="flex-1 bg-green-900/20  p-3 rounded-lg text-sm font-mono"
           />
           <button
             onClick={handleCopyLink}

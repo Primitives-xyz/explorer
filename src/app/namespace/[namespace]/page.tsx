@@ -87,7 +87,7 @@ export default function NamespacePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black text-green-500 p-8">
+      <div className="min-h-screen bg-black  p-8">
         <div className="text-center font-mono">
           {'>>> LOADING NAMESPACE DATA...'}
         </div>
@@ -97,14 +97,14 @@ export default function NamespacePage() {
 
   if (!namespace) {
     return (
-      <div className="min-h-screen bg-black text-green-500 p-8">
+      <div className="min-h-screen bg-black  p-8">
         <div className="text-center font-mono">{'>>> NAMESPACE NOT FOUND'}</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-500 p-8">
+    <div className="min-h-screen bg-black  p-8">
       {/* Namespace Header */}
       <div className="border border-green-800 bg-black/50 p-6 rounded-lg mb-8">
         <div className="flex items-center gap-4">
@@ -116,10 +116,8 @@ export default function NamespacePage() {
             />
           )}
           <div>
-            <h1 className="text-2xl font-mono text-green-400">
-              {namespace.readableName}
-            </h1>
-            <p className="text-sm font-mono text-green-600">
+            <h1 className="text-2xl font-mono ">{namespace.readableName}</h1>
+            <p className="text-sm font-mono ">
               Created {new Date(namespace.createdAt).toLocaleDateString()}
             </p>
           </div>
@@ -129,24 +127,18 @@ export default function NamespacePage() {
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
-          <div className="text-sm font-mono text-green-600">Total Profiles</div>
-          <div className="text-2xl font-mono text-green-400">
-            {profiles.length}
-          </div>
+          <div className="text-sm font-mono ">Total Profiles</div>
+          <div className="text-2xl font-mono ">{profiles.length}</div>
         </div>
         <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
-          <div className="text-sm font-mono text-green-600">
-            Active This Week
-          </div>
-          <div className="text-2xl font-mono text-green-400">
+          <div className="text-sm font-mono ">Active This Week</div>
+          <div className="text-2xl font-mono ">
             {Math.floor(profiles.length * 0.8)}
           </div>
         </div>
         <div className="border border-green-800 bg-black/50 p-4 rounded-lg">
-          <div className="text-sm font-mono text-green-600">
-            Total Interactions
-          </div>
-          <div className="text-2xl font-mono text-green-400">
+          <div className="text-sm font-mono ">Total Interactions</div>
+          <div className="text-2xl font-mono ">
             {Math.floor(Math.random() * 1000)}
           </div>
         </div>
@@ -155,7 +147,7 @@ export default function NamespacePage() {
       {/* Profiles Section */}
       <div className="border border-green-800 bg-black/50 rounded-lg">
         <div className="border-b border-green-800 p-4">
-          <h2 className="font-mono text-green-400">Recent Profiles</h2>
+          <h2 className="font-mono ">Recent Profiles</h2>
         </div>
         <div className="divide-y divide-green-800/30">
           {profiles.map((profile) => (
@@ -170,11 +162,9 @@ export default function NamespacePage() {
                   className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20"
                 />
                 <div>
-                  <div className="font-mono text-green-400">
-                    @{profile.profile.username}
-                  </div>
+                  <div className="font-mono ">@{profile.profile.username}</div>
                   {profile.profile.bio && (
-                    <div className="text-sm font-mono text-green-600">
+                    <div className="text-sm font-mono ">
                       {profile.profile.bio}
                     </div>
                   )}

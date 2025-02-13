@@ -66,7 +66,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
-                    <span className="text-green-500 font-semibold">
+                    <span className=" font-semibold">
                       {tokenSymbol.slice(0, 2)}
                     </span>
                   </div>
@@ -79,22 +79,20 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                 <div className="flex items-center gap-2">
                   <span
                     className={`font-medium ${
-                      isReceiving ? 'text-green-500' : 'text-red-500'
+                      isReceiving ? '' : 'text-red-500'
                     }`}
                   >
                     {isReceiving ? 'Received' : 'Sent'}
                   </span>
-                  <span className="text-green-600 font-mono text-sm">
-                    {tokenSymbol}
-                  </span>
+                  <span className=" font-mono text-sm">{tokenSymbol}</span>
                 </div>
-                <span className="text-green-600/60 font-mono text-xs">
+                <span className="/60 font-mono text-xs">
                   {isReceiving ? (
                     <>
                       From:{' '}
                       <Link
                         href={route('address', { id: transfer.from })}
-                        className="hover:text-green-500 transition-colors"
+                        className="hover: transition-colors"
                       >
                         {transfer.from?.slice(0, 4)}...
                         {transfer.from?.slice(-4)}
@@ -105,7 +103,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                       To:{' '}
                       <Link
                         href={route('address', { id: transfer.to })}
-                        className="hover:text-green-500 transition-colors"
+                        className="hover: transition-colors"
                       >
                         {transfer.to?.slice(0, 4)}...{transfer.to?.slice(-4)}
                       </Link>
@@ -115,11 +113,11 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
               </div>
 
               <div className="flex flex-col items-end gap-0.5">
-                <span className="text-green-400 font-mono font-medium">
+                <span className=" font-mono font-medium">
                   {formatNumber(transfer.amount)} {tokenSymbol}
                 </span>
                 {totalValue && (
-                  <span className="text-green-600/60 font-mono text-xs">
+                  <span className="/60 font-mono text-xs">
                     ≈ ${formatNumber(totalValue, 2)}
                   </span>
                 )}

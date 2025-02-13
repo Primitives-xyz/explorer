@@ -24,9 +24,9 @@ export const DataContainer = ({
   const colorClasses = {
     green: {
       border: 'border-green-800',
-      text: 'text-green-500',
+      text: '',
       dot: 'bg-green-500',
-      count: 'text-green-600',
+      count: '',
       countBg: 'bg-green-900/20',
     },
     indigo: {

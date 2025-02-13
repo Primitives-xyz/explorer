@@ -23,10 +23,10 @@ interface TokenData {
 const EmptyState = ({ type }: { type: 'nft' | 'token' }) => (
   <div className="flex flex-col items-center justify-center p-8 text-center rounded-lg border border-green-500/20 bg-black/20">
     <div className="text-3xl mb-2">{type === 'nft' ? '🖼️' : '💰'}</div>
-    <h3 className="text-lg font-medium text-green-300 mb-2">
+    <h3 className="text-lg font-medium  mb-2">
       No {type === 'nft' ? 'NFTs' : 'tokens'} found
     </h3>
-    <p className="text-sm text-green-600">
+    <p className="text-sm ">
       {type === 'nft'
         ? "This wallet doesn't have any NFTs yet"
         : "This wallet doesn't have any tokens yet"}

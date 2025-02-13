@@ -58,16 +58,16 @@ export function SolanaTransferView({
 
           <div className="flex-1 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-green-400 font-mono text-sm">
+              <span className=" font-mono text-sm">
                 {transfer.from === sourceWallet ? 'Sent' : 'Received'}
               </span>
-              <span className="text-green-600 font-mono text-xs">
+              <span className=" font-mono text-xs">
                 {transfer.from === sourceWallet ? (
                   <>
                     To:{' '}
                     <Link
                       href={route('address', { id: transfer.to })}
-                      className="hover:text-green-400 transition-colors"
+                      className="hover: transition-colors"
                     >
                       {transfer.to.slice(0, 4)}...{transfer.to.slice(-4)}
                     </Link>
@@ -77,7 +77,7 @@ export function SolanaTransferView({
                     From:{' '}
                     <Link
                       href={route('address', { id: transfer.from })}
-                      className="hover:text-green-400 transition-colors"
+                      className="hover: transition-colors"
                     >
                       {transfer.from.slice(0, 4)}...{transfer.from.slice(-4)}
                     </Link>
@@ -87,14 +87,14 @@ export function SolanaTransferView({
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="text-xl text-green-400 font-mono">
+              <div className="text-xl  font-mono">
                 {transfer.from === sourceWallet ? '↓' : '↑'}
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-green-400 font-mono text-sm">
+                <span className=" font-mono text-sm">
                   {formatSOL(transfer.amount)} SOL
                 </span>
-                <span className="text-green-600 font-mono text-xs">
+                <span className=" font-mono text-xs">
                   {formatUSD(transfer.amount)}
                 </span>
               </div>

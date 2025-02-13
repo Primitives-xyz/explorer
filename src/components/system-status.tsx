@@ -20,8 +20,8 @@ const StatDisplay = memo(
     format?: (val: number) => string
   }) => (
     <div className="flex items-center gap-2">
-      <span className="text-green-600">{label}:</span>
-      <span className="text-green-400">
+      <span className="">{label}:</span>
+      <span className="">
         {format ? format(value) : value.toLocaleString()}
       </span>
     </div>

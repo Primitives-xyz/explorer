@@ -165,14 +165,14 @@ export function SwapTransactionView({
               {sourceProfile?.username ? (
                 <Link
                   href={route('address', { id: sourceProfile.username })}
-                  className="text-sm font-semibold text-green-400 hover:text-green-300 transition-colors"
+                  className="text-sm font-semibold  hover: transition-colors"
                 >
                   @{sourceProfile.username}
                 </Link>
               ) : (
                 <Link
                   href={route('address', { id: sourceWallet })}
-                  className="text-sm font-mono text-green-400 hover:text-green-300 transition-colors"
+                  className="text-sm font-mono  hover: transition-colors"
                 >
                   {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
                 </Link>
@@ -182,7 +182,7 @@ export function SwapTransactionView({
           {!isOwnTrade && (
             <button
               onClick={() => setShowSwapModal(true)}
-              className="flex items-center gap-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-lg transition-colors text-sm border border-green-500/20"
+              className="flex items-center gap-1.5 bg-green-500/10 hover:bg-green-500/20  px-3 py-1.5 rounded-lg transition-colors text-sm border border-green-500/20"
             >
               <svg
                 className="w-4 h-4"
@@ -206,7 +206,7 @@ export function SwapTransactionView({
       {/* Swap Details */}
       <div className="flex flex-col gap-3 p-3 bg-green-900/10 rounded-lg border border-green-500/10">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-green-500/60">
+          <div className="text-xs /60">
             {new Date(tx.timestamp).toLocaleString()}
           </div>
         </div>
@@ -242,17 +242,17 @@ export function SwapTransactionView({
                       className="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform"
                     />
                   ) : (
-                    <span className="text-green-500 font-mono text-xs">
+                    <span className=" font-mono text-xs">
                       {fromToken.mint.slice(0, 2)}
                     </span>
                   )}
                 </div>
               </div>
               <div className="flex flex-col flex-1">
-                <span className="text-green-400 font-mono text-base">
+                <span className=" font-mono text-base">
                   {formatNumber(fromToken.amount)}
                 </span>
-                <span className="text-green-600 font-mono text-sm">
+                <span className=" font-mono text-sm">
                   {fromToken.mint ===
                   'So11111111111111111111111111111111111111112' ? (
                     'SOL'
@@ -267,7 +267,7 @@ export function SwapTransactionView({
                 </span>
               </div>
               <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <ExternalLink size={14} className="text-green-500/60" />
+                <ExternalLink size={14} className="/60" />
               </div>
             </Link>
           </div>
@@ -276,7 +276,7 @@ export function SwapTransactionView({
           <div className="flex-shrink-0 flex flex-col items-center gap-1">
             <div className="w-7 h-7 bg-green-900/30 rounded-full flex items-center justify-center">
               <svg
-                className="w-4 h-4 text-green-500"
+                className="w-4 h-4 "
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -289,7 +289,7 @@ export function SwapTransactionView({
                 />
               </svg>
             </div>
-            <span className="text-[10px] text-green-500/40">swap</span>
+            <span className="text-[10px] /40">swap</span>
           </div>
 
           {/* To Token */}
@@ -322,17 +322,17 @@ export function SwapTransactionView({
                       className="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform"
                     />
                   ) : (
-                    <span className="text-green-500 font-mono text-xs">
+                    <span className=" font-mono text-xs">
                       {toToken.mint.slice(0, 2)}
                     </span>
                   )}
                 </div>
               </div>
               <div className="flex flex-col flex-1">
-                <span className="text-green-400 font-mono text-base">
+                <span className=" font-mono text-base">
                   {formatNumber(toToken.amount)}
                 </span>
-                <span className="text-green-600 font-mono text-sm">
+                <span className=" font-mono text-sm">
                   {toToken.mint ===
                   'So11111111111111111111111111111111111111112' ? (
                     'SOL'
@@ -345,7 +345,7 @@ export function SwapTransactionView({
                 </span>
               </div>
               <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <ExternalLink size={14} className="text-green-500/60" />
+                <ExternalLink size={14} className="/60" />
               </div>
             </Link>
           </div>

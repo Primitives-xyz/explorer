@@ -134,7 +134,7 @@ const TraderCard = memo(
                     <div
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                         trader.pnl >= 0
-                          ? 'bg-green-500/20 text-green-400'
+                          ? 'bg-green-500/20 '
                           : 'bg-red-500/20 text-red-400'
                       } shrink-0`}
                     >
@@ -156,7 +156,7 @@ const TraderCard = memo(
                   <div
                     className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                       trader.pnl >= 0
-                        ? 'bg-green-500/20 text-green-400'
+                        ? 'bg-green-500/20 '
                         : 'bg-red-500/20 text-red-400'
                     } shrink-0`}
                   >
@@ -184,7 +184,7 @@ const TraderCard = memo(
                       ? `$${formatNumber(Math.abs(trader.pnl))} total`
                       : 'No trading activity'
                   }
-                  color={trader.pnl >= 0 ? 'text-green-400' : 'text-red-400'}
+                  color={trader.pnl >= 0 ? '' : 'text-red-400'}
                 />
                 <StatCard
                   label="Volume"

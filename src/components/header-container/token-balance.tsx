@@ -53,5 +53,5 @@ export const TokenBalance = ({ walletAddress }: TokenBalanceProps) => {
 
   if (!walletAddress) return null
 
-  return <span className="text-green-500">{loading ? '...' : balance}</span>
+  return <span className="">{loading ? '...' : balance}</span>
 }

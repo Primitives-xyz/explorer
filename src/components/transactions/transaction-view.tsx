@@ -69,7 +69,7 @@ export default function TransactionDetails({
   if (isLoading) {
     return (
       <div className="py-8">
-        <div className="text-green-500 font-mono text-center">
+        <div className=" font-mono text-center">
           Loading transaction details...
         </div>
       </div>
@@ -93,24 +93,20 @@ export default function TransactionDetails({
       </div>
 
       <div className="mb-8">
-        <h1 className="text-2xl font-mono text-green-500 mb-2">
-          Transaction Details
-        </h1>
+        <h1 className="text-2xl font-mono  mb-2">Transaction Details</h1>
         <TransactionSignature signature={signature} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">
-            Timestamp
-          </h3>
-          <div className="text-xl font-mono text-green-400">
+          <h3 className="/60 text-sm font-mono mb-2">Timestamp</h3>
+          <div className="text-xl font-mono ">
             {formatDistanceToNow(new Date(transaction.timestamp * 1000))} ago
           </div>
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">Type</h3>
+          <h3 className="/60 text-sm font-mono mb-2">Type</h3>
           <TransactionBadge
             type={transaction.type}
             source={transaction.source}
@@ -119,26 +115,22 @@ export default function TransactionDetails({
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">Fee</h3>
-          <div className="text-xl font-mono text-green-400">
+          <h3 className="/60 text-sm font-mono mb-2">Fee</h3>
+          <div className="text-xl font-mono ">
             {formatLamportsToSol(transaction.fee)} SOL
           </div>
         </div>
       </div>
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
-        <h3 className="text-green-500/60 text-sm font-mono mb-2">
-          Description
-        </h3>
-        <div className="text-green-400 font-mono">
+        <h3 className="/60 text-sm font-mono mb-2">Description</h3>
+        <div className=" font-mono">
           {transaction.description || 'No description available'}
         </div>
       </div>
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
-        <h3 className="text-green-500/60 text-sm font-mono mb-4">
-          Account Changes
-        </h3>
+        <h3 className="/60 text-sm font-mono mb-4">Account Changes</h3>
         <div className="space-y-3">
           {transaction.accountData
             .filter(
@@ -153,16 +145,14 @@ export default function TransactionDetails({
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-green-400 text-sm">
+                    <span className="font-mono  text-sm">
                       {account.account}
                     </span>
                   </div>
                   {account.nativeBalanceChange !== 0 && (
                     <span
                       className={`font-mono text-sm ${
-                        account.nativeBalanceChange > 0
-                          ? 'text-green-400'
-                          : 'text-red-400'
+                        account.nativeBalanceChange > 0 ? '' : 'text-red-400'
                       }`}
                     >
                       {account.nativeBalanceChange > 0 ? '+' : ''}
@@ -180,13 +170,13 @@ export default function TransactionDetails({
                       className="flex items-center justify-between pl-4 text-sm"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-green-500">
+                        <span className="font-mono ">
                           {change.tokenAccount}
                         </span>
                       </div>
                       <span
                         className={`font-mono ${
-                          amount > 0 ? 'text-green-400' : 'text-red-400'
+                          amount > 0 ? '' : 'text-red-400'
                         }`}
                       >
                         {amount > 0 ? '+' : ''}

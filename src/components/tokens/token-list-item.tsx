@@ -55,7 +55,7 @@ export const TokenListItem = ({
                   }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                  <span className="text-green-400 text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
+                  <span className=" text-xs font-mono bg-black/60 px-1.5 py-0.5 rounded">
                     [view]
                   </span>
                 </div>
@@ -68,7 +68,7 @@ export const TokenListItem = ({
                 !token.imageUrl ? 'block' : 'hidden fallback'
               }`}
             >
-              <span className="text-green-500 font-mono text-sm font-bold">
+              <span className=" font-mono text-sm font-bold">
                 {token.symbol.slice(0, 3)}
               </span>
             </div>
@@ -80,7 +80,7 @@ export const TokenListItem = ({
                   e.stopPropagation()
                   router.push(route('address', { id: token.id }))
                 }}
-                className="text-green-300 font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block truncate hover:text-green-200 transition-colors"
+                className=" font-mono bg-green-900/20 px-1.5 py-0.5 rounded inline-block truncate hover: transition-colors"
               >
                 {token.symbol}
               </button>
@@ -94,28 +94,28 @@ export const TokenListItem = ({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 whitespace-nowrap">
-                <span className="text-green-600">Balance:</span>
-                <span className="text-green-500 bg-green-900/20 px-1.5 py-0.5 rounded">
+                <span className="">Balance:</span>
+                <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
                   {formatNumber(token.balance)}
                 </span>
               </div>
               <div className="flex items-center gap-2 whitespace-nowrap">
-                <span className="text-green-600">Value:</span>
-                <span className="text-green-500 bg-green-900/20 px-1.5 py-0.5 rounded">
+                <span className="">Value:</span>
+                <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
                   ${formatNumber(token.balance * (token.price || 0))}
                 </span>
               </div>
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2 whitespace-nowrap">
-                <span className="text-green-600">Price:</span>
-                <span className="text-green-500 bg-green-900/20 px-1.5 py-0.5 rounded">
+                <span className="">Price:</span>
+                <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
                   ${formatNumber(token.price || 0)}
                 </span>
               </div>
               <div className="flex items-center gap-2 whitespace-nowrap">
-                <span className="text-green-600">Share:</span>
-                <span className="text-green-500 bg-green-900/20 px-1.5 py-0.5 rounded">
+                <span className="">Share:</span>
+                <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
                   {(
                     (token.balance * (token.price || 0) * 100) /
                     totalValue
@@ -130,7 +130,7 @@ export const TokenListItem = ({
         {/* Expanded Details */}
         {expandedTokenId === token.id && (
           <div className="mt-2 space-y-2 bg-green-900/10 p-3 rounded text-xs font-mono">
-            <div className="text-green-500 bg-green-900/20 px-2 py-1 rounded font-mono text-xs break-all">
+            <div className=" bg-green-900/20 px-2 py-1 rounded font-mono text-xs break-all">
               <TokenAddress address={token.id} />
             </div>
           </div>

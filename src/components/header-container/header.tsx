@@ -9,7 +9,7 @@ export function Header() {
   const { walletAddress, mainUsername } = useCurrentWallet()
 
   return (
-    <div className="w-full border-b border-green-800/50">
+    <div className="w-full border-b border-green-800/50 text-[color:var(--text-header)]">
       <div className="mx-auto w-full">
         <div className="flex flex-col gap-4 pb-4 pt-2 w-full overflow-hidden">
           <TerminalStatus

@@ -27,7 +27,7 @@ export function TokenSelectButton({
 }: TokenSelectButtonProps) {
   return (
     <button
-      className="bg-green-900/20 text-green-100 p-3 rounded-lg w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors group"
+      className="bg-green-900/20  p-3 rounded-lg w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors group"
       onClick={onClick}
       disabled={disabled}
     >
@@ -42,9 +42,7 @@ export function TokenSelectButton({
         <div>
           <div className="font-medium">{tokenInfo.symbol || currentToken}</div>
           {isLoggedIn && (
-            <div className="text-sm text-green-500">
-              {isBalanceLoading ? '...' : balance}
-            </div>
+            <div className="text-sm ">{isBalanceLoading ? '...' : balance}</div>
           )}
         </div>
       </div>
