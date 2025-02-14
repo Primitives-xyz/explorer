@@ -4,7 +4,7 @@ import { locales } from '@/i18n'
 import { useLocale } from 'next-intl'
 
 const languageLabels: Record<string, string> = {
-  en: '🇬🇧 English',
+  en: '🇺🇸 English',
   zh: '🇨🇳 中文',
 }
 
