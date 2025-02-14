@@ -44,14 +44,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   }`
   const iconSize = size === 'lg' ? 16 : 14
 
-  // Utility function to capitalize first letter for English locale
-  const capitalizeIfEnglish = (text: string) => {
-    if (locale === 'en') {
-      return text.charAt(0).toUpperCase() + text.slice(1)
-    }
-    return text
-  }
-
   // Reset optimistic state and revalidate on mount or username change
   useEffect(() => {
     setOptimisticFollowing(false)
