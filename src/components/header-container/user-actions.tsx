@@ -62,6 +62,13 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
         </Link>
       )}
 
+      {/* <Link
+        href={route('graphVisualization')}
+        className="uppercase px-4 py-1.5 border border-green-500/50 text-green-400 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0"
+      >
+        {t('header.graph')}
+      </Link> */}
+
       {/* <LanguageSwitcher /> */}
     </div>
   )

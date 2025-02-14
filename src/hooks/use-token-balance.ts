@@ -1,49 +1,8 @@
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112'
 const LAMPORTS_PER_SOL = 1000000000
-
-const formatBalance = (value: string, isSol = false) => {
-  const num = parseFloat(value)
-  if (isNaN(num)) return { formatted: '0', raw: 0 }
-
-  // Format numbers greater than 1 million
-  if (num >= 1_000_000) {
-    return {
-      formatted: (num / 1_000_000).toFixed(2) + 'M',
-      raw: num,
-    }
-  }
-  // Format numbers greater than 1 thousand
-  if (num >= 1_000) {
-    return {
-      formatted: (num / 1_000).toFixed(2) + 'K',
-      raw: num,
-    }
-  }
-
-  // Special handling for SOL balances
-  if (isSol) {
-    if (num >= 1) {
-      // For SOL >= 1, show up to 3 decimal places
-      return {
-        formatted: num.toFixed(3),
-        raw: num,
-      }
-    }
-    // For SOL < 1, show up to 4 decimal places
-    return {
-      formatted: num.toFixed(4),
-      raw: num,
-    }
-  }
-
-  // For other tokens, show up to 2 decimal places
-  return {
-    formatted: num.toFixed(2),
-    raw: num,
-  }
-}
 
 export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
   const [balance, setBalance] = useState<{ formatted: string; raw: number }>({
@@ -52,6 +11,50 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const t = useTranslations()
+
+  const formatBalance = (value: string, isSol = false) => {
+    const num = parseFloat(value)
+    if (isNaN(num)) return { formatted: '0', raw: 0 }
+
+    // Format numbers greater than 1 million
+    if (num >= 1_000_000) {
+      return {
+        formatted: (num / 1_000_000).toFixed(2) + t('common.m'),
+        raw: num,
+      }
+    }
+    // Format numbers greater than 1 thousand
+    if (num >= 1_000) {
+      return {
+        formatted: (num / 1_000).toFixed(2) + t('common.k'),
+        raw: num,
+      }
+    }
+
+    // Special handling for SOL balances
+    if (isSol) {
+      if (num >= 1) {
+        // For SOL >= 1, show up to 3 decimal places
+        return {
+          formatted: num.toFixed(3),
+          raw: num,
+        }
+      }
+      // For SOL < 1, show up to 4 decimal places
+      return {
+        formatted: num.toFixed(4),
+        raw: num,
+      }
+    }
+
+    // For other tokens, show up to 2 decimal places
+    return {
+      formatted: num.toFixed(2),
+      raw: num,
+    }
+  }
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -93,8 +96,8 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
           setBalance(formatBalance(data.balance.uiAmountString))
         }
       } catch (error) {
-        console.error('Error fetching token balance:', error)
-        setError('Failed to fetch balance')
+        console.error(t('error.error_fetching_token_balance'), error)
+        setError(t('error.failed_to_fetch_balance'))
       } finally {
         setLoading(false)
       }

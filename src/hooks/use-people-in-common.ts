@@ -27,7 +27,7 @@ async function fetchTokenOwners(url: string): Promise<PeopleInCommonResponse> {
 
 export function usePeopleInCommon(
   tokenMint: string,
-  { page = 1, pageSize = 1000 }: PaginationOptions = {},
+  { page = 1, pageSize = 1000 }: PaginationOptions = {}
 ) {
   const { mainUsername } = useCurrentWallet()
 
@@ -41,7 +41,7 @@ export function usePeopleInCommon(
       revalidateOnReconnect: false,
       dedupingInterval: 30000, // 30 seconds
       revalidateIfStale: false,
-    },
+    }
   )
 
   return {

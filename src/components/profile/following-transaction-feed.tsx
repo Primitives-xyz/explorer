@@ -1,7 +1,8 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { DataContainer } from '@/components/common/DataContainer'
-import { FilterBar } from '@/components/common/FilterBar'
-import { FilterButton } from '@/components/common/FilterButton'
+import { DataContainer } from '@/components/common/data-container'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
+
 import { ScrollableContent } from '@/components/common/scrollable-content'
 import { TransactionCard } from '@/components/transactions/transaction-card'
 import type { Transaction } from '@/utils/helius/types'
@@ -10,14 +11,14 @@ import dynamic from 'next/dynamic'
 import { useMemo } from 'react'
 
 // Extend the existing interfaces to include className
-declare module '@/components/common/FilterBar' {
+declare module '@/components/common/filter-bar' {
   export interface FilterBarProps {
     children: React.ReactNode
     className?: string
   }
 }
 
-declare module '@/components/common/FilterButton' {
+declare module '@/components/common/filter-button' {
   export interface FilterButtonProps {
     label: string
     isSelected: boolean
@@ -91,12 +92,12 @@ export const FollowingTransactionFeed = ({
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
     return [
-      { value: 'all', label: t('following-transaction.all') },
-      { value: 'swap', label: t('following-transaction.swap') },
-      { value: 'transfer', label: t('following-transaction.transfer') },
+      { value: 'all', label: t('following_transaction.all') },
+      { value: 'swap', label: t('following_transaction.swap') },
+      { value: 'transfer', label: t('following_transaction.transfer') },
       {
         value: 'compressed_nft_mint',
-        label: t('following-transaction.compressed_nft_mint'),
+        label: t('following_transaction.compressed_nft_mint'),
       },
     ]
   }, [])
@@ -105,22 +106,22 @@ export const FollowingTransactionFeed = ({
   const getDisplayText = (type: string) => {
     switch (type) {
       case 'all':
-        return 'TRANSACTIONS'
+        return t('following_transaction.transactions')
       case 'swap':
-        return 'SWAP TRANSACTIONS'
+        return t('following_transaction.swap_transactions')
       case 'transfer':
-        return 'TRANSFERS'
+        return t('following_transaction.transfers')
       case 'compressed_nft_mint':
-        return 'CNFT MINTS'
+        return t('following_transaction.cnft_mints')
       default:
-        return 'TRANSACTIONS'
+        return t('following_transaction.transactions')
     }
   }
 
   // If not logged in, show the preview with CTA
   if (!isLoggedIn) {
     return (
-      <DataContainer title="following_activity" height="large">
+      <DataContainer title={t('following_transaction.title')} height="large">
         <div className="relative h-full flex flex-col">
           {/* Blurred mock transactions in background */}
           <div className="absolute inset-0 divide-y divide-green-800/30 blur-sm">
@@ -136,13 +137,10 @@ export const FollowingTransactionFeed = ({
           {/* Create Profile CTA */}
           <div className="relative flex-1 flex flex-col items-center justify-center bg-background-80/95 backdrop-blur-sm px-4 py-8 sm:p-4 text-center z-10">
             <h3 className="font-mono text-base sm:text-lg mb-6 sm:mb-4 max-w-[280px] sm:max-w-none">
-              Create a profile to follow wallets onchain and see their swaps in
-              real time!
+              {t('following_transaction.create_a_profile_to_follow')}
             </h3>
             <DynamicConnectButton>
-              <div className="px-4 sm:px-6 py-3 sm:py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer text-sm sm:text-base">
-                Create Profile
-              </div>
+              <div className="px-4 sm:px-6 py-3 sm:py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer text-sm sm:text-base"></div>
             </DynamicConnectButton>
           </div>
         </div>
@@ -152,13 +150,13 @@ export const FollowingTransactionFeed = ({
 
   const headerRight = isLoading && totalWallets > 0 && (
     <div className="text-xs  font-mono">
-      ({loadedWallets}/{totalWallets} wallets)
+      ({loadedWallets}/{totalWallets} {t('common.wallets')})
     </div>
   )
 
   return (
     <DataContainer
-      title="following_activity"
+      title={t('following_transaction.title')}
       count={transactions.length}
       height="large"
       headerRight={headerRight}
@@ -179,8 +177,12 @@ export const FollowingTransactionFeed = ({
       <ScrollableContent
         isLoading={isLoading}
         isEmpty={!isLoading && transactions.length === 0}
-        loadingText={`>>> LOADING ${getDisplayText(selectedType)}...`}
-        emptyText={`>>> NO ${getDisplayText(selectedType)} FOUND`}
+        loadingText={`>>> ${t('common.loading')} ${getDisplayText(
+          selectedType
+        )}...`}
+        emptyText={`>>> ${t('common.no')} ${getDisplayText(selectedType)} ${t(
+          'common.found'
+        )}`}
       >
         <div className="divide-y divide-green-800/30">
           {isLoading ? (

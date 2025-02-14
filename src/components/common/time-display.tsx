@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { formatTimeAgo, normalizeTimestamp } from '../../utils/time'
-import { TimeTooltip } from './TimeTooltip'
+import { TimeTooltip } from './time-tooltip'
 
 interface TimeDisplayProps {
   timestamp: number

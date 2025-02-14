@@ -6,11 +6,14 @@ import {
   useIsLoggedIn,
   useUserWallets,
 } from '@dynamic-labs/sdk-react-core'
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 
 export function useCurrentWallet() {
   const { sdkHasLoaded: dynamicSdkHasLoaded, primaryWallet } =
     useDynamicContext()
+
+  const t = useTranslations()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
   const [forceSdkLoaded, setForceSdkLoaded] = useState(false)
@@ -27,7 +30,7 @@ export function useCurrentWallet() {
 
     const timeoutId = setTimeout(() => {
       if (!dynamicSdkHasLoaded) {
-        console.warn('SDK load timeout reached, forcing loaded state')
+        console.warn(t('error.sdk_load_timeout_reached_forcing_loaded_state'))
         setForceSdkLoaded(true)
       }
     }, 5000) // 5 second timeout

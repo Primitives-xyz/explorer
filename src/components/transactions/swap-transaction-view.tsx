@@ -1,6 +1,6 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { Avatar } from '@/components/common/Avatar'
+import { Avatar } from '@/components/common/avatar'
 import { Modal } from '@/components/common/modal'
 import { useTokenInfo } from '@/hooks/use-token-info'
 import type { TokenInfo } from '@/types/Token'

@@ -1,5 +1,6 @@
 import type { TokenPortfolioResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 
 interface PortfolioBalanceSectionProps {
   hideTitle?: boolean
@@ -16,6 +17,7 @@ export const PortfolioBalanceSection = ({
   portfolioData,
 }: PortfolioBalanceSectionProps) => {
   const { items, totalUsd } = portfolioData?.data || { items: [], totalUsd: 0 }
+  const t = useTranslations()
 
   // Find SOL token data
   const solToken = items.find((item) => item.symbol === 'SOL')
@@ -35,15 +37,17 @@ export const PortfolioBalanceSection = ({
       {/* Header */}
       {!hideTitle && (
         <div className="border-b border-green-800 p-3 flex-shrink-0 bg-black/30">
-          <div className=" text-sm font-mono whitespace-nowrap">
-            {'>'} portfolio_balance
+          <div className="text-sm font-mono whitespace-nowrap">
+            {'>'} {t('portfolio_balance.title')}
           </div>
         </div>
       )}
 
       {error && (
         <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
-          <span>! ERROR: {error}</span>
+          <span>
+            ! {t('common.error')}: {error}
+          </span>
         </div>
       )}
 
@@ -62,7 +66,7 @@ export const PortfolioBalanceSection = ({
               <div className="h-5 w-28 bg-green-800/30 rounded"></div>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-green-800">
-              <div className="/50">TOTAL</div>
+              <div className="uppercase">{t('common.total')}</div>
               <div className="h-5 w-28 bg-green-800/30 rounded"></div>
             </div>
           </div>
@@ -73,12 +77,14 @@ export const PortfolioBalanceSection = ({
               <span className="">${formatNumber(solValue)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="">{tokenCount} Tokens</span>
-              <span className="">${formatNumber(otherTokensValue)}</span>
+              <span>
+                {tokenCount} {t('common.tokens')}
+              </span>
+              <span>${formatNumber(otherTokensValue)}</span>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-green-800">
-              <span className="">Total</span>
-              <span className="">${formatNumber(totalUsd)}</span>
+              <span>{t('common.total')}</span>
+              <span>${formatNumber(totalUsd)}</span>
             </div>
           </div>
         )}
