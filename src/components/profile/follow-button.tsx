@@ -5,7 +5,7 @@ import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
@@ -29,6 +29,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   const { mutate: mutateFollowers } = useProfileFollowers(username)
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
   const t = useTranslations()
+  const locale = useLocale()
   const {
     stats,
     mutate: mutateStats,
@@ -42,6 +43,14 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     size === 'lg' ? 'px-4 py-2 text-sm' : 'px-2 py-1 text-xs'
   }`
   const iconSize = size === 'lg' ? 16 : 14
+
+  // Utility function to capitalize first letter for English locale
+  const capitalizeIfEnglish = (text: string) => {
+    if (locale === 'en') {
+      return text.charAt(0).toUpperCase() + text.slice(1)
+    }
+    return text
+  }
 
   // Reset optimistic state and revalidate on mount or username change
   useEffect(() => {
@@ -83,7 +92,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         className={`${buttonClasses} flex items-center gap-1 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
       >
         <LoaderCircle className="animate-spin" size={iconSize} />
-        <span>{t('common.loading')}...</span>
+        <span>{capitalizeIfEnglish(t('common.loading'))}...</span>
       </div>
     )
   }
@@ -96,7 +105,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
           className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer`}
         >
           <UserRoundPlus size={iconSize} />
-          {t('common.follow')}
+          {capitalizeIfEnglish(t('common.follow'))}
         </div>
       </DynamicConnectButton>
     )
@@ -196,7 +205,9 @@ export function FollowButton({ username, size = 'sm' }: Props) {
               disabled={loading}
               className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50`}
             >
-              {loading ? t('common.unfollowing') : t('common.unfollow')}
+              {loading
+                ? capitalizeIfEnglish(t('common.unfollowing'))
+                : capitalizeIfEnglish(t('common.unfollow'))}
             </button>
             <button
               onClick={() => setShowUnfollowConfirm(false)}
@@ -212,7 +223,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
             className={`${buttonClasses} bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50 flex items-center gap-1`}
           >
             <UserRoundCheck size={iconSize} />
-            {t('common.following')}
+            {capitalizeIfEnglish(t('common.following'))}
           </button>
         )}
         {success && (
@@ -234,7 +245,9 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
       >
         <UserRoundPlus size={iconSize} />
-        {loading ? `${t('common.loading')}...` : t('common.follow')}
+        {loading
+          ? `${capitalizeIfEnglish(t('common.loading'))}...`
+          : capitalizeIfEnglish(t('common.follow'))}
       </button>
     </>
   )
