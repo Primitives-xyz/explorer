@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
-    const { username, bio, image } = await request.json()
+    const { username, bio, image, properties } = await request.json()
     const params = await context.params
     const { username: profileUsername } = params
 
@@ -96,6 +96,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
         bio,
         image,
         execution: 'FAST_UNCONFIRMED',
+        properties: properties,
       },
     })
 
