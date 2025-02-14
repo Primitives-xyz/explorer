@@ -2,11 +2,12 @@
 
 const routes = {
   home: () => '/',
-  address: ({ id }: { id: string }) => `/${id}`,
   trade: () => '/trade',
   tradeId: ({ id }: { id: string }) => `/trade/${id}`,
+  address: ({ id }: { id: string }) => `/${id}`,
   namespace: ({ namespace }: { namespace: string }) =>
     `/namespace/${namespace}`,
+  graphVisualization: () => '/graph-visualization',
 }
 
 export function route<T extends keyof typeof routes>(

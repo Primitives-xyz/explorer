@@ -49,6 +49,7 @@
     "search": "search",
     "trade": "trade",
     "portfolio": "portfolio",
+    "graph": "graph",
     "connect_wallet": "connect wallet",
     "logout": "logout",
     "terminal": {
