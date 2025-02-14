@@ -1,6 +1,6 @@
+import { cn } from '@/lib/utils'
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { cn } from '@/lib/utils'
 
 interface ModalProps {
   isOpen: boolean
@@ -53,18 +53,13 @@ export function Modal({
       <div
         className={cn(
           'relative z-10 w-full max-w-lg md:max-w-2xl lg:max-w-4xl bg-black/90 border border-green-500/20 rounded-lg shadow-xl',
-          className,
+          className
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-green-500/20">
-          <h2 className="text-lg md:text-xl font-medium text-green-400">
-            {title}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-green-400 hover:text-green-300 transition-colors"
-          >
+          <h2 className="text-lg md:text-xl font-medium ">{title}</h2>
+          <button onClick={onClose} className=" hover: transition-colors">
             <svg
               className="w-6 h-6"
               fill="none"
@@ -85,6 +80,6 @@ export function Modal({
         <div className="p-4 md:p-6">{children}</div>
       </div>
     </div>,
-    modalRoot.current,
+    modalRoot.current
   )
 }

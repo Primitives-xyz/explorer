@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
 import { formatNumber, shortenAddress } from '@/utils/format'
+import { route } from '@/utils/routes'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
-import Link from 'next/link'
 
 interface TokenHolder {
   address: string
@@ -18,7 +19,7 @@ interface LargestHoldersProps {
 // Simple fetch function
 async function fetchHolders(mintAddress: string): Promise<TokenHolder[]> {
   const response = await fetch(
-    `/api/tokens/largest-holders?mintAddress=${mintAddress}`,
+    `/api/tokens/largest-holders?mintAddress=${mintAddress}`
   )
   if (!response.ok) {
     throw new Error('Failed to fetch holders')
@@ -45,17 +46,13 @@ const HolderRow = ({
   return (
     <div className="flex items-center justify-between py-3 px-4 hover:bg-green-900/10 transition-colors">
       <div className="flex items-center gap-3 min-w-0">
-        <div
-          className={`w-6 text-center font-mono ${
-            index < 3 ? 'text-green-400' : 'text-green-500/60'
-          }`}
-        >
+        <div className={`w-6 text-center font-mono ${index < 3 ? '' : '/60'}`}>
           {index < 3 ? ['🥇', '🥈', '🥉'][index] : `#${index + 1}`}
         </div>
         <div className="flex items-center gap-2 min-w-0">
           <Link
-            href={`/${holder.address}`}
-            className="font-mono text-green-400 text-sm min-w-[120px] truncate hover:text-green-300 transition-colors"
+            href={route('address', { id: holder.address })}
+            className="font-mono  text-sm min-w-[120px] truncate hover: transition-colors"
           >
             {isCurrentWallet ? 'Your Wallet' : shortenAddress(holder.address)}
           </Link>
@@ -64,12 +61,8 @@ const HolderRow = ({
       </div>
       <div className="flex items-center gap-4">
         <div className="text-right min-w-[100px]">
-          <div className="text-green-400 font-mono">
-            {formatNumber(holdingValue)}
-          </div>
-          <div className="text-green-500/60 text-xs">
-            {percentage.toFixed(2)}%
-          </div>
+          <div className=" font-mono">{formatNumber(holdingValue)}</div>
+          <div className="/60 text-xs">{percentage.toFixed(2)}%</div>
         </div>
       </div>
     </div>
@@ -98,7 +91,7 @@ export function LargestHolders({
         console.error('Error fetching token holders:', error)
         if (isMounted) {
           setError(
-            error instanceof Error ? error.message : 'Failed to fetch holders',
+            error instanceof Error ? error.message : 'Failed to fetch holders'
           )
         }
       } finally {

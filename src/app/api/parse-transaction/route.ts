@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { isValidTransactionSignature } from '@/utils/validation'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!signature || !isValidTransactionSignature(signature)) {
       return NextResponse.json(
         { error: 'Invalid transaction signature' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (!HELIUS_API_KEY) {
       return NextResponse.json(
         { error: 'Helius API key not configured' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           transactions: [signature],
         }),
-      },
+      }
     )
 
     const data = await response.json()
@@ -42,14 +42,14 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         { error: errorMessage },
-        { status: response.status },
+        { status: response.status }
       )
     }
 
     if (!data || !Array.isArray(data) || data.length === 0) {
       return NextResponse.json(
         { error: 'Transaction not found' },
-        { status: 404 },
+        { status: 404 }
       )
     }
 

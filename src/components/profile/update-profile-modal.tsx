@@ -1,12 +1,12 @@
+import { useFileUpload } from '@/hooks/use-file-upload'
+import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { useState } from 'react'
+import { Alert } from '../common/alert'
+import { Avatar } from '../common/Avatar'
 import { Modal } from '../common/modal'
 import { Input } from '../form/input'
 import { SubmitButton } from '../form/submit-button'
-import { Alert } from '../common/alert'
-import { useFileUpload } from '@/hooks/use-file-upload'
-import { useState } from 'react'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
-import { Avatar } from '../common/Avatar'
 
 interface UpdateProfileModalProps {
   isOpen: boolean
@@ -66,7 +66,7 @@ export function UpdateProfileModal({
 
       if (!response.ok) {
         throw new Error(
-          data.error || data.details || 'Failed to update profile',
+          data.error || data.details || 'Failed to update profile'
         )
       }
 
@@ -91,7 +91,7 @@ export function UpdateProfileModal({
       <div className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="username" className="block text-sm text-green-500">
+            <label htmlFor="username" className="block text-sm ">
               Username
             </label>
             <Input
@@ -102,13 +102,13 @@ export function UpdateProfileModal({
               placeholder="Enter username (letters and numbers only)"
               className="w-full"
             />
-            <p className="text-xs text-green-600">
+            <p className="text-xs ">
               Only lowercase letters and numbers are allowed
             </p>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="bio" className="block text-sm text-green-500">
+            <label htmlFor="bio" className="block text-sm ">
               Bio
             </label>
             <Input
@@ -122,9 +122,7 @@ export function UpdateProfileModal({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm text-green-500">
-              Profile Image
-            </label>
+            <label className="block text-sm ">Profile Image</label>
             <div className="flex items-center gap-4">
               <Avatar
                 username={username}
@@ -136,20 +134,18 @@ export function UpdateProfileModal({
                 onChange={handleFileSelect}
                 accept="image/*"
                 disabled={isUploading}
-                className="block w-full text-sm text-green-400
+                className="block w-full text-sm 
                   file:mr-4 file:py-1.5 file:px-4
                   file:rounded-none file:border
                   file:text-sm file:font-mono
-                  file:bg-transparent file:text-green-400
+                  file:bg-transparent file:
                   hover:file:bg-green-900/30 hover:file:border-green-400
                   file:cursor-pointer file:transition-colors
                   file:border-green-500/50
                   disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
-            {isUploading && (
-              <p className="text-sm text-green-500">Uploading image...</p>
-            )}
+            {isUploading && <p className="text-sm ">Uploading image...</p>}
             {!fileUrl && !currentImage && username && (
               <div className="mt-2">
                 <div className="relative inline-block w-20 h-20 overflow-hidden rounded-full bg-green-900/20">
@@ -160,7 +156,7 @@ export function UpdateProfileModal({
                   />
                   <div className="absolute inset-0 rounded-full ring-1 ring-green-500/20" />
                 </div>
-                <p className="text-xs text-green-600 mt-1">
+                <p className="text-xs  mt-1">
                   This will be your default avatar if no image is uploaded
                 </p>
               </div>

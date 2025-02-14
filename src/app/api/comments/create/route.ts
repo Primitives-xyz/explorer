@@ -1,6 +1,6 @@
 // app/api/comments/create/route.ts
-import { NextRequest, NextResponse } from 'next/server'
 import { tapestryServer } from '@/lib/tapestry-server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     if (!profileId || !text || !contentId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         error:
           error instanceof Error ? error.message : 'Failed to create comment',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

@@ -50,15 +50,18 @@
     "jose": "5.9.6",
     "lucide-react": "^0.469.0",
     "next": "15.1.2 ",
+    "next-intl": "3.26.3",
     "pino-pretty": "^11.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "socialfi": "^0.1.5",
     "sonner": "1.7.4",
     "swr": "^2.3.0",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@types/bn.js": "5.1.6",
+    "@types/jest": "29.5.14",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

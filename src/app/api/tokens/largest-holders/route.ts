@@ -12,13 +12,13 @@ export async function GET(request: Request) {
     if (!mintAddress) {
       return NextResponse.json(
         { error: 'Missing mintAddress parameter' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
     const connection = new Connection(RPC_ENDPOINT)
     const response = await connection.getTokenLargestAccounts(
-      new PublicKey(mintAddress),
+      new PublicKey(mintAddress)
     )
 
     // Transform the response to include more readable values
@@ -35,13 +35,13 @@ export async function GET(request: Request) {
         headers: {
           'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=300', // Cache for 5 minutes with stale-while-revalidate
         },
-      },
+      }
     )
   } catch (error) {
     console.error('Error fetching largest token holders:', error)
     return NextResponse.json(
       { error: `Failed to fetch largest token holders: ${error}` },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

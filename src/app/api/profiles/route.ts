@@ -24,7 +24,7 @@ export async function GET(request: Request) {
           headers: {
             Accept: 'application/json',
           },
-        },
+        }
       )
 
       if (!identitiesResponse.ok) {
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
             userProfileURL: identity.namespace.userProfileURL,
             faviconURL: identity.namespace.faviconURL,
           },
-        }),
+        })
       )
 
       return NextResponse.json({ profiles: transformedIdentities })
@@ -88,7 +88,7 @@ export async function GET(request: Request) {
         })
         return NextResponse.json(
           { error: 'Failed to fetch profiles from Tapestry' },
-          { status: response.status },
+          { status: response.status }
         )
       }
 

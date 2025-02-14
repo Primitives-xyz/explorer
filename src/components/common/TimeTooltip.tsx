@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode, useRef, useEffect } from 'react'
+import { type ReactNode, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 interface TimeTooltipProps {
@@ -23,7 +23,7 @@ const TooltipPortal = ({
       ref={tooltipRef}
       className={`${
         isHovered ? 'opacity-100' : 'opacity-0'
-      } fixed transform -translate-x-1/2 -translate-y-full mt-1 px-2 py-1 text-xs bg-green-900/90 text-green-100 rounded border border-green-800/50 whitespace-nowrap z-[9999] pointer-events-none transition-opacity duration-200`}
+      } fixed transform -translate-x-1/2 -translate-y-full mt-1 px-2 py-1 text-xs bg-green-900/90  rounded border border-green-800/50 whitespace-nowrap z-[9999] pointer-events-none transition-opacity duration-200`}
       style={{
         left: 'var(--tooltip-x)',
         top: 'var(--tooltip-y)',
@@ -33,7 +33,7 @@ const TooltipPortal = ({
     >
       {fullDate}
     </div>,
-    document.body,
+    document.body
   )
 }
 

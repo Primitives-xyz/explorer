@@ -1,7 +1,8 @@
 'use client'
 
-import * as React from 'react'
 import type { ToastActionElement, ToastProps } from '@/components/toast/toast'
+import * as React from 'react'
+import { useEffect } from 'react'
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 5000
@@ -55,7 +56,7 @@ const reducer = (state: State, action: any): State => {
       return {
         ...state,
         toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? { ...t, ...action.toast } : t,
+          t.id === action.toast.id ? { ...t, ...action.toast } : t
         ),
       }
 
@@ -78,7 +79,7 @@ const reducer = (state: State, action: any): State => {
                 ...t,
                 open: false,
               }
-            : t,
+            : t
         ),
       }
     }
@@ -136,7 +137,6 @@ function toast({ ...props }: Toast) {
     },
   })
 
-  // Add to remove queue immediately
   addToRemoveQueue(id, duration)
 
   return {
@@ -149,15 +149,20 @@ function toast({ ...props }: Toast) {
 export function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
-  React.useEffect(() => {
-    listeners.push(setState)
+  useEffect(() => {
+    const listener = (newState: State) => {
+      console.log('Updated toasts:', newState.toasts)
+      setState({ ...newState })
+    }
+
+    listeners.push(listener)
     return () => {
-      const index = listeners.indexOf(setState)
+      const index = listeners.indexOf(listener)
       if (index > -1) {
         listeners.splice(index, 1)
       }
     }
-  }, [state])
+  }, [])
 
   return {
     ...state,

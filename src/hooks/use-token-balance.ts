@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112'
 const LAMPORTS_PER_SOL = 1000000000
@@ -76,7 +76,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
                 method: 'getBalance',
                 params: [walletAddress],
               }),
-            },
+            }
           )
           const data = await response.json()
           if (data.error) {
@@ -87,7 +87,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
         } else {
           // Handle SPL tokens
           const response = await fetch(
-            `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=${mintAddress}`,
+            `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=${mintAddress}`
           )
           const data = await response.json()
           setBalance(formatBalance(data.balance.uiAmountString))

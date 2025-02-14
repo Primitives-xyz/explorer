@@ -1,0 +1,46 @@
+{
+  "common": {
+    "followers": "粉丝",
+    "following": "关注",
+    "loading": "加载中"
+  },
+  "header": {
+    "title": "solana_social_explorer",
+    "search": "搜索",
+    "trade": "交易",
+    "portfolio": "投资组合",
+    "connect_wallet": "连接钱包",
+    "logout": "登出",
+    "terminal": {
+      "title": "状态：在线 | 网络：Solana |",
+      "user": "用户",
+      "sse": "sse",
+      "balance": "余"
+    }
+  },
+  "search_bar": {
+    "all": "全部",
+    "profiles": "用户",
+    "tokens": "代币",
+    "recent": "最近",
+    "profile_matches": "用户匹配",
+    "more": "更多",
+    "token_matches": "代币匹配",
+    "m_cap": "市值",
+    "volume": "交易量",
+    "m": "百万",
+    "recent_searches": "最近搜索",
+    "system": "系统",
+    "search_username": "搜索用户名或钱包地址...",
+    "navigating_to": "跳转到",
+    "ready_to_analyze": "准备分析",
+    "awaiting_input": "等待输入",
+    "execute": "执行"
+  },
+  "following-transaction": {
+    "all": "全部",
+    "swap": "兑换",
+    "transfer": "转账",
+    "compressed_nft_mint": "cNFT 铸造"
+  }
+}

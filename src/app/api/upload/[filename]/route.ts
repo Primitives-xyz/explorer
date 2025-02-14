@@ -1,5 +1,5 @@
-import { FetchMethod } from '@/utils/api'
 import { fetchTapestryServer } from '@/lib/tapestry-server'
+import { FetchMethod } from '@/utils/api'
 import { NextResponse, type NextRequest } from 'next/server'
 
 type RouteContext = {
@@ -15,7 +15,7 @@ export async function POST(_request: NextRequest, context: RouteContext) {
     if (!filename) {
       return NextResponse.json(
         { error: 'Filename is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -31,7 +31,7 @@ export async function POST(_request: NextRequest, context: RouteContext) {
       console.error('Invalid response from Tapestry:', data)
       return NextResponse.json(
         { error: 'Invalid response from upload service' },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -43,7 +43,7 @@ export async function POST(_request: NextRequest, context: RouteContext) {
     console.error('Error processing upload URL request:', error)
     return NextResponse.json(
       { error: 'Failed to get upload URL' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

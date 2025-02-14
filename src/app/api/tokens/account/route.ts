@@ -1,11 +1,11 @@
-import { Connection, PublicKey, Keypair, Transaction } from '@solana/web3.js'
-import { NextResponse } from 'next/server'
+import { addPriorityFee } from '@/utils/priority-fee'
 import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
+import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js'
 import bs58 from 'bs58'
-import { addPriorityFee } from '@/utils/priority-fee'
+import { NextResponse } from 'next/server'
 
 const RPC_ENDPOINT =
   process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
         {
           error: 'Missing required parameters: mintAddress is required',
         },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     const associatedTokenAddress = await getAssociatedTokenAddress(
       mint,
       new PublicKey(FEE_WALLET),
-      false, // Don't allow owner off curve
+      false // Don't allow owner off curve
     )
 
     // Check if the account already exists
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
             'Cache-Control':
               'public, s-maxage=3600, stale-while-revalidate=600', // Cache for 1 hour
           },
-        },
+        }
       )
     }
     console.log('Creating token account instruction...')
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
       payer.publicKey, // payer
       associatedTokenAddress, // associated token account address
       new PublicKey(FEE_WALLET), // owner
-      mint, // token mint
+      mint // token mint
     )
 
     console.log('Getting recent blockhash...')
@@ -95,7 +95,7 @@ export async function GET(request: Request) {
     console.log('Sending transaction...')
     const signature = await connection.sendRawTransaction(
       transaction.serialize(),
-      { maxRetries: 5 },
+      { maxRetries: 5 }
     )
     console.log('Transaction sent...')
 
@@ -106,12 +106,12 @@ export async function GET(request: Request) {
         blockhash,
         lastValidBlockHeight,
       },
-      'confirmed',
+      'confirmed'
     )
     console.log('Transaction confirmed...')
     if (confirmation.value.err) {
       throw new Error(
-        `Transaction failed: ${confirmation.value.err.toString()}`,
+        `Transaction failed: ${JSON.stringify(confirmation.value.err)}`
       )
     }
     console.log('Transaction successful...')
@@ -125,7 +125,7 @@ export async function GET(request: Request) {
     console.error('Error getting token account:', error)
     return NextResponse.json(
       { error: `Failed to get token account: ${error}` },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

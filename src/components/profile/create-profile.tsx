@@ -9,12 +9,12 @@ import { Alert } from '@/components/common/alert'
 import { Modal } from '@/components/common/modal'
 import { Input } from '@/components/form/input'
 import { SubmitButton } from '@/components/form/submit-button'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
-import { useEffect, useState } from 'react'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
 import { useFileUpload } from '@/hooks/use-file-upload'
+import { DICEBEAR_API_BASE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { IGetProfilesResponse } from '@/models/profile.models'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { useEffect, useState } from 'react'
 
 type FormStep = 'username' | 'details'
 
@@ -63,7 +63,7 @@ export function CreateProfile({
   const { profiles: suggestedProfiles, loading: loadingSuggestions } =
     useGetProfiles(
       walletAddress || '',
-      true, // useIdentities = true
+      true // useIdentities = true
     )
 
   // Group usernames by their base name to find duplicates
@@ -106,8 +106,8 @@ export function CreateProfile({
     new Set(
       suggestedUsernames
         .map((profile) => profile.image)
-        .filter((image): image is string => !!image),
-    ),
+        .filter((image): image is string => !!image)
+    )
   )
 
   // Get unique suggested bios from all profiles
@@ -119,9 +119,9 @@ export function CreateProfile({
           (bio): bio is string =>
             !!bio &&
             bio.trim() !== '' &&
-            !bio.toLowerCase().includes('highest score'),
-        ),
-    ),
+            !bio.toLowerCase().includes('highest score')
+        )
+    )
   )
   const updateProfileSetupModalShownStatus = async (walletAddress: string) => {
     try {
@@ -245,7 +245,7 @@ export function CreateProfile({
 
         if (!response.ok) {
           throw new Error(
-            data.error || data.details || 'Failed to create profile',
+            data.error || data.details || 'Failed to create profile'
           )
         }
 
@@ -296,7 +296,7 @@ export function CreateProfile({
         <div className="space-y-6">
           {currentStep === 'username' ? (
             <>
-              <p className="text-green-400/80 text-lg md:text-xl">
+              <p className="/80 text-lg md:text-xl">
                 Choose a unique username for your profile. You can pick from
                 suggested usernames or create your own.
               </p>
@@ -305,7 +305,7 @@ export function CreateProfile({
                 <div className="space-y-3">
                   <label
                     htmlFor="username"
-                    className="block text-sm md:text-base text-green-500"
+                    className="block text-sm md:text-base "
                   >
                     Username
                   </label>
@@ -317,19 +317,19 @@ export function CreateProfile({
                     placeholder="Enter username (letters and numbers only)"
                     className="w-full text-lg"
                   />
-                  <p className="text-xs md:text-sm text-green-600">
+                  <p className="text-xs md:text-sm ">
                     Only lowercase letters and numbers are allowed
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="block text-sm md:text-base text-green-500">
+                  <label className="block text-sm md:text-base ">
                     Suggested Usernames
                   </label>
                   {loadingSuggestions ? (
                     <div className="p-4 flex flex-col items-center gap-2">
                       <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-                      <div className="text-green-600 font-mono animate-pulse">
+                      <div className=" font-mono animate-pulse">
                         {'>>> LOADING SUGGESTIONS...'}
                       </div>
                     </div>
@@ -343,7 +343,7 @@ export function CreateProfile({
                         const isRelatedToSelected =
                           username &&
                           relatedUsernames.some(
-                            (related) => related.username === username,
+                            (related) => related.username === username
                           )
 
                         return (
@@ -358,8 +358,8 @@ export function CreateProfile({
                                 username === suggestion.username
                                   ? 'bg-green-500 text-black'
                                   : isRelatedToSelected
-                                  ? 'bg-green-900/50 text-green-400 hover:bg-green-900/60'
-                                  : 'bg-green-900/30 text-green-400 hover:bg-green-900/50'
+                                  ? 'bg-green-900/50  hover:bg-green-900/60'
+                                  : 'bg-green-900/30  hover:bg-green-900/50'
                               }`}
                           >
                             {suggestion.faviconURL && (
@@ -383,7 +383,7 @@ export function CreateProfile({
                             {hasMultipleNamespaces && (
                               <div className="absolute left-0 right-0 -bottom-1 translate-y-full pt-2 hidden group-hover:block z-10">
                                 <div className="bg-black/90 border border-green-800 rounded-lg p-2 shadow-xl">
-                                  <div className="text-xs text-green-400 mb-1.5">
+                                  <div className="text-xs  mb-1.5">
                                     Available on:
                                   </div>
                                   <div className="space-y-1.5">
@@ -399,7 +399,7 @@ export function CreateProfile({
                                             className="w-4 h-4 rounded-full"
                                           />
                                         )}
-                                        <span className="text-green-300 text-xs">
+                                        <span className=" text-xs">
                                           {related.readableName}
                                         </span>
                                       </div>
@@ -440,7 +440,7 @@ export function CreateProfile({
             </>
           ) : (
             <>
-              <p className="text-green-400/80 text-lg md:text-xl">
+              <p className="/80 text-lg md:text-xl">
                 Add more details to your profile. You can add a bio and upload a
                 profile image.
               </p>
@@ -450,7 +450,7 @@ export function CreateProfile({
                   <div className="space-y-3">
                     <label
                       htmlFor="bio"
-                      className="block text-sm md:text-base text-green-500"
+                      className="block text-sm md:text-base "
                     >
                       Bio (Optional)
                     </label>
@@ -465,10 +465,8 @@ export function CreateProfile({
                     {suggestedBios.length > 0 && (
                       <div className="space-y-2 mt-3">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm text-green-400/80">
-                            Suggested Bios
-                          </p>
-                          <p className="text-xs text-green-600">
+                          <p className="text-sm /80">Suggested Bios</p>
+                          <p className="text-xs ">
                             {suggestedBios.length} available
                           </p>
                         </div>
@@ -482,14 +480,14 @@ export function CreateProfile({
                                 ${
                                   bio === suggestedBio
                                     ? 'bg-green-500 text-black'
-                                    : 'bg-green-900/30 text-green-400 hover:bg-green-900/50'
+                                    : 'bg-green-900/30  hover:bg-green-900/50'
                                 }`}
                             >
                               <div className="line-clamp-2">{suggestedBio}</div>
                               {suggestedBio.length > 150 && (
                                 <div className="absolute left-0 right-0 -bottom-1 translate-y-full pt-2 hidden group-hover:block z-10">
                                   <div className="bg-black/90 border border-green-800 rounded-lg p-2 shadow-xl">
-                                    <div className="text-green-300 text-xs">
+                                    <div className=" text-xs">
                                       {suggestedBio}
                                     </div>
                                   </div>
@@ -503,16 +501,14 @@ export function CreateProfile({
                   </div>
 
                   <div className="space-y-3">
-                    <label className="block text-sm md:text-base text-green-500">
+                    <label className="block text-sm md:text-base ">
                       Profile Image (Optional)
                     </label>
 
                     <div className="space-y-2">
                       {suggestedImages.length > 0 ? (
                         <>
-                          <p className="text-sm text-green-400/80">
-                            Suggested Images
-                          </p>
+                          <p className="text-sm /80">Suggested Images</p>
                           <div className="flex flex-wrap gap-3">
                             {suggestedImages.map((imageUrl) => (
                               <button
@@ -523,7 +519,7 @@ export function CreateProfile({
                                   'relative group rounded-full overflow-hidden border-2 transition-all duration-200',
                                   selectedImageUrl === imageUrl
                                     ? 'border-green-500 ring-2 ring-green-500/20'
-                                    : 'border-green-500/20 hover:border-green-500/50',
+                                    : 'border-green-500/20 hover:border-green-500/50'
                                 )}
                               >
                                 <img
@@ -532,9 +528,7 @@ export function CreateProfile({
                                   className="w-16 h-16 md:w-20 md:h-20 object-cover"
                                 />
                                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <span className="text-xs text-green-400">
-                                    Select
-                                  </span>
+                                  <span className="text-xs ">Select</span>
                                 </div>
                               </button>
                             ))}
@@ -542,7 +536,7 @@ export function CreateProfile({
                               type="button"
                               onClick={() =>
                                 handleImageSelect(
-                                  `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`,
+                                  `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                                 )
                               }
                               className={cn(
@@ -550,7 +544,7 @@ export function CreateProfile({
                                 selectedImageUrl ===
                                   `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                                   ? 'border-green-500 ring-2 ring-green-500/20'
-                                  : 'border-green-500/20 hover:border-green-500/50',
+                                  : 'border-green-500/20 hover:border-green-500/50'
                               )}
                             >
                               <img
@@ -559,9 +553,7 @@ export function CreateProfile({
                                 className="w-16 h-16 md:w-20 md:h-20 object-cover"
                               />
                               <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className="text-xs text-green-400">
-                                  Default Avatar
-                                </span>
+                                <span className="text-xs ">Default Avatar</span>
                               </div>
                             </button>
                           </div>
@@ -572,7 +564,7 @@ export function CreateProfile({
                             type="button"
                             onClick={() =>
                               handleImageSelect(
-                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`,
+                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                               )
                             }
                             className={cn(
@@ -580,7 +572,7 @@ export function CreateProfile({
                               selectedImageUrl ===
                                 `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
                                 ? 'border-green-500 ring-2 ring-green-500/20'
-                                : 'border-green-500/20 hover:border-green-500/50',
+                                : 'border-green-500/20 hover:border-green-500/50'
                             )}
                           >
                             <img
@@ -589,7 +581,7 @@ export function CreateProfile({
                               className="w-16 h-16 md:w-20 md:h-20 object-cover"
                             />
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span className="text-xs text-green-400">
+                              <span className="text-xs ">
                                 Use Generated Avatar
                               </span>
                             </div>
@@ -603,7 +595,7 @@ export function CreateProfile({
                         <div className="w-full border-t border-green-500/20"></div>
                       </div>
                       <div className="relative flex justify-center">
-                        <span className="px-2 text-xs text-green-500 bg-black/90">
+                        <span className="px-2 text-xs  bg-black/90">
                           OR UPLOAD YOUR OWN
                         </span>
                       </div>
@@ -614,26 +606,24 @@ export function CreateProfile({
                       onChange={handleFileSelect}
                       accept="image/*"
                       disabled={isUploadingImage}
-                      className="block w-full text-sm md:text-base text-green-400
+                      className="block w-full text-sm md:text-base 
                         file:mr-4 file:py-2.5 file:px-4
                         file:rounded-full file:border-0
                         file:text-sm file:font-semibold
-                        file:bg-green-900/30 file:text-green-400
+                        file:bg-green-900/30 file:
                         hover:file:bg-green-900/50
                         file:cursor-pointer file:transition-colors
                         file:border-green-500
                         disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     {isUploadingImage && (
-                      <p className="text-sm md:text-base text-green-500">
+                      <p className="text-sm md:text-base ">
                         Uploading image...
                       </p>
                     )}
                     {(selectedImageUrl || fileUrl) && (
                       <div className="mt-4">
-                        <p className="text-sm text-green-400/80 mb-2">
-                          Preview
-                        </p>
+                        <p className="text-sm /80 mb-2">Preview</p>
                         <img
                           src={selectedImageUrl || fileUrl}
                           alt="Profile preview"
@@ -648,7 +638,7 @@ export function CreateProfile({
                   <button
                     type="button"
                     onClick={() => setCurrentStep('username')}
-                    className="px-6 py-3 text-base md:text-lg font-medium text-green-400 bg-green-900/30 
+                    className="px-6 py-3 text-base md:text-lg font-medium  bg-green-900/30 
                       hover:bg-green-900/50 rounded-lg transition-colors"
                   >
                     Back

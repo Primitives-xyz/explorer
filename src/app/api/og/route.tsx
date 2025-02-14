@@ -3,15 +3,24 @@ import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
+function truncateLines(text: string | null, maxLines: number = 2): string | null {
+  if (!text) return null
+  return text.split('\n').slice(0, maxLines).join('\n')
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const title = searchParams.get('title')
     const description = searchParams.get('description')
+    const bio = searchParams.get('bio')
     const image = searchParams.get('image')
     const followers = searchParams.get('followers') || '0'
     const following = searchParams.get('following') || '0'
     const wallet = searchParams.get('wallet') || ''
+
+    // Truncate bio if needed
+    const truncatedBio = truncateLines(bio)
 
     // Convert DiceBear SVG URL to PNG URL
     let imageData = image
@@ -92,6 +101,25 @@ export async function GET(req: NextRequest) {
             >
               {title || 'Explorer'}
             </div>
+
+            {/* Bio */}
+            {truncatedBio && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 30,
+                  fontFamily: 'monospace',
+                  color: '#22c55e',
+                  textAlign: 'center',
+                  maxWidth: '800px',
+                  wordWrap: 'break-word',
+                }}
+              >
+                {truncatedBio}
+              </div>
+            )}
 
             {/* Social Stats */}
             {(Number(followers) > 0 || Number(following) > 0) && (
@@ -184,7 +212,7 @@ export async function GET(req: NextRequest) {
       {
         width: 1200,
         height: 630,
-      },
+      }
     )
   } catch (e) {
     console.error(e)

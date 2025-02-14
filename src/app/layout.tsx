@@ -1,8 +1,14 @@
-import { ClientLayout } from './ClientLayout'
+import { ActivityTape } from '@/components/activity-tape'
+import { AuthWrapper } from '@/components/auth/auth-wrapper'
+import WalletProvider from '@/components/auth/wallet-provider'
+import { GlobalSearch } from '@/components/global-search'
+import { Header } from '@/components/header-container/header'
+import { CreateProfile } from '@/components/profile/create-profile'
 import { Toaster } from '@/components/toast/toaster'
+import { Metadata } from 'next'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
 import './globals.css'
-import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
 
 export const metadata: Metadata = {
   title:
@@ -72,16 +78,32 @@ export const metadata: Metadata = {
   },
 }
 
-interface RootLayoutProps {
-  children: ReactNode
-}
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const locale = await getLocale()
 
-export default function RootLayout({ children }: RootLayoutProps) {
+  const messages = await getMessages()
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body>
-        <Toaster />
-        <ClientLayout>{children}</ClientLayout>
+        <NextIntlClientProvider messages={messages}>
+          <WalletProvider>
+            <AuthWrapper>
+              <Toaster />
+              <ActivityTape />
+              <div className=" px-2 w-full overflow-hidden bg-[#292C31] text-[#F5F8FD] font-mono min-h-dvh">
+                <Header />
+                {children}
+              </div>
+              <GlobalSearch />
+              <CreateProfile />
+            </AuthWrapper>
+          </WalletProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

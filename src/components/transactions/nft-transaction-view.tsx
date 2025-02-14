@@ -1,17 +1,17 @@
-import { useEffect, useState, useMemo, memo } from 'react'
-import { formatNumber } from '@/utils/format'
-import { TokenAddress } from '../tokens/TokenAddress'
 import { useTokenInfo } from '@/hooks/use-token-info'
+import { formatNumber } from '@/utils/format'
+import type { CompressedNFTMintEvent } from '@/utils/helius/types'
 import {
   type ExtendedTransaction,
-  findNFTMintFromTokenTransfers,
-  findNFTMintFromMetaplexInstructions,
   findNFTMintFromAccounts,
+  findNFTMintFromMetaplexInstructions,
+  findNFTMintFromTokenTransfers,
   getSaleAmount,
   isNFTBuyTransaction,
   normalizeTransfers,
 } from '@/utils/nft-transaction'
-import type { CompressedNFTMintEvent } from '@/utils/helius/types'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { TokenAddress } from '../tokens/token-address'
 
 interface NFTTransactionViewProps {
   tx: ExtendedTransaction
@@ -33,7 +33,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
       transfers: normalizeTransfers(tx),
       compressedNFTMintEvent: tx.events?.find(
         (event): event is CompressedNFTMintEvent =>
-          event.type === 'COMPRESSED_NFT_MINT',
+          event.type === 'COMPRESSED_NFT_MINT'
       ),
     }
   }, [tx])
@@ -67,7 +67,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
     mint = findNFTMintFromMetaplexInstructions(
       instructions,
       sourceWallet,
-      tx.accountsInvolved,
+      tx.accountsInvolved
     )
     if (mint) {
       setDetectionMethod('metaplex_core')
@@ -109,7 +109,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
                 className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
               />
             ) : (
-              <div className="text-green-500 font-mono text-xs flex items-center justify-center w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20">
+              <div className=" font-mono text-xs flex items-center justify-center w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20">
                 NFT
               </div>
             )}
@@ -120,14 +120,14 @@ export const NFTTransactionView = memo(function NFTTransactionView({
         <div className="flex-1 min-w-0">
           {/* Top Row - Name and Symbol */}
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-green-200 font-medium text-sm truncate">
+            <h3 className=" font-medium text-sm truncate">
               {compressedNFTMintEvent?.metadata?.name ||
                 nftInfo?.result?.content?.metadata?.name ||
                 `NFT ${nftMint?.slice(0, 4)}...${nftMint?.slice(-4)}`}
             </h3>
             {(compressedNFTMintEvent?.metadata?.symbol ||
               nftInfo?.result?.content?.metadata?.symbol) && (
-              <span className="text-green-500/60 text-xs whitespace-nowrap">
+              <span className="/60 text-xs whitespace-nowrap">
                 (
                 {compressedNFTMintEvent?.metadata?.symbol ||
                   nftInfo?.result?.content?.metadata?.symbol}
@@ -143,7 +143,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
                 isMint
                   ? 'bg-blue-500/10 text-blue-400'
                   : isBuy
-                  ? 'bg-green-500/10 text-green-400'
+                  ? 'bg-green-500/10 '
                   : 'bg-red-500/10 text-red-400'
               }`}
             >
@@ -152,16 +152,16 @@ export const NFTTransactionView = memo(function NFTTransactionView({
 
             {saleAmount > 0 && (
               <div className="flex items-center gap-1">
-                <span className="text-green-300 font-mono font-medium">
+                <span className=" font-mono font-medium">
                   {formatNumber(saleAmount)}
                 </span>
-                <span className="text-green-400/80 text-xs">SOL</span>
+                <span className="/80 text-xs">SOL</span>
               </div>
             )}
 
-            <div className="flex items-center gap-3 text-xs text-green-500/60">
+            <div className="flex items-center gap-3 text-xs /60">
               {nftMint && (
-                <div className="flex items-center gap-1 hover:text-green-400/80 transition-colors duration-200">
+                <div className="flex items-center gap-1 hover:/80 transition-colors duration-200">
                   <span>NFT:</span>
                   <TokenAddress address={nftMint} />
                 </div>
@@ -169,14 +169,14 @@ export const NFTTransactionView = memo(function NFTTransactionView({
 
               {/* Collection Tag */}
               {nftInfo?.result?.grouping?.find(
-                (g) => g.group_key === 'collection',
+                (g) => g.group_key === 'collection'
               )?.group_value && (
                 <div className="flex items-center gap-1">
                   <span>Collection:</span>
                   <TokenAddress
                     address={
                       nftInfo.result.grouping.find(
-                        (g) => g.group_key === 'collection',
+                        (g) => g.group_key === 'collection'
                       )!.group_value
                     }
                   />
@@ -186,7 +186,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
               {/* Compressed NFT Badge */}
               {(tx.type === 'COMPRESSED_NFT_MINT' ||
                 compressedNFTMintEvent) && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400">
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/10 ">
                   Compressed
                 </span>
               )}

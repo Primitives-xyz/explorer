@@ -2,19 +2,19 @@
 
 import { Alert } from '@/components/common/alert'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
-import { UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
-import { useState, useEffect } from 'react'
-import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
-import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useFollowStats } from '@/hooks/use-follow-stats'
+import { useProfileFollowers } from '@/hooks/use-profile-followers'
+import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 
 const DynamicConnectButton = dynamic(
   () =>
     import('@dynamic-labs/sdk-react-core').then(
-      (mod) => mod.DynamicConnectButton,
+      (mod) => mod.DynamicConnectButton
     ),
-  { ssr: false },
+  { ssr: false }
 )
 
 interface Props {
@@ -91,7 +91,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     return (
       <DynamicConnectButton>
         <div
-          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 cursor-pointer`}
+          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer`}
         >
           <UserRoundPlus size={iconSize} />
           Follow
@@ -115,7 +115,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
               isFollowing: true,
             }
           : currentData,
-      false, // Don't revalidate immediately
+      false // Don't revalidate immediately
     )
 
     followUser({
@@ -158,7 +158,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
                 isFollowing: false,
               }
             : currentData,
-        false, // Don't revalidate immediately
+        false // Don't revalidate immediately
       )
 
       await unfollowUser({
@@ -229,7 +229,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
       <button
         onClick={handleFollow}
         disabled={loading}
-        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
+        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
       >
         <UserRoundPlus size={iconSize} />
         {loading ? 'Following...' : 'Follow'}

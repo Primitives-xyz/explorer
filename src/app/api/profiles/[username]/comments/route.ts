@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     const params = await context.params
     const { username } = params
     const requestingProfileId = req.nextUrl.searchParams.get(
-      'requestingProfileId',
+      'requestingProfileId'
     )
 
     let url = `comments?targetProfileId=${username}`
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
     return NextResponse.json(
       { error: 'An unexpected error occurred' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

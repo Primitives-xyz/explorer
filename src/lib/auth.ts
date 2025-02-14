@@ -23,7 +23,7 @@ export interface JWTPayload {
 }
 
 export async function verifyAuthToken(
-  token: string,
+  token: string
 ): Promise<JWTPayload | null> {
   try {
     const publicKey = await importSPKI(PUBLIC_KEY, 'RS256')

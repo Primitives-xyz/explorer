@@ -1,5 +1,5 @@
-import type { Metadata } from 'next'
 import type { TokenInfo } from '@/types/Token'
+import type { Metadata } from 'next'
 
 interface TokenMetadataParams {
   token: NonNullable<TokenInfo['result']>
@@ -26,7 +26,7 @@ export function isNFTToken(token: NonNullable<TokenInfo['result']>): boolean {
  * Resolves the image URL for a token using the same logic as useNFTImage hook
  */
 export function resolveTokenImage(
-  token: NonNullable<TokenInfo['result']>,
+  token: NonNullable<TokenInfo['result']>
 ): string | null {
   if (!token.content) return null
 

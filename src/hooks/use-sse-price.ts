@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
 import { SSE_TOKEN_MINT } from '@/constants/jupiter'
+import { useEffect, useState } from 'react'
 
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
 const SSE_DECIMALS = 6
@@ -41,7 +41,7 @@ export function useSSEPrice() {
         const response = await fetch(
           `https://quote-api.jup.ag/v6/quote?inputMint=${SSE_TOKEN_MINT}` +
             `&outputMint=${USDC_MINT}&amount=${amount}` +
-            `&slippageBps=50`,
+            `&slippageBps=50`
         ).then((res) => res.json())
 
         if (response.error) {

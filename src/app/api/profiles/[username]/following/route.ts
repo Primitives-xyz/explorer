@@ -16,7 +16,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     if (!username) {
       return NextResponse.json(
         { error: 'Username is required' },
-        { status: 400 },
+        { status: 400 }
       )
     }
     const response = await fetchTapestryServer({
@@ -28,7 +28,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     console.error('Error fetching following:', error)
     return NextResponse.json(
       { error: error.message || 'Failed to fetch following' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

@@ -1,17 +1,17 @@
-import { useFollowWallet } from './hooks/use-follow-wallet'
-import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
-import { UserRoundPlus, UserRoundCheck, LoaderCircle } from 'lucide-react'
-import dynamic from 'next/dynamic'
-import { useWalletFollowStats } from '@/hooks/use-wallet-follow-stats'
-import { useState, useEffect } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { useWalletFollowStats } from '@/hooks/use-wallet-follow-stats'
+import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
+import { useFollowWallet } from './hooks/use-follow-wallet'
 
 const DynamicConnectButton = dynamic(
   () =>
     import('@dynamic-labs/sdk-react-core').then(
-      (mod) => mod.DynamicConnectButton,
+      (mod) => mod.DynamicConnectButton
     ),
-  { ssr: false },
+  { ssr: false }
 )
 
 interface Props {
@@ -90,7 +90,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
     return (
       <DynamicConnectButton>
         <div
-          className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 cursor-pointer shadow-lg shadow-green-900/20`}
+          className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30  border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 cursor-pointer shadow-lg shadow-green-900/20`}
         >
           <UserRoundPlus size={iconSize} />
           Connect Wallet
@@ -201,7 +201,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
       <button
         onClick={handleFollow}
         disabled={loading}
-        className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 disabled:opacity-50 shadow-lg shadow-green-900/20`}
+        className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30  border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 disabled:opacity-50 shadow-lg shadow-green-900/20`}
       >
         {loading ? (
           <LoaderCircle className="animate-spin" size={iconSize} />

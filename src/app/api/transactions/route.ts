@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
 import {
-  SolanaFMParser,
   ParserType,
+  SolanaFMParser,
   checkIfInstructionParser,
 } from '@solanafm/explorer-kit'
 import { getProgramIdl } from '@solanafm/explorer-kit-idls'
+import { NextRequest, NextResponse } from 'next/server'
 
 const TRANSACTIONS_PER_PAGE = 20
 
@@ -48,7 +48,7 @@ function isSpamTransaction(tx: any) {
   if (tx.nativeTransfers.length > 15) {
     // Check if all transfers are tiny amounts (less than 0.00001 SOL)
     const allTinyTransfers = tx.nativeTransfers.every(
-      (transfer: any) => Math.abs(transfer.amount / 1e9) < 0.00001,
+      (transfer: any) => Math.abs(transfer.amount / 1e9) < 0.00001
     )
     if (allTinyTransfers) return true
   }
@@ -60,7 +60,7 @@ function isSpamTransaction(tx: any) {
 async function parseTransactions(transactions: any[]) {
   // Filter out spam transactions
   const filteredTransactions = transactions.filter(
-    (tx) => !isSpamTransaction(tx),
+    (tx) => !isSpamTransaction(tx)
   )
 
   return Promise.all(
@@ -76,7 +76,7 @@ async function parseTransactions(transactions: any[]) {
               if (idlItem) {
                 const parser = new SolanaFMParser(idlItem, ix.programId)
                 const instructionParser = parser.createParser(
-                  ParserType.INSTRUCTION,
+                  ParserType.INSTRUCTION
                 )
 
                 if (
@@ -84,7 +84,7 @@ async function parseTransactions(transactions: any[]) {
                   checkIfInstructionParser(instructionParser)
                 ) {
                   const decodedData = instructionParser.parseInstructions(
-                    ix.data,
+                    ix.data
                   )
                   return {
                     ...ix,
@@ -96,11 +96,11 @@ async function parseTransactions(transactions: any[]) {
             } catch (error) {
               console.error(
                 `Error parsing instruction for program ${ix.programId}:`,
-                error,
+                error
               )
               return ix
             }
-          }),
+          })
         )
 
         // Add additional transaction metadata
@@ -120,7 +120,7 @@ async function parseTransactions(transactions: any[]) {
         console.error('Error parsing transaction:', error)
         return null
       }
-    }),
+    })
   ).then((results) => results.filter(Boolean))
 }
 
@@ -166,7 +166,7 @@ function parseEvents(tx: any) {
         assetId: event.assetId,
         newOwner: event.newLeafOwner,
         metadata: event.metadata,
-      })),
+      }))
     )
   }
 
@@ -197,7 +197,7 @@ export async function GET(request: NextRequest) {
   if (!apiKey) {
     return NextResponse.json(
       { error: 'Helius API key not configured' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 
@@ -232,7 +232,7 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching transactions:', error)
     return NextResponse.json(
       { error: 'Failed to fetch transactions' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

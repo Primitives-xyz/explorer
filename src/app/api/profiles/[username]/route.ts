@@ -43,14 +43,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
     ) {
       return NextResponse.json(
         { error: `Profile not found: ${username}` },
-        { status: 404 },
+        { status: 404 }
       )
     }
 
     // Handle other errors
     return NextResponse.json(
       { error: 'Failed to fetch profile' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
@@ -61,7 +61,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     if (!authHeader) {
       return NextResponse.json(
         { error: 'Authorization header missing' },
-        { status: 401 },
+        { status: 401 }
       )
     }
 
@@ -69,7 +69,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
       return NextResponse.json(
         { error: 'Invalid authorization header format' },
-        { status: 401 },
+        { status: 401 }
       )
     }
 
@@ -105,7 +105,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     console.error('Profile update error:', error)
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
