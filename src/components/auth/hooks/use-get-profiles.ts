@@ -3,7 +3,6 @@ import useSWR, { mutate } from 'swr'
 
 export const useGetProfiles = (
   walletAddress: string,
-  useIdentities: boolean = false
 ) => {
   const fetcher = async (url: string) => {
     // Validate wallet address before making the API call
@@ -20,9 +19,8 @@ export const useGetProfiles = (
     return data.profiles
   }
 
-  const endpoint = useIdentities ? '/api/identities' : '/api/profiles'
   const key = walletAddress
-    ? `${endpoint}?walletAddress=${walletAddress}`
+    ? `/api/identities?walletAddress=${walletAddress}`
     : null
 
   const {
@@ -52,6 +50,5 @@ export const refreshProfiles = (
   walletAddress: string,
   useIdentities: boolean = false
 ) => {
-  const endpoint = useIdentities ? '/api/identities' : '/api/profiles'
-  return mutate(`${endpoint}?walletAddress=${walletAddress}`)
+  return mutate(`/api/identities?walletAddress=${walletAddress}`)
 }
