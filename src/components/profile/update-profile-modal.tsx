@@ -137,7 +137,7 @@ export function UpdateProfileModal({
                 className="block w-full text-sm text-white
                   file:mr-4 file:py-1.5 file:px-4
                   file:rounded-none file:border
-                  file:text-sm file:font-mono
+                  file:text-sm file:font-mono file:text-white
                   file:bg-transparent file:
                   hover:file:bg-green-900/30 hover:file:border-green-400
                   file:cursor-pointer file:transition-colors
