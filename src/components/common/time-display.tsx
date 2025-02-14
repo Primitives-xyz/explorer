@@ -1,6 +1,7 @@
+import { TimeTooltip } from '@/components/common/time-tooltip'
+import { formatTimeAgo } from '@/utils/format-time'
+import { normalizeTimestamp } from '@/utils/time'
 import { useState } from 'react'
-import { formatTimeAgo, normalizeTimestamp } from '../../utils/time'
-import { TimeTooltip } from './TimeTooltip'
 
 interface TimeDisplayProps {
   timestamp: number

@@ -3,8 +3,8 @@ import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
-import { TransactionCommentView } from './transaction-comment-view'
 
 // Legacy format
 interface TokenTransferLegacy {
@@ -81,6 +81,7 @@ const isCommentCommission = (transfers: TokenTransfer[]) => {
 }
 
 export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
+  const t = useTranslations()
   const tokenMint = isHeliusFormat(tx.tokenTransfers?.[0])
     ? tx.tokenTransfers[0].mint
     : tx.tokenTransfers?.[0]?.tokenMint
@@ -90,33 +91,6 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
     return null
   }
 
-  const isComment = isCommentCommission(tx.tokenTransfers)
-
-  // If this is a comment transaction, use the TransactionCommentView
-  if (isComment) {
-    // Find the destination wallet (the one receiving 80%)
-    const destinationWallet = tx.tokenTransfers
-      .map(normalizeTokenTransfer)
-      .find((t) => t.amount === 80)?.to
-
-    // Get the total amount (100 SSE)
-    const totalAmount = tx.tokenTransfers.reduce(
-      (sum, t) => sum + normalizeTokenTransfer(t).amount,
-      0
-    )
-
-    return (
-      <TransactionCommentView
-        tx={tx}
-        sourceWallet={sourceWallet}
-        destinationWallet={destinationWallet}
-        amount={totalAmount}
-        tokenSymbol={tokenInfo?.result.content.metadata.symbol || 'SSE'}
-      />
-    )
-  }
-
-  // Regular SPL transfer view
   return (
     <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
       {tx.tokenTransfers.map((transfer: TokenTransfer, index: number) => {
@@ -165,14 +139,16 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                       isReceiving ? '' : 'text-red-500'
                     }`}
                   >
-                    {isReceiving ? 'Received' : 'Sent'}
+                    {isReceiving
+                      ? t('transaction_log.received')
+                      : t('transaction_log.sent')}
                   </span>
                   <span className=" font-mono text-sm">{tokenSymbol}</span>
                 </div>
                 <span className="/60 font-mono text-xs">
                   {isReceiving ? (
                     <>
-                      From:{' '}
+                      {t('transaction_log.from')}:{' '}
                       <Link
                         href={route('address', { id: normalized.from })}
                         className="hover: transition-colors"
@@ -183,7 +159,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                     </>
                   ) : (
                     <>
-                      To:{' '}
+                      {t('transaction_log.to')}:{' '}
                       <Link
                         href={route('address', { id: normalized.to })}
                         className="hover: transition-colors"
