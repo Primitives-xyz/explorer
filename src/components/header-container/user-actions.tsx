@@ -5,6 +5,7 @@ import '@dialectlabs/react-ui/index.css'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { LanguageSwitcher } from './language-switcher'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -69,7 +70,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
         {t('header.graph')}
       </a> */}
 
-      {/* <LanguageSwitcher /> */}
+      <LanguageSwitcher />
     </div>
   )
 }
