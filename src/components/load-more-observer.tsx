@@ -1,6 +1,5 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
 
 interface Props {
@@ -11,8 +10,6 @@ interface Props {
 
 export function LoadMoreObserver({ hasMore, onLoadMore, loading }: Props) {
   const observerRef = useRef<HTMLDivElement>(null)
-
-  const t = useTranslations()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -42,7 +39,7 @@ export function LoadMoreObserver({ hasMore, onLoadMore, loading }: Props) {
       {loading ? (
         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
       ) : (
-        <div className="text-gray-500">{t('common.load_more')}...</div>
+        <div className="text-gray-500">Load more...</div>
       )}
     </div>
   )

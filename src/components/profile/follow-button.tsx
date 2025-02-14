@@ -5,7 +5,6 @@ import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
@@ -27,7 +26,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
   const { followUser, unfollowUser, loading, success } = useFollowUser()
   const { mutate: mutateFollowers } = useProfileFollowers(username)
-  const t = useTranslations()
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
   const {
     stats,
@@ -63,12 +61,12 @@ export function FollowButton({ username, size = 'sm' }: Props) {
 
   // Handle stats error gracefully without page refresh
   if (!!statsError) {
-    console.error(t('error.stats_error'), statsError)
+    console.error('Stats error:', statsError)
     return (
       <div
         className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800`}
       >
-        {t('common.error')}
+        Error
       </div>
     )
   }
@@ -83,7 +81,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         className={`${buttonClasses} flex items-center gap-1 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
       >
         <LoaderCircle className="animate-spin" size={iconSize} />
-        <span>{t('common.loading')}...</span>
+        <span>Loading...</span>
       </div>
     )
   }
@@ -96,7 +94,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
           className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer`}
         >
           <UserRoundPlus size={iconSize} />
-          {t('common.follow')}
+          Follow
         </div>
       </DynamicConnectButton>
     )
@@ -133,11 +131,11 @@ export function FollowButton({ username, size = 'sm' }: Props) {
             fetch(`/api/profiles/${username}`, { method: 'HEAD' }),
           ])
         } catch (error) {
-          console.error(t('error.failed_to_revalidate_after_follow'), error)
+          console.error('Failed to revalidate after follow:', error)
         }
       })
       .catch((error) => {
-        console.error(t('error.failed_to_follow'), error)
+        console.error('Failed to follow:', error)
         setOptimisticFollowing(false)
         // Revert the optimistic update
         mutateStats()
@@ -175,11 +173,11 @@ export function FollowButton({ username, size = 'sm' }: Props) {
           fetch(`/api/profiles/${username}`, { method: 'HEAD' }),
         ])
       } catch (error) {
-        console.error(t('error.failed_to_revalidate_after_unfollow'), error)
+        console.error('Failed to revalidate after unfollow:', error)
       }
       setShowUnfollowConfirm(false)
     } catch (error) {
-      console.error(t('error.failed_to_unfollow'), error)
+      console.error('Failed to unfollow:', error)
       // Reset optimistic state and revert the optimistic update
       setOptimisticFollowing(true)
       mutateStats()
@@ -196,9 +194,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
               disabled={loading}
               className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50`}
             >
-              {loading
-                ? `${t('common.unfollowing')}...`
-                : `${t('common.unfollow')}?`}
+              {loading ? 'Unfollowing...' : 'Unfollow?'}
             </button>
             <button
               onClick={() => setShowUnfollowConfirm(false)}
@@ -214,13 +210,13 @@ export function FollowButton({ username, size = 'sm' }: Props) {
             className={`${buttonClasses} bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50 flex items-center gap-1`}
           >
             <UserRoundCheck size={iconSize} />
-            {t('common.following')}
+            Following
           </button>
         )}
         {success && (
           <Alert
             type="success"
-            message={t('success.followed_successfully')}
+            message="Followed successfully!"
             duration={5000}
           />
         )}
@@ -236,7 +232,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
       >
         <UserRoundPlus size={iconSize} />
-        {loading ? `${t('common.following')}...` : t('common.follow')}
+        {loading ? 'Following...' : 'Follow'}
       </button>
     </>
   )

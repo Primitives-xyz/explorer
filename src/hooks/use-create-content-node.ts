@@ -38,22 +38,22 @@ export function useCreateContentNode() {
       const [sourceWalletProfiles, walletProfiles] = await Promise.all([
         sourceWallet
           ? fetch(`/api/profiles?walletAddress=${sourceWallet}`).then((res) =>
-              res.json()
+              res.json(),
             )
           : Promise.resolve({ profiles: [] }),
         walletAddress
           ? fetch(`/api/profiles?walletAddress=${walletAddress}`).then((res) =>
-              res.json()
+              res.json(),
             )
           : Promise.resolve({ profiles: [] }),
       ])
 
       // Get main profiles (nemoapp namespace) for both wallets
       const sourceProfile = sourceWalletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp'
+        (p: any) => p.namespace.name === 'nemoapp',
       )?.profile
       const walletProfile = walletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp'
+        (p: any) => p.namespace.name === 'nemoapp',
       )?.profile
 
       // Fetch token information
@@ -87,7 +87,7 @@ export function useCreateContentNode() {
           inputTokenData?.result?.content?.metadata?.symbol || '',
         inputTokenImage: inputTokenData?.result?.content?.links?.image || '',
         inputTokenDecimals: String(
-          inputTokenData?.result?.token_info?.decimals || inputDecimals
+          inputTokenData?.result?.token_info?.decimals || inputDecimals,
         ),
         inputTokenName: inputTokenData?.result?.content?.metadata?.name || '',
         inputTokenDescription:
@@ -97,7 +97,7 @@ export function useCreateContentNode() {
           outputTokenData?.result?.content?.metadata?.symbol || '',
         outputTokenImage: outputTokenData?.result?.content?.links?.image || '',
         outputTokenDecimals: String(
-          outputTokenData?.result?.token_info?.decimals || 6
+          outputTokenData?.result?.token_info?.decimals || 6,
         ),
         outputTokenName: outputTokenData?.result?.content?.metadata?.name || '',
         outputTokenDescription:

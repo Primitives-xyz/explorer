@@ -1,10 +1,9 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { Avatar } from '@/components/common/avatar'
+import { Avatar } from '@/components/common/Avatar'
 import { TimeDisplay } from '@/components/common/time-display'
 import { useTransactionType } from '@/hooks/use-transaction-type'
 import type { Profile } from '@/utils/api'
 import { route } from '@/utils/routes'
-import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { memo, useMemo } from 'react'
 import { NFTTransactionView } from './nft-transaction-view'
@@ -32,7 +31,6 @@ export const TransactionCard = memo(function TransactionCard({
     }),
     [tx]
   )
-  const t = useTranslations()
 
   const {
     isComment,
@@ -99,7 +97,7 @@ export const TransactionCard = memo(function TransactionCard({
                     href={route('address', { id: sourceWallet })}
                     className="text-gray-300 font-mono text-xs px-2 py-0.5 bg-gray-900/20 rounded border border-gray-800/30 hover:border-gray-700/40 transition-colors"
                   >
-                    <span className="text-gray-400">{t('common.wallet')}:</span>{' '}
+                    <span className="text-gray-400">wallet:</span>{' '}
                     {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
                   </Link>
                 )}

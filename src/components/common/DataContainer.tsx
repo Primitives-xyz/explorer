@@ -1,5 +1,4 @@
-import { useTranslations } from 'next-intl'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 interface DataContainerProps {
   title: string
@@ -22,8 +21,6 @@ export const DataContainer = ({
   accentColor = 'green',
   height = 'large',
 }: DataContainerProps) => {
-  const t = useTranslations()
-
   const colorClasses = {
     green: {
       border: 'border-green-800',
@@ -67,9 +64,9 @@ export const DataContainer = ({
           <div className="flex items-center gap-2 flex-shrink-0">
             {count !== undefined && (
               <div
-                className={`uppercase text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full whitespace-nowrap`}
+                className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full whitespace-nowrap`}
               >
-                {t('common.count')}: {count}
+                COUNT: {count}
               </div>
             )}
             {headerRight}

@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 
 interface AmountInputProps {
@@ -28,7 +27,6 @@ export function AmountInput({
   error,
   validateAmount,
 }: AmountInputProps) {
-  const t = useTranslations()
   const inputRef = useRef<HTMLInputElement>(null)
   const [debouncedUpdate, setDebouncedUpdate] = useState<NodeJS.Timeout | null>(
     null
@@ -55,7 +53,7 @@ export function AmountInput({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm">{t('common.amount')}</div>
+        <div className="text-sm ">Amount</div>
         {isLoggedIn && !isBalanceLoading && balance && (
           <div className="flex items-center gap-2">
             {onHalf && (
@@ -63,7 +61,7 @@ export function AmountInput({
                 onClick={onHalf}
                 className="text-xs bg-green-900/20 hover:bg-green-900/30  px-3 py-1 rounded transition-colors"
               >
-                {t('common.half')}
+                HALF
               </button>
             )}
             {onMax && (
@@ -71,7 +69,7 @@ export function AmountInput({
                 onClick={onMax}
                 className="text-xs bg-green-900/20 hover:bg-green-900/30  px-3 py-1 rounded transition-colors"
               >
-                {t('common.max')}
+                MAX
               </button>
             )}
           </div>
@@ -116,7 +114,7 @@ export function AmountInput({
         />
         {isLoggedIn && !isBalanceLoading && balance && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm /70">
-            {t('common.balance')}: {balance}
+            Balance: {balance}
           </div>
         )}
       </div>

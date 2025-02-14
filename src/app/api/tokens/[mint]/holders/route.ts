@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     if (!mint) {
       return NextResponse.json(
         { error: 'Token mint address is required' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     })
     return NextResponse.json(
       { error: error.message || 'Failed to fetch token holders' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

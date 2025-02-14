@@ -3,10 +3,7 @@ import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
-function truncateLines(
-  text: string | null,
-  maxLines: number = 2
-): string | null {
+function truncateLines(text: string | null, maxLines: number = 2): string | null {
   if (!text) return null
   return text.split('\n').slice(0, maxLines).join('\n')
 }

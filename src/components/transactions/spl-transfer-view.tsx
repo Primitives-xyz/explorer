@@ -3,7 +3,6 @@ import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
-import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { TransactionCommentView } from './transaction-comment-view'
 
@@ -82,8 +81,6 @@ const isCommentCommission = (transfers: TokenTransfer[]) => {
 }
 
 export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
-  const t = useTranslations()
-
   const tokenMint = isHeliusFormat(tx.tokenTransfers?.[0])
     ? tx.tokenTransfers[0].mint
     : tx.tokenTransfers?.[0]?.tokenMint
@@ -168,16 +165,14 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                       isReceiving ? '' : 'text-red-500'
                     }`}
                   >
-                    {isReceiving
-                      ? t('transaction_log.received')
-                      : t('transaction_log.sent')}
+                    {isReceiving ? 'Received' : 'Sent'}
                   </span>
                   <span className=" font-mono text-sm">{tokenSymbol}</span>
                 </div>
                 <span className="/60 font-mono text-xs">
                   {isReceiving ? (
                     <>
-                      {t('transaction_log.from')}:{' '}
+                      From:{' '}
                       <Link
                         href={route('address', { id: normalized.from })}
                         className="hover: transition-colors"
@@ -188,7 +183,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                     </>
                   ) : (
                     <>
-                      {t('transaction_log.to')}:{' '}
+                      To:{' '}
                       <Link
                         href={route('address', { id: normalized.to })}
                         className="hover: transition-colors"

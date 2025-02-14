@@ -1,17 +1,16 @@
 'use client'
 
-import { DataContainer } from '@/components/common/data-container'
-import { FilterBar } from '@/components/common/filter-bar'
-import { FilterButton } from '@/components/common/filter-button'
-import { ScrollableContent } from '@/components/common/scrollable-content'
-import { TokenAddress } from '@/components/tokens/token-address'
 import { formatNumber } from '@/utils/format'
 import { route } from '@/utils/routes'
 import type { VirtualItem } from '@tanstack/react-virtual'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { memo, useEffect, useRef, useState } from 'react'
+import { DataContainer } from '../common/DataContainer'
+import { FilterBar } from '../common/FilterBar'
+import { FilterButton } from '../common/FilterButton'
+import { ScrollableContent } from '../common/scrollable-content'
+import { TokenAddress } from './token-address'
 
 interface TrendingToken {
   address: string
@@ -28,8 +27,6 @@ interface TrendingToken {
 // Memoized token card component to prevent unnecessary re-renders
 const TokenCard = memo(
   ({ token, onClick }: { token?: TrendingToken; onClick: () => void }) => {
-    const t = useTranslations()
-
     const router = useRouter()
     if (!token) return null
     return (
@@ -85,8 +82,8 @@ const TokenCard = memo(
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
-                  <span className="text-xs">{t('common.price')}:</span>
-                  <span className="font-mono text-xs font-medium">
+                  <span className="/60 text-xs">price:</span>
+                  <span className=" font-mono text-xs font-medium">
                     ${formatNumber(token.price)}
                   </span>
                 </div>
@@ -94,18 +91,12 @@ const TokenCard = memo(
 
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md min-w-0">
-                  <span className="text-xs flex-shrink-0">
-                    {t('common.address')}:
-                  </span>
+                  <span className="/60 text-xs flex-shrink-0">address:</span>
                   <TokenAddress address={token.address} />
                 </div>
-                <div className="flex items-center gap-2 text-xs font-mono flex-shrink-0">
-                  <span>
-                    {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
-                  </span>
-                  <span>
-                    {t('common.liquidity')}: ${formatNumber(token.liquidity)}
-                  </span>
+                <div className="flex items-center gap-2 text-xs  font-mono flex-shrink-0">
+                  <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
+                  <span>Liq: ${formatNumber(token.liquidity)}</span>
                 </div>
               </div>
             </div>
@@ -136,13 +127,9 @@ const TokenCard = memo(
                 <span className=" text-xs flex-shrink-0">${token.symbol}</span>
               </div>
 
-              <div className="flex items-center justify-between gap-2 text-[10px] font-mono">
-                <span>
-                  {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
-                </span>
-                <span>
-                  {t('common.liquidity')}: ${formatNumber(token.liquidity)}
-                </span>
+              <div className="flex items-center justify-between gap-2 text-[10px]  font-mono">
+                <span>Vol: ${formatNumber(token.volume24hUSD)}</span>
+                <span>Liq: ${formatNumber(token.liquidity)}</span>
               </div>
             </div>
           </div>
@@ -162,8 +149,6 @@ export const TrendingTokens = () => {
   const [sortBy, setSortBy] = useState<'volume24hUSD' | 'rank' | 'liquidity'>(
     'volume24hUSD'
   )
-
-  const t = useTranslations()
 
   // Create a container ref for the virtualizer
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -197,12 +182,12 @@ export const TrendingTokens = () => {
         )
 
         if (!response.ok) {
-          throw new Error(t('error.failed_to_fetch_trending_tokens'))
+          throw new Error('Failed to fetch trending tokens')
         }
 
         const data = await response.json()
         if (!data.success) {
-          throw new Error(t('error.api_request_failed'))
+          throw new Error('API request failed')
         }
 
         const sortedTokens = data.data.tokens
@@ -216,10 +201,8 @@ export const TrendingTokens = () => {
 
         setTokens(sortedTokens)
       } catch (err) {
-        console.error(t('error.error_fetching_trending_tokens'), err)
-        setError(
-          err instanceof Error ? err.message : t('error.failed_to_fetch_tokens')
-        )
+        console.error('Error fetching trending tokens:', err)
+        setError(err instanceof Error ? err.message : 'Failed to fetch tokens')
       } finally {
         setIsLoading(false)
       }
@@ -229,24 +212,20 @@ export const TrendingTokens = () => {
   }, [sortBy])
 
   return (
-    <DataContainer
-      title={t('trending_tokens.title')}
-      count={tokens.length}
-      error={error}
-    >
+    <DataContainer title="trending_tokens" count={tokens.length} error={error}>
       <FilterBar>
         <FilterButton
-          label={t('trending_tokens.volume_24h')}
+          label="Volume 24h"
           isSelected={sortBy === 'volume24hUSD'}
           onClick={() => setSortBy('volume24hUSD')}
         />
         <FilterButton
-          label={t('trending_tokens.rank')}
+          label="Rank"
           isSelected={sortBy === 'rank'}
           onClick={() => setSortBy('rank')}
         />
         <FilterButton
-          label={t('trending_tokens.liquidity')}
+          label="Liquidity"
           isSelected={sortBy === 'liquidity'}
           onClick={() => setSortBy('liquidity')}
         />
@@ -255,8 +234,8 @@ export const TrendingTokens = () => {
       <ScrollableContent
         isLoading={isLoading}
         isEmpty={tokens.length === 0}
-        loadingText={t('trending_tokens.fetching_trending_tokens')}
-        emptyText={t('trending_tokens.no_tokens_found')}
+        loadingText=">>> FETCHING TRENDING TOKENS..."
+        emptyText=">>> NO TOKENS FOUND"
       >
         <div
           ref={scrollContainerRef}

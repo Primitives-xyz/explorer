@@ -3,10 +3,11 @@
 import { formatNumber } from '@/utils/format'
 import type { VirtualItem } from '@tanstack/react-virtual'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useTranslations } from 'next-intl'
 import { memo, useEffect, useRef, useState } from 'react'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
 import { TokenAddress } from '../tokens/token-address'
+
+type TimeFrame = 'today' | 'yesterday' | '1W'
 
 interface Trader {
   network: string
@@ -70,7 +71,6 @@ const TraderCard = memo(
     isSelected: boolean
     onClick: () => void
   }) => {
-    const t = useTranslations()
     // Only calculate avgTradeSize if both volume and trade_count are greater than 0
     const avgTradeSize =
       trader.volume > 0 && trader.trade_count > 0
@@ -169,59 +169,55 @@ const TraderCard = memo(
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-1.5">
                 <StatCard
-                  label={t('top_traders.pnl_trade')}
+                  label="PNL/Trade"
                   value={
                     trader.trade_count > 0
                       ? `$${formatNumber(Math.abs(pnlPerTrade))}`
                       : trader.pnl !== 0
-                      ? t('top_traders.unrealized')
-                      : t('top_traders.no_trades')
+                      ? 'Unrealized'
+                      : 'No trades'
                   }
                   additionalInfo={
                     trader.trade_count > 0
-                      ? t('top_traders.average_profit_per_trade')
+                      ? 'Average Profit per Trade'
                       : trader.pnl !== 0
-                      ? `$${formatNumber(Math.abs(trader.pnl))} ${t(
-                          'common.total'
-                        )}`
-                      : t('top_traders.no_trading_activity')
+                      ? `$${formatNumber(Math.abs(trader.pnl))} total`
+                      : 'No trading activity'
                   }
                   color={trader.pnl >= 0 ? '' : 'text-red-400'}
                 />
                 <StatCard
-                  label={t('top_traders.volume')}
+                  label="Volume"
                   value={
                     trader.volume > 0
                       ? `$${formatNumber(trader.volume)}`
                       : trader.pnl !== 0
-                      ? t('top_traders.holding')
-                      : t('top_traders.no_volume')
+                      ? 'Holding'
+                      : 'No volume'
                   }
                   additionalInfo={
                     trader.volume > 0
-                      ? t('top_traders.total_trading_volume')
+                      ? 'Total Trading Volume'
                       : trader.pnl !== 0
-                      ? t('top_traders.position_value_change')
-                      : t('top_traders.no_trading_activity')
+                      ? 'Position value change'
+                      : 'No trading activity'
                   }
                 />
                 <StatCard
-                  label={t('top_traders.trades')}
+                  label="Trades"
                   value={
                     trader.trade_count > 0
                       ? formatNumber(trader.trade_count)
                       : trader.pnl !== 0
-                      ? t('top_traders.holding')
+                      ? 'Holding'
                       : '0'
                   }
                   additionalInfo={
                     trader.trade_count > 0
-                      ? `${t('top_traders.avg_size')} $${formatNumber(
-                          avgTradeSize
-                        )}`
+                      ? `Avg. Size $${formatNumber(avgTradeSize)}`
                       : trader.pnl !== 0
-                      ? t('top_traders.position_based_pnl')
-                      : t('top_traders.no_trades_yet')
+                      ? 'Position-based PNL'
+                      : 'No trades yet'
                   }
                 />
               </div>
@@ -246,24 +242,8 @@ export const TopTraders = () => {
   const [traders, setTraders] = useState<Trader[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [timeFrame, setTimeFrame] = useState<TimeFrame>('today')
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null)
-  const t = useTranslations()
-
-  const filter = [
-    {
-      value: 'today',
-      label: t('top_traders.today'),
-    },
-    {
-      value: 'yesterday',
-      label: t('top_traders.yesterday'),
-    },
-    {
-      value: '1W',
-      label: t('top_traders.1w'),
-    },
-  ]
-  const [timeFrame, setTimeFrame] = useState(filter[0].value)
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
@@ -297,29 +277,21 @@ export const TopTraders = () => {
 
         if (!response.ok) {
           throw new Error(
-            `${t('error.failed_to_fetch_top_traders')} ${response.status} ${
-              response.statusText
-            }`
+            `Failed to fetch top traders: ${response.status} ${response.statusText}`
           )
         }
 
         const data = await response.json()
         if (!data.success) {
           throw new Error(
-            `${t('error.api_request_failed')} ${
-              data.message || t('error.unknown_error')
-            }`
+            `API request failed: ${data.message || 'Unknown error'}`
           )
         }
 
         setTraders(data.data.items)
       } catch (err) {
-        console.error(t('error.error_fetching_top_traders'), err)
-        setError(
-          err instanceof Error
-            ? err.message
-            : t('error.failed_to_fetch_traders')
-        )
+        console.error('Error fetching top traders:', err)
+        setError(err instanceof Error ? err.message : 'Failed to fetch traders')
       } finally {
         setIsLoading(false)
       }
@@ -336,20 +308,20 @@ export const TopTraders = () => {
         <div className="flex sm:hidden flex-col gap-2">
           <div className="text-indigo-500 text-sm font-mono flex items-center gap-2">
             <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-            {'>'} {t('top_traders.title')}
+            {'>'} top_traders
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {filter.map((tf) => (
+            {(['today', 'yesterday', '1W'] as TimeFrame[]).map((tf) => (
               <button
-                key={tf.value}
-                onClick={() => setTimeFrame(tf.value)}
-                className={`text-xs font-mono px-2.5 py-1 rounded-full transition-all uppercase ${
-                  timeFrame === tf.value
+                key={tf}
+                onClick={() => setTimeFrame(tf)}
+                className={`text-xs font-mono px-2.5 py-1 rounded-full transition-all ${
+                  timeFrame === tf
                     ? 'bg-indigo-500 text-black'
                     : 'text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/40'
                 }`}
               >
-                {tf.label}
+                {tf.toUpperCase()}
               </button>
             ))}
           </div>
@@ -359,20 +331,20 @@ export const TopTraders = () => {
         <div className="hidden sm:flex items-center justify-between">
           <div className="text-indigo-500 text-sm font-mono flex items-center gap-2">
             <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-            {'>'} {t('top_traders.title')}
+            {'>'} top_traders
           </div>
           <div className="flex gap-2">
-            {filter.map((tf) => (
+            {(['today', 'yesterday', '1W'] as TimeFrame[]).map((tf) => (
               <button
-                key={tf.value}
-                onClick={() => setTimeFrame(tf.value)}
-                className={`text-xs font-mono px-3 py-1 rounded-full transition-all uppercase ${
-                  timeFrame === tf.value
+                key={tf}
+                onClick={() => setTimeFrame(tf)}
+                className={`text-xs font-mono px-3 py-1 rounded-full transition-all ${
+                  timeFrame === tf
                     ? 'bg-indigo-500 text-black'
                     : 'text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/40'
                 }`}
               >
-                {tf.label}
+                {tf.toUpperCase()}
               </button>
             ))}
           </div>
@@ -383,7 +355,7 @@ export const TopTraders = () => {
         <div className="p-4 m-4 text-red-400 text-sm border border-red-900/50 rounded-lg bg-red-900/10">
           <div className="flex items-center gap-2">
             <span className="text-red-500">⚠️</span>
-            {t('common.error')}: {error}
+            Error: {error}
           </div>
         </div>
       )}
@@ -397,7 +369,7 @@ export const TopTraders = () => {
           <div className="p-8 flex flex-col items-center gap-4">
             <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
             <div className="text-indigo-600 font-mono animate-pulse">
-              {`>>> ${t('top_traders.analyzing_trader_performance')}...`}
+              {'>>> ANALYZING TRADER PERFORMANCE...'}
             </div>
           </div>
         ) : (
@@ -449,7 +421,7 @@ export const TopTraders = () => {
       {/* Scroll Progress Indicator */}
       <div className="absolute right-2 top-[48px] bottom-2 w-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="h-full bg-indigo-500/5 rounded-full">
-          <div className="h-24 w-full bg-indigo-500/20 rounded-full animate-pulse" />
+          <div className="h-24 w-full bg-indigo-500/20 rounded-full animate-pulse"></div>
         </div>
       </div>
     </div>

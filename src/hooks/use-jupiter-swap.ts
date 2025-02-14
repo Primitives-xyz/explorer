@@ -10,7 +10,6 @@ import { useToast } from '@/hooks/use-toast'
 import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
-import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { useCreateContentNode } from './use-create-content-node'
 import { useSSEPrice } from './use-sse-price'
@@ -63,8 +62,6 @@ export function useJupiterSwap({
     setIsQuoteRefreshing(false)
   }, [])
 
-  const t = useTranslations()
-
   const checkAndCreateTokenAccount = async (
     mintAddress: string,
     walletAddress: string
@@ -77,8 +74,8 @@ export function useJupiterSwap({
 
       if (data.status === 'requires_creation') {
         toast({
-          title: t('trade.creating_token_account'),
-          description: t('trade.setting_up_required_token_account_for_fees'),
+          title: 'Creating Token Account',
+          description: 'Setting up required token account for fees...',
           variant: 'pending',
           duration: 5000,
         })
@@ -89,7 +86,7 @@ export function useJupiterSwap({
         )
 
         if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-          throw new Error(t('error.wallet_not_connected'))
+          throw new Error('Wallet not connected')
         }
 
         const signer = await primaryWallet.getSigner()
@@ -103,10 +100,8 @@ export function useJupiterSwap({
         })
 
         toast({
-          title: t('trade.token_account_created'),
-          description: t(
-            'trade.successfully_set_up_the_required_token_account'
-          ),
+          title: 'Token Account Created',
+          description: 'Successfully set up the required token account.',
           variant: 'success',
           duration: 3000,
         })
@@ -114,10 +109,11 @@ export function useJupiterSwap({
 
       return data.tokenAccount
     } catch (err) {
-      console.error(t('error.error_checking_token_account'), err)
+      console.error('Error checking/creating token account:', err)
       toast({
-        title: t('error.token_account_error'),
-        description: t('error.failed_to_set_up_required_token_account'),
+        title: 'Token Account Error',
+        description:
+          'Failed to set up required token account. Please try again.',
         variant: 'error',
         duration: 5000,
       })
@@ -185,7 +181,7 @@ export function useJupiterSwap({
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
         } catch (err) {
-          console.error(t('error.error_calculating_sse_fee_during_quote'), err)
+          console.error('Error calculating SSE fee during quote:', err)
           setSseFeeAmount('0')
         }
       } else {
@@ -194,8 +190,8 @@ export function useJupiterSwap({
 
       setError('')
     } catch (err) {
-      console.error(t('error.failed_to_fetch_quote'), err)
-      setError(t('error.failed_to_fetch_quote'))
+      console.error('Failed to fetch quote:', err)
+      setError('Failed to fetch quote. Please try again.')
       setSseFeeAmount('0')
     } finally {
       setLoading(false)
@@ -205,12 +201,12 @@ export function useJupiterSwap({
 
   const handleSwap = async () => {
     if (!primaryWallet || !walletAddress) {
-      setError(t('error.wallet_not_connected'))
+      setError('Wallet not connected')
       return
     }
 
     if (platformFeeBps === 1 && !ssePrice) {
-      setError(t('error.unable_to_calculate_sse_fee'))
+      setError('Unable to calculate SSE fee. Please try again.')
       return
     }
 
@@ -218,11 +214,11 @@ export function useJupiterSwap({
     setIsFullyConfirmed(false)
     try {
       toast({
-        title: t('trade.preparing_swap'),
+        title: 'Preparing Swap',
         description:
           platformFeeBps === 1
-            ? t('trade.setting_up_sse_fee_accounts')
-            : t('trade.setting_up_fee_accounts'),
+            ? 'Setting up SSE fee accounts...'
+            : 'Setting up fee accounts...',
         variant: 'pending',
         duration: 2000,
       })
@@ -255,11 +251,11 @@ export function useJupiterSwap({
       ])
 
       toast({
-        title: t('trade.fee_accounts_ready'),
+        title: 'Fee Accounts Ready',
         description:
           platformFeeBps === 0
-            ? t('trade.sse_fee_accounts_are_set_up_and_ready')
-            : t('trade.fee_accounts_are_set_up_and_ready'),
+            ? 'SSE fee accounts are set up and ready'
+            : 'Fee accounts are set up and ready',
         variant: 'success',
         duration: 2000,
       })
@@ -286,15 +282,15 @@ export function useJupiterSwap({
           ).toString()
           setSseFeeAmount(currentSseFeeAmount)
         } catch (err) {
-          console.error(t('error.error_calculating_sse_fee'), err)
+          console.error('Error calculating SSE fee:', err)
           currentSseFeeAmount = '0'
           setSseFeeAmount('0')
         }
       }
 
       toast({
-        title: t('trade.building_transaction'),
-        description: t('trade.preparing_your_swap_transaction'),
+        title: 'Building Transaction',
+        description: 'Preparing your swap transaction...',
         variant: 'pending',
         duration: 2000,
       })
@@ -328,8 +324,8 @@ export function useJupiterSwap({
       }
 
       toast({
-        title: t('trade.sending_transaction'),
-        description: t('trade.please_approve_the_transaction_in_your_wallet'),
+        title: 'Sending Transaction',
+        description: 'Please approve the transaction in your wallet...',
         variant: 'pending',
         duration: 5000,
       })
@@ -341,8 +337,8 @@ export function useJupiterSwap({
 
       // Create a persistent toast for confirmation with a very long duration
       const confirmToast = toast({
-        title: t('trade.confirming_transaction'),
-        description: t('trade.waiting_for_confirmation'),
+        title: 'Confirming Transaction',
+        description: 'Waiting for confirmation...',
         variant: 'pending',
         duration: 1000000000, // Very long duration to ensure it stays visible
       })
@@ -358,18 +354,17 @@ export function useJupiterSwap({
 
       if (tx.value.err) {
         toast({
-          title: t('trade.transaction_failed'),
-          description: t('trade.the_swap_transaction_failed_please_try_again'),
+          title: 'Transaction Failed',
+          description: 'The swap transaction failed. Please try again.',
           variant: 'error',
           duration: 5000,
         })
-        setError(t('error.transaction_failed_please_try_again'))
+        setError('Transaction failed. Please try again.')
       } else {
         toast({
-          title: t('trade.transaction_successful'),
-          description: t(
-            'trade.the_swap_transaction_was_successful_creating_shareable_link'
-          ),
+          title: 'Transaction Successful',
+          description:
+            'The swap transaction was successful. Creating Shareable link..',
           variant: 'success',
           duration: 5000,
         })
@@ -399,14 +394,14 @@ export function useJupiterSwap({
         setIsFullyConfirmed(true)
       }
     } catch (err) {
-      console.error(t('error.swap_failed'), err)
+      console.error('Swap failed:', err)
       toast({
-        title: t('error.swap_failed'),
-        description: t('error.the_swap_transaction_failed_please_try_again'),
+        title: 'Swap Failed',
+        description: 'The swap transaction failed. Please try again.',
         variant: 'error',
         duration: 5000,
       })
-      setError(t('error.the_swap_transaction_failed_please_try_again'))
+      setError('Swap transaction failed. Please try again.')
     } finally {
       setLoading(false)
     }

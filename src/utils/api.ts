@@ -41,16 +41,9 @@ export async function getProfiles(
   page: number = 1
 ): Promise<PaginatedData<Profile>> {
   try {
-    let response;
-    if(useIdentities) {
-      response = await fetch(
-        `/api/identities?walletAddress=${walletAddress}&page=${page}&limit=${ITEMS_PER_PAGE}`
-      )
-    } else {
-      response = await fetch(
-        `/api/profiles?walletAddress=${walletAddress}&page=${page}&limit=${ITEMS_PER_PAGE}`
-      )
-    }
+    const response = await fetch(
+      `/api/profiles?walletAddress=${walletAddress}&useIdentities=${useIdentities}&page=${page}&limit=${ITEMS_PER_PAGE}`
+    )
 
     if (!response.ok) {
       const errorText = await response.text()

@@ -1,5 +1,5 @@
 import { TimeDisplay } from '@/components/common/time-display'
-import { getPriorityLevels } from '@/constants/jupiter'
+import { PRIORITY_LEVELS } from '@/constants/jupiter'
 import { useCommentFee } from '@/hooks/use-comment-fee'
 import { useCommentLikes } from '@/hooks/use-comment-likes'
 import { usePostComment } from '@/hooks/use-post-comment'
@@ -13,13 +13,12 @@ import {
   HeartIcon as HeartOutline,
 } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { Alert } from '../common/alert'
-import { Avatar } from '../common/avatar'
+import { Avatar } from '../common/Avatar'
 import { Card } from '../common/card'
 import { LoadCircle } from '../common/load-circle'
 import { FollowButton } from './follow-button'
@@ -57,8 +56,6 @@ export function CommentWall({
     unlikeComment,
     isLoading: likeLoading,
   } = useCommentLikes()
-
-  const t = useTranslations()
 
   const { mutate: refreshComments } = useProfileComments(
     username,
@@ -408,7 +405,7 @@ export function CommentWall({
                       className="bg-green-900/20  text-sm font-mono rounded border border-green-800/50 px-2 py-1"
                       disabled={postCommentLoading || isProcessingFee}
                     >
-                      {getPriorityLevels(t).map((level) => (
+                      {PRIORITY_LEVELS.map((level) => (
                         <option
                           key={level.value}
                           value={level.value}

@@ -1,19 +1,18 @@
 'use client'
 
-import { Avatar } from '@/components/common/avatar'
-import { FilterBar } from '@/components/common/filter-bar'
-import { FilterButton } from '@/components/common/filter-button'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import { getProfiles, type Profile } from '@/utils/api'
 import { handleProfileNavigation } from '@/utils/profile-navigation'
 import { route } from '@/utils/routes'
 import { Plus } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
-import { DataContainer } from './common/data-container'
+import { Avatar } from './common/Avatar'
+import { DataContainer } from './common/DataContainer'
+import { FilterBar } from './common/FilterBar'
+import { FilterButton } from './common/FilterButton'
 import { Modal } from './common/modal'
 import { ScrollableContent } from './common/scrollable-content'
 import { FollowButton } from './profile/follow-button'
@@ -44,8 +43,6 @@ const ProfileCard = memo(
   ({ profile, router }: { profile: ProfileWithStats; router: any }) => {
     const { mainUsername } = useCurrentWallet()
     const isExplorerApp = profile.namespace?.name === EXPLORER_NAMESPACE
-
-    const t = useTranslations()
 
     const getReadableNamespace = (namespace: any) => {
       // Special cases for namespace display names
@@ -80,7 +77,7 @@ const ProfileCard = memo(
       try {
         handleProfileNavigation(profile, router)
       } catch (error) {
-        console.error(t('error.error_navigating_to_profile'), error)
+        console.error('Error navigating to profile:', error)
       }
     }, [profile, router])
 
@@ -91,7 +88,7 @@ const ProfileCard = memo(
         try {
           router.push(route('namespace', { namespace: profile.namespace.name }))
         } catch (error) {
-          console.error(t('error.error_navigating_to_namespace'), error)
+          console.error('Error navigating to namespace:', error)
         }
       },
       [router, profile?.namespace?.name]
@@ -139,19 +136,15 @@ const ProfileCard = memo(
 
               {isExplorerApp && (
                 <div className="flex items-center gap-2 text-xs  font-mono">
-                  <span>
-                    {t('common.followers')}: {followers}
-                  </span>
-                  <span>
-                    {t('common.following')}: {following}
-                  </span>
+                  <span>Followers: {followers}</span>
+                  <span>Following: {following}</span>
                 </div>
               )}
 
               <div className="flex items-center gap-2">
                 {profile.wallet?.address && (
                   <div className="flex items-center gap-1.5 bg-black/30 py-0.5 rounded-md">
-                    <span className="/60 text-xs">{t('common.address')}:</span>
+                    <span className="/60 text-xs">address:</span>
                     <TokenAddress address={profile.wallet.address} />
                   </div>
                 )}
@@ -193,6 +186,7 @@ export const ProfileSection = ({
   profileData,
   error: propError,
   isLoadingProfileData,
+  title = 'profile_info',
 }: ProfileSectionProps) => {
   const key = walletAddress || 'default'
   const router = useRouter()
@@ -203,8 +197,6 @@ export const ProfileSection = ({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const t = useTranslations()
 
   const getReadableNamespace = (namespace: any) => {
     // Special cases for namespace display names
@@ -290,9 +282,9 @@ export const ProfileSection = ({
           setProfiles(profilesData.items)
         }
       } catch (error) {
-        console.error(t('error.failed_to_fetch_profiles'), error)
+        console.error('Profiles fetch error:', error)
         if (isMounted) {
-          setError(propError || t('error.failed_to_fetch_profiles'))
+          setError(propError || 'Failed to fetch profiles.')
           setProfiles([])
         }
       } finally {
@@ -326,7 +318,7 @@ export const ProfileSection = ({
   return (
     <DataContainer
       key={key}
-      title={t('profile_info.title')}
+      title={title}
       count={filteredProfiles?.length || 0}
       error={error}
       height="large"
@@ -343,7 +335,7 @@ export const ProfileSection = ({
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={t('profile_info.create_new_profile')}
+        title="Create New Profile"
       >
         <div className="flex flex-col gap-3">
           <button
@@ -352,13 +344,13 @@ export const ProfileSection = ({
             }
             className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
-            {t('profile_info.create_a_blink_profile')}
+            Create A .Blink Profile
           </button>
           <button
             onClick={() => window.open('https://www.sns.id/', '_blank')}
             className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
-            {t('profile_info.create_a_sol_profile')}
+            Create a .Sol Profile
           </button>
           <button
             onClick={() =>
@@ -366,13 +358,13 @@ export const ProfileSection = ({
             }
             className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
-            {t('profile_info.explore_all_domains')}
+            Explore All Domains
           </button>
           <button
             onClick={() => window.open('https://www.tapaigames.com/', '_blank')}
             className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
-            {t('profile_info.create_a_nimbus_app')}
+            Create a Nimbus App
           </button>
         </div>
       </Modal>
@@ -380,7 +372,7 @@ export const ProfileSection = ({
       {/* Namespace Filters */}
       <FilterBar>
         <FilterButton
-          label={t('common.all')}
+          label="All"
           isSelected={selectedNamespace === null}
           onClick={() => setSelectedNamespace(null)}
         />
@@ -399,8 +391,8 @@ export const ProfileSection = ({
       <ScrollableContent
         isLoading={isLoading || isLoadingProfileData}
         isEmpty={filteredProfiles.length === 0}
-        loadingText={t('profile_info.fetching_profiles')}
-        emptyText={t('profile_info.no_profile_found')}
+        loadingText=">>> FETCHING PROFILES..."
+        emptyText=">>> NO PROFILES FOUND"
       >
         <div className="divide-y divide-green-800/30">
           {filteredProfiles.map((profile) => (

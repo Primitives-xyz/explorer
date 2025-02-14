@@ -2,7 +2,6 @@
 
 import { debounce } from 'lodash'
 import { Loader2, Search } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
@@ -80,6 +79,8 @@ const DEFAULT_TOKENS: TokenSearchResult[] = [
   },
 ]
 
+type SortOption = 'marketcap' | 'volume' | 'name'
+
 export function TokenSearch({
   onSelect,
   onClose,
@@ -90,32 +91,14 @@ export function TokenSearch({
     useState<TokenSearchResult[]>(DEFAULT_TOKENS)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<SortOption>('marketcap')
   const [verifiedOnly, setVerifiedOnly] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
   const [isGlobalSearchActive, setIsGlobalSearchActive] = useState(false)
 
-  const t = useTranslations()
-
-  const sortOptions = [
-    {
-      value: 'marketcap',
-      label: t('trade.marketcap'),
-    },
-    {
-      value: 'volume',
-      label: t('common.volume'),
-    },
-    {
-      value: 'name',
-      label: t('trade.name'),
-    },
-  ]
-
-  const [sortBy, setSortBy] = useState(sortOptions[0])
-
   const sortResults = (results: TokenSearchResult[]) => {
     return [...results].sort((a, b) => {
-      switch (sortBy.value) {
+      switch (sortBy) {
         case 'marketcap':
           return (b.market_cap || 0) - (a.market_cap || 0)
         case 'volume':
@@ -152,7 +135,7 @@ export function TokenSearch({
       )
 
       if (!response.ok) {
-        throw new Error(t('error.failed_to_fetch_tokens'))
+        throw new Error('Failed to fetch tokens')
       }
 
       const data = await response.json()
@@ -177,9 +160,7 @@ export function TokenSearch({
 
       setSearchResults(sortResults(mappedResults))
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t('error.an_error_occurred')
-      )
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setIsLoading(false)
     }
@@ -235,7 +216,7 @@ export function TokenSearch({
   }
 
   const formatMarketCap = (marketCap: number | null) => {
-    if (!marketCap) return t('trade.no_m_cap')
+    if (!marketCap) return 'No MCap'
 
     // Handle very large numbers more gracefully
     if (marketCap >= 1e12) {
@@ -264,7 +245,7 @@ export function TokenSearch({
   }
 
   const formatPrice = (price: number | null) => {
-    if (!price) return t('trade.no_price')
+    if (!price) return 'No price'
 
     if (price < 0.000001) {
       return `$${price.toExponential(4)}`
@@ -285,8 +266,8 @@ export function TokenSearch({
             <input
               ref={inputRef}
               type="text"
-              placeholder={t('trade.search_tokens')}
-              className="w-full bg-black/80 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+              placeholder="Search tokens..."
+              className="w-full bg-black/80  p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -304,25 +285,42 @@ export function TokenSearch({
                   onChange={(e) => setVerifiedOnly(e.target.checked)}
                   className="rounded border-green-800  focus:ring-green-600 bg-black/80"
                 />
-                {t('trade.verified_tokens_only')}
+                Verified tokens only
               </label>
             </div>
 
             {/* Sort Options */}
             <div className="flex gap-2">
-              {sortOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setSortBy(option)}
-                  className={`text-xs px-2 py-1 rounded ${
-                    sortBy.value === option.value
-                      ? 'bg-green-600'
-                      : 'bg-green-900/40'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
+              <button
+                onClick={() => setSortBy('marketcap')}
+                className={`text-xs px-2 py-1 rounded ${
+                  sortBy === 'marketcap'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-green-900/40 '
+                }`}
+              >
+                Market Cap
+              </button>
+              <button
+                onClick={() => setSortBy('volume')}
+                className={`text-xs px-2 py-1 rounded ${
+                  sortBy === 'volume'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-green-900/40 '
+                }`}
+              >
+                Volume
+              </button>
+              <button
+                onClick={() => setSortBy('name')}
+                className={`text-xs px-2 py-1 rounded ${
+                  sortBy === 'name'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-green-900/40 '
+                }`}
+              >
+                Name
+              </button>
             </div>
           </div>
         </div>
@@ -379,22 +377,21 @@ export function TokenSearch({
                         {formatPrice(token.price)}
                       </div>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="font-medium">
-                          {t('common.m_cap')}:{' '}
-                          {formatMarketCap(token.market_cap)}
+                        <span className="/90 font-medium">
+                          MCap: {formatMarketCap(token.market_cap)}
                         </span>
                         {token.volume_24h_usd > 0 && (
                           <>
-                            <span>•</span>
-                            <span>
-                              {t('common.vol')}: $
+                            <span className="">•</span>
+                            <span className="/90">
+                              Vol: $
                               {(token.volume_24h_usd / 1e6).toLocaleString(
                                 undefined,
                                 {
                                   maximumFractionDigits: 2,
                                 }
                               )}
-                              {t('common.m')}
+                              M
                             </span>
                           </>
                         )}
@@ -405,10 +402,10 @@ export function TokenSearch({
               ))}
             </div>
           ) : searchQuery ? (
-            <div className="p-4 text-center">{t('trade.no_tokens_found')}</div>
+            <div className="p-4  text-center">No tokens found</div>
           ) : (
-            <div className="p-4 text-center">
-              {t('trade.start_typing_to_search_for_tokens')}
+            <div className="p-4  text-center">
+              Start typing to search for tokens
             </div>
           )}
         </div>
@@ -419,7 +416,7 @@ export function TokenSearch({
             onClick={onClose}
             className="w-full bg-green-950 hover:bg-green-900  p-2 rounded transition-colors font-medium"
           >
-            {t('common.close')}
+            Close
           </button>
         </div>
       </div>

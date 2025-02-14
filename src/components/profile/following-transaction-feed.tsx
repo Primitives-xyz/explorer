@@ -1,8 +1,7 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { DataContainer } from '@/components/common/data-container'
-import { FilterBar } from '@/components/common/filter-bar'
-import { FilterButton } from '@/components/common/filter-button'
-
+import { DataContainer } from '@/components/common/DataContainer'
+import { FilterBar } from '@/components/common/FilterBar'
+import { FilterButton } from '@/components/common/FilterButton'
 import { ScrollableContent } from '@/components/common/scrollable-content'
 import { TransactionCard } from '@/components/transactions/transaction-card'
 import type { Transaction } from '@/utils/helius/types'
@@ -11,14 +10,14 @@ import dynamic from 'next/dynamic'
 import { useMemo } from 'react'
 
 // Extend the existing interfaces to include className
-declare module '@/components/common/filter-bar' {
+declare module '@/components/common/FilterBar' {
   export interface FilterBarProps {
     children: React.ReactNode
     className?: string
   }
 }
 
-declare module '@/components/common/filter-button' {
+declare module '@/components/common/FilterButton' {
   export interface FilterButtonProps {
     label: string
     isSelected: boolean
@@ -92,12 +91,12 @@ export const FollowingTransactionFeed = ({
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
     return [
-      { value: 'all', label: t('following_transaction.all') },
-      { value: 'swap', label: t('following_transaction.swap') },
-      { value: 'transfer', label: t('following_transaction.transfer') },
+      { value: 'all', label: t('following-transaction.all') },
+      { value: 'swap', label: t('following-transaction.swap') },
+      { value: 'transfer', label: t('following-transaction.transfer') },
       {
         value: 'compressed_nft_mint',
-        label: t('following_transaction.compressed_nft_mint'),
+        label: t('following-transaction.compressed_nft_mint'),
       },
     ]
   }, [])
@@ -106,22 +105,22 @@ export const FollowingTransactionFeed = ({
   const getDisplayText = (type: string) => {
     switch (type) {
       case 'all':
-        return t('following_transaction.transactions')
+        return 'TRANSACTIONS'
       case 'swap':
-        return t('following_transaction.swap_transactions')
+        return 'SWAP TRANSACTIONS'
       case 'transfer':
-        return t('following_transaction.transfers')
+        return 'TRANSFERS'
       case 'compressed_nft_mint':
-        return t('following_transaction.cnft_mints')
+        return 'CNFT MINTS'
       default:
-        return t('following_transaction.transactions')
+        return 'TRANSACTIONS'
     }
   }
 
   // If not logged in, show the preview with CTA
   if (!isLoggedIn) {
     return (
-      <DataContainer title={t('following_transaction.title')} height="large">
+      <DataContainer title="following_activity" height="large">
         <div className="relative h-full flex flex-col">
           {/* Blurred mock transactions in background */}
           <div className="absolute inset-0 divide-y divide-green-800/30 blur-sm">
@@ -137,10 +136,13 @@ export const FollowingTransactionFeed = ({
           {/* Create Profile CTA */}
           <div className="relative flex-1 flex flex-col items-center justify-center bg-background-80/95 backdrop-blur-sm px-4 py-8 sm:p-4 text-center z-10">
             <h3 className="font-mono text-base sm:text-lg mb-6 sm:mb-4 max-w-[280px] sm:max-w-none">
-              {t('following_transaction.create_a_profile_to_follow')}
+              Create a profile to follow wallets onchain and see their swaps in
+              real time!
             </h3>
             <DynamicConnectButton>
-              <div className="px-4 sm:px-6 py-3 sm:py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer text-sm sm:text-base"></div>
+              <div className="px-4 sm:px-6 py-3 sm:py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer text-sm sm:text-base">
+                Create Profile
+              </div>
             </DynamicConnectButton>
           </div>
         </div>
@@ -150,13 +152,13 @@ export const FollowingTransactionFeed = ({
 
   const headerRight = isLoading && totalWallets > 0 && (
     <div className="text-xs  font-mono">
-      ({loadedWallets}/{totalWallets} {t('common.wallets')})
+      ({loadedWallets}/{totalWallets} wallets)
     </div>
   )
 
   return (
     <DataContainer
-      title={t('following_transaction.title')}
+      title="following_activity"
       count={transactions.length}
       height="large"
       headerRight={headerRight}
@@ -177,12 +179,8 @@ export const FollowingTransactionFeed = ({
       <ScrollableContent
         isLoading={isLoading}
         isEmpty={!isLoading && transactions.length === 0}
-        loadingText={`>>> ${t('common.loading')} ${getDisplayText(
-          selectedType
-        )}...`}
-        emptyText={`>>> ${t('common.no')} ${getDisplayText(selectedType)} ${t(
-          'common.found'
-        )}`}
+        loadingText={`>>> LOADING ${getDisplayText(selectedType)}...`}
+        emptyText={`>>> NO ${getDisplayText(selectedType)} FOUND`}
       >
         <div className="divide-y divide-green-800/30">
           {isLoading ? (

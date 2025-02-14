@@ -1,6 +1,5 @@
 import { cacheTokenInfo, getCachedTokenInfo } from '@/lib/token-db'
 import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
-import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 const CACHE_DURATION = 30_000 // 30 seconds cache duration
@@ -9,7 +8,6 @@ export function useTokenInfo(mint?: string | null) {
   const [data, setData] = useState<TokenResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | undefined>()
-  const t = useTranslations()
 
   useEffect(() => {
     if (!mint) {
@@ -32,7 +30,7 @@ export function useTokenInfo(mint?: string | null) {
           return
         }
       } catch (err) {
-        console.error(t('error.error_reading_from_indexed_db'), err)
+        console.error('Error reading from IndexedDB:', err)
         // Continue with API fetch if cache read fails
       }
 
@@ -42,7 +40,7 @@ export function useTokenInfo(mint?: string | null) {
       try {
         const response = await fetch(`/api/token?mint=${mint}`)
         if (!response.ok) {
-          throw new Error(t('error.failed_to_fetch_token_info'))
+          throw new Error('Failed to fetch token info')
         }
 
         const tokenData = await response.json()
@@ -57,9 +55,7 @@ export function useTokenInfo(mint?: string | null) {
         setData(tokenData)
       } catch (err) {
         const errorMessage =
-          err instanceof Error
-            ? err.message
-            : t('error.failed_to_load_token_data')
+          err instanceof Error ? err.message : 'Failed to load token data'
 
         // Cache errors too to prevent hammering failed requests
         try {
@@ -70,7 +66,7 @@ export function useTokenInfo(mint?: string | null) {
             error: errorMessage,
           })
         } catch (cacheErr) {
-          console.error(t('error.error_caching_token_error'), cacheErr)
+          console.error('Error caching token error:', cacheErr)
         }
 
         setError(errorMessage)

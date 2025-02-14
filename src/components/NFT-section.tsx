@@ -1,7 +1,6 @@
 'use client'
 
 import type { FungibleToken, NFT } from '@/utils/types'
-import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ImageModal } from './tokens/image-modal'
 import { NFTGrid } from './tokens/NFT-grid'
@@ -28,8 +27,6 @@ export const NFTSection = ({
     symbol: string
   } | null>(null)
 
-  const t = useTranslations('tokens')
-
   const shouldShowContent =
     isLoading || items.length > 0 || (hasSearched && items.length === 0)
 
@@ -38,15 +35,15 @@ export const NFTSection = ({
   const getTitle = () => {
     switch (tokenType) {
       case 'fungible':
-        return t('portfolio.fungible_tokens')
+        return 'fungible_tokens'
       case 'nft':
-        return t('portfolio.regular_nfts')
+        return 'regular_nfts'
       case 'compressed':
-        return t('portfolio.compressed_nfts')
+        return 'compressed_nfts'
       case 'programmable':
-        return t('portfolio.programmable_nfts')
+        return 'programmable_nfts'
       default:
-        return t('portfolio.all_tokens')
+        return 'all_tokens'
     }
   }
 
@@ -65,9 +62,7 @@ export const NFTSection = ({
 
       {error && (
         <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
-          <span className="uppercase">
-            ! {t('common.error')}: {error}
-          </span>
+          <span>! ERROR: {error}</span>
         </div>
       )}
 
@@ -106,11 +101,11 @@ export const NFTSection = ({
       >
         {isLoading ? (
           <div className="p-4 text-center  font-mono">
-            {t('portfolio.fetching_tokens')}
+            {'>>> FETCHING TOKENS...'}
           </div>
         ) : items.length === 0 ? (
           <div className="p-4 text-center  font-mono">
-            {t('portfolio.no_tokens_found')}
+            {'>>> NO TOKENS FOUND'}
           </div>
         ) : (
           <NFTGrid

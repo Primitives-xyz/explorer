@@ -1,6 +1,5 @@
 'use client'
 import { formatNumber } from '@/utils/format'
-import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 interface TradingStatsProps {
@@ -71,11 +70,14 @@ interface TradingStats {
   tokenVolumes: Map<string, TokenVolume>
 }
 
+type TimePeriod = '1d' | 'yesterday' | '7d'
+
 export const TradingStats = ({
   walletAddress,
   hideTitle = false,
 }: TradingStatsProps) => {
   const [_trades, setTrades] = useState<Trade[]>([])
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('7d')
   const [stats, setStats] = useState<TradingStats>({
     totalTrades: 0,
     totalVolume: 0,
@@ -88,16 +90,6 @@ export const TradingStats = ({
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const t = useTranslations()
-
-  const timePeriodTab = [
-    { value: '1d', label: t('trade.1d') },
-    { value: 'yesterday', label: t('trade.yesterday') },
-    { value: '7d', label: t('trade.7d') },
-  ]
-
-  const [timePeriod, setTimePeriod] = useState('7d')
 
   useEffect(() => {
     const fetchTrades = async () => {
@@ -153,7 +145,7 @@ export const TradingStats = ({
           const data: TradeResponse = await response.json()
 
           if (!data.success) {
-            throw new Error(data.message || t('error.failed_to_fetch_trades'))
+            throw new Error(data.message || 'Failed to fetch trades')
           }
 
           if (data.data.items.length > 0) {
@@ -252,11 +244,9 @@ export const TradingStats = ({
 
         setStats(stats)
       } catch (error) {
-        console.error(t('error.failed_to_fetch_trades'), error)
+        console.error('Error fetching trades:', error)
         setError(
-          error instanceof Error
-            ? error.message
-            : t('error.failed_to_fetch_trades')
+          error instanceof Error ? error.message : 'Failed to fetch trades'
         )
       } finally {
         setIsLoading(false)
@@ -275,8 +265,8 @@ export const TradingStats = ({
       {!hideTitle && (
         <div className="border-b border-green-800 p-2 flex-shrink-0 bg-black/30">
           <div className="flex justify-between items-center">
-            <div className="text-sm font-mono whitespace-nowrap">
-              {'>'} {t('trade.trading_stats')}
+            <div className=" text-sm font-mono whitespace-nowrap">
+              {'>'} trading_stats
             </div>
             <div className="flex items-center gap-2">
               <span className=" text-xs font-mono">
@@ -285,17 +275,17 @@ export const TradingStats = ({
                   : 'NO TRADES'}
               </span>
               <div className="flex items-center gap-1">
-                {timePeriodTab.map((tf) => (
+                {(['1d', 'yesterday', '7d'] as TimePeriod[]).map((tf) => (
                   <button
-                    key={tf.value}
-                    onClick={() => setTimePeriod(tf.value)}
-                    className={`uppercase text-xs font-mono px-2 py-1 rounded transition-colors ${
-                      timePeriod === tf.value
+                    key={tf}
+                    onClick={() => setTimePeriod(tf)}
+                    className={`text-xs font-mono px-2 py-1 rounded transition-colors ${
+                      timePeriod === tf
                         ? 'bg-green-800 '
-                        : 'hover:bg-green-800/50'
+                        : ' hover:bg-green-800/50'
                     }`}
                   >
-                    {tf.label}
+                    {tf === 'yesterday' ? 'YD' : tf.toUpperCase()}
                   </button>
                 ))}
               </div>
@@ -306,9 +296,7 @@ export const TradingStats = ({
 
       {error && (
         <div className="px-3 py-1.5 border border-red-800 bg-red-900/20 text-red-400 text-xs flex-shrink-0 mx-2 mt-2 rounded">
-          <span className="uppercase">
-            ! {t('common.error')}: {error}
-          </span>
+          <span>! ERROR: {error}</span>
         </div>
       )}
 
@@ -317,42 +305,40 @@ export const TradingStats = ({
           <div className="flex flex-col space-y-4 animate-pulse">
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-1">
-                <div className="text-xs uppercase">{t('common.pnl')}</div>
+                <div className="/50 text-xs">PNL</div>
                 <div className="h-5 w-20 bg-green-800/30 rounded"></div>
               </div>
               <div className="flex flex-col space-y-1 items-end">
-                <div className="text-xs uppercase">{t('common.vol')}</div>
+                <div className="/50 text-xs">VOL</div>
                 <div className="h-5 w-24 bg-green-800/30 rounded"></div>
               </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-green-800/50 pt-3">
               <div className="flex flex-col space-y-1">
-                <div className="text-xs uppercase">{t('common.w_l')}</div>
+                <div className="/50 text-xs">W/L</div>
                 <div className="h-5 w-14 bg-green-800/30 rounded"></div>
               </div>
               <div className="flex flex-col space-y-1 items-end">
-                <div className="text-xs uppercase">
-                  {t('common.best_and_worst')}
-                </div>
+                <div className="/50 text-xs">BEST/WORST</div>
                 <div className="h-5 w-28 bg-green-800/30 rounded"></div>
               </div>
             </div>
 
-            <div className="text-xs pt-1">
-              {t('trade.most_traded')}:{' '}
+            <div className="text-xs /50 pt-1">
+              Most traded:{' '}
               <span className="h-4 w-14 bg-green-800/30 rounded inline-block"></span>
             </div>
           </div>
         ) : stats.totalTrades === 0 ? (
-          <div className="text-center py-2 text-sm">
-            {t('trade.no_trades_found_for_selected_period')}
+          <div className="text-center  py-2 text-sm">
+            {'>>> NO TRADES FOUND FOR SELECTED PERIOD'}
           </div>
         ) : (
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-0.5">
-                <div className="text-xs uppercase">{t('common.pnl')}</div>
+                <div className=" text-xs">PNL</div>
                 <div>
                   <span
                     className={`text-base ${
@@ -364,22 +350,20 @@ export const TradingStats = ({
                 </div>
               </div>
               <div className="flex flex-col space-y-0.5 items-end">
-                <div className="text-xs uppercase">{t('common.vol')}</div>
-                <div>${formatNumber(stats.totalVolume)}</div>
+                <div className=" text-xs">VOL</div>
+                <div className="">${formatNumber(stats.totalVolume)}</div>
               </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-green-800/50 pt-3">
               <div className="flex flex-col space-y-0.5">
-                <div className="text-xs uppercase">{t('common.w_l')}</div>
-                <div>
+                <div className=" text-xs">W/L</div>
+                <div className="">
                   {stats.winningTrades}/{stats.losingTrades}
                 </div>
               </div>
               <div className="flex flex-col space-y-0.5 items-end">
-                <div className="text-xs uppercase">
-                  {t('common.best_and_worst')}
-                </div>
+                <div className=" text-xs">BEST/WORST</div>
                 <div className="flex items-center gap-1">
                   <span className="">${formatNumber(stats.largestWin)}</span>
                   <span className="">/</span>
@@ -391,8 +375,8 @@ export const TradingStats = ({
             </div>
 
             {mostTradedToken && (
-              <div className="text-xs pt-1">
-                {t('trade.most_traded')}:{mostTradedToken[0]}
+              <div className="text-xs  pt-1">
+                Most traded: {mostTradedToken[0]}
               </div>
             )}
           </div>

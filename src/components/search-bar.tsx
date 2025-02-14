@@ -401,7 +401,7 @@ export default function SearchBar({
                           }`}
               >
                 <Coins className="w-3 h-3" />
-                {t('common.tokens')} {hasTokens ? '•' : ''}
+                {t('search_bar.tokens')} {hasTokens ? '•' : ''}
               </button>
               {hasRecent && (
                 <button
@@ -588,18 +588,18 @@ export default function SearchBar({
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
                                   <span className="/90">
-                                    {t('common.m_cap')}:{' '}
+                                    {t('search_bar.m_cap')}:{' '}
                                     {formatMarketCap(token.market_cap)}
                                   </span>
                                   {token.volume_24h_usd > 0 && (
                                     <>
                                       <span className="">•</span>
                                       <span className="/90">
-                                        {t('common.vol')}: $
+                                        {t('search_bar.volume')}: $
                                         {(token.volume_24h_usd / 1e6).toFixed(
                                           2
                                         )}
-                                        {t('common.m')}
+                                        {t('search_bar.m')}
                                       </span>
                                     </>
                                   )}

@@ -15,7 +15,6 @@ import { useTokenBalance } from '@/hooks/use-token-balance'
 import { useTokenInfo } from '@/hooks/use-token-info'
 import { JupiterSwapFormProps } from '@/types/jupiter'
 import { ArrowLeftRight, Loader2 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 
@@ -76,8 +75,6 @@ export function SwapForm({
 
   const { isLoggedIn, sdkHasLoaded, walletAddress } = useCurrentWallet()
 
-  const t = useTranslations()
-
   // Add token balance hooks for both tokens
   const {
     balance: inputBalance,
@@ -136,13 +133,13 @@ export function SwapForm({
     // Check if the value is a valid number
     const numericValue = Number(value)
     if (isNaN(numericValue)) {
-      setInputError(t('error.please_enter_a_valid_number'))
+      setInputError('Please enter a valid number')
       return false
     }
 
     // Check if the value is positive
     if (numericValue <= 0) {
-      setInputError(t('error.amount_must_be_greater_than_0'))
+      setInputError('Amount must be greater than 0')
       return false
     }
 
@@ -153,11 +150,7 @@ export function SwapForm({
       decimalParts[1]?.length &&
       decimalParts[1]?.length > currentInputDecimals
     ) {
-      setInputError(
-        `${t('trade.maximum')} ${currentInputDecimals} ${t(
-          'trade.decimal_places_allowed'
-        )}`
-      )
+      setInputError(`Maximum ${currentInputDecimals} decimal places allowed`)
       return false
     }
 
@@ -306,7 +299,7 @@ export function SwapForm({
             className="bg-green-900/20 hover:bg-green-900/30 p-3 rounded-lg transition-colors"
             title="Swap direction"
           >
-            <ArrowLeftRight className="h-5 w-5" />
+            <ArrowLeftRight className="h-5 w-5 " />
           </button>
 
           <div className="flex-1">
@@ -328,7 +321,7 @@ export function SwapForm({
             <div className="bg-green-900/20 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div className="text-sm mb-1">{t('trade.you_receive')}</div>
+                  <div className="text-sm  mb-1">You&apos;ll receive</div>
                   <div className="flex items-center gap-2">
                     {outputTokenInfo.image && (
                       <img
@@ -339,7 +332,7 @@ export function SwapForm({
                     )}
                     <div className="text-2xl font-semibold">
                       {isQuoteRefreshing ? (
-                        <span className="animate-pulse">
+                        <span className="/70 animate-pulse">
                           {formatLargeNumber(parseFloat(expectedOutput || '0'))}
                         </span>
                       ) : quoteResponse ? (
@@ -350,8 +343,8 @@ export function SwapForm({
                     </div>
                   </div>
                   {isLoggedIn && !outputBalanceLoading && quoteResponse && (
-                    <div className="text-sm mt-1">
-                      {t('trade.after')}:{' '}
+                    <div className="text-sm  mt-1">
+                      After:{' '}
                       {formatLargeNumber(
                         rawOutputBalance + parseFloat(expectedOutput || '0')
                       )}
@@ -360,10 +353,10 @@ export function SwapForm({
                 </div>
 
                 <div className="text-right">
-                  <div className="text-sm mb-1">{t('trade.rate')}</div>
+                  <div className="text-sm  mb-1">Rate</div>
                   <div className="font-medium">
                     {isQuoteRefreshing ? (
-                      <span className="animate-pulse">
+                      <span className="/70 animate-pulse">
                         {quoteResponse
                           ? (
                               Number(quoteResponse.outAmount) /
@@ -384,9 +377,8 @@ export function SwapForm({
                       '0'
                     )}
                   </div>
-                  <div className="text-sm">
-                    {t('trade.per')}{' '}
-                    {inputTokenInfo.symbol || currentInputToken}
+                  <div className="text-sm /70">
+                    per {inputTokenInfo.symbol || currentInputToken}
                   </div>
                 </div>
               </div>
@@ -406,11 +398,11 @@ export function SwapForm({
                   onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
                   className="flex items-center justify-between w-full p-3 bg-green-900/20 rounded-lg hover:bg-green-900/30 transition-colors"
                 >
-                  <span className="text-sm font-medium">
-                    {t('trade.route_information_fees')}
+                  <span className="text-sm font-medium ">
+                    Route Information & Fees
                   </span>
                   <svg
-                    className={`w-5 h-5 transition-transform ${
+                    className={`w-5 h-5  transition-transform ${
                       isRouteInfoOpen ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -431,29 +423,23 @@ export function SwapForm({
                     {isQuoteRefreshing ? (
                       <>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm">
-                            {t('trade.network_fee')}
-                          </span>
-                          <span>
-                            {t('trade.updating')}
+                          <span className="text-sm ">Network Fee</span>
+                          <span className="/70">
+                            Updating
                             <LoadingDots />
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm">
-                            {t('trade.price_impact')}
-                          </span>
-                          <span>
-                            {t('trade.updating')}
+                          <span className="text-sm ">Price Impact</span>
+                          <span className="/70">
+                            Updating
                             <LoadingDots />
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm">
-                            {t('trade.minimum_received')}
-                          </span>
-                          <span>
-                            {t('trade.updating')}
+                          <span className="text-sm ">Minimum Received</span>
+                          <span className="/70">
+                            Updating
                             <LoadingDots />
                           </span>
                         </div>
@@ -481,7 +467,7 @@ export function SwapForm({
                       setUseSSEForFees(e.target.checked)
                       resetQuoteState()
                     }}
-                    className="w-5 h-5 rounded bg-green-900/20 border-green-400 focus:ring-green-400"
+                    className="w-5 h-5 rounded bg-green-900/20 border-green-400  focus:ring-green-400"
                   />
                   <div className="flex items-center gap-3">
                     {sseTokenInfo.image && (
@@ -492,11 +478,9 @@ export function SwapForm({
                       />
                     )}
                     <div>
-                      <div className="font-medium">
-                        {t('trade.pay_fees_with_sse')}
-                      </div>
-                      <div className="text-sm">
-                        {t('trade.get_50_off_on_transaction_fees')}
+                      <div className="font-medium">Pay fees with SSE</div>
+                      <div className="text-sm /70">
+                        Get 50% off on transaction fees
                       </div>
                     </div>
                   </div>
@@ -516,8 +500,8 @@ export function SwapForm({
                     <div className="absolute inset-0 border-2 border-green-400/20 rounded-full"></div>
                     <div className="absolute inset-0 border-2 border-green-400 rounded-full border-t-transparent animate-spin"></div>
                   </div>
-                  <span className="text-sm font-medium">
-                    {t('trade.checking_wallet_status')}
+                  <span className="/70 text-sm font-medium">
+                    Checking wallet status
                     <LoadingDots />
                   </span>
                 </div>
@@ -525,7 +509,7 @@ export function SwapForm({
             ) : !isLoggedIn ? (
               <DynamicConnectButton>
                 <div className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg disabled:opacity-50 w-full text-center cursor-pointer font-medium">
-                  {t('trade.connect_wallet_to_swap')}
+                  Connect Wallet to Swap
                 </div>
               </DynamicConnectButton>
             ) : (
@@ -539,12 +523,12 @@ export function SwapForm({
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>
                       {txSignature
-                        ? `${t('trade.confirming_transaction')}...`
-                        : `${t('trade.executing_swap')}...`}
+                        ? 'Confirming Transaction...'
+                        : 'Executing Swap...'}
                     </span>
                   </div>
                 ) : (
-                  t('trade.execute_swap')
+                  'Execute Swap'
                 )}
               </button>
             )}
@@ -553,8 +537,8 @@ export function SwapForm({
 
         {error && (
           <div className="text-red-400 text-sm bg-red-400/10 p-3 rounded-lg">
-            {error.includes(t('error.amount_cannot_be_parsed'))
-              ? t('error.please_enter_a_valid_amount')
+            {error.includes('amount cannot be parsed')
+              ? 'Please enter a valid amount'
               : error}
           </div>
         )}

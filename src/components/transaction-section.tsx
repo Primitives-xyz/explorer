@@ -1,14 +1,13 @@
 'use client'
 
-import { DataContainer } from '@/components/common/data-container'
-import { FilterBar } from '@/components/common/filter-bar'
-import { FilterButton } from '@/components/common/filter-button'
-import { ScrollableContent } from '@/components/common/scrollable-content'
-import { TransactionCard } from '@/components/transactions/transaction-card'
 import type { Transaction } from '@/utils/helius/types'
 import { isSpamTransaction } from '@/utils/transaction'
-import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
+import { DataContainer } from './common/DataContainer'
+import { FilterBar } from './common/FilterBar'
+import { FilterButton } from './common/FilterButton'
+import { ScrollableContent } from './common/scrollable-content'
+import { TransactionCard } from './transactions/transaction-card'
 
 interface TransactionSectionProps {
   walletAddress: string
@@ -29,8 +28,6 @@ export const TransactionSection = ({
   const [page, setPage] = useState(1)
   const [selectedType, setSelectedType] = useState<string>('all')
   const ITEMS_PER_PAGE = 20
-
-  const t = useTranslations()
 
   // Convert Map to sorted array for display
   const transactions = useMemo(() => {
@@ -89,8 +86,7 @@ export const TransactionSection = ({
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
           throw new Error(
-            errorData.error ||
-              `${t('error.http_error_status')}: ${response.status}`
+            errorData.error || `HTTP error! status: ${response.status}`
           )
         }
 
@@ -113,11 +109,11 @@ export const TransactionSection = ({
 
         mergeTransactions(transactionsData)
       } catch (error) {
-        console.error(t('error.error_fetching_transactions'), error)
+        console.error('Error fetching transactions:', error)
         setError(
           error instanceof Error
             ? error.message
-            : t('error.error_fetching_transactions')
+            : 'Failed to fetch transactions.'
         )
         if (page === 1) setTransactionMap(new Map())
       } finally {
@@ -144,7 +140,7 @@ export const TransactionSection = ({
 
         const response = await fetch(url)
         if (!response.ok)
-          throw new Error(`${t('error.http_error_status')}: ${response.status}`)
+          throw new Error(`HTTP error! status: ${response.status}`)
 
         const newTxs = await response.json()
         if (Array.isArray(newTxs) && newTxs.length > 0) {
@@ -164,7 +160,7 @@ export const TransactionSection = ({
           }
         }
       } catch (error) {
-        console.error(t('error.error_checking_for_new_transactions'), error)
+        console.error('Error checking for new transactions:', error)
       }
     }
 
@@ -185,22 +181,9 @@ export const TransactionSection = ({
     return tx.type?.toLowerCase().replace('_', ' ') === selectedType
   })
 
-  const getFilterLabel = (type: string, t: (key: string) => string) => {
-    switch (type) {
-      case 'all':
-        return t('common.all')
-      case 'unknown':
-        return t('common.unknown')
-      case 'transfer':
-        return t('common.transfer')
-      default:
-        return type
-    }
-  }
-
   return (
     <DataContainer
-      title={t('transaction_log.title')}
+      title="transaction_log"
       count={filteredTransactions.length}
       error={error}
     >
@@ -208,7 +191,7 @@ export const TransactionSection = ({
         {transactionTypes.map((type) => (
           <FilterButton
             key={type}
-            label={getFilterLabel(type, t)}
+            label={type === 'all' ? 'All' : type}
             isSelected={selectedType === type}
             onClick={() => setSelectedType(type)}
           />
@@ -223,8 +206,8 @@ export const TransactionSection = ({
           <div className="relative flex items-center gap-3">
             <span className=" animate-pulse">●</span>
             <span>
-              {newTransactions.length} {t('transaction_log.new_transaction')}
-              {newTransactions.length !== 1 ? 's' : ''} {t('common.available')}
+              {newTransactions.length} new transaction
+              {newTransactions.length !== 1 ? 's' : ''} available
             </span>
           </div>
         </button>
@@ -233,8 +216,8 @@ export const TransactionSection = ({
       <ScrollableContent
         isLoading={isLoading && filteredTransactions.length === 0}
         isEmpty={filteredTransactions.length === 0}
-        loadingText={`>>> ${t('transaction_log.loading_transactions')}...`}
-        emptyText={`>>> ${t('transaction_log.no_transactions_found')}`}
+        loadingText=">>> LOADING TRANSACTIONS..."
+        emptyText=">>> NO TRANSACTIONS FOUND"
       >
         <div className="divide-y divide-green-800/30">
           {filteredTransactions.map((tx) => (
@@ -245,8 +228,8 @@ export const TransactionSection = ({
             />
           ))}
           {isLoading && page > 1 && (
-            <div className="p-4 text-center uppercase font-mono">
-              {`>>> ${t('transaction_log.loading_more_transactions')}...`}
+            <div className="p-4 text-center  font-mono">
+              {'>>> LOADING MORE TRANSACTIONS...'}
             </div>
           )}
         </div>
@@ -258,7 +241,7 @@ export const TransactionSection = ({
           onClick={() => setPage((prev) => prev + 1)}
           disabled={isLoading}
         >
-          {isLoading ? `${t('common.loading')}...` : t('common.load_more')}
+          {isLoading ? 'Loading...' : 'Load More'}
         </button>
       )}
     </DataContainer>

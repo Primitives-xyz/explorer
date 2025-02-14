@@ -1,6 +1,5 @@
 import { JupiterSwapForm } from '@/components/transactions/jupiter-swap-form'
 import type { Metadata } from 'next'
-import { useTranslations } from 'next-intl'
 
 export const metadata: Metadata = {
   title: 'Token Swap | Fast & Efficient Trading',
@@ -31,11 +30,10 @@ export const metadata: Metadata = {
 }
 
 export default function SwapPage() {
-  const t = useTranslations()
   return (
     <div className="px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold  mb-6">{t('trade.swap_tokens')}</h1>
+        <h1 className="text-3xl font-bold  mb-6">Swap Tokens</h1>
         <div className="bg-black/50 backdrop-blur-sm rounded-xl p-6 shadow-xl border border-green-500/20">
           <JupiterSwapForm hideWhenGlobalSearch />
         </div>
