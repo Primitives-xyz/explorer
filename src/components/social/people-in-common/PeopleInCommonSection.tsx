@@ -1,4 +1,4 @@
-import { Avatar } from '@/components/common/avatarr'
+import { Avatar } from '@/components/common/avatar'
 import Link from 'next/link'
 
 interface PersonInCommon {

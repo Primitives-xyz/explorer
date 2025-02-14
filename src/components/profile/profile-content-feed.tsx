@@ -3,7 +3,7 @@ import { route } from '@/utils/routes'
 import { ArrowRight, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { memo, useEffect, useState } from 'react'
-import { Avatar } from '../common/avatarr'
+import { Avatar } from '../common/avatar'
 import { Card } from '../common/card'
 
 interface ContentItem {

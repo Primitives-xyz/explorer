@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar } from '@/components/common/avatarr'
+import { Avatar } from '@/components/common/avatar'
 import { FilterBar } from '@/components/common/filter-bar'
 import { FilterButton } from '@/components/common/filter-button'
 import { useFollowStats } from '@/hooks/use-follow-stats'

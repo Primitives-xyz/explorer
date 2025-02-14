@@ -1,6 +1,6 @@
 import type { ProfileData } from '@/hooks/use-profile-data'
 import { memo, useEffect } from 'react'
-import { Avatar } from '../common/avatarr'
+import { Avatar } from '../common/avatar'
 import { TokenAddress } from '../tokens/token-address'
 import { FollowButton } from './follow-button'
 
