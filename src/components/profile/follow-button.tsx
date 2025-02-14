@@ -5,7 +5,7 @@ import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
@@ -29,7 +29,6 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   const { mutate: mutateFollowers } = useProfileFollowers(username)
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
   const t = useTranslations()
-  const locale = useLocale()
   const {
     stats,
     mutate: mutateStats,
