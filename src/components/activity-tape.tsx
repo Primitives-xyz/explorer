@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 type Transaction = {
   type: string
@@ -97,57 +97,60 @@ const FAKE_ACTIVITIES: Activity[] = [
   },
 ]
 
-// Add custom animation class at the top level
-const scrollAnimation = `
-.scroll-container {
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
-  height: 24px;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000;
-}
-
-.scroll-content {
-  display: flex;
-  gap: 2rem;
-  white-space: nowrap;
-  min-width: 200%;
-  position: relative;
-  will-change: transform;
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-}
-
-@keyframes scroll {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-.animate-scroll {
-  animation: scroll 8s linear infinite;
-}
-
-@media (max-width: 768px) {
-  .animate-scroll {
-    animation: scroll 3s linear infinite;
-  }
-}
-
-.group:hover .group-hover\\:pause {
-  animation-play-state: paused;
-}
-`
-
 export const ActivityTape = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const contentRef = useRef<HTMLDivElement>(null)
+  const animationRef = useRef<Animation | null>(null)
+  const mountedRef = useRef(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  // Configure scroll speed (pixels per second)
+  const SCROLL_SPEED = 120 // Adjust this value to control speed
+
+  const startAnimation = useCallback(() => {
+    if (!contentRef.current || !mountedRef.current) return
+
+    // Calculate content width and required duration
+    const firstChild = contentRef.current.children[0] as HTMLElement
+    const itemWidth = firstChild.offsetWidth
+    const itemCount = contentRef.current.children.length
+    const totalWidth = itemWidth * itemCount
+
+    const duration = (totalWidth / SCROLL_SPEED) * 1000
+
+    // Create animation
+    animationRef.current = contentRef.current.animate(
+      [
+        { transform: 'translateX(0)' },
+        { transform: `translateX(-${totalWidth / 2}px)` },
+      ],
+      { duration, iterations: Infinity }
+    )
+
+    if (isPaused) animationRef.current.pause()
+  }, [isPaused])
+
+  useEffect(() => {
+    mountedRef.current = true
+    const handleResize = () => {
+      if (!mountedRef.current) return
+      animationRef.current?.cancel()
+      startAnimation()
+    }
+
+    startAnimation()
+    window.addEventListener('resize', handleResize)
+    return () => {
+      mountedRef.current = false
+      window.removeEventListener('resize', handleResize)
+      animationRef.current?.cancel()
+    }
+  }, [startAnimation])
+
+  useEffect(() => {
+    if (!animationRef.current) return
+    isPaused ? animationRef.current.pause() : animationRef.current.play()
+  }, [isPaused])
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -203,62 +206,74 @@ export const ActivityTape = () => {
   const allActivities = [...realActivities, ...FAKE_ACTIVITIES]
 
   return (
-    <>
-      <style jsx global>
-        {scrollAnimation}
-      </style>
-      <div className="border-b border-green-800 bg-black/50 group">
-        <div className="p-1.5 flex items-center gap-2 font-mono">
-          <div className="flex-none text-xs text-[color:var(--text-header)]">
-            {'>'} network_feed.log
-          </div>
-          <div className="flex-1 scroll-container">
-            <div className="scroll-content animate-scroll group-hover:pause">
-              {[...allActivities, ...allActivities].map((activity, i) => (
-                <Link
-                  key={i}
-                  href={activity.signature ? `/${activity.signature}` : '#'}
-                  className={
-                    activity.signature ? 'cursor-pointer' : 'cursor-default'
-                  }
-                >
-                  <div className="inline-flex items-center gap-2 transition-opacity hover:opacity-80 text-xs">
-                    <span className="bg-green-900/20 px-1.5 py-0.5 rounded">
-                      {activity.action}
+    <div className="border-b border-green-800 bg-black/50 group">
+      <div className="p-1.5 flex items-center gap-2 font-mono">
+        <div className="flex-none text-xs text-[color:var(--text-header)]">
+          {'>'} network_feed.log
+        </div>
+        <div
+          className="flex-1 overflow-hidden relative"
+          style={{
+            maskImage:
+              'linear-gradient(to right, transparent, black 2%, black 98%, transparent)',
+            WebkitMaskImage:
+              'linear-gradient(to right, transparent, black 2%, black 98%, transparent)',
+          }}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <div
+            ref={contentRef}
+            className="flex gap-8 whitespace-nowrap"
+            style={{
+              willChange: 'transform',
+              transform: 'translate3d(0, 0, 0)',
+            }}
+          >
+            {[...allActivities, ...allActivities].map((activity, i) => (
+              <Link
+                key={i}
+                href={activity.signature ? `/${activity.signature}` : '#'}
+                className={
+                  activity.signature ? 'cursor-pointer' : 'cursor-default'
+                }
+              >
+                <div className="inline-flex items-center gap-2 transition-opacity hover:opacity-80 text-xs">
+                  <span className="bg-green-900/20 px-1.5 py-0.5 rounded">
+                    {activity.action}
+                  </span>
+                  <span className={getHighlightColor(activity.highlight)}>
+                    {activity.text}
+                  </span>
+                  {activity.amount && (
+                    <span
+                      className={`${getHighlightColor(
+                        activity.highlight
+                      )} font-bold flex items-center gap-0.5 mr-2`}
+                    >
+                      {activity.amount}
+                      {activity.amountSuffix}
+                      {activity.isSSEBuy && (
+                        <Image
+                          src="/images/sse.png"
+                          alt="SSE"
+                          width={16}
+                          height={16}
+                          className="inline-block ml-0.5"
+                        />
+                      )}
                     </span>
-                    <span className={getHighlightColor(activity.highlight)}>
-                      {activity.text}
-                    </span>
-                    {activity.amount && (
-                      <span
-                        className={`${getHighlightColor(
-                          activity.highlight
-                        )} font-bold flex items-center gap-0.5 mr-2`}
-                      >
-                        {activity.amount}
-                        {activity.amountSuffix}
-                        {activity.isSSEBuy && (
-                          <Image
-                            src="/images/sse.png"
-                            alt="SSE"
-                            width={16}
-                            height={16}
-                            className="inline-block ml-0.5"
-                          />
-                        )}
-                      </span>
-                    )}
-                    <span className="flex-shrink-0">
-                      {formatTimeAgo(activity.timestamp)}
-                    </span>
-                    <span className="flex-shrink-0">•</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  )}
+                  <span className="flex-shrink-0">
+                    {formatTimeAgo(activity.timestamp)}
+                  </span>
+                  <span className="flex-shrink-0">•</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
