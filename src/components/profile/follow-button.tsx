@@ -92,7 +92,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         className={`${buttonClasses} flex items-center gap-1 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
       >
         <LoaderCircle className="animate-spin" size={iconSize} />
-        <span>{capitalizeIfEnglish(t('common.loading'))}...</span>
+        <span className="capitalize">{t('common.loading')}...</span>
       </div>
     )
   }
@@ -102,10 +102,10 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     return (
       <DynamicConnectButton>
         <div
-          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer`}
+          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer capitalize`}
         >
           <UserRoundPlus size={iconSize} />
-          {capitalizeIfEnglish(t('common.follow'))}
+          {t('common.follow')}
         </div>
       </DynamicConnectButton>
     )
@@ -203,11 +203,9 @@ export function FollowButton({ username, size = 'sm' }: Props) {
             <button
               onClick={handleUnfollow}
               disabled={loading}
-              className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50`}
+              className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50 capitalize`}
             >
-              {loading
-                ? capitalizeIfEnglish(t('common.unfollowing'))
-                : capitalizeIfEnglish(t('common.unfollow'))}
+              {loading ? t('common.unfollowing') : t('common.unfollow')}
             </button>
             <button
               onClick={() => setShowUnfollowConfirm(false)}
@@ -220,10 +218,10 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         ) : (
           <button
             onClick={() => setShowUnfollowConfirm(true)}
-            className={`${buttonClasses} bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50 flex items-center gap-1`}
+            className={`${buttonClasses} bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50 flex items-center gap-1 capitalize`}
           >
             <UserRoundCheck size={iconSize} />
-            {capitalizeIfEnglish(t('common.following'))}
+            {t('common.following')}
           </button>
         )}
         {success && (
@@ -242,12 +240,10 @@ export function FollowButton({ username, size = 'sm' }: Props) {
       <button
         onClick={handleFollow}
         disabled={loading}
-        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
+        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50 capitalize`}
       >
         <UserRoundPlus size={iconSize} />
-        {loading
-          ? `${capitalizeIfEnglish(t('common.loading'))}...`
-          : capitalizeIfEnglish(t('common.follow'))}
+        {loading ? `${t('common.loading')}...` : t('common.follow')}
       </button>
     </>
   )
