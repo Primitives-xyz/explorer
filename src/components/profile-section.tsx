@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar } from '@/components/common/avatar-container'
+import { Avatar } from '@/components/common/avatar'
 import { DataContainer } from '@/components/common/data-container'
 import { FilterBar } from '@/components/common/filter-bar'
 import { FilterButton } from '@/components/common/filter-button'
