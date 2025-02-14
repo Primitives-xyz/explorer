@@ -1,17 +1,5 @@
 {
   "common": {
-    "followers": "关注者",
-    "following": "正在关注",
-    "follow": "关注",
-    "unfollow": "取消关注",
-    "unfollowing": "正在取消关注",
-    "confirm": "确认",
-    "loading": "加载中",
-    "wallet": "钱包",
-    "wallets": "钱包",
-    "no": "没有",
-    "found": "找到",
-    "count": "总数",
     "address": "address",
     "all": "all",
     "copied": "copied",
