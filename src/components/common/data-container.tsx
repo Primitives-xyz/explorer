@@ -67,9 +67,9 @@ export const DataContainer = ({
           <div className="flex items-center gap-2 flex-shrink-0">
             {count !== undefined && (
               <div
-                className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full whitespace-nowrap`}
+                className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full whitespace-nowrap uppercase`}
               >
-                {t('common.count').toUpperCase()}: {count}
+                {t('common.count')}: {count}
               </div>
             )}
             {headerRight}
