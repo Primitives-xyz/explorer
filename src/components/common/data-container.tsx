@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 
 interface DataContainerProps {
@@ -21,6 +22,8 @@ export const DataContainer = ({
   accentColor = 'green',
   height = 'large',
 }: DataContainerProps) => {
+  const t = useTranslations()
+
   const colorClasses = {
     green: {
       border: 'border-green-800',
@@ -66,7 +69,7 @@ export const DataContainer = ({
               <div
                 className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full whitespace-nowrap`}
               >
-                COUNT: {count}
+                {t('common.count').toUpperCase()}: {count}
               </div>
             )}
             {headerRight}
