@@ -11,9 +11,7 @@ export const SortControls = ({ sortBy, onSort }: SortControlsProps) => {
       <button
         onClick={() => onSort('value')}
         className={`text-xs font-mono px-2 py-1 rounded ${
-          sortBy === 'value'
-            ? 'bg-green-900/30 text-green-400'
-            : 'text-green-600 hover:bg-green-900/20'
+          sortBy === 'value' ? 'bg-green-900/30 ' : ' hover:bg-green-900/20'
         }`}
       >
         SORT BY VALUE
@@ -21,9 +19,7 @@ export const SortControls = ({ sortBy, onSort }: SortControlsProps) => {
       <button
         onClick={() => onSort('balance')}
         className={`text-xs font-mono px-2 py-1 rounded ${
-          sortBy === 'balance'
-            ? 'bg-green-900/30 text-green-400'
-            : 'text-green-600 hover:bg-green-900/20'
+          sortBy === 'balance' ? 'bg-green-900/30 ' : ' hover:bg-green-900/20'
         }`}
       >
         SORT BY BALANCE
@@ -31,9 +27,7 @@ export const SortControls = ({ sortBy, onSort }: SortControlsProps) => {
       <button
         onClick={() => onSort('symbol')}
         className={`text-xs font-mono px-2 py-1 rounded ${
-          sortBy === 'symbol'
-            ? 'bg-green-900/30 text-green-400'
-            : 'text-green-600 hover:bg-green-900/20'
+          sortBy === 'symbol' ? 'bg-green-900/30 ' : ' hover:bg-green-900/20'
         }`}
       >
         SORT BY SYMBOL

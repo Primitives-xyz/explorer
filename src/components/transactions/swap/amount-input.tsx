@@ -55,13 +55,13 @@ export function AmountInput({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-green-500">{t('common.amount')}</div>
+        <div className="text-sm">{t('common.amount')}</div>
         {isLoggedIn && !isBalanceLoading && balance && (
           <div className="flex items-center gap-2">
             {onHalf && (
               <button
                 onClick={onHalf}
-                className="uppercase text-xs bg-green-900/20 hover:bg-green-900/30 text-green-400 px-3 py-1 rounded transition-colors"
+                className="text-xs bg-green-900/20 hover:bg-green-900/30  px-3 py-1 rounded transition-colors"
               >
                 {t('common.half')}
               </button>
@@ -69,7 +69,7 @@ export function AmountInput({
             {onMax && (
               <button
                 onClick={onMax}
-                className="uppercase text-xs bg-green-900/20 hover:bg-green-900/30 text-green-400 px-3 py-1 rounded transition-colors"
+                className="text-xs bg-green-900/20 hover:bg-green-900/30  px-3 py-1 rounded transition-colors"
               >
                 {t('common.max')}
               </button>
@@ -83,7 +83,7 @@ export function AmountInput({
           type="text"
           inputMode="decimal"
           placeholder="0.00"
-          className={`bg-green-900/20 text-2xl text-green-100 p-3 rounded-lg w-full font-medium placeholder:text-green-500/50 ${
+          className={`bg-green-900/20 text-2xl  p-3 rounded-lg w-full font-medium placeholder:/50 ${
             error ? 'border border-red-500' : ''
           }`}
           value={value}
@@ -115,7 +115,7 @@ export function AmountInput({
           disabled={disabled}
         />
         {isLoggedIn && !isBalanceLoading && balance && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-green-500/70">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm /70">
             {t('common.balance')}: {balance}
           </div>
         )}

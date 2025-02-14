@@ -3,7 +3,7 @@ import { contentServer } from '@/lib/content-server'
 import type { TransactionContent } from '@/types/content'
 import { getTransactionDisplayData, isCopiedSwap } from '@/types/content'
 import type { Transaction } from '@/utils/helius/types'
-import { route } from '@/utils/routes'
+import { route } from '@/utils/server-routes'
 import { ArrowRight, ExternalLink, Share2 } from 'lucide-react'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
@@ -235,14 +235,12 @@ export default async function TradePage({ params }: Props) {
       <div className="max-w-6xl mx-auto">
         {/* Header with Both Users */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-green-500 mb-2">
-            Trade Details
-          </h1>
-          <p className="text-green-400/80 mb-6">
+          <h1 className="text-3xl font-bold  mb-2">Trade Details</h1>
+          <p className="/80 mb-6">
             {content.walletUsername ? (
               <Link
                 href={route('address', { id: content.walletUsername })}
-                className="text-green-400 hover:text-green-300 transition-colors"
+                className=" hover: transition-colors"
               >
                 @{content.walletUsername}
               </Link>
@@ -257,7 +255,7 @@ export default async function TradePage({ params }: Props) {
                     href={route('address', {
                       id: content.sourceWalletUsername,
                     })}
-                    className="text-green-400 hover:text-green-300 transition-colors"
+                    className=" hover: transition-colors"
                   >
                     @{content.sourceWalletUsername}
                   </Link>
@@ -290,7 +288,7 @@ export default async function TradePage({ params }: Props) {
                       </div>
                     ) : (
                       <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
-                        <span className="text-2xl text-green-500">
+                        <span className="text-2xl ">
                           {(
                             content.sourceWalletUsername ||
                             content.sourceWallet.slice(0, 2)
@@ -309,7 +307,7 @@ export default async function TradePage({ params }: Props) {
                     </div>
                   ) : (
                     <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
-                      <span className="text-2xl text-green-500">
+                      <span className="text-2xl ">
                         {(
                           content.walletUsername ||
                           content.walletAddress.slice(0, 2)
@@ -318,7 +316,7 @@ export default async function TradePage({ params }: Props) {
                     </div>
                   )}
                   <div>
-                    <div className="text-sm text-green-400">
+                    <div className="text-sm ">
                       {isCopiedSwap(content) ? 'Original Trade by' : 'Trader'}
                     </div>
                     {isCopiedSwap(content) ? (
@@ -327,20 +325,20 @@ export default async function TradePage({ params }: Props) {
                           href={route('address', {
                             id: content.sourceWalletUsername,
                           })}
-                          className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
+                          className="text-xl font-semibold  hover: transition-colors"
                         >
                           @{content.sourceWalletUsername}
                         </Link>
                       ) : (
                         <div className="flex flex-col gap-1">
-                          <span className="text-xl font-mono text-green-100">
+                          <span className="text-xl font-mono ">
                             {formatAddress(content.sourceWallet)}
                           </span>
                           <Link
                             href={`https://solscan.io/account/${content.sourceWallet}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
+                            className="text-xs  hover: transition-colors flex items-center gap-1"
                           >
                             View on Solscan
                             <ExternalLink size={12} />
@@ -350,20 +348,20 @@ export default async function TradePage({ params }: Props) {
                     ) : content.walletUsername ? (
                       <Link
                         href={route('address', { id: content.walletUsername })}
-                        className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
+                        className="text-xl font-semibold  hover: transition-colors"
                       >
                         @{content.walletUsername}
                       </Link>
                     ) : (
                       <div className="flex flex-col gap-1">
-                        <span className="text-xl font-mono text-green-100">
+                        <span className="text-xl font-mono ">
                           {formatAddress(content.walletAddress)}
                         </span>
                         <Link
                           href={`https://solscan.io/account/${content.walletAddress}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
+                          className="text-xs  hover: transition-colors flex items-center gap-1"
                         >
                           View on Solscan
                           <ExternalLink size={12} />
@@ -379,13 +377,8 @@ export default async function TradePage({ params }: Props) {
                 <>
                   <div className="flex items-center">
                     <div className="flex flex-col items-center gap-1">
-                      <ArrowRight
-                        className="text-green-500 rotate-0 md:rotate-0"
-                        size={32}
-                      />
-                      <span className="text-xs text-green-400/60">
-                        copied by
-                      </span>
+                      <ArrowRight className=" rotate-0 md:rotate-0" size={32} />
+                      <span className="text-xs /60">copied by</span>
                     </div>
                   </div>
 
@@ -393,26 +386,26 @@ export default async function TradePage({ params }: Props) {
                   <div className="flex-1">
                     <div className="flex items-center gap-4 justify-center md:justify-end">
                       <div className="text-right">
-                        <div className="text-sm text-green-400">Copied by</div>
+                        <div className="text-sm ">Copied by</div>
                         {content.walletUsername ? (
                           <Link
                             href={route('address', {
                               id: content.walletUsername,
                             })}
-                            className="text-xl font-semibold text-green-100 hover:text-green-400 transition-colors"
+                            className="text-xl font-semibold  hover: transition-colors"
                           >
                             @{content.walletUsername}
                           </Link>
                         ) : (
                           <div className="flex flex-col gap-1 items-end">
-                            <span className="text-xl font-mono text-green-100">
+                            <span className="text-xl font-mono ">
                               {formatAddress(content.walletAddress)}
                             </span>
                             <Link
                               href={`https://solscan.io/account/${content.walletAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-green-500 hover:text-green-400 transition-colors flex items-center gap-1"
+                              className="text-xs  hover: transition-colors flex items-center gap-1"
                             >
                               View on Solscan
                               <ExternalLink size={12} />
@@ -431,7 +424,7 @@ export default async function TradePage({ params }: Props) {
                         </div>
                       ) : (
                         <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-green-500 bg-green-900/30 flex items-center justify-center">
-                          <span className="text-2xl text-green-500">
+                          <span className="text-2xl ">
                             {(
                               content.walletUsername ||
                               content.walletAddress.slice(0, 2)
@@ -458,7 +451,7 @@ export default async function TradePage({ params }: Props) {
                 ? `${displayData.copier} copied ${displayData.sourceUser}'s trade: ${displayData.amount} ➔ ${displayData.output}`
                 : `${displayData.trader}'s trade: ${displayData.amount} ➔ ${displayData.output}`
             }
-            className="flex items-center gap-2 bg-green-900/20 px-4 py-2 rounded-lg hover:bg-green-900/30 transition-colors text-green-400"
+            className="flex items-center gap-2 bg-green-900/20 px-4 py-2 rounded-lg hover:bg-green-900/30 transition-colors "
           >
             <Share2 size={16} />
             Share Trade
@@ -471,9 +464,7 @@ export default async function TradePage({ params }: Props) {
           <div className="space-y-8">
             {/* Token Swap Card */}
             <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-green-500 mb-6">
-                Swap Details
-              </h2>
+              <h2 className="text-xl font-semibold  mb-6">Swap Details</h2>
 
               {/* From Token */}
               <div className="bg-green-900/20 rounded-lg p-4 mb-4">
@@ -489,20 +480,16 @@ export default async function TradePage({ params }: Props) {
                     </div>
                   )}
                   <div>
-                    <div className="text-sm text-green-400">From</div>
-                    <div className="font-semibold text-green-100">
-                      {displayData.amount}
-                    </div>
+                    <div className="text-sm ">From</div>
+                    <div className="font-semibold ">{displayData.amount}</div>
                   </div>
                 </div>
-                <div className="text-sm text-green-400/60 mt-2">
-                  {content.inputTokenName}
-                </div>
+                <div className="text-sm /60 mt-2">{content.inputTokenName}</div>
               </div>
 
               {/* Arrow */}
               <div className="flex justify-center my-4">
-                <ArrowRight className="text-green-500" size={24} />
+                <ArrowRight className="" size={24} />
               </div>
 
               {/* To Token */}
@@ -519,13 +506,11 @@ export default async function TradePage({ params }: Props) {
                     </div>
                   )}
                   <div>
-                    <div className="text-sm text-green-400">To</div>
-                    <div className="font-semibold text-green-100">
-                      {displayData.output}
-                    </div>
+                    <div className="text-sm ">To</div>
+                    <div className="font-semibold ">{displayData.output}</div>
                   </div>
                 </div>
-                <div className="text-sm text-green-400/60 mt-2">
+                <div className="text-sm /60 mt-2">
                   {content.outputTokenName}
                 </div>
               </div>
@@ -533,18 +518,16 @@ export default async function TradePage({ params }: Props) {
 
             {/* Transaction Details Card */}
             <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-green-500 mb-6">
+              <h2 className="text-xl font-semibold  mb-6">
                 Transaction Details
               </h2>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Price Impact</span>
+                  <span className="">Price Impact</span>
                   <span
                     className={`${
-                      Number(content.priceImpact) > 1
-                        ? 'text-red-400'
-                        : 'text-green-100'
+                      Number(content.priceImpact) > 1 ? 'text-red-400' : ''
                     }`}
                   >
                     {displayData.priceImpact}%
@@ -552,33 +535,29 @@ export default async function TradePage({ params }: Props) {
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Slippage Tolerance</span>
-                  <span className="text-green-100">
-                    {displayData.slippage}%
-                  </span>
+                  <span className="">Slippage Tolerance</span>
+                  <span className="">{displayData.slippage}%</span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Priority Level</span>
-                  <span className="text-green-100 capitalize">
-                    {content.priorityLevel}
-                  </span>
+                  <span className="">Priority Level</span>
+                  <span className=" capitalize">{content.priorityLevel}</span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Timestamp</span>
-                  <span className="text-green-100">
+                  <span className="">Timestamp</span>
+                  <span className="">
                     {displayData.timestamp.toLocaleString()}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-green-900/30">
-                  <span className="text-green-400">Transaction</span>
+                  <span className="">Transaction</span>
                   <Link
                     href={`https://solscan.io/tx/${content.txSignature}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-green-100 font-mono text-sm hover:text-green-400 transition-colors group"
+                    className="flex items-center gap-2  font-mono text-sm hover: transition-colors group"
                   >
                     {formatAddress(content.txSignature)}
                     <ExternalLink
@@ -594,9 +573,7 @@ export default async function TradePage({ params }: Props) {
           {/* Right Column - Copy Trade Interface */}
           <div className="space-y-4">
             <div className="bg-black/40 border border-green-800/40 rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-green-500 mb-6">
-                Copy Trade
-              </h2>
+              <h2 className="text-xl font-semibold  mb-6">Copy Trade</h2>
               <ClientSwapView
                 tx={transaction}
                 sourceWallet={content.walletAddress}

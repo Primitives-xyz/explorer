@@ -26,12 +26,12 @@ const EmptyState = ({ type }: { type: 'nft' | 'token' }) => {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center rounded-lg border border-green-500/20 bg-black/20">
       <div className="text-3xl mb-2">{type === 'nft' ? '🖼️' : '💰'}</div>
-      <h3 className="text-lg font-medium text-green-300 mb-2">
+      <h3 className="text-lg font-medium mb-2">
         {type === 'nft'
           ? t('portfolio.no_nfts_found')
           : t('portfolio.no_tokens_found_2')}
       </h3>
-      <p className="text-sm text-green-600">
+      <p className="text-sm">
         {type === 'nft'
           ? t('portfolio.this_wallet_doesnt_have_any_nfts_yet')
           : t('portfolio.this_wallet_doesnt_have_any_tokens_yet')}

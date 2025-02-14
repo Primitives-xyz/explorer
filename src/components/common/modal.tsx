@@ -58,13 +58,8 @@ export function Modal({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-green-500/20">
-          <h2 className="text-lg md:text-xl font-medium text-green-400">
-            {title}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-green-400 hover:text-green-300 transition-colors"
-          >
+          <h2 className="text-lg md:text-xl font-medium ">{title}</h2>
+          <button onClick={onClose} className=" hover: transition-colors">
             <svg
               className="w-6 h-6"
               fill="none"

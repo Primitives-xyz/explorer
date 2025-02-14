@@ -111,7 +111,7 @@ export async function GET(request: Request) {
     console.log('Transaction confirmed...')
     if (confirmation.value.err) {
       throw new Error(
-        `Transaction failed: ${confirmation.value.err.toString()}`
+        `Transaction failed: ${JSON.stringify(confirmation.value.err)}`
       )
     }
     console.log('Transaction successful...')

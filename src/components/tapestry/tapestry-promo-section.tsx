@@ -14,7 +14,7 @@ export const TapestryPromoSection = ({
       {/* Header */}
       {!hideTitle && (
         <div className="border-b border-green-800 p-2 flex-shrink-0 bg-black/30">
-          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+          <div className=" text-sm font-mono whitespace-nowrap">
             {'>'} {t('tapestry_social.title')}
           </div>
         </div>
@@ -23,10 +23,10 @@ export const TapestryPromoSection = ({
       {/* Content */}
       <div className="flex-grow overflow-y-auto p-2 font-mono scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
         <div className="space-y-3">
-          <div className="text-lg text-green-400 font-bold">
+          <div className="text-lg  font-bold">
             {t('tapestry_social.are_you_a_solana_builder')}
           </div>
-          <p className="text-green-600 text-sm leading-relaxed">
+          <p className=" text-sm leading-relaxed">
             {t('tapestry_social.solana_need_you')}
           </p>
         </div>
@@ -35,7 +35,7 @@ export const TapestryPromoSection = ({
           href="https://www.usetapestry.dev/"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-all border border-green-500/20 hover:border-green-500/40"
+          className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20  rounded-lg transition-all border border-green-500/20 hover:border-green-500/40"
         >
           <span className="text-sm font-semibold">
             {t('tapestry_social.start_building')}

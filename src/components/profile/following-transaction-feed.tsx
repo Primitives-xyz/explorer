@@ -1,7 +1,8 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { DataContainer } from '@/components/common/DataContainer'
-import { FilterBar } from '@/components/common/FilterBar'
-import { FilterButton } from '@/components/common/FilterButton'
+import { DataContainer } from '@/components/common/data-container'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
+
 import { ScrollableContent } from '@/components/common/scrollable-content'
 import { TransactionCard } from '@/components/transactions/transaction-card'
 import type { Transaction } from '@/utils/helius/types'
@@ -10,14 +11,14 @@ import dynamic from 'next/dynamic'
 import { useMemo } from 'react'
 
 // Extend the existing interfaces to include className
-declare module '@/components/common/FilterBar' {
+declare module '@/components/common/filter-bar' {
   export interface FilterBarProps {
     children: React.ReactNode
     className?: string
   }
 }
 
-declare module '@/components/common/FilterButton' {
+declare module '@/components/common/filter-button' {
   export interface FilterButtonProps {
     label: string
     isSelected: boolean
@@ -121,21 +122,9 @@ export const FollowingTransactionFeed = ({
   if (!isLoggedIn) {
     return (
       <DataContainer title={t('following_transaction.title')} height="large">
-        <div className="relative">
-          {/* Create Profile CTA */}
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <h3 className="text-green-400 font-mono text-lg mb-4">
-              {t('following_transaction.create_a_profile_to_follow')}
-            </h3>
-            <DynamicConnectButton>
-              <div className="px-6 py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer">
-                {t('following_transaction.create_profile')}
-              </div>
-            </DynamicConnectButton>
-          </div>
-
-          {/* Blurred mock transactions */}
-          <div className="divide-y divide-green-800/30 blur-sm">
+        <div className="relative h-full flex flex-col">
+          {/* Blurred mock transactions in background */}
+          <div className="absolute inset-0 divide-y divide-green-800/30 blur-sm">
             {MOCK_TRANSACTIONS.map((tx, i) => (
               <TransactionCard
                 key={i}
@@ -144,13 +133,23 @@ export const FollowingTransactionFeed = ({
               />
             ))}
           </div>
+
+          {/* Create Profile CTA */}
+          <div className="relative flex-1 flex flex-col items-center justify-center bg-background-80/95 backdrop-blur-sm px-4 py-8 sm:p-4 text-center z-10">
+            <h3 className="font-mono text-base sm:text-lg mb-6 sm:mb-4 max-w-[280px] sm:max-w-none">
+              {t('following_transaction.create_a_profile_to_follow')}
+            </h3>
+            <DynamicConnectButton>
+              <div className="px-4 sm:px-6 py-3 sm:py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer text-sm sm:text-base"></div>
+            </DynamicConnectButton>
+          </div>
         </div>
       </DataContainer>
     )
   }
 
   const headerRight = isLoading && totalWallets > 0 && (
-    <div className="text-xs text-green-600 font-mono">
+    <div className="text-xs  font-mono">
       ({loadedWallets}/{totalWallets} {t('common.wallets')})
     </div>
   )

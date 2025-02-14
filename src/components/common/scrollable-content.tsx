@@ -19,7 +19,7 @@ export const ScrollableContent = ({
 }: ScrollableContentProps) => {
   const colorClasses = {
     green: {
-      text: 'text-green-600',
+      text: '',
       border: 'border-green-500',
       scrollThumb: 'scrollbar-thumb-green-900/50',
       divide: 'divide-green-800/30',
@@ -48,9 +48,7 @@ export const ScrollableContent = ({
           </div>
         </div>
       ) : isEmpty ? (
-        <div className="uppercase p-4 text-center text-green-600 font-mono">
-          {emptyText}
-        </div>
+        <div className="p-4 text-center  font-mono">{emptyText}</div>
       ) : (
         children
       )}

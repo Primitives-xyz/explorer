@@ -1,5 +1,10 @@
 'use client'
 
+import { DataContainer } from '@/components/common/data-container'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
+import { ScrollableContent } from '@/components/common/scrollable-content'
+import { TokenAddress } from '@/components/tokens/token-address'
 import { formatNumber } from '@/utils/format'
 import { route } from '@/utils/routes'
 import type { VirtualItem } from '@tanstack/react-virtual'
@@ -7,11 +12,6 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { memo, useEffect, useRef, useState } from 'react'
-import { DataContainer } from '../common/DataContainer'
-import { FilterBar } from '../common/FilterBar'
-import { FilterButton } from '../common/FilterButton'
-import { ScrollableContent } from '../common/scrollable-content'
-import { TokenAddress } from './token-address'
 
 interface TrendingToken {
   address: string
@@ -53,13 +53,13 @@ const TokenCard = memo(
               />
             ) : (
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-                <span className="text-green-500 font-mono text-base sm:text-lg">
+                <span className=" font-mono text-base sm:text-lg">
                   {token.symbol.slice(0, 2)}
                 </span>
               </div>
             )}
             <div className="absolute -top-1.5 -left-1.5 w-5 h-5 sm:w-6 sm:h-6 bg-green-900/90 rounded-full flex items-center justify-center ring-2 ring-green-500 shadow-lg z-[2] group-hover/item:scale-110 transition-transform">
-              <span className="text-green-400 text-[10px] sm:text-xs font-mono font-bold">
+              <span className=" text-[10px] sm:text-xs font-mono font-bold">
                 #{token.rank}
               </span>
             </div>
@@ -76,19 +76,17 @@ const TokenCard = memo(
                       e.stopPropagation()
                       router.push(route('address', { id: token.address }))
                     }}
-                    className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate max-w-[200px]"
+                    className=" font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate max-w-[200px]"
                   >
                     {token.name}
                   </button>
-                  <span className="text-green-600 text-xs flex-shrink-0">
+                  <span className=" text-xs flex-shrink-0">
                     ${token.symbol}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
-                  <span className="text-green-600/60 text-xs">
-                    {t('common.price')}:
-                  </span>
-                  <span className="text-green-400 font-mono text-xs font-medium">
+                  <span className="text-xs">{t('common.price')}:</span>
+                  <span className="font-mono text-xs font-medium">
                     ${formatNumber(token.price)}
                   </span>
                 </div>
@@ -96,12 +94,12 @@ const TokenCard = memo(
 
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md min-w-0">
-                  <span className="text-green-600/60 text-xs flex-shrink-0">
+                  <span className="text-xs flex-shrink-0">
                     {t('common.address')}:
                   </span>
                   <TokenAddress address={token.address} />
                 </div>
-                <div className="flex items-center gap-2 text-xs text-green-600 font-mono flex-shrink-0">
+                <div className="flex items-center gap-2 text-xs font-mono flex-shrink-0">
                   <span>
                     {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
                   </span>
@@ -120,12 +118,12 @@ const TokenCard = memo(
                     e.stopPropagation()
                     router.push(route('address', { id: token.address }))
                   }}
-                  className="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate max-w-[120px]"
+                  className=" font-mono text-sm bg-green-900/20 px-2 py-0.5 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate max-w-[120px]"
                 >
                   {token.name}
                 </button>
                 <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
-                  <span className="text-green-400 font-mono text-xs font-medium">
+                  <span className=" font-mono text-xs font-medium">
                     ${formatNumber(token.price)}
                   </span>
                 </div>
@@ -135,12 +133,10 @@ const TokenCard = memo(
                 <div className="min-w-0 flex-1">
                   <TokenAddress address={token.address} />
                 </div>
-                <span className="text-green-600 text-xs flex-shrink-0">
-                  ${token.symbol}
-                </span>
+                <span className=" text-xs flex-shrink-0">${token.symbol}</span>
               </div>
 
-              <div className="flex items-center justify-between gap-2 text-[10px] text-green-600 font-mono">
+              <div className="flex items-center justify-between gap-2 text-[10px] font-mono">
                 <span>
                   {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
                 </span>

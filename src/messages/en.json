@@ -23,7 +23,7 @@
     "liquidity": "Liq",
     "price": "price",
     "connect_wallet": "connect Wallet",
-    "cancel" : "cancel",
+    "cancel": "cancel",
     "follow_wallet": "follow Wallet",
     "k": "K",
     "m": "M",
@@ -45,13 +45,13 @@
     "best_and_worst": "best/worst"
   },
   "header": {
-    "title" : "solana_social_explorer",
+    "title": "solana_social_explorer",
     "search": "search",
     "trade": "trade",
     "portfolio": "portfolio",
     "connect_wallet": "connect wallet",
     "logout": "logout",
-    "terminal" : {
+    "terminal": {
       "title": "STATUS: ONLINE | NETWORK: SOLANA |",
       "user": "USER",
       "sse": "sse",
@@ -229,7 +229,6 @@
     "loading_transactions": "loading transactions",
     "no_transactions_found": "no transactions found",
     "loading_more_transactions": "LOADING MORE TRANSACTIONS",
-    "no_description_available": "No description available",
     "loading_transaction_details": "Loading transaction details...",
     "transaction_details": "Transaction Details",
     "timestamp": "Timestamp",
@@ -252,7 +251,7 @@
     "start_building": "Start Building"
   },
   "success": {
-    "followed_successfully" : "Followed successfully!",
+    "followed_successfully": "Followed successfully!",
     "successfully_followed_wallet": "Successfully followed wallet!",
     "successfully_unfollowed_wallet": "Successfully unfollowed wallet!",
     "link_copied": "Link Copied",
@@ -276,7 +275,7 @@
     "error_fetching_top_traders": "Error fetching top traders",
     "failed_to_fetch_traders": "Failed to fetch traders",
     "failed_to_follow_wallet_please_try_again": "Failed to follow wallet. Please try again.",
-    "failed_to_unfollow_wallet_please_try_again" : "Failed to unfollow wallet. Please try again.",
+    "failed_to_unfollow_wallet_please_try_again": "Failed to unfollow wallet. Please try again.",
     "please_enter_a_valid_number": "Please enter a valid number",
     "amount_must_be_greater_than_0": "Amount must be greater than 0",
     "amount_cannot_be_parsed": "amount cannot be parsed",

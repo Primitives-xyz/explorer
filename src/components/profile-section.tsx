@@ -1,5 +1,8 @@
 'use client'
 
+import { Avatar } from '@/components/common/avatar'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import { getProfiles, type Profile } from '@/utils/api'
@@ -10,10 +13,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
-import { Avatar } from './common/Avatar'
-import { DataContainer } from './common/DataContainer'
-import { FilterBar } from './common/FilterBar'
-import { FilterButton } from './common/FilterButton'
+import { DataContainer } from './common/data-container'
 import { Modal } from './common/modal'
 import { ScrollableContent } from './common/scrollable-content'
 import { FollowButton } from './profile/follow-button'
@@ -125,7 +125,7 @@ const ProfileCard = memo(
                 <div className="flex items-center gap-2 w-3/5">
                   <button
                     onClick={handleProfileClick}
-                    className="text-green-400 font-mono text-sm bg-green-900/20 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate"
+                    className=" font-mono text-sm bg-green-900/20 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate"
                   >
                     @{profile.profile.username}
                   </button>
@@ -138,7 +138,7 @@ const ProfileCard = memo(
               </div>
 
               {isExplorerApp && (
-                <div className="flex items-center gap-2 text-xs text-green-600 font-mono">
+                <div className="flex items-center gap-2 text-xs  font-mono">
                   <span>
                     {t('common.followers')}: {followers}
                   </span>
@@ -151,9 +151,7 @@ const ProfileCard = memo(
               <div className="flex items-center gap-2">
                 {profile.wallet?.address && (
                   <div className="flex items-center gap-1.5 bg-black/30 py-0.5 rounded-md">
-                    <span className="text-green-600/60 text-xs">
-                      {t('common.address')}:
-                    </span>
+                    <span className="/60 text-xs">{t('common.address')}:</span>
                     <TokenAddress address={profile.wallet.address} />
                   </div>
                 )}
@@ -161,7 +159,7 @@ const ProfileCard = memo(
 
               {profile.profile.bio && (
                 <div className="flex items-center gap-2">
-                  <span className="text-green-600 font-mono text-xs truncate">
+                  <span className=" font-mono text-xs truncate">
                     {profile.profile.bio}
                   </span>
                 </div>
@@ -169,10 +167,10 @@ const ProfileCard = memo(
 
               {profile.namespace && (
                 <div className="flex items-center gap-2">
-                  <span className="text-green-600/50 text-xs">
+                  <span className="/50 text-xs">
                     <button
                       onClick={handleNamespaceClick}
-                      className="hover:text-green-500 transition-colors"
+                      className="hover: transition-colors"
                     >
                       {getReadableNamespace(profile.namespace)}
                     </button>
@@ -335,7 +333,7 @@ export const ProfileSection = ({
       headerRight={
         <button
           onClick={() => setIsModalOpen(true)}
-          className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10 text-green-500 transition-colors"
+          className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10  transition-colors"
         >
           <Plus size={16} />
         </button>
@@ -352,13 +350,13 @@ export const ProfileSection = ({
             onClick={() =>
               window.open('https://www.dotblink.me/search', '_blank')
             }
-            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
             {t('profile_info.create_a_blink_profile')}
           </button>
           <button
             onClick={() => window.open('https://www.sns.id/', '_blank')}
-            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
             {t('profile_info.create_a_sol_profile')}
           </button>
@@ -366,13 +364,13 @@ export const ProfileSection = ({
             onClick={() =>
               window.open('https://alldomains.id/buy-domain', '_blank')
             }
-            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
             {t('profile_info.explore_all_domains')}
           </button>
           <button
             onClick={() => window.open('https://www.tapaigames.com/', '_blank')}
-            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10 text-green-400 rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
+            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
           >
             {t('profile_info.create_a_nimbus_app')}
           </button>

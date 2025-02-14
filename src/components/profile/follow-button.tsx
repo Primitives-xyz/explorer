@@ -93,7 +93,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     return (
       <DynamicConnectButton>
         <div
-          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 cursor-pointer`}
+          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer`}
         >
           <UserRoundPlus size={iconSize} />
           {t('common.follow')}
@@ -233,7 +233,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
       <button
         onClick={handleFollow}
         disabled={loading}
-        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30 text-green-400 border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
+        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
       >
         <UserRoundPlus size={iconSize} />
         {loading ? `${t('common.following')}...` : t('common.follow')}

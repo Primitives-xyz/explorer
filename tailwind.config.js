@@ -7,6 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        'text-body': 'var(--text-body)',
+        'text-header': 'var(--text-header)',
+      },
       keyframes: {
         'slide-left': {
           '0%': { transform: 'translateX(100%)', opacity: 0 },

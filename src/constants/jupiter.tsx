@@ -1,5 +1,4 @@
 import type { PriorityLevelOption } from '@/types/jupiter'
-import { useTranslations } from 'next-intl'
 
 // Platform fee configuration
 export const PLATFORM_FEE_BPS = 80 // 0.8% = 80 basis points
@@ -11,9 +10,9 @@ export const DEFAULT_SLIPPAGE_BPS = 50 // 0.5% default
 export const DEFAULT_PRIORITY_LEVEL = 'Medium'
 
 // Priority level options
-export const getPriorityLevels = (): PriorityLevelOption[] => {
-  const t = useTranslations()
-
+export function getPriorityLevels(
+  t: (key: string) => string
+): PriorityLevelOption[] {
   return [
     {
       label: t('priority_levels.minimum'),

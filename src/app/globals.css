@@ -64,12 +64,15 @@
 }
 
 :root {
-  --background: #000;
+  --background: #292c31;
+  --background-80: #292c31cc;
   --foreground: #fff;
+  --text-body: #f5f8fd;
+  --text-header: #97ef83;
 }
 
 body {
-  color: var(--foreground);
+  color: var(--text-body);
   background: var(--background);
 }
 

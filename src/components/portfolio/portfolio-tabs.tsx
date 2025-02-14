@@ -1,8 +1,8 @@
 'use client'
 
-import { DataContainer } from '@/components/common/DataContainer'
-import { FilterBar } from '@/components/common/FilterBar'
-import { FilterButton } from '@/components/common/FilterButton'
+import { DataContainer } from '@/components/common/data-container'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
 import { TokenContainer } from '@/components/token-container'
 import type { FungibleToken, NFT } from '@/utils/types'
 import { useTranslations } from 'next-intl'

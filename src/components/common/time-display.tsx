@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { formatTimeAgo, normalizeTimestamp } from '../../utils/time'
-import { TimeTooltip } from './TimeTooltip'
+import { TimeTooltip } from './time-tooltip'
 
 interface TimeDisplayProps {
   timestamp: number
@@ -11,7 +11,7 @@ interface TimeDisplayProps {
 
 export const TimeDisplay = ({
   timestamp,
-  textColor = 'text-green-400',
+  textColor = '',
   showBackground = true,
   className = '',
 }: TimeDisplayProps) => {
@@ -32,7 +32,7 @@ export const TimeDisplay = ({
       tabIndex={0}
     >
       <svg
-        className="w-3 h-3 text-green-500"
+        className="w-3 h-3 "
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

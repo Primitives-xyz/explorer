@@ -13,12 +13,13 @@ import {
   HeartIcon as HeartOutline,
 } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { Alert } from '../common/alert'
-import { Avatar } from '../common/Avatar'
+import { Avatar } from '../common/avatar'
 import { Card } from '../common/card'
 import { LoadCircle } from '../common/load-circle'
 import { FollowButton } from './follow-button'
@@ -56,6 +57,8 @@ export function CommentWall({
     unlikeComment,
     isLoading: likeLoading,
   } = useCommentLikes()
+
+  const t = useTranslations()
 
   const { mutate: refreshComments } = useProfileComments(
     username,
@@ -139,29 +142,27 @@ export function CommentWall({
     <Card>
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-mono text-green-400">Comment Wall</h3>
-          <div className="text-sm text-green-600 font-mono">
-            100 SSE per comment
-          </div>
+          <h3 className="text-lg font-mono ">Comment Wall</h3>
+          <div className="text-sm  font-mono">100 SSE per comment</div>
         </div>
         <div className="space-y-4">
           {/* Comments List */}
           <div className="space-y-3 mb-4">
             {isLoading ? (
-              <div className="text-center text-green-600 font-mono py-4">
+              <div className="text-center  font-mono py-4">
                 Loading comments...
               </div>
             ) : comments.length === 0 ? (
               !mainUsername ? (
                 <div className="flex items-center justify-center min-h-[300px]">
                   <DynamicConnectButton>
-                    <div className="bg-green-900/30 text-green-400 font-mono rounded border border-green-800 hover:bg-green-900/50 text-center cursor-pointer px-4 py-2">
+                    <div className="bg-green-900/30  font-mono rounded border border-green-800 hover:bg-green-900/50 text-center cursor-pointer px-4 py-2">
                       Connect Wallet to Comment
                     </div>
                   </DynamicConnectButton>
                 </div>
               ) : (
-                <div className="text-center text-green-600 font-mono py-4">
+                <div className="text-center  font-mono py-4">
                   be the first to comment on this profile
                 </div>
               )
@@ -182,7 +183,7 @@ export function CommentWall({
                             size={24}
                             imageUrl={comment.author.image}
                           />
-                          <span className="text-green-400 font-mono text-sm">
+                          <span className=" font-mono text-sm">
                             @{comment.author.username}
                           </span>
                         </Link>
@@ -194,16 +195,14 @@ export function CommentWall({
                         )}
                       </div>
                     )}
-                    <div className="text-green-300 font-mono">
-                      {comment.comment.text}
-                    </div>
+                    <div className=" font-mono">{comment.comment.text}</div>
                     <div className="flex items-center justify-between mt-2">
-                      <div className="text-green-600 font-mono text-xs">
+                      <div className=" font-mono text-xs">
                         <TimeDisplay
                           timestamp={new Date(
                             comment.comment.created_at
                           ).getTime()}
-                          textColor="text-green-600"
+                          textColor=""
                         />
                       </div>
                       <div className="flex items-center gap-3">
@@ -216,8 +215,8 @@ export function CommentWall({
                                 : ''
                             }`}
                           >
-                            <ChatBubbleLeftIcon className="w-5 h-5 text-green-500" />
-                            <span className="text-green-500 font-mono text-sm">
+                            <ChatBubbleLeftIcon className="w-5 h-5 " />
+                            <span className=" font-mono text-sm">
                               {comment.socialCounts?.replyCount || 0} Reply
                             </span>
                           </button>
@@ -239,12 +238,12 @@ export function CommentWall({
                             }`}
                           >
                             {comment.requestingProfileSocialInfo?.hasLiked ? (
-                              <HeartSolid className="w-5 h-5 text-green-500" />
+                              <HeartSolid className="w-5 h-5 " />
                             ) : (
-                              <HeartOutline className="w-5 h-5 text-green-500" />
+                              <HeartOutline className="w-5 h-5 " />
                             )}
                           </button>
-                          <span className="text-green-500 font-mono text-sm">
+                          <span className=" font-mono text-sm">
                             {comment.socialCounts?.likeCount || 0}
                           </span>
                         </div>
@@ -275,7 +274,7 @@ export function CommentWall({
                                       size={20}
                                       imageUrl={reply.author.image}
                                     />
-                                    <span className="text-green-400 font-mono text-sm">
+                                    <span className=" font-mono text-sm">
                                       @{reply.author.username}
                                     </span>
                                   </Link>
@@ -287,16 +286,16 @@ export function CommentWall({
                                   )}
                                 </div>
                               )}
-                              <div className="text-green-300 font-mono text-sm">
+                              <div className=" font-mono text-sm">
                                 {reply.comment.text}
                               </div>
                               <div className="flex items-center justify-between mt-2">
-                                <div className="text-green-600 font-mono text-xs">
+                                <div className=" font-mono text-xs">
                                   <TimeDisplay
                                     timestamp={new Date(
                                       reply.comment.created_at
                                     ).getTime()}
-                                    textColor="text-green-600"
+                                    textColor=""
                                   />
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -317,12 +316,12 @@ export function CommentWall({
                                   >
                                     {reply.requestingProfileSocialInfo
                                       ?.hasLiked ? (
-                                      <HeartSolid className="w-4 h-4 text-green-500" />
+                                      <HeartSolid className="w-4 h-4 " />
                                     ) : (
-                                      <HeartOutline className="w-4 h-4 text-green-500" />
+                                      <HeartOutline className="w-4 h-4 " />
                                     )}
                                   </button>
-                                  <span className="text-green-500 font-mono text-sm">
+                                  <span className=" font-mono text-sm">
                                     {reply.socialCounts?.likeCount || 0}
                                   </span>
                                 </div>
@@ -342,7 +341,7 @@ export function CommentWall({
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="Write a reply..."
-                            className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3 text-green-400 font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
+                            className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
                             disabled={postCommentLoading || isProcessingFee}
                           />
                           {(postCommentLoading || isProcessingFee) && (
@@ -359,7 +358,7 @@ export function CommentWall({
                               isProcessingFee ||
                               !commentText.trim()
                             }
-                            className="px-4 py-2 bg-green-900/30 text-green-400 font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="px-4 py-2 bg-green-900/30  font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
                             {isProcessingFee
                               ? 'Processing...'
@@ -384,7 +383,7 @@ export function CommentWall({
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write a comment..."
-                  className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3 text-green-400 font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
+                  className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
                   disabled={postCommentLoading || isProcessingFee}
                 />
                 {(postCommentLoading || isProcessingFee) && (
@@ -395,7 +394,7 @@ export function CommentWall({
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                  <div className="text-sm text-green-600 font-mono">
+                  <div className="text-sm  font-mono">
                     {isProcessingFee
                       ? 'Processing payment...'
                       : '80% goes to profile owner'}
@@ -406,10 +405,10 @@ export function CommentWall({
                       onChange={(e) =>
                         setPriorityLevel(e.target.value as PriorityLevel)
                       }
-                      className="bg-green-900/20 text-green-400 text-sm font-mono rounded border border-green-800/50 px-2 py-1"
+                      className="bg-green-900/20  text-sm font-mono rounded border border-green-800/50 px-2 py-1"
                       disabled={postCommentLoading || isProcessingFee}
                     >
-                      {getPriorityLevels().map((level) => (
+                      {getPriorityLevels(t).map((level) => (
                         <option
                           key={level.value}
                           value={level.value}
@@ -419,9 +418,7 @@ export function CommentWall({
                         </option>
                       ))}
                     </select>
-                    <span className="text-xs text-green-600 font-mono">
-                      Priority
-                    </span>
+                    <span className="text-xs  font-mono">Priority</span>
                   </div>
                 </div>
                 <button
@@ -429,7 +426,7 @@ export function CommentWall({
                   disabled={
                     postCommentLoading || isProcessingFee || !commentText.trim()
                   }
-                  className="px-4 py-2 bg-green-900/30 text-green-400 font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 bg-green-900/30  font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isProcessingFee
                     ? 'Processing...'

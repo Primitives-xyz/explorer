@@ -56,7 +56,7 @@ export const NFTSection = ({
       {!hideTitle && (
         <div className="border-b border-green-800 p-3 flex-shrink-0">
           <div className="flex justify-between items-center overflow-x-auto scrollbar-none">
-            <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+            <div className=" text-sm font-mono whitespace-nowrap">
               {'>'} {getTitle()}
             </div>
           </div>
@@ -105,11 +105,11 @@ export const NFTSection = ({
         }}
       >
         {isLoading ? (
-          <div className="p-4 text-center text-green-600 font-mono">
+          <div className="p-4 text-center  font-mono">
             {t('portfolio.fetching_tokens')}
           </div>
         ) : items.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
+          <div className="p-4 text-center  font-mono">
             {t('portfolio.no_tokens_found')}
           </div>
         ) : (

@@ -52,7 +52,7 @@ export const getTransactionTypeColor = (type: string, source: string) => {
     case 'SWAP':
       return 'bg-orange-900/50 text-orange-400 border-orange-800'
     case 'DEPOSIT':
-      return 'bg-green-900/50 text-green-400 border-green-800'
+      return 'bg-green-900/50  border-green-800'
     default:
       return 'bg-gray-900/50 text-gray-400 border-gray-800'
   }
@@ -171,7 +171,7 @@ export const getNFTTransactionRoleColor = (role: string) => {
     case 'buyer':
       return 'text-red-400'
     case 'seller':
-      return 'text-green-400'
+      return ''
     case 'royalty':
       return 'text-purple-400'
     default:

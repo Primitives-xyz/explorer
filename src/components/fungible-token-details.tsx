@@ -16,6 +16,7 @@ import {
   ArrowUpRightIcon as TwitterIcon,
 } from '@heroicons/react/24/outline'
 import Image from 'next/image'
+import { TokenAddress } from './tokens/token-address'
 
 // Define the people in common data type
 interface PeopleInCommonData {
@@ -65,61 +66,64 @@ export default function FungibleTokenDetails({
 
               <div className="flex-1 text-center md:text-left">
                 <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-                  <h1 className="text-4xl font-bold text-green-500 font-mono">
+                  <h1 className="text-4xl font-bold  font-mono">
                     {tokenInfo.content.metadata.name}
                   </h1>
                   <div className="flex items-center gap-3">
-                    <span className="px-4 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-green-400 font-mono">
+                    <span className="px-4 py-1 bg-green-500/10 border border-green-500/20 rounded-full  font-mono">
                       ${tokenInfo.content.metadata.symbol}
                     </span>
-                    <span className="text-xs px-3 py-1 bg-green-900/30 rounded-full text-green-400/80 font-mono">
+                    <span className="text-xs px-3 py-1 bg-green-900/30 rounded-full /80 font-mono">
                       {tokenInfo.interface}
                     </span>
                   </div>
                 </div>
 
-                <p className="text-green-400/70 max-w-2xl mb-4">
+                <p className="/70 max-w-2xl mb-4">
                   {overview?.extensions?.description ||
                     tokenInfo.content.metadata.description}
                 </p>
 
-                {overview && (
-                  <div className="flex flex-wrap gap-4">
-                    {overview.extensions?.website && (
-                      <a
-                        href={overview.extensions.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
-                      >
-                        <GlobeAltIcon className="w-5 h-5" />
-                        <span>Website</span>
-                      </a>
-                    )}
-                    {overview.extensions?.discord && (
-                      <a
-                        href={overview.extensions.discord}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
-                      >
-                        <DiscordIcon className="w-5 h-5" />
-                        <span>Discord</span>
-                      </a>
-                    )}
-                    {overview.extensions?.twitter && (
-                      <a
-                        href={overview.extensions.twitter}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors"
-                      >
-                        <TwitterIcon className="w-5 h-5" />
-                        <span>Twitter</span>
-                      </a>
-                    )}
+                <div className="flex flex-wrap gap-4">
+                  {/* Token Address */}
+                  <div className="flex items-center gap-2 hover: transition-colors">
+                    <TokenAddress address={id} />
                   </div>
-                )}
+                  {/* Social Links */}
+                  {overview?.extensions?.website && (
+                    <a
+                      href={overview.extensions.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2  hover: transition-colors"
+                    >
+                      <GlobeAltIcon className="w-5 h-5" />
+                      <span>Website</span>
+                    </a>
+                  )}
+                  {overview?.extensions?.discord && (
+                    <a
+                      href={overview.extensions.discord}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2  hover: transition-colors"
+                    >
+                      <DiscordIcon className="w-5 h-5" />
+                      <span>Discord</span>
+                    </a>
+                  )}
+                  {overview?.extensions?.twitter && (
+                    <a
+                      href={overview.extensions.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2  hover: transition-colors"
+                    >
+                      <TwitterIcon className="w-5 h-5" />
+                      <span>Twitter</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -156,7 +160,7 @@ export default function FungibleTokenDetails({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Swap Section */}
           <div className="flex flex-col">
-            <h3 className="text-xl font-mono text-green-500 mb-4">Swap</h3>
+            <h3 className="text-xl font-mono  mb-4">Swap</h3>
             <div className="flex flex-col h-[675px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
               <div className="h-full p-4">
                 <div className="h-full overflow-y-auto">
@@ -176,9 +180,7 @@ export default function FungibleTokenDetails({
 
           {/* Token Details Section */}
           <div className="flex flex-col">
-            <h3 className="text-xl font-mono text-green-500 mb-4">
-              Token Details
-            </h3>
+            <h3 className="text-xl font-mono  mb-4">Token Details</h3>
             <div className="flex flex-col h-[675px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
               <Tab.Group className="h-full flex flex-col">
                 <Tab.List className="flex space-x-1 border-b border-green-800/40">
@@ -186,8 +188,8 @@ export default function FungibleTokenDetails({
                     className={({ selected }) =>
                       `flex-1 px-6 py-4 text-lg font-mono outline-none ${
                         selected
-                          ? 'text-green-500 bg-green-900/20'
-                          : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
+                          ? ' bg-green-900/20'
+                          : '/60 hover:/80 hover:bg-green-900/10'
                       } transition-colors`
                     }
                   >
@@ -197,8 +199,8 @@ export default function FungibleTokenDetails({
                     className={({ selected }) =>
                       `flex-1 px-6 py-4 text-lg font-mono outline-none ${
                         selected
-                          ? 'text-green-500 bg-green-900/20'
-                          : 'text-green-500/60 hover:text-green-500/80 hover:bg-green-900/10'
+                          ? ' bg-green-900/20'
+                          : '/60 hover:/80 hover:bg-green-900/10'
                       } transition-colors`
                     }
                   >
@@ -235,9 +237,7 @@ export default function FungibleTokenDetails({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Birdeye Chart */}
           <div className="lg:col-span-2">
-            <h3 className="text-xl font-mono text-green-500 mb-4">
-              Price Chart
-            </h3>
+            <h3 className="text-xl font-mono  mb-4">Price Chart</h3>
             <div className="w-full h-[600px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
               <iframe
                 width="100%"
@@ -251,9 +251,7 @@ export default function FungibleTokenDetails({
 
           {/* Transaction History */}
           <div className="lg:col-span-1">
-            <h3 className="text-xl font-mono text-green-500 mb-4">
-              Transaction History
-            </h3>
+            <h3 className="text-xl font-mono  mb-4">Transaction History</h3>
             <div className="h-[600px] overflow-y-auto">
               <TransactionSection walletAddress={id} hasSearched={true} />
             </div>

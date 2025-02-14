@@ -1,4 +1,4 @@
-import { Avatar } from '@/components/common/Avatar'
+import { Avatar } from '@/components/common/avatar'
 import Link from 'next/link'
 
 interface PersonInCommon {
@@ -20,8 +20,7 @@ const UserLink = ({ username }: { username: string }) => (
 
 export const PeopleInCommonSection = ({
   topUsers,
-  totalAmount
-  
+  totalAmount,
 }: PeopleInCommonSectionProps) => {
   return (
     <div className="flex items-center gap-1">
@@ -46,7 +45,8 @@ export const PeopleInCommonSection = ({
                 {index < 2 && ', '}
               </>
             ))}{' '}
-            and {totalAmount - 3} {totalAmount - 3 === 1 ? 'other' : 'others'} you follow
+            and {totalAmount - 3} {totalAmount - 3 === 1 ? 'other' : 'others'}{' '}
+            you follow
           </>
         ) : (
           <>

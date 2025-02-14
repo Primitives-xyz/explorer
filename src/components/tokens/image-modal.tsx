@@ -25,7 +25,7 @@ export const ImageModal = ({
         >
           <button
             onClick={onClose}
-            className="absolute top-2 right-2 text-green-600 hover:text-green-400 font-mono text-sm"
+            className="absolute top-2 right-2  hover: font-mono text-sm"
           >
             [close]
           </button>
@@ -45,18 +45,16 @@ export const ImageModal = ({
                 )
                 target.insertAdjacentHTML(
                   'afterend',
-                  `<div class="text-green-500/50 font-mono text-sm">Image failed to load</div>`
+                  `<div class="/50 font-mono text-sm">Image failed to load</div>`
                 )
               }}
             />
           ) : (
             <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
-              <div className="text-green-500/50 font-mono text-sm">
-                No image available
-              </div>
+              <div className="/50 font-mono text-sm">No image available</div>
             </div>
           )}
-          <div className="text-center mt-2 text-green-500 font-mono text-sm">
+          <div className="text-center mt-2  font-mono text-sm">
             {symbol || 'Untitled'}
           </div>
         </div>

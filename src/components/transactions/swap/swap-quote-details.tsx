@@ -40,16 +40,14 @@ export function SwapQuoteDetails({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-green-400">
-          {t('trade.platform_fee')}
-        </span>
+        <span className="text-sm ">{t('trade.platform_fee')}</span>
         <div className="text-right">
           {useSSEForFees ? (
             <div className="flex flex-col items-end">
-              <span className="text-sm line-through text-green-400/50">
+              <span className="text-sm line-through /50">
                 {formatUSDC(platformFeeUSDC)} ({PLATFORM_FEE_BPS / 100}%)
               </span>
-              <span className="text-sm text-green-400">
+              <span className="text-sm ">
                 {sseFee.toFixed(2)} SSE ({PLATFORM_FEE_BPS / 200}%)
               </span>
             </div>
@@ -62,9 +60,7 @@ export function SwapQuoteDetails({
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-sm text-green-400">
-          {t('trade.price_impact')}
-        </span>
+        <span className="text-sm ">{t('trade.price_impact')}</span>
         <span
           className={`text-sm ${Number(priceImpact) > 1 ? 'text-red-400' : ''}`}
         >
@@ -73,15 +69,13 @@ export function SwapQuoteDetails({
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-sm text-green-400">
-          {t('trade.maximum_slippage')}
-        </span>
+        <span className="text-sm ">{t('trade.maximum_slippage')}</span>
         <span className="text-sm">{slippageBps / 100}%</span>
       </div>
 
       {quoteResponse.routePlan && (
         <div className="pt-2 border-t border-green-900/30">
-          <p className="text-sm text-green-400 mb-1">{t('trade.route')}</p>
+          <p className="text-sm  mb-1">{t('trade.route')}</p>
           <div className="text-xs space-y-1">
             {quoteResponse.routePlan.map((step, index) => (
               <div key={index} className="flex items-center gap-1">
