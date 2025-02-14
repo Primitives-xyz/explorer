@@ -1,6 +1,6 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { Avatar } from '@/components/common/avatar'
+import { Avatar } from '@/components/common/avatar-container'
 import type { Profile } from '@/utils/api'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
