@@ -105,6 +105,10 @@ const scrollAnimation = `
   position: relative;
   mask-image: linear-gradient(to right, transparent, black 2%, black 98%, transparent);
   height: 24px;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
 }
 
 .scroll-content {
@@ -113,19 +117,28 @@ const scrollAnimation = `
   white-space: nowrap;
   min-width: 200%;
   position: relative;
+  will-change: transform;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 @keyframes scroll {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 .animate-scroll {
-  animation: scroll 60s linear infinite;
+  animation: scroll 8s linear infinite;
+}
+
+@media (max-width: 768px) {
+  .animate-scroll {
+    animation: scroll 3s linear infinite;
+  }
 }
 
 .group:hover .group-hover\\:pause {

@@ -4,18 +4,7 @@ import { ErrorLog, GrafanaMetric } from '../types/grafana'
 export class GrafanaService {
   private static instance: GrafanaService
 
-  private constructor() {
-    console.log(`
-📊 Initializing Grafana service:
-   - Push URL: ${grafanaConfig.PUSH_URL}
-   - User ID: ${grafanaConfig.USER_ID}
-   - API Key: ${
-     grafanaConfig.API_KEY
-       ? '****' + grafanaConfig.API_KEY.slice(-4)
-       : 'Not set'
-   }
-`)
-  }
+  private constructor() {}
 
   public static getInstance(): GrafanaService {
     if (!GrafanaService.instance) {

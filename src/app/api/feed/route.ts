@@ -44,23 +44,6 @@ export async function GET() {
   // Take only the first 40 buy transactions
   const finalTransactions = allBuyTransactions.slice(0, 40)
 
-  // Log transactions with usernames
-  const transactionsWithUsernames = finalTransactions.filter(
-    (tx) => tx.username && tx.username.trim() !== ''
-  )
-  if (transactionsWithUsernames.length > 0) {
-    console.log(
-      'Found transactions with usernames:',
-      transactionsWithUsernames.map((tx) => ({
-        username: tx.username,
-        walletAddress: tx.walletAddress,
-        amount: tx.to.amount,
-      }))
-    )
-  } else {
-    console.log('No transactions found with usernames set')
-  }
-
   const response = NextResponse.json({
     transactions: finalTransactions,
     total: finalTransactions.length,
