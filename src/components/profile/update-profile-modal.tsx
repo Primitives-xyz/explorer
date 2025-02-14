@@ -134,7 +134,7 @@ export function UpdateProfileModal({
                 onChange={handleFileSelect}
                 accept="image/*"
                 disabled={isUploading}
-                className="block w-full text-sm 
+                className="block w-full text-sm text-white
                   file:mr-4 file:py-1.5 file:px-4
                   file:rounded-none file:border
                   file:text-sm file:font-mono
