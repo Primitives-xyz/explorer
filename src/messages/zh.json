@@ -164,7 +164,7 @@
     "please_approve_the_transaction_in_your_wallet": "Please approve the transaction in your wallet...",
     "waiting_for_confirmation": "Waiting for confirmation...",
     "transaction_failed": "Transaction Failed",
-    "the_swap_transaction_failed_please_try_again.": "The swap transaction failed. Please try again.",
+    "the_swap_transaction_failed_please_try_again": "The swap transaction failed. Please try again.",
     "transaction_successful": "Transaction Successful",
     "the_swap_transaction_was_successful_creating_shareable_link": "The swap transaction was successful. Creating Shareable link..",
     "swap_successful": "Swap Successful!",
