@@ -286,7 +286,7 @@ export function TokenSearch({
               ref={inputRef}
               type="text"
               placeholder={t('trade.search_tokens')}
-              className="w-full bg-black/80 text-green-100 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+              className="w-full bg-black/80 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -316,8 +316,8 @@ export function TokenSearch({
                   onClick={() => setSortBy(option)}
                   className={`text-xs px-2 py-1 rounded ${
                     sortBy.value === option.value
-                      ? 'bg-green-600 text-white'
-                      : 'bg-green-900/40 text-green-400'
+                      ? 'bg-green-600'
+                      : 'bg-green-900/40'
                   }`}
                 >
                   {option.label}
@@ -379,14 +379,14 @@ export function TokenSearch({
                         {formatPrice(token.price)}
                       </div>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-green-500/90 font-medium">
+                        <span className="font-medium">
                           {t('common.m_cap')}:{' '}
                           {formatMarketCap(token.market_cap)}
                         </span>
                         {token.volume_24h_usd > 0 && (
                           <>
-                            <span className="text-green-800">•</span>
-                            <span className="text-green-500/90">
+                            <span>•</span>
+                            <span>
                               {t('common.vol')}: $
                               {(token.volume_24h_usd / 1e6).toLocaleString(
                                 undefined,
@@ -405,11 +405,9 @@ export function TokenSearch({
               ))}
             </div>
           ) : searchQuery ? (
-            <div className="p-4 text-green-400 text-center">
-              {t('trade.no_tokens_found')}
-            </div>
+            <div className="p-4 text-center">{t('trade.no_tokens_found')}</div>
           ) : (
-            <div className="p-4 text-green-400 text-center">
+            <div className="p-4 text-center">
               {t('trade.start_typing_to_search_for_tokens')}
             </div>
           )}

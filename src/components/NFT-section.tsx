@@ -105,11 +105,11 @@ export const NFTSection = ({
         }}
       >
         {isLoading ? (
-          <div className="p-4 text-center text-green-600 font-mono">
+          <div className="p-4 text-center font-mono">
             {t('portfolio.fetching_tokens')}
           </div>
         ) : items.length === 0 ? (
-          <div className="p-4 text-center text-green-600 font-mono">
+          <div className="p-4 text-center font-mono">
             {t('portfolio.no_tokens_found')}
           </div>
         ) : (

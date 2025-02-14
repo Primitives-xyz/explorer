@@ -245,7 +245,7 @@ export const TransactionSection = ({
             />
           ))}
           {isLoading && page > 1 && (
-            <div className="p-4 text-center text-green-600 font-mono uppercase">
+            <div className="p-4 text-center font-mono uppercase">
               {`>>> ${t('transaction_log.loading_more_transactions')}...`}
             </div>
           )}

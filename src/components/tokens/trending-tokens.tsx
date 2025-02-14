@@ -99,7 +99,7 @@ const TokenCard = memo(
                   <span className="/60 text-xs flex-shrink-0">address:</span>
                   <TokenAddress address={token.address} />
                 </div>
-                <div className="flex items-center gap-2 text-xs text-green-600 font-mono flex-shrink-0">
+                <div className="flex items-center gap-2 text-xs font-mono flex-shrink-0">
                   <span>
                     {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
                   </span>
@@ -136,7 +136,7 @@ const TokenCard = memo(
                 <span className=" text-xs flex-shrink-0">${token.symbol}</span>
               </div>
 
-              <div className="flex items-center justify-between gap-2 text-[10px] text-green-600 font-mono">
+              <div className="flex items-center justify-between gap-2 text-[10px] font-mono">
                 <span>
                   {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
                 </span>

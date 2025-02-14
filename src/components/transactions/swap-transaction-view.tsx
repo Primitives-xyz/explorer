@@ -204,14 +204,14 @@ export function SwapTransactionView({
               {sourceProfile?.username ? (
                 <Link
                   href={route('address', { id: sourceProfile.username })}
-                  className="text-sm font-semibold hover:text-green-400 transition-colors"
+                  className="text-sm font-semibold transition-colors"
                 >
                   @{sourceProfile.username}
                 </Link>
               ) : (
                 <Link
                   href={route('address', { id: sourceWallet })}
-                  className="text-sm font-mono hover:text-green-400 transition-colors"
+                  className="text-sm font-mono transition-colors"
                 >
                   {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
                 </Link>
@@ -225,7 +225,7 @@ export function SwapTransactionView({
         {!isOwnTrade && (
           <button
             onClick={() => setShowSwapModal(true)}
-            className="flex items-center gap-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-lg transition-colors text-sm border border-green-500/20"
+            className="flex items-center gap-1.5 bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded-lg transition-colors text-sm border border-green-500/20"
           >
             <svg
               className="w-4 h-4"

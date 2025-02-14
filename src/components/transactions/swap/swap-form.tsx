@@ -328,9 +328,7 @@ export function SwapForm({
             <div className="bg-green-900/20 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div className="text-sm text-green-500 mb-1">
-                    {t('trade.you_receive')}
-                  </div>
+                  <div className="text-sm mb-1">{t('trade.you_receive')}</div>
                   <div className="flex items-center gap-2">
                     {outputTokenInfo.image && (
                       <img
@@ -341,7 +339,7 @@ export function SwapForm({
                     )}
                     <div className="text-2xl font-semibold">
                       {isQuoteRefreshing ? (
-                        <span className="/70 animate-pulse">
+                        <span className="animate-pulse">
                           {formatLargeNumber(parseFloat(expectedOutput || '0'))}
                         </span>
                       ) : quoteResponse ? (
@@ -352,7 +350,7 @@ export function SwapForm({
                     </div>
                   </div>
                   {isLoggedIn && !outputBalanceLoading && quoteResponse && (
-                    <div className="text-sm text-green-500 mt-1">
+                    <div className="text-sm mt-1">
                       {t('trade.after')}:{' '}
                       {formatLargeNumber(
                         rawOutputBalance + parseFloat(expectedOutput || '0')
@@ -362,9 +360,7 @@ export function SwapForm({
                 </div>
 
                 <div className="text-right">
-                  <div className="text-sm text-green-500 mb-1">
-                    {t('trade.rate')}
-                  </div>
+                  <div className="text-sm mb-1">{t('trade.rate')}</div>
                   <div className="font-medium">
                     {isQuoteRefreshing ? (
                       <span className="/70 animate-pulse">
@@ -388,7 +384,7 @@ export function SwapForm({
                       '0'
                     )}
                   </div>
-                  <div className="text-sm text-green-500/70">
+                  <div className="text-sm">
                     {t('trade.per')}{' '}
                     {inputTokenInfo.symbol || currentInputToken}
                   </div>
@@ -410,7 +406,7 @@ export function SwapForm({
                   onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
                   className="flex items-center justify-between w-full p-3 bg-green-900/20 rounded-lg hover:bg-green-900/30 transition-colors"
                 >
-                  <span className="text-sm font-medium text-green-400">
+                  <span className="text-sm font-medium">
                     {t('trade.route_information_fees')}
                   </span>
                   <svg
@@ -435,28 +431,28 @@ export function SwapForm({
                     {isQuoteRefreshing ? (
                       <>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-green-400">
+                          <span className="text-sm">
                             {t('trade.network_fee')}
                           </span>
-                          <span className="text-green-400/70">
+                          <span>
                             {t('trade.updating')}
                             <LoadingDots />
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-green-400">
+                          <span className="text-sm">
                             {t('trade.price_impact')}
                           </span>
-                          <span className="text-green-400/70">
+                          <span>
                             {t('trade.updating')}
                             <LoadingDots />
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-green-400">
+                          <span className="text-sm">
                             {t('trade.minimum_received')}
                           </span>
-                          <span className="text-green-400/70">
+                          <span>
                             {t('trade.updating')}
                             <LoadingDots />
                           </span>
@@ -499,7 +495,7 @@ export function SwapForm({
                       <div className="font-medium">
                         {t('trade.pay_fees_with_sse')}
                       </div>
-                      <div className="text-sm text-green-500/70">
+                      <div className="text-sm">
                         {t('trade.get_50_off_on_transaction_fees')}
                       </div>
                     </div>
@@ -520,7 +516,7 @@ export function SwapForm({
                     <div className="absolute inset-0 border-2 border-green-400/20 rounded-full"></div>
                     <div className="absolute inset-0 border-2 border-green-400 rounded-full border-t-transparent animate-spin"></div>
                   </div>
-                  <span className="text-green-400/70 text-sm font-medium">
+                  <span className="text-sm font-medium">
                     {t('trade.checking_wallet_status')}
                     <LoadingDots />
                   </span>

@@ -136,7 +136,7 @@ export const TransactionCard = memo(function TransactionCard({
           tx.type !== 'COMPRESSED_NFT_MINT' &&
           tx.type !== 'SWAP' &&
           tx.type !== 'TRANSFER' && (
-            <div className="text-xs sm:text-sm text-green-300 font-mono break-words">
+            <div className="text-xs sm:text-sm font-mono break-words">
               {tx.description || t('transaction_log.no_description_available')}
             </div>
           )}

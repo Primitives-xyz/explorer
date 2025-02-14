@@ -37,7 +37,7 @@ export const PortfolioBalanceSection = ({
       {/* Header */}
       {!hideTitle && (
         <div className="border-b border-green-800 p-3 flex-shrink-0 bg-black/30">
-          <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+          <div className="text-sm font-mono whitespace-nowrap">
             {'>'} {t('portfolio_balance.title')}
           </div>
         </div>
@@ -66,9 +66,7 @@ export const PortfolioBalanceSection = ({
               <div className="h-5 w-28 bg-green-800/30 rounded"></div>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-green-800">
-              <div className="text-green-600/50 uppercase">
-                {t('common.total')}
-              </div>
+              <div className="uppercase">{t('common.total')}</div>
               <div className="h-5 w-28 bg-green-800/30 rounded"></div>
             </div>
           </div>
@@ -79,16 +77,14 @@ export const PortfolioBalanceSection = ({
               <span className="">${formatNumber(solValue)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-green-400">
+              <span>
                 {tokenCount} {t('common.tokens')}
               </span>
-              <span className="text-green-600">
-                ${formatNumber(otherTokensValue)}
-              </span>
+              <span>${formatNumber(otherTokensValue)}</span>
             </div>
             <div className="flex justify-between items-center pt-2 border-t border-green-800">
-              <span className="text-green-400">{t('common.total')}</span>
-              <span className="text-green-600">${formatNumber(totalUsd)}</span>
+              <span>{t('common.total')}</span>
+              <span>${formatNumber(totalUsd)}</span>
             </div>
           </div>
         )}

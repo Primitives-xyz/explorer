@@ -21,7 +21,7 @@ export function SwapSettings({
   return (
     <div className="flex items-center gap-4 pt-4 border-t border-green-900/20">
       <div className="flex-1">
-        <div className="text-sm text-green-500 mb-2">{t('trade.slippage')}</div>
+        <div className="text-sm mb-2">{t('trade.slippage')}</div>
         <select
           className="bg-green-900/20  p-2 rounded w-full"
           value={slippageBps}
@@ -37,7 +37,7 @@ export function SwapSettings({
       </div>
 
       <div className="flex-1">
-        <div className="text-sm text-green-500 mb-2">{t('trade.priority')}</div>
+        <div className="text-sm mb-2">{t('trade.priority')}</div>
         <select
           className="bg-green-900/20  p-2 rounded w-full"
           value={priorityLevel}

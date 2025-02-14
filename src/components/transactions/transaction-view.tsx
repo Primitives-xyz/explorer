@@ -74,7 +74,7 @@ export default function TransactionDetails({
   if (isLoading) {
     return (
       <div className="py-8">
-        <div className="text-green-500 font-mono text-center">
+        <div className="font-mono text-center">
           {t('transaction_log.loading_transaction_details')}
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function TransactionDetails({
       </div>
 
       <div className="mb-8">
-        <h1 className="text-2xl font-mono text-green-500 mb-2">
+        <h1 className="text-2xl font-mono mb-2">
           {t('transaction_log.transaction_details')}
         </h1>
         <TransactionSignature signature={signature} />
@@ -109,16 +109,16 @@ export default function TransactionDetails({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">
+          <h3 className="text-sm font-mono mb-2">
             {t('transaction_log.timestamp')}
           </h3>
-          <div className="text-xl font-mono text-green-400">
+          <div className="text-xl font-mono">
             {formatDistanceToNow(new Date(transaction.timestamp * 1000))} ago
           </div>
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">
+          <h3 className="text-sm font-mono mb-2">
             {t('transaction_log.type')}
           </h3>
           <TransactionBadge
@@ -129,27 +129,25 @@ export default function TransactionDetails({
         </div>
 
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h3 className="text-green-500/60 text-sm font-mono mb-2">
-            {t('transaction_log.fee')}
-          </h3>
-          <div className="text-xl font-mono text-green-400">
+          <h3 className="text-sm font-mono mb-2">{t('transaction_log.fee')}</h3>
+          <div className="text-xl font-mono">
             {formatLamportsToSol(transaction.fee)} SOL
           </div>
         </div>
       </div>
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
-        <h3 className="text-green-500/60 text-sm font-mono mb-2">
+        <h3 className="text-sm font-mono mb-2">
           {t('transaction_log.description')}
         </h3>
-        <div className="text-green-400 font-mono">
+        <div className="font-mono">
           {transaction.description ||
             t('transaction_log.no_description_available')}
         </div>
       </div>
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
-        <h3 className="text-green-500/60 text-sm font-mono mb-4">
+        <h3 className="text-sm font-mono mb-4">
           {t('transaction_log.account_changes')}
         </h3>
         <div className="space-y-3">

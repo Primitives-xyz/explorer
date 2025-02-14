@@ -45,18 +45,14 @@ export function SwapShareSection({
           </svg>
         </div>
         <div>
-          <h3 className="text-xl font-bold text-green-400">
-            {t('trade.swap_successful')}
-          </h3>
-          <p className="text-green-300/80 text-sm">
-            {t('trade.your_transaction_is_confirmed')}
-          </p>
+          <h3 className="text-xl font-bold">{t('trade.swap_successful')}</h3>
+          <p className="text-sm">{t('trade.your_transaction_is_confirmed')}</p>
         </div>
       </div>
 
       {/* Share Link Section */}
       <div className="space-y-2">
-        <div className="text-sm font-medium text-green-400 mb-2">
+        <div className="text-sm font-medium mb-2">
           {t('trade.share_your_trade')}
         </div>
         <div className="flex items-center gap-2">

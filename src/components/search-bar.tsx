@@ -587,14 +587,14 @@ export default function SearchBar({
                                   {formatPrice(token.price)}
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
-                                  <span className="text-green-500/90">
+                                  <span>
                                     {t('common.m_cap')}:{' '}
                                     {formatMarketCap(token.market_cap)}
                                   </span>
                                   {token.volume_24h_usd > 0 && (
                                     <>
-                                      <span className="text-green-800">•</span>
-                                      <span className="text-green-500/90">
+                                      <span>•</span>
+                                      <span>
                                         {t('common.vol')}: $
                                         {(token.volume_24h_usd / 1e6).toFixed(
                                           2

@@ -275,7 +275,7 @@ export const TradingStats = ({
       {!hideTitle && (
         <div className="border-b border-green-800 p-2 flex-shrink-0 bg-black/30">
           <div className="flex justify-between items-center">
-            <div className="text-green-500 text-sm font-mono whitespace-nowrap">
+            <div className="text-sm font-mono whitespace-nowrap">
               {'>'} {t('trade.trading_stats')}
             </div>
             <div className="flex items-center gap-2">
@@ -291,8 +291,8 @@ export const TradingStats = ({
                     onClick={() => setTimePeriod(tf.value)}
                     className={`uppercase text-xs font-mono px-2 py-1 rounded transition-colors ${
                       timePeriod === tf.value
-                        ? 'bg-green-800 text-green-200'
-                        : 'text-green-600 hover:bg-green-800/50'
+                        ? 'bg-green-800'
+                        : 'hover:bg-green-800/50'
                     }`}
                   >
                     {tf.label}
@@ -317,50 +317,42 @@ export const TradingStats = ({
           <div className="flex flex-col space-y-4 animate-pulse">
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-1">
-                <div className="text-green-600/50 text-xs uppercase">
-                  {t('common.pnl')}
-                </div>
+                <div className="text-xs uppercase">{t('common.pnl')}</div>
                 <div className="h-5 w-20 bg-green-800/30 rounded"></div>
               </div>
               <div className="flex flex-col space-y-1 items-end">
-                <div className="text-green-600/50 text-xs uppercase">
-                  {t('common.vol')}
-                </div>
+                <div className="text-xs uppercase">{t('common.vol')}</div>
                 <div className="h-5 w-24 bg-green-800/30 rounded"></div>
               </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-green-800/50 pt-3">
               <div className="flex flex-col space-y-1">
-                <div className="text-green-600/50 text-xs uppercase">
-                  {t('common.w_l')}
-                </div>
+                <div className="text-xs uppercase">{t('common.w_l')}</div>
                 <div className="h-5 w-14 bg-green-800/30 rounded"></div>
               </div>
               <div className="flex flex-col space-y-1 items-end">
-                <div className="text-green-600/50 text-xs uppercase">
+                <div className="text-xs uppercase">
                   {t('common.best_and_worst')}
                 </div>
                 <div className="h-5 w-28 bg-green-800/30 rounded"></div>
               </div>
             </div>
 
-            <div className="text-xs text-green-600/50 pt-1">
+            <div className="text-xs pt-1">
               {t('trade.most_traded')}:{' '}
               <span className="h-4 w-14 bg-green-800/30 rounded inline-block"></span>
             </div>
           </div>
         ) : stats.totalTrades === 0 ? (
-          <div className="text-center text-green-600 py-2 text-sm">
+          <div className="text-center py-2 text-sm">
             {t('trade.no_trades_found_for_selected_period')}
           </div>
         ) : (
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-0.5">
-                <div className="text-green-600 text-xs uppercase">
-                  {t('common.pnl')}
-                </div>
+                <div className="text-xs uppercase">{t('common.pnl')}</div>
                 <div>
                   <span
                     className={`text-base ${
@@ -372,26 +364,20 @@ export const TradingStats = ({
                 </div>
               </div>
               <div className="flex flex-col space-y-0.5 items-end">
-                <div className="text-green-600 text-xs uppercase">
-                  {t('common.vol')}
-                </div>
-                <div className="text-green-400">
-                  ${formatNumber(stats.totalVolume)}
-                </div>
+                <div className="text-xs uppercase">{t('common.vol')}</div>
+                <div>${formatNumber(stats.totalVolume)}</div>
               </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-green-800/50 pt-3">
               <div className="flex flex-col space-y-0.5">
-                <div className="text-green-600 text-xs uppercase">
-                  {t('common.w_l')}
-                </div>
-                <div className="text-green-400">
+                <div className="text-xs uppercase">{t('common.w_l')}</div>
+                <div>
                   {stats.winningTrades}/{stats.losingTrades}
                 </div>
               </div>
               <div className="flex flex-col space-y-0.5 items-end">
-                <div className="text-green-600 text-xs uppercase">
+                <div className="text-xs uppercase">
                   {t('common.best_and_worst')}
                 </div>
                 <div className="flex items-center gap-1">
@@ -405,7 +391,7 @@ export const TradingStats = ({
             </div>
 
             {mostTradedToken && (
-              <div className="text-xs text-green-600 pt-1">
+              <div className="text-xs pt-1">
                 {t('trade.most_traded')}:{mostTradedToken[0]}
               </div>
             )}
