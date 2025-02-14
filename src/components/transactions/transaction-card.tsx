@@ -1,5 +1,5 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { Avatar } from '@/components/common/avatar'
+import { Avatar } from '@/components/common/avatarr'
 import { TimeDisplay } from '@/components/common/time-display'
 import { useTransactionType } from '@/hooks/use-transaction-type'
 import type { Profile } from '@/utils/api'

@@ -3,7 +3,7 @@
 import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
 import { memo } from 'react'
-import { Avatar } from '../common/avatar'
+import { Avatar } from '../common/avatarr'
 import { FollowButton } from '../profile/follow-button'
 import { TokenAddress } from '../tokens/token-address'
 
