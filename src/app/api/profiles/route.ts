@@ -28,6 +28,7 @@ export async function GET(request: Request) {
         statusText: response.statusText,
         error: errorText,
         walletAddress,
+
       })
       return NextResponse.json(
         { error: 'Failed to fetch profiles from Tapestry' },

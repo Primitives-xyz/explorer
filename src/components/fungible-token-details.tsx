@@ -16,6 +16,7 @@ import {
   ArrowUpRightIcon as TwitterIcon,
 } from '@heroicons/react/24/outline'
 import Image from 'next/image'
+import { TokenAddress } from './tokens/token-address'
 
 // Define the people in common data type
 interface PeopleInCommonData {
@@ -83,43 +84,46 @@ export default function FungibleTokenDetails({
                     tokenInfo.content.metadata.description}
                 </p>
 
-                {overview && (
-                  <div className="flex flex-wrap gap-4">
-                    {overview.extensions?.website && (
-                      <a
-                        href={overview.extensions.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2  hover: transition-colors"
-                      >
-                        <GlobeAltIcon className="w-5 h-5" />
-                        <span>Website</span>
-                      </a>
-                    )}
-                    {overview.extensions?.discord && (
-                      <a
-                        href={overview.extensions.discord}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2  hover: transition-colors"
-                      >
-                        <DiscordIcon className="w-5 h-5" />
-                        <span>Discord</span>
-                      </a>
-                    )}
-                    {overview.extensions?.twitter && (
-                      <a
-                        href={overview.extensions.twitter}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2  hover: transition-colors"
-                      >
-                        <TwitterIcon className="w-5 h-5" />
-                        <span>Twitter</span>
-                      </a>
-                    )}
+                <div className="flex flex-wrap gap-4">
+                  {/* Token Address */}
+                  <div className="flex items-center gap-2 hover: transition-colors">
+                    <TokenAddress address={id} />
                   </div>
-                )}
+                  {/* Social Links */}
+                  {overview?.extensions?.website && (
+                    <a
+                      href={overview.extensions.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2  hover: transition-colors"
+                    >
+                      <GlobeAltIcon className="w-5 h-5" />
+                      <span>Website</span>
+                    </a>
+                  )}
+                  {overview?.extensions?.discord && (
+                    <a
+                      href={overview.extensions.discord}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2  hover: transition-colors"
+                    >
+                      <DiscordIcon className="w-5 h-5" />
+                      <span>Discord</span>
+                    </a>
+                  )}
+                  {overview?.extensions?.twitter && (
+                    <a
+                      href={overview.extensions.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2  hover: transition-colors"
+                    >
+                      <TwitterIcon className="w-5 h-5" />
+                      <span>Twitter</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -27,7 +27,6 @@ export function TokenInformation({
       <div className="space-y-3">
         <h4 className="text-lg font-mono  mb-3">Market Info</h4>
         {[
-          { label: 'Token Address', value: id },
           { label: 'Decimals', value: decimals },
           { label: 'Token Program', value: tokenProgram },
           { label: 'Markets', value: overview?.numberMarkets || 'N/A' },
@@ -53,7 +52,7 @@ export function TokenInformation({
       </div>
 
       {/* Social Links */}
-      {overview?.extensions && (
+      {overview?.extensions && Object.values(overview.extensions).some(Boolean) && (
         <div className="pt-4 border-t border-green-800/40">
           <h4 className="text-lg font-mono  mb-3">Links</h4>
           <div className="space-y-3">

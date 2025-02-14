@@ -1,4 +1,5 @@
 import { JUPITER_CONFIG } from '@/config/jupiter'
+import { GrafanaService } from '@/services/grafana'
 import {
   buildTransactionMessage,
   createSSETransferInstruction,
@@ -19,6 +20,7 @@ import bs58 from 'bs58'
 import { NextResponse } from 'next/server'
 
 const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+const grafanaService = GrafanaService.getInstance()
 
 interface SwapRequest {
   quoteResponse: any
@@ -57,7 +59,14 @@ export async function POST(
     if (!outputAtaInfo) {
       const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
       if (!PRIVATE_KEY) {
-        throw new Error('PAYER_PRIVATE_KEY is not set')
+        const error = new Error('PAYER_PRIVATE_KEY is not set')
+        await grafanaService.logError(error, {
+          severity: 'error',
+          source: 'jupiter-swap',
+          endpoint: '/api/jupiter/swap',
+          metadata: { walletAddress },
+        })
+        throw error
       }
       const secretKey = bs58.decode(PRIVATE_KEY)
       const payer = Keypair.fromSecretKey(secretKey)
@@ -79,7 +88,14 @@ export async function POST(
       if (!sseAtaInfo) {
         const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
         if (!PRIVATE_KEY) {
-          throw new Error('PAYER_PRIVATE_KEY is not set')
+          const error = new Error('PAYER_PRIVATE_KEY is not set')
+          await grafanaService.logError(error, {
+            severity: 'error',
+            source: 'jupiter-swap',
+            endpoint: '/api/jupiter/swap',
+            metadata: { walletAddress, sseTokenAccount },
+          })
+          throw error
         }
         const secretKey = bs58.decode(PRIVATE_KEY)
         const payer = Keypair.fromSecretKey(secretKey)
@@ -154,6 +170,12 @@ export async function POST(
     })
   } catch (error: any) {
     console.error('Error building swap transaction:', error)
+    await grafanaService.logError(error, {
+      severity: 'error',
+      source: 'jupiter-swap',
+      endpoint: '/api/jupiter/swap',
+      metadata: { error: error.message },
+    })
     return NextResponse.json(
       { error: error.message || 'Failed to build swap transaction' },
       { status: 500 }
