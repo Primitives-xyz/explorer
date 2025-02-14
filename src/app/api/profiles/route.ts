@@ -36,8 +36,34 @@ export async function GET(request: Request) {
       )
     }
 
-    const data = await response.json()
-    return NextResponse.json(data)
+
+    const identitiesData = await response.json()
+
+    // Transform identities data to match profiles shape
+    const transformedIdentities = identitiesData.identities.flatMap((identity: any) => 
+      identity.profiles.map((elem: any) => ({
+        profile: {
+          id: elem.profile.id,
+          created_at: elem.profile.created_at,
+          namespace: elem.profile.namespace,
+          username: elem.profile.username,
+          bio: elem.profile.bio || null,
+          image: elem.profile.image || null,
+        },
+        wallet: {
+          address: identity.wallet.address, 
+        },
+        namespace: {
+          name: elem.namespace?.name,
+          readableName: elem.namespace?.readableName,
+          userProfileURL: elem.namespace?.userProfileURL,
+          faviconURL: elem.namespace?.faviconURL,
+        },
+      }))
+    );
+    return NextResponse.json({profiles: transformedIdentities})
+
+        
   } catch (error) {
     console.error('Error fetching from Tapestry:', error)
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 })
