@@ -63,7 +63,6 @@ export function CreateProfile({
   const { profiles: suggestedProfiles, loading: loadingSuggestions } =
     useGetProfiles(
       walletAddress || '',
-      true // useIdentities = true
     )
 
   // Group usernames by their base name to find duplicates

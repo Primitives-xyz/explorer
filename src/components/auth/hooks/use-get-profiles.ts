@@ -48,7 +48,6 @@ export const useGetProfiles = (
 // Export a function to manually trigger revalidation
 export const refreshProfiles = (
   walletAddress: string,
-  useIdentities: boolean = false
 ) => {
   return mutate(`/api/identities?walletAddress=${walletAddress}`)
 }
