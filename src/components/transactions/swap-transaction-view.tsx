@@ -16,6 +16,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { JupiterSwapForm } from './jupiter-swap-form'
 import { TransactionCommentView } from './transaction-comment-view'
+import { TransactionBadge } from './transaction-badge'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -24,6 +25,20 @@ const DynamicConnectButton = dynamic(
     ),
   { ssr: false }
 )
+
+// Helper function to format source name
+const formatSourceName = (source: string) => {
+  switch (source) {
+    case 'JUPITER':
+      return 'Jupiter'
+    case 'RAYDIUM':
+      return 'Raydium'
+    case 'ORCA':
+      return 'Orca'
+    default:
+      return source.charAt(0).toUpperCase() + source.slice(1).toLowerCase()
+  }
+}
 
 interface TokenDisplay {
   mint: string
@@ -195,21 +210,34 @@ export function SwapTransactionView({
       {/* Transaction Header - Simplified */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm">
-          <Link
-            href={route('address', { id: sourceProfile?.username || sourceWallet })}
-            className="hover:text-gray-300 transition-colors"
-          >
-            {sourceProfile?.username === sourceWallet 
-              ? `${sourceWallet.slice(0, 4)}...${sourceWallet.slice(-4)}`
-              : sourceProfile?.username || `${sourceWallet.slice(0, 4)}...${sourceWallet.slice(-4)}`}
-          </Link>
-          <Link
-            href={route('address', { id: tx.signature })}
-            className="text-gray-400 hover:text-gray-300 transition-colors"
-          >
-            swapped
-          </Link>
-          <span className="text-gray-500">on Jupiter • {formatTimeAgo(new Date(tx.timestamp))}</span>
+          <div className="flex items-center gap-2">
+            <Avatar
+              username={sourceProfile?.username || sourceWallet}
+              size={32}
+              imageUrl={sourceProfile?.image}
+            />
+            <span className="text-gray-300">
+              {sourceProfile?.username ? (
+                sourceProfile.username === sourceWallet ? (
+                  <span className="font-mono">
+                    {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                  </span>
+                ) : (
+                  `@${sourceProfile.username}`
+                )
+              ) : (
+                <span className="font-mono">
+                  {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                </span>
+              )}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>swapped on {formatSourceName(tx.source)}</span>
+            <span className="text-gray-500">• {formatTimeAgo(new Date(tx.timestamp))}</span>
+            <span className="text-gray-500">•</span>
+            <TransactionBadge type={tx.type} source={tx.source} />
+          </div>
         </div>
         {!isOwnTrade && (
           <button
@@ -279,7 +307,11 @@ export function SwapTransactionView({
               </Link>
             </div>
             <span className="text-sm text-gray-500">
-              ${formatNumber(fromToken.amount * (fromToken.tokenInfo?.result && 'token_info' in fromToken.tokenInfo.result ? fromToken.tokenInfo.result.token_info?.price_info?.price_per_token || 0 : 0))}
+              ${formatNumber(fromToken.amount * (
+                fromToken.tokenInfo?.result?.token_info?.price_info?.price_per_token || 
+                fromToken.tokenInfo?.result?.content?.token_info?.price_info?.price_per_token || 
+                0
+              ))}
             </span>
           </div>
         </div>
@@ -327,24 +359,12 @@ export function SwapTransactionView({
               </Link>
             </div>
             <span className="text-sm text-gray-500">
-              ${formatNumber(toToken.amount * (toToken.tokenInfo?.result && 'token_info' in toToken.tokenInfo.result ? toToken.tokenInfo.result.token_info?.price_info?.price_per_token || 0 : 0))}
+              ${formatNumber(toToken.amount * (
+                toToken.tokenInfo?.result?.token_info?.price_info?.price_per_token || 
+                toToken.tokenInfo?.result?.content?.token_info?.price_info?.price_per_token || 
+                0
+              ))}
             </span>
-          </div>
-        </div>
-
-        {/* Social Metrics */}
-        <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
-          <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
-            </svg>
-            <span>1.2k</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>400</span>
           </div>
         </div>
       </div>
