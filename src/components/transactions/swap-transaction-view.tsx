@@ -199,10 +199,12 @@ export function SwapTransactionView({
             href={route('address', { id: sourceProfile?.username || sourceWallet })}
             className="hover:text-gray-300 transition-colors"
           >
-            {sourceProfile?.username || sourceWallet.slice(0, 4) + '...' + sourceWallet.slice(-4)}
+            {sourceProfile?.username === sourceWallet 
+              ? `${sourceWallet.slice(0, 4)}...${sourceWallet.slice(-4)}`
+              : sourceProfile?.username || `${sourceWallet.slice(0, 4)}...${sourceWallet.slice(-4)}`}
           </Link>
           <Link
-            href={`https://solscan.io/tx/${tx.signature}`}
+            href={route('address', { id: tx.signature })}
             className="text-gray-400 hover:text-gray-300 transition-colors"
           >
             swapped
