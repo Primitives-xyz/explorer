@@ -3,6 +3,7 @@ import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/avatar'
 import { Modal } from '@/components/common/modal'
 import { useTokenInfo } from '@/hooks/use-token-info'
+import { useTokenUSDCPrice } from '@/hooks/use-token-usdc-price'
 import type { TokenInfo } from '@/types/Token'
 import type { Profile } from '@/utils/api'
 import { formatNumber } from '@/utils/format'
@@ -97,20 +98,80 @@ export function SwapTransactionView({
       ? null
       : toToken?.mint
   )
+
+  // Add price hooks for both tokens
+  const { price: fromTokenPrice, loading: fromPriceLoading } = useTokenUSDCPrice(
+    fromToken?.mint,
+    fromToken?.mint === 'So11111111111111111111111111111111111111112'
+      ? 9 // SOL has 9 decimals
+      : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+        fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+      ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
+      : 6
+  )
+  const { price: toTokenPrice, loading: toPriceLoading } = useTokenUSDCPrice(
+    toToken?.mint,
+    toToken?.mint === 'So11111111111111111111111111111111111111112'
+      ? 9 // SOL has 9 decimals
+      : toToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+        toToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+      ? toToken.tokenInfo.result.token_info?.decimals ?? 6
+      : 6
+  )
+
   useEffect(() => {
     async function loadTokenInfo() {
-      // Parse description for initial token info
-      // Format can be either:
-      // "wallet swapped X SOL for Y TOKEN" or
-      // "wallet swapped X TOKEN for Y SOL"
+      const SOL_MINT = 'So11111111111111111111111111111111111111112'
+
+      // Handle swap event format
+      const swapEvent = tx.events?.find(event => event.type === 'SWAP')?.swap
+      if (swapEvent) {
+        // For token -> token swaps
+        if (swapEvent.tokenInputs?.[0] && swapEvent.tokenOutputs?.[0]) {
+          setFromToken({
+            mint: swapEvent.tokenInputs[0].mint,
+            amount: swapEvent.tokenInputs[0].tokenAmount,
+          })
+          
+          setToToken({
+            mint: swapEvent.tokenOutputs[0].mint,
+            amount: swapEvent.tokenOutputs[0].tokenAmount,
+          })
+        }
+        // For SOL -> token swaps
+        else if (swapEvent.nativeInput && swapEvent.tokenOutputs?.[0]) {
+          setFromToken({
+            mint: SOL_MINT,
+            amount: parseFloat(swapEvent.nativeInput.amount),
+          })
+          
+          setToToken({
+            mint: swapEvent.tokenOutputs[0].mint,
+            amount: swapEvent.tokenOutputs[0].tokenAmount,
+          })
+        }
+        // For token -> SOL swaps
+        else if (swapEvent.tokenInputs?.[0] && swapEvent.nativeOutput) {
+          setFromToken({
+            mint: swapEvent.tokenInputs[0].mint,
+            amount: swapEvent.tokenInputs[0].tokenAmount,
+          })
+          
+          setToToken({
+            mint: SOL_MINT,
+            amount: parseFloat(swapEvent.nativeOutput.amount),
+          })
+        }
+        return
+      }
+
+      // Fallback to description parsing for older format
       const descParts = tx.description?.split(' ') || []
       const fromAmount = parseFloat(descParts[2] || '0')
       const toAmount = parseFloat(descParts[5] || '0')
       const fromTokenMint = fromMint || descParts[3] || ''
       const toTokenMint = toMint || descParts[6] || ''
       console.log({ toMint, fromMint, fromTokenMint, toTokenMint, descParts })
-
-      const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
       // Check if this is a SOL -> Token swap or Token -> SOL swap
       const isFromSol = fromTokenMint.toLowerCase() === 'sol'
@@ -306,12 +367,12 @@ export function SwapTransactionView({
                     `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`}
               </Link>
             </div>
-            <span className="text-sm text-gray-500">
-              ${formatNumber(fromToken.amount * (
-                fromToken.tokenInfo?.result?.token_info?.price_info?.price_per_token || 
-                fromToken.tokenInfo?.result?.content?.token_info?.price_info?.price_per_token || 
-                0
-              ))}
+            <span className="text-xs text-gray-500">
+              {fromTokenPrice !== null && !fromPriceLoading
+                ? `$${formatNumber(fromToken.amount * fromTokenPrice)}`
+                : fromPriceLoading
+                ? 'Loading...'
+                : ''}
             </span>
           </div>
         </div>
@@ -358,12 +419,12 @@ export function SwapTransactionView({
                     `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`}
               </Link>
             </div>
-            <span className="text-sm text-gray-500">
-              ${formatNumber(toToken.amount * (
-                toToken.tokenInfo?.result?.token_info?.price_info?.price_per_token || 
-                toToken.tokenInfo?.result?.content?.token_info?.price_info?.price_per_token || 
-                0
-              ))}
+            <span className="text-xs text-gray-500">
+              {toTokenPrice !== null && !toPriceLoading
+                ? `$${formatNumber(toToken.amount * toTokenPrice)}`
+                : toPriceLoading
+                ? 'Loading...'
+                : ''}
             </span>
           </div>
         </div>
