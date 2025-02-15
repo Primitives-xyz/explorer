@@ -144,7 +144,7 @@ export default function SearchBar({
         )}&target=token&sort_by=marketcap&sort_type=desc&verify_token=true&offset=0&limit=5`,
         {
           headers: {
-            'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY || '',
+            'X-API-KEY': 'ce36cc09be9d41d68f9fd4c45346c9f3',
             accept: 'application/json',
           },
         }
