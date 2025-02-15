@@ -115,7 +115,7 @@ export const fetchSwapInstructions = async (
         userPublicKey: request.userPublicKey,
         prioritizationFeeLamports: request.prioritizationFeeLamports,
         dynamicComputeUnitLimit: true,
-        dynamicSlippage: true,
+        dynamicSlippage: request.slippageBps === 'auto' ? true : false,
         useSharedAccounts: false,
         feeAccount: request.feeAccount,
       }),

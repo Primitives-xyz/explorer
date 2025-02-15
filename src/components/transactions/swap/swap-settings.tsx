@@ -23,7 +23,7 @@ export function SwapSettings({
       <div className="flex-1">
         <div className="text-sm mb-2">{t('trade.slippage')}</div>
         <select
-          className="bg-green-900/20  p-2 rounded w-full"
+          className="bg-green-900/20 p-2 rounded w-full"
           value={slippageBps}
           onChange={(e) =>
             onSlippageChange(
@@ -43,7 +43,7 @@ export function SwapSettings({
       <div className="flex-1">
         <div className="text-sm mb-2">{t('trade.priority')}</div>
         <select
-          className="bg-green-900/20  p-2 rounded w-full"
+          className="bg-green-900/20 p-2 rounded w-full"
           value={priorityLevel}
           onChange={(e) => onPriorityChange(e.target.value as PriorityLevel)}
           disabled={disabled}

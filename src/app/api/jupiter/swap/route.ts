@@ -30,6 +30,8 @@ interface SwapRequest {
   priorityFee?: number
   mintAddress: string
   isCopyTrade?: boolean
+  slippageMode: 'auto' | 'fixed'
+  slippageBps: number
 }
 
 export async function POST(
@@ -43,6 +45,8 @@ export async function POST(
       sseFeeAmount,
       priorityFee,
       mintAddress,
+      slippageMode,
+      slippageBps,
     } = (await request.json()) as SwapRequest
 
     // Get and verify the ATA for the output token
@@ -111,11 +115,15 @@ export async function POST(
     }
 
     // Get swap instructions from Jupiter
+    const effectiveSlippageBps =
+      slippageMode === 'auto' ? quoteResponse.slippageBps : slippageBps
+
     const swapResponse = await fetchSwapInstructions({
       quoteResponse,
       userPublicKey: walletAddress,
       prioritizationFeeLamports: priorityFee,
       feeAccount: associatedTokenAddress.toString(),
+      slippageBps: effectiveSlippageBps,
     })
 
     // Get lookup table accounts

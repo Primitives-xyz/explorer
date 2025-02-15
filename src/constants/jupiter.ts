@@ -1,4 +1,4 @@
-import type { PriorityLevelOption } from '@/types/jupiter'
+import type { PriorityLevelOption, SlippageValue } from '@/types/jupiter'
 
 // Platform fee configuration
 export const PLATFORM_FEE_BPS = 80 // 0.8% = 80 basis points
@@ -6,7 +6,8 @@ export const PLATFORM_FEE_ACCOUNT =
   '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 export const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
 
-export const DEFAULT_SLIPPAGE_BPS = 50 // 0.5% default
+export const DEFAULT_SLIPPAGE_BPS: SlippageValue = 'auto' // Default to auto slippage
+export const DEFAULT_SLIPPAGE_VALUE = 50 // 0.5% as base value when needed
 export const DEFAULT_PRIORITY_LEVEL = 'Medium'
 
 // Priority level options

@@ -2,12 +2,17 @@ import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import {
   DEFAULT_PRIORITY_LEVEL,
   DEFAULT_SLIPPAGE_BPS,
+  DEFAULT_SLIPPAGE_VALUE,
   PLATFORM_FEE_ACCOUNT,
   PLATFORM_FEE_BPS,
   SSE_TOKEN_MINT,
 } from '@/constants/jupiter'
 import { useToast } from '@/hooks/use-toast'
-import type { PriorityLevel, QuoteResponse } from '@/types/jupiter'
+import type {
+  PriorityLevel,
+  QuoteResponse,
+  SlippageValue,
+} from '@/types/jupiter'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
@@ -45,9 +50,8 @@ export function useJupiterSwap({
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [priceImpact, setPriceImpact] = useState<string>('')
-  const [slippageBps, setSlippageBps] = useState<number | 'auto'>(
-    DEFAULT_SLIPPAGE_BPS
-  )
+  const [slippageBps, setSlippageBps] =
+    useState<SlippageValue>(DEFAULT_SLIPPAGE_BPS)
   const [showTradeLink, setShowTradeLink] = useState(false)
   const [isFullyConfirmed, setIsFullyConfirmed] = useState(false)
   const [isQuoteRefreshing, setIsQuoteRefreshing] = useState(false)
@@ -146,14 +150,11 @@ export function useJupiterSwap({
         Number(inputAmount) * Math.pow(10, inputDecimals)
       )
 
+      // Always use DEFAULT_SLIPPAGE_VALUE for quotes
       const QUOTE_URL =
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
         `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-        `&slippageBps=${
-          slippageBps === 'auto'
-            ? calculateAutoSlippage(priceImpact)
-            : slippageBps
-        }` +
+        `&slippageBps=${DEFAULT_SLIPPAGE_VALUE}` +
         // Always add a 1 bps platform fee, even when using SSE fees
         `&platformFeeBps=${
           platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
@@ -162,42 +163,13 @@ export function useJupiterSwap({
 
       const response = await fetch(QUOTE_URL).then((res) => res.json())
 
-      setQuoteResponse(response)
       // Use the output token's decimals for formatting
       const outputDecimals = outputTokenInfo.decimals ?? 9
       setExpectedOutput(
         (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString()
       )
       setPriceImpact(response.priceImpactPct)
-
-      // After getting price impact, if using auto slippage, update the quote with calculated slippage
-      if (slippageBps === 'auto' && response.priceImpactPct) {
-        const calculatedSlippage = calculateAutoSlippage(
-          response.priceImpactPct
-        )
-        // Only fetch again if the calculated slippage is different from default
-        if (calculatedSlippage !== DEFAULT_SLIPPAGE_BPS) {
-          const RECALC_QUOTE_URL =
-            `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-            `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-            `&slippageBps=${calculatedSlippage}` +
-            `&platformFeeBps=${
-              platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-            }` +
-            `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
-
-          const recalcResponse = await fetch(RECALC_QUOTE_URL).then((res) =>
-            res.json()
-          )
-          setQuoteResponse(recalcResponse)
-          setExpectedOutput(
-            (
-              Number(recalcResponse.outAmount) / Math.pow(10, outputDecimals)
-            ).toString()
-          )
-          setPriceImpact(recalcResponse.priceImpactPct)
-        }
-      }
+      setQuoteResponse(response)
 
       // Calculate SSE fee amount if using SSE for fees
       if (platformFeeBps === 1 && ssePrice) {
@@ -275,14 +247,11 @@ export function useJupiterSwap({
           const multiplier = Math.pow(10, inputDecimals)
           const adjustedAmount = Number(inputAmount) * multiplier
 
-          // For auto slippage, start with default slippage
-          const initialSlippage =
-            slippageBps === 'auto' ? DEFAULT_SLIPPAGE_BPS : slippageBps
-
+          // Always use DEFAULT_SLIPPAGE_VALUE for quotes
           const QUOTE_2_URL: string =
             `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
             `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-            `&slippageBps=${initialSlippage}` +
+            `&slippageBps=${DEFAULT_SLIPPAGE_VALUE}` +
             // Always add a 1 bps platform fee, even when using SSE fees
             `&platformFeeBps=${
               platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
@@ -292,25 +261,6 @@ export function useJupiterSwap({
           const response: QuoteResponse = await fetch(QUOTE_2_URL).then((res) =>
             res.json()
           )
-
-          // If auto slippage is enabled, recalculate with the actual price impact
-          if (slippageBps === 'auto' && response.priceImpactPct) {
-            const calculatedSlippage = calculateAutoSlippage(
-              response.priceImpactPct
-            )
-            if (calculatedSlippage !== initialSlippage) {
-              const RECALC_URL: string =
-                `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-                `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-                `&slippageBps=${calculatedSlippage}` +
-                `&platformFeeBps=${
-                  platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-                }` +
-                `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
-
-              return await fetch(RECALC_URL).then((res) => res.json())
-            }
-          }
 
           return response
         })(),
@@ -374,6 +324,13 @@ export function useJupiterSwap({
           mintAddress: outputMint,
           sseTokenAccount: platformFeeBps === 1 ? sseFeeAta : undefined,
           sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
+          slippageMode: slippageBps === 'auto' ? 'auto' : 'fixed',
+          // For auto mode, calculate slippage based on price impact
+          // For fixed mode, use the user-selected value
+          slippageBps:
+            slippageBps === 'auto'
+              ? calculateAutoSlippage(priceImpact)
+              : slippageBps,
         }),
       }).then((res) => res.json())
 

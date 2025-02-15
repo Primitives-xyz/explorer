@@ -10,14 +10,13 @@ import { formatNumber } from '@/utils/format'
 import { formatTimeAgo } from '@/utils/format-time'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
-import { ExternalLink } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { JupiterSwapForm } from './jupiter-swap-form'
-import { TransactionCommentView } from './transaction-comment-view'
 import { TransactionBadge } from './transaction-badge'
+import { TransactionCommentView } from './transaction-comment-view'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -100,15 +99,16 @@ export function SwapTransactionView({
   )
 
   // Add price hooks for both tokens
-  const { price: fromTokenPrice, loading: fromPriceLoading } = useTokenUSDCPrice(
-    fromToken?.mint,
-    fromToken?.mint === 'So11111111111111111111111111111111111111112'
-      ? 9 // SOL has 9 decimals
-      : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-        fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-      ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
-      : 6
-  )
+  const { price: fromTokenPrice, loading: fromPriceLoading } =
+    useTokenUSDCPrice(
+      fromToken?.mint,
+      fromToken?.mint === 'So11111111111111111111111111111111111111112'
+        ? 9 // SOL has 9 decimals
+        : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+          fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+        ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
+        : 6
+    )
   const { price: toTokenPrice, loading: toPriceLoading } = useTokenUSDCPrice(
     toToken?.mint,
     toToken?.mint === 'So11111111111111111111111111111111111111112'
@@ -124,7 +124,7 @@ export function SwapTransactionView({
       const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
       // Handle swap event format
-      const swapEvent = tx.events?.find(event => event.type === 'SWAP')?.swap
+      const swapEvent = tx.events?.find((event) => event.type === 'SWAP')?.swap
       if (swapEvent) {
         // For token -> token swaps
         if (swapEvent.tokenInputs?.[0] && swapEvent.tokenOutputs?.[0]) {
@@ -132,7 +132,7 @@ export function SwapTransactionView({
             mint: swapEvent.tokenInputs[0].mint,
             amount: swapEvent.tokenInputs[0].tokenAmount,
           })
-          
+
           setToToken({
             mint: swapEvent.tokenOutputs[0].mint,
             amount: swapEvent.tokenOutputs[0].tokenAmount,
@@ -144,7 +144,7 @@ export function SwapTransactionView({
             mint: SOL_MINT,
             amount: parseFloat(swapEvent.nativeInput.amount),
           })
-          
+
           setToToken({
             mint: swapEvent.tokenOutputs[0].mint,
             amount: swapEvent.tokenOutputs[0].tokenAmount,
@@ -156,7 +156,7 @@ export function SwapTransactionView({
             mint: swapEvent.tokenInputs[0].mint,
             amount: swapEvent.tokenInputs[0].tokenAmount,
           })
-          
+
           setToToken({
             mint: SOL_MINT,
             amount: parseFloat(swapEvent.nativeOutput.amount),
@@ -337,7 +337,8 @@ export function SwapTransactionView({
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-              {fromToken.mint === 'So11111111111111111111111111111111111111112' ? (
+              {fromToken.mint ===
+              'So11111111111111111111111111111111111111112' ? (
                 <Image
                   src="/images/solana-icon.svg"
                   alt="solana icon"
@@ -350,7 +351,10 @@ export function SwapTransactionView({
               ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
                 <img
                   src={fromToken.tokenInfo.result.content.links.image}
-                  alt={fromToken.tokenInfo.result?.content?.metadata?.symbol || 'Token'}
+                  alt={
+                    fromToken.tokenInfo.result?.content?.metadata?.symbol ||
+                    'Token'
+                  }
                   className="w-8 h-8 rounded-lg"
                 />
               ) : (
@@ -363,15 +367,20 @@ export function SwapTransactionView({
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
               <span className="text-red-400 text-sm">-</span>
-              <span className="font-mono text-lg">{formatNumber(fromToken.amount)}</span>
+              <span className="font-mono text-lg">
+                {formatNumber(fromToken.amount)}
+              </span>
               <Link
                 href={route('address', { id: fromToken.mint })}
                 className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
               >
-                {fromToken.mint === 'So11111111111111111111111111111111111111112'
+                {fromToken.mint ===
+                'So11111111111111111111111111111111111111112'
                   ? 'SOL'
                   : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                    `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`}
+                    `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(
+                      -4
+                    )}`}
               </Link>
             </div>
             <span className="text-xs text-gray-500">
@@ -389,7 +398,8 @@ export function SwapTransactionView({
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-              {toToken.mint === 'So11111111111111111111111111111111111111112' ? (
+              {toToken.mint ===
+              'So11111111111111111111111111111111111111112' ? (
                 <Image
                   src="/images/solana-icon.svg"
                   alt="solana icon"
@@ -402,7 +412,10 @@ export function SwapTransactionView({
               ) : toToken.tokenInfo?.result?.content?.links?.image ? (
                 <img
                   src={toToken.tokenInfo.result.content.links.image}
-                  alt={toToken.tokenInfo.result?.content?.metadata?.symbol || 'Token'}
+                  alt={
+                    toToken.tokenInfo.result?.content?.metadata?.symbol ||
+                    'Token'
+                  }
                   className="w-8 h-8 rounded-lg"
                 />
               ) : (
@@ -415,7 +428,9 @@ export function SwapTransactionView({
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
               <span className="text-green-400 text-sm">+</span>
-              <span className="font-mono text-lg">{formatNumber(toToken.amount)}</span>
+              <span className="font-mono text-lg">
+                {formatNumber(toToken.amount)}
+              </span>
               <Link
                 href={route('address', { id: toToken.mint })}
                 className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"

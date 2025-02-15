@@ -222,16 +222,17 @@ export function SwapForm({
     setCurrentOutputToken(token.symbol)
   }
 
-  // Updated helper function to show full decimal precision
+  // Updated helper function to show full decimal precision based on token decimals
   const formatLargeNumber = (num: number) => {
     // Handle very small numbers with exponential notation
     if (num !== 0 && Math.abs(num) < 0.0001) {
       return num.toExponential(4)
     }
-    // Show up to 6 decimal places for regular numbers
+    // Show up to token's decimal places for regular numbers
+    const decimals = outputTokenInfo.decimals ?? 6
     return num.toLocaleString(undefined, {
-      minimumFractionDigits: 6,
-      maximumFractionDigits: 6,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: decimals,
     })
   }
 
@@ -254,6 +255,32 @@ export function SwapForm({
     setIsRouteInfoOpen(false)
   }
 
+  // Utility function to format raw token amounts
+  const formatRawAmount = (rawAmount: bigint, decimals: bigint): string => {
+    try {
+      if (rawAmount === 0n) return '0'
+
+      const divisor = 10n ** decimals
+      const integerPart = rawAmount / divisor
+      const fractionPart = rawAmount % divisor
+
+      if (fractionPart === 0n) {
+        return integerPart.toString()
+      }
+
+      const fractionStr = fractionPart
+        .toString()
+        .padStart(Number(decimals), '0')
+      const trimmedFraction = fractionStr.replace(/0+$/, '')
+      return trimmedFraction
+        ? `${integerPart}.${trimmedFraction}`
+        : integerPart.toString()
+    } catch (err) {
+      console.error('Error formatting amount:', err)
+      return '0'
+    }
+  }
+
   return (
     <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
       <div className="flex flex-col gap-3">
@@ -266,22 +293,6 @@ export function SwapForm({
           isLoggedIn={isLoggedIn}
           isBalanceLoading={inputBalanceLoading}
           disabled={showLoadingState}
-          onHalf={() => {
-            if (!inputRawBalance) return
-
-            // Calculate half and round to 2 decimal places
-            const halfValue = Math.floor((inputRawBalance * 100) / 2) / 100
-            setDisplayAmount(halfValue.toFixed(2))
-            updateEffectiveAmount(halfValue.toFixed(2))
-          }}
-          onMax={() => {
-            if (!inputRawBalance) return
-
-            // Round to 2 decimal places
-            const value = Math.floor(inputRawBalance * 100) / 100
-            setDisplayAmount(value.toFixed(2))
-            updateEffectiveAmount(value.toFixed(2))
-          }}
           error={inputError}
           validateAmount={validateAmount}
         />

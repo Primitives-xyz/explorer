@@ -5,6 +5,7 @@ export interface SwapInstructionsRequest {
   userPublicKey: string
   prioritizationFeeLamports?: number
   feeAccount: string
+  slippageBps: number | 'auto'
 }
 
 export interface SwapInstructionsResponse {
