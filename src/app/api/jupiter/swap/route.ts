@@ -162,14 +162,22 @@ export async function POST(
     )
 
     const transaction = new VersionedTransaction(message)
-
-    // Simulate the transaction before returning
-    await simulateTransaction(
-      connection,
-      transaction,
-      addressLookupTableAccounts
-    )
-
+    try {
+      // Simulate the transaction before returning
+      await simulateTransaction(
+        connection,
+        transaction,
+        addressLookupTableAccounts
+      )
+    } catch (error: any) {
+      console.error('Error simulating transaction:', error)
+      await grafanaService.logError(error, {
+        severity: 'error',
+        source: 'jupiter-swap',
+        endpoint: '/api/jupiter/swap',
+        metadata: { error: error.message },
+      })
+    }
     return NextResponse.json({
       transaction: Buffer.from(transaction.serialize()).toString('base64'),
       lastValidBlockHeight: swapResponse.lastValidBlockHeight,
