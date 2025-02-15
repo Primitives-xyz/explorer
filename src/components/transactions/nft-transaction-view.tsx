@@ -12,6 +12,13 @@ import {
 } from '@/utils/nft-transaction'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { TokenAddress } from '../tokens/token-address'
+import { Avatar } from '@/components/common/avatar'
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import type { Profile } from '@/utils/api'
+import { formatTimeAgo } from '@/utils/format-time'
+import { TransactionBadge } from './transaction-badge'
+import Link from 'next/link'
+import { route } from '@/utils/routes'
 
 interface NFTTransactionViewProps {
   tx: ExtendedTransaction
@@ -25,6 +32,12 @@ export const NFTTransactionView = memo(function NFTTransactionView({
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [_detectionMethod, setDetectionMethod] = useState<string>('')
   const { data: nftInfo, loading, error } = useTokenInfo(nftMint)
+
+  // Add profile lookup for source wallet
+  const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
+  const sourceProfile = sourceProfiles?.find(
+    (p: Profile) => p.namespace.name === 'nemoapp'
+  )?.profile
 
   // Memoize expensive computations
   const { instructions, transfers, compressedNFTMintEvent } = useMemo(() => {
@@ -86,112 +99,102 @@ export const NFTTransactionView = memo(function NFTTransactionView({
   }, [tx, sourceWallet, instructions, compressedNFTMintEvent])
 
   return (
-    <div className="group relative overflow-hidden transition-all duration-200 hover:scale-[1.01] p-3 bg-gradient-to-r from-green-950/40 to-green-900/20 rounded-lg border border-green-800/20 hover:border-green-700/30">
-      <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-
-      <div className="flex items-center gap-3 relative z-10">
-        {/* NFT Image Section */}
-        <div className="relative flex-shrink-0">
-          <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-lg" />
-          <div className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/30 group-hover:ring-green-400/40 transition-all duration-200 flex items-center justify-center relative overflow-hidden">
-            {loading ? (
-              <div className="animate-pulse w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20" />
-            ) : nftInfo?.result?.content?.links?.image ? (
-              <img
-                src={nftInfo.result.content.links.image}
-                alt={nftInfo.result.content.metadata.symbol || 'NFT'}
-                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
-              />
-            ) : compressedNFTMintEvent?.metadata?.uri ? (
-              <img
-                src={compressedNFTMintEvent.metadata.uri}
-                alt={compressedNFTMintEvent.metadata.symbol || 'NFT'}
-                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
-              />
-            ) : (
-              <div className=" font-mono text-xs flex items-center justify-center w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20">
-                NFT
-              </div>
-            )}
+    <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
+      {/* Transaction Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <Avatar
+              username={sourceProfile?.username || sourceWallet}
+              size={32}
+              imageUrl={sourceProfile?.image}
+            />
+            <span className="text-gray-300">
+              {sourceProfile?.username ? (
+                sourceProfile.username === sourceWallet ? (
+                  <span className="font-mono">
+                    {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                  </span>
+                ) : (
+                  `@${sourceProfile.username}`
+                )
+              ) : (
+                <span className="font-mono">
+                  {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                </span>
+              )}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>{isMint ? 'minted NFT' : isBuy ? 'bought NFT' : 'sold NFT'}</span>
+            <Link
+              href={route('address', { id: tx.signature })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              • {formatTimeAgo(new Date(tx.timestamp))}
+            </Link>
+            <span className="text-gray-500">•</span>
+            <TransactionBadge type={tx.type} source={tx.source} />
           </div>
         </div>
+      </div>
 
-        {/* Main Content Section */}
-        <div className="flex-1 min-w-0">
-          {/* Top Row - Name and Symbol */}
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className=" font-medium text-sm truncate">
-              {compressedNFTMintEvent?.metadata?.name ||
-                nftInfo?.result?.content?.metadata?.name ||
-                `NFT ${nftMint?.slice(0, 4)}...${nftMint?.slice(-4)}`}
-            </h3>
-            {(compressedNFTMintEvent?.metadata?.symbol ||
-              nftInfo?.result?.content?.metadata?.symbol) && (
-              <span className="/60 text-xs whitespace-nowrap">
-                (
-                {compressedNFTMintEvent?.metadata?.symbol ||
-                  nftInfo?.result?.content?.metadata?.symbol}
-                )
-              </span>
-            )}
-          </div>
+      {/* Existing NFT details */}
+      <div className="flex items-center gap-3 text-sm">
+        <span
+          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+            isMint
+              ? 'bg-blue-500/10 text-blue-400'
+              : isBuy
+              ? 'bg-green-500/10 '
+              : 'bg-red-500/10 text-red-400'
+          }`}
+        >
+          {isMint ? 'Minted' : isBuy ? 'Bought' : 'Sold'}
+        </span>
 
-          {/* Bottom Row */}
-          <div className="flex items-center gap-3 text-sm">
-            <span
-              className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                isMint
-                  ? 'bg-blue-500/10 text-blue-400'
-                  : isBuy
-                  ? 'bg-green-500/10 '
-                  : 'bg-red-500/10 text-red-400'
-              }`}
-            >
-              {isMint ? 'Minted' : isBuy ? 'Bought' : 'Sold'}
+        {saleAmount > 0 && (
+          <div className="flex items-center gap-1">
+            <span className=" font-mono font-medium">
+              {formatNumber(saleAmount)}
             </span>
-
-            {saleAmount > 0 && (
-              <div className="flex items-center gap-1">
-                <span className=" font-mono font-medium">
-                  {formatNumber(saleAmount)}
-                </span>
-                <span className="/80 text-xs">SOL</span>
-              </div>
-            )}
-
-            <div className="flex items-center gap-3 text-xs /60">
-              {nftMint && (
-                <div className="flex items-center gap-1 hover:/80 transition-colors duration-200">
-                  <span>NFT:</span>
-                  <TokenAddress address={nftMint} />
-                </div>
-              )}
-
-              {/* Collection Tag */}
-              {nftInfo?.result?.grouping?.find(
-                (g) => g.group_key === 'collection'
-              )?.group_value && (
-                <div className="flex items-center gap-1">
-                  <span>Collection:</span>
-                  <TokenAddress
-                    address={
-                      nftInfo.result.grouping.find(
-                        (g) => g.group_key === 'collection'
-                      )!.group_value
-                    }
-                  />
-                </div>
-              )}
-
-              {/* Compressed NFT Badge */}
-              {(tx.type === 'COMPRESSED_NFT_MINT' ||
-                compressedNFTMintEvent) && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/10 ">
-                  Compressed
-                </span>
-              )}
-            </div>
+            <span className="/80 text-xs">SOL</span>
           </div>
+        )}
+
+        <div className="flex items-center gap-3 text-xs /60">
+          {nftMint && (
+            <div className="flex items-center gap-1 hover:/80 transition-colors duration-200">
+              <span>NFT:</span>
+              <TokenAddress address={nftMint} />
+            </div>
+          )}
+
+          {/* Collection Tag */}
+          {nftInfo?.result?.grouping?.find(
+            (g) => g.group_key === 'collection'
+          )?.group_value && (
+            <div className="flex items-center gap-1">
+              <span>Collection:</span>
+              <TokenAddress
+                address={
+                  nftInfo.result.grouping.find(
+                    (g) => g.group_key === 'collection'
+                  )!.group_value
+                }
+              />
+            </div>
+          )}
+
+          {/* Compressed NFT Badge */}
+          {(tx.type === 'COMPRESSED_NFT_MINT' ||
+            compressedNFTMintEvent) && (
+            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/10 ">
+              Compressed
+            </span>
+          )}
         </div>
       </div>
 
