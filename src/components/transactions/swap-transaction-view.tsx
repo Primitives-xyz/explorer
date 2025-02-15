@@ -295,7 +295,14 @@ export function SwapTransactionView({
           </div>
           <div className="flex items-center gap-1">
             <span>swapped on {formatSourceName(tx.source)}</span>
-            <span className="text-gray-500">• {formatTimeAgo(new Date(tx.timestamp))}</span>
+            <Link
+              href={route('address', { id: tx.signature })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              • {formatTimeAgo(new Date(tx.timestamp))}
+            </Link>
             <span className="text-gray-500">•</span>
             <TransactionBadge type={tx.type} source={tx.source} />
           </div>
