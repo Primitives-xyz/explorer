@@ -44,7 +44,9 @@ export function useJupiterSwap({
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [priceImpact, setPriceImpact] = useState<string>('')
-  const [slippageBps, setSlippageBps] = useState<number>(DEFAULT_SLIPPAGE_BPS)
+  const [slippageBps, setSlippageBps] = useState<number | 'auto'>(
+    DEFAULT_SLIPPAGE_BPS
+  )
   const [showTradeLink, setShowTradeLink] = useState(false)
   const [isFullyConfirmed, setIsFullyConfirmed] = useState(false)
   const [isQuoteRefreshing, setIsQuoteRefreshing] = useState(false)
@@ -143,7 +145,11 @@ export function useJupiterSwap({
       const QUOTE_URL =
         `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
         `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-        `&slippageBps=${slippageBps}` +
+        `&slippageBps=${
+          slippageBps === 'auto'
+            ? calculateAutoSlippage(priceImpact)
+            : slippageBps
+        }` +
         // Always add a 1 bps platform fee, even when using SSE fees
         `&platformFeeBps=${
           platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
@@ -159,6 +165,35 @@ export function useJupiterSwap({
         (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString()
       )
       setPriceImpact(response.priceImpactPct)
+
+      // After getting price impact, if using auto slippage, update the quote with calculated slippage
+      if (slippageBps === 'auto' && response.priceImpactPct) {
+        const calculatedSlippage = calculateAutoSlippage(
+          response.priceImpactPct
+        )
+        // Only fetch again if the calculated slippage is different from default
+        if (calculatedSlippage !== DEFAULT_SLIPPAGE_BPS) {
+          const RECALC_QUOTE_URL =
+            `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
+            `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+            `&slippageBps=${calculatedSlippage}` +
+            `&platformFeeBps=${
+              platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+            }` +
+            `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
+
+          const recalcResponse = await fetch(RECALC_QUOTE_URL).then((res) =>
+            res.json()
+          )
+          setQuoteResponse(recalcResponse)
+          setExpectedOutput(
+            (
+              Number(recalcResponse.outAmount) / Math.pow(10, outputDecimals)
+            ).toString()
+          )
+          setPriceImpact(recalcResponse.priceImpactPct)
+        }
+      }
 
       // Calculate SSE fee amount if using SSE for fees
       if (platformFeeBps === 1 && ssePrice) {
@@ -236,17 +271,44 @@ export function useJupiterSwap({
           const multiplier = Math.pow(10, inputDecimals)
           const adjustedAmount = Number(inputAmount) * multiplier
 
-          const QUOTE_2_URL =
+          // For auto slippage, start with default slippage
+          const initialSlippage =
+            slippageBps === 'auto' ? DEFAULT_SLIPPAGE_BPS : slippageBps
+
+          const QUOTE_2_URL: string =
             `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
             `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-            `&slippageBps=${slippageBps}` +
+            `&slippageBps=${initialSlippage}` +
             // Always add a 1 bps platform fee, even when using SSE fees
             `&platformFeeBps=${
               platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
             }` +
             `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
 
-          return fetch(QUOTE_2_URL).then((res) => res.json())
+          const response: QuoteResponse = await fetch(QUOTE_2_URL).then((res) =>
+            res.json()
+          )
+
+          // If auto slippage is enabled, recalculate with the actual price impact
+          if (slippageBps === 'auto' && response.priceImpactPct) {
+            const calculatedSlippage = calculateAutoSlippage(
+              response.priceImpactPct
+            )
+            if (calculatedSlippage !== initialSlippage) {
+              const RECALC_URL: string =
+                `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
+                `&outputMint=${outputMint}&amount=${adjustedAmount}` +
+                `&slippageBps=${calculatedSlippage}` +
+                `&platformFeeBps=${
+                  platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+                }` +
+                `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
+
+              return await fetch(RECALC_URL).then((res) => res.json())
+            }
+          }
+
+          return response
         })(),
       ])
 
@@ -375,7 +437,10 @@ export function useJupiterSwap({
           inputAmount,
           expectedOutput,
           priceImpact,
-          slippageBps,
+          slippageBps:
+            slippageBps === 'auto'
+              ? calculateAutoSlippage(priceImpact)
+              : slippageBps,
           sourceWallet,
           priorityLevel,
           walletAddress,
@@ -386,8 +451,7 @@ export function useJupiterSwap({
                 (platformFeeBps === 1
                   ? PLATFORM_FEE_BPS / 20000
                   : PLATFORM_FEE_BPS / 10000)
-              ) // Divide by 20000 for SSE swaps to get half
-                .toString()
+              ).toString()
             : '0',
         })
         setShowTradeLink(true)
@@ -436,4 +500,19 @@ export function useJupiterSwap({
     isQuoteRefreshing,
     sseFeeAmount,
   }
+}
+
+function calculateAutoSlippage(priceImpactPct: string): number {
+  const impact = Math.abs(parseFloat(priceImpactPct))
+
+  // Default to 0.5% (50 bps) if no price impact or invalid
+  if (!impact || isNaN(impact)) return 50
+
+  // Scale slippage based on price impact
+  if (impact <= 0.1) return 50 // 0.5% slippage for very low impact
+  if (impact <= 0.5) return 100 // 1% slippage for low impact
+  if (impact <= 1.0) return 200 // 2% slippage for medium impact
+  if (impact <= 2.0) return 500 // 5% slippage for high impact
+  if (impact <= 5.0) return 1000 // 10% slippage for very high impact
+  return 1500 // 15% slippage for extreme impact
 }

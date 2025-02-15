@@ -2,8 +2,8 @@ import { PRIORITY_LEVELS, SLIPPAGE_OPTIONS } from '@/constants/jupiter'
 import type { PriorityLevel } from '@/types/jupiter'
 
 interface SwapSettingsProps {
-  slippageBps: number
-  onSlippageChange: (value: number) => void
+  slippageBps: number | 'auto'
+  onSlippageChange: (value: number | 'auto') => void
   priorityLevel: PriorityLevel
   onPriorityChange: (value: PriorityLevel) => void
   disabled?: boolean
@@ -23,7 +23,11 @@ export function SwapSettings({
         <select
           className="bg-green-900/20  p-2 rounded w-full"
           value={slippageBps}
-          onChange={(e) => onSlippageChange(Number(e.target.value))}
+          onChange={(e) =>
+            onSlippageChange(
+              e.target.value === 'auto' ? 'auto' : Number(e.target.value)
+            )
+          }
           disabled={disabled}
         >
           {SLIPPAGE_OPTIONS.map((option) => (

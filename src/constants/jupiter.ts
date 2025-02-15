@@ -45,8 +45,11 @@ export const PRIORITY_LEVELS: PriorityLevelOption[] = [
 
 // Slippage options in basis points
 export const SLIPPAGE_OPTIONS = [
-  { label: '0.1%', value: 10 },
+  { label: 'Auto', value: 'auto' },
   { label: '0.5%', value: 50 },
   { label: '1.0%', value: 100 },
   { label: '2.0%', value: 200 },
+  { label: '5.0%', value: 500 },
+  { label: '10.0%', value: 1000 },
+  { label: '15.0%', value: 1500 },
 ]
