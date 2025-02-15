@@ -3,7 +3,7 @@ import { DICEBEAR_API_BASE } from '@/lib/constants'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useState } from 'react'
 import { Alert } from '../common/alert'
-import { Avatar } from '../common/Avatar'
+import { Avatar } from '../common/avatar'
 import { Modal } from '../common/modal'
 import { Input } from '../form/input'
 import { SubmitButton } from '../form/submit-button'
@@ -134,10 +134,10 @@ export function UpdateProfileModal({
                 onChange={handleFileSelect}
                 accept="image/*"
                 disabled={isUploading}
-                className="block w-full text-sm 
+                className="block w-full text-sm text-white
                   file:mr-4 file:py-1.5 file:px-4
                   file:rounded-none file:border
-                  file:text-sm file:font-mono
+                  file:text-sm file:font-mono file:text-white
                   file:bg-transparent file:
                   hover:file:bg-green-900/30 hover:file:border-green-400
                   file:cursor-pointer file:transition-colors

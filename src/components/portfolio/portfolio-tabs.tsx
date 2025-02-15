@@ -1,10 +1,11 @@
 'use client'
 
-import { DataContainer } from '@/components/common/DataContainer'
-import { FilterBar } from '@/components/common/FilterBar'
-import { FilterButton } from '@/components/common/FilterButton'
+import { DataContainer } from '@/components/common/data-container'
+import { FilterBar } from '@/components/common/filter-bar'
+import { FilterButton } from '@/components/common/filter-button'
 import { TokenContainer } from '@/components/token-container'
 import type { FungibleToken, NFT } from '@/utils/types'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 interface PortfolioTabsProps {
@@ -27,6 +28,7 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
   const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | undefined>(undefined)
+  const t = useTranslations()
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -38,7 +40,7 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
       try {
         const response = await fetch(`/api/tokens?address=${address}&type=all`)
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          throw new Error(`${t('error.http_error_status')}: ${response.status}`)
         }
         const data = await response.json()
         if ('error' in data) {
@@ -47,8 +49,8 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
 
         setTokenData(data)
       } catch (error) {
-        console.error('Error fetching tokens:', error)
-        setError('Failed to fetch tokens.')
+        console.error(t('error.error_fetching_tokens'), error)
+        setError(t('error.failed_to_fetch_tokens'))
         setTokenData(undefined)
       } finally {
         setIsLoading(false)
@@ -88,18 +90,18 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
 
   return (
     <DataContainer
-      title="portfolio_assets"
+      title={t('portfolio_assets.title')}
       count={filteredItems.length}
       error={error}
     >
       <FilterBar>
         <FilterButton
-          label="Tokens"
+          label={t('common.tokens')}
           isSelected={activeTab === 'fungible'}
           onClick={() => setActiveTab('fungible')}
         />
         <FilterButton
-          label="NFTs"
+          label={t('common.nfts')}
           isSelected={activeTab === 'nft'}
           onClick={() => setActiveTab('nft')}
         />

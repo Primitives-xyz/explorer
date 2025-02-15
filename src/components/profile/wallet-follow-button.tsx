@@ -1,6 +1,7 @@
 import { useToast } from '@/hooks/use-toast'
 import { useWalletFollowStats } from '@/hooks/use-wallet-follow-stats'
 import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
@@ -23,6 +24,9 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
   const { followWallet, unfollowWallet, loading, success } = useFollowWallet()
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
+
+  const t = useTranslations()
+
   const {
     isFollowing,
     isLoading: isLoadingStats,
@@ -44,8 +48,8 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
   useEffect(() => {
     if (success) {
       toast({
-        title: 'Success',
-        description: 'Successfully followed wallet!',
+        title: t('common.success'),
+        description: t('success.successfully_followed_wallet'),
         variant: 'default',
       })
     }
@@ -76,7 +80,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
         className={`${buttonClasses} flex items-center justify-center gap-2 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
       >
         <LoaderCircle className="animate-spin" size={iconSize} />
-        <span>Loading...</span>
+        <span>{t('common.loading')}...</span>
       </div>
     )
   }
@@ -93,7 +97,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
           className={`${buttonClasses} flex items-center justify-center gap-2 bg-green-900/30  border border-green-800 hover:bg-green-900/50 active:bg-green-900/70 cursor-pointer shadow-lg shadow-green-900/20`}
         >
           <UserRoundPlus size={iconSize} />
-          Connect Wallet
+          {t('common.connect_wallet')}
         </div>
       </DynamicConnectButton>
     )
@@ -111,8 +115,8 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
 
     if (success) {
       toast({
-        title: 'Success',
-        description: 'Successfully followed wallet!',
+        title: t('common.success'),
+        description: t('success.successfully_followed_wallet'),
         variant: 'success',
         duration: 5000,
       })
@@ -120,8 +124,8 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
     } else {
       setOptimisticFollowing(false)
       toast({
-        title: 'Error',
-        description: 'Failed to follow wallet. Please try again.',
+        title: t('common.error'),
+        description: t('error.failed_to_follow_wallet_please_try_again'),
         variant: 'error',
         duration: 5000,
       })
@@ -140,8 +144,8 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
 
     if (success) {
       toast({
-        title: 'Success',
-        description: 'Successfully unfollowed wallet!',
+        title: t('common.success'),
+        description: t('success.successfully_unfollowed_wallet'),
         variant: 'success',
         duration: 5000,
       })
@@ -150,8 +154,8 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
     } else {
       setOptimisticFollowing(true)
       toast({
-        title: 'Error',
-        description: 'Failed to unfollow wallet. Please try again.',
+        title: t('common.error'),
+        description: t('common.failed_to_unfollow_wallet_please_try_again'),
         variant: 'error',
         duration: 5000,
       })
@@ -173,14 +177,14 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
               ) : (
                 <UserRoundPlus size={iconSize} />
               )}
-              {loading ? 'Unfollowing...' : 'Confirm'}
+              {loading ? `${t('common.unfollowing')}...` : t('common.confirm')}
             </button>
             <button
               onClick={() => setShowUnfollowConfirm(false)}
               disabled={loading}
               className={`${buttonClasses} flex items-center justify-center gap-2 bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50`}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         ) : (
@@ -189,7 +193,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
             className={`${buttonClasses} flex items-center justify-center gap-2 bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50 active:bg-neutral-900/70 shadow-lg shadow-neutral-900/20`}
           >
             <UserRoundCheck size={iconSize} />
-            Following
+            {t('common.following')}
           </button>
         )}
       </>
@@ -208,7 +212,7 @@ export function WalletFollowButton({ walletAddress, size = 'sm' }: Props) {
         ) : (
           <UserRoundPlus size={iconSize} />
         )}
-        {loading ? 'Following...' : 'Follow Wallet'}
+        {loading ? `${t('common.following')}...` : t('common.follow_wallet')}
       </button>
     </>
   )

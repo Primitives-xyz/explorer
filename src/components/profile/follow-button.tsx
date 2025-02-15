@@ -5,6 +5,7 @@ import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { LoaderCircle, UserRoundCheck, UserRoundPlus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
@@ -27,6 +28,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
   const { followUser, unfollowUser, loading, success } = useFollowUser()
   const { mutate: mutateFollowers } = useProfileFollowers(username)
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
+  const t = useTranslations()
   const {
     stats,
     mutate: mutateStats,
@@ -81,7 +83,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         className={`${buttonClasses} flex items-center gap-1 bg-neutral-900/30 text-neutral-400 border border-neutral-800`}
       >
         <LoaderCircle className="animate-spin" size={iconSize} />
-        <span>Loading...</span>
+        <span className="capitalize">{t('common.loading')}...</span>
       </div>
     )
   }
@@ -91,10 +93,10 @@ export function FollowButton({ username, size = 'sm' }: Props) {
     return (
       <DynamicConnectButton>
         <div
-          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer`}
+          className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 cursor-pointer capitalize`}
         >
           <UserRoundPlus size={iconSize} />
-          Follow
+          {t('common.follow')}
         </div>
       </DynamicConnectButton>
     )
@@ -192,9 +194,9 @@ export function FollowButton({ username, size = 'sm' }: Props) {
             <button
               onClick={handleUnfollow}
               disabled={loading}
-              className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50`}
+              className={`${buttonClasses} bg-red-900/30 text-red-400 border border-red-800 hover:bg-red-900/50 disabled:opacity-50 capitalize`}
             >
-              {loading ? 'Unfollowing...' : 'Unfollow?'}
+              {loading ? t('common.unfollowing') : t('common.unfollow')}
             </button>
             <button
               onClick={() => setShowUnfollowConfirm(false)}
@@ -207,16 +209,16 @@ export function FollowButton({ username, size = 'sm' }: Props) {
         ) : (
           <button
             onClick={() => setShowUnfollowConfirm(true)}
-            className={`${buttonClasses} bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50 flex items-center gap-1`}
+            className={`${buttonClasses} bg-neutral-900/30 text-neutral-400 border border-neutral-800 hover:bg-neutral-900/50 flex items-center gap-1 capitalize`}
           >
             <UserRoundCheck size={iconSize} />
-            Following
+            {t('common.following')}
           </button>
         )}
         {success && (
           <Alert
             type="success"
-            message="Followed successfully!"
+            message={t('success.followed_successfully')}
             duration={5000}
           />
         )}
@@ -229,10 +231,10 @@ export function FollowButton({ username, size = 'sm' }: Props) {
       <button
         onClick={handleFollow}
         disabled={loading}
-        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50`}
+        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50 capitalize`}
       >
         <UserRoundPlus size={iconSize} />
-        {loading ? 'Following...' : 'Follow'}
+        {loading ? `${t('common.loading')}...` : t('common.follow')}
       </button>
     </>
   )

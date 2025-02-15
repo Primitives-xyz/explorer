@@ -1,6 +1,6 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { Avatar } from '@/components/common/Avatar'
+import { Avatar } from '@/components/common/avatar'
 import type { Profile } from '@/utils/api'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
@@ -88,7 +88,7 @@ export function TransactionCommentView({
               href={route('address', {
                 id: sourceProfile?.username || sourceWallet,
               })}
-              className="text-sm font-semibold hover:text-green-400 transition-colors"
+              className="text-sm font-semibold transition-colors"
             >
               {sourceProfile?.username ? (
                 `@${sourceProfile.username}`
@@ -108,7 +108,7 @@ export function TransactionCommentView({
                 href={route('address', {
                   id: destProfile?.username || destinationWallet || '',
                 })}
-                className="text-sm font-semibold hover:text-green-400 transition-colors"
+                className="text-sm font-semibold transition-colors"
               >
                 {destProfile?.username ? (
                   `@${destProfile.username}'s`
@@ -142,7 +142,7 @@ export function TransactionCommentView({
             )}
             <Link
               href={route('address', { id: tx.signature })}
-              className="hover:text-green-400 transition-colors"
+              className="transition-colors"
             >
               View Details
             </Link>
