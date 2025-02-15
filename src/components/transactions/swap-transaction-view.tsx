@@ -247,143 +247,115 @@ export function SwapTransactionView({
 
       {/* Transaction Details */}
       <div className="flex flex-col gap-3 p-3 bg-green-900/10 rounded-lg border border-green-500/10">
-        <div className="flex items-center gap-4">
-          {/* From Token */}
-          <div className="flex-1">
-            <Link
-              href={route('address', { id: fromToken.mint })}
-              className="flex items-center gap-3 p-2 bg-black/20 rounded-lg hover:bg-black/30 transition-colors group"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-                <div className="w-9 h-9 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-                  {fromToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    <Image
-                      src="/images/solana-icon.svg"
-                      alt="solana icon"
-                      width={22}
-                      height={22}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                  ) : fromTokenLoading ? (
-                    <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
-                  ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
-                    <img
-                      src={fromToken.tokenInfo.result.content.links.image}
-                      alt={
-                        fromToken.tokenInfo.result?.content?.metadata?.symbol ||
-                        'Token'
-                      }
-                      className="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform"
-                    />
-                  ) : (
-                    <span className="font-mono text-xs">
-                      {fromToken.mint.slice(0, 2)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col flex-1">
-                <span className="font-mono text-base">
-                  {formatNumber(fromToken.amount)}
-                </span>
-                <span className="font-mono text-sm">
-                  {fromToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    'SOL'
-                  ) : fromTokenLoading ? (
-                    <div className="animate-pulse w-14 h-3.5 bg-green-500/20 rounded" />
-                  ) : (
-                    fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                    `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(
-                      -4
-                    )}`
-                  )}
-                </span>
-              </div>
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <ExternalLink size={14} className="text-gray-500" />
-              </div>
-            </Link>
-          </div>
-
-          {/* Swap Icon */}
-          <div className="flex-shrink-0 flex flex-col items-center gap-1">
-            <div className="w-7 h-7 bg-green-900/30 rounded-full flex items-center justify-center">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+        {/* From Token */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+              {fromToken.mint === 'So11111111111111111111111111111111111111112' ? (
+                <Image
+                  src="/images/solana-icon.svg"
+                  alt="solana icon"
+                  width={24}
+                  height={24}
+                  className="group-hover:scale-110 transition-transform"
                 />
-              </svg>
+              ) : fromTokenLoading ? (
+                <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
+              ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
+                <img
+                  src={fromToken.tokenInfo.result.content.links.image}
+                  alt={fromToken.tokenInfo.result?.content?.metadata?.symbol || 'Token'}
+                  className="w-8 h-8 rounded-lg"
+                />
+              ) : (
+                <span className="font-mono text-xs">
+                  {fromToken.mint.slice(0, 2)}
+                </span>
+              )}
             </div>
-            <span className="text-[10px] text-gray-500">swap</span>
           </div>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-1">
+              <span className="text-red-400 text-sm">-</span>
+              <span className="font-mono text-lg">{formatNumber(fromToken.amount)}</span>
+              <Link
+                href={route('address', { id: fromToken.mint })}
+                className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
+              >
+                {fromToken.mint === 'So11111111111111111111111111111111111111112'
+                  ? 'SOL'
+                  : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
+                    `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`}
+              </Link>
+            </div>
+            <span className="text-sm text-gray-500">
+              ${formatNumber(fromToken.amount * (fromToken.tokenInfo?.result && 'token_info' in fromToken.tokenInfo.result ? fromToken.tokenInfo.result.token_info?.price_info?.price_per_token || 0 : 0))}
+            </span>
+          </div>
+        </div>
 
-          {/* To Token */}
-          <div className="flex-1">
-            <Link
-              href={route('address', { id: toToken.mint })}
-              className="flex items-center gap-3 p-2 bg-black/20 rounded-lg hover:bg-black/30 transition-colors group"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-                <div className="w-9 h-9 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-                  {toToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    <Image
-                      src="/images/solana-icon.svg"
-                      alt="solana icon"
-                      width={22}
-                      height={22}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                  ) : toTokenLoading ? (
-                    <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
-                  ) : toToken.tokenInfo?.result?.content?.links?.image ? (
-                    <img
-                      src={toToken.tokenInfo.result.content.links.image}
-                      alt={
-                        toToken.tokenInfo.result?.content?.metadata?.symbol ||
-                        'Token'
-                      }
-                      className="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform"
-                    />
-                  ) : (
-                    <span className="font-mono text-xs">
-                      {toToken.mint.slice(0, 2)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col flex-1">
-                <span className="font-mono text-base">
-                  {formatNumber(toToken.amount)}
+        {/* To Token */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+              {toToken.mint === 'So11111111111111111111111111111111111111112' ? (
+                <Image
+                  src="/images/solana-icon.svg"
+                  alt="solana icon"
+                  width={24}
+                  height={24}
+                  className="group-hover:scale-110 transition-transform"
+                />
+              ) : toTokenLoading ? (
+                <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
+              ) : toToken.tokenInfo?.result?.content?.links?.image ? (
+                <img
+                  src={toToken.tokenInfo.result.content.links.image}
+                  alt={toToken.tokenInfo.result?.content?.metadata?.symbol || 'Token'}
+                  className="w-8 h-8 rounded-lg"
+                />
+              ) : (
+                <span className="font-mono text-xs">
+                  {toToken.mint.slice(0, 2)}
                 </span>
-                <span className="font-mono text-sm">
-                  {toToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    'SOL'
-                  ) : toTokenLoading ? (
-                    <div className="animate-pulse w-14 h-3.5 bg-green-500/20 rounded" />
-                  ) : (
-                    toToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                    `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`
-                  )}
-                </span>
-              </div>
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <ExternalLink size={14} className="text-gray-500" />
-              </div>
-            </Link>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-1">
+              <span className="text-green-400 text-sm">+</span>
+              <span className="font-mono text-lg">{formatNumber(toToken.amount)}</span>
+              <Link
+                href={route('address', { id: toToken.mint })}
+                className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
+              >
+                {toToken.mint === 'So11111111111111111111111111111111111111112'
+                  ? 'SOL'
+                  : toToken.tokenInfo?.result?.content?.metadata?.symbol ||
+                    `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`}
+              </Link>
+            </div>
+            <span className="text-sm text-gray-500">
+              ${formatNumber(toToken.amount * (toToken.tokenInfo?.result && 'token_info' in toToken.tokenInfo.result ? toToken.tokenInfo.result.token_info?.price_info?.price_per_token || 0 : 0))}
+            </span>
+          </div>
+        </div>
+
+        {/* Social Metrics */}
+        <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
+          <div className="flex items-center gap-1">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+            </svg>
+            <span>1.2k</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>400</span>
           </div>
         </div>
       </div>
