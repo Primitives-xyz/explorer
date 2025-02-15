@@ -5,6 +5,11 @@ import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
+import { Avatar } from '@/components/common/avatar'
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import type { Profile } from '@/utils/api'
+import { formatTimeAgo } from '@/utils/format-time'
+import { TransactionBadge } from './transaction-badge'
 
 // Legacy format
 interface TokenTransferLegacy {
@@ -87,12 +92,60 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
     : tx.tokenTransfers?.[0]?.tokenMint
   const { data: tokenInfo, loading } = useTokenInfo(tokenMint)
 
+  // Add profile lookup for source wallet
+  const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
+  const sourceProfile = sourceProfiles?.find(
+    (p: Profile) => p.namespace.name === 'nemoapp'
+  )?.profile
+
   if (!tx.tokenTransfers?.length) {
     return null
   }
 
   return (
     <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
+      {/* Transaction Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <Avatar
+              username={sourceProfile?.username || sourceWallet}
+              size={32}
+              imageUrl={sourceProfile?.image}
+            />
+            <span className="text-gray-300">
+              {sourceProfile?.username ? (
+                sourceProfile.username === sourceWallet ? (
+                  <span className="font-mono">
+                    {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                  </span>
+                ) : (
+                  `@${sourceProfile.username}`
+                )
+              ) : (
+                <span className="font-mono">
+                  {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                </span>
+              )}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>transferred tokens</span>
+            <Link
+              href={route('address', { id: tx.signature })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              • {formatTimeAgo(new Date(tx.timestamp))}
+            </Link>
+            <span className="text-gray-500">•</span>
+            <TransactionBadge type={tx.type} source={tx.source} />
+          </div>
+        </div>
+      </div>
+
+      {/* Existing transfer details */}
       {tx.tokenTransfers.map((transfer: TokenTransfer, index: number) => {
         const normalized = normalizeTokenTransfer(transfer)
         const tokenSymbol =

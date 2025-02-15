@@ -2,6 +2,12 @@ import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Avatar } from '@/components/common/avatar'
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import type { Profile } from '@/utils/api'
+import { formatTimeAgo } from '@/utils/format-time'
+import { TransactionBadge } from './transaction-badge'
+import { formatNumber } from '@/utils/format'
 
 interface Transfer {
   from: string
@@ -31,77 +37,80 @@ const formatUSD = (sol: number) => {
   return `$${usd.toFixed(2)}`
 }
 
-export function SolanaTransferView({
-  tx,
-  sourceWallet,
-}: SolanaTransferViewProps) {
-  const transfers =
-    tx.transfers?.filter((transfer: Transfer) => transfer.amount > 0) || []
+export const SolanaTransferView = ({ tx, sourceWallet }: SolanaTransferViewProps) => {
+  // Add profile lookup for source wallet
+  const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
+  const sourceProfile = sourceProfiles?.find(
+    (p: Profile) => p.namespace.name === 'nemoapp'
+  )?.profile
 
-  if (!transfers.length) return null
+  const amount = tx.nativeTransfers?.[0]?.amount || 0
 
   return (
-    <div className="space-y-2 p-3 bg-green-900/10 rounded-lg border border-green-800/20">
-      {transfers.map((transfer: Transfer, index: number) => (
-        <div key={index} className="flex items-center gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-              <Image
-                src="/images/solana-icon.svg"
-                alt="solana icon"
-                width={24}
-                height={24}
-              />
-            </div>
-          </div>
-
-          <div className="flex-1 flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className=" font-mono text-sm">
-                {transfer.from === sourceWallet ? 'Sent' : 'Received'}
-              </span>
-              <span className=" font-mono text-xs">
-                {transfer.from === sourceWallet ? (
-                  <>
-                    To:{' '}
-                    <Link
-                      href={route('address', { id: transfer.to })}
-                      className="hover: transition-colors"
-                    >
-                      {transfer.to.slice(0, 4)}...{transfer.to.slice(-4)}
-                    </Link>
-                  </>
+    <div className="space-y-2 p-4 bg-green-900/5 hover:bg-green-900/10 transition-colors rounded-xl border border-green-800/10">
+      {/* Transaction Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <Avatar
+              username={sourceProfile?.username || sourceWallet}
+              size={32}
+              imageUrl={sourceProfile?.image}
+            />
+            <span className="text-gray-300">
+              {sourceProfile?.username ? (
+                sourceProfile.username === sourceWallet ? (
+                  <span className="font-mono">
+                    {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                  </span>
                 ) : (
-                  <>
-                    From:{' '}
-                    <Link
-                      href={route('address', { id: transfer.from })}
-                      className="hover: transition-colors"
-                    >
-                      {transfer.from.slice(0, 4)}...{transfer.from.slice(-4)}
-                    </Link>
-                  </>
-                )}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="text-xl  font-mono">
-                {transfer.from === sourceWallet ? '↓' : '↑'}
-              </div>
-              <div className="flex flex-col items-end">
-                <span className=" font-mono text-sm">
-                  {formatSOL(transfer.amount)} SOL
+                  `@${sourceProfile.username}`
+                )
+              ) : (
+                <span className="font-mono">
+                  {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
                 </span>
-                <span className=" font-mono text-xs">
-                  {formatUSD(transfer.amount)}
-                </span>
-              </div>
-            </div>
+              )}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>transferred SOL</span>
+            <Link
+              href={route('address', { id: tx.signature })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              • {formatTimeAgo(new Date(tx.timestamp))}
+            </Link>
+            <span className="text-gray-500">•</span>
+            <TransactionBadge type={tx.type} source={tx.source} />
           </div>
         </div>
-      ))}
+      </div>
+
+      {/* Transfer Details */}
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
+          <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+            <Image
+              src="/images/solana-icon.svg"
+              alt="solana icon"
+              width={24}
+              height={24}
+              className="group-hover:scale-110 transition-transform"
+            />
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div className="flex items-baseline gap-1">
+            <span className="text-red-400 text-sm">-</span>
+            <span className="font-mono text-lg">{formatNumber(amount)}</span>
+            <span className="font-mono text-base text-gray-400">SOL</span>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
