@@ -145,7 +145,7 @@ export function TokenSearch({
         )}&target=token&sort_by=marketcap&sort_type=desc&verify_token=${verifiedOnly}&offset=0&limit=20`,
         {
           headers: {
-            'X-API-KEY': 'ce36cc09be9d41d68f9fd4c45346c9f3',
+            'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY || '',
             accept: 'application/json',
           },
         }
