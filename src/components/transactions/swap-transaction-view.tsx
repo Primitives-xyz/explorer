@@ -334,9 +334,12 @@ export function SwapTransactionView({
       <div className="flex flex-col gap-3 p-3 bg-green-900/10 rounded-lg border border-green-500/10">
         {/* From Token */}
         <div className="flex items-center gap-3">
-          <div className="relative">
+          <Link
+            href={route('address', { id: fromToken.mint })}
+            className="relative group cursor-pointer"
+          >
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1] group-hover:ring-green-500/40 transition-all">
               {fromToken.mint === 'So11111111111111111111111111111111111111112' ? (
                 <Image
                   src="/images/solana-icon.svg"
@@ -351,7 +354,7 @@ export function SwapTransactionView({
                 <img
                   src={fromToken.tokenInfo.result.content.links.image}
                   alt={fromToken.tokenInfo.result?.content?.metadata?.symbol || 'Token'}
-                  className="w-8 h-8 rounded-lg"
+                  className="w-8 h-8 rounded-lg group-hover:scale-105 transition-transform"
                 />
               ) : (
                 <span className="font-mono text-xs">
@@ -359,7 +362,7 @@ export function SwapTransactionView({
                 </span>
               )}
             </div>
-          </div>
+          </Link>
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
               <span className="text-red-400 text-sm">-</span>
@@ -386,9 +389,12 @@ export function SwapTransactionView({
 
         {/* To Token */}
         <div className="flex items-center gap-3">
-          <div className="relative">
+          <Link
+            href={route('address', { id: toToken.mint })}
+            className="relative group cursor-pointer"
+          >
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1] group-hover:ring-green-500/40 transition-all">
               {toToken.mint === 'So11111111111111111111111111111111111111112' ? (
                 <Image
                   src="/images/solana-icon.svg"
@@ -403,7 +409,7 @@ export function SwapTransactionView({
                 <img
                   src={toToken.tokenInfo.result.content.links.image}
                   alt={toToken.tokenInfo.result?.content?.metadata?.symbol || 'Token'}
-                  className="w-8 h-8 rounded-lg"
+                  className="w-8 h-8 rounded-lg group-hover:scale-105 transition-transform"
                 />
               ) : (
                 <span className="font-mono text-xs">
@@ -411,7 +417,7 @@ export function SwapTransactionView({
                 </span>
               )}
             </div>
-          </div>
+          </Link>
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
               <span className="text-green-400 text-sm">+</span>
