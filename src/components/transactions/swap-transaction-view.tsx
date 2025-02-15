@@ -6,6 +6,7 @@ import { useTokenInfo } from '@/hooks/use-token-info'
 import type { TokenInfo } from '@/types/Token'
 import type { Profile } from '@/utils/api'
 import { formatNumber } from '@/utils/format'
+import { formatTimeAgo } from '@/utils/format-time'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import { ExternalLink } from 'lucide-react'
@@ -191,36 +192,22 @@ export function SwapTransactionView({
   // For regular swaps, use the existing UI
   return (
     <div className="flex flex-col gap-3">
-      {/* Transaction Header - Social Style */}
-      <div className="flex items-center justify-between p-3 bg-green-900/10 rounded-lg border border-green-500/10">
-        <div className="flex items-center gap-3">
-          <Avatar
-            username={sourceProfile?.username || sourceWallet}
-            size={40}
-            imageUrl={sourceProfile?.image}
-          />
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              {sourceProfile?.username ? (
-                <Link
-                  href={route('address', { id: sourceProfile.username })}
-                  className="text-sm font-semibold transition-colors"
-                >
-                  @{sourceProfile.username}
-                </Link>
-              ) : (
-                <Link
-                  href={route('address', { id: sourceWallet })}
-                  className="text-sm font-mono transition-colors"
-                >
-                  {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
-                </Link>
-              )}
-            </div>
-            <span className="text-xs text-gray-500">
-              {new Date(tx.timestamp).toLocaleString()}
-            </span>
-          </div>
+      {/* Transaction Header - Simplified */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm">
+          <Link
+            href={route('address', { id: sourceProfile?.username || sourceWallet })}
+            className="hover:text-gray-300 transition-colors"
+          >
+            {sourceProfile?.username || sourceWallet.slice(0, 4) + '...' + sourceWallet.slice(-4)}
+          </Link>
+          <Link
+            href={`https://solscan.io/tx/${tx.signature}`}
+            className="text-gray-400 hover:text-gray-300 transition-colors"
+          >
+            swapped
+          </Link>
+          <span className="text-gray-500">on Jupiter • {formatTimeAgo(new Date(tx.timestamp))}</span>
         </div>
         {!isOwnTrade && (
           <button
@@ -364,11 +351,7 @@ export function SwapTransactionView({
       <Modal
         isOpen={showSwapModal}
         onClose={() => setShowSwapModal(false)}
-        title={
-          sourceProfile?.username
-            ? `Copy Trade by @${sourceProfile.username}`
-            : 'Copy Trade'
-        }
+        title="Copy Trade"
       >
         {isLoggedIn ? (
           <JupiterSwapForm
