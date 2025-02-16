@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 interface SwapQuoteDetailsProps {
   quoteResponse: QuoteResponse
   priceImpact: string | null
-  slippageBps: number
+  slippageBps: number | 'auto'
   useSSEForFees?: boolean
   sseFeeAmount?: string
 }
@@ -70,7 +70,9 @@ export function SwapQuoteDetails({
 
       <div className="flex items-center justify-between">
         <span className="text-sm">{t('trade.maximum_slippage')}</span>
-        <span className="text-sm">{slippageBps / 100}%</span>
+        <span className="text-sm">
+          {slippageBps === 'auto' ? t('trade.auto') : `${slippageBps / 100}%`}
+        </span>
       </div>
 
       {quoteResponse.routePlan && (

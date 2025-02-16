@@ -1,7 +1,4 @@
 export const JUPITER_CONFIG = {
-  // API endpoints
-  QUOTE_API_URL: 'https://quote-api.jup.ag/v6',
-
   // Platform fee configuration
   PLATFORM_FEE_BPS: 100, // 1%
   MIN_PLATFORM_FEE_BPS: 1, // Minimum fee when using SSE

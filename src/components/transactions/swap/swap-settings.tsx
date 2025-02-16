@@ -3,8 +3,8 @@ import type { PriorityLevel } from '@/types/jupiter'
 import { useTranslations } from 'next-intl'
 
 interface SwapSettingsProps {
-  slippageBps: number
-  onSlippageChange: (value: number) => void
+  slippageBps: number | 'auto'
+  onSlippageChange: (value: number | 'auto') => void
   priorityLevel: PriorityLevel
   onPriorityChange: (value: PriorityLevel) => void
   disabled?: boolean
@@ -23,9 +23,13 @@ export function SwapSettings({
       <div className="flex-1">
         <div className="text-sm mb-2">{t('trade.slippage')}</div>
         <select
-          className="bg-green-900/20  p-2 rounded w-full"
+          className="bg-green-900/20 p-2 rounded w-full"
           value={slippageBps}
-          onChange={(e) => onSlippageChange(Number(e.target.value))}
+          onChange={(e) =>
+            onSlippageChange(
+              e.target.value === 'auto' ? 'auto' : Number(e.target.value)
+            )
+          }
           disabled={disabled}
         >
           {SLIPPAGE_OPTIONS.map((option) => (
@@ -39,7 +43,7 @@ export function SwapSettings({
       <div className="flex-1">
         <div className="text-sm mb-2">{t('trade.priority')}</div>
         <select
-          className="bg-green-900/20  p-2 rounded w-full"
+          className="bg-green-900/20 p-2 rounded w-full"
           value={priorityLevel}
           onChange={(e) => onPriorityChange(e.target.value as PriorityLevel)}
           disabled={disabled}

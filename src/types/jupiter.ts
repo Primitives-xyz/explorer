@@ -54,3 +54,5 @@ export interface PriorityLevelOption {
   value: PriorityLevel
   description: string
 }
+
+export type SlippageValue = number | 'auto'

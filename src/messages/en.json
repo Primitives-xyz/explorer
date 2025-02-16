@@ -128,7 +128,7 @@
     "swap_tokens": "Swap Tokens",
     "maximum": "Maximum",
     "decimal_places_allowed": "decimal places allowed",
-    "you_receive": "You‘ll receive",
+    "you_receive": "You'll receive",
     "after": "after",
     "rate": "rate",
     "per": "per",
@@ -190,7 +190,8 @@
     "7d": "7d",
     "trading_stats": "Trading Stats",
     "most_traded": "Most traded",
-    "no_trades_found_for_selected_period": ">>> NO TRADES FOUND FOR SELECTED PERIOD"
+    "no_trades_found_for_selected_period": ">>> NO TRADES FOUND FOR SELECTED PERIOD",
+    "auto": "Auto"
   },
   "priority_levels": {
     "minimum": "Minimum",
@@ -247,7 +248,7 @@
   "tapestry_social": {
     "title": "tapestry_social",
     "are_you_a_solana_builder": "Are you a Solana builder?",
-    "solana_need_you": "Solana needs YOU to add social features to your app! Get started with Tapestry‘s powerful social toolkit.",
+    "solana_need_you": "Solana needs YOU to add social features to your app! Get started with Tapestry's powerful social toolkit.",
     "start_building": "Start Building"
   },
   "success": {
