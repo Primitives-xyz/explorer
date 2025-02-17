@@ -239,8 +239,9 @@ export function CreateProfile({
         
         let profileData = await res.json()
         let response;
+        let data;
         if(res.ok && profileData?.profile?.id) {
-          response = await socialfi.updateProfile(walletAddress,{
+          data = await socialfi.updateProfile(walletAddress, {
             username,
             image: imageUrl,
             bio,
@@ -260,9 +261,10 @@ export function CreateProfile({
               bio,
             }),
           })
+          data = await response.json()
         }
-        const data = await response.json()
-        if (!response.ok) {
+        
+        if (response && response.ok === false) {
           throw new Error(
             data.error || data.details || 'Failed to create profile'
           )
