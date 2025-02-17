@@ -222,7 +222,7 @@ export function CreateProfile({
         setLoading(true)
         setResponse(null)
 
-        const existingProfile = await fetch(`/api/profiles/${username}`, {
+        const res = await fetch(`/api/profiles/${walletAddress}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -235,9 +235,10 @@ export function CreateProfile({
         fileUrl ||
         `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
         
+        let profileData = await res.json()
         let response;
-        if(existingProfile) {
-          response = await fetch(`/api/profiles/${username}`, {
+        if(res.ok && profileData?.profile?.id) {
+          response = await fetch(`/api/profiles/${walletAddress}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -264,7 +265,6 @@ export function CreateProfile({
             }),
           })
         }
-        console.log("🚀 ~ profile ~ RESPONSE:", response)
         const data = await response.json()
         if (!response.ok) {
           throw new Error(
