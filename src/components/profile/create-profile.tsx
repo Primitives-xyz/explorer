@@ -242,7 +242,7 @@ export function CreateProfile({
         if(res.ok && profileData?.profile?.id) {
           response = await socialfi.updateProfile(walletAddress,{
             username,
-            profileImageUrl: imageUrl,
+            image: imageUrl,
             bio,
           })
 
