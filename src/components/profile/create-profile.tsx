@@ -240,7 +240,8 @@ export function CreateProfile({
         let profileData = await res.json()
         let response;
         if(res.ok && profileData?.profile?.id) {
-          response = await socialfi.api.updateProfile(walletAddress,{username,
+          response = await socialfi.updateProfile(walletAddress,{
+            username,
             profileImageUrl: imageUrl,
             bio,
           })
