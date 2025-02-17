@@ -39,9 +39,9 @@ const DEFAULT_TOKENS: TokenSearchResult[] = [
     logoURI:
       'https://ipfs.io/ipfs/QmT4fG3jhXv3dcvEVdkvAqi8RjXEmEcLS48PsUA5zSb1RY',
     verified: true,
-    price: null,
-    volume_24h_usd: 0,
-    market_cap: 0,
+    market_cap: 7836380.32118586,
+    price: 0.007971767374586932,
+    volume_24h_usd: 10566433.718458362,
   },
   {
     name: 'USD Coin',
@@ -51,9 +51,9 @@ const DEFAULT_TOKENS: TokenSearchResult[] = [
     logoURI:
       'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
     verified: true,
-    price: null,
-    volume_24h_usd: 0,
-    market_cap: 0,
+    market_cap: 1842335985.249657,
+    price: 1,
+    volume_24h_usd: 76544935.249657,
   },
   {
     name: 'Wrapped SOL',
@@ -63,9 +63,9 @@ const DEFAULT_TOKENS: TokenSearchResult[] = [
     logoURI:
       'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
     verified: true,
-    price: null,
-    volume_24h_usd: 0,
-    market_cap: 0,
+    market_cap: 47835674523.34,
+    price: 109.23,
+    volume_24h_usd: 1234567890.34,
   },
   {
     name: 'Jupiter',
@@ -74,9 +74,9 @@ const DEFAULT_TOKENS: TokenSearchResult[] = [
     decimals: 6,
     logoURI: 'https://static.jup.ag/jup/icon.png',
     verified: true,
-    price: null,
-    volume_24h_usd: 0,
-    market_cap: 0,
+    market_cap: 2514767005.3796864,
+    price: 0.8002922960187652,
+    volume_24h_usd: 78987069.65993138,
   },
 ]
 
@@ -277,11 +277,45 @@ export function TokenSearch({
   }
 
   const formatMarketCap = (marketCap: number | null) => {
-    return t('trade.no_m_cap')
+    if (!marketCap) return t('trade.no_m_cap')
+
+    // Handle very large numbers more gracefully
+    if (marketCap >= 1e12) {
+      return `$${(marketCap / 1e12).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}T`
+    }
+    if (marketCap >= 1e9) {
+      return `$${(marketCap / 1e9).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}B`
+    }
+    if (marketCap >= 1e6) {
+      return `$${(marketCap / 1e6).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}M`
+    }
+    if (marketCap >= 1e3) {
+      return `$${(marketCap / 1e3).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}K`
+    }
+    return `$${marketCap.toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    })}`
   }
 
   const formatPrice = (price: number | null) => {
-    return t('trade.no_price')
+    if (!price) return t('trade.no_price')
+
+    if (price < 0.000001) {
+      return `$${price.toExponential(4)}`
+    }
+
+    return `$${price.toLocaleString(undefined, {
+      maximumFractionDigits: 6,
+      minimumFractionDigits: 2,
+    })}`
   }
 
   return (
