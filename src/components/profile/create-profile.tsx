@@ -232,8 +232,9 @@ export function CreateProfile({
         `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
         
         let response;
-        console.log("🚀 ~ profile ~ profile:", profile)
-        if(profile.id) {
+        console.log("🚀 ~ profile:", profile)
+        console.log("🚀 ~ profiles:", profiles)
+        if(profile && profile.id) {
           response = await fetch(`/api/profiles/${profile.id}`, {
             method: 'PUT',
             headers: {
