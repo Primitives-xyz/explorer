@@ -222,20 +222,22 @@ export function CreateProfile({
         setLoading(true)
         setResponse(null)
 
-        const profile = profiles.find((profile: IGetProfilesResponse) => {
-          return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
+        const existingProfile = await fetch(`/api/profiles/${mainUsername}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
         })
-        
+
         const imageUrl =
         selectedImageUrl ||
         fileUrl ||
         `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
         
         let response;
-        console.log("🚀 ~ profile:", profile)
-        console.log("🚀 ~ profiles:", profiles)
-        if(profile && profile.id) {
-          response = await fetch(`/api/profiles/${profile.id}`, {
+        if(existingProfile) {
+          response = await fetch(`/api/profiles/${mainUsername}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
