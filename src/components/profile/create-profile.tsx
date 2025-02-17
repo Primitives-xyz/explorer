@@ -222,7 +222,7 @@ export function CreateProfile({
         setLoading(true)
         setResponse(null)
 
-        const existingProfile = await fetch(`/api/profiles/${mainUsername}`, {
+        const existingProfile = await fetch(`/api/profiles/${username}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ export function CreateProfile({
         
         let response;
         if(existingProfile) {
-          response = await fetch(`/api/profiles/${mainUsername}`, {
+          response = await fetch(`/api/profiles/${username}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
