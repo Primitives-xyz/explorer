@@ -222,27 +222,47 @@ export function CreateProfile({
         setLoading(true)
         setResponse(null)
 
-        const imageUrl =
-          selectedImageUrl ||
-          fileUrl ||
-          `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
-
-        const response = await fetch('/api/profiles/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            username,
-            ownerWalletAddress: walletAddress,
-            profileImageUrl: imageUrl,
-            bio,
-          }),
+        const profile = profiles.find((profile: IGetProfilesResponse) => {
+          return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
         })
-
+        
+        const imageUrl =
+        selectedImageUrl ||
+        fileUrl ||
+        `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
+        
+        let response;
+        console.log("🚀 ~ profile ~ profile:", profile)
+        if(profile.id) {
+          response = await fetch(`/api/profiles/${profile.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+              username,
+              profileImageUrl: imageUrl,
+              bio,
+            }),
+          })
+        } else {
+          response = await fetch('/api/profiles/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+              username,
+              ownerWalletAddress: walletAddress,
+              profileImageUrl: imageUrl,
+              bio,
+            }),
+          })
+        }
+        console.log("🚀 ~ profile ~ RESPONSE:", response)
         const data = await response.json()
-
         if (!response.ok) {
           throw new Error(
             data.error || data.details || 'Failed to create profile'
