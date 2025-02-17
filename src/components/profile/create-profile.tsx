@@ -241,12 +241,18 @@ export function CreateProfile({
         let response;
         let data;
         if(res.ok && profileData?.profile?.id) {
-          data = await socialfi.updateProfile(walletAddress, {
-            username,
-            image: imageUrl,
-            bio,
+          response = await fetch(`/api/profiles/${username}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+              username,
+              image: imageUrl,
+              bio,
+            }),
           })
-
         } else {
           response = await fetch('/api/profiles/create', {
             method: 'POST',
@@ -261,8 +267,8 @@ export function CreateProfile({
               bio,
             }),
           })
-          data = await response.json()
         }
+        data = await response.json()
         
         if (response && response.ok === false) {
           throw new Error(
