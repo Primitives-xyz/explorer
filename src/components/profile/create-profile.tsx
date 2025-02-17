@@ -15,6 +15,8 @@ import { cn } from '@/lib/utils'
 import type { IGetProfilesResponse } from '@/models/profile.models'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState } from 'react'
+import { socialfi } from '@/utils/socialfi'
+
 
 type FormStep = 'username' | 'details'
 
@@ -238,18 +240,11 @@ export function CreateProfile({
         let profileData = await res.json()
         let response;
         if(res.ok && profileData?.profile?.id) {
-          response = await fetch(`/api/profiles/${walletAddress}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${authToken}`,
-            },
-            body: JSON.stringify({
-              username,
-              profileImageUrl: imageUrl,
-              bio,
-            }),
+          response = await socialfi.api.updateProfile(walletAddress,{username,
+            profileImageUrl: imageUrl,
+            bio,
           })
+
         } else {
           response = await fetch('/api/profiles/create', {
             method: 'POST',
