@@ -160,7 +160,6 @@ export function CreateProfile({
   const isProfileSetup = () => {
     const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
     if(!profiles || profiles.length === 0) return true;
-    console.log("🚀 ~ profile ~ profiles:", profiles)
     
     const profile = profiles?.find((profile: IGetProfilesResponse) => {
       return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
@@ -202,6 +201,10 @@ export function CreateProfile({
     }
     return true
   }
+
+  console.log("🚀 ~ walletAddress:", walletAddress)
+  console.log("🚀 ~ loadingProfiles:", loadingProfiles)
+  console.log("🚀 ~ isProfileSetup:", !isProfileSetup())
 
   // For testing purposes, we'll show the modal whenever wallet is connected
   const shouldShowModal =
