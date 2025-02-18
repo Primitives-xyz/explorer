@@ -273,12 +273,6 @@ export function useJupiterSwap({
         })
         setError(t('error.transaction_failed_please_try_again'))
       } else {
-        console.log('[SOURCE WALLET]', sourceWallet)
-
-        if (!!sourceWallet) {
-          // CREATE NOTIFICATION THAT THIS WAS A COPIED TRADE
-        }
-
         toast({
           title: t('trade.transaction_successful'),
           description: t(

@@ -204,15 +204,6 @@ export const sendNotification = async ({
   authorUsername: string
   tokenPair: string
 }) => {
-  console.log(
-    '[SEND NOTIFICATION]',
-    JSON.stringify({
-      notificationType,
-      recipientWalletAddress,
-      authorUsername,
-      tokenPair,
-    })
-  )
   try {
     if (notificationType === 'TRANSACTION_COPIED') {
       const response = await fetchTapestry({
