@@ -176,7 +176,7 @@ export default function SearchBar({
   }
 
   const formatMarketCap = (marketCap: number | null) => {
-    if (!marketCap) return 'No MCap'
+    if (!marketCap) return ''
     if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(2)}B`
     if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(2)}M`
     if (marketCap >= 1e3) return `$${(marketCap / 1e3).toFixed(2)}K`
@@ -184,7 +184,7 @@ export default function SearchBar({
   }
 
   const formatPrice = (price: number | null) => {
-    if (!price) return 'No price'
+    if (!price) return ''
     if (price < 0.000001) return `$${price.toExponential(4)}`
     return `$${price.toLocaleString(undefined, {
       maximumFractionDigits: 6,

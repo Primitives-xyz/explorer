@@ -306,7 +306,7 @@ export function TokenSearch({
   }
 
   const formatPrice = (price: number | null) => {
-    if (!price) return t('trade.no_price')
+    if (!price) return ''
 
     if (price < 0.000001) {
       return `$${price.toExponential(4)}`

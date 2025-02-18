@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -24,7 +25,7 @@ type Activity = {
   text: string
   action: string
   wallet: string
-  timestamp: Date
+  timestamp: number
   highlight: string
   amount?: string
   amountSuffix?: string
@@ -32,13 +33,16 @@ type Activity = {
   signature?: string
 }
 
+// Store base timestamp for fake activities
+const BASE_TIME = Math.floor(Date.now() / 1000) // Unix timestamp in seconds
+
 const FAKE_ACTIVITIES: Activity[] = [
   {
     type: 'FOLLOW',
     text: 'DeGods.sol followed BeansDAO.sol',
     action: '👥',
     wallet: 'DeGods.sol',
-    timestamp: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+    timestamp: BASE_TIME - 120, // 2 minutes ago
     highlight: 'neutral',
   },
   {
@@ -46,7 +50,7 @@ const FAKE_ACTIVITIES: Activity[] = [
     text: 'Whale transferred 50,000 USDC to Jito.sol',
     action: '💸',
     wallet: 'Bpf...2Eq',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+    timestamp: BASE_TIME - 300, // 5 minutes ago
     highlight: 'positive',
     amount: '+50,000',
     amountSuffix: 'USDC',
@@ -56,7 +60,7 @@ const FAKE_ACTIVITIES: Activity[] = [
     text: 'Mad Lads #1337 sold for 45 SOL',
     action: '🎨',
     wallet: 'Mad...Labs',
-    timestamp: new Date(Date.now() - 1000 * 60 * 8), // 8 minutes ago
+    timestamp: BASE_TIME - 480, // 8 minutes ago
     highlight: 'neutral',
     amount: '45 SOL',
   },
@@ -65,7 +69,7 @@ const FAKE_ACTIVITIES: Activity[] = [
     text: 'Large stake delegation to Jito',
     action: '🔒',
     wallet: '7nZ...3tGy',
-    timestamp: new Date(Date.now() - 1000 * 60 * 10), // 10 minutes ago
+    timestamp: BASE_TIME - 600, // 10 minutes ago
     highlight: 'positive',
     amount: '+1000 SOL',
   },
@@ -74,7 +78,7 @@ const FAKE_ACTIVITIES: Activity[] = [
     text: 'xNFT.sol reached 1000 followers',
     action: '🎯',
     wallet: 'xNFT.sol',
-    timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
+    timestamp: BASE_TIME - 900, // 15 minutes ago
     highlight: 'neutral',
   },
   {
@@ -82,7 +86,7 @@ const FAKE_ACTIVITIES: Activity[] = [
     text: 'Large BONK/SOL swap on Jupiter',
     action: '💱',
     wallet: '4m4...enSj',
-    timestamp: new Date(Date.now() - 1000 * 60 * 20), // 20 minutes ago
+    timestamp: BASE_TIME - 1200, // 20 minutes ago
     highlight: 'negative',
     amount: '-2.5M BONK',
   },
@@ -91,18 +95,29 @@ const FAKE_ACTIVITIES: Activity[] = [
     text: 'Position liquidated on Drift',
     action: '⚠️',
     wallet: 'Drft...X2z',
-    timestamp: new Date(Date.now() - 1000 * 60 * 25), // 25 minutes ago
+    timestamp: BASE_TIME - 1500, // 25 minutes ago
     highlight: 'negative',
     amount: '-100K USDC',
   },
 ]
 
-export const ActivityTape = () => {
+const ActivityTapeComponent = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const contentRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<Animation | null>(null)
   const mountedRef = useRef(false)
   const [isPaused, setIsPaused] = useState(false)
+  const [currentTime, setCurrentTime] = useState(() =>
+    Math.floor(Date.now() / 1000)
+  )
+
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(Math.floor(Date.now() / 1000))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   // Configure scroll speed (pixels per second)
   const SCROLL_SPEED = 120 // Adjust this value to control speed
@@ -166,8 +181,8 @@ export const ActivityTape = () => {
     fetchTransactions()
   }, [])
 
-  const formatTimeAgo = (date: Date) => {
-    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
+  const formatTimeAgo = (timestamp: number) => {
+    const seconds = currentTime - timestamp
     if (seconds < 60) return `${seconds}s`
     const minutes = Math.floor(seconds / 60)
     return `${minutes}m`
@@ -195,7 +210,7 @@ export const ActivityTape = () => {
     } bought`,
     action: '💱',
     wallet: tx.username || tx.walletAddress,
-    timestamp: new Date(tx.timestamp),
+    timestamp: Math.floor(new Date(tx.timestamp).getTime() / 1000),
     highlight: 'positive',
     amount: `${tx.to.amount.toFixed(2)} `,
     amountSuffix: 'SSE',
@@ -277,3 +292,11 @@ export const ActivityTape = () => {
     </div>
   )
 }
+
+// Export as client-only component
+export const ActivityTape = dynamic(
+  () => Promise.resolve(ActivityTapeComponent),
+  {
+    ssr: false,
+  }
+)
