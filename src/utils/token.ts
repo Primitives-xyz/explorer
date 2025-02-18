@@ -1,8 +1,7 @@
+import type { FungibleTokenInfo } from '@/types/Token'
 import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
-  TOKEN_2022_PROGRAM_ID,
-  TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
 import {
   ComputeBudgetProgram,
@@ -11,6 +10,7 @@ import {
   PublicKey,
   Transaction,
 } from '@solana/web3.js'
+import { fetchTokenInfo } from './helius/das-api'
 import { addPriorityFee } from './priority-fee'
 import { confirmTransactionFast } from './transaction'
 
@@ -71,7 +71,7 @@ async function createATA(
 
   // Add compute unit limit instruction
   const computeUnitLimitInstruction = ComputeBudgetProgram.setComputeUnitLimit({
-    units: 22_000,
+    units: 32_000,
   })
   transaction.add(computeUnitLimitInstruction)
 
@@ -102,7 +102,7 @@ async function createATA(
   transaction.sign(payer)
   const signature = await connection.sendRawTransaction(
     transaction.serialize(),
-    { maxRetries: 5 }
+    { skipPreflight: true, preflightCommitment: 'confirmed' }
   )
 
   // Wait for confirmation
@@ -118,6 +118,7 @@ async function createATA(
       programId: programId.toString(),
       error: status.err,
     }
+
     console.error(JSON.stringify(errorDetails, null, 2))
     throw new Error(`Failed to create ATA: ${JSON.stringify(status.err)}`)
   }
@@ -162,13 +163,34 @@ export async function createATAIfNotExists(
     | 'VeryHigh'
     | 'UnsafeMax' = 'Medium'
 ): Promise<{ ata: PublicKey; wasCreated: boolean }> {
+  const tokenInfo = await fetchTokenInfo(mint.toString())
+
+  if (!tokenInfo) {
+    throw new Error('Failed to fetch token info')
+  }
+
+  // Check if token is fungible
+  if (
+    tokenInfo.result.interface !== 'FungibleToken' &&
+    tokenInfo.result.interface !== 'FungibleAsset'
+  ) {
+    throw new Error('Token is not fungible')
+  }
+
+  // Get the token program from the token info
+  const tokenProgram = new PublicKey(
+    (tokenInfo.result as FungibleTokenInfo).token_info.token_program
+  )
+
+  if (!tokenProgram) {
+    throw new Error('Token program not found')
+  }
+
   console.log(
     JSON.stringify(
       {
-        operation: 'createATAIfNotExists:start',
-        mint: mint.toString(),
-        owner: owner.toString(),
-        priorityLevel,
+        operation: 'createATAIfNotExists:tokenProgram',
+        tokenProgram: tokenProgram.toString(),
       },
       null,
       2
@@ -176,32 +198,16 @@ export async function createATAIfNotExists(
   )
 
   try {
-    // Try with regular Token Program first
+    // Use the token program from the token info
     return await createATA(
       connection,
       payer,
       mint,
       owner,
       priorityLevel,
-      TOKEN_PROGRAM_ID
+      tokenProgram
     )
   } catch (error) {
-    // If we get the Token 2022 error, retry with TOKEN_2022_PROGRAM_ID
-    if (
-      error instanceof Error &&
-      error.message.includes('Please upgrade to SPL Token 2022')
-    ) {
-      console.log('Retrying with Token 2022 program')
-      return await createATA(
-        connection,
-        payer,
-        mint,
-        owner,
-        priorityLevel,
-        TOKEN_2022_PROGRAM_ID
-      )
-    }
-    // If it's a different error, rethrow it
     throw error
   }
 }

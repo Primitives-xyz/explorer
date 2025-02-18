@@ -5,7 +5,6 @@ import {
   DEFAULT_SLIPPAGE_VALUE,
   PLATFORM_FEE_ACCOUNT,
   PLATFORM_FEE_BPS,
-  SSE_TOKEN_MINT,
 } from '@/constants/jupiter'
 import { useToast } from '@/hooks/use-toast'
 import type {
@@ -70,66 +69,6 @@ export function useJupiterSwap({
   }, [])
 
   const t = useTranslations()
-
-  const checkAndCreateTokenAccount = async (
-    mintAddress: string,
-    walletAddress: string
-  ) => {
-    try {
-      const response = await fetch(
-        `/api/tokens/account?mintAddress=${mintAddress}&walletAddress=${walletAddress}`
-      )
-      const data = await response.json()
-
-      if (data.status === 'requires_creation') {
-        toast({
-          title: t('trade.creating_token_account'),
-          description: t('trade.setting_up_required_token_account_for_fees'),
-          variant: 'pending',
-          duration: 5000,
-        })
-
-        // Create the token account
-        const transaction = VersionedTransaction.deserialize(
-          Buffer.from(data.transaction, 'base64')
-        )
-
-        if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-          throw new Error(t('error.wallet_not_connected'))
-        }
-
-        const signer = await primaryWallet.getSigner()
-        const txid = await signer.signAndSendTransaction(transaction)
-
-        // Wait for confirmation
-        const connection = await primaryWallet.getConnection()
-        await connection.confirmTransaction({
-          signature: txid.signature,
-          ...(await connection.getLatestBlockhash()),
-        })
-
-        toast({
-          title: t('trade.token_account_created'),
-          description: t(
-            'trade.successfully_set_up_the_required_token_account'
-          ),
-          variant: 'success',
-          duration: 3000,
-        })
-      }
-
-      return data.tokenAccount
-    } catch (err) {
-      console.error(t('error.error_checking_token_account'), err)
-      toast({
-        title: t('error.token_account_error'),
-        description: t('error.failed_to_set_up_required_token_account'),
-        variant: 'error',
-        duration: 5000,
-      })
-      throw err
-    }
-  }
 
   const fetchQuote = async () => {
     if (!inputAmount || !inputMint || !outputMint) {
@@ -226,55 +165,14 @@ export function useJupiterSwap({
     try {
       toast({
         title: t('trade.preparing_swap'),
-        description:
-          platformFeeBps === 1
-            ? t('trade.setting_up_sse_fee_accounts')
-            : t('trade.setting_up_fee_accounts'),
+        description: t('trade.preparing_your_swap_transaction'),
         variant: 'pending',
         duration: 2000,
       })
 
-      // Run token account checks and quote fetching in parallel
-      const [outputFeeAta, sseFeeAta, quoteResponse] = await Promise.all([
-        // Always check for output token fee ATA since we're always using a platform fee (1 bps for SSE)
-        checkAndCreateTokenAccount(outputMint, PLATFORM_FEE_ACCOUNT),
-        // Check and create SSE token account for platform fees if using SSE for fees
-        platformFeeBps === 1
-          ? checkAndCreateTokenAccount(SSE_TOKEN_MINT, PLATFORM_FEE_ACCOUNT)
-          : Promise.resolve(null),
-        // Fetch quote in parallel
-        (async () => {
-          const multiplier = Math.pow(10, inputDecimals)
-          const adjustedAmount = Number(inputAmount) * multiplier
-
-          // Always use DEFAULT_SLIPPAGE_VALUE for quotes
-          const QUOTE_2_URL: string =
-            `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}` +
-            `&outputMint=${outputMint}&amount=${adjustedAmount}` +
-            `&slippageBps=${DEFAULT_SLIPPAGE_VALUE}` +
-            // Always add a 1 bps platform fee, even when using SSE fees
-            `&platformFeeBps=${
-              platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-            }` +
-            `&feeAccount=${PLATFORM_FEE_ACCOUNT}`
-
-          const response: QuoteResponse = await fetch(QUOTE_2_URL).then((res) =>
-            res.json()
-          )
-
-          return response
-        })(),
-      ])
-
-      toast({
-        title: t('trade.fee_accounts_ready'),
-        description:
-          platformFeeBps === 0
-            ? t('trade.sse_fee_accounts_are_set_up_and_ready')
-            : t('trade.fee_accounts_are_set_up_and_ready'),
-        variant: 'success',
-        duration: 2000,
-      })
+      if (!quoteResponse) {
+        throw new Error(t('error.no_quote_available'))
+      }
 
       // Calculate SSE fee amount if using SSE for fees
       let currentSseFeeAmount = '0'
@@ -304,13 +202,6 @@ export function useJupiterSwap({
         }
       }
 
-      toast({
-        title: t('trade.building_transaction'),
-        description: t('trade.preparing_your_swap_transaction'),
-        variant: 'pending',
-        duration: 2000,
-      })
-
       // Get transaction from our API
       const response = await fetch('/api/jupiter/swap', {
         method: 'POST',
@@ -320,9 +211,7 @@ export function useJupiterSwap({
         body: JSON.stringify({
           quoteResponse,
           walletAddress,
-          feeTokenAccount: outputFeeAta,
           mintAddress: outputMint,
-          sseTokenAccount: platformFeeBps === 1 ? sseFeeAta : undefined,
           sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
           slippageMode: slippageBps === 'auto' ? 'auto' : 'fixed',
           // For auto mode, calculate slippage based on price impact

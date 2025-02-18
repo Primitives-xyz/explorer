@@ -1,16 +1,35 @@
+import type { TokenResponse } from '@/types/Token'
+
 const RPC_URL = process.env.RPC_URL || ''
-interface TokenResponse {
-  result: {
-    total?: number
-    value?: any[]
-  }
+
+interface RPCResponse {
+  jsonrpc: string
+  id: string
   error?: {
     message: string
     code: number
   }
+  result?: TokenResponse['result']
 }
 
-export async function fetchTokenInfo(id: string) {
+interface SearchAssetsResponse {
+  jsonrpc: string
+  id: string
+  error?: {
+    message: string
+    code: number
+  }
+  result?: {
+    total: number
+    limit: number
+    page: number
+    items: TokenResponse['result'][]
+  }
+}
+
+export async function fetchTokenInfo(
+  id: string
+): Promise<TokenResponse | false> {
   try {
     if (!RPC_URL) {
       throw new Error('RPC_URL is not configured')
@@ -35,10 +54,28 @@ export async function fetchTokenInfo(id: string) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json()
-    return data
+    const data: RPCResponse = await response.json()
+
+    // Check for RPC error response
+    if (data.error) {
+      throw new Error(`RPC error: ${data.error.message}`)
+    }
+
+    // Validate that we have a result
+    if (!data.result) {
+      throw new Error('No token data found')
+    }
+
+    return {
+      jsonrpc: data.jsonrpc,
+      id: data.id,
+      result: data.result,
+    }
   } catch (error) {
-    console.error('Error fetching token info:', error)
+    console.error(
+      'Error fetching token info:',
+      error instanceof Error ? error.message : 'Unknown error'
+    )
     return false
   }
 }
@@ -82,7 +119,7 @@ export async function checkSolanaBusinessFrogHolder({
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data: TokenResponse = await response.json()
+    const data: SearchAssetsResponse = await response.json()
     if (data.error) {
       throw new Error(`RPC error: ${data.error.message}`)
     }
@@ -90,7 +127,10 @@ export async function checkSolanaBusinessFrogHolder({
     const hasBusinessFrog = (data.result?.total ?? 0) >= 1
     return hasBusinessFrog
   } catch (error) {
-    console.error('Error checking Business Frog holder status:', error)
+    console.error(
+      'Error checking Business Frog holder status:',
+      error instanceof Error ? error.message : 'Unknown error'
+    )
     return false
   }
 }

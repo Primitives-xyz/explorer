@@ -219,7 +219,20 @@ export async function confirmTransactionFast(
     }
 
     if (status.err) {
-      throw new Error(`Transaction failed: ${JSON.stringify(status.err)}`)
+      const errorContext = {
+        signature,
+        error: status.err,
+        slot: status.slot,
+        confirmations: status.confirmations,
+        confirmationStatus: status.confirmationStatus,
+        timeElapsed: Date.now() - startTime,
+        desiredConfirmationStatus,
+      }
+      console.error(
+        'Transaction failed:',
+        JSON.stringify(errorContext, null, 2)
+      )
+      throw new Error(`Transaction failed: ${JSON.stringify(errorContext)}`)
     }
 
     // Return if we've reached our desired confirmation status

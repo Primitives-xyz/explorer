@@ -36,6 +36,14 @@ interface ErrorLogContext {
   mintAddress?: string
   error: string
   details?: Record<string, any>
+  signature?: string
+  blockHeight?: number
+  slot?: number
+  transactionError?: any
+  simulationLogs?: string[]
+  inputAmount?: string
+  outputAmount?: string
+  slippage?: number
 }
 
 export class SwapService {
@@ -56,10 +64,15 @@ export class SwapService {
     return Keypair.fromSecretKey(secretKey)
   }
 
+  private async delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
+
   private async verifyOrCreateATA(
     mintAddress: string,
     ownerAddress: string,
-    label: string
+    label: string,
+    retryCount = 0
   ): Promise<PublicKey> {
     try {
       // Get the payer ready in case we need it
@@ -94,6 +107,23 @@ export class SwapService {
 
       return associatedTokenAddress
     } catch (error: any) {
+      const maxRetries = 3
+      if (retryCount < maxRetries) {
+        const delayMs = 500 * Math.pow(2, retryCount) // Exponential backoff: 500ms, 1000ms, 2000ms
+        console.log(
+          `Retrying verifyOrCreateATA attempt ${
+            retryCount + 1
+          }/${maxRetries} after ${delayMs}ms delay`
+        )
+        await this.delay(delayMs)
+        return this.verifyOrCreateATA(
+          mintAddress,
+          ownerAddress,
+          label,
+          retryCount + 1
+        )
+      }
+
       const errorDetails = {
         label,
         errorCode: error.code,
@@ -109,6 +139,7 @@ export class SwapService {
         )),
         feeWallet: JUPITER_CONFIG.FEE_WALLET,
         isForFeeWallet: ownerAddress === JUPITER_CONFIG.FEE_WALLET,
+        retryAttempts: retryCount,
       }
 
       await this.logError({
@@ -243,28 +274,12 @@ export class SwapService {
     request: SwapRequest
   ): Promise<SwapRouteResponse> {
     try {
-      console.log(
-        JSON.stringify(
-          {
-            operation: 'createSwapTransaction:start',
-            walletAddress: request.walletAddress,
-            mintAddress: request.mintAddress,
-            details: {
-              slippageMode: request.slippageMode,
-              slippageBps: request.slippageBps,
-              hasSSEFee: !!request.sseTokenAccount,
-            },
-          },
-          null,
-          2
-        )
-      )
-
       // Verify output token ATA
       const outputAta = await this.verifyOrCreateATA(
         request.mintAddress,
         JUPITER_CONFIG.FEE_WALLET,
-        'output-token'
+        'output-token',
+        3
       )
 
       // Verify SSE token ATA if needed
@@ -296,6 +311,10 @@ export class SwapService {
             simulationLogs: error.logs,
             errorCode: error.code,
           },
+          simulationLogs: error.logs,
+          inputAmount: request.quoteResponse.inAmount,
+          outputAmount: request.quoteResponse.outAmount,
+          slippage: request.slippageBps,
         })
       }
 
@@ -315,6 +334,7 @@ export class SwapService {
             details: {
               lastValidBlockHeight: response.lastValidBlockHeight,
               computeUnitLimit: response.computeUnitLimit,
+              blockHeight: swapResponse.lastValidBlockHeight,
             },
           },
           null,
@@ -331,18 +351,32 @@ export class SwapService {
         mintAddress: request.mintAddress,
         details: {
           errorCode: error.code,
+          priorityFee: request.priorityFee,
         },
+        inputAmount: request.quoteResponse?.inAmount,
+        outputAmount: request.quoteResponse?.outAmount,
+        slippage: request.slippageBps,
+        transactionError: error,
       })
       throw error
     }
   }
-  private logError(context: ErrorLogContext) {
+
+  private async logError(context: ErrorLogContext) {
     const {
       operation,
       error,
       details = {},
       walletAddress,
       mintAddress,
+      signature,
+      blockHeight,
+      slot,
+      transactionError,
+      simulationLogs,
+      inputAmount,
+      outputAmount,
+      slippage,
     } = context
 
     // Clean error message for logging
@@ -355,6 +389,14 @@ export class SwapService {
       error: cleanError,
       walletAddress,
       mintAddress,
+      signature,
+      blockHeight,
+      slot,
+      transactionError,
+      simulationLogs,
+      inputAmount,
+      outputAmount,
+      slippage,
       ...details,
     }
 
@@ -368,6 +410,9 @@ export class SwapService {
       wallet: walletAddress?.slice(0, 8) || 'unknown',
       mint: mintAddress?.slice(0, 8) || 'unknown',
       errorType: details.errorCode || 'unknown',
+      signature: signature?.slice(0, 8) || 'unknown',
+      blockHeight: blockHeight || 0,
+      slot: slot || 0,
     }
 
     return this.grafanaService.logError(new Error(cleanError), {

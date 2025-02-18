@@ -20,10 +20,13 @@ export async function getPriorityFeeEstimate(
     throw new Error('HELIUS_API_KEY is not configured')
   }
 
-  // Serialize the transaction and encode it properly for the API
-  const serializedTransaction = Buffer.from(
-    transaction.serialize({ verifySignatures: false })
-  ).toString('base64')
+  // Extract account keys from the transaction
+  const accountKeys = transaction.instructions
+    .flatMap((ix) => [
+      ix.programId.toString(),
+      ...ix.keys.map((key) => key.pubkey.toString()),
+    ])
+    .filter((value, index, self) => self.indexOf(value) === index) // Remove duplicates
 
   const response = await fetch(HELIUS_RPC_URL, {
     method: 'POST',
@@ -36,7 +39,7 @@ export async function getPriorityFeeEstimate(
       method: 'getPriorityFeeEstimate',
       params: [
         {
-          transaction: serializedTransaction,
+          accountKeys,
           options: {
             ...options,
             priorityLevel,
@@ -54,7 +57,8 @@ export async function getPriorityFeeEstimate(
   }
 
   // Ensure we have a valid priority fee value
-  const priorityFee = data.result?.priorityFeeLevels?.[priorityLevel]
+  const priorityFee =
+    data.result?.priorityFeeLevels?.[priorityLevel.toLowerCase()]
   if (typeof priorityFee !== 'number' || isNaN(priorityFee)) {
     // Default to a reasonable priority fee if the API doesn't return a valid value
     return BigInt(45000)
