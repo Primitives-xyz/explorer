@@ -62,27 +62,29 @@ export function TerminalStatus({
             </span>
           )}
         </div>
-        <LanguageSwitcher />
-        {mainUsername && (
-          <div className="flex items-center gap-1 relative flex-shrink-0">
-            <Link
-              href={route('address', { id: mainUsername })}
-              className="font-bold hover:opacity-80 transition-opacity flex-shrink-0"
-            >
-              {t('header.terminal.user')}: {mainUsername}
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <EllipsisVertical className="w-4 h-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleLogoutClick}>
-                  {t('header.logout')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+        <div className="flex items-center space-x-4">
+          <LanguageSwitcher />
+          {mainUsername && (
+            <div className="flex items-center gap-1 relative flex-shrink-0">
+              <Link
+                href={route('address', { id: mainUsername })}
+                className="font-bold hover:opacity-80 transition-opacity flex-shrink-0"
+              >
+                {t('header.terminal.user')}: {mainUsername}
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <EllipsisVertical className="w-4 h-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleLogoutClick}>
+                    {t('header.logout')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

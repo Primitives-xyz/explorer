@@ -15,8 +15,6 @@ import type { IGetProfilesResponse } from '@/models/profile.models'
 import { cn } from '@/utils/utils'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState } from 'react'
-import { socialfi } from '@/utils/socialfi'
-
 
 type FormStep = 'username' | 'details'
 
@@ -64,9 +62,7 @@ export function CreateProfile({
 
   // Get suggested usernames from identities
   const { profiles: suggestedProfiles, loading: loadingSuggestions } =
-    useGetProfiles(
-      walletAddress || '',
-    )
+    useGetProfiles(walletAddress || '')
 
   // Group usernames by their base name to find duplicates
   const usernameGroups = ((suggestedProfiles || []) as SuggestedProfile[])
@@ -159,10 +155,13 @@ export function CreateProfile({
 
   const isProfileSetup = () => {
     const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
-    if(!profiles || profiles.length === 0) return true;
-    
+    if (!profiles || profiles.length === 0) return true
+
     const profile = profiles?.find((profile: IGetProfilesResponse) => {
-      return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
+      return (
+        profile.namespace?.name == 'nemoapp' &&
+        profile.profile?.username === mainUsername
+      )
     })
 
     if (profile?.profile.hasSeenProfileSetupModal) return true
@@ -202,9 +201,9 @@ export function CreateProfile({
     return true
   }
 
-  console.log("🚀 ~ walletAddress:", walletAddress)
-  console.log("🚀 ~ loadingProfiles:", loadingProfiles)
-  console.log("🚀 ~ isProfileSetup:", !isProfileSetup())
+  console.log('🚀 ~ walletAddress:', walletAddress)
+  console.log('🚀 ~ loadingProfiles:', loadingProfiles)
+  console.log('🚀 ~ isProfileSetup:', !isProfileSetup())
 
   // For testing purposes, we'll show the modal whenever wallet is connected
   const shouldShowModal =
@@ -251,14 +250,14 @@ export function CreateProfile({
         })
 
         const imageUrl =
-        selectedImageUrl ||
-        fileUrl ||
-        `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
-        
+          selectedImageUrl ||
+          fileUrl ||
+          `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
+
         let profileData = await res.json()
-        let response;
-        let data;
-        if(res.ok && profileData?.profile?.id) {
+        let response
+        let data
+        if (res.ok && profileData?.profile?.id) {
           response = await fetch(`/api/profiles/${username}`, {
             method: 'PUT',
             headers: {
@@ -287,7 +286,7 @@ export function CreateProfile({
           })
         }
         data = await response.json()
-        
+
         if (response && response.ok === false) {
           throw new Error(
             data.error || data.details || 'Failed to create profile'
