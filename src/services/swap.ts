@@ -55,22 +55,37 @@ export class SwapService {
       walletAddress,
       mintAddress,
     } = context
+
+    // Clean error message for logging
+    const cleanError = error.replace(/\n/g, ' ').replace(/"/g, "'")
+
     const logContext = {
       timestamp: new Date().toISOString(),
       service: 'SwapService',
       operation,
-      error,
+      error: cleanError,
       walletAddress,
       mintAddress,
       ...details,
     }
 
+    // Console log with pretty printing for local debugging
     console.error(JSON.stringify(logContext, null, 2))
-    return this.grafanaService.logError(new Error(error), {
+
+    // Simplified context for Grafana to prevent parsing errors
+    const grafanaContext = {
+      error: cleanError,
+      operation,
+      wallet: walletAddress?.slice(0, 8) || 'unknown',
+      mint: mintAddress?.slice(0, 8) || 'unknown',
+      errorType: details.errorCode || 'unknown',
+    }
+
+    return this.grafanaService.logError(new Error(cleanError), {
       severity: 'error',
       source: 'jupiter-swap',
       endpoint: '/api/jupiter/swap',
-      metadata: logContext,
+      metadata: grafanaContext,
     })
   }
 
