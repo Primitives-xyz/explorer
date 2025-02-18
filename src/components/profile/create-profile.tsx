@@ -159,7 +159,7 @@ export function CreateProfile({
 
   const isProfileSetup = () => {
     const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
-    if(!profiles) return true;
+    if(!profiles || profiles.length === 0) return true;
 
     const profile = profiles.find((profile: IGetProfilesResponse) => {
       return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
