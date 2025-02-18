@@ -15,6 +15,8 @@ import type { IGetProfilesResponse } from '@/models/profile.models'
 import { cn } from '@/utils/utils'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useState } from 'react'
+import { socialfi } from '@/utils/socialfi'
+
 
 type FormStep = 'username' | 'details'
 
@@ -64,7 +66,6 @@ export function CreateProfile({
   const { profiles: suggestedProfiles, loading: loadingSuggestions } =
     useGetProfiles(
       walletAddress || '',
-      true // useIdentities = true
     )
 
   // Group usernames by their base name to find duplicates
@@ -158,12 +159,10 @@ export function CreateProfile({
 
   const isProfileSetup = () => {
     const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
+    if(!profiles || profiles.length === 0) return true;
 
     const profile = profiles.find((profile: IGetProfilesResponse) => {
-      return (
-        profile.namespace.name == 'nemoapp' &&
-        profile.profile.username === mainUsername
-      )
+      return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
     })
 
     if (profile?.profile.hasSeenProfileSetupModal) return true
@@ -239,28 +238,53 @@ export function CreateProfile({
         setLoading(true)
         setResponse(null)
 
-        const imageUrl =
-          selectedImageUrl ||
-          fileUrl ||
-          `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
-
-        const response = await fetch('/api/profiles/create', {
-          method: 'POST',
+        const res = await fetch(`/api/profiles/${walletAddress}`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
           },
-          body: JSON.stringify({
-            username,
-            ownerWalletAddress: walletAddress,
-            profileImageUrl: imageUrl,
-            bio,
-          }),
         })
 
-        const data = await response.json()
-
-        if (!response.ok) {
+        const imageUrl =
+        selectedImageUrl ||
+        fileUrl ||
+        `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
+        
+        let profileData = await res.json()
+        let response;
+        let data;
+        if(res.ok && profileData?.profile?.id) {
+          response = await fetch(`/api/profiles/${username}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+              username,
+              image: imageUrl,
+              bio,
+            }),
+          })
+        } else {
+          response = await fetch('/api/profiles/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+              username,
+              ownerWalletAddress: walletAddress,
+              profileImageUrl: imageUrl,
+              bio,
+            }),
+          })
+        }
+        data = await response.json()
+        
+        if (response && response.ok === false) {
           throw new Error(
             data.error || data.details || 'Failed to create profile'
           )

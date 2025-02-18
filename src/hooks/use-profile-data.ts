@@ -69,7 +69,7 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     profiles,
     loading: loadingProfiles,
     error: profilesError,
-  } = useGetProfiles(data?.walletAddress || '', true)
+  } = useGetProfiles(data?.walletAddress || '')
 
   const {
     followers,
