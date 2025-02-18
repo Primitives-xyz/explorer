@@ -34,6 +34,7 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@neo4j-nvl/base": "0.3.6",
+    "@radix-ui/react-dropdown-menu": "2.1.6",
     "@radix-ui/react-progress": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.5",
     "@react-sigma/core": "5.0.2",
@@ -60,6 +61,7 @@
     "socialfi": "^0.1.5",
     "sonner": "1.7.4",
     "swr": "^2.3.0",
+    "tailwind-merge": "3.0.1",
     "zustand": "^5.0.2"
   },
   "devDependencies": {

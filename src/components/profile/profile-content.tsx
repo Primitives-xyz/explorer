@@ -2,7 +2,7 @@
 
 import { useProfileData } from '@/hooks/use-profile-data'
 import { useTargetWallet } from '@/hooks/use-target-wallet'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/utils'
 import { memo, useCallback, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { Card } from '../common/card'
