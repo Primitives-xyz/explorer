@@ -47,46 +47,13 @@ export class SwapService {
     this.grafanaService = GrafanaService.getInstance()
   }
 
-  private logError(context: ErrorLogContext) {
-    const {
-      operation,
-      error,
-      details = {},
-      walletAddress,
-      mintAddress,
-    } = context
-
-    // Clean error message for logging
-    const cleanError = error.replace(/\n/g, ' ').replace(/"/g, "'")
-
-    const logContext = {
-      timestamp: new Date().toISOString(),
-      service: 'SwapService',
-      operation,
-      error: cleanError,
-      walletAddress,
-      mintAddress,
-      ...details,
+  private async getPayerKeypair(): Promise<Keypair> {
+    const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
+    if (!PRIVATE_KEY) {
+      throw new Error('PAYER_PRIVATE_KEY is not set')
     }
-
-    // Console log with pretty printing for local debugging
-    console.error(JSON.stringify(logContext, null, 2))
-
-    // Simplified context for Grafana to prevent parsing errors
-    const grafanaContext = {
-      error: cleanError,
-      operation,
-      wallet: walletAddress?.slice(0, 8) || 'unknown',
-      mint: mintAddress?.slice(0, 8) || 'unknown',
-      errorType: details.errorCode || 'unknown',
-    }
-
-    return this.grafanaService.logError(new Error(cleanError), {
-      severity: 'error',
-      source: 'jupiter-swap',
-      endpoint: '/api/jupiter/swap',
-      metadata: grafanaContext,
-    })
+    const secretKey = bs58.decode(PRIVATE_KEY)
+    return Keypair.fromSecretKey(secretKey)
   }
 
   private async verifyOrCreateATA(
@@ -95,87 +62,61 @@ export class SwapService {
     label: string
   ): Promise<PublicKey> {
     try {
-      const associatedTokenAddress = await getAssociatedTokenAddress(
-        new PublicKey(mintAddress),
-        new PublicKey(ownerAddress),
-        false
-      )
+      // Get the payer ready in case we need it
+      const payer = await this.getPayerKeypair()
 
-      // Get mint info for better error context
-      const mintInfo = await this.connection.getAccountInfo(
-        new PublicKey(mintAddress)
-      )
-      const ataInfo = await this.connection.getAccountInfo(
-        associatedTokenAddress
-      )
+      // Call createATAIfNotExists directly - it will handle the existence check
+      const { wasCreated, ata: associatedTokenAddress } =
+        await createATAIfNotExists(
+          this.connection,
+          payer,
+          new PublicKey(mintAddress),
+          new PublicKey(ownerAddress),
+          'High'
+        )
 
-      if (!ataInfo) {
-        const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
-        if (!PRIVATE_KEY) {
-          await this.logError({
-            operation: 'verifyOrCreateATA',
-            error: 'PAYER_PRIVATE_KEY not set',
-            walletAddress: ownerAddress,
+      console.log(
+        JSON.stringify(
+          {
+            operation: wasCreated
+              ? 'verifyOrCreateATA:created'
+              : 'verifyOrCreateATA:exists',
             mintAddress,
-            details: {
-              label,
-              ataAddress: associatedTokenAddress.toString(),
-              mintExists: !!mintInfo,
-              mintOwner: mintInfo?.owner.toString(),
-              targetOwner: ownerAddress,
-            },
-          })
-          throw new Error('PAYER_PRIVATE_KEY is not set')
-        }
-
-        const secretKey = bs58.decode(PRIVATE_KEY)
-        const payer = Keypair.fromSecretKey(secretKey)
-
-        try {
-          console.log(
-            `Creating ATA for mint ${mintAddress} and owner ${ownerAddress}...`
-          )
-          await createATAIfNotExists(
-            this.connection,
-            payer,
-            new PublicKey(mintAddress),
-            new PublicKey(ownerAddress),
-            'High'
-          )
-        } catch (error: any) {
-          await this.logError({
-            operation: 'createATAIfNotExists',
-            error: error.message,
-            walletAddress: ownerAddress,
-            mintAddress,
-            details: {
-              label,
-              ataAddress: associatedTokenAddress.toString(),
-              errorCode: error.code,
-              mintExists: !!mintInfo,
-              mintOwner: mintInfo?.owner.toString(),
-              targetOwner: ownerAddress,
-              feeWallet: JUPITER_CONFIG.FEE_WALLET,
-              isForFeeWallet: ownerAddress === JUPITER_CONFIG.FEE_WALLET,
-            },
-          })
-          throw error
-        }
-      }
+            ownerAddress,
+            label,
+            ataAddress: associatedTokenAddress.toString(),
+            wasCreated,
+          },
+          null,
+          2
+        )
+      )
 
       return associatedTokenAddress
     } catch (error: any) {
+      const errorDetails = {
+        label,
+        errorCode: error.code,
+        ataAddress: (
+          await getAssociatedTokenAddress(
+            new PublicKey(mintAddress),
+            new PublicKey(ownerAddress),
+            false
+          )
+        ).toString(),
+        mintExists: !!(await this.connection.getAccountInfo(
+          new PublicKey(mintAddress)
+        )),
+        feeWallet: JUPITER_CONFIG.FEE_WALLET,
+        isForFeeWallet: ownerAddress === JUPITER_CONFIG.FEE_WALLET,
+      }
+
       await this.logError({
         operation: 'verifyOrCreateATA',
         error: error.message,
         walletAddress: ownerAddress,
         mintAddress,
-        details: {
-          label,
-          errorCode: error.code,
-          feeWallet: JUPITER_CONFIG.FEE_WALLET,
-          isForFeeWallet: ownerAddress === JUPITER_CONFIG.FEE_WALLET,
-        },
+        details: errorDetails,
       })
       throw error
     }
@@ -394,5 +335,46 @@ export class SwapService {
       })
       throw error
     }
+  }
+  private logError(context: ErrorLogContext) {
+    const {
+      operation,
+      error,
+      details = {},
+      walletAddress,
+      mintAddress,
+    } = context
+
+    // Clean error message for logging
+    const cleanError = error.replace(/\n/g, ' ').replace(/"/g, "'")
+
+    const logContext = {
+      timestamp: new Date().toISOString(),
+      service: 'SwapService',
+      operation,
+      error: cleanError,
+      walletAddress,
+      mintAddress,
+      ...details,
+    }
+
+    // Console log with pretty printing for local debugging
+    console.error(JSON.stringify(logContext, null, 2))
+
+    // Simplified context for Grafana to prevent parsing errors
+    const grafanaContext = {
+      error: cleanError,
+      operation,
+      wallet: walletAddress?.slice(0, 8) || 'unknown',
+      mint: mintAddress?.slice(0, 8) || 'unknown',
+      errorType: details.errorCode || 'unknown',
+    }
+
+    return this.grafanaService.logError(new Error(cleanError), {
+      severity: 'error',
+      source: 'jupiter-swap',
+      endpoint: '/api/jupiter/swap',
+      metadata: grafanaContext,
+    })
   }
 }

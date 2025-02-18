@@ -34,6 +34,19 @@ export async function createATAIfNotExists(
     | 'VeryHigh'
     | 'UnsafeMax' = 'Medium'
 ): Promise<{ ata: PublicKey; wasCreated: boolean }> {
+  console.log(
+    JSON.stringify(
+      {
+        operation: 'createATAIfNotExists:start',
+        mint: mint.toString(),
+        owner: owner.toString(),
+        priorityLevel,
+      },
+      null,
+      2
+    )
+  )
+
   // Get the ATA address
   const ata = await getAssociatedTokenAddress(
     mint,
@@ -44,6 +57,18 @@ export async function createATAIfNotExists(
   // Check if the account already exists
   const accountInfo = await connection.getAccountInfo(ata)
   if (accountInfo) {
+    console.log(
+      JSON.stringify(
+        {
+          operation: 'createATAIfNotExists:exists',
+          ata: ata.toString(),
+          mint: mint.toString(),
+          owner: owner.toString(),
+        },
+        null,
+        2
+      )
+    )
     return { ata, wasCreated: false }
   }
 
@@ -78,6 +103,22 @@ export async function createATAIfNotExists(
   // Add priority fee
   await addPriorityFee(transaction, priorityLevel)
 
+  console.log(
+    JSON.stringify(
+      {
+        operation: 'createATAIfNotExists:sending',
+        ata: ata.toString(),
+        mint: mint.toString(),
+        owner: owner.toString(),
+        blockhash,
+        lastValidBlockHeight,
+        priorityLevel,
+      },
+      null,
+      2
+    )
+  )
+
   // Sign and send the transaction
   transaction.sign(payer)
   const signature = await connection.sendRawTransaction(
@@ -85,14 +126,49 @@ export async function createATAIfNotExists(
     { maxRetries: 5 }
   )
 
-  console.log('ATA Creation Transaction sent:', signature)
+  console.log(
+    JSON.stringify(
+      {
+        operation: 'createATAIfNotExists:sent',
+        signature,
+        ata: ata.toString(),
+        mint: mint.toString(),
+        owner: owner.toString(),
+      },
+      null,
+      2
+    )
+  )
 
   // Wait for confirmation using our faster confirmation function
   const status = await confirmTransactionFast(connection, signature)
 
   if (status.err) {
+    const errorDetails = {
+      operation: 'createATAIfNotExists:error',
+      signature,
+      ata: ata.toString(),
+      mint: mint.toString(),
+      owner: owner.toString(),
+      error: status.err,
+    }
+    console.error(JSON.stringify(errorDetails, null, 2))
     throw new Error(`Failed to create ATA: ${JSON.stringify(status.err)}`)
   }
+
+  console.log(
+    JSON.stringify(
+      {
+        operation: 'createATAIfNotExists:success',
+        signature,
+        ata: ata.toString(),
+        mint: mint.toString(),
+        owner: owner.toString(),
+      },
+      null,
+      2
+    )
+  )
 
   return { ata, wasCreated: true }
 }
