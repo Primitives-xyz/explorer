@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { memo, useEffect, useState } from 'react'
 
 const INITIAL_STATS = {
@@ -22,7 +23,9 @@ const StatDisplay = memo(
     <div className="flex items-center gap-2">
       <span className="">{label}:</span>
       <span className="">
-        {format ? format(value) : value.toLocaleString()}
+        {format
+          ? format(value)
+          : value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
       </span>
     </div>
   )
@@ -30,7 +33,7 @@ const StatDisplay = memo(
 
 StatDisplay.displayName = 'StatDisplay'
 
-export const SystemStatus = () => {
+const SystemStatusComponent = () => {
   const [stats, setStats] = useState(INITIAL_STATS)
 
   // Simulate live updates with reduced frequency and smaller variations
@@ -68,10 +71,20 @@ export const SystemStatus = () => {
         <StatDisplay
           label="TOTAL_STAKE"
           value={stats.totalStake}
-          format={(val) => `${val.toLocaleString()} SOL`}
+          format={(val) =>
+            `${val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} SOL`
+          }
         />
         <div className="w-1.5 h-1.5 rounded-full bg-green-500 opacity-75"></div>
       </div>
     </footer>
   )
 }
+
+// Export as client-only component
+export const SystemStatus = dynamic(
+  () => Promise.resolve(SystemStatusComponent),
+  {
+    ssr: false,
+  }
+)
