@@ -162,7 +162,7 @@ export function CreateProfile({
     if(!profiles || profiles.length === 0) return true;
     console.log("🚀 ~ profile ~ profiles:", profiles)
     
-    const profile = profiles.find((profile: IGetProfilesResponse) => {
+    const profile = profiles?.find((profile: IGetProfilesResponse) => {
       return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
     })
 
