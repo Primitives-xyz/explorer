@@ -3,6 +3,7 @@
 import PortfolioTabs from '@/components/portfolio/portfolio-tabs'
 import type { TokenPortfolioResponse } from '@/types/Token'
 import { isValidSolanaAddress } from '@/utils/validation'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../profile-section'
@@ -32,13 +33,15 @@ export function WalletView({ address }: { address: string }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const t = useTranslations()
+
   useEffect(() => {
     const fetchData = async () => {
       if (!address) return
 
       // Validate wallet address before making any API calls
       if (!isValidSolanaAddress(address)) {
-        setError('Invalid Solana wallet address')
+        setError(t('error.invalid_solana_wallet_address'))
         setIsLoading(false)
         return
       }
@@ -52,7 +55,9 @@ export function WalletView({ address }: { address: string }) {
           `/api/tokens?address=${address}&type=all`
         )
         if (!tokenResponse.ok) {
-          throw new Error(`HTTP error! status: ${tokenResponse.status}`)
+          throw new Error(
+            `${t('error.http_error_status')}: ${tokenResponse.status}`
+          )
         }
         const tokenResult = await tokenResponse.json()
         if ('error' in tokenResult) {
@@ -76,15 +81,19 @@ export function WalletView({ address }: { address: string }) {
         )
         if (!portfolioResponse.ok) {
           throw new Error(
-            `Portfolio HTTP error! status: ${portfolioResponse.status}`
+            `${t('error.portfolio_http_error_status')}: ${
+              portfolioResponse.status
+            }`
           )
         }
         const portfolioResult = await portfolioResponse.json()
         setPortfolioData(portfolioResult)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error(t('error.failed_to_fetch_data'), error)
         setError(
-          error instanceof Error ? error.message : 'Failed to fetch data'
+          error instanceof Error
+            ? error.message
+            : t('error.failed_to_fetch_data')
         )
       } finally {
         setIsLoading(false)
@@ -99,7 +108,7 @@ export function WalletView({ address }: { address: string }) {
     return (
       <div className="px-4 py-8">
         <div className="text-red-500 font-mono">
-          Invalid wallet address: {address}
+          {t('error.invalid_wallet_address')}: {address}
         </div>
       </div>
     )
@@ -108,8 +117,8 @@ export function WalletView({ address }: { address: string }) {
   return (
     <div className="py-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-        <h1 className="text-xl sm:text-2xl font-mono  break-all">
-          Wallet: {address}
+        <h1 className="text-xl sm:text-2xl font-mono break-all">
+          {t('common.wallet')}: {address}
         </h1>
         {walletAddress !== address && (
           <WalletFollowButton walletAddress={address} size="lg" />

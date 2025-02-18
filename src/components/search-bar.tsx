@@ -176,7 +176,7 @@ export default function SearchBar({
   }
 
   const formatMarketCap = (marketCap: number | null) => {
-    if (!marketCap) return 'No MCap'
+    if (!marketCap) return ''
     if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(2)}B`
     if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(2)}M`
     if (marketCap >= 1e3) return `$${(marketCap / 1e3).toFixed(2)}K`
@@ -184,7 +184,7 @@ export default function SearchBar({
   }
 
   const formatPrice = (price: number | null) => {
-    if (!price) return 'No price'
+    if (!price) return ''
     if (price < 0.000001) return `$${price.toExponential(4)}`
     return `$${price.toLocaleString(undefined, {
       maximumFractionDigits: 6,
@@ -401,7 +401,7 @@ export default function SearchBar({
                           }`}
               >
                 <Coins className="w-3 h-3" />
-                {t('search_bar.tokens')} {hasTokens ? '•' : ''}
+                {t('common.tokens')} {hasTokens ? '•' : ''}
               </button>
               {hasRecent && (
                 <button
@@ -587,19 +587,19 @@ export default function SearchBar({
                                   {formatPrice(token.price)}
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
-                                  <span className="/90">
-                                    {t('search_bar.m_cap')}:{' '}
+                                  <span>
+                                    {t('common.m_cap')}:{' '}
                                     {formatMarketCap(token.market_cap)}
                                   </span>
                                   {token.volume_24h_usd > 0 && (
                                     <>
-                                      <span className="">•</span>
-                                      <span className="/90">
-                                        {t('search_bar.volume')}: $
+                                      <span>•</span>
+                                      <span>
+                                        {t('common.vol')}: $
                                         {(token.volume_24h_usd / 1e6).toFixed(
                                           2
                                         )}
-                                        {t('search_bar.m')}
+                                        {t('common.m')}
                                       </span>
                                     </>
                                   )}

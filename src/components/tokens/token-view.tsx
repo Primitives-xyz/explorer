@@ -1,5 +1,5 @@
 import NFTDetails from '@/components/NFT-details'
-import { FungibleTokenDetailsWrapper } from '@/components/tokens/FungibleTokenDetailsWrapper'
+import { FungibleTokenDetailsWrapper } from '@/components/tokens/fungible-token-details-wrapper'
 import { WalletView } from '@/components/wallet/wallet-view'
 import type { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 

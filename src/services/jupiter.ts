@@ -1,21 +1,21 @@
-import {
-  Connection,
-  PublicKey,
-  TransactionMessage,
-  VersionedTransaction,
-  AddressLookupTableAccount,
-  TransactionInstruction,
-  MessageV0,
-} from '@solana/web3.js'
-import { TOKEN_PROGRAM_ID, createTransferInstruction } from '@solana/spl-token'
 import type {
   SwapInstructionsRequest,
   SwapInstructionsResponse,
 } from '@/types/jupiter-service'
+import { TOKEN_PROGRAM_ID, createTransferInstruction } from '@solana/spl-token'
+import {
+  AddressLookupTableAccount,
+  Connection,
+  MessageV0,
+  PublicKey,
+  TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
+} from '@solana/web3.js'
 
 // Helper function to deserialize instructions from Jupiter
 export const deserializeInstruction = (
-  instruction: any,
+  instruction: any
 ): TransactionInstruction => {
   return new TransactionInstruction({
     programId: new PublicKey(instruction.programId),
@@ -31,14 +31,14 @@ export const deserializeInstruction = (
 // Helper function to get address lookup table accounts
 export const getAddressLookupTableAccounts = async (
   connection: Connection,
-  keys: string[],
+  keys: string[]
 ): Promise<AddressLookupTableAccount[]> => {
   if (!keys.length) return []
 
   try {
     const addressLookupTableAccountInfos =
       await connection.getMultipleAccountsInfo(
-        keys.map((key) => new PublicKey(key)),
+        keys.map((key) => new PublicKey(key))
       )
 
     if (!addressLookupTableAccountInfos.length) {
@@ -57,7 +57,7 @@ export const getAddressLookupTableAccounts = async (
         } catch (error: any) {
           console.error(
             `Failed to deserialize lookup table account ${addressLookupTableAddress}:`,
-            error,
+            error
           )
         }
       }
@@ -73,7 +73,7 @@ export const getAddressLookupTableAccounts = async (
 export const simulateTransaction = async (
   connection: Connection,
   transaction: VersionedTransaction,
-  addressLookupTableAccounts: AddressLookupTableAccount[],
+  addressLookupTableAccounts: AddressLookupTableAccount[]
 ): Promise<void> => {
   try {
     const response = await connection.simulateTransaction(transaction, {
@@ -82,7 +82,7 @@ export const simulateTransaction = async (
       accounts: {
         encoding: 'base64',
         addresses: addressLookupTableAccounts.map((account) =>
-          account.key.toBase58(),
+          account.key.toBase58()
         ),
       },
     })
@@ -90,7 +90,7 @@ export const simulateTransaction = async (
     if (response.value.err) {
       console.error('Simulation error:', response.value.logs)
       throw new Error(
-        `Transaction simulation failed: ${JSON.stringify(response.value.err)}`,
+        `Transaction simulation failed: ${JSON.stringify(response.value.err)}`
       )
     }
   } catch (error: any) {
@@ -101,7 +101,7 @@ export const simulateTransaction = async (
 
 // Function to fetch swap instructions from Jupiter API
 export const fetchSwapInstructions = async (
-  request: SwapInstructionsRequest,
+  request: SwapInstructionsRequest
 ): Promise<SwapInstructionsResponse> => {
   const response = await fetch(
     'https://quote-api.jup.ag/v6/swap-instructions',
@@ -115,11 +115,11 @@ export const fetchSwapInstructions = async (
         userPublicKey: request.userPublicKey,
         prioritizationFeeLamports: request.prioritizationFeeLamports,
         dynamicComputeUnitLimit: true,
-        dynamicSlippage: true,
+        dynamicSlippage: request.slippageBps === 'auto' ? true : false,
         useSharedAccounts: false,
         feeAccount: request.feeAccount,
       }),
-    },
+    }
   ).then((res) => res.json())
 
   if (response.error) {
@@ -135,7 +135,7 @@ export const createSSETransferInstruction = async (
   sourceTokenAccount: PublicKey,
   destinationTokenAccount: PublicKey,
   owner: PublicKey,
-  amount: string,
+  amount: string
 ): Promise<TransactionInstruction> => {
   // Check if both accounts exist
   const [sourceInfo, destInfo] = await Promise.all([
@@ -145,7 +145,7 @@ export const createSSETransferInstruction = async (
 
   if (!sourceInfo || !destInfo) {
     throw new Error(
-      'SSE token accounts not found. Please ensure both source and destination accounts exist.',
+      'SSE token accounts not found. Please ensure both source and destination accounts exist.'
     )
   }
 
@@ -155,7 +155,7 @@ export const createSSETransferInstruction = async (
     owner,
     BigInt(amount),
     [],
-    TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID
   )
 }
 
@@ -165,14 +165,14 @@ export const buildTransactionMessage = (
   recentBlockhash: string,
   swapResponse: SwapInstructionsResponse,
   sseTransferInstruction?: TransactionInstruction,
-  addressLookupTableAccounts: AddressLookupTableAccount[] = [],
+  addressLookupTableAccounts: AddressLookupTableAccount[] = []
 ): MessageV0 => {
   return new TransactionMessage({
     payerKey,
     recentBlockhash,
     instructions: [
       ...(swapResponse.computeBudgetInstructions || []).map(
-        deserializeInstruction,
+        deserializeInstruction
       ),
       ...(swapResponse.setupInstructions || []).map(deserializeInstruction),
       ...(swapResponse.tokenLedgerInstruction

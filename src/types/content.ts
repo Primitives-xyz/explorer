@@ -51,14 +51,14 @@ export type TransactionContent = DirectSwapContent | CopiedSwapContent
 
 // Type guard to check if a transaction is a copied swap
 export function isCopiedSwap(
-  content: TransactionContent,
+  content: TransactionContent
 ): content is CopiedSwapContent {
   return content.transactionType === 'copied'
 }
 
 // Type guard to check if a transaction is a direct swap
 export function isDirectSwap(
-  content: TransactionContent,
+  content: TransactionContent
 ): content is DirectSwapContent {
   return content.transactionType === 'direct'
 }
@@ -95,7 +95,7 @@ export type TransactionDisplayData =
 
 // Helper function to format transaction content for display
 export function getTransactionDisplayData(
-  content: TransactionContent,
+  content: TransactionContent
 ): TransactionDisplayData {
   const base = {
     amount: `${content.inputAmount} ${content.inputTokenSymbol}`,

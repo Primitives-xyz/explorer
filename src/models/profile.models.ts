@@ -60,7 +60,6 @@ export interface ISuggestedProfile {
     id: string
     username: string
     image: string
-
   }
   wallet: { address: string }
 }

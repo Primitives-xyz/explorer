@@ -2,6 +2,7 @@
 
 const routes = {
   home: () => '/',
+  graphVisualization: () => '/graph-visualization',
   address: ({ id }: { id: string }) => `/${id}`,
   trade: () => '/trade',
   tradeId: ({ id }: { id: string }) => `/trade/${id}`,

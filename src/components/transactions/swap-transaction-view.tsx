@@ -1,19 +1,21 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { Avatar } from '@/components/common/Avatar'
+import { Avatar } from '@/components/common/avatar'
 import { Modal } from '@/components/common/modal'
 import { useTokenInfo } from '@/hooks/use-token-info'
+import { useTokenUSDCPrice } from '@/hooks/use-token-usdc-price'
 import type { TokenInfo } from '@/types/Token'
 import type { Profile } from '@/utils/api'
 import { formatNumber } from '@/utils/format'
+import { formatTimeAgo } from '@/utils/format-time'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
-import { ExternalLink } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { JupiterSwapForm } from './jupiter-swap-form'
+import { TransactionBadge } from './transaction-badge'
 import { TransactionCommentView } from './transaction-comment-view'
 
 const DynamicConnectButton = dynamic(
@@ -23,6 +25,20 @@ const DynamicConnectButton = dynamic(
     ),
   { ssr: false }
 )
+
+// Helper function to format source name
+const formatSourceName = (source: string) => {
+  switch (source) {
+    case 'JUPITER':
+      return 'Jupiter'
+    case 'RAYDIUM':
+      return 'Raydium'
+    case 'ORCA':
+      return 'Orca'
+    default:
+      return source.charAt(0).toUpperCase() + source.slice(1).toLowerCase()
+  }
+}
 
 interface TokenDisplay {
   mint: string
@@ -81,20 +97,81 @@ export function SwapTransactionView({
       ? null
       : toToken?.mint
   )
+
+  // Add price hooks for both tokens
+  const { price: fromTokenPrice, loading: fromPriceLoading } =
+    useTokenUSDCPrice(
+      fromToken?.mint,
+      fromToken?.mint === 'So11111111111111111111111111111111111111112'
+        ? 9 // SOL has 9 decimals
+        : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+          fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+        ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
+        : 6
+    )
+  const { price: toTokenPrice, loading: toPriceLoading } = useTokenUSDCPrice(
+    toToken?.mint,
+    toToken?.mint === 'So11111111111111111111111111111111111111112'
+      ? 9 // SOL has 9 decimals
+      : toToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+        toToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+      ? toToken.tokenInfo.result.token_info?.decimals ?? 6
+      : 6
+  )
+
   useEffect(() => {
     async function loadTokenInfo() {
-      // Parse description for initial token info
-      // Format can be either:
-      // "wallet swapped X SOL for Y TOKEN" or
-      // "wallet swapped X TOKEN for Y SOL"
+      const SOL_MINT = 'So11111111111111111111111111111111111111112'
+
+      // Handle swap event format
+      const swapEvent = tx.events?.find((event) => event.type === 'SWAP')?.swap
+      if (swapEvent) {
+        // For token -> token swaps
+        if (swapEvent.tokenInputs?.[0] && swapEvent.tokenOutputs?.[0]) {
+          setFromToken({
+            mint: swapEvent.tokenInputs[0].mint,
+            amount: swapEvent.tokenInputs[0].tokenAmount,
+          })
+
+          setToToken({
+            mint: swapEvent.tokenOutputs[0].mint,
+            amount: swapEvent.tokenOutputs[0].tokenAmount,
+          })
+        }
+        // For SOL -> token swaps
+        else if (swapEvent.nativeInput && swapEvent.tokenOutputs?.[0]) {
+          setFromToken({
+            mint: SOL_MINT,
+            amount: parseFloat(swapEvent.nativeInput.amount),
+          })
+
+          setToToken({
+            mint: swapEvent.tokenOutputs[0].mint,
+            amount: swapEvent.tokenOutputs[0].tokenAmount,
+          })
+        }
+        // For token -> SOL swaps
+        else if (swapEvent.tokenInputs?.[0] && swapEvent.nativeOutput) {
+          setFromToken({
+            mint: swapEvent.tokenInputs[0].mint,
+            amount: swapEvent.tokenInputs[0].tokenAmount,
+          })
+
+          setToToken({
+            mint: SOL_MINT,
+            amount: parseFloat(swapEvent.nativeOutput.amount),
+          })
+        }
+        return
+      }
+
+      // Fallback to description parsing for older format
       const descParts = tx.description?.split(' ') || []
       const fromAmount = parseFloat(descParts[2] || '0')
       const toAmount = parseFloat(descParts[5] || '0')
       const fromTokenMint = fromMint || descParts[3] || ''
       const toTokenMint = toMint || descParts[6] || ''
       console.log({ toMint, fromMint, fromTokenMint, toTokenMint, descParts })
-
-      const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
       // Check if this is a SOL -> Token swap or Token -> SOL swap
       const isFromSol = fromTokenMint.toLowerCase() === 'sol'
@@ -191,41 +268,49 @@ export function SwapTransactionView({
   // For regular swaps, use the existing UI
   return (
     <div className="flex flex-col gap-3">
-      {/* Transaction Header - Social Style */}
-      <div className="flex items-center justify-between p-3 bg-green-900/10 rounded-lg border border-green-500/10">
-        <div className="flex items-center gap-3">
-          <Avatar
-            username={sourceProfile?.username || sourceWallet}
-            size={40}
-            imageUrl={sourceProfile?.image}
-          />
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
+      {/* Transaction Header - Simplified */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <Avatar
+              username={sourceProfile?.username || sourceWallet}
+              size={32}
+              imageUrl={sourceProfile?.image}
+            />
+            <span className="text-gray-300">
               {sourceProfile?.username ? (
-                <Link
-                  href={route('address', { id: sourceProfile.username })}
-                  className="text-sm font-semibold hover:text-green-400 transition-colors"
-                >
-                  @{sourceProfile.username}
-                </Link>
+                sourceProfile.username === sourceWallet ? (
+                  <span className="font-mono">
+                    {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
+                  </span>
+                ) : (
+                  `@${sourceProfile.username}`
+                )
               ) : (
-                <Link
-                  href={route('address', { id: sourceWallet })}
-                  className="text-sm font-mono hover:text-green-400 transition-colors"
-                >
+                <span className="font-mono">
                   {sourceWallet.slice(0, 4)}...{sourceWallet.slice(-4)}
-                </Link>
+                </span>
               )}
-            </div>
-            <span className="text-xs text-gray-500">
-              {new Date(tx.timestamp).toLocaleString()}
             </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>swapped on {formatSourceName(tx.source)}</span>
+            <Link
+              href={route('address', { id: tx.signature })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              • {formatTimeAgo(new Date(tx.timestamp))}
+            </Link>
+            <span className="text-gray-500">•</span>
+            <TransactionBadge type={tx.type} source={tx.source} />
           </div>
         </div>
         {!isOwnTrade && (
           <button
             onClick={() => setShowSwapModal(true)}
-            className="flex items-center gap-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-lg transition-colors text-sm border border-green-500/20"
+            className="flex items-center gap-1.5 bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded-lg transition-colors text-sm border border-green-500/20"
           >
             <svg
               className="w-4 h-4"
@@ -247,143 +332,122 @@ export function SwapTransactionView({
 
       {/* Transaction Details */}
       <div className="flex flex-col gap-3 p-3 bg-green-900/10 rounded-lg border border-green-500/10">
-        <div className="flex items-center gap-4">
-          {/* From Token */}
-          <div className="flex-1">
-            <Link
-              href={route('address', { id: fromToken.mint })}
-              className="flex items-center gap-3 p-2 bg-black/20 rounded-lg hover:bg-black/30 transition-colors group"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-                <div className="w-9 h-9 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-                  {fromToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    <Image
-                      src="/images/solana-icon.svg"
-                      alt="solana icon"
-                      width={22}
-                      height={22}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                  ) : fromTokenLoading ? (
-                    <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
-                  ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
-                    <img
-                      src={fromToken.tokenInfo.result.content.links.image}
-                      alt={
-                        fromToken.tokenInfo.result?.content?.metadata?.symbol ||
-                        'Token'
-                      }
-                      className="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform"
-                    />
-                  ) : (
-                    <span className="font-mono text-xs">
-                      {fromToken.mint.slice(0, 2)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col flex-1">
-                <span className="font-mono text-base">
-                  {formatNumber(fromToken.amount)}
+        {/* From Token */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+              {fromToken.mint ===
+              'So11111111111111111111111111111111111111112' ? (
+                <Image
+                  src="/images/solana-icon.svg"
+                  alt="solana icon"
+                  width={24}
+                  height={24}
+                  className="group-hover:scale-110 transition-transform"
+                />
+              ) : fromTokenLoading ? (
+                <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
+              ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
+                <img
+                  src={fromToken.tokenInfo.result.content.links.image}
+                  alt={
+                    fromToken.tokenInfo.result?.content?.metadata?.symbol ||
+                    'Token'
+                  }
+                  className="w-8 h-8 rounded-lg"
+                />
+              ) : (
+                <span className="font-mono text-xs">
+                  {fromToken.mint.slice(0, 2)}
                 </span>
-                <span className="font-mono text-sm">
-                  {fromToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    'SOL'
-                  ) : fromTokenLoading ? (
-                    <div className="animate-pulse w-14 h-3.5 bg-green-500/20 rounded" />
-                  ) : (
-                    fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-1">
+              <span className="text-red-400 text-sm">-</span>
+              <span className="font-mono text-lg">
+                {formatNumber(fromToken.amount)}
+              </span>
+              <Link
+                href={route('address', { id: fromToken.mint })}
+                className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
+              >
+                {fromToken.mint ===
+                'So11111111111111111111111111111111111111112'
+                  ? 'SOL'
+                  : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
                     `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(
                       -4
-                    )}`
-                  )}
-                </span>
-              </div>
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <ExternalLink size={14} className="text-gray-500" />
-              </div>
-            </Link>
-          </div>
-
-          {/* Swap Icon */}
-          <div className="flex-shrink-0 flex flex-col items-center gap-1">
-            <div className="w-7 h-7 bg-green-900/30 rounded-full flex items-center justify-center">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                />
-              </svg>
+                    )}`}
+              </Link>
             </div>
-            <span className="text-[10px] text-gray-500">swap</span>
+            <span className="text-xs text-gray-500">
+              {fromTokenPrice !== null && !fromPriceLoading
+                ? `$${formatNumber(fromToken.amount * fromTokenPrice)}`
+                : fromPriceLoading
+                ? 'Loading...'
+                : ''}
+            </span>
           </div>
+        </div>
 
-          {/* To Token */}
-          <div className="flex-1">
-            <Link
-              href={route('address', { id: toToken.mint })}
-              className="flex items-center gap-3 p-2 bg-black/20 rounded-lg hover:bg-black/30 transition-colors group"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-                <div className="w-9 h-9 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-                  {toToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    <Image
-                      src="/images/solana-icon.svg"
-                      alt="solana icon"
-                      width={22}
-                      height={22}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                  ) : toTokenLoading ? (
-                    <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
-                  ) : toToken.tokenInfo?.result?.content?.links?.image ? (
-                    <img
-                      src={toToken.tokenInfo.result.content.links.image}
-                      alt={
-                        toToken.tokenInfo.result?.content?.metadata?.symbol ||
-                        'Token'
-                      }
-                      className="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform"
-                    />
-                  ) : (
-                    <span className="font-mono text-xs">
-                      {toToken.mint.slice(0, 2)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col flex-1">
-                <span className="font-mono text-base">
-                  {formatNumber(toToken.amount)}
+        {/* To Token */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+              {toToken.mint ===
+              'So11111111111111111111111111111111111111112' ? (
+                <Image
+                  src="/images/solana-icon.svg"
+                  alt="solana icon"
+                  width={24}
+                  height={24}
+                  className="group-hover:scale-110 transition-transform"
+                />
+              ) : toTokenLoading ? (
+                <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
+              ) : toToken.tokenInfo?.result?.content?.links?.image ? (
+                <img
+                  src={toToken.tokenInfo.result.content.links.image}
+                  alt={
+                    toToken.tokenInfo.result?.content?.metadata?.symbol ||
+                    'Token'
+                  }
+                  className="w-8 h-8 rounded-lg"
+                />
+              ) : (
+                <span className="font-mono text-xs">
+                  {toToken.mint.slice(0, 2)}
                 </span>
-                <span className="font-mono text-sm">
-                  {toToken.mint ===
-                  'So11111111111111111111111111111111111111112' ? (
-                    'SOL'
-                  ) : toTokenLoading ? (
-                    <div className="animate-pulse w-14 h-3.5 bg-green-500/20 rounded" />
-                  ) : (
-                    toToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                    `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`
-                  )}
-                </span>
-              </div>
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <ExternalLink size={14} className="text-gray-500" />
-              </div>
-            </Link>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-1">
+              <span className="text-green-400 text-sm">+</span>
+              <span className="font-mono text-lg">
+                {formatNumber(toToken.amount)}
+              </span>
+              <Link
+                href={route('address', { id: toToken.mint })}
+                className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
+              >
+                {toToken.mint === 'So11111111111111111111111111111111111111112'
+                  ? 'SOL'
+                  : toToken.tokenInfo?.result?.content?.metadata?.symbol ||
+                    `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`}
+              </Link>
+            </div>
+            <span className="text-xs text-gray-500">
+              {toTokenPrice !== null && !toPriceLoading
+                ? `$${formatNumber(toToken.amount * toTokenPrice)}`
+                : toPriceLoading
+                ? 'Loading...'
+                : ''}
+            </span>
           </div>
         </div>
       </div>
@@ -392,11 +456,7 @@ export function SwapTransactionView({
       <Modal
         isOpen={showSwapModal}
         onClose={() => setShowSwapModal(false)}
-        title={
-          sourceProfile?.username
-            ? `Copy Trade by @${sourceProfile.username}`
-            : 'Copy Trade'
-        }
+        title="Copy Trade"
       >
         {isLoggedIn ? (
           <JupiterSwapForm
