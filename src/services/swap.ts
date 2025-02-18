@@ -86,9 +86,14 @@ export class SwapService {
         false
       )
 
+      // Get mint info for better error context
+      const mintInfo = await this.connection.getAccountInfo(
+        new PublicKey(mintAddress)
+      )
       const ataInfo = await this.connection.getAccountInfo(
         associatedTokenAddress
       )
+
       if (!ataInfo) {
         const PRIVATE_KEY = process.env.PAYER_PRIVATE_KEY
         if (!PRIVATE_KEY) {
@@ -100,6 +105,9 @@ export class SwapService {
             details: {
               label,
               ataAddress: associatedTokenAddress.toString(),
+              mintExists: !!mintInfo,
+              mintOwner: mintInfo?.owner.toString(),
+              targetOwner: ownerAddress,
             },
           })
           throw new Error('PAYER_PRIVATE_KEY is not set')
@@ -109,6 +117,9 @@ export class SwapService {
         const payer = Keypair.fromSecretKey(secretKey)
 
         try {
+          console.log(
+            `Creating ATA for mint ${mintAddress} and owner ${ownerAddress}...`
+          )
           await createATAIfNotExists(
             this.connection,
             payer,
@@ -126,6 +137,11 @@ export class SwapService {
               label,
               ataAddress: associatedTokenAddress.toString(),
               errorCode: error.code,
+              mintExists: !!mintInfo,
+              mintOwner: mintInfo?.owner.toString(),
+              targetOwner: ownerAddress,
+              feeWallet: JUPITER_CONFIG.FEE_WALLET,
+              isForFeeWallet: ownerAddress === JUPITER_CONFIG.FEE_WALLET,
             },
           })
           throw error
@@ -142,6 +158,8 @@ export class SwapService {
         details: {
           label,
           errorCode: error.code,
+          feeWallet: JUPITER_CONFIG.FEE_WALLET,
+          isForFeeWallet: ownerAddress === JUPITER_CONFIG.FEE_WALLET,
         },
       })
       throw error
