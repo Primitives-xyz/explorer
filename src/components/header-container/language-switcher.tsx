@@ -1,33 +1,32 @@
 'use client'
 
 import { locales } from '@/i18n'
-import { useLocale } from 'next-intl'
-
-const languageLabels: Record<string, string> = {
-  en: '🇺🇸',
-  zh: '🇨🇳',
-}
 
 export function LanguageSwitcher() {
-  const locale = useLocale()
+  const currentLocale =
+    document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('NEXT_LOCALE='))
+      ?.split('=')[1] || locales[0]
 
-  const changeLanguage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLocale = event.target.value
+  const changeLanguage = (newLocale: string) => {
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`
     window.location.reload()
   }
 
   return (
-    <select
-      value={locale}
-      onChange={changeLanguage}
-      className="px-3 h-[34px] border border-green-500/50 bg-black  hover:border-green-400 font-mono text-sm transition-colors cursor-pointer uppercase"
-    >
+    <div className="flex">
       {locales.map((locale) => (
-        <option key={locale} value={locale}>
-          {languageLabels[locale] || locale.toUpperCase()}
-        </option>
+        <button
+          key={locale}
+          onClick={() => changeLanguage(locale)}
+          className={`px-2 ${
+            currentLocale === locale ? 'text-white' : 'opacity-50'
+          }`}
+        >
+          {locale}
+        </button>
       ))}
-    </select>
+    </div>
   )
 }

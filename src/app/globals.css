@@ -1,6 +1,11 @@
+@import '../styles/styles.css' layer(base);
+
+/* Suppression de @config, car potentiellement inutile */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 /* Custom Scrollbar Styles */
 ::-webkit-scrollbar {

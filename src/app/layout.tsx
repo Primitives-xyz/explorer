@@ -95,7 +95,7 @@ export default async function RootLayout({
             <AuthWrapper>
               <Toaster />
               <ActivityTape />
-              <div className=" px-2 w-full overflow-hidden bg-[#292C31] text-[#F5F8FD] font-mono min-h-dvh">
+              <div className="px-2 w-full overflow-hidden bg-[#292C31] text-[#F5F8FD] font-mono min-h-dvh">
                 <Header />
                 {children}
               </div>

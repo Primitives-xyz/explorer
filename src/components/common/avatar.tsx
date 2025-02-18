@@ -1,5 +1,5 @@
 import { getDicebearUrl } from '@/lib/constants'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/utils'
 import Image from 'next/image'
 import { useState } from 'react'
 
