@@ -45,7 +45,8 @@ export async function POST(request: Request) {
       relatedContentId,
       properties,
       sourceWallet,
-      tokenPair,
+      inputTokenName,
+      outputTokenName,
     } = body
 
     if (!id || !profileId) {
@@ -63,12 +64,12 @@ export async function POST(request: Request) {
     })
 
     if (properties.transactionType === 'copied') {
-      console.log('sending notification')
+      const tokenPair = `${inputTokenName} -> ${outputTokenName}`
       await sendNotification({
         notificationType: 'TRANSACTION_COPIED',
         recipientWalletAddress: sourceWallet,
         authorUsername: profileId,
-        tokenPair: tokenPair,
+        tokenPair,
       })
     }
 

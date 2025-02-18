@@ -65,6 +65,9 @@ export function useCreateContentNode() {
       const inputTokenData = await inputTokenResponse.json()
       const outputTokenData = await outputTokenResponse.json()
 
+      const inputTokenName = inputTokenData?.result?.content?.metadata?.name
+      const outputTokenName = outputTokenData?.result?.content?.metadata?.name
+
       // Create the base content properties
       const baseContent = {
         type: 'swap' as const,
@@ -89,7 +92,7 @@ export function useCreateContentNode() {
         inputTokenDecimals: String(
           inputTokenData?.result?.token_info?.decimals || inputDecimals
         ),
-        inputTokenName: inputTokenData?.result?.content?.metadata?.name || '',
+        inputTokenName: inputTokenName || '',
         inputTokenDescription:
           inputTokenData?.result?.content?.metadata?.description || '',
 
@@ -99,7 +102,7 @@ export function useCreateContentNode() {
         outputTokenDecimals: String(
           outputTokenData?.result?.token_info?.decimals || 6
         ),
-        outputTokenName: outputTokenData?.result?.content?.metadata?.name || '',
+        outputTokenName: outputTokenName || '',
         outputTokenDescription:
           outputTokenData?.result?.content?.metadata?.description || '',
       }
@@ -129,8 +132,6 @@ export function useCreateContentNode() {
         }))
       }
 
-      // transactionType: copied or direct
-
       // Post the content to the API
       await fetch('/api/content', {
         method: 'POST',
@@ -141,7 +142,8 @@ export function useCreateContentNode() {
           id: signature,
           profileId: mainUsername,
           sourceWallet,
-          tokenPair: 'abc', // TODO
+          inputTokenName,
+          outputTokenName,
           properties: contentToProperties(content),
         }),
       })
