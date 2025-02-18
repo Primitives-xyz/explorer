@@ -71,6 +71,14 @@ export async function POST(request: Request) {
         authorUsername: profileId,
         tokenPair,
       })
+    } else {
+      console.log(
+        `Notification not sent because transactionType is not copied - ${JSON.stringify(
+          properties,
+          null,
+          2
+        )}`
+      )
     }
 
     return NextResponse.json(content)
