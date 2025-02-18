@@ -129,6 +129,8 @@ export function useCreateContentNode() {
         }))
       }
 
+      // transactionType: copied or direct
+
       // Post the content to the API
       await fetch('/api/content', {
         method: 'POST',
@@ -138,6 +140,8 @@ export function useCreateContentNode() {
         body: JSON.stringify({
           id: signature,
           profileId: mainUsername,
+          sourceWallet,
+          tokenPair: 'abc', // TODO
           properties: contentToProperties(content),
         }),
       })

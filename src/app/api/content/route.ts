@@ -1,4 +1,5 @@
 import { contentServer } from '@/lib/content-server'
+import { sendNotification } from '@/lib/tapestry'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -38,7 +39,14 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { id, profileId, relatedContentId, properties } = body
+    const {
+      id,
+      profileId,
+      relatedContentId,
+      properties,
+      sourceWallet,
+      tokenPair,
+    } = body
 
     if (!id || !profileId) {
       return NextResponse.json(
@@ -53,6 +61,16 @@ export async function POST(request: Request) {
       relatedContentId,
       properties,
     })
+
+    if (properties.transactionType === 'copied') {
+      console.log('sending notification')
+      await sendNotification({
+        notificationType: 'TRANSACTION_COPIED',
+        recipientWalletAddress: sourceWallet,
+        authorUsername: profileId,
+        tokenPair: tokenPair,
+      })
+    }
 
     return NextResponse.json(content)
   } catch (error: any) {
