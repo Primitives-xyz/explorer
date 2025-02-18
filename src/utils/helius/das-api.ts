@@ -27,9 +27,7 @@ interface SearchAssetsResponse {
   }
 }
 
-export async function fetchTokenInfo(
-  id: string
-): Promise<TokenResponse | false> {
+export async function fetchTokenInfo(id: string): Promise<TokenResponse> {
   try {
     if (!RPC_URL) {
       throw new Error('RPC_URL is not configured')
@@ -76,7 +74,7 @@ export async function fetchTokenInfo(
       'Error fetching token info:',
       error instanceof Error ? error.message : 'Unknown error'
     )
-    return false
+    throw error
   }
 }
 
