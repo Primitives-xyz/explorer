@@ -1,7 +1,7 @@
 import { contentServer } from '@/lib/content-server'
 import { NextResponse } from 'next/server'
 
-export async function POST(
+export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {

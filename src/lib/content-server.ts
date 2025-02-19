@@ -78,7 +78,6 @@ export const contentServer = {
     pageSize?: number
     profileId?: string
     requestingProfileId?: string
-    namespace?: string
   } = {}): Promise<ContentListResponse> {
     const params = new URLSearchParams()
     if (orderByField) params.append('orderByField', orderByField)

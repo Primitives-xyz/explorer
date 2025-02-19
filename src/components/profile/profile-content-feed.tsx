@@ -45,7 +45,9 @@ interface ContentItem {
   socialCounts: {
     likeCount: number
     commentCount: number
-    hasLiked?: boolean
+  }
+  requestingProfileSocialInfo?: {
+    hasLiked: boolean
   }
 }
 
@@ -243,7 +245,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
               <button
                 onClick={() => handleLike(
                   item.content.id,
-                  item.socialCounts.hasLiked || false
+                  item.requestingProfileSocialInfo?.hasLiked || false
                 )}
                 disabled={!mainUsername || likeLoading}
                 className={`flex items-center space-x-1 p-1 rounded-full hover:bg-green-900/20 transition-colors ${
@@ -251,7 +253,7 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                 }`}
               >
                 <Heart
-                  className={`w-4 h-4 ${item.socialCounts.hasLiked ? 'fill-current' : ''}`}
+                  className={`w-4 h-4 ${item.requestingProfileSocialInfo?.hasLiked ? 'fill-current' : ''}`}
                 />
                 <span>{item.socialCounts.likeCount}</span>
               </button>

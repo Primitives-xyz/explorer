@@ -30,7 +30,7 @@ export function useContentLikes() {
 
       // Revalidate content data
       await mutate([
-        `/api/content?profileId=${targetProfileId}&orderByField=created_at&orderByDirection=DESC`,
+        `/api/content?profileId=${targetProfileId}&requestingProfileId=${profileId}&orderByField=created_at&orderByDirection=DESC`,
         'profile-content',
       ])
     } catch (err) {
@@ -48,7 +48,7 @@ export function useContentLikes() {
     setIsLoading(true)
     try {
       const response = await fetch(`/api/content/${contentId}/unlike`, {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -65,7 +65,7 @@ export function useContentLikes() {
 
       // Revalidate content data
       await mutate([
-        `/api/content?profileId=${targetProfileId}&orderByField=created_at&orderByDirection=DESC`,
+        `/api/content?profileId=${targetProfileId}&requestingProfileId=${profileId}&orderByField=created_at&orderByDirection=DESC`,
         'profile-content',
       ])
     } catch (err) {
