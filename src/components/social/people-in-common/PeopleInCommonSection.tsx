@@ -1,5 +1,6 @@
 import { Avatar } from '@/components/common/avatar'
 import Link from 'next/link'
+import { Fragment } from 'react'
 
 interface PersonInCommon {
   username: string
@@ -40,10 +41,10 @@ export const PeopleInCommonSection = ({
           <>
             owned by{' '}
             {topUsers.slice(0, 3).map((user, index) => (
-              <>
-                <UserLink key={user.username} username={user.username} />
+              <Fragment key={user.username}>
+                <UserLink username={user.username} />
                 {index < 2 && ', '}
-              </>
+              </Fragment>
             ))}{' '}
             and {totalAmount - 3} {totalAmount - 3 === 1 ? 'other' : 'others'}{' '}
             you follow
@@ -52,10 +53,10 @@ export const PeopleInCommonSection = ({
           <>
             owned by{' '}
             {topUsers.map((user, index) => (
-              <>
-                <UserLink key={user.username} username={user.username} />
+              <Fragment key={user.username}>
+                <UserLink username={user.username} />
                 {index < topUsers.length - 1 && ', '}
-              </>
+              </Fragment>
             ))}
           </>
         )}

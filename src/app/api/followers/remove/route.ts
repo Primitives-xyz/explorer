@@ -1,4 +1,4 @@
-import { FetchMethod, fetchTapestry } from '@/utils/api'
+import { socialfi } from '@/utils/socialfi'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface UnfollowRequestBody {
@@ -27,18 +27,10 @@ export async function POST(req: NextRequest) {
       endId: followeeUser.username,
     }
 
-    const response = await fetchTapestry<TapestryResponse>({
-      endpoint: 'followers/remove',
-      method: FetchMethod.POST,
-      data: bodyData,
-    })
-
-    if (response.error) {
-      return NextResponse.json(
-        { error: response.error || 'Failed to unfollow user' },
-        { status: 500 }
-      )
-    }
+    const response = await socialfi.unfollowUser(
+      bodyData.startId,
+      bodyData.endId
+    )
 
     return NextResponse.json(response)
   } catch (error: any) {

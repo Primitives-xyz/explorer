@@ -1,6 +1,5 @@
 'use client'
 
-import { Alert } from '@/components/common/alert'
 import { useFollowUser } from '@/components/profile/hooks/use-follow-user'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
@@ -25,7 +24,7 @@ interface Props {
 
 export function FollowButton({ username, size = 'sm' }: Props) {
   const { mainUsername, isLoggedIn, sdkHasLoaded } = useCurrentWallet()
-  const { followUser, unfollowUser, loading, success } = useFollowUser()
+  const { followUser, unfollowUser, loading } = useFollowUser()
   const { mutate: mutateFollowers } = useProfileFollowers(username)
   const [showUnfollowConfirm, setShowUnfollowConfirm] = useState(false)
   const t = useTranslations()
@@ -188,9 +187,9 @@ export function FollowButton({ username, size = 'sm' }: Props) {
 
   if (isFollowing || optimisticFollowing) {
     return (
-      <>
+      <div className="flex gap-1">
         {showUnfollowConfirm ? (
-          <div className="flex gap-1">
+          <>
             <button
               onClick={handleUnfollow}
               disabled={loading}
@@ -205,7 +204,7 @@ export function FollowButton({ username, size = 'sm' }: Props) {
             >
               ✕
             </button>
-          </div>
+          </>
         ) : (
           <button
             onClick={() => setShowUnfollowConfirm(true)}
@@ -215,27 +214,18 @@ export function FollowButton({ username, size = 'sm' }: Props) {
             {t('common.following')}
           </button>
         )}
-        {success && (
-          <Alert
-            type="success"
-            message={t('success.followed_successfully')}
-            duration={5000}
-          />
-        )}
-      </>
+      </div>
     )
   }
 
   return (
-    <>
-      <button
-        onClick={handleFollow}
-        disabled={loading}
-        className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50 capitalize`}
-      >
-        <UserRoundPlus size={iconSize} />
-        {loading ? `${t('common.loading')}...` : t('common.follow')}
-      </button>
-    </>
+    <button
+      onClick={handleFollow}
+      disabled={loading}
+      className={`${buttonClasses} flex items-center gap-1 bg-green-900/30  border border-green-800 hover:bg-green-900/50 disabled:opacity-50 capitalize`}
+    >
+      <UserRoundPlus size={iconSize} />
+      {loading ? `${t('common.loading')}...` : t('common.follow')}
+    </button>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { useToast } from '@/hooks/use-toast'
 import { useState } from 'react'
 
 interface FollowUserProps {
@@ -12,6 +13,7 @@ export const useFollowUser = () => {
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<any>(null)
   const [success, setSuccess] = useState<boolean>(false)
+  const { toast } = useToast()
 
   const followUser = async ({
     followerUsername,
@@ -42,8 +44,19 @@ export const useFollowUser = () => {
 
       setData(result)
       setSuccess(true)
+      toast({
+        variant: 'success',
+        title: 'Success',
+        description: `You are now following ${followeeUsername}`,
+      })
     } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+      const errorMessage = err.message || 'Something went wrong'
+      setError(errorMessage)
+      toast({
+        variant: 'error',
+        title: 'Error',
+        description: errorMessage,
+      })
     } finally {
       setLoading(false)
     }
@@ -78,8 +91,19 @@ export const useFollowUser = () => {
 
       setData(result)
       setSuccess(true)
+      toast({
+        variant: 'pending',
+        title: 'Success',
+        description: `You have unfollowed ${followeeUsername}`,
+      })
     } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+      const errorMessage = err.message || 'Something went wrong'
+      setError(errorMessage)
+      toast({
+        variant: 'error',
+        title: 'Error',
+        description: errorMessage,
+      })
     } finally {
       setLoading(false)
     }

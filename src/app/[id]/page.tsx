@@ -26,7 +26,7 @@ export async function generateMetadata({
   const { id } = await params
   const cleanId = id?.startsWith('@') ? id.slice(1) : id
   const routeType = determineRouteType(id)
-
+  console.log('routeType', routeType)
   // Default metadata as fallback
   const defaultMetadata: Metadata = {
     title: `${id} | Explorer`,
