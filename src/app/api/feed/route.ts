@@ -17,9 +17,6 @@ type Transaction = {
   accountsInvolved: string[]
 }
 
-// Set cache revalidation time to 30 seconds
-export const revalidate = 30
-
 export async function GET() {
   let allBuyTransactions: Transaction[] = []
   let page = 0
@@ -49,10 +46,10 @@ export async function GET() {
     total: finalTransactions.length,
   })
 
-  // Set cache control headers
+  // Set cache control headers for 30 seconds with stale-while-revalidate
   response.headers.set(
     'Cache-Control',
-    'public, s-maxage=30, stale-while-revalidate=59'
+    'public, max-age=30, stale-while-revalidate=59'
   )
 
   return response
