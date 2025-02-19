@@ -1,6 +1,8 @@
-import { formatTimeAgo } from '@/utils/format-time'
+import { TimeDisplay } from '@/components/common/time-display'
+import { useCommentLikes } from '@/hooks/use-comment-likes'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { route } from '@/utils/routes'
-import { ArrowRight, ExternalLink } from 'lucide-react'
+import { ArrowRight, ExternalLink, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { memo, useEffect, useState } from 'react'
 import { Avatar } from '../common/avatar'
@@ -43,6 +45,7 @@ interface ContentItem {
   socialCounts: {
     likeCount: number
     commentCount: number
+    hasLiked?: boolean
   }
 }
 
@@ -53,9 +56,29 @@ interface ProfileContentFeedProps {
 export const ProfileContentFeed = memo(function ProfileContentFeed({
   username,
 }: ProfileContentFeedProps) {
+  const { mainUsername } = useCurrentWallet()
+  const {
+    likeComment,
+    unlikeComment,
+    isLoading: likeLoading,
+  } = useCommentLikes()
   const [contents, setContents] = useState<ContentItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const handleLike = async (contentId: string, isLiked: boolean) => {
+    if (!mainUsername || likeLoading) return
+
+    try {
+      if (isLiked) {
+        await unlikeComment(contentId, mainUsername, username)
+      } else {
+        await likeComment(contentId, mainUsername, username)
+      }
+    } catch (err) {
+      console.error('Failed to handle like:', err)
+    }
+  }
 
   useEffect(() => {
     async function fetchContents() {
@@ -136,7 +159,11 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                     @{item.authorProfile.username}
                   </Link>
                   <div className="text-xs text-gray-400">
-                    {formatTimeAgo(new Date(item.content.created_at))}
+                    <TimeDisplay
+                      timestamp={new Date(item.content.created_at).getTime()}
+                      textColor=""
+                      showBackground={false}
+                    />
                   </div>
                 </div>
               </div>
@@ -216,38 +243,21 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
 
             {/* Social Counts */}
             <div className="flex items-center space-x-4 text-sm text-gray-400">
-              <div className="flex items-center space-x-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
+              <button
+                onClick={() => handleLike(
+                  item.content.id,
+                  item.socialCounts.hasLiked || false
+                )}
+                disabled={!mainUsername || likeLoading}
+                className={`flex items-center space-x-1 p-1 rounded-full hover:bg-green-900/20 transition-colors ${
+                  !mainUsername ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <Heart
+                  className={`w-4 h-4 ${item.socialCounts.hasLiked ? 'fill-current' : ''}`}
+                />
                 <span>{item.socialCounts.likeCount}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
-                <span>{item.socialCounts.commentCount}</span>
-              </div>
+              </button>
             </div>
           </div>
         </Card>
