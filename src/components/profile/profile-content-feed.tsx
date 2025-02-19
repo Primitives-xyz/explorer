@@ -1,5 +1,5 @@
 import { TimeDisplay } from '@/components/common/time-display'
-import { useCommentLikes } from '@/hooks/use-comment-likes'
+import { useContentLikes } from '@/hooks/use-content-likes'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { route } from '@/utils/routes'
 import { ArrowRight, ExternalLink, Heart } from 'lucide-react'
@@ -58,10 +58,10 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
 }: ProfileContentFeedProps) {
   const { mainUsername } = useCurrentWallet()
   const {
-    likeComment,
-    unlikeComment,
+    likeContent,
+    unlikeContent,
     isLoading: likeLoading,
-  } = useCommentLikes()
+  } = useContentLikes()
   const [contents, setContents] = useState<ContentItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -71,9 +71,9 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
 
     try {
       if (isLiked) {
-        await unlikeComment(contentId, mainUsername, username)
+        await unlikeContent(contentId, mainUsername, username)
       } else {
-        await likeComment(contentId, mainUsername, username)
+        await likeContent(contentId, mainUsername, username)
       }
     } catch (err) {
       console.error('Failed to handle like:', err)
@@ -158,13 +158,10 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
                   >
                     @{item.authorProfile.username}
                   </Link>
-                  <div className="text-xs text-gray-400">
-                    <TimeDisplay
-                      timestamp={new Date(item.content.created_at).getTime()}
-                      textColor=""
-                      showBackground={false}
-                    />
-                  </div>
+                  <TimeDisplay
+                    timestamp={new Date(item.content.created_at).getTime()}
+                    className="text-xs text-gray-400"
+                  />
                 </div>
               </div>
 
