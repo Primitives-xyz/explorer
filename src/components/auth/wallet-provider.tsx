@@ -3,6 +3,7 @@
 import '@/styles/dynamic-labs.css'
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core'
 import { SolanaWalletConnectors } from '@dynamic-labs/solana'
+import { WalletContextProvider } from './wallet-context'
 
 function WalletProviderComponent({ children }: { children: React.ReactNode }) {
   return (
@@ -24,7 +25,7 @@ function WalletProviderComponent({ children }: { children: React.ReactNode }) {
         },
       }}
     >
-      {children}
+      <WalletContextProvider>{children}</WalletContextProvider>
     </DynamicContextProvider>
   )
 }

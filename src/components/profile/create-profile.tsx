@@ -14,7 +14,7 @@ import { DICEBEAR_API_BASE } from '@/lib/constants'
 import type { IGetProfilesResponse } from '@/models/profile.models'
 import { cn } from '@/utils/utils'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type FormStep = 'username' | 'details'
 
@@ -153,15 +153,18 @@ export function CreateProfile({
     }
   }
 
-  const isProfileSetup = () => {
+  const isProfileSetup = useCallback(() => {
     const MODAL_CREATE_PROFILE_PREFIX = 'create_profile_modal_'
-    if(!profiles) return true;
-    
-    if(profiles && profiles.length > 0) {
+    if (!profiles) return true
+
+    if (profiles && profiles.length > 0) {
       const profile = profiles.find((profile: IGetProfilesResponse) => {
-        return profile.namespace?.name == 'nemoapp' && profile.profile?.username === mainUsername
+        return (
+          profile.namespace?.name == 'nemoapp' &&
+          profile.profile?.username === mainUsername
+        )
       })
-  
+
       if (profile?.profile.hasSeenProfileSetupModal) return true
     }
 
@@ -198,15 +201,13 @@ export function CreateProfile({
       return false
     }
     return true
-  }
-
-  console.log('🚀 ~ walletAddress:', walletAddress)
-  console.log('🚀 ~ loadingProfiles:', loadingProfiles)
-  console.log('🚀 ~ isProfileSetup:', !isProfileSetup())
+  }, [profiles, mainUsername, walletAddress])
 
   // For testing purposes, we'll show the modal whenever wallet is connected
-  const shouldShowModal =
-    !!walletAddress && !loadingProfiles && !isProfileSetup()
+  const shouldShowModal = useMemo(
+    () => !!walletAddress && !loadingProfiles && !isProfileSetup(),
+    [walletAddress, loadingProfiles, isProfileSetup]
+  )
 
   useEffect(() => {
     setIsModalOpen(shouldShowModal)

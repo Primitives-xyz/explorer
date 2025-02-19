@@ -9,9 +9,12 @@ export function isValidSolanaAddress(address: string): boolean {
 }
 
 export function isValidTransactionSignature(signature: string): boolean {
-  // Solana transaction signatures are base58 encoded and 88 characters long
+  // Solana transaction signatures are base58 encoded and typically 87-88 characters long
   const base58Regex = /^[1-9A-HJ-NP-Za-km-z]+$/
-  return base58Regex.test(signature) && signature.length === 88
+  return (
+    base58Regex.test(signature) &&
+    (signature.length === 88 || signature.length === 87)
+  )
 }
 
 export function isValidUrl(url: string): boolean {

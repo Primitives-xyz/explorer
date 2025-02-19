@@ -20,23 +20,28 @@ async function fetchProfile(url: string): Promise<IProfileResponse | null> {
   }
 }
 
-export function useFollowStats(username: string, fromUsername: string) {
+export function useFollowStats(username: string, fromUsername: string | null) {
   // Construct URL based on whether fromUsername exists
-  const url = username
-    ? fromUsername
+  const url =
+    username && fromUsername
       ? `/api/profiles/${username}?fromUsername=${fromUsername}`
-      : `/api/profiles/${username}`
-    : null
+      : username
+      ? `/api/profiles/${username}`
+      : null
 
   const { data, error, mutate, isLoading } = useSWR<IProfileResponse | null>(
-    url,
-    fetchProfile,
+    // Use an array as the key for better stability
+    url ? ['profile', username, fromUsername] : null,
+    () => fetchProfile(url!),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 30000, // 30 seconds
+      dedupingInterval: 60000, // Increased to 1 minute
       revalidateIfStale: false,
-      shouldRetryOnError: false, // Prevent retries on error
+      shouldRetryOnError: false,
+      // Add suspense to prevent unnecessary re-renders
+      suspense: false,
+      // Add a longer staleTime
     }
   )
 

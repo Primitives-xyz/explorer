@@ -123,8 +123,11 @@ export function SwapTransactionView({
     async function loadTokenInfo() {
       const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
+      if (!tx.events) return
       // Handle swap event format
-      const swapEvent = tx.events?.find((event) => event.type === 'SWAP')?.swap
+      const swapEvent = Array.isArray(tx.events)
+        ? tx.events.find((event) => event.type === 'SWAP')?.swap
+        : undefined
       if (swapEvent) {
         // For token -> token swaps
         if (swapEvent.tokenInputs?.[0] && swapEvent.tokenOutputs?.[0]) {
@@ -171,7 +174,6 @@ export function SwapTransactionView({
       const toAmount = parseFloat(descParts[5] || '0')
       const fromTokenMint = fromMint || descParts[3] || ''
       const toTokenMint = toMint || descParts[6] || ''
-      console.log({ toMint, fromMint, fromTokenMint, toTokenMint, descParts })
 
       // Check if this is a SOL -> Token swap or Token -> SOL swap
       const isFromSol = fromTokenMint.toLowerCase() === 'sol'

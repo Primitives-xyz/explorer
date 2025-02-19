@@ -10,14 +10,6 @@ export function useTransactionType(tx: Transaction) {
     ) &&
     tx.tokenTransfers.some((t) => t.to !== COMMISSION_WALLET && t.amount === 80)
 
-  // Debug logging for comment detection
-  console.log('Transaction type detection:', {
-    tokenTransfers: tx.tokenTransfers,
-    isComment,
-    type: tx.type,
-    source: tx.source,
-  })
-
   const isSwap = tx.type === 'SWAP'
   const isSolanaTransfer =
     tx.source === 'SYSTEM_PROGRAM' && tx.type === 'TRANSFER'
