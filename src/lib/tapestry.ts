@@ -7,6 +7,7 @@ import {
   type ISuggestedProfiles,
 } from '@/models/profile.models'
 import { FetchMethod, fetchTapestry } from '@/utils/api'
+import { socialfi } from '@/utils/socialfi'
 
 export const createProfile = async ({
   username,
@@ -190,5 +191,49 @@ export const createComment = async ({
   } catch (error) {
     console.error('[createComment Error]:', error)
     throw error // Re-throw to handle in the component layer
+  }
+}
+
+export const sendNotification = async ({
+  notificationType,
+  recipientWalletAddress,
+  authorUsername,
+  tokenPair,
+}: {
+  notificationType: 'TRANSACTION_COPIED'
+  recipientWalletAddress: string
+  authorUsername: string
+  tokenPair: string
+}) => {
+  console.log(
+    '[SEND NOTIFICATION]',
+    JSON.stringify({
+      notificationType,
+      recipientWalletAddress,
+      authorUsername,
+      tokenPair,
+    })
+  )
+  try {
+    if (notificationType === 'TRANSACTION_COPIED') {
+      const response = await socialfi.api.notifications.notificationsCreate(
+        {},
+        {
+          message: `Hey there influencer – ${authorUsername} just copied your ${tokenPair} trade!`,
+          recipient: recipientWalletAddress,
+          medium: 'wallet',
+          title: 'Trade Copied!',
+        }
+      )
+
+      if (!response) {
+        throw new Error('Failed to send notification - no response received')
+      }
+
+      return response
+    }
+  } catch (error) {
+    console.error('[sendNotification Error]:', error)
+    throw error
   }
 }
