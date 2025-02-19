@@ -11,6 +11,7 @@ import {
 import { DataCard } from '@/components/ui/data-card'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { FollowButton } from '../profile/follow-button'
 
@@ -132,9 +133,12 @@ export function LeaderboardTable() {
                       </div>
                     )}
                     <div className="flex flex-col">
-                      <div className="text-violet-300 text-sm">
+                      <Link
+                        href={`/${trader.profile.username}`}
+                        className="text-violet-300 text-sm hover:text-violet-200 transition-colors"
+                      >
                         {trader.profile.username || 'Anonymous Trader'}
-                      </div>
+                      </Link>
                     </div>
                   </div>
                 </TableCell>
