@@ -47,7 +47,7 @@ export function useContentLikes() {
   ) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/content/${contentId}/unlike`, {
+      const response = await fetch(`/api/content/${contentId}/like`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
