@@ -1,4 +1,4 @@
-import { contentServer } from '@/lib/content-server'
+import { socialfi } from '@/utils/socialfi'
 import { NextRequest } from 'next/server'
 
 type RouteContext = {
@@ -7,14 +7,14 @@ type RouteContext = {
 
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
-    const { profileId, targetProfileId } = await request.json()
+    const { profileId } = await request.json()
     const params = await context.params
     const { id } = params
     if (!profileId) {
       return Response.json({ error: 'Profile ID is required' }, { status: 400 })
     }
 
-    await contentServer.likeContent(id, profileId, targetProfileId)
+    await socialfi.likeContent(id, profileId)
     return Response.json({ success: true })
   } catch (error) {
     console.error('Error liking content:', error)
@@ -26,13 +26,13 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
     const { id } = params
-    const { profileId, targetProfileId } = await request.json()
+    const { profileId } = await request.json()
 
     if (!profileId) {
       return Response.json({ error: 'Profile ID is required' }, { status: 400 })
     }
 
-    await contentServer.unlikeContent(id, profileId, targetProfileId)
+    await socialfi.unlikeContent(id, profileId)
     return Response.json({ success: true })
   } catch (error) {
     console.error('Error unliking content:', error)

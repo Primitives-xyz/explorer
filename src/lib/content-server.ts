@@ -161,28 +161,4 @@ export const contentServer = {
       data: ids,
     })
   },
-
-  async likeContent(
-    id: string,
-    profileId: string,
-    targetProfileId: string
-  ): Promise<void> {
-    return fetchTapestryServer({
-      endpoint: `contents/${id}/like`,
-      method: FetchMethod.POST,
-      data: { profileId, targetProfileId },
-    })
-  },
-
-  async unlikeContent(
-    id: string,
-    profileId: string,
-    targetProfileId: string
-  ): Promise<void> {
-    return fetchTapestryServer({
-      endpoint: `contents/${id}/unlike`,
-      method: FetchMethod.POST,
-      data: { profileId, targetProfileId },
-    })
-  },
 }

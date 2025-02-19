@@ -23,7 +23,6 @@ export async function GET(request: Request) {
       ...(requestingProfileId && { requestingProfileId }),
       ...(namespace && { namespace }),
     })
-    console.log('contents: ', contents)
 
     return NextResponse.json(contents)
   } catch (error: any) {

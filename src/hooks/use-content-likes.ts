@@ -1,15 +1,11 @@
 import { useState } from 'react'
-import useSWR, { mutate } from 'swr'
+import { mutate } from 'swr'
 
 export function useContentLikes() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const likeContent = async (
-    contentId: string,
-    profileId: string,
-    targetProfileId: string
-  ) => {
+  const likeContent = async (contentId: string, profileId: string) => {
     setIsLoading(true)
     try {
       const response = await fetch(`/api/content/${contentId}/like`, {
@@ -19,7 +15,6 @@ export function useContentLikes() {
         },
         body: JSON.stringify({
           profileId,
-          targetProfileId,
         }),
       })
 
@@ -40,11 +35,7 @@ export function useContentLikes() {
     }
   }
 
-  const unlikeContent = async (
-    contentId: string,
-    profileId: string,
-    targetProfileId: string
-  ) => {
+  const unlikeContent = async (contentId: string, profileId: string) => {
     setIsLoading(true)
     try {
       const response = await fetch(`/api/content/${contentId}/like`, {
@@ -54,7 +45,6 @@ export function useContentLikes() {
         },
         body: JSON.stringify({
           profileId,
-          targetProfileId,
         }),
       })
 

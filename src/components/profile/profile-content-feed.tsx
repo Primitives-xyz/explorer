@@ -1,10 +1,10 @@
 import { TimeDisplay } from '@/components/common/time-display'
 import { useContentLikes } from '@/hooks/use-content-likes'
-import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { route } from '@/utils/routes'
 import { ArrowRight, ExternalLink, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { memo, useEffect, useState } from 'react'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { Avatar } from '../common/avatar'
 import { Card } from '../common/card'
 
@@ -68,14 +68,35 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const fetchContents = async () => {
+    try {
+      const response = await fetch(
+        `/api/content?profileId=${username}&orderByField=created_at&orderByDirection=DESC&requestingProfileId=${mainUsername}`
+      )
+      if (!response.ok) {
+        throw new Error('Failed to fetch contents')
+      }
+      const data = await response.json()
+      setContents(data.contents || [])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch contents')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleLike = async (contentId: string, isLiked: boolean) => {
     if (!mainUsername || likeLoading) return
 
     try {
       if (isLiked) {
-        await unlikeContent(contentId, mainUsername, username)
+        await unlikeContent(contentId, mainUsername).then(() => {
+          fetchContents()
+        })
       } else {
-        await likeContent(contentId, mainUsername, username)
+        await likeContent(contentId, mainUsername).then(() => {
+          fetchContents()
+        })
       }
     } catch (err) {
       console.error('Failed to handle like:', err)
@@ -83,25 +104,6 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
   }
 
   useEffect(() => {
-    async function fetchContents() {
-      try {
-        const response = await fetch(
-          `/api/content?profileId=${username}&orderByField=created_at&orderByDirection=DESC`
-        )
-        if (!response.ok) {
-          throw new Error('Failed to fetch contents')
-        }
-        const data = await response.json()
-        setContents(data.contents || [])
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch contents'
-        )
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     fetchContents()
   }, [username])
 
@@ -243,17 +245,23 @@ export const ProfileContentFeed = memo(function ProfileContentFeed({
             {/* Social Counts */}
             <div className="flex items-center space-x-4 text-sm text-gray-400">
               <button
-                onClick={() => handleLike(
-                  item.content.id,
-                  item.requestingProfileSocialInfo?.hasLiked || false
-                )}
+                onClick={() =>
+                  handleLike(
+                    item.content.id,
+                    item.requestingProfileSocialInfo?.hasLiked || false
+                  )
+                }
                 disabled={!mainUsername || likeLoading}
                 className={`flex items-center space-x-1 p-1 rounded-full hover:bg-green-900/20 transition-colors ${
                   !mainUsername ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 <Heart
-                  className={`w-4 h-4 ${item.requestingProfileSocialInfo?.hasLiked ? 'fill-current' : ''}`}
+                  className={`w-4 h-4 ${
+                    item.requestingProfileSocialInfo?.hasLiked
+                      ? 'fill-current'
+                      : ''
+                  }`}
                 />
                 <span>{item.socialCounts.likeCount}</span>
               </button>
