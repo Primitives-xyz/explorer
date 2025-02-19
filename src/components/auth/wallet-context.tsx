@@ -32,60 +32,66 @@ export function WalletContextProvider({
   const userWallets = useUserWallets()
   const [forceSdkLoaded, setForceSdkLoaded] = useState(false)
 
+  // Separate effect for timeout logic
   useEffect(() => {
-    console.log('Dynamic SDK Load Status:', {
-      dynamicSdkHasLoaded,
-      forceSdkLoaded,
-      primaryWallet: !!primaryWallet,
-      isLoggedIn,
-      userWallets: !!userWallets?.length,
-    })
+    if (dynamicSdkHasLoaded) return // Early return if already loaded
 
     const timeoutId = setTimeout(() => {
-      if (!dynamicSdkHasLoaded) {
-        console.warn(t('error.sdk_load_timeout_reached_forcing_loaded_state'))
-        setForceSdkLoaded(true)
-      }
+      console.warn(t('error.sdk_load_timeout_reached_forcing_loaded_state'))
+      setForceSdkLoaded(true)
     }, 5000)
 
-    return () => {
-      clearTimeout(timeoutId)
-      console.log('Cleanup: SDK load timeout cleared')
-    }
-  }, [dynamicSdkHasLoaded, primaryWallet, isLoggedIn, userWallets])
+    return () => clearTimeout(timeoutId)
+  }, [dynamicSdkHasLoaded, t])
 
-  const sdkHasLoaded = dynamicSdkHasLoaded || forceSdkLoaded
+  const sdkHasLoaded = useMemo(
+    () => dynamicSdkHasLoaded || forceSdkLoaded,
+    [dynamicSdkHasLoaded, forceSdkLoaded]
+  )
 
   const walletAddress = useMemo(
-    () => (sdkHasLoaded && isLoggedIn ? userWallets[0]?.address || '' : ''),
+    () => (sdkHasLoaded && isLoggedIn ? userWallets?.[0]?.address || '' : ''),
     [userWallets, sdkHasLoaded, isLoggedIn]
   )
 
   const { profiles, loading: loadingProfiles } = useGetProfiles(walletAddress)
 
-  const mainUsername = useMemo(() => {
-    if (!profiles) return ''
-    return (
-      profiles.find((profile: any) => profile.namespace.name === 'nemoapp')
-        ?.profile?.username || ''
-    )
+  const { mainUsername, image } = useMemo(() => {
+    if (!profiles) return { mainUsername: '', image: null }
+
+    const mainProfile = profiles.find(
+      (profile: any) => profile.namespace.name === 'nemoapp'
+    )?.profile
+
+    return {
+      mainUsername: mainProfile?.username || '',
+      image: mainProfile?.image || null,
+    }
   }, [profiles])
 
-  const mainProfile = profiles?.find(
-    (profile: any) => profile.namespace.name === 'nemoapp'
-  )?.profile
-  const image = mainProfile?.image || null
-
-  const value = {
-    walletAddress,
-    mainUsername,
-    loadingProfiles,
-    isLoggedIn,
-    primaryWallet,
-    sdkHasLoaded,
-    image,
-    profiles: profiles || [],
-  }
+  // Memoize the context value to prevent unnecessary rerenders of consumers
+  const value = useMemo(
+    () => ({
+      walletAddress,
+      mainUsername,
+      loadingProfiles,
+      isLoggedIn,
+      primaryWallet,
+      sdkHasLoaded,
+      image,
+      profiles: profiles || [],
+    }),
+    [
+      walletAddress,
+      mainUsername,
+      loadingProfiles,
+      isLoggedIn,
+      primaryWallet,
+      sdkHasLoaded,
+      image,
+      profiles,
+    ]
+  )
 
   return (
     <WalletContext.Provider value={value}>{children}</WalletContext.Provider>
