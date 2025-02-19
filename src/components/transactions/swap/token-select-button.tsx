@@ -1,12 +1,15 @@
-import type { TokenInfo } from '@/types/Token'
+import type { TokenResponse } from '@/types/Token'
 import { ArrowLeftRight } from 'lucide-react'
 
 interface TokenSelectButtonProps {
   tokenInfo: {
-    data: TokenInfo | null
+    data?: TokenResponse
+    loading: boolean
+    error: any
     symbol?: string
     name?: string
     image?: string
+    decimals?: number
   }
   currentToken: string
   balance?: string

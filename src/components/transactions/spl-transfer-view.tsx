@@ -1,14 +1,14 @@
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import { Avatar } from '@/components/common/avatar'
 import { useTokenInfo } from '@/hooks/use-token-info'
 import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
+import type { Profile } from '@/utils/api'
 import { formatNumber } from '@/utils/format'
+import { formatTimeAgo } from '@/utils/format-time'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
-import { Avatar } from '@/components/common/avatar'
-import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import type { Profile } from '@/utils/api'
-import { formatTimeAgo } from '@/utils/format-time'
 import { TransactionBadge } from './transaction-badge'
 
 // Legacy format
@@ -64,11 +64,12 @@ const normalizeTokenTransfer = (transfer: TokenTransfer) => {
 
 // Helper function to check if token is fungible
 const isFungibleToken = (
-  data: TokenResponse | null
+  data: TokenResponse | null | undefined
 ): data is TokenResponse & { result: FungibleTokenInfo } => {
   return (
-    data?.result?.interface === 'FungibleToken' ||
-    data?.result?.interface === 'FungibleAsset'
+    !!data &&
+    (data.result?.interface === 'FungibleToken' ||
+      data.result?.interface === 'FungibleAsset')
   )
 }
 

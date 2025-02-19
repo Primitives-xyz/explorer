@@ -105,6 +105,8 @@
   },
   "top_traders": {
     "title": "top_traders",
+    "most_active": "Most Active Traders",
+    "analyzing_trader_activity": "ANALYZING TRADER ACTIVITY",
     "analyzing_trader_performance": "ANALYZING TRADER PERFORMANCE",
     "pnl_trade": "PNL/Trade",
     "unrealized": "Unrealized",
@@ -118,11 +120,14 @@
     "position_value_change": "Position value change",
     "trades": "Trades",
     "avg_size": "Avg. Size",
+    "avg_trade": "Avg Trade",
+    "average_trade_size": "Average Trade Size",
     "position_based_pnl": "Position-based PNL",
     "no_trades_yet": "No trades yet",
     "today": "today",
     "yesterday": "yesterday",
-    "1w": "1W"
+    "1w": "1W",
+    "7d": "7D"
   },
   "trade": {
     "swap_tokens": "Swap Tokens",

@@ -8,7 +8,7 @@ import type { TokenInfo } from '@/types/Token'
 import type { Profile } from '@/utils/api'
 import { formatNumber } from '@/utils/format'
 import { formatTimeAgo } from '@/utils/format-time'
-import type { Transaction } from '@/utils/helius/types'
+import type { Transaction, TransactionEvent } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -126,43 +126,55 @@ export function SwapTransactionView({
       if (!tx.events) return
       // Handle swap event format
       const swapEvent = Array.isArray(tx.events)
-        ? tx.events.find((event) => event.type === 'SWAP')?.swap
+        ? tx.events.find(
+            (event): event is Extract<TransactionEvent, { type: 'SWAP' }> =>
+              event.type === 'SWAP'
+          )
         : undefined
       if (swapEvent) {
         // For token -> token swaps
-        if (swapEvent.tokenInputs?.[0] && swapEvent.tokenOutputs?.[0]) {
+        if (
+          swapEvent.swap.tokenInputs?.[0] &&
+          swapEvent.swap.tokenOutputs?.[0]
+        ) {
           setFromToken({
-            mint: swapEvent.tokenInputs[0].mint,
-            amount: swapEvent.tokenInputs[0].tokenAmount,
+            mint: swapEvent.swap.tokenInputs[0].mint,
+            amount: swapEvent.swap.tokenInputs[0].tokenAmount,
           })
 
           setToToken({
-            mint: swapEvent.tokenOutputs[0].mint,
-            amount: swapEvent.tokenOutputs[0].tokenAmount,
+            mint: swapEvent.swap.tokenOutputs[0].mint,
+            amount: swapEvent.swap.tokenOutputs[0].tokenAmount,
           })
         }
         // For SOL -> token swaps
-        else if (swapEvent.nativeInput && swapEvent.tokenOutputs?.[0]) {
+        else if (
+          swapEvent.swap.nativeInput &&
+          swapEvent.swap.tokenOutputs?.[0]
+        ) {
           setFromToken({
             mint: SOL_MINT,
-            amount: parseFloat(swapEvent.nativeInput.amount),
+            amount: parseFloat(swapEvent.swap.nativeInput.amount),
           })
 
           setToToken({
-            mint: swapEvent.tokenOutputs[0].mint,
-            amount: swapEvent.tokenOutputs[0].tokenAmount,
+            mint: swapEvent.swap.tokenOutputs[0].mint,
+            amount: swapEvent.swap.tokenOutputs[0].tokenAmount,
           })
         }
         // For token -> SOL swaps
-        else if (swapEvent.tokenInputs?.[0] && swapEvent.nativeOutput) {
+        else if (
+          swapEvent.swap.tokenInputs?.[0] &&
+          swapEvent.swap.nativeOutput
+        ) {
           setFromToken({
-            mint: swapEvent.tokenInputs[0].mint,
-            amount: swapEvent.tokenInputs[0].tokenAmount,
+            mint: swapEvent.swap.tokenInputs[0].mint,
+            amount: swapEvent.swap.tokenInputs[0].tokenAmount,
           })
 
           setToToken({
             mint: SOL_MINT,
-            amount: parseFloat(swapEvent.nativeOutput.amount),
+            amount: parseFloat(swapEvent.swap.nativeOutput.amount),
           })
         }
         return

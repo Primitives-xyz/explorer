@@ -15,3 +15,17 @@ export interface Transaction {
   signature?: string
   success?: boolean
 }
+export type FeedTransaction = {
+  type: string
+  source: string
+  description: string
+  fee: number
+  timestamp: string
+  signature: string
+  success: boolean
+  walletAddress: string
+  username: string
+  from: { amount: number; token: string }
+  to: { amount: number; token: string }
+  accountsInvolved: string[]
+}

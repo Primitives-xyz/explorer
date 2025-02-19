@@ -1,24 +1,10 @@
 import { SSE_TOKEN_MINT } from '@/constants/jupiter'
+import { FeedTransaction } from '@/types/Transaction'
 import { socialfi } from '@/utils/socialfi'
 import { NextResponse } from 'next/server'
 
-type Transaction = {
-  type: string
-  source: string
-  description: string
-  fee: number
-  timestamp: string
-  signature: string
-  success: boolean
-  walletAddress: string
-  username: string
-  from: { amount: number; token: string }
-  to: { amount: number; token: string }
-  accountsInvolved: string[]
-}
-
 export async function GET() {
-  let allBuyTransactions: Transaction[] = []
+  let allBuyTransactions: FeedTransaction[] = []
   let page = 0
 
   // Keep fetching until we have at least 40 buy transactions or we've made too many attempts

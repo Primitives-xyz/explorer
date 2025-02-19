@@ -1,5 +1,6 @@
 'use client'
 
+import { DataCard } from '@/components/ui/data-card'
 import { formatNumber } from '@/utils/format'
 import type { VirtualItem } from '@tanstack/react-virtual'
 import { useVirtualizer } from '@tanstack/react-virtual'
@@ -329,121 +330,95 @@ export const TopTraders = () => {
   }, [timeFrame]) // apiOptions is now stable and doesn't need to be in dependencies
 
   return (
-    <div className="border border-indigo-800 bg-black/50 w-full overflow-hidden flex flex-col h-[600px] relative group backdrop-blur-sm">
-      {/* Header */}
-      <div className="border-b border-indigo-800 p-3 flex-shrink-0 bg-black/20">
-        {/* Mobile Layout */}
-        <div className="flex sm:hidden flex-col gap-2">
-          <div className="text-indigo-500 text-sm font-mono flex items-center gap-2">
-            <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-            {'>'} {t('top_traders.title')}
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {filter.map((tf) => (
-              <button
-                key={tf.value}
-                onClick={() => setTimeFrame(tf.value)}
-                className={`text-xs font-mono px-2.5 py-1 rounded-full transition-all uppercase ${
-                  timeFrame === tf.value
-                    ? 'bg-indigo-500 text-black'
-                    : 'text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/40'
-                }`}
-              >
-                {tf.label}
-              </button>
-            ))}
-          </div>
+    <DataCard
+      className="h-[600px]"
+      borderColor="indigo"
+      title={t('top_traders.title')}
+      titleRight={
+        <div className="hidden sm:flex gap-2">
+          {filter.map((tf) => (
+            <button
+              key={tf.value}
+              onClick={() => setTimeFrame(tf.value)}
+              className={`text-xs font-mono px-3 py-1 rounded-full transition-all uppercase ${
+                timeFrame === tf.value
+                  ? 'bg-indigo-500 text-black'
+                  : 'text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/40'
+              }`}
+            >
+              {tf.label}
+            </button>
+          ))}
         </div>
-
-        {/* Desktop Layout */}
-        <div className="hidden sm:flex items-center justify-between">
-          <div className="text-indigo-500 text-sm font-mono flex items-center gap-2">
-            <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-            {'>'} {t('top_traders.title')}
-          </div>
-          <div className="flex gap-2">
-            {filter.map((tf) => (
-              <button
-                key={tf.value}
-                onClick={() => setTimeFrame(tf.value)}
-                className={`text-xs font-mono px-3 py-1 rounded-full transition-all uppercase ${
-                  timeFrame === tf.value
-                    ? 'bg-indigo-500 text-black'
-                    : 'text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/40'
-                }`}
-              >
-                {tf.label}
-              </button>
-            ))}
-          </div>
+      }
+      error={error}
+      loading={isLoading}
+      loadingText={t('top_traders.analyzing_trader_performance')}
+    >
+      {/* Mobile filters */}
+      <div className="flex sm:hidden flex-col gap-2 p-3 border-b border-indigo-800">
+        <div className="flex flex-wrap gap-1.5">
+          {filter.map((tf) => (
+            <button
+              key={tf.value}
+              onClick={() => setTimeFrame(tf.value)}
+              className={`text-xs font-mono px-2.5 py-1 rounded-full transition-all uppercase ${
+                timeFrame === tf.value
+                  ? 'bg-indigo-500 text-black'
+                  : 'text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/40'
+              }`}
+            >
+              {tf.label}
+            </button>
+          ))}
         </div>
       </div>
-
-      {error && (
-        <div className="p-4 m-4 text-red-400 text-sm border border-red-900/50 rounded-lg bg-red-900/10">
-          <div className="flex items-center gap-2">
-            <span className="text-red-500">⚠️</span>
-            {t('common.error')}: {error}
-          </div>
-        </div>
-      )}
 
       {/* Content */}
       <div
         ref={scrollContainerRef}
         className="overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-indigo-900/50"
       >
-        {isLoading ? (
-          <div className="p-8 flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-            <div className="text-indigo-600 font-mono animate-pulse">
-              {`>>> ${t('top_traders.analyzing_trader_performance')}...`}
-            </div>
+        <div className="divide-y divide-indigo-800/30">
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow: VirtualItem) => {
+              const trader = traders[virtualRow.index]
+              if (!trader) return null
+              return (
+                <div
+                  key={trader.address}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <TraderCard
+                    trader={trader}
+                    index={virtualRow.index}
+                    isSelected={selectedTrader?.address === trader.address}
+                    onClick={() =>
+                      setSelectedTrader(
+                        selectedTrader?.address === trader.address
+                          ? null
+                          : trader
+                      )
+                    }
+                  />
+                </div>
+              )
+            })}
           </div>
-        ) : (
-          <div className="divide-y divide-indigo-800/30">
-            <div
-              style={{
-                height: `${rowVirtualizer.getTotalSize()}px`,
-                width: '100%',
-                position: 'relative',
-              }}
-            >
-              {rowVirtualizer
-                .getVirtualItems()
-                .map((virtualRow: VirtualItem) => {
-                  const trader = traders[virtualRow.index]
-                  if (!trader) return null
-                  return (
-                    <div
-                      key={trader.address}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: `${virtualRow.size}px`,
-                        transform: `translateY(${virtualRow.start}px)`,
-                      }}
-                    >
-                      <TraderCard
-                        trader={trader}
-                        index={virtualRow.index}
-                        isSelected={selectedTrader?.address === trader.address}
-                        onClick={() =>
-                          setSelectedTrader(
-                            selectedTrader?.address === trader.address
-                              ? null
-                              : trader
-                          )
-                        }
-                      />
-                    </div>
-                  )
-                })}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Scroll Progress Indicator */}
@@ -452,6 +427,6 @@ export const TopTraders = () => {
           <div className="h-24 w-full bg-indigo-500/20 rounded-full animate-pulse" />
         </div>
       </div>
-    </div>
+    </DataCard>
   )
 }
