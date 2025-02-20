@@ -27,6 +27,7 @@ interface ProfileWithStats extends Profile {
 
 interface ProfileData {
   profiles: any[]
+  totalCount?: number
 }
 
 interface ProfileSectionProps {
@@ -319,7 +320,7 @@ export const ProfileSection = ({
     <DataContainer
       key={key}
       title={title}
-      count={filteredProfiles?.length || 0}
+      count={profileData?.totalCount ?? filteredProfiles?.length ?? 0}
       error={error}
       height="large"
       headerRight={
