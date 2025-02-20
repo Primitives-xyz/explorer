@@ -360,12 +360,6 @@ export const ProfileSection = ({
           >
             Explore All Domains
           </button>
-          <button
-            onClick={() => window.open('https://www.tapaigames.com/', '_blank')}
-            className="w-full p-3 text-left bg-green-500/5 hover:bg-green-500/10  rounded-lg transition-colors font-mono text-sm border border-green-500/20 hover:border-green-500/30"
-          >
-            Create a Nimbus App
-          </button>
         </div>
       </Modal>
 
