@@ -6,8 +6,6 @@ const BASE_URL = process.env.TAPESTRY_URL
 const API_KEY = process.env.TAPESTRY_API_KEY
 
 export async function GET(request: Request) {
-  console.log('++++++++++++')
-
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
   const useIdentities = searchParams.get('useIdentities') === 'true'
@@ -95,8 +93,6 @@ export async function GET(request: Request) {
       }
 
       const data = await response.json()
-
-      console.log('[profiles] data:', JSON.stringify(data, null, 2))
       return NextResponse.json(data)
     }
   } catch (error) {

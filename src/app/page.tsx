@@ -35,9 +35,6 @@ export default function Home() {
       const url = '/api/profiles'
       const response = await fetch(url)
 
-      console.log('&&&&&')
-      console.log(JSON.stringify(response, null, 2))
-
       if (!response.ok) {
         throw new Error('Failed to fetch profiles')
       }
