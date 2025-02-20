@@ -65,6 +65,8 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     }
   )
 
+  console.log('[useProfileData] data:', JSON.stringify(data, null, 2))
+
   const {
     profiles,
     loading: loadingProfiles,
