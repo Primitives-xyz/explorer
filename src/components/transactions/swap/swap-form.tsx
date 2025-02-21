@@ -44,7 +44,7 @@ const LoadingDots = () => {
 export function SwapForm({
   initialInputMint = 'So11111111111111111111111111111111111111112',
   initialOutputMint = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump',
-  initialAmount = '0.01',
+  initialAmount = '',
   inputTokenName = 'SOL',
   outputTokenName = 'USDC',
   inputDecimals = 9,
