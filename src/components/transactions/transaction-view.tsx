@@ -75,7 +75,7 @@ export default function TransactionDetails({
     setTransactionExplanationLoading(true);
     
     try{
-      const response = await fetch(`api/llm?text=${transaction?.description}`);
+      const response = await fetch(`api/llm?text=${JSON.stringify(transaction)}`);
 
       if(!response.ok) {
         setTransactionExplanation(t('unable_get_response_llm'));

@@ -23,7 +23,7 @@ export async function GET(request: Request) {
           model: "claude-3-5-sonnet-20241022",
           max_tokens: 1024,
           messages: [{
-            "role": "user", "content": transactionText
+            "role": "user", "content": `Explain this transaction to a solana trader: ${transactionText}`
           }]
         })
       }
