@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.usetapestry.dev',
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_TAPESTRY_ASSETS_URL}/explorer-2.png`,
+        url: `https://assets.usetapestry.dev/ssegg.png`,
         width: 1200,
         height: 630,
         alt: 'Solana Social Explorer Interface',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     description:
       process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
       'Explore social connections and wallet analytics on Solana',
-    images: [`${process.env.NEXT_PUBLIC_TAPESTRY_ASSETS_URL}/explorer-2.png`],
+    images: [`https://assets.usetapestry.dev/ssegg.png`],
     creator: process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto',
   },
   robots: {
