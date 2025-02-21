@@ -234,6 +234,8 @@
     "loading_transactions": "loading transactions",
     "no_transactions_found": "no transactions found",
     "loading_more_transactions": "LOADING MORE TRANSACTIONS",
+    "loading_transaction_explanation": "Loading transaction explanation...",
+    "unable_get_response_llm": "Unable to explain the transaction. Please try again later.",
     "no_description_available": "No description available",
     "loading_transaction_details": "Loading transaction details...",
     "transaction_details": "Transaction Details",
@@ -245,7 +247,8 @@
     "received": "Received",
     "sent": "Sent",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "explain_transaction": "Explain this transaction"
   },
   "portfolio_assets": {
     "title": "portfolio_assets"
