@@ -1,5 +1,7 @@
 'use client'
 
+import type { TransactionExplanation } from '@/hooks/useTransactionExplanation'
+import { useTransactionExplanation } from '@/hooks/useTransactionExplanation'
 import type { Transaction } from '@/utils/helius/types'
 import {
   formatLamportsToSol,
@@ -29,8 +31,12 @@ export default function TransactionDetails({
     isLoading: true,
     error: null,
   })
-  const [transactionExplanation, setTransactionExplanation] = useState('')
-  const [transactionExplanationLoading, setTransactionExplanationLoading] = useState(false)
+
+  const {
+    explanation: transactionExplanation,
+    isLoading: transactionExplanationLoading,
+    getExplanation,
+  } = useTransactionExplanation()
 
   const t = useTranslations()
 
@@ -72,21 +78,8 @@ export default function TransactionDetails({
   }, [signature])
 
   async function handleTransactionExplanationClick() {
-    setTransactionExplanationLoading(true);
-    
-    try{
-      const response = await fetch(`api/llm?text=${JSON.stringify(transaction)}`);
-
-      if(!response.ok) {
-        setTransactionExplanation(t('unable_get_response_llm'));
-        return;
-      }
-
-      setTransactionExplanation((await response.json()).text);
-    } catch(exception) {
-      setTransactionExplanation(t('unable_get_response_llm'));
-    } finally {
-      setTransactionExplanationLoading(false);
+    if (state.transaction) {
+      await getExplanation(state.transaction)
     }
   }
 
@@ -114,18 +107,135 @@ export default function TransactionDetails({
 
   return (
     <div className="py-8">
-      <div className="mb-8 border border-green-800/40 rounded-xl bg-black/40">
-        <TransactionCard
-          transaction={transaction}
-          sourceWallet={transaction.feePayer || ''}
-        />
-      </div>
-
       <div className="mb-8">
         <h1 className="text-2xl font-mono mb-2">
           {t('transaction_log.transaction_details')}
         </h1>
         <TransactionSignature signature={signature} />
+      </div>
+
+      <div className="mb-8">
+        <button
+          onClick={handleTransactionExplanationClick}
+          className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0"
+        >
+          {t('transaction_log.explain_transaction')}
+        </button>
+
+        {transactionExplanationLoading && (
+          <div className="py-8">
+            <div className="font-mono text-center">
+              {t('transaction_log.loading_transaction_explanation')}
+            </div>
+          </div>
+        )}
+        {!transactionExplanationLoading && transactionExplanation && (
+          <div className="mt-6 space-y-6 p-6 border-2 border-green-500/30 rounded-xl bg-black/60 shadow-lg shadow-green-900/20">
+            {/* Key Points Summary */}
+            <div>
+              <h4 className="text-lg font-mono mb-4 text-green-400">
+                {
+                  (transactionExplanation as TransactionExplanation).summaries
+                    .brief
+                }
+              </h4>
+
+              <div className="space-y-2">
+                <h5 className="text-sm font-mono uppercase tracking-wider text-green-400">
+                  KEY POINTS
+                </h5>
+                {(
+                  transactionExplanation as TransactionExplanation
+                ).details.operations.map((op, index) => (
+                  <div key={index} className="font-mono text-sm">
+                    • {op.description}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Detailed Explanation */}
+            <div>
+              <h5 className="text-sm font-mono uppercase tracking-wider text-green-400 mb-2">
+                DETAILED EXPLANATION
+              </h5>
+              <p className="font-mono text-sm opacity-90">
+                {
+                  (transactionExplanation as TransactionExplanation).summaries
+                    .detailed
+                }
+              </p>
+            </div>
+
+            {/* Technical Details */}
+            <div className="space-y-4">
+              <h5 className="text-sm font-mono uppercase tracking-wider text-green-400">
+                TECHNICAL DETAILS
+              </h5>
+
+              {/* Protocols Used */}
+              <div className="pl-4">
+                <div className="text-sm font-mono mb-1">Protocols:</div>
+                <div className="flex gap-2 flex-wrap">
+                  <span className="px-3 py-1 bg-green-900/30 border border-green-500/30 rounded-full text-sm font-mono">
+                    {
+                      (transactionExplanation as TransactionExplanation)
+                        .protocols.primary
+                    }
+                  </span>
+                  {(
+                    transactionExplanation as TransactionExplanation
+                  ).protocols.integrated.map((protocol, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-green-900/20 border border-green-500/20 rounded-full text-sm font-mono opacity-80"
+                    >
+                      {protocol}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Fees */}
+              <div className="pl-4">
+                <div className="text-sm font-mono mb-1">Fees:</div>
+                <div className="space-y-1 font-mono text-sm opacity-90">
+                  <div>
+                    • Transaction Fee:{' '}
+                    {
+                      (transactionExplanation as TransactionExplanation).details
+                        .fees.transactionFee
+                    }
+                  </div>
+                  {(
+                    transactionExplanation as TransactionExplanation
+                  ).details.fees.protocolFees.map((fee, index) => (
+                    <div key={index}>
+                      • {fee.protocol}: {fee.amount} {fee.token}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Risks if any */}
+              {(transactionExplanation as TransactionExplanation).analysis.risks
+                .length > 0 && (
+                <div className="pl-4">
+                  <div className="text-sm font-mono mb-1">Risks:</div>
+                  <ul className="list-disc pl-4 space-y-1">
+                    {(
+                      transactionExplanation as TransactionExplanation
+                    ).analysis.risks.map((risk, index) => (
+                      <li key={index} className="font-mono text-sm opacity-90">
+                        {risk}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -165,26 +275,6 @@ export default function TransactionDetails({
           {transaction.description ||
             t('transaction_log.no_description_available')}
         </div>
-      </div>
-
-      <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
-        <button 
-          onClick={handleTransactionExplanationClick}
-          className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0" >{t('transaction_log.explain_transaction')}
-          </button>
-
-          {transactionExplanationLoading && (
-            <div className="py-8">
-              <div className="font-mono text-center">
-                {t('transaction_log.loading_transaction_explanation')}
-              </div>
-            </div>
-          )}
-          {!transactionExplanationLoading && transactionExplanation && transactionExplanation != '' && (
-            <div className="mt-6 font-mono">
-              {transactionExplanation}
-            </div>
-          )}
       </div>
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
@@ -252,6 +342,13 @@ export default function TransactionDetails({
               </div>
             ))}
         </div>
+      </div>
+
+      <div className="border border-green-800/40 rounded-xl bg-black/40">
+        <TransactionCard
+          transaction={transaction}
+          sourceWallet={transaction.feePayer || ''}
+        />
       </div>
     </div>
   )
