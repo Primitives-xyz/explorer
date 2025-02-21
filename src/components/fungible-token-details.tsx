@@ -167,7 +167,6 @@ export default function FungibleTokenDetails({
                   <JupiterSwapForm
                     initialInputMint="So11111111111111111111111111111111111111112"
                     initialOutputMint={id}
-                    initialAmount="0.01"
                     inputTokenName="SOL"
                     outputTokenName={tokenInfo.content.metadata.symbol}
                     inputDecimals={9}
