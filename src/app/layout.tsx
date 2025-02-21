@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.usetapestry.dev',
     images: [
       {
-        url: `https://assets.usetapestry.dev/ssegg.png`,
+        url: `${process.env.NEXT_PUBLIC_TAPESTRY_ASSETS_URL}/explorer-2.png`,
         width: 1200,
         height: 630,
         alt: 'Solana Social Explorer Interface',
