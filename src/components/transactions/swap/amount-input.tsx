@@ -8,9 +8,13 @@ interface AmountInputProps {
   balance?: string
   isLoggedIn?: boolean
   isBalanceLoading?: boolean
+  isBalanceRefreshing?: boolean
   disabled?: boolean
   error?: string | null
   validateAmount?: (value: string) => boolean
+  onQuarterClick?: () => void
+  onHalfClick?: () => void
+  onMaxClick?: () => void
 }
 
 export function AmountInput({
@@ -20,9 +24,13 @@ export function AmountInput({
   balance,
   isLoggedIn,
   isBalanceLoading,
+  isBalanceRefreshing,
   disabled,
   error,
   validateAmount,
+  onQuarterClick,
+  onHalfClick,
+  onMaxClick,
 }: AmountInputProps) {
   const t = useTranslations()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -48,24 +56,82 @@ export function AmountInput({
     setDebouncedUpdate(timeout)
   }
 
+  const isButtonDisabled =
+    disabled || !balance || balance === '0' || isBalanceRefreshing
+
+  const buttonClass =
+    'text-xs bg-green-500/10 hover:bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-green-500/20 hover:border-green-500/30 active:scale-95'
+
   return (
-    <div>
+    <div className="relative">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm">{t('common.amount')}</div>
+        <div className="text-sm font-medium">{t('common.amount')}</div>
         {isLoggedIn && !isBalanceLoading && balance && (
-          <div className="text-sm">
-            {t('common.balance')}: {balance}
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-green-100/70 flex items-center gap-1">
+              {t('common.balance')}:{' '}
+              <span className={isBalanceRefreshing ? 'animate-pulse' : ''}>
+                {balance}
+              </span>
+              {isBalanceRefreshing && (
+                <svg
+                  className="w-3 h-3 animate-spin text-green-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              )}
+            </div>
+            <div className="flex gap-1.5">
+              <button
+                onClick={onQuarterClick}
+                disabled={isButtonDisabled}
+                className={buttonClass}
+              >
+                25%
+              </button>
+              <button
+                onClick={onHalfClick}
+                disabled={isButtonDisabled}
+                className={buttonClass}
+              >
+                50%
+              </button>
+              <button
+                onClick={onMaxClick}
+                disabled={isButtonDisabled}
+                className={buttonClass}
+              >
+                {t('common.max')}
+              </button>
+            </div>
           </div>
         )}
       </div>
-      <div className="relative">
+      <div className="relative group">
         <input
           ref={inputRef}
           type="text"
           inputMode="decimal"
           placeholder="0.00"
-          className={`bg-green-900/20 text-2xl  p-3 rounded-lg w-full font-medium placeholder:/50 ${
-            error ? 'border border-red-500' : ''
+          className={`bg-green-900/20 text-2xl p-4 rounded-lg w-full font-medium placeholder:text-green-100/30 transition-all duration-200 outline-none focus:ring-2 focus:ring-green-500/20 ${
+            error
+              ? 'border border-red-500/50 focus:border-red-500'
+              : 'border border-green-500/20 focus:border-green-500/30'
           }`}
           value={value}
           onFocus={(e) => {
@@ -95,8 +161,22 @@ export function AmountInput({
           }}
           disabled={disabled}
         />
+        {disabled && (
+          <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px] rounded-lg cursor-not-allowed" />
+        )}
       </div>
-      {error && <p className="text-red-400 text-sm mt-1 ml-1">{error}</p>}
+      {error && (
+        <p className="text-red-400 text-sm mt-2 ml-1 flex items-center gap-1">
+          <svg
+            viewBox="0 0 24 24"
+            className="w-4 h-4 fill-current"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z" />
+          </svg>
+          {error}
+        </p>
+      )}
     </div>
   )
 }
