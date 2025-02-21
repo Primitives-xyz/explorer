@@ -29,6 +29,8 @@ export default function TransactionDetails({
     isLoading: true,
     error: null,
   })
+  const [transactionExplanation, setTransactionExplanation] = useState('')
+  const [transactionExplanationLoading, setTransactionExplanationLoading] = useState(false)
 
   const t = useTranslations()
 
@@ -68,6 +70,25 @@ export default function TransactionDetails({
     setState((prev) => ({ ...prev, isLoading: true }))
     fetchTransaction()
   }, [signature])
+
+  async function handleTransactionExplanationClick() {
+    setTransactionExplanationLoading(true);
+    
+    try{
+      const response = await fetch(`api/llm?text=${transaction?.description}`);
+
+      if(!response.ok) {
+        setTransactionExplanation(t('unable_get_response_llm'));
+        return;
+      }
+
+      setTransactionExplanation((await response.json()).text);
+    } catch(exception) {
+      setTransactionExplanation(t('unable_get_response_llm'));
+    } finally {
+      setTransactionExplanationLoading(false);
+    }
+  }
 
   const { transaction, isLoading, error } = state
 
@@ -144,6 +165,26 @@ export default function TransactionDetails({
           {transaction.description ||
             t('transaction_log.no_description_available')}
         </div>
+      </div>
+
+      <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
+        <button 
+          onClick={handleTransactionExplanationClick}
+          className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0" >{t('transaction_log.explain_transaction')}
+          </button>
+
+          {transactionExplanationLoading && (
+            <div className="py-8">
+              <div className="font-mono text-center">
+                {t('transaction_log.loading_transaction_explanation')}
+              </div>
+            </div>
+          )}
+          {!transactionExplanationLoading && transactionExplanation && transactionExplanation != '' && (
+            <div className="mt-6 font-mono">
+              {transactionExplanation}
+            </div>
+          )}
       </div>
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
