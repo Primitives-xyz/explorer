@@ -47,6 +47,7 @@
   "header": {
     "title": "solana_social_explorer",
     "search": "search",
+    "PumpMint": "PumpMint",
     "trade": "trade",
     "portfolio": "portfolio",
     "connect_wallet": "connect wallet",
