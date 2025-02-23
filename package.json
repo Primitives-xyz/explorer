@@ -26,6 +26,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "0.30.1",
     "@dialectlabs/react-sdk-blockchain-solana": "^2.1.1",
     "@dialectlabs/react-ui": "^2.2.0",
     "@dynamic-labs/sdk-react-core": "^3.9.5",
@@ -59,6 +60,9 @@
     "pino-pretty": "^11.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-icons": "5.5.0",
+    "react-images-uploading": "3.1.7",
+    "react-spinners-kit": "1.9.1",
     "socialfi": "^0.1.5",
     "sonner": "1.7.4",
     "swr": "^2.3.0",

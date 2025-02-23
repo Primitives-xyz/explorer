@@ -30,6 +30,7 @@ export function WalletContextProvider({
   const t = useTranslations()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
+
   const [forceSdkLoaded, setForceSdkLoaded] = useState(false)
 
   // Separate effect for timeout logic

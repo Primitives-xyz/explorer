@@ -5,12 +5,17 @@ import CustomButton from "@/components/pump-mint/Button";
 import { usePumpMint } from "@/components/pump-mint/hook/use-pump-mint";
 import InputField from "@/components/pump-mint/InputField";
 import React from "react";
-// import ImageUploading from 'react-images-uploading';
-// import { FaUpload } from "react-icons/fa";
+import ImageUploading from 'react-images-uploading';
+import { FaUpload } from "react-icons/fa";
 
 const TokenCreator: React.FC = () => {
 
-  const { name, setName, symbol, setSymbol, description, setDescription, website, setWebsite, twitter, setTwitter, discord, setDiscord, telegram, setTelegram, mintDisable, createLoading, handleCreatePumpFunToken } = usePumpMint()
+  const { name, setName, symbol, setSymbol, description, setDescription, website, setWebsite, twitter, setTwitter, discord, setDiscord, telegram, setTelegram, mintDisable, createLoading, handleCreatePumpFunToken,images, setImages } = usePumpMint()
+
+  const onChange = (imageList: any, addUpdateIndex: any) => {
+    console.log(imageList, addUpdateIndex);
+    setImages(imageList);
+  };
 
   return (
     <div className="flex flex-col justify-center gap-5 bg-black/50 shadow-lg item-center mx-auto mt-6 p-6 rounded-lg w-full max-w-4xl text-white border-green-500/20 border">
@@ -34,7 +39,7 @@ const TokenCreator: React.FC = () => {
 
       {/* Image Upload */}
       <div className="flex justify-center items-center mt-4 p-4 border-dashed h-[205px] text-center border-2 border-green-500/20 rounded-md">
-        {/* <ImageUploading
+        <ImageUploading
           multiple
           value={images}
           onChange={onChange}
@@ -71,7 +76,7 @@ const TokenCreator: React.FC = () => {
               </button>}
             </div>
           )}
-        </ImageUploading> */}
+        </ImageUploading>
       </div>
 
       {/* Description */}
