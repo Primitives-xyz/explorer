@@ -285,7 +285,12 @@ export function SwapTransactionView({
       {/* Transaction Header - Simplified */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm">
-          <div className="flex items-center gap-2">
+          <Link
+            href={route('address', {
+              id: sourceProfile?.username || sourceWallet,
+            })}
+            className="flex items-center gap-2 hover:bg-green-900/20 rounded-lg px-2 py-1 transition-colors"
+          >
             <Avatar
               username={sourceProfile?.username || sourceWallet}
               size={32}
@@ -306,7 +311,7 @@ export function SwapTransactionView({
                 </span>
               )}
             </span>
-          </div>
+          </Link>
           <div className="flex items-center gap-1">
             <span>swapped on {formatSourceName(tx.source)}</span>
             <Link
