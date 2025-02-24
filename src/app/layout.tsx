@@ -14,13 +14,10 @@ import './globals.css'
 function getDomainInfo(host: string | null) {
   const isSSE = host?.includes('sse.gg')
   return {
-    name: isSSE ? 'SSE' : 'Solana Social Explorer | Tapestry Protocol',
+    name: 'Solana Social Explorer | Tapestry Protocol',
     url: isSSE ? 'https://sse.gg' : 'https://explorer.usetapestry.gg',
     description:
       'Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.',
-    imageUrl: isSSE
-      ? 'https://assets.usetapestry.dev/ssegg.png'
-      : 'https://assets.usetapestry.dev/tapestry.png',
   }
 }
 
@@ -43,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: domainInfo.url || process.env.NEXT_PUBLIC_APP_URL,
       images: [
         {
-          url: process.env.NEXT_PUBLIC_OG_IMAGE || domainInfo.imageUrl,
+          url: `https://assets.usetapestry.dev/ssegg.png`,
           width: 1200,
           height: 630,
           alt: 'Solana Social Explorer Interface',
@@ -56,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: process.env.NEXT_PUBLIC_APP_NAME || domainInfo.name,
       description:
         process.env.NEXT_PUBLIC_APP_DESCRIPTION || domainInfo.description,
-      images: [process.env.NEXT_PUBLIC_OG_IMAGE || domainInfo.imageUrl],
+      images: [`https://assets.usetapestry.dev/ssegg.png`],
       creator: process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto',
     },
     robots: {
@@ -74,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     },
     alternates: {
-      canonical: domainInfo.url || process.env.NEXT_PUBLIC_APP_URL,
+      canonical: process.env.NEXT_PUBLIC_APP_URL || domainInfo.url,
     },
     icons: {
       icon: '/favicon.png',
