@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       }
 
       const identitiesResponse = await fetch(
-        `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=0&pageSize=20`,
+        `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}`,
         {
           method: 'GET',
           headers: {
