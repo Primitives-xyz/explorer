@@ -1,5 +1,6 @@
 import { generateNamespaceMetadata } from '@/utils/metadata/namespace-metadata'
 import { getNamespaceDetails, getNamespaceProfiles } from '@/utils/namespace'
+import { type NamespaceParams as Params } from '@/utils/validation'
 import { Metadata } from 'next'
 import { NamespaceClient } from './namespace-client'
 
@@ -7,10 +8,11 @@ import { NamespaceClient } from './namespace-client'
 export async function generateMetadata({
   params,
 }: {
-  params: { namespace: string }
+  params: Params
 }): Promise<Metadata> {
-  const namespaceDetails = await getNamespaceDetails(params.namespace)
-  const { totalCount } = await getNamespaceProfiles(params.namespace)
+  const { namespace } = await params
+  const namespaceDetails = await getNamespaceDetails(namespace)
+  const { totalCount } = await getNamespaceProfiles(namespace)
 
   if (!namespaceDetails) {
     return {
@@ -22,14 +24,10 @@ export async function generateMetadata({
   return generateNamespaceMetadata(namespaceDetails, totalCount)
 }
 
-// Server Component
-export default async function NamespacePage({
-  params,
-}: {
-  params: { namespace: string }
-}) {
-  const namespaceDetails = await getNamespaceDetails(params.namespace)
-  const { profiles, totalCount } = await getNamespaceProfiles(params.namespace)
+export default async function Page({ params }: { params: Params }) {
+  const { namespace } = await params
+  const namespaceDetails = await getNamespaceDetails(namespace)
+  const { profiles, totalCount } = await getNamespaceProfiles(namespace)
 
   return (
     <NamespaceClient
@@ -39,3 +37,6 @@ export default async function NamespacePage({
     />
   )
 }
+
+// Force dynamic rendering to ensure data is always fresh
+export const dynamic = 'force-dynamic'
