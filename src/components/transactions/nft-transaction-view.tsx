@@ -32,7 +32,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
 }: NFTTransactionViewProps) {
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [_detectionMethod, setDetectionMethod] = useState<string>('')
-  const { data: nftInfo, loading, error } = useTokenInfo(nftMint)
+  const { data: nftInfo, error } = useTokenInfo(nftMint)
 
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
