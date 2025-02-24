@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: domainInfo.url || process.env.NEXT_PUBLIC_APP_URL,
       images: [
         {
-          url: `https://assets.usetapestry.dev/ssegg.png`,
+          url: `https://assets.usetapestry.dev/sse2.png`,
           width: 1200,
           height: 630,
           alt: 'Solana Social Explorer Interface',
@@ -53,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: process.env.NEXT_PUBLIC_APP_NAME || domainInfo.name,
       description:
         process.env.NEXT_PUBLIC_APP_DESCRIPTION || domainInfo.description,
-      images: [`https://assets.usetapestry.dev/ssegg.png`],
+      images: [`https://assets.usetapestry.dev/sse2.png`],
       creator: process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto',
     },
     robots: {
