@@ -1,6 +1,7 @@
 import { ActivityTape } from '@/components/activity-tape'
 import { AuthWrapper } from '@/components/auth/auth-wrapper'
 import WalletProvider from '@/components/auth/wallet-provider'
+import { FeedbackButton } from '@/components/common/feedback-button'
 import { GlobalSearch } from '@/components/global-search'
 import { Header } from '@/components/header-container/header'
 import { CreateProfile } from '@/components/profile/create-profile'
@@ -95,6 +96,7 @@ export default async function RootLayout({
               </div>
               <GlobalSearch />
               <CreateProfile />
+              <FeedbackButton />
             </AuthWrapper>
           </WalletProvider>
         </NextIntlClientProvider>
