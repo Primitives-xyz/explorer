@@ -91,7 +91,6 @@ export function ProfileContent({ username }: Props) {
     error: identitiesError,
   } = useIdentities(targetWalletAddress || '')
 
-  console.log('PROFILES: \n ', identities)
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
   }, [])
