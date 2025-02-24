@@ -1,9 +1,7 @@
 import { isValidSolanaAddress } from '@/utils/validation'
 import useSWR, { mutate } from 'swr'
 
-export const useGetProfiles = (
-  walletAddress: string,
-) => {
+export const useGetProfiles = (walletAddress: string) => {
   const fetcher = async (url: string) => {
     // Validate wallet address before making the API call
     if (walletAddress && !isValidSolanaAddress(walletAddress)) {
@@ -20,7 +18,7 @@ export const useGetProfiles = (
   }
 
   const key = walletAddress
-    ? `/api/identities?walletAddress=${walletAddress}`
+    ? `/api/profiles?walletAddress=${walletAddress}`
     : null
 
   const {
@@ -46,8 +44,6 @@ export const useGetProfiles = (
 }
 
 // Export a function to manually trigger revalidation
-export const refreshProfiles = (
-  walletAddress: string,
-) => {
-  return mutate(`/api/identities?walletAddress=${walletAddress}`)
+export const refreshProfiles = (walletAddress: string) => {
+  return mutate(`/api/profiles?walletAddress=${walletAddress}`)
 }

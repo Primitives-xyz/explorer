@@ -1,6 +1,7 @@
 'use client'
 
 import PortfolioTabs from '@/components/portfolio/portfolio-tabs'
+import { useIdentities } from '@/hooks/use-identities'
 import type { TokenPortfolioResponse } from '@/types/Token'
 import { isValidSolanaAddress } from '@/utils/validation'
 import { useTranslations } from 'next-intl'
@@ -32,7 +33,11 @@ export function WalletView({ address }: { address: string }) {
   >(undefined)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
+  const {
+    identities,
+    loading: isLoadingIdentities,
+    error: identitiesError,
+  } = useIdentities(address)
   const t = useTranslations()
 
   useEffect(() => {
@@ -132,6 +137,12 @@ export function WalletView({ address }: { address: string }) {
           <ProfileSection
             walletAddress={address}
             isLoadingProfileData={isLoading}
+            profileData={{
+              profiles:
+                !identitiesError && !isLoadingIdentities && identities
+                  ? identities
+                  : [],
+            }}
             hasSearched={true}
           />
         </div>

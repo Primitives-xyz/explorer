@@ -1,5 +1,6 @@
 'use client'
 
+import { useIdentities } from '@/hooks/use-identities'
 import { useProfileData } from '@/hooks/use-profile-data'
 import { useTargetWallet } from '@/hooks/use-target-wallet'
 import { cn } from '@/utils/utils'
@@ -75,7 +76,6 @@ export function ProfileContent({ username }: Props) {
 
   const {
     profileData,
-    profiles,
     followers,
     following,
     comments,
@@ -84,6 +84,12 @@ export function ProfileContent({ username }: Props) {
     isLoadingFollowing,
     isLoadingComments,
   } = useProfileData(username, mainUsername)
+
+  const {
+    identities,
+    loading: isLoadingIdentities,
+    error: identitiesError,
+  } = useIdentities(targetWalletAddress || '')
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
@@ -187,10 +193,19 @@ export function ProfileContent({ username }: Props) {
 
           <ProfileSection
             walletAddress={targetWalletAddress}
-            hasSearched={!isLoading}
-            isLoadingProfileData={isLoading}
-            profileData={{ profiles: profiles || [] }}
-            title="related_profiles"
+            hasSearched={!isLoadingIdentities && !!targetWalletAddress}
+            isLoadingProfileData={
+              isLoadingIdentities || isLoadingWallet || !targetWalletAddress
+            }
+            profileData={{
+              profiles:
+                !identitiesError && !isLoadingIdentities && identities
+                  ? identities
+                  : [],
+            }}
+            title={
+              identitiesError ? 'error_loading_profiles' : 'related_profiles'
+            }
           />
         </div>
       </div>
