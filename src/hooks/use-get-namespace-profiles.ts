@@ -15,8 +15,6 @@ export const useGetNamespaceProfiles = ({ name }: { name: string }) => {
     fetchNamespaceProfiles
   )
 
-  console.log('[data profiles]', JSON.stringify(data, null, 2))
-
   return {
     profiles: data?.profiles,
     totalCount: data?.totalCount,
