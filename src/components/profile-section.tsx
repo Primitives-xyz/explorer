@@ -86,8 +86,15 @@ const ProfileCard = memo(
       (e: React.MouseEvent) => {
         e.stopPropagation() // Prevent event bubbling
         if (!profile?.namespace?.name) return // Add guard clause
+
         try {
-          router.push(route('namespace', { namespace: profile.namespace.name }))
+          if (profile.namespace.name === 'nemoapp') {
+            router.push(route('address', { id: profile.profile.username }))
+          } else {
+            router.push(
+              route('namespace', { namespace: profile.namespace.name })
+            )
+          }
         } catch (error) {
           console.error('Error navigating to namespace:', error)
         }
