@@ -27,15 +27,16 @@ export const useGetProfiles = (walletAddress: string) => {
     isLoading,
     mutate: mutateProfiles,
   } = useSWR(key, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 5000, // 5 seconds
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+    dedupingInterval: 0,
     revalidateIfStale: true,
     revalidateOnMount: true,
-    refreshInterval: 30000, // 30 seconds
+    refreshInterval: 0,
     shouldRetryOnError: true,
-    errorRetryCount: 2,
+    errorRetryCount: 3,
     keepPreviousData: true,
+    fallbackData: null,
     isPaused: () => !walletAddress,
   })
 
