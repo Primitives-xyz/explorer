@@ -9,6 +9,13 @@ async function fetchNamespaceDetails(url: string) {
   return await res.json()
 }
 
+export interface INamespaceDetails {
+  id: number
+  name: string
+  readableName: string
+  faviconURL: string | null
+}
+
 export const useGetNamespaceDetails = ({ name }: { name: string }) => {
   const { data, error, mutate } = useSWR(
     `/api/namespace/${name}`,
@@ -16,7 +23,7 @@ export const useGetNamespaceDetails = ({ name }: { name: string }) => {
   )
 
   return {
-    namespaceDetails: data?.namespaceDetails,
+    namespaceDetails: data?.namespaceDetails as INamespaceDetails,
     isLoading: !error && !data,
     error,
     mutate,

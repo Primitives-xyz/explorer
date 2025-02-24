@@ -1,36 +1,12 @@
 'use client'
 
 import { DataContainer } from '@/components/common/data-container'
-import { useGetNamespaceDetails } from '@/hooks/use-get-namespace-details'
+import {
+  INamespaceDetails,
+  useGetNamespaceDetails,
+} from '@/hooks/use-get-namespace-details'
 import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
 import { useParams } from 'next/navigation'
-
-interface Namespace {
-  id: number
-  name: string
-  readableName: string
-  faviconURL: string | null
-  createdAt: string
-  isDefault: boolean
-}
-
-interface Profile {
-  profile: {
-    id: string
-    username: string
-    bio: string | null
-    image: string | null
-    created_at: number
-  }
-  wallet: {
-    address: string
-  }
-  namespace: Namespace
-  followStats: {
-    followers: number
-    following: number
-  }
-}
 
 export default function NamespacePage() {
   const params = useParams()
@@ -73,6 +49,7 @@ export default function NamespacePage() {
             <button
               key={profile.profile.id}
               className="w-full text-left p-4 hover:bg-green-900/10"
+              disabled={!profile.namespace.userProfileURL}
               onClick={() =>
                 (window.location.href = `${profile.namespace.userProfileURL}${profile.profile.username}`)
               }
@@ -106,7 +83,7 @@ export default function NamespacePage() {
 function NamespaceHeader({
   namespaceDetails,
 }: {
-  namespaceDetails: Namespace
+  namespaceDetails: INamespaceDetails
 }) {
   return (
     <div className="flex items-center justify-between mb-4">
