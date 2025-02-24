@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: process.env.NEXT_PUBLIC_APP_NAME || name,
       description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
       type: 'website',
-      url: process.env.NEXT_PUBLIC_APP_URL || url,
+      url: url,
       images: [
         {
           url: `https://assets.usetapestry.dev/sse2.png`,
