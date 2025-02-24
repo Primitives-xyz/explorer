@@ -1,6 +1,7 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/avatar'
 import { useTokenInfo } from '@/hooks/use-token-info'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
 import type { Profile } from '@/utils/api'
 import { formatNumber } from '@/utils/format'
@@ -96,7 +97,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
-    (p: Profile) => p.namespace.name === 'nemoapp'
+    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   if (!tx.tokenTransfers?.length) {

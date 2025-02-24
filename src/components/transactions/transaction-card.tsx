@@ -2,6 +2,7 @@ import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { TimeDisplay } from '@/components/common/time-display'
 import { useToast } from '@/hooks/use-toast'
 import { useTransactionType } from '@/hooks/use-transaction-type'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { Profile } from '@/utils/api'
 import { route } from '@/utils/routes'
 import { ClipboardIcon } from '@heroicons/react/24/outline'
@@ -46,7 +47,7 @@ export const TransactionCard = memo(function TransactionCard({
   // Profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
-    (p: Profile) => p.namespace.name === 'nemoapp'
+    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   // Determine destination wallet for comments

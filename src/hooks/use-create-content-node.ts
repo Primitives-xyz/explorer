@@ -1,4 +1,5 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { TransactionContent } from '@/types/content'
 
 interface CreateContentNodeParams {
@@ -50,10 +51,10 @@ export function useCreateContentNode() {
 
       // Get main profiles (nemoapp namespace) for both wallets
       const sourceProfile = sourceWalletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp'
+        (p: any) => p.namespace.name === EXPLORER_NAMESPACE
       )?.profile
       const walletProfile = walletProfiles.profiles?.find(
-        (p: any) => p.namespace.name === 'nemoapp'
+        (p: any) => p.namespace.name === EXPLORER_NAMESPACE
       )?.profile
 
       // Fetch token information

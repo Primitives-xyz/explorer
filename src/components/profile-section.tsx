@@ -88,7 +88,7 @@ const ProfileCard = memo(
         if (!profile?.namespace?.name) return // Add guard clause
 
         try {
-          if (profile.namespace.name === 'nemoapp') {
+          if (profile.namespace.name === EXPLORER_NAMESPACE) {
             router.push(route('address', { id: profile.profile.username }))
           } else {
             router.push(
@@ -117,7 +117,8 @@ const ProfileCard = memo(
                 imageUrl={profile.profile.image}
               />
             </button>
-            {profile.namespace?.faviconURL && profile.namespace?.name !== 'nemoapp' ? (
+            {profile.namespace?.faviconURL &&
+            profile.namespace?.name !== EXPLORER_NAMESPACE ? (
               <button
                 onClick={handleNamespaceClick}
                 className="absolute -bottom-1.5 -right-1.5 hover:scale-110 transition-transform"
