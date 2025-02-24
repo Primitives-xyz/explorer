@@ -8,52 +8,39 @@ import { Toaster } from '@/components/toast/toaster'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-import { headers } from 'next/headers'
 import './globals.css'
 
-function getDomainInfo(host: string | null) {
-  const isSSE = host?.includes('sse.gg')
-  return {
-    name: isSSE ? 'SSE' : 'Solana Social Explorer | Tapestry Protocol',
-    url: isSSE ? 'https://sse.gg' : 'https://explorer.usetapestry.gg',
-    description:
-      'Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.',
-  }
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-  const headersList = await headers()
-  const host = headersList.get('host')
-  const domainInfo = getDomainInfo(host)
+  const name = 'Solana Social Explorer | Tapestry Protocol'
+  const description =
+    'Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.'
+  const url = 'https://sse.gg'
 
   return {
-    title: process.env.NEXT_PUBLIC_APP_NAME || domainInfo.name,
-    description:
-      process.env.NEXT_PUBLIC_APP_DESCRIPTION || domainInfo.description,
+    title: process.env.NEXT_PUBLIC_APP_NAME || name,
+    description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
     keywords:
       'Solana, Social Graph, Tapestry Protocol, Blockchain Analytics, NFT Explorer, Wallet Analysis, Social Connections, Web3 Social',
     openGraph: {
-      title: process.env.NEXT_PUBLIC_APP_NAME || domainInfo.name,
-      description:
-        process.env.NEXT_PUBLIC_APP_DESCRIPTION || domainInfo.description,
+      title: process.env.NEXT_PUBLIC_APP_NAME || name,
+      description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
       type: 'website',
-      url: process.env.NEXT_PUBLIC_APP_URL || domainInfo.url,
+      url: url,
       images: [
         {
-          url: `https://assets.usetapestry.dev/ssegg.png`,
+          url: `https://assets.usetapestry.dev/sse2.png`,
           width: 1200,
           height: 630,
           alt: 'Solana Social Explorer Interface',
         },
       ],
-      siteName: process.env.NEXT_PUBLIC_APP_NAME || domainInfo.name,
+      siteName: process.env.NEXT_PUBLIC_APP_NAME || name,
     },
     twitter: {
       card: 'summary_large_image',
-      title: process.env.NEXT_PUBLIC_APP_NAME || domainInfo.name,
-      description:
-        process.env.NEXT_PUBLIC_APP_DESCRIPTION || domainInfo.description,
-      images: [`https://assets.usetapestry.dev/ssegg.png`],
+      title: process.env.NEXT_PUBLIC_APP_NAME || name,
+      description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
+      images: [`https://assets.usetapestry.dev/sse2.png`],
       creator: process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto',
     },
     robots: {
@@ -71,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     },
     alternates: {
-      canonical: process.env.NEXT_PUBLIC_APP_URL || domainInfo.url,
+      canonical: process.env.NEXT_PUBLIC_APP_URL || url,
     },
     icons: {
       icon: '/favicon.png',
