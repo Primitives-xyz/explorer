@@ -111,7 +111,7 @@ const ProfileCard = memo(
               size={48}
               imageUrl={profile.profile.image}
             />
-            {profile.namespace?.faviconURL && (
+            {profile.namespace?.faviconURL && profile.namespace?.name !== 'nemoapp' ? (
               <button
                 onClick={handleNamespaceClick}
                 className="absolute -bottom-1.5 -right-1.5 hover:scale-110 transition-transform"
@@ -122,7 +122,15 @@ const ProfileCard = memo(
                   className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
                 />
               </button>
-            )}
+            ) : profile.namespace?.faviconURL ? (
+              <div className="absolute -bottom-1.5 -right-1.5">
+                <img
+                  src={profile.namespace.faviconURL}
+                  alt={profile.namespace.readableName}
+                  className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
+                />
+              </div>
+            ) : null}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-col gap-1.5">
