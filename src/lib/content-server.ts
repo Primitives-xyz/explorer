@@ -162,4 +162,11 @@ export const contentServer = {
       data: ids,
     })
   },
+
+  async getNamespaceDetails({ name }: { name: string }): Promise<any> {
+    return fetchTapestryServer({
+      endpoint: `namespace/${name}`,
+      method: FetchMethod.GET,
+    })
+  },
 }
