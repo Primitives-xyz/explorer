@@ -1,6 +1,6 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import type { Transaction } from '@/utils/helius/types'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { GetFollowingResponse } from '../types'
 
 // Helper to fetch transactions for a single wallet
@@ -49,58 +49,66 @@ export const useFollowingTransactions = (
   const [selectedType, setSelectedType] = useState<string>('all')
   const { walletAddress } = useCurrentWallet()
 
-  useEffect(() => {
-    setLoadedWallets(new Set())
-    setTotalWallets(following?.profiles?.length ?? 0)
+  // Memoize the wallet IDs to prevent unnecessary re-renders
+  const walletIds = useMemo(() => {
+    if (!following?.profiles?.length) return []
+    return following.profiles
+      .map((profile) => profile.wallet?.id)
+      .filter((id): id is string => !!id)
+  }, [following?.profiles])
 
-    if (!following?.profiles?.length) {
+  // Memoize the fetchAllTransactions function
+  const fetchAllTransactions = useCallback(async () => {
+    if (!walletIds.length) {
       setAggregatedTransactions([])
       return
     }
 
-    const fetchAllTransactions = async () => {
-      setIsLoadingTransactions(true)
-      setAggregatedTransactions([]) // Clear current transactions while loading
+    setIsLoadingTransactions(true)
+    setAggregatedTransactions([]) // Clear current transactions while loading
 
-      try {
-        const walletIds = following.profiles
-          .map((profile) => profile.wallet?.id)
-          .filter((id): id is string => !!id)
+    try {
+      const transactionsByWallet: { [key: string]: Transaction[] } = {}
 
-        const transactionsByWallet: { [key: string]: Transaction[] } = {}
+      // Fetch transactions for all wallets concurrently
+      const fetchPromises = walletIds.map(async (walletId) => {
+        const transactions = await fetchWalletTransactions(
+          walletId,
+          selectedType
+        )
+        transactionsByWallet[walletId] = transactions
+        setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
 
-        // Fetch transactions for all wallets concurrently
-        const fetchPromises = walletIds.map(async (walletId) => {
-          const transactions = await fetchWalletTransactions(
-            walletId,
-            selectedType
-          )
-          transactionsByWallet[walletId] = transactions
-          setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
+        // Update aggregated transactions whenever we get new data
+        const allCurrentTransactions = Object.values(transactionsByWallet)
+          .flat()
+          .sort((a, b) => {
+            const timeA = new Date(a.timestamp).getTime()
+            const timeB = new Date(b.timestamp).getTime()
+            return timeB - timeA
+          })
+          .slice(0, 50)
 
-          // Update aggregated transactions whenever we get new data
-          const allCurrentTransactions = Object.values(transactionsByWallet)
-            .flat()
-            .sort((a, b) => {
-              const timeA = new Date(a.timestamp).getTime()
-              const timeB = new Date(b.timestamp).getTime()
-              return timeB - timeA
-            })
-            .slice(0, 50)
+        setAggregatedTransactions(allCurrentTransactions)
+      })
 
-          setAggregatedTransactions(allCurrentTransactions)
-        })
-
-        await Promise.all(fetchPromises)
-      } catch (error) {
-        console.error('Error aggregating transactions:', error)
-      } finally {
-        setIsLoadingTransactions(false)
-      }
+      await Promise.all(fetchPromises)
+    } catch (error) {
+      console.error('Error aggregating transactions:', error)
+    } finally {
+      setIsLoadingTransactions(false)
     }
+  }, [walletIds, selectedType])
 
-    fetchAllTransactions()
-  }, [following, walletAddress, selectedType])
+  useEffect(() => {
+    setLoadedWallets(new Set())
+    setTotalWallets(following?.profiles?.length ?? 0)
+
+    // Only fetch if we have wallet IDs
+    if (walletIds.length > 0) {
+      fetchAllTransactions()
+    }
+  }, [walletIds.length, fetchAllTransactions])
 
   return {
     aggregatedTransactions,

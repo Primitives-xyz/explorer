@@ -27,9 +27,9 @@ export const useGetProfiles = (walletAddress: string) => {
     isLoading,
     mutate: mutateProfiles,
   } = useSWR(key, fetcher, {
-    revalidateOnFocus: true,
-    revalidateOnReconnect: true,
-    dedupingInterval: 0,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 10000,
     revalidateIfStale: true,
     revalidateOnMount: true,
     refreshInterval: 0,

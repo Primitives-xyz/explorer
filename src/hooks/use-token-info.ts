@@ -13,7 +13,7 @@ const isFungibleToken = (
   )
 }
 
-const CACHE_DURATION = 30_000 // 30 seconds cache duration
+const CACHE_DURATION = 120_000 // Increased from 30s to 120s (2 minutes)
 
 export function useTokenInfo(mint?: string | null) {
   const t = useTranslations()
@@ -37,6 +37,7 @@ export function useTokenInfo(mint?: string | null) {
       keepPreviousData: true,
       shouldRetryOnError: true,
       errorRetryCount: 2,
+      revalidateIfStale: false, // Don't revalidate if data is stale
     }
   )
 

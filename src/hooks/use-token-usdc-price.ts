@@ -28,9 +28,11 @@ export function useTokenUSDCPrice(
       : null
 
   const { data, error, isLoading } = useSWR(url, fetcher, {
-    refreshInterval: 25000, // 25 seconds
-    dedupingInterval: 1000, // Dedupe requests within 1 second
+    refreshInterval: 60000, // Increased from 25s to 60s
+    dedupingInterval: 10000, // Increased from 1s to 10s
     keepPreviousData: true,
+    revalidateOnFocus: false, // Don't revalidate when window regains focus
+    revalidateIfStale: false, // Don't revalidate if data is stale
   })
 
   // Special case for USDC - always worth $1
