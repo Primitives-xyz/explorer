@@ -1,3 +1,4 @@
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import {
   useDynamicContext,
   useIsLoggedIn,
@@ -60,7 +61,7 @@ export function WalletContextProvider({
     if (!profiles) return { mainUsername: '', image: null }
     const mainProfile = profiles.find(
       (profile: any) =>
-        profile.namespace.name === 'nemoapp' &&
+        profile.namespace.name === EXPLORER_NAMESPACE &&
         profile.wallet.address === walletAddress
     )?.profile
 

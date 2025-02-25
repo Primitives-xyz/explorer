@@ -1,13 +1,14 @@
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import { Avatar } from '@/components/common/avatar'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
+import type { Profile } from '@/utils/api'
+import { formatNumber } from '@/utils/format'
+import { formatTimeAgo } from '@/utils/format-time'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Avatar } from '@/components/common/avatar'
-import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import type { Profile } from '@/utils/api'
-import { formatTimeAgo } from '@/utils/format-time'
 import { TransactionBadge } from './transaction-badge'
-import { formatNumber } from '@/utils/format'
 
 interface Transfer {
   from: string
@@ -37,11 +38,14 @@ const formatUSD = (sol: number) => {
   return `$${usd.toFixed(2)}`
 }
 
-export const SolanaTransferView = ({ tx, sourceWallet }: SolanaTransferViewProps) => {
+export const SolanaTransferView = ({
+  tx,
+  sourceWallet,
+}: SolanaTransferViewProps) => {
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
-    (p: Profile) => p.namespace.name === 'nemoapp'
+    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   const amount = tx.nativeTransfers?.[0]?.amount || 0
