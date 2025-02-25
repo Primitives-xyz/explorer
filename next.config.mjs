@@ -19,20 +19,6 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
   },
-  // Add custom headers to help debug API requests
-  async headers() {
-    return [
-      {
-        source: '/api/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=30, stale-while-revalidate=60',
-          },
-        ],
-      },
-    ]
-  },
 }
 
 export default withNextIntl(nextConfig)
