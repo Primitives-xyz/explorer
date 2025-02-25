@@ -3,23 +3,25 @@
 import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana'
 import { NotificationsButton } from '@dialectlabs/react-ui'
 import '@dialectlabs/react-ui/index.css'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import type { ISolana } from '@dynamic-labs/solana-core'
 import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '../auth/wallet-context'
+
 export const DialectNotificationsComponent = () => {
   const DAPP_ADDRESS = process.env.NEXT_PUBLIC_DAPP_ADDRESS
-  const { walletAddress } = useWallet()
+  const { walletAddress, primaryWallet } = useWallet()
+
   if (!DAPP_ADDRESS || !walletAddress) {
     return null
   }
-  const { primaryWallet } = useDynamicContext()
-  const walletPK = new PublicKey(walletAddress)
 
   if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-    return
+    return null
   }
+
+  const walletPK = new PublicKey(walletAddress)
+
   return (
     <DialectSolanaSdk
       dappAddress={DAPP_ADDRESS}
