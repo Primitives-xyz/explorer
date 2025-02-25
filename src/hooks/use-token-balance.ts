@@ -3,33 +3,40 @@ import { useEffect, useState } from 'react'
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112'
 const LAMPORTS_PER_SOL = 1000000000
+const REFRESH_INTERVAL = 10000 // 10 seconds
 
 export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
-  const [balance, setBalance] = useState<{ formatted: string; raw: number }>({
+  const [balance, setBalance] = useState<{ formatted: string; raw: bigint }>({
     formatted: '0',
-    raw: 0,
+    raw: 0n,
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const t = useTranslations()
 
   const formatBalance = (value: string, isSol = false) => {
     const num = parseFloat(value)
-    if (isNaN(num)) return { formatted: '0', raw: 0 }
+    if (isNaN(num)) return { formatted: '0', raw: 0n }
+
+    // Calculate raw value in base units
+    const raw = isSol
+      ? BigInt(Math.round(num * LAMPORTS_PER_SOL))
+      : BigInt(Math.round(num * Math.pow(10, 6))) // Assuming non-SOL tokens use 6 decimals
 
     // Format numbers greater than 1 million
     if (num >= 1_000_000) {
       return {
         formatted: (num / 1_000_000).toFixed(2) + t('common.m'),
-        raw: num,
+        raw,
       }
     }
     // Format numbers greater than 1 thousand
     if (num >= 1_000) {
       return {
         formatted: (num / 1_000).toFixed(2) + t('common.k'),
-        raw: num,
+        raw,
       }
     }
 
@@ -39,20 +46,20 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
         // For SOL >= 1, show up to 3 decimal places
         return {
           formatted: num.toFixed(3),
-          raw: num,
+          raw,
         }
       }
       // For SOL < 1, show up to 4 decimal places
       return {
         formatted: num.toFixed(4),
-        raw: num,
+        raw,
       }
     }
 
     // For other tokens, show up to 2 decimal places
     return {
       formatted: num.toFixed(2),
-      raw: num,
+      raw,
     }
   }
 
@@ -60,7 +67,13 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     const fetchBalance = async () => {
       if (!walletAddress || !mintAddress) return
 
-      setLoading(true)
+      // Only set loading true on initial load, not refreshes
+      if (!balance.formatted) {
+        setLoading(true)
+      } else {
+        setIsRefreshing(true)
+      }
+
       setError(null)
       try {
         // Handle SOL balance differently using direct RPC call
@@ -100,15 +113,22 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
         setError(t('error.failed_to_fetch_balance'))
       } finally {
         setLoading(false)
+        setIsRefreshing(false)
       }
     }
 
     fetchBalance()
-    // Refresh balance every minute
-    const interval = setInterval(fetchBalance, 60000)
+    // Refresh balance every 10 seconds
+    const interval = setInterval(fetchBalance, REFRESH_INTERVAL)
 
     return () => clearInterval(interval)
   }, [walletAddress, mintAddress])
 
-  return { balance: balance.formatted, rawBalance: balance.raw, loading, error }
+  return {
+    balance: balance.formatted,
+    rawBalance: balance.raw,
+    loading,
+    error,
+    isRefreshing,
+  }
 }

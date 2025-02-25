@@ -44,7 +44,7 @@ const LoadingDots = () => {
 export function SwapForm({
   initialInputMint = 'So11111111111111111111111111111111111111112',
   initialOutputMint = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump',
-  initialAmount = '0.01',
+  initialAmount = '',
   inputTokenName = 'SOL',
   outputTokenName = 'USDC',
   inputDecimals = 9,
@@ -94,7 +94,6 @@ export function SwapForm({
   useEffect(() => {
     setCurrentInputDecimals(inputTokenInfo.decimals ?? inputDecimals)
   }, [inputTokenInfo.decimals, inputDecimals])
-  console.log({ useSSEForFees })
   const {
     loading,
     error,
@@ -268,16 +267,83 @@ export function SwapForm({
         return integerPart.toString()
       }
 
-      const fractionStr = fractionPart
-        .toString()
-        .padStart(Number(decimals), '0')
-      const trimmedFraction = fractionStr.replace(/0+$/, '')
-      return trimmedFraction
-        ? `${integerPart}.${trimmedFraction}`
+      // Convert to string and pad with zeros
+      let fractionStr = fractionPart.toString()
+      while (fractionStr.length < Number(decimals)) {
+        fractionStr = '0' + fractionStr
+      }
+
+      // Remove trailing zeros
+      fractionStr = fractionStr.replace(/0+$/, '')
+
+      return fractionStr
+        ? `${integerPart}.${fractionStr}`
         : integerPart.toString()
     } catch (err) {
       console.error('Error formatting amount:', err)
       return '0'
+    }
+  }
+
+  // Add handlers for quarter, half and max amount
+  const handleQuarterAmount = () => {
+    if (!inputBalance || typeof inputRawBalance !== 'bigint') return
+
+    try {
+      // Calculate quarter of the raw balance using bigint arithmetic
+      const quarterAmount = inputRawBalance / 4n
+      const formattedQuarter = formatRawAmount(
+        quarterAmount,
+        BigInt(currentInputDecimals)
+      )
+
+      if (validateAmount(formattedQuarter)) {
+        setDisplayAmount(formattedQuarter)
+        setEffectiveAmount(formattedQuarter)
+        if (debouncedUpdate) clearTimeout(debouncedUpdate)
+      }
+    } catch (err) {
+      console.error('Error calculating quarter amount:', err)
+    }
+  }
+
+  const handleHalfAmount = () => {
+    if (!inputBalance || typeof inputRawBalance !== 'bigint') return
+
+    try {
+      // Calculate half of the raw balance using bigint arithmetic
+      const halfAmount = inputRawBalance / 2n
+      const formattedHalf = formatRawAmount(
+        halfAmount,
+        BigInt(currentInputDecimals)
+      )
+
+      if (validateAmount(formattedHalf)) {
+        setDisplayAmount(formattedHalf)
+        setEffectiveAmount(formattedHalf)
+        if (debouncedUpdate) clearTimeout(debouncedUpdate)
+      }
+    } catch (err) {
+      console.error('Error calculating half amount:', err)
+    }
+  }
+
+  const handleMaxAmount = () => {
+    if (!inputBalance || typeof inputRawBalance !== 'bigint') return
+
+    try {
+      const formattedMax = formatRawAmount(
+        inputRawBalance,
+        BigInt(currentInputDecimals)
+      )
+
+      if (validateAmount(formattedMax)) {
+        setDisplayAmount(formattedMax)
+        setEffectiveAmount(formattedMax)
+        if (debouncedUpdate) clearTimeout(debouncedUpdate)
+      }
+    } catch (err) {
+      console.error('Error calculating max amount:', err)
     }
   }
 
@@ -295,6 +361,9 @@ export function SwapForm({
           disabled={showLoadingState}
           error={inputError}
           validateAmount={validateAmount}
+          onQuarterClick={handleQuarterAmount}
+          onHalfClick={handleHalfAmount}
+          onMaxClick={handleMaxAmount}
         />
 
         {/* Token Selection */}
@@ -364,7 +433,8 @@ export function SwapForm({
                     <div className="text-sm mt-1">
                       {t('trade.after')}:{' '}
                       {formatLargeNumber(
-                        rawOutputBalance + parseFloat(expectedOutput || '0')
+                        Number(rawOutputBalance) +
+                          parseFloat(expectedOutput || '0')
                       )}
                     </div>
                   )}
