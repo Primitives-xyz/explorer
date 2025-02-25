@@ -8,7 +8,7 @@ const DAPP_ADDRESS =
   process.env.NEXT_PUBLIC_DAPP_ADDRESS ||
   '2dCVckCxPgmTPass9sqYedLi9QNQc7yNuW6rPTU1Su4d'
 
-export const DialectNotificationComponent = () => {
+export const DialectNotificationsComponent = () => {
   return (
     <DialectSolanaSdk dappAddress={DAPP_ADDRESS}>
       <NotificationsButton />
