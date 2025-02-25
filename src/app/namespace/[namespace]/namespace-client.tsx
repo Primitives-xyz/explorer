@@ -1,6 +1,7 @@
 'use client'
 
 import { DataContainer } from '@/components/common/data-container'
+import { TokenAddress } from '@/components/tokens/token-address'
 import { INamespaceDetails } from '@/hooks/use-get-namespace-details'
 
 interface NamespaceClientProps {
@@ -76,8 +77,13 @@ export function NamespaceClient({
                   alt={profile.profile.username}
                   className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20"
                 />
-                <div>
+                <div className="flex flex-col gap-1.5">
                   <div className="font-mono ">@{profile.profile.username}</div>
+                  {profile.wallet?.address && (
+                    <div className="flex items-center gap-1.5">
+                      <TokenAddress address={profile.wallet.address} />
+                    </div>
+                  )}
                   {profile.profile.bio && (
                     <div className="text-sm font-mono ">
                       {profile.profile.bio}
