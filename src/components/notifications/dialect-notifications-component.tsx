@@ -3,14 +3,46 @@
 import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana'
 import { NotificationsButton } from '@dialectlabs/react-ui'
 import '@dialectlabs/react-ui/index.css'
+import { isSolanaWallet } from '@dynamic-labs/solana'
+import type { ISolana } from '@dynamic-labs/solana-core'
+import { PublicKey } from '@solana/web3.js'
+import { useWallet } from '../auth/wallet-context'
 
 export const DialectNotificationsComponent = () => {
   const DAPP_ADDRESS = process.env.NEXT_PUBLIC_DAPP_ADDRESS
-  if (!DAPP_ADDRESS) {
+  const { walletAddress, primaryWallet } = useWallet()
+
+  if (!DAPP_ADDRESS || !walletAddress) {
     return null
   }
+
+  if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+    return null
+  }
+
+  const walletPK = new PublicKey(walletAddress)
+
   return (
-    <DialectSolanaSdk dappAddress={DAPP_ADDRESS}>
+    <DialectSolanaSdk
+      dappAddress={DAPP_ADDRESS}
+      customWalletAdapter={{
+        publicKey: walletPK,
+        signMessage: async (msg) => {
+          // Convert Uint8Array to string for primaryWallet.signMessage
+          const message = new TextDecoder().decode(msg)
+          const signature = await primaryWallet.signMessage(message)
+          // Convert signature back to Uint8Array
+          return signature
+            ? new TextEncoder().encode(signature)
+            : new Uint8Array()
+        },
+        signTransaction: async (tx) => {
+          const signer: ISolana = await primaryWallet.getSigner()
+          const sign = signer.signTransaction(tx)
+          return sign
+        },
+      }}
+    >
       <NotificationsButton theme="dark" />
     </DialectSolanaSdk>
   )
