@@ -677,7 +677,7 @@ export function SwapForm({
               </div>
             ) : !isLoggedIn ? (
               <DynamicConnectButton>
-                <div className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg disabled:opacity-50 w-full text-center cursor-pointer font-medium text-sm">
+                <div className="bg-green-600 hover:bg-green-700 text-white p-2.5 sm:p-3 rounded-lg disabled:opacity-50 w-full text-center cursor-pointer font-medium text-sm">
                   {t('trade.connect_wallet_to_swap')}
                 </div>
               </DynamicConnectButton>
@@ -685,7 +685,7 @@ export function SwapForm({
               <button
                 onClick={handleSwap}
                 disabled={showLoadingState}
-                className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg disabled:opacity-50 w-full font-medium text-sm"
+                className="bg-green-600 hover:bg-green-700 text-white p-2.5 sm:p-3 rounded-lg disabled:opacity-50 w-full font-medium text-sm"
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
