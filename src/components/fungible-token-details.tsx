@@ -115,8 +115,6 @@ export default function FungibleTokenDetails({
 
         {/* Right Column - Swap & Transactions */}
         <div className="lg:col-span-1">
-          <div className="text-lg font-mono mb-4 text-gray-300">Swap</div>
-
           {/* Swap Section */}
           <TokenSwapSection
             tokenId={id}
