@@ -16,6 +16,18 @@ export interface INamespaceDetails {
   faviconURL: string | null
 }
 
+export interface INamespaceProfile {
+  profile: {
+    id: number
+    name: string
+    displayName: string
+    description: string
+  }
+  wallet: {
+    address: string
+  }
+}
+
 export const useGetNamespaceDetails = ({ name }: { name: string }) => {
   const { data, error, mutate } = useSWR(
     `/api/namespace/${name}`,
