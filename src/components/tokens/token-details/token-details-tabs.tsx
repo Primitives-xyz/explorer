@@ -60,7 +60,7 @@ export function TokenDetailsTabs({
           Markets
         </button>
       </div>
-      <div className="p-4 h-[300px] overflow-y-auto">
+      <div className="p-4  overflow-y-auto">
         {activeTab === 'about' && (
           <div>
             {!isLoading && overview ? (
