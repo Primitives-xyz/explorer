@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 export default function SwapPage() {
   const t = useTranslations()
   return (
-    <div className="px-4 py-8 min-h-screen">
+    <div className="md:px-1 py-8 min-h-screen">
       <div className="mx-auto h-full">
         <div className="flex flex-col lg:flex-row gap-8 h-full">
           <div className="w-full lg:w-2/3">

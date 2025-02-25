@@ -372,7 +372,7 @@ export function SwapForm({
   }
 
   return (
-    <div className="p-3 bg-green-900/10 rounded-lg space-y-3">
+    <div className="p-2 sm:p-3 bg-green-900/10 rounded-lg space-y-2 sm:space-y-3">
       <div className="flex flex-col gap-2">
         {/* Amount Input */}
         <AmountInput
@@ -441,7 +441,7 @@ export function SwapForm({
                 <div className="text-xs text-green-100/80">
                   {t('trade.you_receive')}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
                   {outputTokenInfo.image && (
                     <img
                       src={outputTokenInfo.image}
@@ -451,7 +451,7 @@ export function SwapForm({
                   )}
                   <div>
                     <div className="flex items-center gap-1">
-                      <div className="text-base font-semibold">
+                      <div className="text-sm sm:text-base font-semibold truncate max-w-[120px] sm:max-w-none">
                         {isQuoteRefreshing ? (
                           <span className="animate-pulse">
                             {formatLargeNumber(
@@ -464,12 +464,12 @@ export function SwapForm({
                           '0'
                         )}
                       </div>
-                      <div className="text-sm font-medium text-green-100/80">
+                      <div className="text-xs sm:text-sm font-medium text-green-100/80 whitespace-nowrap">
                         {outputTokenInfo.symbol || currentOutputToken}
                       </div>
                     </div>
                     {/* USD Value */}
-                    <div className="text-xs text-green-100/70">
+                    <div className="text-xs text-green-100/70 text-right">
                       {isQuoteRefreshing || outputPriceLoading ? (
                         <span className="animate-pulse">
                           {formatUsdValue(0)}
@@ -489,48 +489,52 @@ export function SwapForm({
               {/* Trade Info - Compact Grid */}
               <div className="grid grid-cols-2 gap-2 mb-2">
                 {/* Rate */}
-                <div className="p-2 bg-green-900/20 rounded-lg">
-                  <div className="text-xs text-green-100/80 mb-1">
+                <div className="p-1.5 sm:p-2 bg-green-900/20 rounded-lg">
+                  <div className="text-xs text-green-100/80 mb-0.5 sm:mb-1">
                     {t('trade.rate')}
                   </div>
-                  <div className="flex items-center text-xs">
-                    <span className="font-medium">
+                  <div className="flex flex-col sm:flex-row sm:items-center text-xs">
+                    <div className="font-medium whitespace-nowrap">
                       1 {inputTokenInfo.symbol || currentInputToken}
-                    </span>
-                    <span className="mx-1">≈</span>
-                    <span className="font-medium">
-                      {isQuoteRefreshing ? (
-                        <span className="animate-pulse">
-                          {quoteResponse
-                            ? (
-                                Number(quoteResponse.outAmount) /
-                                Math.pow(10, outputTokenInfo.decimals ?? 9) /
-                                (Number(quoteResponse.inAmount) /
-                                  Math.pow(10, currentInputDecimals))
-                              ).toFixed(4)
-                            : '0'}
+                    </div>
+                    <div className="flex items-center">
+                      <span className="mx-0.5 sm:mx-1">≈</span>
+                      <span className="font-medium truncate max-w-[100px]">
+                        {isQuoteRefreshing ? (
+                          <span className="animate-pulse">
+                            {quoteResponse
+                              ? (
+                                  Number(quoteResponse.outAmount) /
+                                  Math.pow(10, outputTokenInfo.decimals ?? 9) /
+                                  (Number(quoteResponse.inAmount) /
+                                    Math.pow(10, currentInputDecimals))
+                                ).toFixed(4)
+                              : '0'}
+                          </span>
+                        ) : quoteResponse ? (
+                          (
+                            Number(quoteResponse.outAmount) /
+                            Math.pow(10, outputTokenInfo.decimals ?? 9) /
+                            (Number(quoteResponse.inAmount) /
+                              Math.pow(10, currentInputDecimals))
+                          ).toFixed(4)
+                        ) : (
+                          '0'
+                        )}{' '}
+                        <span className="whitespace-nowrap">
+                          {outputTokenInfo.symbol || currentOutputToken}
                         </span>
-                      ) : quoteResponse ? (
-                        (
-                          Number(quoteResponse.outAmount) /
-                          Math.pow(10, outputTokenInfo.decimals ?? 9) /
-                          (Number(quoteResponse.inAmount) /
-                            Math.pow(10, currentInputDecimals))
-                        ).toFixed(4)
-                      ) : (
-                        '0'
-                      )}{' '}
-                      {outputTokenInfo.symbol || currentOutputToken}
-                    </span>
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Price Impact */}
-                <div className="p-2 bg-green-900/20 rounded-lg">
-                  <div className="text-xs text-green-100/80 mb-1">
+                <div className="p-1.5 sm:p-2 bg-green-900/20 rounded-lg">
+                  <div className="text-xs text-green-100/80 mb-0.5 sm:mb-1">
                     {t('trade.price_impact')}
                   </div>
-                  <div className="text-xs">
+                  <div className="text-xs flex items-center h-full">
                     {quoteResponse && priceImpact ? (
                       <span
                         className={`font-medium ${
@@ -622,7 +626,7 @@ export function SwapForm({
                 </div>
 
                 {/* SSE Fee Option - Compact */}
-                <label className="flex items-center gap-2 p-2 bg-green-900/20 rounded-lg border border-green-400/20 hover:border-green-400/40 transition-colors cursor-pointer">
+                <label className="flex items-start sm:items-center gap-2 p-2 bg-green-900/20 rounded-lg border border-green-400/20 hover:border-green-400/40 transition-colors cursor-pointer">
                   <input
                     type="checkbox"
                     checked={useSSEForFees}
@@ -630,7 +634,7 @@ export function SwapForm({
                       setUseSSEForFees(e.target.checked)
                       resetQuoteState()
                     }}
-                    className="w-4 h-4 rounded bg-green-900/20 border-green-400 focus:ring-green-400"
+                    className="w-4 h-4 rounded bg-green-900/20 border-green-400 focus:ring-green-400 mt-0.5 sm:mt-0"
                   />
                   <div className="flex items-center gap-2">
                     {sseTokenInfo.image && (
@@ -640,11 +644,11 @@ export function SwapForm({
                         className="w-4 h-4 rounded-full"
                       />
                     )}
-                    <div>
-                      <div className="text-xs font-medium">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium truncate">
                         {t('trade.pay_fees_with_sse')}
                       </div>
-                      <div className="text-xs text-green-100/70">
+                      <div className="text-xs text-green-100/70 truncate">
                         {t('trade.get_50_off_on_transaction_fees')}
                       </div>
                     </div>

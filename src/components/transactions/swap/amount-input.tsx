@@ -64,15 +64,15 @@ export function AmountInput({
     disabled || !balance || balance === '0' || isBalanceRefreshing
 
   const buttonClass =
-    'text-xs bg-green-500/10 hover:bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-green-500/20 hover:border-green-500/30 active:scale-95'
+    'text-xs bg-green-500/10 hover:bg-green-500/20 text-green-400 px-1.5 sm:px-2.5 py-1 rounded-full transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-green-500/20 hover:border-green-500/30 active:scale-95'
 
   return (
     <div className="relative">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 mb-2">
         <div className="text-sm font-medium">{t('common.amount')}</div>
         {isLoggedIn && !isBalanceLoading && balance && (
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-green-100/70 flex items-center gap-1">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+            <div className="text-xs sm:text-sm text-green-100/70 flex items-center gap-1">
               {t('common.balance')}:{' '}
               <span className={isBalanceRefreshing ? 'animate-pulse' : ''}>
                 {balance}
@@ -128,7 +128,7 @@ export function AmountInput({
       </div>
       <div className="relative group">
         <div
-          className={`bg-green-900/20 p-4 rounded-lg w-full transition-all duration-200 ${
+          className={`bg-green-900/20 p-3 sm:p-4 rounded-lg w-full transition-all duration-200 ${
             error
               ? 'border border-red-500/50'
               : 'border border-green-500/20 focus-within:border-green-500/30 focus-within:ring-2 focus-within:ring-green-500/20'
@@ -140,7 +140,7 @@ export function AmountInput({
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              className="bg-transparent text-2xl w-full font-medium placeholder:text-green-100/30 outline-none"
+              className="bg-transparent text-xl sm:text-2xl w-full font-medium placeholder:text-green-100/30 outline-none"
               value={value}
               onFocus={(e) => {
                 e.preventDefault()
@@ -171,12 +171,12 @@ export function AmountInput({
             />
 
             {usdValue && value && !isUsdValueLoading && (
-              <div className="flex items-center text-sm text-green-100/70 ml-2 whitespace-nowrap">
+              <div className="flex items-center text-xs sm:text-sm text-green-100/70 ml-2 whitespace-nowrap">
                 {usdValue}
               </div>
             )}
             {isUsdValueLoading && value && (
-              <div className="flex items-center text-sm text-green-100/70 animate-pulse ml-2 whitespace-nowrap">
+              <div className="flex items-center text-xs sm:text-sm text-green-100/70 animate-pulse ml-2 whitespace-nowrap">
                 $0.00
               </div>
             )}
@@ -187,10 +187,10 @@ export function AmountInput({
         )}
       </div>
       {error && (
-        <p className="text-red-400 text-sm mt-2 ml-1 flex items-center gap-1">
+        <p className="text-red-400 text-xs sm:text-sm mt-2 ml-1 flex items-center gap-1">
           <svg
             viewBox="0 0 24 24"
-            className="w-4 h-4 fill-current"
+            className="w-3 h-3 sm:w-4 sm:h-4 fill-current"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z" />

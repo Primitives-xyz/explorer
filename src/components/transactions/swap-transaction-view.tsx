@@ -26,6 +26,10 @@ const DynamicConnectButton = dynamic(
   { ssr: false }
 )
 
+// Constants
+const SOL_MINT = 'So11111111111111111111111111111111111111112'
+const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+
 // Helper function to format source name
 const formatSourceName = (source: string) => {
   switch (source) {
@@ -88,41 +92,48 @@ export function SwapTransactionView({
 
   // Add useTokenInfo hooks for both tokens
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
-    fromToken?.mint === 'So11111111111111111111111111111111111111112'
-      ? null
-      : fromToken?.mint
+    fromToken?.mint === SOL_MINT ? null : fromToken?.mint
   )
   const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
-    toToken?.mint === 'So11111111111111111111111111111111111111112'
-      ? null
-      : toToken?.mint
+    toToken?.mint === SOL_MINT ? null : toToken?.mint
   )
 
-  // Add price hooks for both tokens
+  // Only fetch prices for SOL and USDC tokens
+  const shouldFetchFromPrice =
+    fromToken?.mint &&
+    (fromToken.mint === SOL_MINT || fromToken.mint === USDC_MINT)
+
+  const shouldFetchToPrice =
+    toToken?.mint && (toToken.mint === SOL_MINT || toToken.mint === USDC_MINT)
+
+  // Add price hooks for both tokens, but only if they're SOL or USDC
   const { price: fromTokenPrice, loading: fromPriceLoading } =
-    useTokenUSDCPrice(
-      fromToken?.mint,
-      fromToken?.mint === 'So11111111111111111111111111111111111111112'
-        ? 9 // SOL has 9 decimals
-        : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-          fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-        ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
-        : 6
-    )
-  const { price: toTokenPrice, loading: toPriceLoading } = useTokenUSDCPrice(
-    toToken?.mint,
-    toToken?.mint === 'So11111111111111111111111111111111111111112'
-      ? 9 // SOL has 9 decimals
-      : toToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-        toToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-      ? toToken.tokenInfo.result.token_info?.decimals ?? 6
-      : 6
-  )
+    shouldFetchFromPrice
+      ? useTokenUSDCPrice(
+          fromToken?.mint,
+          fromToken?.mint === SOL_MINT
+            ? 9 // SOL has 9 decimals
+            : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+              fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+            ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
+            : 6
+        )
+      : { price: null, loading: false }
+
+  const { price: toTokenPrice, loading: toPriceLoading } = shouldFetchToPrice
+    ? useTokenUSDCPrice(
+        toToken?.mint,
+        toToken?.mint === SOL_MINT
+          ? 9 // SOL has 9 decimals
+          : toToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+            toToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+          ? toToken.tokenInfo.result.token_info?.decimals ?? 6
+          : 6
+      )
+    : { price: null, loading: false }
 
   useEffect(() => {
     async function loadTokenInfo() {
-      const SOL_MINT = 'So11111111111111111111111111111111111111112'
-
       if (!tx.events) return
       // Handle swap event format
       const swapEvent = Array.isArray(tx.events)
@@ -269,7 +280,7 @@ export function SwapTransactionView({
           destinationWallet={destinationWallet}
           amount={fromToken.amount}
           tokenSymbol={
-            fromToken.mint === 'So11111111111111111111111111111111111111112'
+            fromToken.mint === SOL_MINT
               ? 'SOL'
               : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
                 `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`
@@ -351,8 +362,7 @@ export function SwapTransactionView({
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-              {fromToken.mint ===
-              'So11111111111111111111111111111111111111112' ? (
+              {fromToken.mint === SOL_MINT ? (
                 <Image
                   src="/images/solana-icon.svg"
                   alt="solana icon"
@@ -388,8 +398,7 @@ export function SwapTransactionView({
                 href={route('address', { id: fromToken.mint })}
                 className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
               >
-                {fromToken.mint ===
-                'So11111111111111111111111111111111111111112'
+                {fromToken.mint === SOL_MINT
                   ? 'SOL'
                   : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
                     `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(
@@ -412,8 +421,7 @@ export function SwapTransactionView({
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-              {toToken.mint ===
-              'So11111111111111111111111111111111111111112' ? (
+              {toToken.mint === SOL_MINT ? (
                 <Image
                   src="/images/solana-icon.svg"
                   alt="solana icon"
@@ -449,7 +457,7 @@ export function SwapTransactionView({
                 href={route('address', { id: toToken.mint })}
                 className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
               >
-                {toToken.mint === 'So11111111111111111111111111111111111111112'
+                {toToken.mint === SOL_MINT
                   ? 'SOL'
                   : toToken.tokenInfo?.result?.content?.metadata?.symbol ||
                     `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`}
@@ -478,19 +486,19 @@ export function SwapTransactionView({
             initialOutputMint={toToken.mint}
             initialAmount={fromToken.amount.toString()}
             inputTokenName={
-              fromToken.mint === 'So11111111111111111111111111111111111111112'
+              fromToken.mint === SOL_MINT
                 ? 'SOL'
                 : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
                   `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`
             }
             outputTokenName={
-              toToken.mint === 'So11111111111111111111111111111111111111112'
+              toToken.mint === SOL_MINT
                 ? 'SOL'
                 : toToken.tokenInfo?.result?.content?.metadata?.symbol ||
                   `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`
             }
             inputDecimals={
-              fromToken.mint === 'So11111111111111111111111111111111111111112'
+              fromToken.mint === SOL_MINT
                 ? 9
                 : fromToken.tokenInfo?.result &&
                   'token_info' in fromToken.tokenInfo.result
