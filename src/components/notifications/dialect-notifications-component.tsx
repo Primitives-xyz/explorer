@@ -11,7 +11,9 @@ export const DialectNotificationsComponent = () => {
   }
   return (
     <DialectSolanaSdk dappAddress={DAPP_ADDRESS}>
-      <NotificationsButton />
+      <NotificationsButton theme="dark" />
     </DialectSolanaSdk>
   )
 }
+
+/* necessary to make the button have the same height as connect walled + search */
