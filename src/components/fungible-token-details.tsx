@@ -1,22 +1,13 @@
 'use client'
 
-import { PeopleInCommonSection } from '@/components/social/people-in-common/PeopleInCommonSection'
-import { LargestHolders } from '@/components/tokens/largest-holders'
-import { TokenInformation } from '@/components/tokens/token-information'
-import { TokenMetrics } from '@/components/tokens/token-metrics'
+import { TokenChart } from '@/components/tokens/token-details/token-chart'
+import { TokenDetailsTabs } from '@/components/tokens/token-details/token-details-tabs'
+import { TokenHeader } from '@/components/tokens/token-details/token-header'
+import { TokenMetrics } from '@/components/tokens/token-details/token-metrics'
+import { TokenSwapSection } from '@/components/tokens/token-details/token-swap-section'
 import { TransactionSection } from '@/components/transaction-section'
-import { JupiterSwapForm } from '@/components/transactions/jupiter-swap-form'
-import { Skeleton } from '@/components/ui/skeleton'
 import { useBirdeyeTokenOverview } from '@/hooks/use-birdeye-token-overview'
 import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
-import { Tab } from '@headlessui/react'
-import {
-  ChatBubbleLeftRightIcon as DiscordIcon,
-  GlobeAltIcon,
-  ArrowUpRightIcon as TwitterIcon,
-} from '@heroicons/react/24/outline'
-import Image from 'next/image'
-import { TokenAddress } from './tokens/token-address'
 
 // Define the people in common data type
 interface PeopleInCommonData {
@@ -41,219 +32,105 @@ export default function FungibleTokenDetails({
   tokenInfo,
 }: EnhancedFungibleTokenDetailsProps) {
   const { overview, isLoading } = useBirdeyeTokenOverview(id)
+
   const imageUrl =
     overview?.logoURI ||
     tokenInfo.content?.links?.image ||
     tokenInfo.content?.files?.[0]?.uri
 
   return (
-    <div className="w-full max-w-[100vw] overflow-x-hidden">
-      <div className="px-2 md:px-8 py-8">
-        {/* Hero Section with Token Identity */}
-        <div className="relative mb-8">
-          <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />
-          <div className="relative flex flex-col p-8 bg-black/40 border border-green-800 rounded-2xl backdrop-blur-sm">
-            {/* Token Identity */}
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
-              <div className="relative w-32 h-32 rounded-2xl border-2 border-green-500 overflow-hidden">
-                <Image
-                  src={imageUrl || '/fallback-token.png'}
-                  alt={tokenInfo.content.metadata.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
+    <div className="w-full max-w-[100vw] overflow-x-hidden bg-[#111111]">
+      {/* Token Header and Key Metrics */}
+      <div className="p-3 sm:p-4 border-b border-green-800/20">
+        {/* Token Header and Metrics Layout */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-6">
+          <TokenHeader
+            id={id}
+            name={tokenInfo.content.metadata.name}
+            symbol={tokenInfo.content.metadata.symbol}
+            imageUrl={imageUrl || '/fallback-token.png'}
+            website={overview?.extensions?.website}
+            twitter={overview?.extensions?.twitter}
+            peopleInCommon={tokenInfo.peopleInCommon}
+          />
 
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-                  <h1 className="text-4xl font-bold  font-mono">
-                    {tokenInfo.content.metadata.name}
-                  </h1>
-                  <div className="flex items-center gap-3">
-                    <span className="px-4 py-1 bg-green-500/10 border border-green-500/20 rounded-full  font-mono">
-                      ${tokenInfo.content.metadata.symbol}
-                    </span>
-                    <span className="text-xs px-3 py-1 bg-green-900/30 rounded-full /80 font-mono">
-                      {tokenInfo.interface}
-                    </span>
-                  </div>
-                </div>
+          {/* Key Metrics */}
+          <TokenMetrics
+            price={overview?.price}
+            priceChange24h={overview?.priceChange24hPercent}
+            liquidity={overview?.liquidity}
+            volume24h={overview?.v24hUSD}
+            marketCap={
+              overview?.price
+                ? overview.price * (overview.supply || 0)
+                : undefined
+            }
+            holders={overview?.holder}
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
 
-                <p className="/70 max-w-2xl mb-4">
-                  {overview?.extensions?.description ||
-                    tokenInfo.content.metadata.description}
-                </p>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 p-2 sm:p-4">
+        {/* Left Column - Chart */}
+        <div className="lg:col-span-2">
+          <TokenChart tokenId={id} />
 
-                <div className="flex flex-wrap gap-4">
-                  {/* Token Address */}
-                  <div className="flex items-center gap-2 hover: transition-colors">
-                    <TokenAddress address={id} />
-                  </div>
-                  {/* Social Links */}
-                  {overview?.extensions?.website && (
-                    <a
-                      href={overview.extensions.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2  hover: transition-colors"
-                    >
-                      <GlobeAltIcon className="w-5 h-5" />
-                      <span>Website</span>
-                    </a>
-                  )}
-                  {overview?.extensions?.discord && (
-                    <a
-                      href={overview.extensions.discord}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2  hover: transition-colors"
-                    >
-                      <DiscordIcon className="w-5 h-5" />
-                      <span>Discord</span>
-                    </a>
-                  )}
-                  {overview?.extensions?.twitter && (
-                    <a
-                      href={overview.extensions.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2  hover: transition-colors"
-                    >
-                      <TwitterIcon className="w-5 h-5" />
-                      <span>Twitter</span>
-                    </a>
-                  )}
-                </div>
-              </div>
+          {/* <div className="text-lg font-mono mb-3 mt-4 text-gray-300">
+            Market Activity
+          </div> */}
+
+          {/* Market Activity Cards
+          {!isLoading && overview ? (
+            <TokenMarketActivity overview={overview} isLoading={isLoading} />
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+              <Skeleton className="h-20 sm:h-24 w-full bg-green-900/20 col-span-2 md:col-span-1" />
+              <Skeleton className="h-20 sm:h-24 w-full bg-green-900/20" />
+              <Skeleton className="h-20 sm:h-24 w-full bg-green-900/20" />
+              <Skeleton className="h-20 sm:h-24 w-full bg-green-900/20" />
             </div>
+          )} */}
 
-            {/* Token Metrics */}
-            {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-24 bg-green-900/20" />
-                ))}
-              </div>
-            ) : overview ? (
-              <TokenMetrics overview={overview} />
-            ) : null}
-
-            {/* People in Common Section */}
-            {tokenInfo.peopleInCommon?.isLoading ? (
-              <div className="mt-6">
-                <Skeleton className="h-12 bg-green-900/20" />
-              </div>
-            ) : tokenInfo.peopleInCommon?.topUsers &&
-              tokenInfo.peopleInCommon.topUsers.length > 0 ? (
-              <div className="mt-6">
-                <PeopleInCommonSection
-                  topUsers={tokenInfo.peopleInCommon.topUsers}
-                  totalAmount={tokenInfo.peopleInCommon.totalAmount}
-                  tokenName={tokenInfo.content.metadata.name}
-                />
-              </div>
-            ) : null}
+          <div className="text-lg font-mono my-4 text-gray-300">
+            Token Details
           </div>
+
+          {/* Token Details Tabs */}
+          <TokenDetailsTabs
+            id={id}
+            overview={overview}
+            isLoading={isLoading}
+            decimals={tokenInfo.token_info.decimals}
+            tokenProgram={tokenInfo.token_info.token_program}
+            authorities={tokenInfo.authorities}
+            description={
+              overview?.extensions?.description ||
+              tokenInfo.content.metadata.description
+            }
+            totalSupply={overview?.supply}
+          />
         </div>
 
-        {/* Swap and Token Info Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Right Column - Swap & Transactions */}
+        <div className="lg:col-span-1">
+          <div className="text-lg font-mono mb-4 text-gray-300">Swap</div>
+
           {/* Swap Section */}
-          <div className="flex flex-col">
-            <h3 className="text-xl font-mono  mb-4">Swap</h3>
-            <div className="flex flex-col h-[675px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
-              <div className="h-full p-4">
-                <div className="h-full overflow-y-auto">
-                  <JupiterSwapForm
-                    initialInputMint="So11111111111111111111111111111111111111112"
-                    initialOutputMint={id}
-                    inputTokenName="SOL"
-                    outputTokenName={tokenInfo.content.metadata.symbol}
-                    inputDecimals={9}
-                    sourceWallet=""
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <TokenSwapSection
+            tokenId={id}
+            tokenSymbol={tokenInfo.content.metadata.symbol}
+            inputDecimals={9}
+          />
 
-          {/* Token Details Section */}
-          <div className="flex flex-col">
-            <h3 className="text-xl font-mono  mb-4">Token Details</h3>
-            <div className="flex flex-col h-[675px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
-              <Tab.Group className="h-full flex flex-col">
-                <Tab.List className="flex space-x-1 border-b border-green-800/40">
-                  <Tab
-                    className={({ selected }) =>
-                      `flex-1 px-6 py-4 text-lg font-mono outline-none ${
-                        selected
-                          ? ' bg-green-900/20'
-                          : '/60 hover:/80 hover:bg-green-900/10'
-                      } transition-colors`
-                    }
-                  >
-                    About
-                  </Tab>
-                  <Tab
-                    className={({ selected }) =>
-                      `flex-1 px-6 py-4 text-lg font-mono outline-none ${
-                        selected
-                          ? ' bg-green-900/20'
-                          : '/60 hover:/80 hover:bg-green-900/10'
-                      } transition-colors`
-                    }
-                  >
-                    Token Holders
-                  </Tab>
-                </Tab.List>
-                <Tab.Panels className="flex-1 overflow-y-auto">
-                  <Tab.Panel className="h-full p-4">
-                    <div className="h-full overflow-y-auto">
-                      <TokenInformation
-                        id={id}
-                        overview={overview}
-                        decimals={tokenInfo.token_info.decimals}
-                        tokenProgram={tokenInfo.token_info.token_program}
-                        authorities={tokenInfo.authorities}
-                      />
-                    </div>
-                  </Tab.Panel>
-                  <Tab.Panel className="min-h-[500px]">
-                    <div className="p-4">
-                      <LargestHolders
-                        mintAddress={id}
-                        totalSupply={overview?.supply || 0}
-                      />
-                    </div>
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            </div>
-          </div>
-        </div>
-
-        {/* Chart and Transaction History Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Birdeye Chart */}
-          <div className="lg:col-span-2">
-            <h3 className="text-xl font-mono  mb-4">Price Chart</h3>
-            <div className="w-full h-[600px] bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
-              <iframe
-                width="100%"
-                height="100%"
-                src={`https://birdeye.so/tv-widget/${id}?chain=solana&viewMode=pair&chartInterval=15&chartType=CANDLE&theme=dark&defaultMetric=mcap`}
-                frameBorder="0"
-                allowFullScreen
-              />
-            </div>
+          <div className="text-lg font-mono mb-4 mt-6 text-gray-300">
+            Transaction History
           </div>
 
           {/* Transaction History */}
-          <div className="lg:col-span-1">
-            <h3 className="text-xl font-mono  mb-4">Transaction History</h3>
-            <div className="h-[600px] overflow-y-auto">
-              <TransactionSection walletAddress={id} hasSearched={true} />
-            </div>
+          <div className="bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">
+            <TransactionSection walletAddress={id} hasSearched={true} />
           </div>
         </div>
       </div>
