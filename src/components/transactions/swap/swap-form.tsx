@@ -13,6 +13,7 @@ import {
 import { useJupiterSwap } from '@/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/hooks/use-token-balance'
 import { useTokenInfo } from '@/hooks/use-token-info'
+import { useTokenUSDCPrice } from '@/hooks/use-token-usdc-price'
 import { JupiterSwapFormProps } from '@/types/jupiter'
 import { ArrowLeftRight, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -73,6 +74,12 @@ export function SwapForm({
   const inputTokenInfo = useTokenInfo(inputMint)
   const outputTokenInfo = useTokenInfo(outputMint)
   const sseTokenInfo = useTokenInfo(SSE_MINT)
+
+  // Add token price hooks for USD values
+  const { price: inputTokenUsdPrice, loading: inputPriceLoading } =
+    useTokenUSDCPrice(inputMint, inputTokenInfo.decimals)
+  const { price: outputTokenUsdPrice, loading: outputPriceLoading } =
+    useTokenUSDCPrice(outputMint, outputTokenInfo.decimals)
 
   const { isLoggedIn, sdkHasLoaded, walletAddress } = useCurrentWallet()
 
@@ -235,6 +242,23 @@ export function SwapForm({
     })
   }
 
+  // Helper function to format USD values
+  const formatUsdValue = (value: number | null) => {
+    if (value === null || isNaN(value)) return '$0.00'
+
+    // For very small values, show more precision
+    if (value !== 0 && Math.abs(value) < 0.01) {
+      return `$${value.toFixed(6)}`
+    }
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
+  }
+
   const handleReset = () => {
     // Reset all form states
     setDisplayAmount('')
@@ -348,8 +372,8 @@ export function SwapForm({
   }
 
   return (
-    <div className="p-4 bg-green-900/10 rounded-lg space-y-4">
-      <div className="flex flex-col gap-3">
+    <div className="p-3 bg-green-900/10 rounded-lg space-y-3">
+      <div className="flex flex-col gap-2">
         {/* Amount Input */}
         <AmountInput
           value={displayAmount}
@@ -364,6 +388,12 @@ export function SwapForm({
           onQuarterClick={handleQuarterAmount}
           onHalfClick={handleHalfAmount}
           onMaxClick={handleMaxAmount}
+          usdValue={
+            inputTokenUsdPrice && displayAmount
+              ? formatUsdValue(parseFloat(displayAmount) * inputTokenUsdPrice)
+              : null
+          }
+          isUsdValueLoading={inputPriceLoading}
         />
 
         {/* Token Selection */}
@@ -383,10 +413,10 @@ export function SwapForm({
           <button
             onClick={handleSwapDirection}
             disabled={showLoadingState}
-            className="bg-green-900/20 hover:bg-green-900/30 p-3 rounded-lg transition-colors"
+            className="bg-green-900/20 hover:bg-green-900/30 p-2 rounded-lg transition-colors relative z-10"
             title="Swap direction"
           >
-            <ArrowLeftRight className="h-5 w-5 " />
+            <ArrowLeftRight className="h-4 w-4" />
           </button>
 
           <div className="flex-1">
@@ -402,159 +432,197 @@ export function SwapForm({
           </div>
         </div>
 
-        {/* Quote Details */}
+        {/* Quote Details - Streamlined */}
         {(quoteResponse || effectiveAmount) && !isFullyConfirmed && (
-          <div className="space-y-3 mt-2">
-            <div className="bg-green-900/20 p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="text-sm mb-1">{t('trade.you_receive')}</div>
-                  <div className="flex items-center gap-2">
-                    {outputTokenInfo.image && (
-                      <img
-                        src={outputTokenInfo.image}
-                        alt={outputTokenInfo.symbol || currentOutputToken}
-                        className="w-6 h-6 rounded-full"
-                      />
-                    )}
-                    <div className="text-2xl font-semibold">
-                      {isQuoteRefreshing ? (
+          <div className="mt-1">
+            <div className="bg-green-900/20 p-2 rounded-lg">
+              {/* You Receive Section - Compact */}
+              <div className="flex items-center justify-between p-2 bg-green-900/20 rounded-lg mb-2">
+                <div className="text-xs text-green-100/80">
+                  {t('trade.you_receive')}
+                </div>
+                <div className="flex items-center gap-2">
+                  {outputTokenInfo.image && (
+                    <img
+                      src={outputTokenInfo.image}
+                      alt={outputTokenInfo.symbol || currentOutputToken}
+                      className="w-5 h-5 rounded-full"
+                    />
+                  )}
+                  <div>
+                    <div className="flex items-center gap-1">
+                      <div className="text-base font-semibold">
+                        {isQuoteRefreshing ? (
+                          <span className="animate-pulse">
+                            {formatLargeNumber(
+                              parseFloat(expectedOutput || '0')
+                            )}
+                          </span>
+                        ) : quoteResponse ? (
+                          formatLargeNumber(parseFloat(expectedOutput))
+                        ) : (
+                          '0'
+                        )}
+                      </div>
+                      <div className="text-sm font-medium text-green-100/80">
+                        {outputTokenInfo.symbol || currentOutputToken}
+                      </div>
+                    </div>
+                    {/* USD Value */}
+                    <div className="text-xs text-green-100/70">
+                      {isQuoteRefreshing || outputPriceLoading ? (
                         <span className="animate-pulse">
-                          {formatLargeNumber(parseFloat(expectedOutput || '0'))}
+                          {formatUsdValue(0)}
                         </span>
-                      ) : quoteResponse ? (
-                        formatLargeNumber(parseFloat(expectedOutput))
+                      ) : quoteResponse && outputTokenUsdPrice ? (
+                        formatUsdValue(
+                          parseFloat(expectedOutput) * outputTokenUsdPrice
+                        )
                       ) : (
-                        '0'
+                        formatUsdValue(0)
                       )}
                     </div>
                   </div>
-                  {isLoggedIn && !outputBalanceLoading && quoteResponse && (
-                    <div className="text-sm mt-1">
-                      {t('trade.after')}:{' '}
-                      {formatLargeNumber(
-                        Number(rawOutputBalance) +
-                          parseFloat(expectedOutput || '0')
-                      )}
+                </div>
+              </div>
+
+              {/* Trade Info - Compact Grid */}
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                {/* Rate */}
+                <div className="p-2 bg-green-900/20 rounded-lg">
+                  <div className="text-xs text-green-100/80 mb-1">
+                    {t('trade.rate')}
+                  </div>
+                  <div className="flex items-center text-xs">
+                    <span className="font-medium">
+                      1 {inputTokenInfo.symbol || currentInputToken}
+                    </span>
+                    <span className="mx-1">≈</span>
+                    <span className="font-medium">
+                      {isQuoteRefreshing ? (
+                        <span className="animate-pulse">
+                          {quoteResponse
+                            ? (
+                                Number(quoteResponse.outAmount) /
+                                Math.pow(10, outputTokenInfo.decimals ?? 9) /
+                                (Number(quoteResponse.inAmount) /
+                                  Math.pow(10, currentInputDecimals))
+                              ).toFixed(4)
+                            : '0'}
+                        </span>
+                      ) : quoteResponse ? (
+                        (
+                          Number(quoteResponse.outAmount) /
+                          Math.pow(10, outputTokenInfo.decimals ?? 9) /
+                          (Number(quoteResponse.inAmount) /
+                            Math.pow(10, currentInputDecimals))
+                        ).toFixed(4)
+                      ) : (
+                        '0'
+                      )}{' '}
+                      {outputTokenInfo.symbol || currentOutputToken}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Price Impact */}
+                <div className="p-2 bg-green-900/20 rounded-lg">
+                  <div className="text-xs text-green-100/80 mb-1">
+                    {t('trade.price_impact')}
+                  </div>
+                  <div className="text-xs">
+                    {quoteResponse && priceImpact ? (
+                      <span
+                        className={`font-medium ${
+                          parseFloat(priceImpact) <= -3
+                            ? 'text-red-400'
+                            : parseFloat(priceImpact) <= -1
+                            ? 'text-yellow-400'
+                            : 'text-green-400'
+                        }`}
+                      >
+                        {parseFloat(priceImpact).toFixed(2)}%
+                      </span>
+                    ) : (
+                      <span className="text-green-100/70">-</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Collapsible Sections */}
+              <div className="space-y-2">
+                {/* Settings - Collapsible */}
+                <div className="rounded-lg overflow-hidden border border-green-900/30">
+                  <button
+                    onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
+                    className="flex items-center justify-between w-full p-2 bg-green-900/20 hover:bg-green-900/30 transition-colors text-xs font-medium"
+                  >
+                    <span>{t('trade.route_information_fees')}</span>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        isRouteInfoOpen ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {isRouteInfoOpen && (
+                    <div className="p-2 bg-green-900/10 text-xs">
+                      {isQuoteRefreshing ? (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span>{t('trade.network_fee')}</span>
+                            <span>
+                              {t('trade.updating')}
+                              <LoadingDots />
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span>{t('trade.minimum_received')}</span>
+                            <span>
+                              {t('trade.updating')}
+                              <LoadingDots />
+                            </span>
+                          </div>
+                        </div>
+                      ) : quoteResponse ? (
+                        <SwapQuoteDetails
+                          quoteResponse={quoteResponse}
+                          priceImpact={priceImpact}
+                          slippageBps={slippageBps}
+                          useSSEForFees={useSSEForFees}
+                          sseFeeAmount={
+                            useSSEForFees ? sseFeeAmount : undefined
+                          }
+                        />
+                      ) : null}
+
+                      {/* Slippage Settings - Inline */}
+                      <div className="mt-2 pt-2 border-t border-green-900/20">
+                        <SwapSettings
+                          slippageBps={slippageBps}
+                          onSlippageChange={setSlippageBps}
+                          priorityLevel={priorityLevel}
+                          onPriorityChange={setPriorityLevel}
+                          disabled={showLoadingState}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
 
-                <div className="text-right">
-                  <div className="text-sm mb-1">{t('trade.rate')}</div>
-                  <div className="font-medium">
-                    {isQuoteRefreshing ? (
-                      <span className="/70 animate-pulse">
-                        {quoteResponse
-                          ? (
-                              Number(quoteResponse.outAmount) /
-                              Math.pow(10, outputTokenInfo.decimals ?? 9) /
-                              (Number(quoteResponse.inAmount) /
-                                Math.pow(10, currentInputDecimals))
-                            ).toFixed(6)
-                          : '0'}
-                      </span>
-                    ) : quoteResponse ? (
-                      (
-                        Number(quoteResponse.outAmount) /
-                        Math.pow(10, outputTokenInfo.decimals ?? 9) /
-                        (Number(quoteResponse.inAmount) /
-                          Math.pow(10, currentInputDecimals))
-                      ).toFixed(6)
-                    ) : (
-                      '0'
-                    )}
-                  </div>
-                  <div className="text-sm">
-                    {t('trade.per')}{' '}
-                    {inputTokenInfo.symbol || currentInputToken}
-                  </div>
-                </div>
-              </div>
-
-              {/* Settings Section */}
-              <SwapSettings
-                slippageBps={slippageBps}
-                onSlippageChange={setSlippageBps}
-                priorityLevel={priorityLevel}
-                onPriorityChange={setPriorityLevel}
-                disabled={showLoadingState}
-              />
-
-              {/* Route Information & Fees */}
-              <div className="mt-4 space-y-3">
-                <button
-                  onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
-                  className="flex items-center justify-between w-full p-3 bg-green-900/20 rounded-lg hover:bg-green-900/30 transition-colors"
-                >
-                  <span className="text-sm font-medium">
-                    {t('trade.route_information_fees')}
-                  </span>
-                  <svg
-                    className={`w-5 h-5  transition-transform ${
-                      isRouteInfoOpen ? 'rotate-180' : ''
-                    }`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {isRouteInfoOpen && (
-                  <div className="space-y-2 p-3 bg-green-900/20 rounded-lg">
-                    {isQuoteRefreshing ? (
-                      <>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">
-                            {t('trade.network_fee')}
-                          </span>
-                          <span>
-                            {t('trade.updating')}
-                            <LoadingDots />
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">
-                            {t('trade.price_impact')}
-                          </span>
-                          <span>
-                            {t('trade.updating')}
-                            <LoadingDots />
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">
-                            {t('trade.minimum_received')}
-                          </span>
-                          <span>
-                            {t('trade.updating')}
-                            <LoadingDots />
-                          </span>
-                        </div>
-                      </>
-                    ) : quoteResponse ? (
-                      <SwapQuoteDetails
-                        quoteResponse={quoteResponse}
-                        priceImpact={priceImpact}
-                        slippageBps={slippageBps}
-                        useSSEForFees={useSSEForFees}
-                        sseFeeAmount={useSSEForFees ? sseFeeAmount : undefined}
-                      />
-                    ) : null}
-                  </div>
-                )}
-              </div>
-
-              {/* SSE Fee Option */}
-              <div className="mt-4">
-                <label className="flex items-center gap-3 p-3 bg-green-900/20 rounded-lg border border-green-400/20 hover:border-green-400/40 transition-colors cursor-pointer">
+                {/* SSE Fee Option - Compact */}
+                <label className="flex items-center gap-2 p-2 bg-green-900/20 rounded-lg border border-green-400/20 hover:border-green-400/40 transition-colors cursor-pointer">
                   <input
                     type="checkbox"
                     checked={useSSEForFees}
@@ -562,21 +630,21 @@ export function SwapForm({
                       setUseSSEForFees(e.target.checked)
                       resetQuoteState()
                     }}
-                    className="w-5 h-5 rounded bg-green-900/20 border-green-400  focus:ring-green-400"
+                    className="w-4 h-4 rounded bg-green-900/20 border-green-400 focus:ring-green-400"
                   />
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     {sseTokenInfo.image && (
                       <img
                         src={sseTokenInfo.image}
                         alt={sseTokenInfo.symbol || 'SSE'}
-                        className="w-6 h-6 rounded-full"
+                        className="w-4 h-4 rounded-full"
                       />
                     )}
                     <div>
-                      <div className="font-medium">
+                      <div className="text-xs font-medium">
                         {t('trade.pay_fees_with_sse')}
                       </div>
-                      <div className="text-sm">
+                      <div className="text-xs text-green-100/70">
                         {t('trade.get_50_off_on_transaction_fees')}
                       </div>
                     </div>
@@ -591,13 +659,13 @@ export function SwapForm({
         {!isFullyConfirmed && (
           <>
             {!sdkHasLoaded ? (
-              <div className="mt-2 bg-green-900/20 rounded-lg p-3 border border-green-400/20">
-                <div className="flex items-center justify-center gap-3">
-                  <div className="relative w-5 h-5">
+              <div className="mt-1 bg-green-900/20 rounded-lg p-2 border border-green-400/20">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="relative w-4 h-4">
                     <div className="absolute inset-0 border-2 border-green-400/20 rounded-full"></div>
                     <div className="absolute inset-0 border-2 border-green-400 rounded-full border-t-transparent animate-spin"></div>
                   </div>
-                  <span className="text-sm font-medium">
+                  <span className="text-xs font-medium">
                     {t('trade.checking_wallet_status')}
                     <LoadingDots />
                   </span>
@@ -605,7 +673,7 @@ export function SwapForm({
               </div>
             ) : !isLoggedIn ? (
               <DynamicConnectButton>
-                <div className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg disabled:opacity-50 w-full text-center cursor-pointer font-medium">
+                <div className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg disabled:opacity-50 w-full text-center cursor-pointer font-medium text-sm">
                   {t('trade.connect_wallet_to_swap')}
                 </div>
               </DynamicConnectButton>
@@ -613,11 +681,11 @@ export function SwapForm({
               <button
                 onClick={handleSwap}
                 disabled={showLoadingState}
-                className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg disabled:opacity-50 w-full font-medium"
+                className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg disabled:opacity-50 w-full font-medium text-sm"
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-3 w-3 animate-spin" />
                     <span>
                       {txSignature
                         ? `${t('trade.confirming_transaction')}...`
@@ -633,7 +701,7 @@ export function SwapForm({
         )}
 
         {error && (
-          <div className="text-red-400 text-sm bg-red-400/10 p-3 rounded-lg">
+          <div className="text-red-400 text-xs bg-red-400/10 p-2 rounded-lg">
             {error.includes(t('error.amount_cannot_be_parsed'))
               ? t('error.please_enter_a_valid_amount')
               : error}

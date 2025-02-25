@@ -18,8 +18,7 @@ export function useTokenUSDCPrice(
   tokenMint: string | undefined | null,
   decimals: number = 6
 ) {
-  const shouldFetch =
-    tokenMint && (tokenMint === SOL_MINT || tokenMint === USDC_MINT)
+  const shouldFetch = tokenMint && tokenMint !== USDC_MINT
   const amount = Math.pow(10, decimals || 6) // 1 token in base units
 
   const url =
