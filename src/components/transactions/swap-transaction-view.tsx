@@ -106,31 +106,38 @@ export function SwapTransactionView({
   const shouldFetchToPrice =
     toToken?.mint && (toToken.mint === SOL_MINT || toToken.mint === USDC_MINT)
 
-  // Add price hooks for both tokens, but only if they're SOL or USDC
-  const { price: fromTokenPrice, loading: fromPriceLoading } =
-    shouldFetchFromPrice
-      ? useTokenUSDCPrice(
-          fromToken?.mint,
-          fromToken?.mint === SOL_MINT
-            ? 9 // SOL has 9 decimals
-            : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-              fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-            ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
-            : 6
-        )
-      : { price: null, loading: false }
+  // Always call hooks, but pass null when we don't want to fetch
+  const { price: fromTokenPriceRaw, loading: fromPriceLoadingRaw } =
+    useTokenUSDCPrice(
+      shouldFetchFromPrice ? fromToken?.mint : null,
+      shouldFetchFromPrice
+        ? fromToken?.mint === SOL_MINT
+          ? 9 // SOL has 9 decimals
+          : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
+            fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
+          ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
+          : 6
+        : 0
+    )
 
-  const { price: toTokenPrice, loading: toPriceLoading } = shouldFetchToPrice
-    ? useTokenUSDCPrice(
-        toToken?.mint,
-        toToken?.mint === SOL_MINT
+  const { price: toTokenPriceRaw, loading: toPriceLoadingRaw } =
+    useTokenUSDCPrice(
+      shouldFetchToPrice ? toToken?.mint : null,
+      shouldFetchToPrice
+        ? toToken?.mint === SOL_MINT
           ? 9 // SOL has 9 decimals
           : toToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
             toToken?.tokenInfo?.result?.interface === 'FungibleAsset'
           ? toToken.tokenInfo.result.token_info?.decimals ?? 6
           : 6
-      )
-    : { price: null, loading: false }
+        : 0
+    )
+
+  // Use the results conditionally
+  const fromTokenPrice = shouldFetchFromPrice ? fromTokenPriceRaw : null
+  const fromPriceLoading = shouldFetchFromPrice ? fromPriceLoadingRaw : false
+  const toTokenPrice = shouldFetchToPrice ? toTokenPriceRaw : null
+  const toPriceLoading = shouldFetchToPrice ? toPriceLoadingRaw : false
 
   useEffect(() => {
     async function loadTokenInfo() {
