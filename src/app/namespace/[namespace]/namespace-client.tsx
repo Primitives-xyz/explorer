@@ -1,11 +1,15 @@
 'use client'
 
 import { DataContainer } from '@/components/common/data-container'
-import { INamespaceDetails } from '@/hooks/use-get-namespace-details'
+import { TokenAddress } from '@/components/tokens/token-address'
+import {
+  INamespaceDetails,
+  INamespaceProfile,
+} from '@/hooks/use-get-namespace-details'
 
 interface NamespaceClientProps {
   namespaceDetails: INamespaceDetails | null
-  profiles: any[]
+  profiles: INamespaceProfile[]
   totalCount: number
 }
 
@@ -58,14 +62,10 @@ export function NamespaceClient({
       {/* Profiles Section */}
       <DataContainer title="recent_profiles" count={totalCount} height="max">
         <div className="divide-y divide-green-800/30">
-          {(profiles ?? []).map((profile: any) => (
-            <button
+          {(profiles ?? []).map((profile: INamespaceProfile) => (
+            <div
               key={profile.profile.id}
-              className="w-full text-left p-4 hover:bg-green-900/10"
-              disabled={!profile.namespace.userProfileURL}
-              onClick={() =>
-                (window.location.href = `${profile.namespace.userProfileURL}${profile.profile.username}`)
-              }
+              className="w-full text-left p-4 hover:bg-green-900/10 transition-colors"
             >
               <div className="flex items-center gap-4">
                 <img
@@ -76,16 +76,29 @@ export function NamespaceClient({
                   alt={profile.profile.username}
                   className="w-12 h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20"
                 />
-                <div>
-                  <div className="font-mono ">@{profile.profile.username}</div>
+                <div className="flex-1">
+                  <button
+                    className="font-mono text-base"
+                    disabled={!profile.namespace.userProfileURL}
+                    onClick={() =>
+                      (window.location.href = `${profile.namespace.userProfileURL}${profile.profile.username}`)
+                    }
+                  >
+                    @{profile.profile.username}
+                  </button>
                   {profile.profile.bio && (
-                    <div className="text-sm font-mono ">
+                    <div className="text-sm font-mono text-gray-400 mt-1 line-clamp-2">
                       {profile.profile.bio}
+                    </div>
+                  )}
+                  {profile.wallet?.address && (
+                    <div className="mt-2">
+                      <TokenAddress address={profile.wallet.address} />
                     </div>
                   )}
                 </div>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       </DataContainer>
