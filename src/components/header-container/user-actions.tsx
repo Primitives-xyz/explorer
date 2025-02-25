@@ -61,7 +61,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
         </Link>
       )}
 
-      {/* <DialectNotificationsComponent /> */}
+      <DialectNotificationsComponent />
 
       {/* <a
         href={route('graphVisualization')}
