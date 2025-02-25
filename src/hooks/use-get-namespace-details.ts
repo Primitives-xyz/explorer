@@ -19,12 +19,17 @@ export interface INamespaceDetails {
 export interface INamespaceProfile {
   profile: {
     id: number
-    name: string
-    displayName: string
-    description: string
+    username: string
+    bio: string
+    image: string
   }
   wallet: {
     address: string
+  }
+  namespace: {
+    id: number
+    name: string
+    userProfileURL: string
   }
 }
 
