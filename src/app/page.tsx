@@ -76,6 +76,7 @@ export default function Home() {
             profileData={profileData}
             error={error}
             isLoadingProfileData={isLoadingProfileData}
+            title="recent_profiles"
           />
         </div>
       </div>
