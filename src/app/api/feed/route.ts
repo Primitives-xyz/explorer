@@ -32,10 +32,10 @@ export async function GET() {
     total: finalTransactions.length,
   })
 
-  // Set cache control headers for 30 seconds with stale-while-revalidate
+  // Set cache control headers for 4 minutes with stale-while-revalidate
   response.headers.set(
     'Cache-Control',
-    'public, max-age=30, stale-while-revalidate=59'
+    'public, max-age=240, stale-while-revalidate=120'
   )
 
   return response
