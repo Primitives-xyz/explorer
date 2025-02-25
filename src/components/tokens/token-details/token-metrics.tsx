@@ -25,21 +25,29 @@ export function TokenMetrics({
 
     // For very small numbers, use scientific notation
     if (price < 0.0001) {
-      return price.toExponential(2)
+      return price.toExponential(8)
     }
 
     // For small numbers (but not too small), show more decimals
     if (price < 0.01) {
       return price.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: 8,
+        maximumFractionDigits: 8,
+      })
+    }
+
+    // For medium-sized numbers
+    if (price < 1) {
+      return price.toLocaleString('en-US', {
+        minimumFractionDigits: 6,
+        maximumFractionDigits: 6,
       })
     }
 
     // For regular numbers
     return price.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
     })
   }
 
@@ -118,6 +126,14 @@ export function TokenMetrics({
         <div className="text-sm text-gray-400">Volume</div>
         <div className="text-xl font-bold font-mono text-green-400">
           {formatLargeNumber(volume24h)}
+        </div>
+      </div>
+
+      {/* Mobile-only Liquidity Card */}
+      <div className="bg-black/40 border border-green-800/40 rounded-lg p-3 md:hidden">
+        <div className="text-sm text-gray-400">Liquidity</div>
+        <div className="text-xl font-bold font-mono text-green-400">
+          {formatLargeNumber(liquidity)}
         </div>
       </div>
     </div>
