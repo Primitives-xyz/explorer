@@ -162,8 +162,6 @@ export const TrendingTokens = () => {
   const [sortBy, setSortBy] = useState<'volume24hUSD' | 'rank' | 'liquidity'>(
     'volume24hUSD'
   )
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0)
-  const CACHE_DURATION = 60000 // 1 minute cache
 
   // Create a container ref for the virtualizer
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -178,12 +176,6 @@ export const TrendingTokens = () => {
 
   useEffect(() => {
     const fetchTrendingTokens = async () => {
-      // Check if we should use cached data
-      const now = Date.now()
-      if (now - lastFetchTime < CACHE_DURATION && tokens.length > 0) {
-        return // Use cached data if it's recent enough
-      }
-
       try {
         setIsLoading(true)
         const options = {
@@ -221,7 +213,6 @@ export const TrendingTokens = () => {
           }))
 
         setTokens(sortedTokens)
-        setLastFetchTime(now)
       } catch (err) {
         console.error('Error fetching trending tokens:', err)
         setError(err instanceof Error ? err.message : 'Failed to fetch tokens')
@@ -231,7 +222,7 @@ export const TrendingTokens = () => {
     }
 
     fetchTrendingTokens()
-  }, [sortBy, tokens.length, lastFetchTime])
+  }, [sortBy])
 
   return (
     <DataContainer title="trending_tokens" count={tokens.length} error={error}>
