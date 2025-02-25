@@ -106,11 +106,17 @@ const ProfileCard = memo(
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
         <div className="flex items-start gap-3 h-full">
           <div className="relative flex-shrink-0">
-            <Avatar
-              username={profile.profile.username}
-              size={48}
-              imageUrl={profile.profile.image}
-            />
+            <button
+              onClick={() => handleProfileNavigation(profile, router)}
+              className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-full"
+              aria-label={`View ${profile.profile.username}'s profile`}
+            >
+              <Avatar
+                username={profile.profile.username}
+                size={48}
+                imageUrl={profile.profile.image}
+              />
+            </button>
             {profile.namespace?.faviconURL && profile.namespace?.name !== 'nemoapp' ? (
               <button
                 onClick={handleNamespaceClick}

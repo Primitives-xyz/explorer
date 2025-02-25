@@ -4,7 +4,7 @@ import { MessageCircle } from 'lucide-react'
 
 export function FeedbackButton() {
   const handleClick = () => {
-    const text = encodeURIComponent('@usetapestry @nemoblackburn @apollotoday devs, please fix/improve:')
+    const text = encodeURIComponent('@usetapestry @nemoblackburn @apollotoday hi $SSE devs, please fix/improve:')
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank')
   }
 
