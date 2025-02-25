@@ -1,6 +1,5 @@
 'use client'
 
-import { DataContainer } from '@/components/common/data-container'
 import { FilterBar } from '@/components/common/filter-bar'
 import { FilterButton } from '@/components/common/filter-button'
 import { TokenContainer } from '@/components/token-container'
@@ -10,6 +9,7 @@ import { useEffect, useState } from 'react'
 
 interface PortfolioTabsProps {
   address: string
+  compact?: boolean
 }
 
 interface TokenData {
@@ -23,7 +23,10 @@ interface TokenData {
 
 type TokenTab = 'fungible' | 'nft'
 
-export default function PortfolioTabs({ address }: PortfolioTabsProps) {
+export default function PortfolioTabs({
+  address,
+  compact = false,
+}: PortfolioTabsProps) {
   const [activeTab, setActiveTab] = useState<TokenTab>('fungible')
   const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
@@ -73,27 +76,8 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
     )
   }
 
-  const filteredItems =
-    tokenData?.items.filter((item) => {
-      if (activeTab === 'fungible') {
-        return (
-          item.interface === 'FungibleToken' ||
-          item.interface === 'FungibleAsset'
-        )
-      } else {
-        return (
-          item.interface !== 'FungibleToken' &&
-          item.interface !== 'FungibleAsset'
-        )
-      }
-    }) || []
-
   return (
-    <DataContainer
-      title={t('portfolio_assets.title')}
-      count={filteredItems.length}
-      error={error}
-    >
+    <>
       <FilterBar>
         <FilterButton
           label={t('common.tokens')}
@@ -107,6 +91,6 @@ export default function PortfolioTabs({ address }: PortfolioTabsProps) {
         />
       </FilterBar>
       <div className="flex-grow overflow-auto">{renderContent()}</div>
-    </DataContainer>
+    </>
   )
 }

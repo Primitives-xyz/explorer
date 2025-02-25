@@ -2,17 +2,19 @@
 
 import PortfolioTabs from '@/components/portfolio/portfolio-tabs'
 import { useIdentities } from '@/hooks/use-identities'
+import { useToast } from '@/hooks/use-toast'
 import type { TokenPortfolioResponse } from '@/types/Token'
+import { formatAddress, formatNumber } from '@/utils/format'
 import { isValidSolanaAddress } from '@/utils/validation'
+import { Copy, ExternalLink, Plus, Share2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
-import { ProfileSection } from '../profile-section'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
-import { TapestryPromoSection } from '../tapestry/tapestry-promo-section'
-import { PortfolioBalanceSection } from '../tokens/sol-balance-section'
 import { TradingStats } from '../trading/trading-stats'
-import { TransactionSection } from '../transaction-section'
+import { WalletProfileSection } from './wallet-profile-section'
+import { WalletTransactionView } from './wallet-transaction-view'
 
 interface TokenData {
   nativeBalance: {
@@ -23,10 +25,10 @@ interface TokenData {
 }
 
 /**
- * Renders a wallet view with portfolio tabs
+ * Renders a terminal-inspired wallet view that matches market standards
  */
 export function WalletView({ address }: { address: string }) {
-  const [_tokenData, setTokenData] = useState<TokenData | null>(null)
+  const [tokenData, setTokenData] = useState<TokenData | null>(null)
   const { walletAddress } = useCurrentWallet()
   const [portfolioData, setPortfolioData] = useState<
     TokenPortfolioResponse | undefined
@@ -39,6 +41,7 @@ export function WalletView({ address }: { address: string }) {
     error: identitiesError,
   } = useIdentities(address)
   const t = useTranslations()
+  const { toast } = useToast()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,69 +114,184 @@ export function WalletView({ address }: { address: string }) {
   // Show error state if wallet address is invalid
   if (error === 'Invalid Solana wallet address') {
     return (
-      <div className="px-4 py-8">
-        <div className="text-red-500 font-mono">
+      <div className="px-4 py-8 font-mono">
+        <div className="text-red-500">
           {t('error.invalid_wallet_address')}: {address}
         </div>
       </div>
     )
   }
 
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(address)
+    toast({
+      title: t('common.address_copied'),
+      variant: 'success',
+    })
+  }
+
+  const handleShareWallet = () => {
+    const url = `${window.location.origin}/wallet/${address}`
+    navigator.clipboard.writeText(url)
+    toast({
+      title: t('common.wallet_link_copied') || t('success.link_copied'),
+      variant: 'success',
+    })
+  }
+
+  // Get SOL balance from portfolio data
+  const solToken = portfolioData?.data?.items.find(
+    (item) => item.symbol === 'SOL'
+  )
+  const solBalance = solToken?.uiAmount || 0
+  const solValue = solToken?.valueUsd || 0
+
   return (
-    <div className="py-8 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-        <h1 className="text-xl sm:text-2xl font-mono break-all">
-          {t('common.wallet')}: {address}
-        </h1>
-        {walletAddress !== address && (
-          <WalletFollowButton walletAddress={address} size="lg" />
-        )}
+    <div className="w-full max-w-[100vw] overflow-x-hidden bg-[#111111] font-mono">
+      {/* Wallet Header - Compact with essential info */}
+      <div className="bg-black/30 p-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-green-400">{t('common.wallet')}:</span>
+            <span className="text-white">{formatAddress(address, 8, 8)}</span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleCopyAddress}
+                className="text-green-400 hover:text-green-300 transition-colors"
+                title={t('common.copy_address')}
+              >
+                <Copy size={14} />
+              </button>
+              <a
+                href={`https://solscan.io/account/${address}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-400 hover:text-green-300 transition-colors"
+                title={t('common.view_on_solscan')}
+              >
+                <ExternalLink size={14} />
+              </a>
+              <button
+                onClick={handleShareWallet}
+                className="text-green-400 hover:text-green-300 transition-colors"
+                title={t('common.share_wallet')}
+              >
+                <Share2 size={14} />
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {walletAddress === address ? (
+              <div className="text-green-400 text-xs border border-green-500/20 bg-green-500/5 px-2 py-0.5 rounded">
+                {t('common.your_wallet')}
+              </div>
+            ) : (
+              <WalletFollowButton walletAddress={address} size="sm" />
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Top section */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Left side - Profile Section */}
-        <div className="lg:w-1/2">
-          <ProfileSection
-            walletAddress={address}
-            isLoadingProfileData={isLoading}
-            profileData={{
-              profiles:
-                !identitiesError && !isLoadingIdentities && identities
-                  ? identities
-                  : [],
-            }}
-            hasSearched={true}
-          />
+      {/* Main Content - Streamlined Layout */}
+      <div className="p-2 space-y-2">
+        {/* Top Section: Stats/Profile and Transactions */}
+        <div className="border border-green-800 bg-black/50 rounded-none">
+          <div className="grid grid-cols-1 md:grid-cols-12">
+            {/* Left Column - Stats & Social (3 cols) */}
+            <div className="md:col-span-3 md:border-r border-green-800/30">
+              {/* Quick Stats Panel */}
+              <div className="p-2">
+                <div className="grid grid-cols-2 gap-2">
+                  {/* SOL Balance */}
+                  <div>
+                    <div className="text-green-400 text-xs mb-1">
+                      <span className="mr-1">{'>'}</span> SOL
+                    </div>
+                    {isLoading ? (
+                      <div className="animate-pulse h-5 bg-green-800/20 rounded w-2/3"></div>
+                    ) : (
+                      <div className="text-base">
+                        {formatNumber(solBalance)}
+                      </div>
+                    )}
+                    {!isLoading && (
+                      <div className="text-gray-400 text-xs">
+                        ${formatNumber(solValue)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Portfolio Value */}
+                  <div>
+                    <div className="text-green-400 text-xs mb-1">
+                      <span className="mr-1">{'>'}</span>{' '}
+                      {t('portfolio_balance.title')}
+                    </div>
+                    {isLoading ? (
+                      <div className="animate-pulse h-5 bg-green-800/20 rounded w-2/3"></div>
+                    ) : (
+                      <div className="text-base">
+                        ${formatNumber(portfolioData?.data?.totalUsd || 0)}
+                      </div>
+                    )}
+                    {!isLoading && (
+                      <div className="text-gray-400 text-xs">
+                        {portfolioData?.data?.items.length || 0}{' '}
+                        {t('common.tokens')}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Trading Stats */}
+              <div>
+                <TradingStats walletAddress={address} hideTitle={true} />
+              </div>
+
+              {/* Profile Section */}
+              <div>
+                <WalletProfileSection
+                  walletAddress={address}
+                  isLoading={isLoadingIdentities}
+                  profiles={
+                    !identitiesError && !isLoadingIdentities && identities
+                      ? identities
+                      : []
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Right Column - Transactions (9 cols) */}
+            <div className="md:col-span-9">
+              <div className="h-full">
+                <WalletTransactionView
+                  walletAddress={address}
+                  itemsPerPage={20}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right side - Balance and Trading Stats */}
-        <div className="lg:w-1/2 flex flex-col space-y-3">
-          <div className="lg:h-[calc(33.33%-0.5rem)]">
-            <PortfolioBalanceSection
-              hideTitle={false}
-              isLoading={isLoading}
-              error={error || undefined}
-              portfolioData={portfolioData}
-            />
-          </div>
-          <div className=" lg:h-[calc(33.33%-0.5rem)]">
-            <TradingStats walletAddress={address} hideTitle={false} />
-          </div>
-          <div className=" lg:h-[calc(33.33%-0.5rem)]">
-            <TapestryPromoSection hideTitle={false} />
-          </div>
+        {/* Bottom Section: Tokens and NFTs */}
+        <div className="border border-green-800 bg-black/50 rounded-none">
+          <PortfolioTabs address={address} compact={true} />
         </div>
       </div>
 
-      {/* Middle - Portfolio Tabs */}
-      <div className="mt-6">
-        <PortfolioTabs address={address} />
-      </div>
-
-      {/* Bottom - Transaction Section */}
-      <div className="mt-6">
-        <TransactionSection walletAddress={address} hasSearched={true} />
+      {/* Quick Actions */}
+      <div className="fixed bottom-6 right-6 z-10">
+        <Link
+          href={`https://jup.ag/swap/USDC-SOL?outputMint=So11111111111111111111111111111111111111112&recipient=${address}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition-colors"
+          title={t('common.send_sol')}
+        >
+          <Plus size={20} className="text-black" />
+        </Link>
       </div>
     </div>
   )

@@ -49,3 +49,21 @@ export function formatUSD(num: number): string {
 export function shortenAddress(address: string, chars = 4): string {
   return `${address.slice(0, chars)}...${address.slice(-chars)}`
 }
+
+/**
+ * Formats a blockchain address with customizable prefix and suffix lengths
+ * @param address The address to format
+ * @param prefixLength Number of characters to show at the beginning
+ * @param suffixLength Number of characters to show at the end
+ * @returns Formatted address string
+ */
+export function formatAddress(
+  address: string,
+  prefixLength = 4,
+  suffixLength = 4
+): string {
+  if (!address) return ''
+  if (address.length <= prefixLength + suffixLength) return address
+
+  return `${address.slice(0, prefixLength)}...${address.slice(-suffixLength)}`
+}

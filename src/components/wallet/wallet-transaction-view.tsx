@@ -1,28 +1,24 @@
 'use client'
 
-import { DataContainer } from '@/components/common/data-container'
 import { FilterBar } from '@/components/common/filter-bar'
 import { FilterButton } from '@/components/common/filter-button'
-import { ScrollableContent } from '@/components/common/scrollable-content'
 import { TransactionCard } from '@/components/transactions/transaction-card'
 import type { Transaction } from '@/utils/helius/types'
 import { isSpamTransaction } from '@/utils/transaction'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 
-interface TransactionSectionProps {
+interface WalletTransactionViewProps {
   walletAddress: string
-  hasSearched?: boolean
-  expandedView?: boolean
+  className?: string
   itemsPerPage?: number
 }
 
-export const TransactionSection = ({
+export const WalletTransactionView = ({
   walletAddress,
-  hasSearched,
-  expandedView = false,
+  className = '',
   itemsPerPage = 20,
-}: TransactionSectionProps) => {
+}: WalletTransactionViewProps) => {
   // Use a Map to store unique transactions by signature
   const [transactionMap, setTransactionMap] = useState<
     Map<string, Transaction>
@@ -71,7 +67,7 @@ export const TransactionSection = ({
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      if (!walletAddress || !hasSearched) return
+      if (!walletAddress) return
 
       setIsLoading(true)
       setError(null)
@@ -130,11 +126,11 @@ export const TransactionSection = ({
     }
 
     fetchTransactions()
-  }, [walletAddress, hasSearched, page])
+  }, [walletAddress, page])
 
   // Add polling for new transactions
   useEffect(() => {
-    if (!walletAddress || !hasSearched) return
+    if (!walletAddress) return
 
     const checkNewTransactions = async () => {
       try {
@@ -174,14 +170,12 @@ export const TransactionSection = ({
 
     const interval = setInterval(checkNewTransactions, 8000)
     return () => clearInterval(interval)
-  }, [walletAddress, hasSearched, transactions, transactionMap])
+  }, [walletAddress, transactions, transactionMap])
 
   const handleLoadNewTransactions = () => {
     mergeTransactions(newTransactions)
     setNewTransactions([])
   }
-
-  if (!hasSearched) return null
 
   // Filter transactions by type
   const filteredTransactions = transactions.filter((tx) => {
@@ -203,11 +197,21 @@ export const TransactionSection = ({
   }
 
   return (
-    <DataContainer
-      title={t('transaction_log.title')}
-      count={filteredTransactions.length}
-      error={error}
-    >
+    <div className={`font-mono  bg-black/50 ${className}`}>
+      {/* Header */}
+      <div className=" p-3 flex justify-between items-center">
+        <h2 className="text-green-400 text-sm">
+          <span className="mr-1">{'>'}</span> {t('transaction_log.title')}
+          {filteredTransactions.length > 0 && (
+            <span className="ml-2 text-xs">
+              ({filteredTransactions.length})
+            </span>
+          )}
+        </h2>
+        {error && <div className="text-red-500 text-xs">{error}</div>}
+      </div>
+
+      {/* Filter Bar */}
       <FilterBar>
         {transactionTypes.map((type) => (
           <FilterButton
@@ -219,13 +223,14 @@ export const TransactionSection = ({
         ))}
       </FilterBar>
 
+      {/* New Transactions Notification */}
       {newTransactions.length > 0 && (
         <button
           onClick={handleLoadNewTransactions}
-          className="w-full py-2 px-4 bg-green-500/10 hover:bg-green-500/20  font-mono border-y border-green-500/20 mb-2 relative group transition-all duration-300"
+          className="w-full py-2 px-4 bg-green-500/10 hover:bg-green-500/20 font-mono border-y border-green-500/20 mb-2 relative group transition-all duration-300"
         >
           <div className="relative flex items-center gap-3">
-            <span className=" animate-pulse">●</span>
+            <span className="text-green-400 animate-pulse">●</span>
             <span>
               {newTransactions.length} {t('transaction_log.new_transaction')}
               {newTransactions.length !== 1 ? 's' : ''} {t('common.available')}
@@ -234,37 +239,47 @@ export const TransactionSection = ({
         </button>
       )}
 
-      <ScrollableContent
-        isLoading={isLoading && filteredTransactions.length === 0}
-        isEmpty={filteredTransactions.length === 0}
-        loadingText={`>>> ${t('transaction_log.loading_transactions')}...`}
-        emptyText={`>>> ${t('transaction_log.no_transactions_found')}`}
-      >
-        <div className="divide-y divide-green-800/30">
-          {filteredTransactions.map((tx) => (
-            <TransactionCard
-              key={tx.signature}
-              transaction={tx}
-              sourceWallet={walletAddress}
-            />
-          ))}
-          {isLoading && page > 1 && (
-            <div className="p-4 text-center font-mono uppercase">
-              {`>>> ${t('transaction_log.loading_more_transactions')}...`}
+      {/* Transactions List */}
+      <div className="divide-y divide-green-800/30 overflow-y-auto  scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
+        {isLoading && filteredTransactions.length === 0 ? (
+          <div className="p-8 flex flex-col items-center gap-4">
+            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+            <div className="font-mono animate-pulse">
+              {`>>> ${t('transaction_log.loading_transactions')}...`}
             </div>
-          )}
-        </div>
-      </ScrollableContent>
+          </div>
+        ) : filteredTransactions.length === 0 ? (
+          <div className="p-4 text-center font-mono">
+            {`>>> ${t('transaction_log.no_transactions_found')}`}
+          </div>
+        ) : (
+          <>
+            {filteredTransactions.map((tx) => (
+              <TransactionCard
+                key={tx.signature}
+                transaction={tx}
+                sourceWallet={walletAddress}
+              />
+            ))}
+            {isLoading && page > 1 && (
+              <div className="p-4 text-center font-mono uppercase">
+                {`>>> ${t('transaction_log.loading_more_transactions')}...`}
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
+      {/* Load More Button */}
       {!isLoading && transactions.length > 0 && (
         <button
-          className="w-full p-1 text-xs  hover: font-mono border-t border-green-800 transition-colors duration-200"
+          className="w-full p-2 text-xs hover:bg-green-900/10 font-mono border-t border-green-800 transition-colors duration-200"
           onClick={() => setPage((prev) => prev + 1)}
           disabled={isLoading}
         >
           {isLoading ? `${t('common.loading')}...` : t('common.load_more')}
         </button>
       )}
-    </DataContainer>
+    </div>
   )
 }

@@ -5,7 +5,6 @@ import { DataContainer } from '@/components/common/data-container'
 import { FilterBar } from '@/components/common/filter-bar'
 import { FilterButton } from '@/components/common/filter-button'
 import { Modal } from '@/components/common/modal'
-import { ScrollableContent } from '@/components/common/scrollable-content'
 import { FollowButton } from '@/components/profile/follow-button'
 import { useFollowStats } from '@/hooks/use-follow-stats'
 import { EXPLORER_NAMESPACE } from '@/lib/constants'
@@ -15,6 +14,7 @@ import { route } from '@/utils/routes'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 import { TokenAddress } from './tokens/token-address'
 
@@ -37,6 +37,7 @@ interface ProfileSectionProps {
   error?: string | null
   isLoadingProfileData?: boolean
   title?: string
+  compact?: boolean
 }
 
 // Memoize the profile card component
@@ -117,7 +118,8 @@ const ProfileCard = memo(
                 imageUrl={profile.profile.image}
               />
             </button>
-            {profile.namespace?.faviconURL && profile.namespace?.name !== 'nemoapp' ? (
+            {profile.namespace?.faviconURL &&
+            profile.namespace?.name !== 'nemoapp' ? (
               <button
                 onClick={handleNamespaceClick}
                 className="absolute -bottom-1.5 -right-1.5 hover:scale-110 transition-transform"
@@ -209,7 +211,9 @@ export const ProfileSection = ({
   error: propError,
   isLoadingProfileData,
   title = 'profile_info',
+  compact,
 }: ProfileSectionProps) => {
+  const { t } = useTranslation()
   const key = walletAddress || 'default'
   const router = useRouter()
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
@@ -340,7 +344,7 @@ export const ProfileSection = ({
   return (
     <DataContainer
       key={key}
-      title={title}
+      title={t(title)}
       count={profileData?.totalCount ?? filteredProfiles?.length ?? 0}
       error={error}
       height="large"
@@ -352,6 +356,7 @@ export const ProfileSection = ({
           <Plus size={16} />
         </button>
       }
+      className={compact ? 'p-0' : ''}
     >
       {/* Domain Creation Modal */}
       <Modal
@@ -404,13 +409,28 @@ export const ProfileSection = ({
       </FilterBar>
 
       {/* Profile List */}
-      <ScrollableContent
-        isLoading={isLoading || isLoadingProfileData}
-        isEmpty={filteredProfiles.length === 0}
-        loadingText=">>> FETCHING PROFILES..."
-        emptyText=">>> NO PROFILES FOUND"
-      >
-        <div className="divide-y divide-green-800/30">
+      {isLoading ? (
+        <div className="p-4 text-center">
+          <div className="animate-pulse">
+            <div className="h-4 bg-green-800/20 rounded w-1/2 mx-auto mb-2"></div>
+            <div className="h-4 bg-green-800/20 rounded w-3/4 mx-auto"></div>
+          </div>
+          <div className="mt-2 text-sm">
+            {t('profile_info.fetching_profiles')}
+          </div>
+        </div>
+      ) : !profiles || profiles.length === 0 ? (
+        <div className="p-4 text-center text-sm">
+          {t('profile_info.no_profile_found')}
+        </div>
+      ) : (
+        <div
+          className={`grid ${
+            compact
+              ? 'grid-cols-1 gap-2'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
+          }`}
+        >
           {filteredProfiles.map((profile) => (
             <ProfileCard
               key={`${profile.profile.username}-${profile.namespace?.name}`}
@@ -419,7 +439,7 @@ export const ProfileSection = ({
             />
           ))}
         </div>
-      </ScrollableContent>
+      )}
     </DataContainer>
   )
 }

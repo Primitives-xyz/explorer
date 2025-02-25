@@ -72,7 +72,7 @@ const filterTokens = (items: (FungibleToken | NFT)[]) => {
   return items.filter(
     (item) =>
       item.interface === 'FungibleToken' || item.interface === 'FungibleAsset'
-  )
+  ) as FungibleToken[]
 }
 
 export const TokenContainer = ({
@@ -83,45 +83,50 @@ export const TokenContainer = ({
   isLoading,
   error,
 }: TokenContainerProps) => {
+  const t = useTranslations()
   const filteredNFTs = tokenData?.items
     ? filterNFTs(tokenData.items, tokenType)
     : []
   const filteredTokens = tokenData?.items ? filterTokens(tokenData.items) : []
 
-  if (tokenType === 'nft') {
-    return (
-      <div className="flex flex-col space-y-6">
-        {!isLoading && !error && filteredNFTs.length === 0 ? (
-          <EmptyState type="nft" />
-        ) : (
-          <div>
-            <NFTSection
-              hasSearched={hasSearched}
-              tokenType={tokenType}
-              hideTitle={hideTitle}
-              isLoading={isLoading}
-              error={error}
-              items={filteredNFTs}
-            />
-          </div>
-        )}
-      </div>
-    )
-  }
+  // Only show NFT section for NFT-related token types
+  const showNFTSection = ['all', 'nft', 'compressed', 'programmable'].includes(
+    tokenType
+  )
+
+  // Only show token section for fungible or all token types
+  const showTokenSection = ['all', 'fungible'].includes(tokenType)
 
   return (
-    <div className="flex flex-col">
-      {!isLoading && !error && filteredTokens.length === 0 ? (
-        <EmptyState type="token" />
-      ) : (
-        <TokenSection
-          tokenType={tokenType}
-          hideTitle={hideTitle}
-          isLoading={isLoading}
-          error={error}
-          items={filteredTokens}
-        />
-      )}
+    <div className="flex flex-col space-y-8">
+      {/* Fungible Tokens Section */}
+      {showTokenSection &&
+        (!isLoading && !error && filteredTokens.length === 0 ? (
+          <EmptyState type="token" />
+        ) : (
+          <TokenSection
+            tokenType={tokenType}
+            hideTitle={hideTitle}
+            isLoading={isLoading}
+            error={error}
+            items={filteredTokens}
+          />
+        ))}
+
+      {/* NFTs Section */}
+      {showNFTSection &&
+        (!isLoading && !error && filteredNFTs.length === 0 ? (
+          <EmptyState type="nft" />
+        ) : (
+          <NFTSection
+            hasSearched={hasSearched}
+            tokenType={tokenType}
+            hideTitle={hideTitle}
+            isLoading={isLoading}
+            error={error}
+            items={filteredNFTs}
+          />
+        ))}
     </div>
   )
 }

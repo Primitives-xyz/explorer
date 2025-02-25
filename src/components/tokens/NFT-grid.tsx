@@ -3,229 +3,254 @@ import { route } from '@/utils/routes'
 import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { TokenAddress } from './token-address'
 
 interface NFTGridProps {
   tokens: (NFT | TokenWithInscription | FungibleToken)[]
   onImageClick: (url: string, symbol: string) => void
-  onAddressSearch?: (address: string) => void
+  viewMode?: 'grid' | 'list'
+  onHover?: (tokenId: string | null) => void
+  hoveredNFT?: string | null
+  hideErroredImages?: boolean
 }
 
-interface NFTImageContainerProps {
-  token: NFT | TokenWithInscription | FungibleToken
-  name: string
-  onImageClick: (url: string, symbol: string) => void
-  onImageError: () => void
-}
-
-const NFTImageContainer = ({
+// Simple NFT card component for both grid and list views
+const NFTCard = ({
   token,
-  name,
   onImageClick,
-  onImageError,
-}: NFTImageContainerProps) => {
-  const { url: imageUrl, isLoading: imageLoading } = useNFTImage(token.content)
+  onHover,
+  isHovered,
+  viewMode,
+  hideErroredImages,
+}: {
+  token: NFT | TokenWithInscription | FungibleToken
+  onImageClick: (url: string, symbol: string) => void
+  onHover?: (tokenId: string | null) => void
+  isHovered: boolean
+  viewMode: 'grid' | 'list'
+  hideErroredImages?: boolean
+}) => {
+  const router = useRouter()
+  const {
+    url: imageUrl,
+    isLoading: imageLoading,
+    error: imageError,
+  } = useNFTImage(token.content)
+  const [hasImageError, setHasImageError] = useState(false)
+  const name = token.name || 'Unnamed Token'
 
+  // If image has error and hideErroredImages is true, don't render this card
+  if ((hasImageError || imageError) && hideErroredImages) {
+    return null
+  }
+
+  // Format address for display
+  const formatAddress = (address: string) => {
+    return address.slice(0, 6) + '..' + address.slice(-4)
+  }
+
+  // Get creator info
+  const creator =
+    token.creators && token.creators.length > 0
+      ? formatAddress(
+          typeof token.creators[0] === 'string'
+            ? token.creators[0]
+            : (token.creators[0] as any).address || 'Unknown'
+        )
+      : 'Unknown'
+
+  // Handle image error
+  const handleImageError = () => {
+    setHasImageError(true)
+  }
+
+  // List view
+  if (viewMode === 'list') {
+    return (
+      <div
+        className={`border border-green-800/30 rounded-md p-3 hover:bg-green-900/10 transition-all duration-200 relative group flex items-center ${
+          isHovered
+            ? 'bg-green-900/20 border-green-500/30 shadow-lg shadow-green-900/10'
+            : ''
+        }`}
+        onMouseEnter={() => onHover?.(token.id)}
+        onMouseLeave={() => onHover?.(null)}
+      >
+        {/* Image */}
+        <div className="relative w-16 h-16 bg-black/20 rounded-md overflow-hidden">
+          {imageLoading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="animate-pulse w-full h-full bg-gradient-to-br from-green-900/20 to-green-800/10" />
+            </div>
+          ) : imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={name}
+              className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+              onClick={() => onImageClick(imageUrl, name)}
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-green-500/50 text-sm">
+              No Image
+            </div>
+          )}
+        </div>
+
+        {/* Token Info */}
+        <div className="ml-4 flex-grow">
+          <div className="flex justify-between items-start">
+            <div>
+              <div className="font-mono text-sm truncate font-semibold text-green-300 group-hover:text-green-200 transition-colors">
+                {name}
+              </div>
+              <div className="text-green-500/80 font-mono text-xs flex items-center mt-1">
+                <span className="text-green-500/50 mr-1">ID:</span>
+                <span>{formatAddress(token.id)}</span>
+                <button
+                  onClick={() =>
+                    router.push(route('address', { id: token.id }))
+                  }
+                  className="ml-1 text-[10px] text-green-400 hover:text-green-300 transition-colors"
+                >
+                  [view]
+                </button>
+              </div>
+            </div>
+
+            {/* Badges */}
+            <div className="flex flex-wrap gap-1">
+              {token.compressed && (
+                <span className="text-[10px] font-mono px-1.5 py-0.5 bg-green-900/30 text-green-400 rounded-full">
+                  Compressed
+                </span>
+              )}
+              {token.mutable && (
+                <span className="text-[10px] font-mono px-1.5 py-0.5 bg-green-900/30 text-green-400 rounded-full">
+                  Mutable
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="text-green-500/80 font-mono text-xs mt-1.5 flex items-center">
+            <span className="text-green-500/50 mr-1">Creator:</span>
+            <span>{creator}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Grid view
   return (
-    <div className="relative aspect-square w-full mb-4 bg-black/20 rounded-lg overflow-hidden">
-      {imageLoading ? (
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="animate-pulse w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20" />
+    <div
+      className={`border border-green-800/30 rounded-md overflow-hidden hover:bg-green-900/10 transition-all duration-300 relative group ${
+        isHovered
+          ? 'bg-green-900/20 border-green-500/30 shadow-lg shadow-green-900/10 transform scale-[1.02]'
+          : ''
+      }`}
+      onMouseEnter={() => onHover?.(token.id)}
+      onMouseLeave={() => onHover?.(null)}
+    >
+      {/* Badges */}
+      <div className="absolute top-2 right-2 flex space-x-1 z-10">
+        {token.compressed && (
+          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-green-900/80 text-green-300 rounded-full backdrop-blur-sm">
+            Compressed
+          </span>
+        )}
+        {token.mutable && (
+          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-green-900/80 text-green-300 rounded-full backdrop-blur-sm">
+            Mutable
+          </span>
+        )}
+      </div>
+
+      {/* Image */}
+      <div className="relative w-full aspect-square bg-black/20 overflow-hidden">
+        {imageLoading ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="animate-pulse w-full h-full bg-gradient-to-br from-green-900/20 to-green-800/10" />
+          </div>
+        ) : imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={name}
+            className="w-full h-full object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
+            onClick={() => onImageClick(imageUrl, name)}
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-green-500/50 text-sm">
+            No Image
+          </div>
+        )}
+      </div>
+
+      {/* Token Info */}
+      <div className="p-3 space-y-2 bg-black/40 backdrop-blur-sm">
+        <div className="font-mono text-sm truncate font-semibold text-green-300 group-hover:text-green-200 transition-colors">
+          {name}
         </div>
-      ) : imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={name}
-          className="w-full h-full object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105"
-          onClick={() => onImageClick(imageUrl, name)}
-          onError={onImageError}
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center /50 text-lg">
-          No Image
+
+        <div className="text-[11px] space-y-1.5">
+          <div className="text-green-500/80 font-mono flex items-center">
+            <span className="text-green-500/50 mr-1">NFT:</span>
+            <span className="text-green-400">{formatAddress(token.id)}</span>
+            <button
+              onClick={() => router.push(route('address', { id: token.id }))}
+              className="ml-1 text-[10px] text-green-400 hover:text-green-300 transition-colors"
+            >
+              [view]
+            </button>
+          </div>
+
+          <div className="text-green-500/80 font-mono flex items-center">
+            <span className="text-green-500/50 mr-1">Creator:</span>
+            <span className="text-green-400">→ {creator}</span>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
 
-export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
-  const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
-  const router = useRouter()
-
-  const isInscription = (
-    token: NFT | TokenWithInscription | FungibleToken
-  ): token is TokenWithInscription => {
-    return 'inscription' in token
-  }
-
-  const isNFT = (
-    token: NFT | TokenWithInscription | FungibleToken
-  ): token is NFT => {
-    return 'supply' in token && !('balance' in token)
-  }
-
-  const isFungible = (
-    token: NFT | TokenWithInscription | FungibleToken
-  ): token is FungibleToken => {
-    return 'balance' in token
-  }
-
-  const formatCreators = (creators: any[]) => {
-    if (!creators || creators.length === 0) return 'Unknown Creator'
-    const displayedCreators = creators.slice(0, 2).map((creator, index) => {
-      const address = creator.address || creator
-      return (
-        <span key={address} className="inline-flex items-center gap-1">
-          <TokenAddress address={address} />
-          {index < Math.min(creators.length, 2) - 1 && ', '}
-        </span>
-      )
-    })
-
-    return (
-      <>
-        {displayedCreators}
-        {creators.length > 2 && '...'}
-      </>
-    )
-  }
-
-  const handleImageError = (tokenId: string) => {
-    setFailedImages((prev) => new Set(prev).add(tokenId))
-  }
-
-  const hasValidImage = (token: NFT | TokenWithInscription | FungibleToken) => {
-    return token.imageUrl && !failedImages.has(token.id)
-  }
-
-  // Sort tokens: items with valid images first
+export const NFTGrid = ({
+  tokens,
+  onImageClick,
+  viewMode = 'grid',
+  onHover,
+  hoveredNFT,
+  hideErroredImages = false,
+}: NFTGridProps) => {
+  // Sort tokens: prioritize tokens with images
   const sortedTokens = [...tokens].sort((a, b) => {
-    const aHasImage = hasValidImage(a)
-    const bHasImage = hasValidImage(b)
+    const aHasImage = a.imageUrl
+    const bHasImage = b.imageUrl
     if (aHasImage && !bHasImage) return -1
     if (!aHasImage && bHasImage) return 1
     return 0
   })
 
+  // Container styles based on view mode
+  const containerClass =
+    viewMode === 'list'
+      ? 'space-y-2 p-3'
+      : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4'
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-3">
-      {sortedTokens.map((token) => {
-        const name = token.name || 'Unnamed Token'
-        const symbol = token.symbol || ''
-        const creators = token.creators || []
-
-        return (
-          <div
-            key={token.id}
-            className="border border-green-800/30 rounded-lg p-3 hover:bg-green-900/10 transition-colors relative group"
-          >
-            {/* Compressed Badge */}
-            {token.compressed && (
-              <div className="absolute top-3 right-3 bg-green-900/80  text-xs px-2 py-1 rounded-full z-10">
-                Compressed
-              </div>
-            )}
-
-            {/* Image Container */}
-            <NFTImageContainer
-              token={token}
-              name={name}
-              onImageClick={onImageClick}
-              onImageError={() => handleImageError(token.id)}
-            />
-
-            {/* Token Info */}
-            <div className="space-y-2">
-              <button
-                onClick={() => router.push(route('address', { id: token.id }))}
-                className=" font-mono text-base truncate font-semibold group-hover: transition-colors w-full text-left hover:"
-              >
-                {name}
-              </button>
-              {symbol && (
-                <button
-                  onClick={() =>
-                    router.push(route('address', { id: token.id }))
-                  }
-                  className=" font-mono text-sm group-hover: transition-colors w-full text-left hover:"
-                >
-                  {symbol}
-                </button>
-              )}
-              <div className="/80 font-mono text-xs flex items-center gap-1">
-                <span className="/50">NFT:</span>
-                <TokenAddress address={token.id} />
-              </div>
-              <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
-                <span className="/50">Creator:</span> {formatCreators(creators)}
-              </div>
-
-              {/* Supply Info for NFTs */}
-              {isNFT(token) && token.supply && token.supply.editionNumber && (
-                <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
-                  Edition: {token.supply.editionNumber}
-                  {token.supply.printMaxSupply
-                    ? ` / ${token.supply.printMaxSupply}`
-                    : ''}
-                </div>
-              )}
-
-              {/* Balance Info for Fungible Tokens */}
-              {isFungible(token) && (
-                <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
-                  Balance: {token.balance.toLocaleString()}
-                  {token.price > 0 && (
-                    <div className=" group-hover: transition-colors">
-                      ≈ $
-                      {(token.price * token.balance).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Inscription Info */}
-              {isInscription(token) && (
-                <div className="mt-2 p-1.5 bg-green-900/20 rounded-md group-hover:bg-green-900/30 transition-colors">
-                  <div className=" font-mono text-xs group-hover: transition-colors">
-                    Inscription #{token.inscription.order}
-                  </div>
-                  <div className="/80 font-mono text-xs truncate group-hover:/80 transition-colors">
-                    {token.inscription.contentType}
-                  </div>
-                </div>
-              )}
-
-              {/* Attributes */}
-              <div className="flex flex-wrap gap-1 mt-2">
-                {token.mutable && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20  rounded group-hover:bg-green-900/30 group-hover: transition-colors">
-                    Mutable
-                  </span>
-                )}
-                {token.burnt && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-red-900/20 text-red-500 rounded group-hover:bg-red-900/30 group-hover:text-red-400 transition-colors">
-                    Burnt
-                  </span>
-                )}
-                {token.compressed && (
-                  <span className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20  rounded group-hover:bg-green-900/30 group-hover: transition-colors">
-                    Compressed
-                  </span>
-                )}
-                {isFungible(token) && token.associatedTokenAddress && (
-                  <div className="text-xs font-mono px-1.5 py-0.5 bg-green-900/20  rounded group-hover:bg-green-900/30 group-hover: transition-colors">
-                    ATA: <TokenAddress address={token.associatedTokenAddress} />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )
-      })}
+    <div className={containerClass}>
+      {sortedTokens.map((token) => (
+        <NFTCard
+          key={token.id}
+          token={token}
+          onImageClick={onImageClick}
+          onHover={onHover}
+          isHovered={hoveredNFT === token.id}
+          viewMode={viewMode}
+          hideErroredImages={hideErroredImages}
+        />
+      ))}
     </div>
   )
 }

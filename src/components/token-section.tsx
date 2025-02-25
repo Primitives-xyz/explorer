@@ -1,10 +1,9 @@
 'use client'
 
 import { formatNumber } from '@/utils/format'
-import type { FungibleToken, NFT } from '@/utils/types'
+import type { FungibleToken } from '@/utils/types'
 import { useState } from 'react'
 import { ImageModal } from './tokens/image-modal'
-import { NFTGrid } from './tokens/NFT-grid'
 import { TokenList } from './tokens/token-list'
 
 interface TokenSectionProps {
@@ -12,7 +11,7 @@ interface TokenSectionProps {
   hideTitle?: boolean
   isLoading: boolean
   error?: string
-  items?: (FungibleToken | NFT)[]
+  items?: FungibleToken[]
 }
 
 export const TokenSection = ({
@@ -29,43 +28,12 @@ export const TokenSection = ({
     symbol: string
   } | null>(null)
 
-  // Filter items based on token type
-  const tokens = items.filter(
-    (item: any) =>
-      tokenType === 'all' ||
-      (tokenType === 'fungible' &&
-        (item.interface === 'FungibleToken' ||
-          item.interface === 'FungibleAsset')) ||
-      (tokenType === 'nft' &&
-        (item.interface === 'V1_NFT' ||
-          item.interface === 'V2_NFT' ||
-          item.interface === 'LEGACY_NFT') &&
-        !item.compressed) ||
-      (tokenType === 'compressed' &&
-        (item.interface === 'V1_NFT' || item.interface === 'V2_NFT') &&
-        item.compressed) ||
-      (tokenType === 'programmable' && item.interface === 'ProgrammableNFT')
-  )
-
-  const fungibleTokens = tokens.filter(
-    (item: any) =>
-      item.interface === 'FungibleToken' || item.interface === 'FungibleAsset'
-  ) as FungibleToken[]
-
-  const nfts = tokens.filter(
-    (item: any) =>
-      item.interface === 'V1_NFT' ||
-      item.interface === 'V2_NFT' ||
-      item.interface === 'ProgrammableNFT' ||
-      item.interface === 'LEGACY_NFT'
-  ) as NFT[]
-
   // Calculate total value of tokens
-  const totalValue = fungibleTokens.reduce<number>((acc, token) => {
+  const totalValue = items.reduce<number>((acc, token) => {
     return acc + (token.price || 0) * token.balance
   }, 0)
 
-  const shouldShowContent = isLoading || tokens.length > 0
+  const shouldShowContent = isLoading || items.length > 0
 
   if (!shouldShowContent) return null
 
@@ -73,19 +41,13 @@ export const TokenSection = ({
     switch (tokenType) {
       case 'fungible':
         return 'fungible_tokens'
-      case 'nft':
-        return 'regular_nfts'
-      case 'compressed':
-        return 'compressed_nfts'
-      case 'programmable':
-        return 'programmable_nfts'
       default:
         return 'all_tokens'
     }
   }
 
   return (
-    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col h-[284px] lg:h-[484px] relative group">
+    <div className="border border-green-800 bg-black/50 w-full overflow-hidden flex flex-col relative group">
       {/* Header */}
       {!hideTitle && (
         <div className="border-b border-green-800 p-2 flex-shrink-0">
@@ -93,8 +55,8 @@ export const TokenSection = ({
             <div className=" text-sm font-mono whitespace-nowrap">
               {'>'} {getTitle()}
             </div>
-            {fungibleTokens.length > 0 && (
-              <div className="text-xs  font-mono whitespace-nowrap ml-2">
+            {items.length > 0 && (
+              <div className="text-xs font-mono whitespace-nowrap ml-2">
                 TOTAL: ${formatNumber(totalValue)} USDC
               </div>
             )}
@@ -142,35 +104,21 @@ export const TokenSection = ({
         }}
       >
         {isLoading ? (
-          <div className="p-4 text-center  font-mono">
+          <div className="p-4 text-center font-mono">
             {'>>> FETCHING TOKENS...'}
           </div>
         ) : (
-          <>
-            {fungibleTokens.length > 0 && (
-              <TokenList
-                tokens={fungibleTokens}
-                totalValue={totalValue}
-                expandedTokenId={expandedTokenId}
-                onExpand={(id) =>
-                  setExpandedTokenId(expandedTokenId === id ? null : id)
-                }
-                onImageClick={(url, symbol) =>
-                  setSelectedImage({ url, symbol })
-                }
-                sortBy={sortBy}
-                onSort={setSortBy}
-              />
-            )}
-            {nfts.length > 0 && (
-              <NFTGrid
-                tokens={nfts}
-                onImageClick={(url, symbol) =>
-                  setSelectedImage({ url, symbol })
-                }
-              />
-            )}
-          </>
+          <TokenList
+            tokens={items}
+            totalValue={totalValue}
+            expandedTokenId={expandedTokenId}
+            onExpand={(id) =>
+              setExpandedTokenId(expandedTokenId === id ? null : id)
+            }
+            onImageClick={(url, symbol) => setSelectedImage({ url, symbol })}
+            sortBy={sortBy}
+            onSort={setSortBy}
+          />
         )}
       </div>
 

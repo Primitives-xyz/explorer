@@ -42,7 +42,14 @@
     "pnl": "pnl",
     "vol": "Vol",
     "w_l": "W/L",
-    "best_and_worst": "best/worst"
+    "best_and_worst": "best/worst",
+    "address_copied": "Address copied",
+    "copy_address": "Copy address",
+    "view_on_solscan": "View on Solscan",
+    "share_wallet": "Share wallet",
+    "wallet_link_copied": "Wallet link copied",
+    "your_wallet": "Your wallet",
+    "send_sol": "Send SOL"
   },
   "header": {
     "title": "solana_social_explorer",
