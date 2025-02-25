@@ -1,7 +1,7 @@
 'use client'
 
+import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { route } from '@/utils/routes'
-import '@dialectlabs/react-ui/index.css'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -61,6 +61,8 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
           {t('header.portfolio')}
         </Link>
       )}
+
+      <DialectNotificationsComponent />
 
       {/* <a
         href={route('graphVisualization')}
