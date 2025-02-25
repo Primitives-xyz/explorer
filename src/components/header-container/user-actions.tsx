@@ -1,6 +1,5 @@
 'use client'
 
-import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { route } from '@/utils/routes'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
@@ -62,7 +61,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
         </Link>
       )}
 
-      <DialectNotificationsComponent />
+      {/* <DialectNotificationsComponent /> */}
 
       {/* <a
         href={route('graphVisualization')}
