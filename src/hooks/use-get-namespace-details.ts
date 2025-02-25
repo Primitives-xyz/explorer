@@ -31,6 +31,10 @@ export interface INamespaceProfile {
     name: string
     userProfileURL: string
   }
+  socialCounts?: {
+    followers: number
+    following: number
+  }
 }
 
 export const useGetNamespaceDetails = ({ name }: { name: string }) => {

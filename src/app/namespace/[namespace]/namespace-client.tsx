@@ -86,6 +86,16 @@ export function NamespaceClient({
                   >
                     @{profile.profile.username}
                   </button>
+                  {profile.socialCounts && (
+                    <div className="mt-1 flex items-center">
+                      <span className="font-mono text-sm text-gray-400">
+                        Followers: {profile.socialCounts.followers}
+                      </span>
+                      <span className="font-mono text-sm text-gray-400 ml-4">
+                        Following: {profile.socialCounts.following}
+                      </span>
+                    </div>
+                  )}
                   {profile.profile.bio && (
                     <div className="text-sm font-mono text-gray-400 mt-1 line-clamp-2">
                       {profile.profile.bio}
