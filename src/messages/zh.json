@@ -52,7 +52,7 @@
     "connect_wallet": "connect wallet",
     "logout": "logout",
     "terminal": {
-      "title": "STATUS: ONLINE | NETWORK: SOLANA | CMC: 1072667",
+      "title": "STATUS: ONLINE | NETWORK: SOLANA",
       "user": "USER",
       "sse": "sse",
       "balance": "Bal"
