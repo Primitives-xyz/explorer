@@ -86,8 +86,15 @@ const ProfileCard = memo(
       (e: React.MouseEvent) => {
         e.stopPropagation() // Prevent event bubbling
         if (!profile?.namespace?.name) return // Add guard clause
+
         try {
-          router.push(route('namespace', { namespace: profile.namespace.name }))
+          if (profile.namespace.name === EXPLORER_NAMESPACE) {
+            router.push(route('address', { id: profile.profile.username }))
+          } else {
+            router.push(
+              route('namespace', { namespace: profile.namespace.name })
+            )
+          }
         } catch (error) {
           console.error('Error navigating to namespace:', error)
         }
@@ -99,12 +106,19 @@ const ProfileCard = memo(
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
         <div className="flex items-start gap-3 h-full">
           <div className="relative flex-shrink-0">
-            <Avatar
-              username={profile.profile.username}
-              size={48}
-              imageUrl={profile.profile.image}
-            />
-            {profile.namespace?.faviconURL && (
+            <button
+              onClick={() => handleProfileNavigation(profile, router)}
+              className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-full"
+              aria-label={`View ${profile.profile.username}'s profile`}
+            >
+              <Avatar
+                username={profile.profile.username}
+                size={48}
+                imageUrl={profile.profile.image}
+              />
+            </button>
+            {profile.namespace?.faviconURL &&
+            profile.namespace?.name !== EXPLORER_NAMESPACE ? (
               <button
                 onClick={handleNamespaceClick}
                 className="absolute -bottom-1.5 -right-1.5 hover:scale-110 transition-transform"
@@ -115,7 +129,15 @@ const ProfileCard = memo(
                   className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
                 />
               </button>
-            )}
+            ) : profile.namespace?.faviconURL ? (
+              <div className="absolute -bottom-1.5 -right-1.5">
+                <img
+                  src={profile.namespace.faviconURL}
+                  alt={profile.namespace.readableName}
+                  className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
+                />
+              </div>
+            ) : null}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-col gap-1.5">

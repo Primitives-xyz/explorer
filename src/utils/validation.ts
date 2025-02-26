@@ -53,3 +53,5 @@ export type RouteType = 'transaction' | 'token' | 'profile'
 
 // Types
 export type IdParams = Promise<{ id: string }>
+
+export type NamespaceParams = Promise<{ namespace: string }>

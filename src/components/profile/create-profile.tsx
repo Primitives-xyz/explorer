@@ -10,7 +10,7 @@ import { Modal } from '@/components/common/modal'
 import { Input } from '@/components/form/input'
 import { SubmitButton } from '@/components/form/submit-button'
 import { useFileUpload } from '@/hooks/use-file-upload'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { DICEBEAR_API_BASE, EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { IGetProfilesResponse } from '@/models/profile.models'
 import { cn } from '@/utils/utils'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
@@ -160,7 +160,7 @@ export function CreateProfile({
     if (profiles && profiles.length > 0) {
       const profile = profiles.find((profile: IGetProfilesResponse) => {
         return (
-          profile.namespace?.name == 'nemoapp' &&
+          profile.namespace?.name == EXPLORER_NAMESPACE &&
           profile.profile?.username === mainUsername
         )
       })
