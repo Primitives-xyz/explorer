@@ -48,8 +48,7 @@ export default async function NamespaceProfilePage({
   params,
 }: NamespaceProfileParams) {
   try {
-
-    const { namespace, profile } = await params
+    const { namespace, profile } = params
     return <ProfileContent username={profile} namespace={namespace} />
   } catch(exception) {
     console.error('Error loading profile:', exception)
