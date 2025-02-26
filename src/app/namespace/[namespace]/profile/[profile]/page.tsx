@@ -17,7 +17,7 @@ interface NamespaceProfileParams {
 export async function generateMetadata({
   params,
 }: NamespaceProfileParams): Promise<Metadata> {
-  const { namespace, profile } = await params
+  const { namespace, profile } = params
 
   // Default metadata as fallback
   const defaultMetadata: Metadata = {
