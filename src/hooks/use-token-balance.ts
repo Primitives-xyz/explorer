@@ -1,19 +1,46 @@
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112'
 const LAMPORTS_PER_SOL = 1000000000
-const REFRESH_INTERVAL = 10000 // 10 seconds
+
+// Fetcher function for SWR
+const fetcher = async (url: string) => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(
+      `HTTP ${response.status}: ${errorData.error || 'Unknown error'}`
+    )
+  }
+  return response.json()
+}
+
+// Special fetcher for SOL balance using RPC
+const fetchSolBalance = async (walletAddress: string) => {
+  const response = await fetch(
+    process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'getBalance',
+        params: [walletAddress],
+      }),
+    }
+  )
+  const data = await response.json()
+  if (data.error) {
+    throw new Error(data.error.message)
+  }
+  return data.result?.value || 0
+}
 
 export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
-  const [balance, setBalance] = useState<{ formatted: string; raw: bigint }>({
-    formatted: '0',
-    raw: 0n,
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-
   const t = useTranslations()
 
   const formatBalance = (value: string, isSol = false) => {
@@ -63,66 +90,62 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     }
   }
 
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (!walletAddress || !mintAddress) return
+  // For SOL balance
+  const solKey =
+    mintAddress === SOL_MINT && walletAddress
+      ? ['solBalance', walletAddress]
+      : null
+  const {
+    data: solData,
+    error: solError,
+    isLoading: solLoading,
+    isValidating: solRefreshing,
+  } = useSWR(solKey, () => fetchSolBalance(walletAddress!), {
+    refreshInterval: 10000, // 10 seconds
+    dedupingInterval: 2000,
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  })
 
-      // Only set loading true on initial load, not refreshes
-      if (!balance.formatted) {
-        setLoading(true)
-      } else {
-        setIsRefreshing(true)
-      }
+  // For SPL token balance
+  const tokenKey =
+    mintAddress !== SOL_MINT && walletAddress && mintAddress
+      ? `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=${mintAddress}`
+      : null
+  const {
+    data: tokenData,
+    error: tokenError,
+    isLoading: tokenLoading,
+    isValidating: tokenRefreshing,
+  } = useSWR(tokenKey, fetcher, {
+    refreshInterval: 10000, // 10 seconds
+    dedupingInterval: 2000,
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  })
 
-      setError(null)
-      try {
-        // Handle SOL balance differently using direct RPC call
-        if (mintAddress === SOL_MINT) {
-          const response = await fetch(
-            process.env.NEXT_PUBLIC_RPC_URL ||
-              'https://api.mainnet-beta.solana.com',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                jsonrpc: '2.0',
-                id: 1,
-                method: 'getBalance',
-                params: [walletAddress],
-              }),
-            }
-          )
-          const data = await response.json()
-          if (data.error) {
-            throw new Error(data.error.message)
-          }
-          const solBalance = (data.result?.value || 0) / LAMPORTS_PER_SOL
-          setBalance(formatBalance(solBalance.toString(), true))
-        } else {
-          // Handle SPL tokens
-          const response = await fetch(
-            `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=${mintAddress}`
-          )
-          const data = await response.json()
-          setBalance(formatBalance(data.balance.uiAmountString))
-        }
-      } catch (error) {
-        console.error(t('error.error_fetching_token_balance'), error)
-        setError(t('error.failed_to_fetch_balance'))
-      } finally {
-        setLoading(false)
-        setIsRefreshing(false)
-      }
+  // Process the data based on token type
+  let balance = { formatted: '0', raw: 0n }
+  let error = null
+  let loading = false
+  let isRefreshing = false
+
+  if (mintAddress === SOL_MINT) {
+    if (solData !== undefined) {
+      const solBalance = solData / LAMPORTS_PER_SOL
+      balance = formatBalance(solBalance.toString(), true)
     }
-
-    fetchBalance()
-    // Refresh balance every 10 seconds
-    const interval = setInterval(fetchBalance, REFRESH_INTERVAL)
-
-    return () => clearInterval(interval)
-  }, [walletAddress, mintAddress])
+    error = solError ? t('error.failed_to_fetch_balance') : null
+    loading = solLoading
+    isRefreshing = solRefreshing
+  } else {
+    if (tokenData) {
+      balance = formatBalance(tokenData.balance.uiAmountString)
+    }
+    error = tokenError ? t('error.failed_to_fetch_balance') : null
+    loading = tokenLoading
+    isRefreshing = tokenRefreshing
+  }
 
   return {
     balance: balance.formatted,
