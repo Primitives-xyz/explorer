@@ -258,7 +258,8 @@ export function CreateProfile({
         let response
         let data
         if (res.ok && profileData?.profile?.id) {
-          response = await fetch(`/api/profiles/${username}`, {
+          const profileIdentifier = profileData.profile.username || walletAddress;
+          response = await fetch(`/api/profiles/${profileIdentifier}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
