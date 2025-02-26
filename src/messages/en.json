@@ -131,7 +131,10 @@
     "7d": "7D"
   },
   "trade": {
-    "swap_tokens": "Swap Tokens",
+    "swap_tokens": "Swap",
+    "unstake_sse": "UnStake SSE",
+    "select_stake": "Select Stake",
+    "unstake_available_in": "Unstake available in",
     "maximum": "Maximum",
     "decimal_places_allowed": "decimal places allowed",
     "you_receive": "You'll receive",
@@ -147,6 +150,7 @@
     "get_50_off_on_transaction_fees": "Get 50% off on transaction fees",
     "checking_wallet_status": "Checking wallet status",
     "connect_wallet_to_swap": "Connect Wallet to Swap",
+    "connect_wallet_to_stake": "Connect Wallet to Stake",
     "confirming_transaction": "Confirming Transaction",
     "executing_swap": "Executing Swap",
     "execute_swap": "Execute Swap",
@@ -197,7 +201,14 @@
     "trading_stats": "Trading Stats",
     "most_traded": "Most traded",
     "no_trades_found_for_selected_period": ">>> NO TRADES FOUND FOR SELECTED PERIOD",
-    "auto": "Auto"
+    "auto": "Auto",
+    "stake": "Stake",
+    "unstake": "UnStake",
+    "summary": "Summary",
+    "stake_date": "Stake Date",
+    "interest_period": "Interest Period",
+    "apy": "APY",
+    "stake_end_period": "Stake End Period"
   },
   "priority_levels": {
     "minimum": "Minimum",
