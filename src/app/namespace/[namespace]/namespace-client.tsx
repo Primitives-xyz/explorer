@@ -2,6 +2,8 @@
 
 import { DataContainer } from '@/components/common/data-container'
 import { TokenAddress } from '@/components/tokens/token-address'
+import { useRouter } from 'next/navigation';
+
 import {
   INamespaceDetails,
   INamespaceProfile,
@@ -47,6 +49,8 @@ export function NamespaceClient({
   profiles,
   totalCount,
 }: NamespaceClientProps) {
+  const router = useRouter();
+
   if (!namespaceDetails) {
     return (
       <div className="min-h-screen bg-black p-8">
@@ -79,9 +83,8 @@ export function NamespaceClient({
                 <div className="flex-1">
                   <button
                     className="font-mono text-base"
-                    disabled={!profile.namespace.userProfileURL}
-                    onClick={() =>
-                      (window.location.href = `${profile.namespace.userProfileURL}${profile.profile.username}`)
+                    onClick={() => 
+                      router.push(`/namespace/${profile.namespace.name}/profile/${profile.profile.username}`)
                     }
                   >
                     @{profile.profile.username}

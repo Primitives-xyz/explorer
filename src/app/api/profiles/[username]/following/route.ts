@@ -12,6 +12,10 @@ export const revalidate = 60 // Revalidate every 60 seconds
 export async function GET(_req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
+    
+    const searchParams = _req.nextUrl.searchParams
+    const namespace = searchParams.get('namespace')
+
     const { username } = params
     if (!username) {
       return NextResponse.json(
@@ -20,7 +24,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
       )
     }
     const response = await fetchTapestryServer({
-      endpoint: `profiles/${username}/following`,
+      endpoint: `profiles/${username}/following${namespace ? `?namespace=${namespace}` : ''}`,
       method: FetchMethod.GET,
     })
     return NextResponse.json(response)

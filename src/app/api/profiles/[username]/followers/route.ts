@@ -14,6 +14,9 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     const params = await context.params
     const { username } = params
 
+    const searchParams = _req.nextUrl.searchParams
+    const namespace = searchParams.get('namespace')
+
     if (!username) {
       return NextResponse.json(
         { error: 'Username is required' },
@@ -22,7 +25,7 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     }
 
     const response = await fetchTapestryServer({
-      endpoint: `profiles/${username}/followers`,
+      endpoint: `profiles/${username}/followers${namespace ? `?namespace=${namespace}` : ''}`,
       method: FetchMethod.GET,
     })
 

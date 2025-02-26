@@ -16,6 +16,10 @@ export interface ProfileData {
     image: string | null
     bio?: string
   }
+  namespace?: {
+    name?: string,
+    userProfileURL?: string
+  }
 }
 
 interface LoadingState {
@@ -49,13 +53,20 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-export function useProfileData(username: string, mainUsername?: string | null) {
+export function useProfileData(username: string, mainUsername?: string | null, namespace?: string | null) {
   const [state, setState] = useState<ProfileState>({ type: 'loading' })
   const prevDataRef = useRef<LoadedState | null>(null)
   const isInitialLoadRef = useRef(true)
+  
+  // Check if namespace exists and is not null
+  const hasNamespace = namespace !== undefined && namespace !== null && namespace !== ''
 
+  let url = !hasNamespace
+    ? `/api/profiles/${username}?fromUsername=${mainUsername}`
+    : `/api/profiles/${username}?namespace=${namespace}`
+  
   const { data, isLoading } = useSWR<ProfileData>(
-    `/api/profiles/${username}?fromUsername=${mainUsername}`,
+    url,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -75,18 +86,17 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     followers,
     isLoading: isLoadingFollowers,
     error: _followersError,
-  } = useProfileFollowers(username)
+  } = useProfileFollowers(username, namespace)
 
   const {
     following,
     isLoading: isLoadingFollowing,
     error: _followingError,
-  } = useProfileFollowing(username)
+  } = useProfileFollowing(username, namespace)
 
-  const { comments, isLoading: isLoadingComments } = useProfileComments(
-    username,
-    mainUsername || undefined
-  )
+  const { comments, isLoading: isLoadingComments } = hasNamespace
+    ? { comments: [], isLoading: false }
+    : useProfileComments(username, mainUsername || undefined)
 
   const isLoading_All =
     isLoading ||
@@ -178,9 +188,9 @@ export function useProfileData(username: string, mainUsername?: string | null) {
         following: [],
         comments: [],
         isLoading: true,
-        isLoadingFollowers: true,
-        isLoadingFollowing: true,
-        isLoadingComments: true,
+        isLoadingFollowers:  true,
+        isLoadingFollowing:  true,
+        isLoadingComments:  true,
         walletAddressError: false,
         serverError: false,
         followersError: null,
@@ -221,5 +231,5 @@ export function useProfileData(username: string, mainUsername?: string | null) {
       followersError: null,
       followingError: null,
     }
-  }, [state])
+  }, [state, hasNamespace])
 }

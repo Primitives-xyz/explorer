@@ -19,6 +19,7 @@ import { UpdateProfileModal } from './update-profile-modal'
 
 interface Props {
   username: string
+  namespace?: string
 }
 
 // Memoize the modals to prevent unnecessary rerenders
@@ -59,7 +60,8 @@ const ErrorCard = memo(function ErrorCard() {
   )
 })
 
-export function ProfileContent({ username }: Props) {
+
+export function ProfileContent({ username, namespace }: Props) {
   const { mainUsername } = useCurrentWallet()
   const [showFollowersModal, setShowFollowersModal] = useState(false)
   const [showFollowingModal, setShowFollowingModal] = useState(false)
@@ -72,7 +74,7 @@ export function ProfileContent({ username }: Props) {
     walletAddressError,
     serverError,
     isOwnWallet,
-  } = useTargetWallet(username)
+  } = useTargetWallet(username, namespace)
 
   const {
     profileData,
@@ -83,8 +85,7 @@ export function ProfileContent({ username }: Props) {
     isLoadingFollowers,
     isLoadingFollowing,
     isLoadingComments,
-  } = useProfileData(username, mainUsername)
-
+  } = useProfileData(username, mainUsername, namespace)
   const {
     identities,
     loading: isLoadingIdentities,
@@ -131,6 +132,7 @@ export function ProfileContent({ username }: Props) {
 
   return (
     <div className="py-8">
+     < >
       <ProfileHeader
         username={username}
         profileData={profileData}
@@ -138,6 +140,7 @@ export function ProfileContent({ username }: Props) {
         walletAddressError={walletAddressError}
         onEditProfile={handleEditProfile}
         isOwnProfile={isOwnWallet}
+        namespaceLink={profileData?.namespace?.userProfileURL ? `${profileData?.namespace?.userProfileURL}/${username}` : null}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -148,7 +151,7 @@ export function ProfileContent({ username }: Props) {
             onFollowersClick={handleFollowersClick}
             onFollowingClick={handleFollowingClick}
           />
-
+          {!namespace && (
           <Card>
             <div className="border-b border-green-900/20">
               <nav className="flex" aria-label="Tabs">
@@ -182,6 +185,7 @@ export function ProfileContent({ username }: Props) {
               )}
             </div>
           </Card>
+            )}
         </div>
 
         <div className="space-y-6">
@@ -239,6 +243,7 @@ export function ProfileContent({ username }: Props) {
           onProfileUpdated={handleProfileUpdated}
         />
       )}
+      </>
     </div>
   )
 }
