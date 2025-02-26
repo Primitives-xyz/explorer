@@ -94,9 +94,12 @@ export function useProfileData(username: string, mainUsername?: string | null, n
     error: _followingError,
   } = useProfileFollowing(username, namespace)
 
-  const { comments, isLoading: isLoadingComments } = hasNamespace
-    ? { comments: [], isLoading: false }
-    : useProfileComments(username, mainUsername || undefined)
+  const { comments: rawComments, isLoading: isLoadingComments } = useProfileComments(
+    username, 
+    mainUsername || undefined
+  );
+
+  const comments = hasNamespace ? [] : rawComments;
 
   const isLoading_All =
     isLoading ||
@@ -231,5 +234,8 @@ export function useProfileData(username: string, mainUsername?: string | null, n
       followersError: null,
       followingError: null,
     }
-  }, [state, hasNamespace])
+  }, [
+    state, 
+    hasNamespace
+  ])
 }

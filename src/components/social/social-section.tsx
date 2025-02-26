@@ -6,6 +6,7 @@ import { memo } from 'react'
 import { Avatar } from '../common/avatar'
 import { FollowButton } from '../profile/follow-button'
 import { TokenAddress } from '../tokens/token-address'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 
 interface SocialUser {
   id: string
@@ -43,7 +44,7 @@ const SocialCard = memo(({ user }: { user: SocialUser; type: string, namespace?:
             >
               @{user.username}
             </button>
-            {user.namespace === 'nemoapp' && // only give the possibility of follow for users inside explorer app
+            {user.namespace === EXPLORER_NAMESPACE && // only give the possibility of follow for users inside explorer app
             (
               <div className="flex-shrink-0">
                 <FollowButton username={user.username} size="sm" />

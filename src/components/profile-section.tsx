@@ -76,7 +76,7 @@ const ProfileCard = memo(
     const handleProfileClick = useCallback(() => {
       if (!profile) return // Add guard clause
       try {
-        if (profile.namespace?.name === 'nemoapp') {
+        if (profile.namespace?.name === EXPLORER_NAMESPACE) {
           handleProfileNavigation(profile, router)
         } else {
           // For other namespaces, redirect to the new URL format

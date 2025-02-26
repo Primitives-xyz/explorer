@@ -3,6 +3,7 @@ import { memo, useEffect } from 'react'
 import { Avatar } from '../common/avatar'
 import { TokenAddress } from '../tokens/token-address'
 import { FollowButton } from './follow-button'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 
 interface ProfileHeaderProps {
   username: string
@@ -81,7 +82,7 @@ export const ProfileHeader = memo(function ProfileHeader({
               Edit Profile
             </button>
           )}
-          {profileData?.namespace?.name === 'nemoapp' &&
+          {profileData?.namespace?.name === EXPLORER_NAMESPACE &&
           <>
             <FollowButton username={username} size="lg" />
           </>
