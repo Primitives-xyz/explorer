@@ -7,12 +7,9 @@ import {
 import { ProfileMetadata } from '@/utils/metadata/profile-metadata'
 import { fetchTapestryServer } from '@/lib/tapestry-server'
 
-interface NamespaceProfileParams {
-  params: {
-    namespace: string
-    profile: string
-  }
-  searchParams?: Record<string, string | string[] | undefined>;
+type NamespaceProfileParams = {
+  params: { namespace: string; profile: string };
+  searchParams?: Record<string, string | string[]>;
 }
 
 export async function generateMetadata({
