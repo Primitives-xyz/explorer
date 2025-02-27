@@ -12,6 +12,10 @@ type NamespaceProfileParams = {
   searchParams?: Record<string, string | string[]>;
 }
 
+type Props = {
+  params: Promise<{ namespace: string; profile: string }>
+}
+
 export async function generateMetadata({
   params,
 }: NamespaceProfileParams): Promise<Metadata> {
@@ -42,11 +46,10 @@ export async function generateMetadata({
   }
 }
 
-export default async function NamespaceProfilePage({
-  params,
-}: NamespaceProfileParams) {
+
+export default async function NamespaceProfilePage({ params }: Props) {
   try {
-    const { namespace, profile } = params
+    const { namespace, profile } = await params;
     return <ProfileContent username={profile} namespace={namespace} />
   } catch(exception) {
     console.error('Error loading profile:', exception)
