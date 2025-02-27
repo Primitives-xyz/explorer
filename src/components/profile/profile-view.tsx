@@ -37,6 +37,8 @@ export function ProfileView({ username }: Props) {
           avatarUrl: profileData?.profile.image || null,
           bio: profileData?.profile.bio || '',
           socialCounts: profileData?.socialCounts,
+          userProfileURL: profileData?.namespace?.userProfileURL,
+          namespace: profileData?.namespace?.name,
           createdAt: profileData?.profile.created_at,
           isLoading: isLoading || isLoadingWallet,
         }}
