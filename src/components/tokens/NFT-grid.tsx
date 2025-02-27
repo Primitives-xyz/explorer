@@ -154,11 +154,11 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
                 </button>
               )}
               <div className="/80 font-mono text-xs flex items-center gap-1">
-                <span className="/50">NFT:</span>
+                <span className="">NFT:</span>
                 <TokenAddress address={token.id} />
               </div>
               <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
-                <span className="/50">Creator:</span> {formatCreators(creators)}
+                <span className="">Creator:</span> {formatCreators(creators)}
               </div>
 
               {/* Supply Info for NFTs */}

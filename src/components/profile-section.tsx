@@ -183,7 +183,7 @@ const ProfileCard = memo(
 
               {profile.namespace && (
                 <div className="flex items-center gap-2">
-                  <span className="/50 text-xs">
+                  <span className=" text-xs">
                     <button
                       onClick={handleNamespaceClick}
                       className="hover: transition-colors"
