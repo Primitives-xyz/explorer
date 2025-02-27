@@ -4,22 +4,22 @@ import useSWR from 'swr'
 async function fetchFollowers(url: string): Promise<IGetSocialResponse> {
   const res = await fetch(url)
   if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.error || 'Failed to fetch followers')
+    throw new Error('Failed to fetch followers')
   }
-  return await res.json()
+  return res.json()
 }
 
-export function useProfileFollowers(username: string | null) {
+export function useProfileFollowers(username: string | null, namespace?: string | null | undefined) {
+  const namespaceQuery = namespace ? `?namespace=${namespace}` : '';  
+
   const { data, error, mutate } = useSWR<IGetSocialResponse>(
-    username ? `/api/profiles/${username}/followers` : null,
+    username ? `/api/profiles/${username}/followers${namespaceQuery}` : null,
     fetchFollowers,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       dedupingInterval: 30000, // 30 seconds
-      revalidateIfStale: false,
-      fallbackData: { profiles: [], page: 1, pageSize: 10 },
+      revalidateIfStale: false
     }
   )
 

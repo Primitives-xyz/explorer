@@ -76,7 +76,12 @@ const ProfileCard = memo(
     const handleProfileClick = useCallback(() => {
       if (!profile) return // Add guard clause
       try {
-        handleProfileNavigation(profile, router)
+        if (profile.namespace?.name === EXPLORER_NAMESPACE) {
+          handleProfileNavigation(profile, router)
+        } else {
+          // For other namespaces, redirect to the new URL format
+          router.push(`/namespace/${profile.namespace?.name}/profile/${profile.profile.username}`)
+        }
       } catch (error) {
         console.error('Error navigating to profile:', error)
       }
