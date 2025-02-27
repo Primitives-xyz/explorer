@@ -364,7 +364,7 @@ export default function TokenDashboard({
                   <div className="text-5xl mb-4">💰</div>
                   <h3 className="text-xl font-medium mb-2">No Tokens Found</h3>
                   <p className="text-gray-400 mb-6">
-                    This wallet doesn't have any tokens yet.
+                    This wallet doesn&apos;t have any tokens yet.
                   </p>
                   <button
                     className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md transition-colors"

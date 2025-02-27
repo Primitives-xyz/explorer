@@ -1,4 +1,4 @@
-import { ProfileContent } from '@/components/profile/profile-content'
+import { ProfileView } from '@/components/profile/profile-view'
 import { TokenView } from '@/components/tokens/token-view'
 import TransactionDetails from '@/components/transactions/transaction-view'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
@@ -74,7 +74,7 @@ function renderContent(routeType: RouteType, cleanId: string) {
     case 'token':
       return <TokenView id={cleanId} />
     case 'profile':
-      return <ProfileContent username={cleanId} />
+      return <ProfileView username={cleanId} />
   }
 }
 

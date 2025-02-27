@@ -246,7 +246,7 @@ export default function NFTShowcase({
               <div className="text-5xl mb-4">🖼️</div>
               <h3 className="text-xl font-medium mb-2">No NFTs Found</h3>
               <p className="text-green-400/70">
-                This wallet doesn't have any NFTs yet.
+                This wallet doesn&apos;t have any NFTs yet.
               </p>
             </div>
           ) : (
