@@ -11,14 +11,21 @@ import {
 } from '@/components/ui/tooltip'
 import type { TokenPortfolioResponse } from '@/types/Token'
 import { formatNumber } from '@/utils/format'
-import { CoinsIcon, DollarSign, Share2, Users } from 'lucide-react'
+import {
+  CalendarIcon,
+  CoinsIcon,
+  DollarSign,
+  NetworkIcon,
+  Share2,
+  Users,
+} from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { FollowButton } from './profile/follow-button'
 
 interface User {
   username: string
   walletAddress: string
-  avatarUrl: string
+  avatarUrl: string | null
   bio: string
   level: number
   reputation: number
@@ -27,6 +34,7 @@ interface User {
     following: number
   }
   isLoading?: boolean
+  createdAt?: string
 }
 
 interface UserHeaderProps {
@@ -53,14 +61,19 @@ export default function UserHeader({
 
   // Calculate other tokens
   const tokenCount = Math.max(0, items.length - 1) // Subtract SOL, ensure non-negative
+  console.log({ user })
+  // Get creation year or default to current year
+  const creationYear = user.createdAt
+    ? new Date(user.createdAt).getFullYear()
+    : new Date().getFullYear()
 
   return (
-    <div className="border-b border-gray-700 bg-gray-900 py-6">
+    <div className="border-b border-gray-700 bg-gray-900 py-2 lg:py-6">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row items-start gap-6">
+        <div className="flex flex-col md:flex-row items-start gap-1 lg:gap-6">
           {/* Avatar */}
           <Avatar className="w-24 h-24 border-2 border-green-500 shadow-lg shadow-green-500/20">
-            <AvatarImage src={user.avatarUrl} alt={user.username} />
+            <AvatarImage src={user.avatarUrl ?? ''} alt={user.username} />
             <AvatarFallback className="bg-gray-800 text-green-500">
               {user.username.slice(0, 2).toUpperCase()}
             </AvatarFallback>
@@ -75,6 +88,25 @@ export default function UserHeader({
               <code className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">
                 {user.walletAddress}
               </code>
+            </div>
+
+            {/* Profile Info Badges */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              <Badge
+                variant="outline"
+                className="text-xs font-mono border-green-500/50 text-green-400"
+              >
+                <CalendarIcon className="w-3 h-3 mr-1" />
+                {`Since ${creationYear}`}
+              </Badge>
+
+              <Badge
+                variant="outline"
+                className="text-xs font-mono border-green-500/50 text-green-400"
+              >
+                <NetworkIcon className="w-3 h-3 mr-1" />
+                Solana
+              </Badge>
             </div>
 
             {/* Stats */}

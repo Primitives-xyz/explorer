@@ -152,11 +152,6 @@ export function useProfileData(username: string, mainUsername?: string | null) {
     profilesError,
   ])
 
-  // Keep the debug logs
-  useEffect(() => {
-    console.log('[useProfileData] state changed:', state)
-  }, [state])
-
   // Transform state into the expected return type
   return useMemo(() => {
     if (state.type === 'loading') {

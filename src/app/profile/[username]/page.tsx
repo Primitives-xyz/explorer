@@ -1,6 +1,7 @@
 'use client'
 import UserHeader from '@/components/UserHeader'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { ProfileIdentities } from '@/components/profile/profile-identities'
 import { ProfileTabs } from '@/components/profile/profile-tabs'
 import { useProfileData } from '@/hooks/use-profile-data'
 import { useTargetWallet } from '@/hooks/use-target-wallet'
@@ -45,18 +46,20 @@ export default function ProfilePage() {
         user={{
           username: username,
           walletAddress: targetWalletAddress,
-          avatarUrl:
-            profileData?.profile.image ||
-            '/placeholder.svg?height=200&width=200',
+          avatarUrl: profileData?.profile.image || null,
           bio: profileData?.profile.bio || '',
           level: 42,
           reputation: 9876,
           socialCounts: profileData?.socialCounts,
+          createdAt: profileData?.profile.created_at,
           isLoading: isLoading || isLoadingWallet,
         }}
         portfolioData={portfolioData}
         isPortfolioLoading={isLoadingPortfolio}
       />
+      {targetWalletAddress && (
+        <ProfileIdentities walletAddress={targetWalletAddress} />
+      )}
       <div className="container mx-auto">
         <ProfileTabs username={username} />
       </div>
