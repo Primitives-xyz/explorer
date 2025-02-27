@@ -18,8 +18,8 @@ type Props = {
 
 export async function generateMetadata({
   params,
-}: NamespaceProfileParams): Promise<Metadata> {
-  const { namespace, profile } = params
+}: Props): Promise<Metadata> {
+  const { namespace, profile } = await params
 
   // Default metadata as fallback
   const defaultMetadata: Metadata = {
