@@ -112,7 +112,7 @@ const ProfileCard = memo(
         <div className="flex items-start gap-3 h-full">
           <div className="relative flex-shrink-0">
             <button
-              onClick={() => handleProfileNavigation(profile, router)}
+              onClick={handleProfileClick}
               className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-full"
               aria-label={`View ${profile.profile.username}'s profile`}
             >
