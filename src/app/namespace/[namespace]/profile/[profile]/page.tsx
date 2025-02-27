@@ -12,6 +12,7 @@ interface NamespaceProfileParams {
     namespace: string
     profile: string
   }
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
 export async function generateMetadata({
