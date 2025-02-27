@@ -45,13 +45,13 @@ export const ImageModal = ({
                 )
                 target.insertAdjacentHTML(
                   'afterend',
-                  `<div class="/50 font-mono text-sm">Image failed to load</div>`
+                  `<div class=" font-mono text-sm">Image failed to load</div>`
                 )
               }}
             />
           ) : (
             <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
-              <div className="/50 font-mono text-sm">No image available</div>
+              <div className=" font-mono text-sm">No image available</div>
             </div>
           )}
           <div className="text-center mt-2  font-mono text-sm">

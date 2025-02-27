@@ -13,7 +13,7 @@ export function TokenMarketActivity({
       <div className="bg-black/40 border border-green-800/40 rounded-lg p-3 col-span-2 md:col-span-1">
         <div className="text-sm text-gray-400 mb-2">Buy/Sell Ratio (24h)</div>
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-full bg-gray-800 rounded-full h-2">
+          <div className="w-full  rounded-full h-2">
             <div
               className="bg-green-500 h-2 rounded-full"
               style={{ width: '51.2%' }}

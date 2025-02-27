@@ -108,7 +108,7 @@ export const FollowingProfileList = ({
                         onClick={() => {
                           navigator.clipboard.writeText(walletId)
                         }}
-                        className="/50 hover:/80 text-xs font-mono bg-green-900/20 px-1.5 py-0.5 rounded transition-colors"
+                        className=" hover:/80 text-xs font-mono bg-green-900/20 px-1.5 py-0.5 rounded transition-colors"
                       >
                         [copy]
                       </button>
