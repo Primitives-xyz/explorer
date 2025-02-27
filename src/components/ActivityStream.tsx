@@ -85,7 +85,7 @@ export default function ActivityStream({ username }: { username: string }) {
 
   return (
     <div className="container mx-auto">
-      <div className="bg-gray-900 border border-gray-700 rounded-sm">
+      <div className=" border border-gray-700 rounded-sm">
         <div className="border-b border-gray-700 px-4 py-3 flex items-center">
           <Terminal className="h-4 w-4 text-green-500 mr-2" />
           <h2 className="text-sm font-mono font-bold text-green-400">
@@ -100,7 +100,7 @@ export default function ActivityStream({ username }: { username: string }) {
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: index * 0.05 }}
-              className="px-4 py-3 hover:bg-gray-800/50"
+              className="px-4 py-3"
             >
               <div className="flex items-start space-x-3">
                 <Avatar className="h-8 w-8 border border-gray-700">
@@ -108,7 +108,7 @@ export default function ActivityStream({ username }: { username: string }) {
                     src={`/placeholder.svg?height=40&width=40`}
                     alt={activity.user}
                   />
-                  <AvatarFallback className="bg-gray-800 text-green-500 text-xs">
+                  <AvatarFallback className=" text-green-500 text-xs">
                     {activity.user.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>

@@ -41,7 +41,7 @@ const NFTImageContainer = ({
           onError={onImageError}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center /50 text-lg">
+        <div className="w-full h-full flex items-center justify-center text-lg">
           No Image
         </div>
       )}

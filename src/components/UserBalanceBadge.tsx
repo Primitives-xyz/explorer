@@ -53,7 +53,7 @@ export default function UserBalanceBadge({
             )}
           </Badge>
         </TooltipTrigger>
-        <TooltipContent className="bg-gray-900 border border-green-800 p-3 font-mono text-xs">
+        <TooltipContent className=" border border-green-800 p-3 font-mono text-xs">
           <div className="space-y-2">
             <div className="flex justify-between gap-4">
               <span>{formattedSolBalance} SOL</span>

@@ -6,7 +6,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* Custom Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 8px;
@@ -69,15 +68,17 @@
 }
 
 :root {
+  --background: #292c31;
   --background-80: #292c31cc;
+  --foreground: #fff;
   --text-body: #f5f8fd;
   --text-header: #97ef83;
 }
 
 body {
   color: var(--text-body);
+  background: var(--background);
 }
-
 /* necessary to make the button have the same height as connect walled + search */
 .dialect > * > button {
   height: 34px !important;
@@ -103,8 +104,6 @@ body {
   --dt-button-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
   --dt-icon-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
 }
-
-
 
 @layer base {
   :root {
@@ -161,8 +160,6 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {

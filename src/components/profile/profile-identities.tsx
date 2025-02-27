@@ -10,6 +10,47 @@ interface ProfileIdentitiesProps {
   walletAddress: string
 }
 
+// Skeleton loader for identity cards
+const IdentityCardSkeleton = ({ index }: { index: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3, delay: index * 0.05 }}
+    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-700 min-w-[180px]"
+  >
+    <div className="relative flex-shrink-0 w-6 h-6">
+      <div className="w-6 h-6 rounded-full bg-gray-800 animate-pulse" />
+    </div>
+    <div className="flex-1 min-w-0 space-y-1">
+      <div className="h-4 w-20 bg-gray-800 rounded animate-pulse" />
+      <div className="h-3 w-16 bg-gray-800 rounded animate-pulse" />
+    </div>
+    <div className="w-3 h-3 bg-gray-800 rounded animate-pulse" />
+  </motion.div>
+)
+
+// Loading skeleton component
+const LoadingSkeletons = () => (
+  <div className="container py-2 px-2 lg:px-8 border-b border-gray-700 min-w-full">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400 font-mono">
+          Loading identities...
+        </span>
+      </div>
+    </div>
+
+    <div className="mt-2 overflow-x-auto pb-2">
+      <div className="flex gap-2">
+        {/* Display 3 skeleton loaders while loading */}
+        {[...Array(3)].map((_, index) => (
+          <IdentityCardSkeleton key={index} index={index} />
+        ))}
+      </div>
+    </div>
+  </div>
+)
+
 export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
   const {
     identities,
@@ -18,6 +59,8 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
   } = useIdentities(walletAddress || '')
 
   const [isVisible, setIsVisible] = useState(false)
+  // Add a state to track if we should show content
+  const [showContent, setShowContent] = useState(false)
 
   useEffect(() => {
     // Add a small delay for animation
@@ -25,20 +68,23 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
       setIsVisible(true)
     }, 300)
 
-    return () => clearTimeout(timer)
-  }, [])
+    // Only show content after loading is complete and data is available
+    if (!isLoading && identities) {
+      const contentTimer = setTimeout(() => {
+        setShowContent(true)
+      }, 100)
+      return () => {
+        clearTimeout(timer)
+        clearTimeout(contentTimer)
+      }
+    }
 
-  if (isLoading) {
-    return (
-      <div className="container  py-3 px-4 bg-gray-800/50 border-b border-gray-700">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400 font-mono">
-            Loading identities...
-          </span>
-          <div className="h-4 w-24 bg-gray-700 animate-pulse rounded"></div>
-        </div>
-      </div>
-    )
+    return () => clearTimeout(timer)
+  }, [isLoading, identities])
+
+  // Always show skeleton on initial render
+  if (isLoading || !showContent) {
+    return <LoadingSkeletons />
   }
 
   if (error || !identities || identities.length === 0) {
@@ -46,7 +92,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
   }
 
   return (
-    <div className="container py-2 px-2 bg-gray-800/50 border-b border-gray-700 min-w-full">
+    <div className="container py-2 px-2 lg:px-8 border-b border-gray-700 min-w-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-400 font-mono">
@@ -76,7 +122,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
                 duration: 0.3,
                 delay: index * 0.1,
               }}
-              className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 
+              className="flex items-center gap-2   
                         transition-colors px-3 py-2 rounded-lg border border-gray-700
                         hover:border-green-500/30 group min-w-[180px]"
             >

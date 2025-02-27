@@ -20,46 +20,32 @@ export default function ProfilePage() {
   const {
     targetWalletAddress,
     isLoading: isLoadingWallet,
-    walletAddressError,
-    serverError,
     isOwnWallet,
   } = useTargetWallet(username)
 
-  const {
-    profileData,
-    followers,
-    following,
-    comments,
-    isLoading,
-    isLoadingFollowers,
-    isLoadingFollowing,
-    isLoadingComments,
-  } = useProfileData(username, mainUsername)
+  const { profileData, isLoading } = useProfileData(username, mainUsername)
 
   // Fetch portfolio data for the wallet address
   const { portfolioData, isLoading: isLoadingPortfolio } =
     usePortfolioData(targetWalletAddress)
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-200 font-mono">
+    <div className="min-h-screen bg-[#111111] text-gray-200 font-mono">
       <UserHeader
         user={{
           username: username,
           walletAddress: targetWalletAddress,
           avatarUrl: profileData?.profile.image || null,
           bio: profileData?.profile.bio || '',
-          level: 42,
-          reputation: 9876,
           socialCounts: profileData?.socialCounts,
           createdAt: profileData?.profile.created_at,
           isLoading: isLoading || isLoadingWallet,
         }}
         portfolioData={portfolioData}
         isPortfolioLoading={isLoadingPortfolio}
+        isOwnProfile={isOwnWallet}
       />
-      {targetWalletAddress && (
-        <ProfileIdentities walletAddress={targetWalletAddress} />
-      )}
+      {username && <ProfileIdentities walletAddress={targetWalletAddress} />}
       <div className="container mx-auto">
         <ProfileTabs username={username} />
       </div>

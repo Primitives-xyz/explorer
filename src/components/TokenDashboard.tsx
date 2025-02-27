@@ -23,7 +23,7 @@ const TokenImage = ({
 
   return (
     <div
-      className="w-8 h-8 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center"
+      className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center"
       onClick={() => imageUrl && onImageClick(imageUrl, token.symbol)}
     >
       {imageUrl ? (
@@ -46,8 +46,8 @@ export default function TokenDashboard({
 }: {
   walletAddress: string
 }) {
-  const [autoLoadEnabled, setAutoLoadEnabled] = useState(false)
-  const [showDebug, setShowDebug] = useState(false)
+  // Set autoLoadEnabled to true by default and remove the state since we're always auto-loading
+  const autoLoadEnabled = true
 
   const {
     tokens,
@@ -105,51 +105,17 @@ export default function TokenDashboard({
   }
 
   return (
-    <Card className="bg-gray-800 text-white overflow-hidden">
+    <Card className="text-white overflow-hidden bg-gray-900">
       <CardContent className="p-0">
         {/* Header */}
         <div className="p-4 border-b border-gray-700 flex justify-between items-center">
           <h2 className="text-2xl font-bold">Token Dashboard</h2>
           <div className="flex items-center space-x-2">
-            <div className="flex items-center">
-              <label
-                htmlFor="autoload-toggle"
-                className="text-sm mr-2 cursor-pointer"
-              >
-                Auto-load all
-              </label>
-              <div className="relative inline-block w-10 mr-2 align-middle select-none">
-                <input
-                  type="checkbox"
-                  id="autoload-toggle"
-                  name="autoload-toggle"
-                  className="sr-only"
-                  checked={autoLoadEnabled}
-                  onChange={() => setAutoLoadEnabled(!autoLoadEnabled)}
-                />
-                <div
-                  className={`block h-6 rounded-full w-10 ${
-                    autoLoadEnabled ? 'bg-blue-600' : 'bg-gray-600'
-                  }`}
-                ></div>
-                <div
-                  className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${
-                    autoLoadEnabled ? 'transform translate-x-4' : ''
-                  }`}
-                ></div>
-              </div>
-            </div>
             <button
-              className="p-2 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
-              onClick={() => setShowDebug(!showDebug)}
-              title="Toggle Debug Panel"
-            >
-              <span className="text-xs font-mono">DEBUG</span>
-            </button>
-            <button
-              className="p-2 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
+              className="p-2 rounded-md hover:bg-gray-800 transition-colors"
               onClick={() => refetch()}
               disabled={isLoading}
+              aria-label="Refresh"
             >
               <RefreshCw
                 size={18}
@@ -159,58 +125,53 @@ export default function TokenDashboard({
           </div>
         </div>
 
-        {/* Debug Panel */}
-        {showDebug && (
-          <div className="p-4 border-b border-gray-700 bg-gray-900 font-mono text-xs">
-            <h3 className="text-sm font-bold mb-2">Debug Information</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <p>Total Tokens: {tokens.length}</p>
-                <p>Fungible Tokens: {fungibleTokens.length}</p>
-                <p>Has More: {hasMoreTokens ? 'Yes' : 'No'}</p>
-                <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
-                <p>Loading More: {loadingMore ? 'Yes' : 'No'}</p>
-              </div>
-              <div>
-                <p>
-                  Progress: {progress.loaded} / {progress.total} (
-                  {progress.percentage}%)
-                </p>
-                <p>Auto-Load: {autoLoadEnabled ? 'Enabled' : 'Disabled'}</p>
-                <p>Significant Tokens: {significantTokens.length}</p>
-                <p>
-                  Dust Tokens:{' '}
-                  {fungibleTokens.length - significantTokens.length}
-                </p>
-              </div>
-            </div>
-            <div className="mt-2">
-              <p className="font-bold">Token Interfaces:</p>
-              <div className="max-h-20 overflow-y-auto">
-                {Object.entries(
-                  tokens.reduce((acc, token) => {
-                    acc[token.interface] = (acc[token.interface] || 0) + 1
-                    return acc
-                  }, {} as Record<string, number>)
-                ).map(([interface_, count]) => (
-                  <p key={interface_}>
-                    {interface_}: {count}
-                  </p>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Loading state */}
         {isLoading && (
-          <div className="p-8 text-center">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-700 rounded w-1/3 mx-auto"></div>
-              <div className="h-32 bg-gray-700 rounded"></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="h-24 bg-gray-700 rounded"></div>
-                <div className="h-24 bg-gray-700 rounded"></div>
+          <div className="p-8">
+            <div className="animate-pulse space-y-6">
+              {/* Portfolio value skeleton */}
+              <div className="mb-6">
+                <div className="h-6 bg-gray-800 rounded w-1/3 mb-2"></div>
+                <div className="h-10 bg-gray-800 rounded w-1/4"></div>
+                <div className="mt-4 p-3 bg-gray-800/50 rounded-lg h-16"></div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Token holdings skeleton */}
+                <div>
+                  <div className="h-6 bg-gray-800 rounded w-1/3 mb-4"></div>
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="p-3 bg-gray-800/50 rounded-lg h-16 flex items-center"
+                      >
+                        <div className="w-8 h-8 bg-gray-700 rounded-full mr-3"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-700 rounded w-1/4 mb-2"></div>
+                          <div className="h-3 bg-gray-700 rounded w-1/3"></div>
+                        </div>
+                        <div className="w-20">
+                          <div className="h-4 bg-gray-700 rounded w-full mb-2"></div>
+                          <div className="h-3 bg-gray-700 rounded w-3/4"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Chart skeleton */}
+                <div>
+                  <div className="h-6 bg-gray-800 rounded w-1/3 mb-4"></div>
+                  <div className="bg-gray-800/50 p-4 rounded-lg">
+                    <div className="h-[300px] bg-gray-800/70 rounded-lg flex items-center justify-center">
+                      <RefreshCw
+                        size={40}
+                        className="text-gray-600 animate-spin"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -244,7 +205,7 @@ export default function TokenDashboard({
 
               {/* Native SOL Balance */}
               {nativeBalance && (
-                <div className="mt-2 p-3 bg-gray-700/50 rounded-lg">
+                <div className="mt-2 p-3 bg-gray-800/50 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
@@ -283,7 +244,7 @@ export default function TokenDashboard({
 
                   {/* Progress bar */}
                   {progress.total > 0 && progress.percentage < 100 && (
-                    <div className="w-full h-1 bg-gray-700 rounded-full mb-4 overflow-hidden">
+                    <div className="w-full h-1 bg-gray-800 rounded-full mb-4 overflow-hidden">
                       <div
                         className="h-full bg-blue-500 transition-all duration-300"
                         style={{ width: `${progress.percentage}%` }}
@@ -299,7 +260,7 @@ export default function TokenDashboard({
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: index * 0.05 }}
-                          className="p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors"
+                          className="p-3 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
@@ -345,7 +306,7 @@ export default function TokenDashboard({
                   <h3 className="text-xl font-semibold mb-4">
                     Portfolio Distribution
                   </h3>
-                  <div className="bg-gray-700/30 p-4 rounded-lg">
+                  <div className="bg-gray-800/30 p-4 rounded-lg">
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
                         <Pie
@@ -384,32 +345,12 @@ export default function TokenDashboard({
               )}
             </div>
 
-            {/* Load more button - only show if auto-load is disabled */}
-            {hasMoreTokens && !autoLoadEnabled && (
-              <div className="pt-4 text-center">
-                <button
-                  onClick={loadMoreTokens}
-                  disabled={loadingMore}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
-                >
-                  {loadingMore ? (
-                    <span className="flex items-center justify-center">
-                      <RefreshCw size={16} className="animate-spin mr-2" />
-                      Loading...
-                    </span>
-                  ) : (
-                    'Load More Tokens'
-                  )}
-                </button>
-              </div>
-            )}
-
             {/* Loading indicator for auto-load */}
-            {loadingMore && autoLoadEnabled && (
+            {loadingMore && (
               <div className="pt-4 text-center text-gray-400">
                 <span className="flex items-center justify-center">
                   <RefreshCw size={16} className="animate-spin mr-2" />
-                  Auto-loading tokens...
+                  Loading more tokens...
                 </span>
               </div>
             )}

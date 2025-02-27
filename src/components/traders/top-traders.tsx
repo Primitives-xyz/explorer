@@ -98,7 +98,7 @@ const TraderCard = memo(
                   index === 0
                     ? 'bg-yellow-500/20 ring-yellow-500/50'
                     : index === 1
-                    ? 'bg-gray-300/20 ring-gray-300/50'
+                    ? '/20 ring-gray-300/50'
                     : index === 2
                     ? 'bg-amber-600/20 ring-amber-600/50'
                     : 'bg-indigo-900/20 ring-indigo-500/20'

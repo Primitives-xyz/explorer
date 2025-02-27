@@ -30,18 +30,18 @@ export function ProfileTabs({ username }: ProfileTabsProps) {
   ]
 
   return (
-    <div className="bg-gray-900 w-full">
+    <div className=" w-full">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="sticky top-0 z-10 bg-gray-900 border-b border-gray-800">
-          <TabsList className="w-full flex bg-gray-900 px-0 rounded-none overflow-visible">
+        <div className="sticky top-0 z-10 bg-[#161616] border-b border-gray-800">
+          <TabsList className="w-full flex bg-transparent px-0 rounded-none overflow-visible">
             {tabOptions.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
                 className="flex-1 py-3 font-mono text-sm text-gray-400 border-b-2 border-transparent 
-                  hover:text-gray-200 hover:bg-gray-800/40 transition-colors
+                  hover:text-gray-200 /40 transition-colors
                   data-[state=active]:border-green-700 data-[state=active]:text-green-300 
-                  data-[state=active]:bg-gray-800/60 rounded-none"
+                  data-[state=active]/60 rounded-none"
               >
                 {isMobile && tab.id === 'transactions' ? 'Tx' : tab.label}
               </TabsTrigger>

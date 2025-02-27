@@ -20,6 +20,29 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 
+// Helper function to format dates in a mobile-friendly way
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  const now = new Date()
+
+  // If it's today, just show the time
+  if (date.toDateString() === now.toDateString()) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  // If it's this year, show month and day
+  if (date.getFullYear() === now.getFullYear()) {
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+  }
+
+  // Otherwise show abbreviated date
+  return date.toLocaleDateString([], {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
 export default function SocialHub({ username }: { username: string }) {
   const [newComment, setNewComment] = useState('')
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null)
@@ -123,7 +146,7 @@ export default function SocialHub({ username }: { username: string }) {
               placeholder="Share your thoughts..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="mb-2 bg-gray-800 border-green-800/50 text-gray-200 font-mono text-sm resize-none focus:border-green-500 focus:ring-green-500/20"
+              className="mb-2  border-green-800/50 text-gray-200 font-mono text-sm resize-none focus:border-green-500 focus:ring-green-500/20"
               disabled={postCommentLoading}
             />
             <Button
@@ -157,7 +180,7 @@ export default function SocialHub({ username }: { username: string }) {
                   src={comment.author?.image || ''}
                   alt={comment.author?.username || ''}
                 />
-                <AvatarFallback className="bg-gray-800 text-green-500">
+                <AvatarFallback className=" text-green-500">
                   {comment.author?.username?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -172,7 +195,7 @@ export default function SocialHub({ username }: { username: string }) {
                     @{comment.author?.username}
                   </span>
                   <span className="text-xs text-gray-400 font-mono">
-                    {new Date(comment.comment.created_at).toLocaleString()}
+                    {formatDate(comment.comment.created_at)}
                   </span>
                 </div>
                 <p className="mt-1 text-gray-300 font-mono text-sm">
@@ -227,7 +250,7 @@ export default function SocialHub({ username }: { username: string }) {
                         placeholder={`Reply to @${comment.author?.username}...`}
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        className="mb-2 bg-gray-800 border-green-800/50 text-gray-200 font-mono text-sm resize-none focus:border-green-500 focus:ring-green-500/20"
+                        className="mb-2  border-green-800/50 text-gray-200 font-mono text-sm resize-none focus:border-green-500 focus:ring-green-500/20"
                         disabled={postCommentLoading}
                       />
                       <div className="flex justify-end gap-2">
@@ -275,7 +298,7 @@ export default function SocialHub({ username }: { username: string }) {
                             src={reply.author?.image || ''}
                             alt={reply.author?.username || ''}
                           />
-                          <AvatarFallback className="text-xs bg-gray-800 text-green-500">
+                          <AvatarFallback className="text-xs  text-green-500">
                             {reply.author?.username?.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -290,9 +313,7 @@ export default function SocialHub({ username }: { username: string }) {
                               @{reply.author?.username}
                             </span>
                             <span className="text-xs text-gray-400 font-mono">
-                              {new Date(
-                                reply.comment.created_at
-                              ).toLocaleString()}
+                              {formatDate(reply.comment.created_at)}
                             </span>
                           </div>
                           <p className="mt-1 text-sm text-gray-300 font-mono">
