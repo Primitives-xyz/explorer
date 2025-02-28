@@ -1,6 +1,7 @@
 'use client'
 
 import { useIdentities } from '@/hooks/use-identities'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import Image from 'next/image'
@@ -110,8 +111,11 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
           {identities.map((identity, index) => (
             <motion.a
               key={`${identity.namespace.name}-${identity.profile.username}`}
-              href={identity.namespace.userProfileURL}
-              target="_blank"
+              href={
+                identity.namespace.name === EXPLORER_NAMESPACE
+                  ? `/${identity.profile.username}`
+                  : `/namespace/${identity.namespace.name}/profile/${identity.profile.username}`
+              }
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
               animate={{
