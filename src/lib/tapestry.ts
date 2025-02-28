@@ -215,8 +215,6 @@ type NotificationPayload =
   | IEarningsNotification
 
 export const sendNotification = async (payload: NotificationPayload) => {
-  console.log('[SEND NOTIFICATION]', JSON.stringify(payload))
-
   try {
     switch (payload.notificationType) {
       case 'TRANSACTION_COPIED': {
