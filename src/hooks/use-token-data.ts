@@ -1,6 +1,6 @@
 import type { FungibleToken } from '@/utils/types'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface TokenData {
   items: FungibleToken[]
@@ -14,7 +14,106 @@ interface TokenData {
   limit: number
 }
 
-interface UseTokenDataResult {
+interface TokenFetcherResult {
+  tokenData: TokenData | undefined
+  tokens: FungibleToken[]
+  nativeBalance:
+    | {
+        lamports: number
+        price_per_sol: number
+        total_price: number
+      }
+    | undefined
+  isLoading: boolean
+  error: string | undefined
+  fetchTokens: (page: number, limit: number) => Promise<void>
+  resetTokens: () => Promise<void>
+}
+
+/**
+ * Base hook for fetching token data for a wallet address
+ */
+export function useTokenFetcher(address: string): TokenFetcherResult {
+  const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined)
+  const [tokens, setTokens] = useState<FungibleToken[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | undefined>(undefined)
+  const t = useTranslations()
+
+  const fetchTokens = useCallback(
+    async (page: number, limit: number) => {
+      if (!address) return
+
+      setIsLoading(true)
+      setError(undefined)
+
+      try {
+        console.log(`Fetching tokens: page ${page}, limit ${limit}`)
+
+        const response = await fetch(
+          `/api/tokens?address=${address}&type=fungible&limit=${limit}&page=${page}`
+        )
+        if (!response.ok) {
+          throw new Error(`${t('error.http_error_status')}: ${response.status}`)
+        }
+        const data = await response.json()
+        if ('error' in data) {
+          throw new Error(data.error)
+        }
+
+        // Log the response data for debugging
+        console.log(
+          `Received ${data.items?.length || 0} tokens, total: ${
+            data.total || 0
+          }`
+        )
+
+        // Update token data
+        setTokenData(data)
+
+        // Filter to only include fungible tokens
+        const fungibleTokens = data.items.filter(
+          (item: any) =>
+            item.interface === 'FungibleToken' ||
+            item.interface === 'FungibleAsset'
+        ) as FungibleToken[]
+
+        setTokens(fungibleTokens)
+      } catch (error) {
+        console.error(t('error.error_fetching_tokens'), error)
+        setError(t('error.failed_to_fetch_tokens'))
+        setTokenData(undefined)
+        setTokens([])
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [address, t]
+  )
+
+  const resetTokens = useCallback(async () => {
+    setTokens([])
+    setTokenData(undefined)
+    await fetchTokens(1, 250) // Default to page 1 with 250 tokens
+  }, [fetchTokens])
+
+  // Initial fetch on address change
+  useEffect(() => {
+    resetTokens()
+  }, [address, resetTokens])
+
+  return {
+    tokenData,
+    tokens,
+    nativeBalance: tokenData?.nativeBalance,
+    isLoading,
+    error,
+    fetchTokens,
+    resetTokens,
+  }
+}
+
+interface UseWalletTokensResult {
   tokens: FungibleToken[]
   fungibleTokens: FungibleToken[]
   nativeBalance:
@@ -38,17 +137,23 @@ interface UseTokenDataResult {
 }
 
 /**
- * Custom hook for fetching all token data for a wallet address
+ * Higher-level hook for fetching all token data for a wallet address with pagination
  */
-export function useTokenData(
+export function useGetWalletTokens(
   address: string,
   autoLoadAll = false
-): UseTokenDataResult {
-  const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined)
+): UseWalletTokensResult {
+  const {
+    tokens: baseTokens,
+    nativeBalance,
+    isLoading: isBaseLoading,
+    error,
+    fetchTokens,
+    resetTokens,
+  } = useTokenFetcher(address)
+
   const [allTokens, setAllTokens] = useState<FungibleToken[]>([])
-  const [isLoading, setIsLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [error, setError] = useState<string | undefined>(undefined)
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMoreTokens, setHasMoreTokens] = useState(false)
   const [progress, setProgress] = useState({
@@ -56,140 +161,79 @@ export function useTokenData(
     total: 0,
     percentage: 0,
   })
-  const t = useTranslations()
 
   // Increase page size to fetch more tokens at once
   const TOKENS_PER_PAGE = 250 // Maximum allowed by Helius API
 
-  const fetchTokens = async (resetData = true) => {
-    if (!address) return
+  // Update allTokens when baseTokens change (initial load)
+  useEffect(() => {
+    if (baseTokens.length > 0 && currentPage === 1) {
+      setAllTokens(baseTokens)
 
-    if (resetData) {
-      setIsLoading(true)
-      setAllTokens([])
-      setCurrentPage(1)
-      setProgress({ loaded: 0, total: 0, percentage: 0 })
-    } else {
-      setLoadingMore(true)
-    }
-
-    setError(undefined)
-
-    try {
-      console.log(
-        `Fetching tokens: page ${
-          resetData ? 1 : currentPage
-        }, limit ${TOKENS_PER_PAGE}`
-      )
-
-      const response = await fetch(
-        `/api/tokens?address=${address}&type=fungible&limit=${TOKENS_PER_PAGE}&page=${
-          resetData ? 1 : currentPage
-        }`
-      )
-      if (!response.ok) {
-        throw new Error(`${t('error.http_error_status')}: ${response.status}`)
-      }
-      const data = await response.json()
-      if ('error' in data) {
-        throw new Error(data.error)
-      }
-
-      // Log the response data for debugging
-      console.log(
-        `Received ${data.items?.length || 0} tokens, total: ${data.total || 0}`
-      )
-
-      // Update token data
-      setTokenData(data)
-
-      // Calculate if there are more tokens to load
-      const total = data.total || 0
-      const receivedItems = data.items?.length || 0
-
-      // If we received exactly the limit number of tokens, there might be more
-      // even if the API reports total = limit
-      const mightHaveMoreTokens = receivedItems === TOKENS_PER_PAGE
-
-      const loadedCount = resetData
-        ? receivedItems
-        : allTokens.length + receivedItems
+      // Check if there might be more tokens to load
+      const mightHaveMoreTokens = baseTokens.length === TOKENS_PER_PAGE
+      setHasMoreTokens(mightHaveMoreTokens)
 
       // Update progress
       setProgress({
-        loaded: loadedCount,
-        // If we received exactly the limit, assume there might be more
-        total:
-          mightHaveMoreTokens && total <= loadedCount ? loadedCount + 1 : total,
-        percentage:
-          total > 0 && total > loadedCount
-            ? Math.min(Math.round((loadedCount / total) * 100), 100)
-            : mightHaveMoreTokens
-            ? 99
-            : 100, // If we might have more, show 99%
+        loaded: baseTokens.length,
+        total: mightHaveMoreTokens ? baseTokens.length + 1 : baseTokens.length,
+        percentage: mightHaveMoreTokens ? 99 : 100,
       })
 
-      // Filter to only include fungible tokens
-      const fungibleTokens = data.items.filter(
-        (item: any) =>
-          item.interface === 'FungibleToken' ||
-          item.interface === 'FungibleAsset'
-      ) as FungibleToken[]
+      setCurrentPage(2) // Next page will be 2
+    }
+  }, [baseTokens, currentPage])
 
-      // Update tokens list
-      if (resetData) {
-        setAllTokens(fungibleTokens)
-      } else {
-        // Ensure we don't add duplicate tokens
-        const newTokenIds = new Set(
-          fungibleTokens.map((token: FungibleToken) => token.id)
-        )
-        const existingTokens = allTokens.filter(
-          (token) => !newTokenIds.has(token.id)
-        )
-        setAllTokens([...existingTokens, ...fungibleTokens])
-      }
+  const loadMoreTokens = useCallback(async () => {
+    if (!hasMoreTokens || loadingMore || isBaseLoading) return
+
+    setLoadingMore(true)
+
+    try {
+      await fetchTokens(currentPage, TOKENS_PER_PAGE)
+
+      // Update tokens list with new tokens
+      const newTokens = baseTokens
+
+      // Ensure we don't add duplicate tokens
+      const newTokenIds = new Set(
+        newTokens.map((token: FungibleToken) => token.id)
+      )
+      const existingTokens = allTokens.filter(
+        (token) => !newTokenIds.has(token.id)
+      )
+
+      const updatedTokens = [...existingTokens, ...newTokens]
+      setAllTokens(updatedTokens)
 
       // Check if there are more tokens to load
       // If we received exactly the limit number of tokens, assume there might be more
-      // even if the API reports total = limit
-      const moreTokensAvailable = loadedCount < total || mightHaveMoreTokens
-      setHasMoreTokens(moreTokensAvailable)
+      const mightHaveMoreTokens = newTokens.length === TOKENS_PER_PAGE
+      setHasMoreTokens(mightHaveMoreTokens)
+
+      // Update progress
+      const loadedCount = updatedTokens.length
+      setProgress({
+        loaded: loadedCount,
+        total: mightHaveMoreTokens ? loadedCount + 1 : loadedCount,
+        percentage: mightHaveMoreTokens ? 99 : 100,
+      })
 
       // Update current page for next load
-      if (!resetData) {
-        setCurrentPage((prev) => prev + 1)
-      } else {
-        setCurrentPage(2) // Next page will be 2
-      }
-
-      // Auto-load next page if enabled and more tokens are available
-      if (autoLoadAll && moreTokensAvailable && !resetData) {
-        // Small delay to prevent overwhelming the API
-        setTimeout(() => {
-          fetchTokens(false)
-        }, 500) // Increased delay to be more gentle with the API
-      }
-    } catch (error) {
-      console.error(t('error.error_fetching_tokens'), error)
-      setError(t('error.failed_to_fetch_tokens'))
-      if (resetData) {
-        setTokenData(undefined)
-        setAllTokens([])
-      }
+      setCurrentPage((prev) => prev + 1)
     } finally {
-      if (resetData) {
-        setIsLoading(false)
-      } else {
-        setLoadingMore(false)
-      }
+      setLoadingMore(false)
     }
-  }
-
-  const loadMoreTokens = async () => {
-    if (!hasMoreTokens || loadingMore) return
-    await fetchTokens(false)
-  }
+  }, [
+    hasMoreTokens,
+    loadingMore,
+    isBaseLoading,
+    fetchTokens,
+    currentPage,
+    baseTokens,
+    allTokens,
+  ])
 
   // Auto-load all tokens after initial fetch if autoLoadAll is enabled
   useEffect(() => {
@@ -197,16 +241,27 @@ export function useTokenData(
       autoLoadAll &&
       hasMoreTokens &&
       !loadingMore &&
-      !isLoading &&
+      !isBaseLoading &&
       allTokens.length > 0
     ) {
       loadMoreTokens()
     }
-  }, [hasMoreTokens, loadingMore, isLoading, allTokens.length, autoLoadAll])
+  }, [
+    hasMoreTokens,
+    loadingMore,
+    isBaseLoading,
+    allTokens.length,
+    autoLoadAll,
+    loadMoreTokens,
+  ])
 
-  useEffect(() => {
-    fetchTokens()
-  }, [address])
+  const refetch = useCallback(async () => {
+    setCurrentPage(1)
+    setAllTokens([])
+    setHasMoreTokens(false)
+    setProgress({ loaded: 0, total: 0, percentage: 0 })
+    await resetTokens()
+  }, [resetTokens])
 
   // All tokens are fungible tokens now
   const tokens = allTokens || []
@@ -215,10 +270,10 @@ export function useTokenData(
   return {
     tokens,
     fungibleTokens,
-    nativeBalance: tokenData?.nativeBalance,
-    isLoading,
+    nativeBalance,
+    isLoading: isBaseLoading && currentPage === 1,
     error,
-    refetch: () => fetchTokens(true),
+    refetch,
     hasMoreTokens,
     loadMoreTokens,
     loadingMore,
