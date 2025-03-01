@@ -143,6 +143,7 @@ export interface TokenPortfolioItem {
   uiAmount: number
   chainId: string
   logoURI: string
+  icon: string
   priceUsd: number
   valueUsd: number
 }

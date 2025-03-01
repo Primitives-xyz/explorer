@@ -1,4 +1,4 @@
-import type { TokenPortfolioResponse } from '@/types/Token'
+import type { TokenPortfolioItem, TokenPortfolioResponse } from '@/types/Token'
 import { isValidSolanaAddress } from '@/utils/validation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
@@ -9,6 +9,7 @@ interface UsePortfolioDataResult {
   error?: string
   refetch: () => void
   tokenData?: TokenData | null
+  items: TokenPortfolioItem[]
 }
 
 interface TokenData {
@@ -96,5 +97,11 @@ export function usePortfolioData(
     setRefreshCounter((prev) => prev + 1)
   }
 
-  return { portfolioData, isLoading, error, refetch }
+  return {
+    portfolioData,
+    isLoading,
+    error,
+    refetch,
+    items: portfolioData?.data.items || [],
+  }
 }

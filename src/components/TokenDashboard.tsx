@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { useNFTImage } from '@/hooks/use-nft-image'
-import { useTokenData } from '@/hooks/use-token-data'
+import { useGetWalletTokens } from '@/hooks/use-token-data'
 import { formatNumber } from '@/utils/format'
 import { FungibleToken } from '@/utils/types'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -60,7 +60,7 @@ export default function TokenDashboard({
     loadMoreTokens,
     loadingMore,
     progress,
-  } = useTokenData(walletAddress, autoLoadEnabled)
+  } = useGetWalletTokens(walletAddress, autoLoadEnabled)
 
   const [selectedImage, setSelectedImage] = useState<{
     url: string
