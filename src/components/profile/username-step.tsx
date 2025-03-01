@@ -23,6 +23,10 @@ export function UsernameStep({
   loadingSuggestions,
   onSubmit,
 }: UsernameStepProps) {
+  // Generate skeleton placeholders for the loading state - use just 1 for mobile, 2 for desktop
+  // to match what's visible in the viewport without scrolling
+  const skeletonItems = Array.from({ length: 2 }, (_, i) => i)
+
   return (
     <div className="space-y-8">
       <div className="space-y-3">
@@ -56,23 +60,47 @@ export function UsernameStep({
           </div>
         </div>
 
-        {suggestedUsernames.length > 0 && (
+        {(suggestedUsernames.length > 0 || loadingSuggestions) && (
           <div className="space-y-4 bg-black/30 rounded-xl p-5 border border-green-500/20">
             <div className="flex items-center justify-between">
               <h4 className="text-base font-medium text-green-400">
                 Suggested Usernames
               </h4>
-              <span className="text-sm text-gray-400 bg-black/50 px-2 py-1 rounded-md">
-                {suggestedUsernames.length} available
-              </span>
+              {!loadingSuggestions && (
+                <span className="text-sm text-gray-400 bg-black/50 px-2 py-1 rounded-md">
+                  {suggestedUsernames.length} available
+                </span>
+              )}
+              {loadingSuggestions && (
+                <span className="text-sm text-gray-400 bg-black/50 px-2 py-1 rounded-md">
+                  Loading...
+                </span>
+              )}
             </div>
 
             {loadingSuggestions ? (
-              <div className="p-8 flex flex-col items-center gap-3">
-                <div className="w-10 h-10 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-                <div className="text-green-400 font-mono animate-pulse">
-                  {'>>> LOADING SUGGESTIONS...'}
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[280px] overflow-y-auto p-2 -mx-2 custom-scrollbar">
+                {skeletonItems.map((id) => (
+                  <div
+                    key={id}
+                    className="px-4 py-3 rounded-lg bg-black/50 border border-green-500/10 flex items-center gap-3 h-[58px] relative"
+                  >
+                    <div className="w-6 h-6 min-w-[24px] rounded-full bg-green-900/20 animate-pulse opacity-70"></div>
+                    <div className="flex-1 space-y-2">
+                      <div
+                        className="h-4 bg-green-900/20 rounded w-3/4 animate-pulse opacity-70"
+                        style={{ animationDelay: `${id * 100}ms` }}
+                      ></div>
+                      <div
+                        className="h-3 bg-green-900/10 rounded w-1/2 animate-pulse opacity-70"
+                        style={{ animationDelay: `${id * 150}ms` }}
+                      ></div>
+                    </div>
+                    {id === 0 && (
+                      <div className="absolute -top-2 -right-2 bg-green-900/20 text-transparent text-xs rounded-full w-6 h-6 animate-pulse opacity-70"></div>
+                    )}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[280px] overflow-y-auto p-2 -mx-2 custom-scrollbar">
