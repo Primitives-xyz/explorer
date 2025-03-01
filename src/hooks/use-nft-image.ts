@@ -1,5 +1,5 @@
+import type { DAS } from 'helius-sdk'
 import { useEffect, useState } from 'react'
-
 interface NFTContent {
   $schema?: string
   json_uri?: string
@@ -32,7 +32,7 @@ interface ImageState {
   source: 'direct' | 'cdn' | 'file' | 'json' | 'metadata' | null
 }
 
-export function useNFTImage(content: NFTContent | undefined | null) {
+export function useNFTImage(content: DAS.Content | undefined) {
   const [imageState, setImageState] = useState<ImageState>({
     url: null,
     isLoading: false,
@@ -123,9 +123,9 @@ export function useNFTImage(content: NFTContent | undefined | null) {
         }
 
         // 5. Check metadata image as last resort
-        if (content.metadata?.image) {
+        if (content.files?.[0]?.uri) {
           setImageState({
-            url: content.metadata.image,
+            url: content.files[0].uri,
             isLoading: false,
             error: null,
             source: 'metadata',

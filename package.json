@@ -58,6 +58,7 @@
     "clsx": "2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "12.4.7",
+    "helius-sdk": "1.4.2",
     "jose": "5.9.6",
     "lucide-react": "^0.469.0",
     "next": "^15.1.7",
