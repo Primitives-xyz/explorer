@@ -2,7 +2,7 @@
 
 import { SubmitButton } from '@/components/form/submit-button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { DICEBEAR_API_BASE, DICEBEAR_AVATAR_STYLES } from '@/lib/constants'
 import { cn } from '@/utils/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -45,10 +45,53 @@ export function DetailsStep({
   const [activeTab, setActiveTab] = useState<'suggested' | 'upload'>(
     'suggested'
   )
+  const [currentPage, setCurrentPage] = useState(1)
+  const imagesPerPage = 8
+  const [generatedAvatars, setGeneratedAvatars] = useState<string[]>([])
 
   useEffect(() => {
     setBioLength(bio.length)
   }, [bio])
+
+  // Generate avatars from DiceBear API
+  useEffect(() => {
+    if (username) {
+      const avatars = DICEBEAR_AVATAR_STYLES.map(
+        (style) => `${DICEBEAR_API_BASE}/${style}/svg?seed=${username}`
+      )
+      setGeneratedAvatars(avatars)
+    }
+  }, [username])
+
+  // Combine suggested images with generated avatars
+  const allImages = [...suggestedImages, ...generatedAvatars]
+  const totalPages = Math.ceil(allImages.length / imagesPerPage)
+  const indexOfLastImage = currentPage * imagesPerPage
+  const indexOfFirstImage = indexOfLastImage - imagesPerPage
+  const currentImages = allImages.slice(indexOfFirstImage, indexOfLastImage)
+
+  // Check if current page contains generated avatars
+  const hasGeneratedAvatarsInCurrentPage = currentImages.some((img) =>
+    generatedAvatars.includes(img)
+  )
+  const hasSuggestedImagesInCurrentPage = currentImages.some((img) =>
+    suggestedImages.includes(img)
+  )
+
+  // We no longer need to show a default avatar separately since we have multiple generated avatars
+  const showDefaultAvatar = false
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
 
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
@@ -65,12 +108,70 @@ export function DetailsStep({
     },
   }
 
+  const PaginationControls = () => {
+    if (totalPages <= 1) return null
+
+    return (
+      <div className="flex items-center justify-center gap-2 mt-3">
+        <button
+          type="button"
+          onClick={goToPrevPage}
+          disabled={currentPage === 1}
+          className={`p-1 rounded-md ${
+            currentPage === 1
+              ? 'text-gray-500 cursor-not-allowed'
+              : 'text-green-400 hover:bg-green-900/30'
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+        <span className="text-sm text-gray-300">
+          {currentPage} / {totalPages}
+        </span>
+        <button
+          type="button"
+          onClick={goToNextPage}
+          disabled={currentPage === totalPages}
+          className={`p-1 rounded-md ${
+            currentPage === totalPages
+              ? 'text-gray-500 cursor-not-allowed'
+              : 'text-green-400 hover:bg-green-900/30'
+          }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    )
+  }
+
   return (
     <motion.div
       initial="hidden"
       animate="visible"
       variants={fadeIn}
-      className="space-y-4 sm:space-y-8"
+      className="space-y-4 sm:space-y-2"
     >
       <div className="space-y-2 sm:space-y-3">
         <motion.h3
@@ -101,7 +202,7 @@ export function DetailsStep({
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4 sm:space-y-8">
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
+        <div className="grid md:grid-cols-3 gap-4 sm:gap-8">
           {/* Bio Section */}
           <motion.div
             className="space-y-3 sm:space-y-4 flex flex-col"
@@ -255,7 +356,7 @@ export function DetailsStep({
 
           {/* Profile Image Section */}
           <motion.div
-            className="space-y-3 sm:space-y-4 flex flex-col"
+            className="space-y-3 sm:space-y-4 flex flex-col md:col-span-2"
             variants={fadeIn}
           >
             <div className="space-y-2 flex-1 flex flex-col">
@@ -315,7 +416,10 @@ export function DetailsStep({
                 <div className="flex border-b border-green-500/20">
                   <button
                     type="button"
-                    onClick={() => setActiveTab('suggested')}
+                    onClick={() => {
+                      setActiveTab('suggested')
+                      setCurrentPage(1)
+                    }}
                     className={`flex-1 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors ${
                       activeTab === 'suggested'
                         ? 'bg-green-500/10 text-green-400 border-b-2 border-green-500'
@@ -326,7 +430,10 @@ export function DetailsStep({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveTab('upload')}
+                    onClick={() => {
+                      setActiveTab('upload')
+                      setCurrentPage(1)
+                    }}
                     className={`flex-1 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors ${
                       activeTab === 'upload'
                         ? 'bg-green-500/10 text-green-400 border-b-2 border-green-500'
@@ -355,113 +462,129 @@ export function DetailsStep({
                             </p>
                           </div>
                         </div>
-                      ) : suggestedImages.length > 0 ? (
+                      ) : suggestedImages.length > 0 ||
+                        generatedAvatars.length > 0 ? (
                         <motion.div
-                          className="flex flex-wrap gap-3 sm:gap-4 justify-center"
+                          className="flex flex-col"
                           variants={staggerContainer}
                           initial="hidden"
                           animate="visible"
                           layout
                         >
-                          {suggestedImages.map((imageUrl) => (
-                            <motion.button
-                              key={imageUrl}
-                              type="button"
-                              onClick={() => handleImageSelect(imageUrl)}
-                              variants={fadeIn}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              className={cn(
-                                'relative group rounded-full overflow-hidden border-2 transition-all duration-200 w-[80px] h-[80px] sm:w-[96px] sm:h-[96px]',
-                                selectedImageUrl === imageUrl
-                                  ? 'border-green-500 ring-2 ring-green-500/30'
-                                  : 'border-green-500/20 hover:border-green-500/50'
-                              )}
-                            >
-                              <Avatar className="w-full h-full">
-                                <AvatarImage
-                                  src={imageUrl}
-                                  alt="Suggested profile"
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm sm:text-base font-medium text-green-400 flex items-center gap-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-5 h-5"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z"
+                                  clipRule="evenodd"
                                 />
-                                <AvatarFallback className="bg-green-900/30 text-green-400">
-                                  {username.substring(0, 2).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className="text-xs text-white font-medium">
-                                  Select
-                                </span>
+                              </svg>
+                              Available Images
+                            </h4>
+                            <span className="text-sm text-gray-400 bg-black/50 px-2 py-1 rounded-md">
+                              {allImages.length} available
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-3 sm:gap-4 justify-center min-h-[200px] sm:min-h-[240px]">
+                            {hasSuggestedImagesInCurrentPage &&
+                              suggestedImages.length > 0 && (
+                                <div className="w-full">
+                                  <h5 className="text-sm font-medium text-green-400 mb-2">
+                                    Your NFTs
+                                  </h5>
+                                </div>
+                              )}
+                            {currentImages
+                              .filter((img) => suggestedImages.includes(img))
+                              .map((imageUrl) => (
+                                <motion.button
+                                  key={imageUrl}
+                                  type="button"
+                                  onClick={() => handleImageSelect(imageUrl)}
+                                  variants={fadeIn}
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  className={cn(
+                                    'relative group rounded-full overflow-hidden border-2 transition-all duration-200 w-[80px] h-[80px] sm:w-[96px] sm:h-[96px]',
+                                    selectedImageUrl === imageUrl
+                                      ? 'border-green-500 ring-2 ring-green-500/30'
+                                      : 'border-green-500/20 hover:border-green-500/50'
+                                  )}
+                                >
+                                  <Avatar className="w-full h-full">
+                                    <AvatarImage
+                                      src={imageUrl}
+                                      alt="NFT profile"
+                                    />
+                                    <AvatarFallback className="bg-green-900/30 text-green-400">
+                                      {username.substring(0, 2).toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-xs text-white font-medium">
+                                      Select
+                                    </span>
+                                  </div>
+                                </motion.button>
+                              ))}
+
+                            {hasGeneratedAvatarsInCurrentPage && (
+                              <div className="w-full">
+                                <h5 className="text-sm font-medium text-green-400 mb-2 mt-4">
+                                  Generated Avatars
+                                </h5>
                               </div>
-                            </motion.button>
-                          ))}
-                          <motion.button
-                            type="button"
-                            onClick={() =>
-                              handleImageSelect(
-                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
-                              )
-                            }
-                            variants={fadeIn}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className={cn(
-                              'relative group rounded-full overflow-hidden border-2 transition-all duration-200 w-[80px] h-[80px] sm:w-[96px] sm:h-[96px]',
-                              selectedImageUrl ===
-                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
-                                ? 'border-green-500 ring-2 ring-green-500/30'
-                                : 'border-green-500/20 hover:border-green-500/50'
                             )}
-                          >
-                            <Avatar className="w-full h-full">
-                              <AvatarImage
-                                src={`${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`}
-                                alt="Default avatar"
-                              />
-                              <AvatarFallback className="bg-green-900/30 text-green-400">
-                                {username.substring(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span className="text-xs text-white font-medium">
-                                Default Avatar
-                              </span>
-                            </div>
-                          </motion.button>
+                            {currentImages
+                              .filter((img) => generatedAvatars.includes(img))
+                              .map((imageUrl) => (
+                                <motion.button
+                                  key={imageUrl}
+                                  type="button"
+                                  onClick={() => handleImageSelect(imageUrl)}
+                                  variants={fadeIn}
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                  className={cn(
+                                    'relative group rounded-full overflow-hidden border-2 transition-all duration-200 w-[80px] h-[80px] sm:w-[96px] sm:h-[96px]',
+                                    selectedImageUrl === imageUrl
+                                      ? 'border-green-500 ring-2 ring-green-500/30'
+                                      : 'border-green-500/20 hover:border-green-500/50'
+                                  )}
+                                >
+                                  <Avatar className="w-full h-full">
+                                    <AvatarImage
+                                      src={imageUrl}
+                                      alt="Generated avatar"
+                                    />
+                                    <AvatarFallback className="bg-green-900/30 text-green-400">
+                                      {username.substring(0, 2).toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-xs text-white font-medium">
+                                      {imageUrl.split('/')[4]} style
+                                    </span>
+                                  </div>
+                                </motion.button>
+                              ))}
+                          </div>
+                          <PaginationControls />
                         </motion.div>
                       ) : (
                         <div className="flex justify-center h-[200px] items-center">
-                          <motion.button
-                            type="button"
-                            onClick={() =>
-                              handleImageSelect(
-                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
-                              )
-                            }
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className={cn(
-                              'relative group rounded-full overflow-hidden border-2 transition-all duration-200 w-[80px] h-[80px] sm:w-[96px] sm:h-[96px]',
-                              selectedImageUrl ===
-                                `${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`
-                                ? 'border-green-500 ring-2 ring-green-500/30'
-                                : 'border-green-500/20 hover:border-green-500/50'
-                            )}
-                          >
-                            <Avatar className="w-full h-full">
-                              <AvatarImage
-                                src={`${DICEBEAR_API_BASE}/shapes/svg?seed=${username}`}
-                                alt="Generated avatar"
-                              />
-                              <AvatarFallback className="bg-green-900/30 text-green-400">
-                                {username.substring(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span className="text-xs text-white font-medium">
-                                Use Generated Avatar
-                              </span>
-                            </div>
-                          </motion.button>
+                          <div className="text-center text-gray-400">
+                            <p className="mb-2">No images available</p>
+                            <p className="text-sm">
+                              Try uploading your own image
+                            </p>
+                          </div>
                         </div>
                       )}
                     </motion.div>
@@ -541,10 +664,7 @@ export function DetailsStep({
           </motion.div>
         </div>
 
-        <motion.div
-          className="flex gap-2 sm:gap-4 pt-2 sm:pt-4"
-          variants={fadeIn}
-        >
+        <motion.div className="flex gap-2 sm:gap-4 " variants={fadeIn}>
           <button
             type="button"
             onClick={onBack}

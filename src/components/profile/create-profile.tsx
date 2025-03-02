@@ -101,7 +101,7 @@ export function CreateProfile({
           ? 'Choose Your Username'
           : 'Complete Your Profile'
       }
-      className="w-full max-h-[90vh] overflow-y-auto max-w-3xl mx-auto"
+      className="w-full max-h-[95vh] overflow-y-auto max-w-3xl mx-auto"
     >
       <div className="space-y-6">
         {currentStep === 'username' ? (
