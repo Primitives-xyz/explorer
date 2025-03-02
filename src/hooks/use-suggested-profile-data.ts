@@ -1,9 +1,11 @@
 import { SuggestedProfile, SuggestedUsername } from '@/types/profile.types'
 import { useMemo } from 'react'
+import { useGroupedNFTData } from './use-grouped-nft-data'
 
 interface UseSuggestedProfileDataProps {
   suggestedProfiles: SuggestedProfile[] | null
   loadingSuggestions: boolean
+  walletAddress?: string // Add wallet address to fetch NFTs
 }
 
 interface UseSuggestedProfileDataReturn {
@@ -12,11 +14,13 @@ interface UseSuggestedProfileDataReturn {
   suggestedImages: string[]
   suggestedBios: string[]
   loadingSuggestions: boolean
+  loadingNFTs: boolean // Add loading state for NFTs
 }
 
 export function useSuggestedProfileData({
   suggestedProfiles,
   loadingSuggestions,
+  walletAddress = '', // Default to empty string
 }: UseSuggestedProfileDataProps): UseSuggestedProfileDataReturn {
   // Group usernames by their base name to find duplicates
   const usernameGroups = useMemo(() => {
@@ -64,16 +68,62 @@ export function useSuggestedProfileData({
       .filter((profile): profile is SuggestedUsername => !!profile)
   }, [usernameGroups])
 
-  // Get unique suggested profile images
+  // Fetch NFT data if wallet address is provided
+  const {
+    collections,
+    isLoading: loadingNFTs,
+    enhancedNFTs,
+  } = useGroupedNFTData(
+    walletAddress,
+    false, // Don't show fungible tokens
+    false, // Don't show native balance
+    20, // Limit to 20 NFTs for performance
+    false // Don't validate images
+  )
+
+  // Get unique suggested profile images, including NFT images
   const suggestedImages = useMemo(() => {
-    return Array.from(
+    // Get images from suggested profiles
+    const profileImages = Array.from(
       new Set(
         suggestedUsernames
           .map((profile) => profile.image)
           .filter((image): image is string => !!image)
       )
     )
-  }, [suggestedUsernames])
+
+    // Get images from NFTs
+    const nftImages: string[] = []
+
+    // First try to get collection images (usually higher quality)
+    collections.forEach((collection) => {
+      if (collection.collectionImage && collection.verified) {
+        nftImages.push(collection.collectionImage)
+      }
+    })
+
+    // Then add individual NFT images, prioritizing non-spam NFTs
+    enhancedNFTs.forEach((nft) => {
+      if (!nft.isSpam && nft.hasValidImage !== false) {
+        // Extract image URL from NFT
+        let imageUrl: string | null = null
+
+        if (nft.content?.links?.image) {
+          imageUrl = nft.content.links.image
+        } else if (nft.content?.files && nft.content.files.length > 0) {
+          imageUrl =
+            nft.content.files[0].cdn_uri || nft.content.files[0].uri || null
+        }
+
+        if (imageUrl && !nftImages.includes(imageUrl)) {
+          nftImages.push(imageUrl)
+        }
+      }
+    })
+
+    // Combine and deduplicate all images
+    return Array.from(new Set([...profileImages, ...nftImages])).slice(0, 12) // Limit to 12 images
+  }, [suggestedUsernames, collections, enhancedNFTs])
 
   // Get unique suggested bios from all profiles
   const suggestedBios = useMemo(() => {
@@ -97,5 +147,6 @@ export function useSuggestedProfileData({
     suggestedImages,
     suggestedBios,
     loadingSuggestions,
+    loadingNFTs,
   }
 }

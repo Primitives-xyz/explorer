@@ -64,11 +64,17 @@ export function CreateProfile({
   } = useProfileForm()
 
   // Suggested profile data
-  const { suggestedUsernames, usernameGroups, suggestedImages, suggestedBios } =
-    useSuggestedProfileData({
-      suggestedProfiles,
-      loadingSuggestions,
-    })
+  const {
+    suggestedUsernames,
+    usernameGroups,
+    suggestedImages,
+    suggestedBios,
+    loadingNFTs,
+  } = useSuggestedProfileData({
+    suggestedProfiles,
+    loadingSuggestions,
+    walletAddress,
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -123,6 +129,7 @@ export function CreateProfile({
             onBack={() => setCurrentStep('username')}
             onSubmit={handleSubmit}
             loading={loading}
+            loadingNFTs={loadingNFTs}
           />
         )}
 

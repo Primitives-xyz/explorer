@@ -21,6 +21,7 @@ interface DetailsStepProps {
   onBack: () => void
   onSubmit: (e: React.FormEvent) => void
   loading: boolean
+  loadingNFTs?: boolean
 }
 
 export function DetailsStep({
@@ -37,6 +38,7 @@ export function DetailsStep({
   onBack,
   onSubmit,
   loading,
+  loadingNFTs = false,
 }: DetailsStepProps) {
   const [bioLength, setBioLength] = useState(0)
   const [showBioTooltip, setShowBioTooltip] = useState(false)
@@ -344,7 +346,16 @@ export function DetailsStep({
                       transition={{ duration: 0.2 }}
                       className="min-h-[180px] sm:min-h-[240px] flex flex-col"
                     >
-                      {suggestedImages.length > 0 ? (
+                      {loadingNFTs ? (
+                        <div className="flex justify-center items-center h-[200px]">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+                            <p className="text-sm text-green-400">
+                              Loading your NFTs...
+                            </p>
+                          </div>
+                        </div>
+                      ) : suggestedImages.length > 0 ? (
                         <motion.div
                           className="flex flex-wrap gap-3 sm:gap-4 justify-center"
                           variants={staggerContainer}
