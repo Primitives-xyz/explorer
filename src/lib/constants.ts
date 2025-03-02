@@ -4,6 +4,20 @@ export const BIRDEYE_API_BASE = 'https://public-api.birdeye.so'
 export const JUPITER_API_BASE = 'https://quote-api.jup.ag/v6'
 export const DICEBEAR_API_BASE = 'https://api.dicebear.com/7.x'
 
+// DiceBear Avatar Styles
+export const DICEBEAR_AVATAR_STYLES = [
+  'shapes',
+  'pixel-art',
+  'lorelei',
+  'initials',
+  'bottts',
+  'avataaars',
+  'adventurer',
+  'micah',
+  'thumbs',
+  'personas',
+]
+
 // External URLs
 export const SOLSCAN_BASE = 'https://solscan.io'
 export const TENSOR_BASE = 'https://www.tensor.trade'

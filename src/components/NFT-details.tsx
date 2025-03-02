@@ -6,6 +6,7 @@ import { TransactionSection } from '@/components/transaction-section'
 import { useNFTImage } from '@/hooks/use-nft-image'
 import type { NFTTokenInfo } from '@/types/Token'
 import { route } from '@/utils/routes'
+import { DAS } from 'helius-sdk'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -300,40 +301,35 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
         <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
           <h4 className="/60 text-sm font-mono mb-4">Files</h4>
           <div className="space-y-4">
-            {tokenInfo.content.files.map(
-              (
-                file: { uri: string; type: string; cdn_uri?: string },
-                index: number
-              ) => (
-                <div
-                  key={index}
-                  className="p-4 bg-black/30 rounded-lg border border-green-800/40"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {tokenInfo.content.files.map((file: DAS.File, index: number) => (
+              <div
+                key={index}
+                className="p-4 bg-black/30 rounded-lg border border-green-800/40"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div>
+                    <span className="/60 text-xs font-mono">URI</span>
+                    <div className="font-mono  break-all text-sm">
+                      {file.uri}
+                    </div>
+                  </div>
+                  {file.mime && (
                     <div>
-                      <span className="/60 text-xs font-mono">URI</span>
+                      <span className="/60 text-xs font-mono">Type</span>
+                      <div className="font-mono  text-sm">{file.mime}</div>
+                    </div>
+                  )}
+                  {file.cdn_uri && (
+                    <div className="md:col-span-2">
+                      <span className="/60 text-xs font-mono">CDN URI</span>
                       <div className="font-mono  break-all text-sm">
-                        {file.uri}
+                        {file.cdn_uri}
                       </div>
                     </div>
-                    {file.type && (
-                      <div>
-                        <span className="/60 text-xs font-mono">Type</span>
-                        <div className="font-mono  text-sm">{file.type}</div>
-                      </div>
-                    )}
-                    {file.cdn_uri && (
-                      <div className="md:col-span-2">
-                        <span className="/60 text-xs font-mono">CDN URI</span>
-                        <div className="font-mono  break-all text-sm">
-                          {file.cdn_uri}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
-              )
-            )}
+              </div>
+            ))}
           </div>
         </div>
       )}

@@ -1,3 +1,5 @@
+import type { DAS } from 'helius-sdk/dist/src/types/das-types'
+
 export interface BaseToken {
   id: string
   interface:
@@ -16,29 +18,25 @@ export interface BaseToken {
   creators: string[]
   mutable: boolean
   burnt: boolean
-  content?: {
-    $schema?: string
-    json_uri?: string
-    files?: Array<{
-      uri: string
-      cdn_uri?: string
-      mime?: string
-      type?: string
+  content?: DAS.Content
+  metadata: {
+    name: string
+    symbol: string
+    description: string
+    attributes?: Array<{
+      trait_type: string
+      value: string
     }>
-    metadata: {
+    image?: string
+    collection?: {
       name: string
-      symbol: string
-      description: string
-      attributes?: Array<{
-        trait_type: string
-        value: string
-      }>
-      image?: string
+      family?: string
+      verified?: boolean
     }
-    links?: {
-      image?: string
-      external_url?: string
-    }
+  }
+  links?: {
+    image?: string
+    external_url?: string
   }
 }
 

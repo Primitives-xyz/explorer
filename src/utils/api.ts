@@ -41,8 +41,8 @@ export async function getProfiles(
   page: number = 1
 ): Promise<PaginatedData<Profile>> {
   try {
-    let response;
-    if(useIdentities) {
+    let response
+    if (useIdentities) {
       response = await fetch(
         `/api/identities?walletAddress=${walletAddress}&page=${page}&limit=${ITEMS_PER_PAGE}`
       )
@@ -106,4 +106,32 @@ export async function fetchTapestry<T>({
   }
 
   return response.json()
+}
+
+/**
+ * Create a standardized error response for API routes
+ * @param error Error object
+ * @param customMessage Optional custom error message
+ * @param statusCode HTTP status code (defaults to 500)
+ * @returns NextResponse with error details
+ */
+export const createErrorResponse = (
+  error: unknown,
+  customMessage?: string,
+  statusCode = 500
+) => {
+  console.error('API Error:', error)
+
+  const errorMessage =
+    customMessage || 'An error occurred processing your request'
+  const detailedMessage = error instanceof Error ? error.message : String(error)
+
+  return Response.json(
+    {
+      error: errorMessage,
+      message: detailedMessage,
+      timestamp: new Date().toISOString(),
+    },
+    { status: statusCode }
+  )
 }

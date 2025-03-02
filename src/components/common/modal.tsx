@@ -52,7 +52,7 @@ export function Modal({
       {/* Modal Content */}
       <div
         className={cn(
-          'relative z-10 w-full max-w-lg md:max-w-2xl lg:max-w-4xl bg-black/90 border border-green-500/20 rounded-lg shadow-xl',
+          'relative z-10 w-full max-w-lg md:max-w-2xl lg:max-w-none lg:mx-6 bg-black/90 border border-green-500/20 rounded-lg shadow-xl',
           className
         )}
       >
