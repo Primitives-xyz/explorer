@@ -1,13 +1,11 @@
 import { TimeDisplay } from '@/components/common/time-display'
 
-import { getPriorityLevels } from '@/constants/jupiter'
-import { useCommentFee } from '@/hooks/use-comment-fee'
 import { useCommentLikes } from '@/hooks/use-comment-likes'
 import { usePostComment } from '@/hooks/use-post-comment'
 import type { CommentItem } from '@/hooks/use-profile-comments'
 import { useProfileComments } from '@/hooks/use-profile-comments'
+import { useProfileData } from '@/hooks/use-profile-data'
 import { useToast } from '@/hooks/use-toast'
-import type { PriorityLevel } from '@/types/jupiter'
 import { route } from '@/utils/routes'
 import {
   ChatBubbleLeftIcon,
@@ -40,18 +38,13 @@ interface Props {
   targetWalletAddress?: string
 }
 
-export function CommentWall({
-  username,
-  comments = [],
-  isLoading = false,
-  targetWalletAddress,
-}: Props) {
+export function CommentWall({ username, targetWalletAddress }: Props) {
+  const { mainUsername } = useCurrentWallet()
+  const { comments, isLoadingComments } = useProfileData(username, mainUsername)
+
   const [commentText, setCommentText] = useState('')
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null)
-  const [priorityLevel, setPriorityLevel] = useState<PriorityLevel>('Medium')
   const { postComment, isLoading: postCommentLoading, error } = usePostComment()
-  const { mainUsername } = useCurrentWallet()
-  const { processCommentFee, isProcessing: isProcessingFee } = useCommentFee()
   const { toast } = useToast()
   const {
     likeComment,
@@ -71,23 +64,6 @@ export function CommentWall({
     if (!commentText.trim() || !mainUsername || !targetWalletAddress) return
 
     try {
-      // First process the SSE payment
-      toast({
-        title: 'Processing Payment',
-        description: 'Please approve the SSE payment transaction...',
-        variant: 'pending',
-        duration: 5000,
-      })
-
-      await processCommentFee(targetWalletAddress, priorityLevel)
-
-      toast({
-        title: 'Payment Successful',
-        description: 'Posting your comment...',
-        variant: 'pending',
-        duration: 2000,
-      })
-
       // Then post the comment
       await postComment({
         profileId: mainUsername,
@@ -144,12 +120,11 @@ export function CommentWall({
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-mono ">Comment Wall</h3>
-          <div className="text-sm  font-mono">100 SSE per comment</div>
         </div>
         <div className="space-y-4">
           {/* Comments List */}
           <div className="space-y-3 mb-4">
-            {isLoading ? (
+            {isLoadingComments ? (
               <div className="text-center  font-mono py-4">
                 Loading comments...
               </div>
@@ -256,7 +231,7 @@ export function CommentWall({
                   {comment.recentReplies &&
                     comment.recentReplies.length > 0 && (
                       <div className="mt-2 ml-8 space-y-2">
-                        {comment.recentReplies.map((reply) => (
+                        {comment.recentReplies.map((reply: any) => (
                           <div
                             key={reply.comment.id}
                             className="border-l-2 border-green-800/30 pl-4"
@@ -343,9 +318,9 @@ export function CommentWall({
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="Write a reply..."
                             className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
-                            disabled={postCommentLoading || isProcessingFee}
+                            disabled={postCommentLoading}
                           />
-                          {(postCommentLoading || isProcessingFee) && (
+                          {postCommentLoading && (
                             <div className="absolute right-3 top-3">
                               <LoadCircle />
                             </div>
@@ -354,18 +329,10 @@ export function CommentWall({
                         <div className="flex justify-end">
                           <button
                             type="submit"
-                            disabled={
-                              postCommentLoading ||
-                              isProcessingFee ||
-                              !commentText.trim()
-                            }
+                            disabled={postCommentLoading || !commentText.trim()}
                             className="px-4 py-2 bg-green-900/30  font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
-                            {isProcessingFee
-                              ? 'Processing...'
-                              : postCommentLoading
-                              ? 'Posting...'
-                              : 'Post Reply'}
+                            Post Reply
                           </button>
                         </div>
                       </form>
@@ -385,55 +352,21 @@ export function CommentWall({
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write a comment..."
                   className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
-                  disabled={postCommentLoading || isProcessingFee}
+                  disabled={postCommentLoading}
                 />
-                {(postCommentLoading || isProcessingFee) && (
+                {postCommentLoading && (
                   <div className="absolute right-3 top-3">
                     <LoadCircle />
                   </div>
                 )}
               </div>
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="text-sm  font-mono">
-                    {isProcessingFee
-                      ? 'Processing payment...'
-                      : '80% goes to profile owner'}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={priorityLevel}
-                      onChange={(e) =>
-                        setPriorityLevel(e.target.value as PriorityLevel)
-                      }
-                      className="bg-green-900/20  text-sm font-mono rounded border border-green-800/50 px-2 py-1"
-                      disabled={postCommentLoading || isProcessingFee}
-                    >
-                      {getPriorityLevels(t).map((level) => (
-                        <option
-                          key={level.value}
-                          value={level.value}
-                          title={level.description}
-                        >
-                          {level.label}
-                        </option>
-                      ))}
-                    </select>
-                    <span className="text-xs  font-mono">Priority</span>
-                  </div>
-                </div>
                 <button
                   type="submit"
-                  disabled={
-                    postCommentLoading || isProcessingFee || !commentText.trim()
-                  }
+                  disabled={postCommentLoading || !commentText.trim()}
                   className="px-4 py-2 bg-green-900/30  font-mono rounded hover:bg-green-900/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isProcessingFee
-                    ? 'Processing...'
-                    : postCommentLoading
-                    ? 'Posting...'
-                    : 'Post Comment'}
+                  {postCommentLoading ? 'Posting...' : 'Post Comment'}
                 </button>
               </div>
             </form>

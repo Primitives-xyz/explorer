@@ -1,7 +1,6 @@
 'use client'
 
 import NFTShowcase from '@/components/NFTShowcase'
-import SocialHub from '@/components/SocialHub'
 import TokenDashboard from '@/components/TokenDashboard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMediaQuery } from '@/hooks/use-media-query'
@@ -9,6 +8,7 @@ import { useTargetWallet } from '@/hooks/use-target-wallet'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { TransactionSection } from '../transaction-section'
+import { CommentWall } from './comment-wall'
 import { ProfileContentFeed } from './profile-content-feed'
 
 interface ProfileTabsProps {
@@ -17,6 +17,7 @@ interface ProfileTabsProps {
 
 export function ProfileTabs({ username }: ProfileTabsProps) {
   const { targetWalletAddress } = useTargetWallet(username)
+
   const [activeTab, setActiveTab] = useState('social')
   const isMobile = useMediaQuery('(max-width: 768px)')
 
@@ -61,7 +62,10 @@ export function ProfileTabs({ username }: ProfileTabsProps) {
             >
               <TabsContent value="social" className="mt-0 w-full">
                 <div className="container mx-auto px-2 md:px-4">
-                  <SocialHub username={username} />
+                  <CommentWall
+                    username={username}
+                    targetWalletAddress={targetWalletAddress}
+                  />
                 </div>
               </TabsContent>
               <TabsContent value="activity" className="mt-0 w-full">

@@ -36,10 +36,15 @@ export async function fetchTapestryServer<T = any>({
       options.body = JSON.stringify(data)
     }
 
+    console.log('url', url)
+    console.log('options', options)
+
     const response = await fetch(url, options)
 
     if (!response.ok) {
       const errorText = await response.text()
+
+      console.log('errorText', errorText)
 
       // Handle specific status codes
       switch (response.status) {
