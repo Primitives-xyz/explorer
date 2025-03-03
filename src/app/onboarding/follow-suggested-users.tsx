@@ -264,9 +264,21 @@ export function FollowSuggestedUsers() {
   return (
     <div className="grid gap-6">
       <div>
-        <h2 className="text-lg font-semibold text-violet-100 mb-4">
-          Suggested Users
-        </h2>
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-lg font-semibold text-violet-100">
+            Suggested Users
+          </h2>
+          <div className="flex items-center gap-1 text-sm text-violet-300/70">
+            <span>Powered by</span>
+            <Image
+              src="/images/tap_white.png"
+              alt="TAP"
+              width={80}
+              height={20}
+              className="object-contain"
+            />
+          </div>
+        </div>
         <GenericUsers />
       </div>
       <div>
