@@ -198,7 +198,12 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
                       ? t('transaction_log.received')
                       : t('transaction_log.sent')}
                   </span>
-                  <span className=" font-mono text-sm">{tokenSymbol}</span>
+                  <Link
+                    href={route('address', { id: normalized.mint })}
+                    className="font-mono text-sm hover:text-gray-300 transition-colors"
+                  >
+                    {tokenSymbol}
+                  </Link>
                 </div>
                 <span className="/60 font-mono text-xs">
                   {isReceiving ? (
