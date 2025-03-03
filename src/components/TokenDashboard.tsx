@@ -26,7 +26,10 @@ const TokenImage = ({
   return (
     <div
       className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center"
-      onClick={() => imageUrl && onImageClick(imageUrl, token.symbol)}
+      onClick={(e) => {
+        e.stopPropagation();
+        imageUrl && onImageClick(imageUrl, token.symbol);
+      }}
     >
       {imageUrl ? (
         <img
@@ -259,7 +262,7 @@ export default function TokenDashboard({
                       {significantTokens.map((token, index) => (
                         <Link
                           key={token.id}
-                          href={route('address', { id: token.id })}
+                          href={route('address', { id: token.mint })}
                           className="block"
                         >
                           <motion.div
