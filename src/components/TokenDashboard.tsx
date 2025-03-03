@@ -7,8 +7,10 @@ import { formatNumber } from '@/utils/format'
 import { FungibleToken } from '@/utils/types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { RefreshCw } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { route } from '@/utils/routes'
 import { ImageModal } from './tokens/image-modal'
 
 // Token Image component
@@ -255,37 +257,42 @@ export default function TokenDashboard({
                   <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                     <AnimatePresence>
                       {significantTokens.map((token, index) => (
-                        <motion.div
+                        <Link
                           key={token.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.05 }}
-                          className="p-3 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors"
+                          href={route('address', { id: token.id })}
+                          className="block"
                         >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <TokenImage
-                                token={token}
-                                onImageClick={handleImageClick}
-                              />
-                              <div>
-                                <div className="font-semibold">
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                            className="p-3 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <TokenImage
+                                  token={token}
+                                  onImageClick={handleImageClick}
+                                />
+                                <div>
+                                  <div className="font-semibold">
+                                    {token.symbol}
+                                  </div>
+                                  <div className="text-sm text-gray-400">
+                                    {token.name}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div>${formatNumber(token.totalPrice)}</div>
+                                <div className="text-sm">
+                                  {token.balance / Math.pow(10, token.decimals)}{' '}
                                   {token.symbol}
                                 </div>
-                                <div className="text-sm text-gray-400">
-                                  {token.name}
-                                </div>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <div>${formatNumber(token.totalPrice)}</div>
-                              <div className="text-sm">
-                                {token.balance / Math.pow(10, token.decimals)}{' '}
-                                {token.symbol}
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
+                          </motion.div>
+                        </Link>
                       ))}
                     </AnimatePresence>
 
