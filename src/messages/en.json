@@ -175,6 +175,7 @@
     "the_swap_transaction_failed_please_try_again": "The swap transaction failed. Please try again.",
     "transaction_successful": "Transaction Successful",
     "the_swap_transaction_was_successful_creating_shareable_link": "The swap transaction was successful. Creating Shareable link..",
+    "the_stake_transaction_was_successful_creating_shareable_link": "The stake transaction was successful. Creating Shareable link..",
     "swap_successful": "Swap Successful!",
     "your_transaction_is_confirmed": "Your transaction is confirmed",
     "share_your_trade": "Share your trade",
@@ -204,7 +205,8 @@
     "auto": "Auto",
     "stake": "Stake",
     "unstake": "UnStake",
-    "summary": "Summary",
+    "about_title": "About",
+    "about_content": "Users can stake SSE tokens daily, with rewards distributed proportionally based on their share of the total staked amount. The greater a user's stake, the higher their reward allocation.",
     "stake_date": "Stake Date",
     "interest_period": "Interest Period",
     "apy": "APY",
@@ -316,6 +318,7 @@
     "transaction_failed_please_try_again": "Transaction failed. Please try again.",
     "swap_failed": "Swap failed",
     "the_swap_transaction_failed_please_try_again": "The swap transaction failed. Please try again.",
+    "the_stake_transaction_failed_please_try_again": "The stake transaction failed. Please try again.",
     "sdk_load_timeout_reached_forcing_loaded_state": "SDK load timeout reached, forcing loaded state",
     "an_error_occurred": "An error occurred",
     "invalid_solana_wallet_address": "Invalid Solana wallet address",
@@ -328,7 +331,8 @@
     "error_fetching_tokens": "Error fetching tokens",
     "failed_to_fetch_trades": "Failed to fetch trades",
     "failed_to_fetch_transaction": "Failed to fetch transaction",
-    "transaction_not_found": "Transaction not found"
+    "transaction_not_found": "Transaction not found",
+    "amount_exceeds_your_balance": "Insufficient balance for this transaction"
   },
   "pumpfun": {
     "the_pumpfun_token_mint_transaction_failed_please_try_again": "The pumpfun token mint transaction failed. Please try again.",

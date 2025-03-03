@@ -4,8 +4,8 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { LeaderboardTable } from "../leaderboards/leaderboard-table"
 import { JupiterSwapForm } from "../transactions/jupiter-swap-form"
-import { StakeForm } from "../transactions/stake/stake"
-import { UnstakeForm } from "../transactions/unstake/unstake"
+import { StakeForm } from "./stake/stake"
+import { UnstakeForm } from "./unstake/unstake"
 
 export const Swap = () => {
     const t = useTranslations()
