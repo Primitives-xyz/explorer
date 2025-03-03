@@ -95,7 +95,7 @@ export function CreateProfile({
         // Add a small delay to ensure all states are updated
         setTimeout(() => {
           window.location.href = '/onboarding'
-        }, 500)
+        }, 50)
       }
     }
   }
