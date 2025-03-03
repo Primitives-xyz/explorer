@@ -16,7 +16,7 @@ interface UseProfileCreationReturn {
     username: string,
     bio: string,
     imageUrl: string
-  ) => Promise<void>
+  ) => Promise<boolean>
   updateProfileSetupModalShownStatus: (walletAddress: string) => Promise<void>
 }
 
@@ -97,7 +97,7 @@ export function useProfileCreation({
       setResponse(data)
       await refreshProfiles(walletAddress)
       onProfileCreated?.()
-      
+
       // Return success status
       return true
     } catch (err: any) {

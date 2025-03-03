@@ -89,7 +89,7 @@ export function CreateProfile({
     if (walletAddress && username) {
       const imageUrl = selectedImageUrl || fileUrl
       const success = await createProfile(username, bio, imageUrl)
-      
+
       // Redirect to onboarding page after successful profile creation
       if (success) {
         // Add a small delay to ensure all states are updated
