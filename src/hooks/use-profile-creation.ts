@@ -34,7 +34,7 @@ export function useProfileCreation({
     bio: string,
     imageUrl: string
   ) => {
-    if (!walletAddress || !username) return
+    if (!walletAddress || !username) return false
 
     try {
       setError(null)
@@ -97,9 +97,13 @@ export function useProfileCreation({
       setResponse(data)
       await refreshProfiles(walletAddress)
       onProfileCreated?.()
+      
+      // Return success status
+      return true
     } catch (err: any) {
       console.error('Profile creation error:', err)
       setError(err.message || 'Failed to create profile')
+      return false
     } finally {
       setLoading(false)
     }
