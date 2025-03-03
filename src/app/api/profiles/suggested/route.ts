@@ -1,10 +1,29 @@
-// app/api/profiles/suggestedProfiles/route.ts
-import { FetchMethod, fetchTapestry, type Profile } from '@/utils/api'
+// app/api/profiles/suggested/route.ts
+import { fetchTapestryServer } from '@/lib/tapestry-server'
+import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
+interface SuggestedProfile {
+  namespaces: Array<{
+    name: string
+    readableName: string
+    faviconURL?: string | null
+    userProfileURL?: string
+  }>
+  profile: {
+    image: string
+    namespace: string
+    created_at: number
+    id: string
+    username: string
+  }
+  wallet: {
+    address: string
+  }
+}
+
 interface SuggestedProfilesResponse {
-  profiles: Profile[]
-  error?: string
+  [key: string]: SuggestedProfile
 }
 
 export async function GET(req: NextRequest) {
@@ -19,11 +38,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const response = await fetchTapestry<SuggestedProfilesResponse>({
+    const response = await fetchTapestryServer<SuggestedProfilesResponse>({
       endpoint: `profiles/suggested/${walletAddress}`,
       method: FetchMethod.GET,
     })
-
+    console.log('response', response)
     if (response.error) {
       return NextResponse.json({ error: response.error }, { status: 500 })
     }
