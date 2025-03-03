@@ -102,7 +102,6 @@ export async function fetchTapestry<T>({
   const response = await fetch(url, options)
 
   if (!response.ok) {
-    console.log(response)
     throw new Error(`HTTP error! status: ${response.status}`)
   }
 
