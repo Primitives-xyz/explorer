@@ -1,7 +1,7 @@
 import { isValidSolanaAddress } from '@/utils/validation'
 import useSWR, { mutate } from 'swr'
 
-interface Identity {
+export interface Identity {
   profile: {
     id: string
     created_at: string

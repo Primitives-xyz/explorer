@@ -1,11 +1,12 @@
-import { SuggestedProfile, SuggestedUsername } from '@/types/profile.types'
+import { Identity } from '@/hooks/use-identities'
+import { SuggestedUsername } from '@/types/profile.types'
 import { useMemo } from 'react'
 import { useGroupedNFTData } from './use-grouped-nft-data'
 
 interface UseSuggestedProfileDataProps {
-  suggestedProfiles: SuggestedProfile[] | null
+  suggestedProfiles: Identity[] | undefined
   loadingSuggestions: boolean
-  walletAddress?: string // Add wallet address to fetch NFTs
+  walletAddress?: string
 }
 
 interface UseSuggestedProfileDataReturn {
@@ -14,28 +15,24 @@ interface UseSuggestedProfileDataReturn {
   suggestedImages: string[]
   suggestedBios: string[]
   loadingSuggestions: boolean
-  loadingNFTs: boolean // Add loading state for NFTs
+  loadingNFTs: boolean
 }
 
 export function useSuggestedProfileData({
   suggestedProfiles,
   loadingSuggestions,
-  walletAddress = '', // Default to empty string
+  walletAddress = '',
 }: UseSuggestedProfileDataProps): UseSuggestedProfileDataReturn {
   // Group usernames by their base name to find duplicates
   const usernameGroups = useMemo(() => {
-    return ((suggestedProfiles || []) as SuggestedProfile[])
+    return (suggestedProfiles || [])
       .map((profile) => {
-        if (
-          profile.profile?.username &&
-          profile.profile?.namespace &&
-          profile.namespace
-        ) {
+        if (profile?.profile?.username) {
           return {
             username: profile.profile.username,
             namespace: profile.profile.namespace,
             readableName: profile.namespace.readableName,
-            faviconURL: profile.namespace.faviconURL || null,
+            faviconURL: profile.namespace.faviconURL,
             image: profile.profile.image,
           } as SuggestedUsername
         }
@@ -129,8 +126,8 @@ export function useSuggestedProfileData({
   const suggestedBios = useMemo(() => {
     return Array.from(
       new Set(
-        ((suggestedProfiles || []) as SuggestedProfile[])
-          .map((profile) => profile.profile?.bio)
+        (suggestedProfiles || [])
+          .map((profile) => profile.profile.bio)
           .filter(
             (bio): bio is string =>
               !!bio &&

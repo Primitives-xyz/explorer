@@ -1,9 +1,9 @@
 'use client'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Alert } from '@/components/common/alert'
 import { Modal } from '@/components/common/modal'
+import { useIdentities } from '@/hooks/use-identities'
 import { useProfileCreation } from '@/hooks/use-profile-creation'
 import { useProfileForm } from '@/hooks/use-profile-form'
 import { useProfileModalVisibility } from '@/hooks/use-profile-modal-visibility'
@@ -22,8 +22,8 @@ export function CreateProfile({
     useCurrentWallet()
 
   // Get suggested usernames from identities
-  const { profiles: suggestedProfiles, loading: loadingSuggestions } =
-    useGetProfiles(walletAddress || '')
+  const { identities: suggestedProfiles, loading: loadingSuggestions } =
+    useIdentities(walletAddress || '')
 
   // Profile creation logic
   const {
