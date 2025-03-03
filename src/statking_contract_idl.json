@@ -1,5 +1,5 @@
 {
-  "address": "87SAogmKbQNqm9T9nXTZJWvNNYRQHNL9RU4XxdoiQXxU",
+  "address": "Duz2eqNJeK41LkRfnb8aBmEvxTTi7PP7JZvUUevSWVzM",
   "metadata": {
     "name": "tapestry_explorer_statking_contract",
     "version": "0.1.0",
@@ -422,7 +422,7 @@
       "args": [
         {
           "name": "is_stop",
-          "type": "bool"
+          "type": "u8"
         }
       ]
     },
@@ -874,11 +874,14 @@
             "type": "u64"
           },
           {
-            "name": "initialized",
-            "type": "bool"
+            "name": "is_stop",
+            "docs": [
+              "is stopped"
+            ],
+            "type": "u8"
           },
           {
-            "name": "is_stop",
+            "name": "initialized",
             "type": "bool"
           }
         ]

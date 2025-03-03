@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
 
@@ -89,9 +89,8 @@ export const StakeForm = ({
         }
 
         // Check if the value exceeds the balance
-        if (BigInt(Number(value)) > inputRawBalance) {
+        if (BigInt(Math.floor(Math.pow(10, SSE_TOKEN_DECIMAL) * Number(value))) > inputRawBalance) {
             setInputError(t('error.amount_exceeds_your_balance'))
-
             return false
         }
 
@@ -192,13 +191,14 @@ export const StakeForm = ({
     // Add handler for stake
     const handleStake = async () => {
         try {
+            setShowStakeLoading(true)
             const response = await fetch(`/api/stake`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    amount: inputRawBalance.toString(),
+                    amount: displayAmount,
                     walletAddy: walletAddress
                 }),
             })
@@ -206,9 +206,10 @@ export const StakeForm = ({
             const stakeTx = data.stakeTx
             const serializedBuffer: Buffer = Buffer.from(stakeTx, "base64");
             const vtx: VersionedTransaction = VersionedTransaction.deserialize(Uint8Array.from(serializedBuffer));
-            console.log("vtx: ", vtx)
             const signer = await primaryWallet.getSigner()
-            setShowStakeLoading(true)
+            const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+            const simulateTx = await connection.simulateTransaction(vtx)
+            console.log("sim:", simulateTx)
             const txid = await signer.signAndSendTransaction(vtx)
             const confirmToast = toast({
                 title: t('trade.confirming_transaction'),
@@ -217,8 +218,6 @@ export const StakeForm = ({
                 duration: 1000000000,
             })
 
-
-            const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
             const tx = await connection.confirmTransaction({
                 signature: txid.signature,
                 ...(await connection.getLatestBlockhash()),
@@ -248,6 +247,7 @@ export const StakeForm = ({
 
         } catch (error) {
             console.log("Error in making stake tx:", error)
+            setShowStakeLoading(false)
             toast({
                 title: t('trade.transaction_failed'),
                 description: t('trade.the_stake_transaction_failed_please_try_again'),

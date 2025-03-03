@@ -1,15 +1,15 @@
-import { Connection, Keypair } from "@solana/web3.js";
+import { Connection, Keypair } from "@solana/web3.js"
 import stakingProgramIdl from "@/statking_contract_idl.json"
-import * as anchor from "@coral-xyz/anchor";
+import * as anchor from "@coral-xyz/anchor"
 import { SSEStaking } from "@/sse-staking"
-import { PublicKey } from "@solana/web3.js";
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { NextRequest, NextResponse } from "next/server";
-import { SSE_MINT } from "@/components/trading/constants";
-import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { BN } from "bn.js";
-import { TransactionMessage } from "@solana/web3.js";
-import { VersionedTransaction } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js"
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet"
+import { NextRequest, NextResponse } from "next/server"
+import { SSE_MINT, SSE_TOKEN_DECIMAL } from "@/components/trading/constants"
+import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token"
+import { BN } from "bn.js"
+import { TransactionMessage } from "@solana/web3.js"
+import { VersionedTransaction } from "@solana/web3.js"
 
 export const getAssociatedTokenAccount = (
     ownerPubkey: PublicKey,
@@ -22,48 +22,49 @@ export const getAssociatedTokenAccount = (
             mintPk.toBytes(),
         ],
         ASSOCIATED_TOKEN_PROGRAM_ID
-    ))[0];
+    ))[0]
 
-    return associatedTokenAccountPubkey;
+    return associatedTokenAccountPubkey
 }
 
 export async function POST(req: NextRequest) {
     try {
         const { amount, walletAddy } = await req.json()
         console.log("amount: ", amount)
-        console.log("amount: ", walletAddy)
+        console.log("walletAddy: ", walletAddy)
         const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-        const wallet = new NodeWallet(Keypair.generate());
+        const wallet = new NodeWallet(Keypair.generate())
         const provider = new anchor.AnchorProvider(connection, wallet, {
             preflightCommitment: "confirmed",
-        });
-        anchor.setProvider(provider);
-        const stakingProgramInterface = JSON.parse(JSON.stringify(stakingProgramIdl));
+        })
+        anchor.setProvider(provider)
+        const stakingProgramInterface = JSON.parse(JSON.stringify(stakingProgramIdl))
         const program = new anchor.Program(
             stakingProgramInterface,
             provider
-        ) as anchor.Program<SSEStaking>;
+        ) as anchor.Program<SSEStaking>
 
-        const userTokenAccount = await getAssociatedTokenAccount(new PublicKey(walletAddy), new PublicKey(SSE_MINT));
-        const stakeTx = await program.methods.stake(new BN(amount)).accounts({ user: new PublicKey(walletAddy), userTokenAccount: userTokenAccount }
-        ).transaction();
+        const userTokenAccount = await getAssociatedTokenAccount(new PublicKey(walletAddy), new PublicKey(SSE_MINT))
+        const stakeAmount = new BN(Number(amount) * Math.pow(10, SSE_TOKEN_DECIMAL))
+        const stakeTx = await program.methods.stake(stakeAmount).accounts({ user: new PublicKey(walletAddy), userTokenAccount: userTokenAccount }
+        ).transaction()
 
-        const blockHash = (await connection.getLatestBlockhash('confirmed')).blockhash;
+        const blockHash = (await connection.getLatestBlockhash('finalized')).blockhash
 
         const messageV0 = new TransactionMessage({
             payerKey: new PublicKey(walletAddy),
             recentBlockhash: blockHash,
             instructions: stakeTx.instructions,
-        }).compileToV0Message();
+        }).compileToV0Message()
 
-        const vtx = new VersionedTransaction(messageV0);
+        const vtx = new VersionedTransaction(messageV0)
         const serialized = vtx.serialize()
-        const buffer = Buffer.from(serialized).toString("base64");
+        const buffer = Buffer.from(serialized).toString("base64")
 
         return NextResponse.json({ stakeTx: buffer })
 
     } catch (err) {
         console.log(err)
-        return NextResponse.json({ error: String(err) });
+        return NextResponse.json({ error: String(err) })
     }
 }
