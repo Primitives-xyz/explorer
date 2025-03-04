@@ -1,0 +1,7 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Google-specific settings
+User-agent: Googlebot
+Allow: /
