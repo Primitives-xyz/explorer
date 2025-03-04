@@ -1,6 +1,7 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Sitemap: https://www.sse.gg/sitemap.xml
 
 # Google-specific settings
 User-agent: Googlebot
