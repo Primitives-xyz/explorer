@@ -1,6 +1,6 @@
 import { SSE_MINT } from '@/components/trading/constants'
-import { SSEStaking } from '@/sse-staking'
-import stakingProgramIdl from '@/statking_contract_idl.json'
+import { SseStake } from '@/sse-staking'
+import stakingProgramIdl from '@/sse_stake.json'
 import * as anchor from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import {
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const program = new anchor.Program(
       stakingProgramInterface,
       provider
-    ) as anchor.Program<SSEStaking>
+    ) as anchor.Program<SseStake>
 
     const [configPda, _] = PublicKey.findProgramAddressSync(
       [Buffer.from('config')],

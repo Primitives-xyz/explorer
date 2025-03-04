@@ -2,249 +2,176 @@
  * Program IDL in camelCase format in order to be used in JS/TS.
  *
  * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/tapestry_explorer_statking_contract.json`.
+ * IDL can be found at `target/idl/sse_stake.json`.
  */
-export type SSEStaking = {
-  "address": "H799pQrKs8W84t6svhBog62tWSHjCNLQxpH41J6RUZ8z",
-  "metadata": {
-    "name": "tapestryExplorerStatkingContract",
-    "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Created with Anchor"
-  },
-  "instructions": [
+export type SseStake = {
+  address: 'sse8RjyWVkAoLdRVxfXPECnAKYU232a6DfVF6LJye4s'
+  metadata: {
+    name: 'sseStake'
+    version: '0.1.0'
+    spec: '0.1.0'
+    description: 'Created with Anchor'
+  }
+  instructions: [
     {
-      "name": "acceptAuthority",
-      "discriminator": [
-        107,
-        86,
-        198,
-        91,
-        33,
-        12,
-        107,
-        160
-      ],
-      "accounts": [
+      name: 'acceptAuthority'
+      discriminator: [107, 86, 198, 91, 33, 12, 107, 160]
+      accounts: [
         {
-          "name": "newAdmin",
-          "writable": true,
-          "signer": true
+          name: 'newAdmin'
+          writable: true
+          signer: true
         },
         {
-          "name": "globalConfig",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalConfig'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         }
-      ],
-      "args": []
+      ]
+      args: []
     },
     {
-      "name": "claimReward",
-      "discriminator": [
-        149,
-        95,
-        181,
-        242,
-        94,
-        90,
-        158,
-        162
-      ],
-      "accounts": [
+      name: 'claimReward'
+      discriminator: [149, 95, 181, 242, 94, 90, 158, 162]
+      accounts: [
         {
-          "name": "globalConfig",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalConfig'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         },
         {
-          "name": "globalTokenAccount",
-          "writable": true
+          name: 'globalTokenAccount'
+          writable: true
         },
         {
-          "name": "userInfo",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'userInfo'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114,
-                  105,
-                  110,
-                  102,
-                  111
-                ]
+                kind: 'const'
+                value: [117, 115, 101, 114, 105, 110, 102, 111]
               },
               {
-                "kind": "account",
-                "path": "user"
+                kind: 'account'
+                path: 'user'
               }
             ]
           }
         },
         {
-          "name": "user",
-          "writable": true,
-          "signer": true
+          name: 'user'
+          writable: true
+          signer: true
         },
         {
-          "name": "userTokenAccount",
-          "writable": true
+          name: 'userTokenAccount'
+          writable: true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
         },
         {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          name: 'tokenProgram'
+          address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
         }
-      ],
-      "args": []
+      ]
+      args: []
     },
     {
-      "name": "configure",
-      "discriminator": [
-        245,
-        7,
-        108,
-        117,
-        95,
-        196,
-        54,
-        217
-      ],
-      "accounts": [
+      name: 'configure'
+      discriminator: [245, 7, 108, 117, 95, 196, 54, 217]
+      accounts: [
         {
-          "name": "payer",
-          "writable": true,
-          "signer": true
+          name: 'payer'
+          writable: true
+          signer: true
         },
         {
-          "name": "config",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'config'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
         }
-      ],
-      "args": [
+      ]
+      args: [
         {
-          "name": "newConfig",
-          "type": {
-            "defined": {
-              "name": "config"
+          name: 'newConfig'
+          type: {
+            defined: {
+              name: 'config'
             }
           }
         }
       ]
     },
     {
-      "name": "depositFund",
-      "discriminator": [
-        189,
-        21,
-        71,
-        93,
-        11,
-        59,
-        198,
-        37
-      ],
-      "accounts": [
+      name: 'depositFund'
+      discriminator: [189, 21, 71, 93, 11, 59, 198, 37]
+      accounts: [
         {
-          "name": "admin",
-          "writable": true,
-          "signer": true
+          name: 'admin'
+          writable: true
+          signer: true
         },
         {
-          "name": "invester",
-          "writable": true,
-          "signer": true
+          name: 'invester'
+          writable: true
+          signer: true
         },
         {
-          "name": "investerTokenAccount",
-          "writable": true
+          name: 'investerTokenAccount'
+          writable: true
         },
         {
-          "name": "globalConfig",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalConfig'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         },
         {
-          "name": "rewardVault",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'rewardVault'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "account",
-                "path": "globalConfig"
+                kind: 'account'
+                path: 'globalConfig'
               },
               {
-                "kind": "const",
-                "value": [
+                kind: 'const'
+                value: [
                   6,
                   221,
                   246,
@@ -280,14 +207,14 @@ export type SSEStaking = {
                 ]
               },
               {
-                "kind": "account",
-                "path": "global_config.token_mint_config",
-                "account": "config"
+                kind: 'account'
+                path: 'global_config.token_mint_config'
+                account: 'config'
               }
-            ],
-            "program": {
-              "kind": "const",
-              "value": [
+            ]
+            program: {
+              kind: 'const'
+              value: [
                 140,
                 151,
                 37,
@@ -325,157 +252,109 @@ export type SSEStaking = {
           }
         },
         {
-          "name": "tokenMint"
+          name: 'tokenMint'
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
         },
         {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          name: 'tokenProgram'
+          address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
         },
         {
-          "name": "associatedTokenProgram",
-          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+          name: 'associatedTokenProgram'
+          address: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'
         }
-      ],
-      "args": []
+      ]
+      args: []
     },
     {
-      "name": "nominateAuthority",
-      "discriminator": [
-        148,
-        182,
-        144,
-        91,
-        186,
-        12,
-        118,
-        18
-      ],
-      "accounts": [
+      name: 'nominateAuthority'
+      discriminator: [148, 182, 144, 91, 186, 12, 118, 18]
+      accounts: [
         {
-          "name": "admin",
-          "writable": true,
-          "signer": true
+          name: 'admin'
+          writable: true
+          signer: true
         },
         {
-          "name": "globalConfig",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalConfig'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         }
-      ],
-      "args": [
+      ]
+      args: [
         {
-          "name": "newAdmin",
-          "type": "pubkey"
+          name: 'newAdmin'
+          type: 'pubkey'
         }
       ]
     },
     {
-      "name": "pause",
-      "discriminator": [
-        211,
-        22,
-        221,
-        251,
-        74,
-        121,
-        193,
-        47
-      ],
-      "accounts": [
+      name: 'pause'
+      discriminator: [211, 22, 221, 251, 74, 121, 193, 47]
+      accounts: [
         {
-          "name": "admin",
-          "writable": true,
-          "signer": true
+          name: 'admin'
+          writable: true
+          signer: true
         },
         {
-          "name": "globalConfig",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalConfig'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         }
-      ],
-      "args": [
+      ]
+      args: [
         {
-          "name": "isStop",
-          "type": "u8"
+          name: 'isStop'
+          type: 'u8'
         }
       ]
     },
     {
-      "name": "stake",
-      "discriminator": [
-        206,
-        176,
-        202,
-        18,
-        200,
-        209,
-        179,
-        108
-      ],
-      "accounts": [
+      name: 'stake'
+      discriminator: [206, 176, 202, 18, 200, 209, 179, 108]
+      accounts: [
         {
-          "name": "globalConfig",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalConfig'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         },
         {
-          "name": "globalTokenAccount",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalTokenAccount'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "account",
-                "path": "globalConfig"
+                kind: 'account'
+                path: 'globalConfig'
               },
               {
-                "kind": "const",
-                "value": [
+                kind: 'const'
+                value: [
                   6,
                   221,
                   246,
@@ -511,14 +390,14 @@ export type SSEStaking = {
                 ]
               },
               {
-                "kind": "account",
-                "path": "global_config.token_mint_config",
-                "account": "config"
+                kind: 'account'
+                path: 'global_config.token_mint_config'
+                account: 'config'
               }
-            ],
-            "program": {
-              "kind": "const",
-              "value": [
+            ]
+            program: {
+              kind: 'const'
+              value: [
                 140,
                 151,
                 37,
@@ -556,382 +435,302 @@ export type SSEStaking = {
           }
         },
         {
-          "name": "userInfo",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'userInfo'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114,
-                  105,
-                  110,
-                  102,
-                  111
-                ]
+                kind: 'const'
+                value: [117, 115, 101, 114, 105, 110, 102, 111]
               },
               {
-                "kind": "account",
-                "path": "user"
+                kind: 'account'
+                path: 'user'
               }
             ]
           }
         },
         {
-          "name": "user",
-          "writable": true,
-          "signer": true
+          name: 'user'
+          writable: true
+          signer: true
         },
         {
-          "name": "userTokenAccount",
-          "writable": true
+          name: 'userTokenAccount'
+          writable: true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
         },
         {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          name: 'tokenProgram'
+          address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
         }
-      ],
-      "args": [
+      ]
+      args: [
         {
-          "name": "amount",
-          "type": "u64"
+          name: 'amount'
+          type: 'u64'
         }
       ]
     },
     {
-      "name": "unstake",
-      "discriminator": [
-        90,
-        95,
-        107,
-        42,
-        205,
-        124,
-        50,
-        225
-      ],
-      "accounts": [
+      name: 'unstake'
+      discriminator: [90, 95, 107, 42, 205, 124, 50, 225]
+      accounts: [
         {
-          "name": "globalConfig",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'globalConfig'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                kind: 'const'
+                value: [99, 111, 110, 102, 105, 103]
               }
             ]
           }
         },
         {
-          "name": "globalTokenAccount",
-          "writable": true
+          name: 'globalTokenAccount'
+          writable: true
         },
         {
-          "name": "userInfo",
-          "writable": true,
-          "pda": {
-            "seeds": [
+          name: 'userInfo'
+          writable: true
+          pda: {
+            seeds: [
               {
-                "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114,
-                  105,
-                  110,
-                  102,
-                  111
-                ]
+                kind: 'const'
+                value: [117, 115, 101, 114, 105, 110, 102, 111]
               },
               {
-                "kind": "account",
-                "path": "user"
+                kind: 'account'
+                path: 'user'
               }
             ]
           }
         },
         {
-          "name": "user",
-          "writable": true,
-          "signer": true
+          name: 'user'
+          writable: true
+          signer: true
         },
         {
-          "name": "userTokenAccount",
-          "writable": true
+          name: 'userTokenAccount'
+          writable: true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          name: 'systemProgram'
+          address: '11111111111111111111111111111111'
         },
         {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          name: 'tokenProgram'
+          address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
         }
-      ],
-      "args": []
-    }
-  ],
-  "accounts": [
-    {
-      "name": "config",
-      "discriminator": [
-        155,
-        12,
-        170,
-        224,
-        30,
-        250,
-        204,
-        130
       ]
-    },
-    {
-      "name": "user",
-      "discriminator": [
-        159,
-        117,
-        95,
-        227,
-        239,
-        151,
-        58,
-        236
-      ]
+      args: []
     }
-  ],
-  "errors": [
+  ]
+  accounts: [
     {
-      "code": 6000,
-      "name": "contractIsStopped",
-      "msg": "Contract is stopped"
+      name: 'config'
+      discriminator: [155, 12, 170, 224, 30, 250, 204, 130]
     },
     {
-      "code": 6001,
-      "name": "depositRewardTokenMintError",
-      "msg": "reward token mint error"
-    },
-    {
-      "code": 6002,
-      "name": "depositInvesterTokenMintError",
-      "msg": "Invester token mint error"
-    },
-    {
-      "code": 6003,
-      "name": "depositInvesterTokenOwnerError",
-      "msg": "Invester token owner error"
-    },
-    {
-      "code": 6004,
-      "name": "depositInvesterTokenAmountError",
-      "msg": "Invester token Amount error"
-    },
-    {
-      "code": 6005,
-      "name": "youHaveNoWithdrawableAmount",
-      "msg": "You have no withdrawable amount"
-    },
-    {
-      "code": 6006,
-      "name": "needMoreTimeToDeposit",
-      "msg": "Need more time to deposit."
-    },
-    {
-      "code": 6007,
-      "name": "valueTooSmall",
-      "msg": "valueTooSmall"
-    },
-    {
-      "code": 6008,
-      "name": "valueTooLarge",
-      "msg": "valueTooLarge"
-    },
-    {
-      "code": 6009,
-      "name": "valueInvalid",
-      "msg": "valueInvalid"
-    },
-    {
-      "code": 6010,
-      "name": "incorrectConfigAccount",
-      "msg": "incorrectConfigAccount"
-    },
-    {
-      "code": 6011,
-      "name": "incorrectAuthority",
-      "msg": "incorrectAuthority"
-    },
-    {
-      "code": 6012,
-      "name": "overflowOrUnderflowOccurred",
-      "msg": "Overflow or underflow occured"
-    },
-    {
-      "code": 6013,
-      "name": "invalidAmount",
-      "msg": "Amount is invalid"
-    },
-    {
-      "code": 6014,
-      "name": "arithmeticError",
-      "msg": "Arithmetic Error"
-    },
-    {
-      "code": 6015,
-      "name": "invalidParameter",
-      "msg": "Invalid Parameter"
-    },
-    {
-      "code": 6016,
-      "name": "invalidArgument",
-      "msg": "Invalid Argument"
+      name: 'user'
+      discriminator: [159, 117, 95, 227, 239, 151, 58, 236]
     }
-  ],
-  "types": [
+  ]
+  errors: [
     {
-      "name": "config",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      code: 6000
+      name: 'contractIsStopped'
+      msg: 'Contract is stopped'
+    },
+    {
+      code: 6001
+      name: 'depositRewardTokenMintError'
+      msg: 'reward token mint error'
+    },
+    {
+      code: 6002
+      name: 'depositInvesterTokenMintError'
+      msg: 'Invester token mint error'
+    },
+    {
+      code: 6003
+      name: 'depositInvesterTokenOwnerError'
+      msg: 'Invester token owner error'
+    },
+    {
+      code: 6004
+      name: 'depositInvesterTokenAmountError'
+      msg: 'Invester token Amount error'
+    },
+    {
+      code: 6005
+      name: 'youHaveNoWithdrawableAmount'
+      msg: 'You have no withdrawable amount'
+    },
+    {
+      code: 6006
+      name: 'needMoreTimeToDeposit'
+      msg: 'Need more time to deposit.'
+    },
+    {
+      code: 6007
+      name: 'valueTooSmall'
+      msg: 'valueTooSmall'
+    },
+    {
+      code: 6008
+      name: 'valueTooLarge'
+      msg: 'valueTooLarge'
+    },
+    {
+      code: 6009
+      name: 'valueInvalid'
+      msg: 'valueInvalid'
+    },
+    {
+      code: 6010
+      name: 'incorrectConfigAccount'
+      msg: 'incorrectConfigAccount'
+    },
+    {
+      code: 6011
+      name: 'incorrectAuthority'
+      msg: 'incorrectAuthority'
+    },
+    {
+      code: 6012
+      name: 'overflowOrUnderflowOccurred'
+      msg: 'Overflow or underflow occured'
+    },
+    {
+      code: 6013
+      name: 'invalidAmount'
+      msg: 'Amount is invalid'
+    },
+    {
+      code: 6014
+      name: 'arithmeticError'
+      msg: 'Arithmetic Error'
+    },
+    {
+      code: 6015
+      name: 'invalidParameter'
+      msg: 'Invalid Parameter'
+    },
+    {
+      code: 6016
+      name: 'invalidArgument'
+      msg: 'Invalid Argument'
+    }
+  ]
+  types: [
+    {
+      name: 'config'
+      type: {
+        kind: 'struct'
+        fields: [
           {
-            "name": "authority",
-            "docs": [
-              "authority publickey"
-            ],
-            "type": "pubkey"
+            name: 'authority'
+            docs: ['authority publickey']
+            type: 'pubkey'
           },
           {
-            "name": "pendingAuthority",
-            "type": "pubkey"
+            name: 'pendingAuthority'
+            type: 'pubkey'
           },
           {
-            "name": "tokenMintConfig",
-            "docs": [
-              "stake token mint publickey"
-            ],
-            "type": "pubkey"
+            name: 'tokenMintConfig'
+            docs: ['stake token mint publickey']
+            type: 'pubkey'
           },
           {
-            "name": "claimPeriod",
-            "docs": [
-              "reward token claim period"
-            ],
-            "type": "i64"
+            name: 'claimPeriod'
+            docs: ['reward token claim period']
+            type: 'i64'
           },
           {
-            "name": "totalRate",
-            "type": "f64"
+            name: 'totalRate'
+            type: 'f64'
           },
           {
-            "name": "totalStakers",
-            "docs": [
-              "number of stakers"
-            ],
-            "type": "u64"
+            name: 'totalStakers'
+            docs: ['number of stakers']
+            type: 'u64'
           },
           {
-            "name": "lastRewardTime",
-            "docs": [
-              "the latest staking time"
-            ],
-            "type": "i64"
+            name: 'lastRewardTime'
+            docs: ['the latest staking time']
+            type: 'i64'
           },
           {
-            "name": "rewardMultiplier",
-            "docs": [
-              "reward for one sec"
-            ],
-            "type": "u64"
+            name: 'rewardMultiplier'
+            docs: ['reward for one sec']
+            type: 'u64'
           },
           {
-            "name": "depositTime",
-            "docs": [
-              "reward token deposit time"
-            ],
-            "type": "i64"
+            name: 'depositTime'
+            docs: ['reward token deposit time']
+            type: 'i64'
           },
           {
-            "name": "totalDeposit",
-            "docs": [
-              "total stakeed token amount"
-            ],
-            "type": "u64"
+            name: 'totalDeposit'
+            docs: ['total stakeed token amount']
+            type: 'u64'
           },
           {
-            "name": "purchaseAmt",
-            "docs": [
-              "reward token amount"
-            ],
-            "type": "u64"
+            name: 'purchaseAmt'
+            docs: ['reward token amount']
+            type: 'u64'
           },
           {
-            "name": "isStop",
-            "docs": [
-              "is stopped"
-            ],
-            "type": "u8"
+            name: 'isStop'
+            docs: ['is stopped']
+            type: 'u8'
           },
           {
-            "name": "initialized",
-            "type": "bool"
+            name: 'initialized'
+            type: 'bool'
           }
         ]
       }
     },
     {
-      "name": "user",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'user'
+      type: {
+        kind: 'struct'
+        fields: [
           {
-            "name": "user",
-            "docs": [
-              "user publickey"
-            ],
-            "type": "pubkey"
+            name: 'user'
+            docs: ['user publickey']
+            type: 'pubkey'
           },
           {
-            "name": "deposit",
-            "docs": [
-              "deposted stake token amount"
-            ],
-            "type": "u64"
+            name: 'deposit'
+            docs: ['deposted stake token amount']
+            type: 'u64'
           },
           {
-            "name": "debt",
-            "docs": [
-              "withdrawed Reward Token amount"
-            ],
-            "type": "u64"
+            name: 'debt'
+            docs: ['withdrawed Reward Token amount']
+            type: 'u64'
           },
           {
-            "name": "lastUpdate",
-            "docs": [
-              "the latest staking date"
-            ],
-            "type": "i64"
+            name: 'lastUpdate'
+            docs: ['the latest staking date']
+            type: 'i64'
           },
           {
-            "name": "initialized",
-            "type": "u8"
+            name: 'initialized'
+            type: 'u8'
           }
         ]
       }
     }
   ]
-};
+}
