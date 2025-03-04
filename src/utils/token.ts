@@ -1,7 +1,9 @@
 import type { FungibleTokenInfo } from '@/types/Token'
 import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
+  TOKEN_PROGRAM_ID,
 } from '@solana/spl-token'
 import {
   ComputeBudgetProgram,
@@ -210,4 +212,16 @@ export async function createATAIfNotExists(
   } catch (error) {
     throw error
   }
+}
+
+export const getAssociatedTokenAccount = (
+  ownerPubkey: PublicKey,
+  mintPk: PublicKey
+): PublicKey => {
+  let associatedTokenAccountPubkey = PublicKey.findProgramAddressSync(
+    [ownerPubkey.toBytes(), TOKEN_PROGRAM_ID.toBytes(), mintPk.toBytes()],
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  )[0]
+
+  return associatedTokenAccountPubkey
 }

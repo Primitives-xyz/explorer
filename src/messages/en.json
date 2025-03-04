@@ -209,12 +209,28 @@
     "stake": "Stake",
     "unstake": "UnStake",
     "unstake_and_claim_rewards": "Unstake and Claim Rewards",
-    "about_title": "About",
-    "about_content": "You can stake SSE tokens daily, with rewards distributed proportionally based on your share of the total staked amount. The greater a user's stake, the higher their reward allocation.\n\n You can stake only once per day.",
+    "about_title": "About Staking",
+    "about_content": "Stake your SSE tokens to earn platform fees and unlock exclusive benefits. Stakers receive 10% of all platform fees, distributed proportionally based on stake amount. No lock-up period required - stake and unstake anytime.",
     "stake_date": "Stake Date",
     "interest_period": "Interest Period",
     "apy": "APY",
-    "stake_end_period": "Stake End Period"
+    "stake_end_period": "Stake End Period",
+    "staking": {
+      "benefits_title": "Staking Benefits",
+      "fee_sharing": "Fee Sharing",
+      "fee_sharing_desc": "Earn 10% of all platform fees, distributed proportionally to your stake amount",
+      "flexible_staking": "Flexible Staking",
+      "flexible_staking_desc": "No lock-up period - stake and unstake whenever you want",
+      "tiers_title": "Staking Tiers & Benefits",
+      "bronze_tier": "Bronze",
+      "silver_tier": "Silver",
+      "gold_tier": "Gold",
+      "bronze_requirement": "1,000+ SSE",
+      "silver_requirement": "25,000+ SSE",
+      "gold_requirement": "500,000+ SSE",
+      "swap_fee_discount": "% off swap fees",
+      "comment_fee_discount": "% off comment fees"
+    }
   },
   "priority_levels": {
     "minimum": "Minimum",
