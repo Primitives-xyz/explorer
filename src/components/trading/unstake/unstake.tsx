@@ -1,9 +1,13 @@
 import { useState } from "react"
-import { useTokenBalance } from "@/hooks/use-token-balance"
-import { useCurrentWallet } from "@/components/auth/hooks/use-current-wallet"
+import dynamic from "next/dynamic"
 import { useTranslations } from "next-intl"
-import dynamic from 'next/dynamic'
+
+import { VersionedTransaction, Connection } from "@solana/web3.js"
 import { Loader2 } from "lucide-react"
+
+import { useCurrentWallet } from "@/components/auth/hooks/use-current-wallet"
+import { useToast } from "@/hooks/use-toast"
+import { useStakeInfo } from "@/hooks/use-stake-info"
 
 const DynamicConnectButton = dynamic(
     () =>
@@ -13,16 +17,13 @@ const DynamicConnectButton = dynamic(
     { ssr: false }
 )
 
-export interface StakeFormProps {
-    initialAmount?: string
-}
-
-export const UnstakeForm = ({
-    initialAmount = ''
-}: StakeFormProps) => {
+export const UnstakeForm = () => {
     const t = useTranslations()
-    const { isLoggedIn, sdkHasLoaded, walletAddress } = useCurrentWallet()
+    const { toast } = useToast()
+    const { isLoggedIn, sdkHasLoaded, walletAddress, primaryWallet } = useCurrentWallet()
     const [showUnstakeLoading, setShowUnstakeLoading] = useState<boolean>(false)
+
+    const { stakeAmount, setStakeAmount, rewardsAmount, setRewardsAmount, showUserInfoLoading } = useStakeInfo()
 
     const LoadingDots = () => {
         return (
@@ -34,55 +35,102 @@ export const UnstakeForm = ({
         )
     }
 
-    // Add token balance hooks for SSE token
-    const {
-        balance: inputBalance,
-        rawBalance: inputRawBalance,
-        loading: inputBalanceLoading,
-    } = useTokenBalance(walletAddress, 'So11111111111111111111111111111111111111112')
+    // Add handler for unstake
+    const handleUnstake = async () => {
+        try {
+            setShowUnstakeLoading(true)
+            const response = await fetch(`/api/unstake`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    walletAddy: walletAddress
+                }),
+            })
+            const data = await response.json()
+            const unStakeTx = data.unStakeTx
+            const serializedBuffer: Buffer = Buffer.from(unStakeTx, "base64");
+            const vtx: VersionedTransaction = VersionedTransaction.deserialize(Uint8Array.from(serializedBuffer));
+            const signer = await primaryWallet.getSigner()
+            const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+            const simulateTx = await connection.simulateTransaction(vtx)
+            console.log("sim:", simulateTx)
+            const txid = await signer.signAndSendTransaction(vtx)
+            const confirmToast = toast({
+                title: t('trade.confirming_transaction'),
+                description: t('trade.waiting_for_confirmation'),
+                variant: 'pending',
+                duration: 1000000000,
+            })
 
-    // Add handler for stake
-    const handleUnstake = () => {
-        console.log("Staking.....")
+            const tx = await connection.confirmTransaction({
+                signature: txid.signature,
+                ...(await connection.getLatestBlockhash()),
+            })
+
+            confirmToast.dismiss()
+
+            if (tx.value.err) {
+                toast({
+                    title: t('trade.transaction_failed'),
+                    description: t('error.the_unstake_transaction_failed_please_try_again'),
+                    variant: 'error',
+                    duration: 5000,
+                })
+            } else {
+                toast({
+                    title: t('trade.transaction_successful'),
+                    description: t(
+                        'trade.the_unstake_transaction_was_successful_creating_shareable_link'
+                    ),
+                    variant: 'success',
+                    duration: 5000,
+                })
+                setStakeAmount("0")
+                setRewardsAmount("0")
+            }
+
+            setShowUnstakeLoading(false)
+
+        } catch (error) {
+            console.log("Error in making stake tx:", error)
+            setShowUnstakeLoading(false)
+            toast({
+                title: t('trade.transaction_failed'),
+                description: t('error.the_unstake_transaction_failed_please_try_again'),
+                variant: 'error',
+                duration: 5000,
+            })
+        }
     }
 
     return (
-        <div>
-            <p className="text-xl font-medium mb-[30px]">{t('trade.select_stake')}</p>
-            <div>
-                <div className="grid grid-flow-row grid-cols-3 gap-3">
-                    <div
-                        className="flex flex-col gap-2 bg-green-900/20 rounded-lg border border-green-500/20 hover:border-green-500/50 p-3 cursor-pointer hover:scale-105"
-                    >
-                        <p>{t('trade.stake')} 1</p>
-                        <p className="uppercase text-xl font-medium">2089000 {t('header.terminal.sse')} {t('trade.stake')}</p>
-                        <p>{t('trade.unstake_available_in')}</p>
-                        <p className="uppercase text-xl font-medium">00D:00H:00M</p>
-                    </div>
-                    <div
-                        className="flex flex-col gap-2 bg-green-900/20 rounded-lg border border-green-500/20 hover:border-green-500/50 p-3 cursor-pointer hover:scale-105"
-                    >
-                        <p>{t('trade.stake')} 2</p>
-                        <p className="uppercase text-xl font-medium">2089000 {t('header.terminal.sse')} {t('trade.stake')}</p>
-                        <p>{t('trade.unstake_available_in')}</p>
-                        <p className="uppercase text-xl font-medium">00D:00H:00M</p>
-                    </div>
-                    <div
-                        className="flex flex-col gap-2 bg-green-900/20 rounded-lg border border-green-500/20 hover:border-green-500/50 p-3 cursor-pointer hover:scale-105"
-                    >
-                        <p>{t('trade.stake')} 3</p>
-                        <p className="uppercase text-xl font-medium">2089000 {t('header.terminal.sse')} {t('trade.stake')}</p>
-                        <p>{t('trade.unstake_available_in')}</p>
-                        <p className="uppercase text-xl font-medium">00D:00H:00M</p>
-                    </div>
-                    <div
-                        className="flex flex-col gap-2 bg-green-900/20 rounded-lg border border-green-500/20 hover:border-green-500/50 p-3 cursor-pointer hover:scale-105"
-                    >
-                        <p>{t('trade.stake')} 4</p>
-                        <p className="uppercase text-xl font-medium">2089000 {t('header.terminal.sse')} {t('trade.stake')}</p>
-                        <p>{t('trade.unstake_available_in')}</p>
-                        <p className="uppercase text-xl font-medium">00D:00H:00M</p>
-                    </div>
+        <div className="mt-8">
+            <div className="flex flex-col gap-8">
+                <div className="flex flex-row justify-between items-center border border-green-500/20 rounded-lg p-3 relative">
+                    <p className="text-md font-sm absolute -top-4 bg-[#141618]">{t('trade.total_staking_amount')}</p>
+                    {
+                        showUserInfoLoading ? (
+                            <div className="w-full flex justify-end">
+                                <Loader2 className="h-9 w-9 animate-spin" />
+                            </div>
+                        ) : (
+                            <p className="w-full text-right text-3xl font-medium">{stakeAmount}</p>
+                        )
+                    }
+                </div>
+                <div className="flex flex-row justify-between items-center border border-green-500/20 rounded-lg p-3 relative">
+                    <p className="text-md font-sm absolute -top-4 bg-[#141618]">{t('trade.total_reward_amount')}</p>
+                    {
+                        showUserInfoLoading ? (
+                            <div className="w-full flex justify-end">
+                                <Loader2 className="h-9 w-9 animate-spin" />
+                            </div>
+                        ) : (
+                            <p className="w-full text-right text-3xl font-medium">{rewardsAmount}</p>
+                        )
+                    }
                 </div>
             </div>
             <div className="w-full my-3">
@@ -116,7 +164,7 @@ export const UnstakeForm = ({
                                 <Loader2 className="h-6 w-6 animate-spin" />
                             </div>
                         ) : (
-                            t('trade.unstake')
+                            t('trade.unstake_and_claim_rewards')
                         )}
                     </button>
                 )}
