@@ -3,7 +3,6 @@
 const routes = {
   home: () => '/',
   graphVisualization: () => '/graph-visualization',
-  pumpMint: () => '/pump-mint',
   address: ({ id }: { id: string }) => `/${id}`,
   trade: () => '/trade',
   tradeId: ({ id }: { id: string }) => `/trade/${id}`,

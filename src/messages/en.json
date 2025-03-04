@@ -47,7 +47,6 @@
   "header": {
     "title": "solana_social_explorer",
     "search": "search",
-    "PumpMint": "PumpMint",
     "trade": "trade",
     "portfolio": "portfolio",
     "connect_wallet": "connect wallet",
@@ -338,10 +337,5 @@
     "failed_to_fetch_transaction": "Failed to fetch transaction",
     "transaction_not_found": "Transaction not found",
     "amount_exceeds_your_balance": "Insufficient balance for this transaction"
-  },
-  "pumpfun": {
-    "the_pumpfun_token_mint_transaction_failed_please_try_again": "The pumpfun token mint transaction failed. Please try again.",
-    "the_pumpfun_token_mint_transaction_was_successful": "The pumpfun token mint transaction was successful.",
-    "pumpfun_token_mint_failed":"The pumpfun token mint failed"
   }
 }
