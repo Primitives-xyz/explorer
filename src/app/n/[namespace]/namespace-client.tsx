@@ -84,7 +84,7 @@ export function NamespaceClient({
                   <button
                     className="font-mono text-base"
                     onClick={() => 
-                      router.push(`/namespace/${profile.namespace.name}/profile/${profile.profile.username}`)
+                      router.push(`/n/${profile.namespace.name}/${profile.profile.username}`)
                     }
                   >
                     @{profile.profile.username}

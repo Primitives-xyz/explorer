@@ -114,7 +114,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
               href={
                 identity.namespace.name === EXPLORER_NAMESPACE
                   ? `/${identity.profile.username}`
-                  : `/namespace/${identity.namespace.name}/profile/${identity.profile.username}`
+                  : `/n/${identity.namespace.name}/${identity.profile.username}`
               }
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}

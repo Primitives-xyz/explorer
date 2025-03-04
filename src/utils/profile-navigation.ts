@@ -24,7 +24,7 @@ export function handleProfileNavigation(
       return
     } else {
       // For other namespaces, redirect to the new URL format
-      router.push(`/namespace/${profile.namespace?.name}/profile/${profile.profile.username}`)
+      router.push(`/n/${profile.namespace?.name}/${profile.profile.username}`)
     }
 
     return
@@ -42,7 +42,7 @@ export function handleProfileNavigation(
     return
   } else {
     // For other namespaces, redirect to the new URL format
-    router.push(`/namespace/${profile.namespace?.name}/profile/${profile.profile.username}`)
+    router.push(`/n/${profile.namespace?.name}/${profile.profile.username}`)
   }
 
   // Fallback to namespace view
