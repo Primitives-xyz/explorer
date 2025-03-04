@@ -3,6 +3,7 @@ import { memo, useEffect } from 'react'
 import { Avatar } from '../common/avatar'
 import { TokenAddress } from '../tokens/token-address'
 import { FollowButton } from './follow-button'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 
 interface ProfileHeaderProps {
   username: string
@@ -11,6 +12,7 @@ interface ProfileHeaderProps {
   walletAddressError?: boolean
   onEditProfile: () => void
   isOwnProfile: boolean
+  namespaceLink?: string | null
 }
 
 export const ProfileHeader = memo(function ProfileHeader({
@@ -20,14 +22,17 @@ export const ProfileHeader = memo(function ProfileHeader({
   walletAddressError,
   onEditProfile,
   isOwnProfile,
+  namespaceLink,
 }: ProfileHeaderProps) {
   useEffect(() => {
     console.log('[ProfileHeader] rerender:', {
       username,
+      profileData,
       walletAddress: profileData?.walletAddress,
       isLoading,
       walletAddressError,
       isOwnProfile,
+      namespaceLink
     })
   })
 
@@ -56,6 +61,15 @@ export const ProfileHeader = memo(function ProfileHeader({
                   )}
                 </div>
               )}
+              {!isLoading && namespaceLink && namespaceLink !== '' && (
+                <div className="flex items-center gap-2 text-sm  mt-2">
+                  <a href={namespaceLink} target="_blank">
+                    <button className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0">
+                    See original
+                    </button>
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -68,7 +82,11 @@ export const ProfileHeader = memo(function ProfileHeader({
               Edit Profile
             </button>
           )}
-          <FollowButton username={username} size="lg" />
+          {profileData?.namespace?.name === EXPLORER_NAMESPACE &&
+          <>
+            <FollowButton username={username} size="lg" />
+          </>
+          }
         </div>
       </div>
     </div>

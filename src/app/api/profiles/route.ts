@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
   const useIdentities = searchParams.get('useIdentities') === 'true'
-
+  const namespace = searchParams.get('namespace')
   try {
     if (useIdentities) {
       // For related profiles, use identities endpoint
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       }
 
       const identitiesResponse = await fetch(
-        `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=0&pageSize=20`,
+        `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}`,
         {
           method: 'GET',
           headers: {
@@ -67,11 +67,18 @@ export async function GET(request: Request) {
     } else {
       // For regular profile fetching, use profiles endpoint
       // TODO: shouldIncludeExternalProfiles was deprecated and no longer exists in tapestry. It should get from the identities.
-      const apiUrl = walletAddress
-        ? `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`
-        : `${BASE_URL}/profiles?apiKey=${API_KEY}`
 
-      const response = await fetch(apiUrl, {
+      let url = `${BASE_URL}/profiles?apiKey=${API_KEY}`
+
+      if (!!walletAddress) {
+        url = `${url}&walletAddress=${walletAddress}&shouldIncludeExternalProfiles=true`
+      }
+
+      if (!!namespace) {
+        url = `${url}&namespace=${namespace}`
+      }
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           Accept: 'application/json',

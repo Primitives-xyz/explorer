@@ -6,6 +6,7 @@ import { memo } from 'react'
 import { Avatar } from '../common/avatar'
 import { FollowButton } from '../profile/follow-button'
 import { TokenAddress } from '../tokens/token-address'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 
 interface SocialUser {
   id: string
@@ -26,7 +27,7 @@ interface SocialSectionProps {
   type: 'followers' | 'following'
 }
 
-const SocialCard = memo(({ user }: { user: SocialUser; type: string }) => {
+const SocialCard = memo(({ user }: { user: SocialUser; type: string, namespace?: string }) => {
   const router = useRouter()
   return (
     <div className="p-3 hover:bg-green-900/10">
@@ -43,9 +44,13 @@ const SocialCard = memo(({ user }: { user: SocialUser; type: string }) => {
             >
               @{user.username}
             </button>
-            <div className="flex-shrink-0">
-              <FollowButton username={user.username} size="sm" />
-            </div>
+            {user.namespace === EXPLORER_NAMESPACE && // only give the possibility of follow for users inside explorer app
+            (
+              <div className="flex-shrink-0">
+                <FollowButton username={user.username} size="sm" />
+              </div>
+            )
+            }
           </div>
 
           {user.wallet?.id && (
@@ -91,7 +96,11 @@ export function SocialSection({
           <div className="p-4 text-center  font-mono">No {type} found</div>
         ) : (
           users.map((user) => (
-            <SocialCard key={user.id} user={user} type={type} />
+            <SocialCard 
+              key={user.id}
+              user={user}
+              namespace={user.namespace}
+              type={type} />
           ))
         )}
       </div>

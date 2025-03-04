@@ -1,10 +1,9 @@
 'use client'
 
 import PortfolioTabs from '@/components/portfolio/portfolio-tabs'
-import type { TokenPortfolioResponse } from '@/types/Token'
-import { isValidSolanaAddress } from '@/utils/validation'
+import { useIdentities } from '@/hooks/use-identities'
+import { usePortfolioData } from '@/hooks/usePortfolioData'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 import { ProfileSection } from '../profile-section'
 import { WalletFollowButton } from '../profile/wallet-follow-button'
@@ -13,98 +12,21 @@ import { PortfolioBalanceSection } from '../tokens/sol-balance-section'
 import { TradingStats } from '../trading/trading-stats'
 import { TransactionSection } from '../transaction-section'
 
-interface TokenData {
-  nativeBalance: {
-    lamports: number
-    price_per_sol: number
-    total_price: number
-  }
-}
-
 /**
  * Renders a wallet view with portfolio tabs
  */
 export function WalletView({ address }: { address: string }) {
-  const [_tokenData, setTokenData] = useState<TokenData | null>(null)
   const { walletAddress } = useCurrentWallet()
-  const [portfolioData, setPortfolioData] = useState<
-    TokenPortfolioResponse | undefined
-  >(undefined)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
+  const { portfolioData, isLoading, error } = usePortfolioData(address)
+  const {
+    identities,
+    loading: isLoadingIdentities,
+    error: identitiesError,
+  } = useIdentities(address)
   const t = useTranslations()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!address) return
-
-      // Validate wallet address before making any API calls
-      if (!isValidSolanaAddress(address)) {
-        setError(t('error.invalid_solana_wallet_address'))
-        setIsLoading(false)
-        return
-      }
-
-      setIsLoading(true)
-      setError(null)
-
-      try {
-        // Fetch token data
-        const tokenResponse = await fetch(
-          `/api/tokens?address=${address}&type=all`
-        )
-        if (!tokenResponse.ok) {
-          throw new Error(
-            `${t('error.http_error_status')}: ${tokenResponse.status}`
-          )
-        }
-        const tokenResult = await tokenResponse.json()
-        if ('error' in tokenResult) {
-          throw new Error(tokenResult.error)
-        }
-        setTokenData(tokenResult)
-
-        // Fetch portfolio data
-        const portfolioOptions = {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            'x-chain': 'solana',
-            'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY || '',
-          },
-        }
-
-        const portfolioResponse = await fetch(
-          `https://public-api.birdeye.so/v1/wallet/token_list?wallet=${address}`,
-          portfolioOptions
-        )
-        if (!portfolioResponse.ok) {
-          throw new Error(
-            `${t('error.portfolio_http_error_status')}: ${
-              portfolioResponse.status
-            }`
-          )
-        }
-        const portfolioResult = await portfolioResponse.json()
-        setPortfolioData(portfolioResult)
-      } catch (error) {
-        console.error(t('error.failed_to_fetch_data'), error)
-        setError(
-          error instanceof Error
-            ? error.message
-            : t('error.failed_to_fetch_data')
-        )
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [address])
-
   // Show error state if wallet address is invalid
-  if (error === 'Invalid Solana wallet address') {
+  if (error === t('error.invalid_solana_wallet_address')) {
     return (
       <div className="px-4 py-8">
         <div className="text-red-500 font-mono">
@@ -132,6 +54,12 @@ export function WalletView({ address }: { address: string }) {
           <ProfileSection
             walletAddress={address}
             isLoadingProfileData={isLoading}
+            profileData={{
+              profiles:
+                !identitiesError && !isLoadingIdentities && identities
+                  ? identities
+                  : [],
+            }}
             hasSearched={true}
           />
         </div>
@@ -142,7 +70,7 @@ export function WalletView({ address }: { address: string }) {
             <PortfolioBalanceSection
               hideTitle={false}
               isLoading={isLoading}
-              error={error || undefined}
+              error={error}
               portfolioData={portfolioData}
             />
           </div>

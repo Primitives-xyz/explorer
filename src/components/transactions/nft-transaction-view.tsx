@@ -1,5 +1,10 @@
+import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
+import { Avatar } from '@/components/common/avatar'
 import { useTokenInfo } from '@/hooks/use-token-info'
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
+import type { Profile } from '@/utils/api'
 import { formatNumber } from '@/utils/format'
+import { formatTimeAgo } from '@/utils/format-time'
 import type { CompressedNFTMintEvent } from '@/utils/helius/types'
 import {
   type ExtendedTransaction,
@@ -10,15 +15,11 @@ import {
   isNFTBuyTransaction,
   normalizeTransfers,
 } from '@/utils/nft-transaction'
+import { route } from '@/utils/routes'
+import Link from 'next/link'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { TokenAddress } from '../tokens/token-address'
-import { Avatar } from '@/components/common/avatar'
-import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import type { Profile } from '@/utils/api'
-import { formatTimeAgo } from '@/utils/format-time'
 import { TransactionBadge } from './transaction-badge'
-import Link from 'next/link'
-import { route } from '@/utils/routes'
 
 interface NFTTransactionViewProps {
   tx: ExtendedTransaction
@@ -31,12 +32,12 @@ export const NFTTransactionView = memo(function NFTTransactionView({
 }: NFTTransactionViewProps) {
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [_detectionMethod, setDetectionMethod] = useState<string>('')
-  const { data: nftInfo, loading, error } = useTokenInfo(nftMint)
+  const { data: nftInfo, error } = useTokenInfo(nftMint)
 
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
-    (p: Profile) => p.namespace.name === 'nemoapp'
+    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   // Memoize expensive computations
@@ -126,7 +127,9 @@ export const NFTTransactionView = memo(function NFTTransactionView({
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <span>{isMint ? 'minted NFT' : isBuy ? 'bought NFT' : 'sold NFT'}</span>
+            <span>
+              {isMint ? 'minted NFT' : isBuy ? 'bought NFT' : 'sold NFT'}
+            </span>
             <Link
               href={route('address', { id: tx.signature })}
               target="_blank"
@@ -173,9 +176,8 @@ export const NFTTransactionView = memo(function NFTTransactionView({
           )}
 
           {/* Collection Tag */}
-          {nftInfo?.result?.grouping?.find(
-            (g) => g.group_key === 'collection'
-          )?.group_value && (
+          {nftInfo?.result?.grouping?.find((g) => g.group_key === 'collection')
+            ?.group_value && (
             <div className="flex items-center gap-1">
               <span>Collection:</span>
               <TokenAddress
@@ -189,8 +191,7 @@ export const NFTTransactionView = memo(function NFTTransactionView({
           )}
 
           {/* Compressed NFT Badge */}
-          {(tx.type === 'COMPRESSED_NFT_MINT' ||
-            compressedNFTMintEvent) && (
+          {(tx.type === 'COMPRESSED_NFT_MINT' || compressedNFTMintEvent) && (
             <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/10 ">
               Compressed
             </span>

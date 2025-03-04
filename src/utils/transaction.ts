@@ -54,7 +54,7 @@ export const getTransactionTypeColor = (type: string, source: string) => {
     case 'DEPOSIT':
       return 'bg-green-900/50  border-green-800'
     default:
-      return 'bg-gray-900/50 text-gray-400 border-gray-800'
+      return '/50 text-gray-400 border-gray-800'
   }
 }
 

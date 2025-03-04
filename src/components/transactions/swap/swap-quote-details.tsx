@@ -44,7 +44,7 @@ export function SwapQuoteDetails({
         <div className="text-right">
           {useSSEForFees ? (
             <div className="flex flex-col items-end">
-              <span className="text-sm line-through /50">
+              <span className="text-sm line-through">
                 {formatUSDC(platformFeeUSDC)} ({PLATFORM_FEE_BPS / 100}%)
               </span>
               <span className="text-sm ">

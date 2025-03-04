@@ -1,3 +1,4 @@
+import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import {
   useDynamicContext,
   useIsLoggedIn,
@@ -59,16 +60,17 @@ export function WalletContextProvider({
 
   const { mainUsername, image } = useMemo(() => {
     if (!profiles) return { mainUsername: '', image: null }
-
     const mainProfile = profiles.find(
-      (profile: any) => profile.namespace.name === 'nemoapp'
+      (profile: any) =>
+        profile.namespace.name === EXPLORER_NAMESPACE &&
+        profile.wallet.address === walletAddress
     )?.profile
 
     return {
       mainUsername: mainProfile?.username || '',
       image: mainProfile?.image || null,
     }
-  }, [profiles])
+  }, [profiles, walletAddress])
 
   // Memoize the context value to prevent unnecessary rerenders of consumers
   const value = useMemo(

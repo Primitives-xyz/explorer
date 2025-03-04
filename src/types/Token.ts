@@ -1,28 +1,22 @@
+import { DAS } from 'helius-sdk'
+
 // Common token properties
 export interface BaseTokenInfo {
   interface: string
   id: string
-  content: {
-    $schema?: string
-    json_uri?: string
-    files?: Array<{
-      uri: string
-      cdn_uri?: string
-      type: string
+  content: DAS.Content
+  metadata: {
+    name: string
+    symbol: string
+    description: string
+    attributes?: Array<{
+      trait_type: string
+      value: string
     }>
-    metadata: {
-      name: string
-      symbol: string
-      description: string
-      attributes?: Array<{
-        trait_type: string
-        value: string
-      }>
-    }
-    links?: {
-      image?: string
-      external_url?: string
-    }
+  }
+  links?: {
+    image?: string
+    external_url?: string
   }
   authorities: Array<{
     address: string
@@ -143,6 +137,7 @@ export interface TokenPortfolioItem {
   uiAmount: number
   chainId: string
   logoURI: string
+  icon: string
   priceUsd: number
   valueUsd: number
 }

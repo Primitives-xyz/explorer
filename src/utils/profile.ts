@@ -1,15 +1,6 @@
 import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
-
-interface ProfileMetadata {
-  image: string | null
-  bio: string | null
-  socialCounts: {
-    followers: number
-    following: number
-  }
-  walletAddress: string
-}
+import { ProfileMetadata } from '@/utils/metadata/profile-metadata'
 
 /**
  * Gets the profile metadata for a given username

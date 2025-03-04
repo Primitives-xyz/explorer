@@ -1,3 +1,5 @@
+import { DAS } from 'helius-sdk'
+
 export enum TokenType {
   ALL = 'all',
   FUNGIBLE = 'fungible',
@@ -161,21 +163,7 @@ export interface FungibleTokenDetailsProps {
   tokenInfo: {
     id: string
     interface: string
-    content: {
-      metadata: {
-        name: string
-        symbol: string
-        description: string
-      }
-      files?: Array<{
-        uri: string
-        type: string
-        cdn_uri?: string
-      }>
-      links?: {
-        image?: string
-      }
-    }
+    content: DAS.Content
     authorities: Array<{
       address: string
       scopes: string[]

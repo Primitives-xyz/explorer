@@ -27,6 +27,7 @@ interface ProfileWithStats extends Profile {
 
 interface ProfileData {
   profiles: any[]
+  totalCount?: number
 }
 
 interface ProfileSectionProps {
@@ -75,7 +76,12 @@ const ProfileCard = memo(
     const handleProfileClick = useCallback(() => {
       if (!profile) return // Add guard clause
       try {
-        handleProfileNavigation(profile, router)
+        if (profile.namespace?.name === EXPLORER_NAMESPACE) {
+          handleProfileNavigation(profile, router)
+        } else {
+          // For other namespaces, redirect to the new URL format
+          router.push(`/namespace/${profile.namespace?.name}/profile/${profile.profile.username}`)
+        }
       } catch (error) {
         console.error('Error navigating to profile:', error)
       }
@@ -85,8 +91,15 @@ const ProfileCard = memo(
       (e: React.MouseEvent) => {
         e.stopPropagation() // Prevent event bubbling
         if (!profile?.namespace?.name) return // Add guard clause
+
         try {
-          router.push(route('namespace', { namespace: profile.namespace.name }))
+          if (profile.namespace.name === EXPLORER_NAMESPACE) {
+            router.push(route('address', { id: profile.profile.username }))
+          } else {
+            router.push(
+              route('namespace', { namespace: profile.namespace.name })
+            )
+          }
         } catch (error) {
           console.error('Error navigating to namespace:', error)
         }
@@ -98,12 +111,19 @@ const ProfileCard = memo(
       <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
         <div className="flex items-start gap-3 h-full">
           <div className="relative flex-shrink-0">
-            <Avatar
-              username={profile.profile.username}
-              size={48}
-              imageUrl={profile.profile.image}
-            />
-            {profile.namespace?.faviconURL && (
+            <button
+              onClick={handleProfileClick}
+              className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-full"
+              aria-label={`View ${profile.profile.username}'s profile`}
+            >
+              <Avatar
+                username={profile.profile.username}
+                size={48}
+                imageUrl={profile.profile.image}
+              />
+            </button>
+            {profile.namespace?.faviconURL &&
+            profile.namespace?.name !== EXPLORER_NAMESPACE ? (
               <button
                 onClick={handleNamespaceClick}
                 className="absolute -bottom-1.5 -right-1.5 hover:scale-110 transition-transform"
@@ -114,7 +134,15 @@ const ProfileCard = memo(
                   className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
                 />
               </button>
-            )}
+            ) : profile.namespace?.faviconURL ? (
+              <div className="absolute -bottom-1.5 -right-1.5">
+                <img
+                  src={profile.namespace.faviconURL}
+                  alt={profile.namespace.readableName}
+                  className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
+                />
+              </div>
+            ) : null}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-col gap-1.5">
@@ -160,7 +188,7 @@ const ProfileCard = memo(
 
               {profile.namespace && (
                 <div className="flex items-center gap-2">
-                  <span className="/50 text-xs">
+                  <span className=" text-xs">
                     <button
                       onClick={handleNamespaceClick}
                       className="hover: transition-colors"
@@ -319,7 +347,7 @@ export const ProfileSection = ({
     <DataContainer
       key={key}
       title={title}
-      count={filteredProfiles?.length || 0}
+      count={profileData?.totalCount ?? filteredProfiles?.length ?? 0}
       error={error}
       height="large"
       headerRight={

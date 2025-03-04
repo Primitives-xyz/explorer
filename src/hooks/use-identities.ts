@@ -1,7 +1,31 @@
 import { isValidSolanaAddress } from '@/utils/validation'
 import useSWR, { mutate } from 'swr'
 
-export const useGetProfiles = (walletAddress: string) => {
+export interface Identity {
+  profile: {
+    id: string
+    created_at: string
+    namespace: string
+    username: string
+    bio: string | null
+    image: string | null
+  }
+  wallet: {
+    address: string
+  }
+  namespace: {
+    name: string
+    readableName: string
+    userProfileURL: string
+    faviconURL: string | null
+  }
+}
+
+interface IdentitiesResponse {
+  profiles: Identity[]
+}
+
+export const useIdentities = (walletAddress: string) => {
   const fetcher = async (url: string) => {
     // Validate wallet address before making the API call
     if (walletAddress && !isValidSolanaAddress(walletAddress)) {
@@ -11,9 +35,9 @@ export const useGetProfiles = (walletAddress: string) => {
     const res = await fetch(url)
     if (!res.ok) {
       const errorData = await res.json()
-      throw new Error(errorData.error || 'Failed to fetch profiles')
+      throw new Error(errorData.error || 'Failed to fetch identities')
     }
-    const data = await res.json()
+    const data = (await res.json()) as IdentitiesResponse
     return data.profiles
   }
 
@@ -22,11 +46,11 @@ export const useGetProfiles = (walletAddress: string) => {
     : null
 
   const {
-    data: profiles,
+    data: identities,
     error,
     isLoading,
-    mutate: mutateProfiles,
-  } = useSWR(key, fetcher, {
+    mutate: mutateIdentities,
+  } = useSWR<Identity[], Error>(key, fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     dedupingInterval: 5000, // 5 seconds
@@ -39,10 +63,15 @@ export const useGetProfiles = (walletAddress: string) => {
     isPaused: () => !walletAddress,
   })
 
-  return { profiles, loading: isLoading, error, mutateProfiles }
+  return {
+    identities,
+    loading: isLoading,
+    error,
+    mutateIdentities,
+  }
 }
 
 // Export a function to manually trigger revalidation
-export const refreshProfiles = (walletAddress: string) => {
+export const refreshIdentities = (walletAddress: string) => {
   return mutate(`/api/identities?walletAddress=${walletAddress}`)
 }

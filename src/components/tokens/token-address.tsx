@@ -34,7 +34,7 @@ export const TokenAddress = ({ address }: TokenAddressProps) => {
         className="/90 hover: transition-all hover:scale-[1.02] truncate font-medium tracking-wider bg-green-500/10 hover:bg-green-500/20 px-2 py-1 rounded-md flex items-center gap-1.5 border border-green-500/20 hover:border-green-500/30"
         title={address}
       >
-        <span className="/50">→</span>
+        <span className="">→</span>
         {displayAddress}
       </button>
       <button

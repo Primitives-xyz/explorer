@@ -30,17 +30,15 @@ export function usePeopleInCommon(
   { page = 1, pageSize = 1000 }: PaginationOptions = {}
 ) {
   const { mainUsername } = useCurrentWallet()
-
   const { data, error, isLoading } = useSWR<PeopleInCommonResponse>(
-    tokenMint
-      ? `/api/tokens/${tokenMint}/holders?requestorId=${mainUsername}&page=${page}&pageSize=${pageSize}`
-      : null,
+    `/api/tokens/${tokenMint}/holders?requestorId=${mainUsername}&page=${page}&pageSize=${pageSize}`,
     fetchTokenOwners,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       dedupingInterval: 30000, // 30 seconds
       revalidateIfStale: false,
+      isPaused: () => !mainUsername || !tokenMint, // Skip the request if mainUsername or tokenMint not provided
     }
   )
 

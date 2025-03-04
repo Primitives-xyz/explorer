@@ -1,5 +1,6 @@
 'use client'
 
+import { useIdentities } from '@/hooks/use-identities'
 import { useProfileData } from '@/hooks/use-profile-data'
 import { useTargetWallet } from '@/hooks/use-target-wallet'
 import { cn } from '@/utils/utils'
@@ -18,6 +19,7 @@ import { UpdateProfileModal } from './update-profile-modal'
 
 interface Props {
   username: string
+  namespace?: string
 }
 
 // Memoize the modals to prevent unnecessary rerenders
@@ -58,7 +60,8 @@ const ErrorCard = memo(function ErrorCard() {
   )
 })
 
-export function ProfileContent({ username }: Props) {
+
+export function ProfileContent({ username, namespace }: Props) {
   const { mainUsername } = useCurrentWallet()
   const [showFollowersModal, setShowFollowersModal] = useState(false)
   const [showFollowingModal, setShowFollowingModal] = useState(false)
@@ -71,11 +74,10 @@ export function ProfileContent({ username }: Props) {
     walletAddressError,
     serverError,
     isOwnWallet,
-  } = useTargetWallet(username)
+  } = useTargetWallet(username, namespace)
 
   const {
     profileData,
-    profiles,
     followers,
     following,
     comments,
@@ -83,7 +85,12 @@ export function ProfileContent({ username }: Props) {
     isLoadingFollowers,
     isLoadingFollowing,
     isLoadingComments,
-  } = useProfileData(username, mainUsername)
+  } = useProfileData(username, mainUsername, namespace)
+  const {
+    identities,
+    loading: isLoadingIdentities,
+    error: identitiesError,
+  } = useIdentities(targetWalletAddress || '')
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
@@ -125,6 +132,7 @@ export function ProfileContent({ username }: Props) {
 
   return (
     <div className="py-8">
+     < >
       <ProfileHeader
         username={username}
         profileData={profileData}
@@ -132,6 +140,7 @@ export function ProfileContent({ username }: Props) {
         walletAddressError={walletAddressError}
         onEditProfile={handleEditProfile}
         isOwnProfile={isOwnWallet}
+        namespaceLink={profileData?.namespace?.userProfileURL ? `${profileData?.namespace?.userProfileURL}/${username}` : null}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -142,7 +151,7 @@ export function ProfileContent({ username }: Props) {
             onFollowersClick={handleFollowersClick}
             onFollowingClick={handleFollowingClick}
           />
-
+          {!namespace && (
           <Card>
             <div className="border-b border-green-900/20">
               <nav className="flex" aria-label="Tabs">
@@ -176,6 +185,7 @@ export function ProfileContent({ username }: Props) {
               )}
             </div>
           </Card>
+            )}
         </div>
 
         <div className="space-y-6">
@@ -187,10 +197,19 @@ export function ProfileContent({ username }: Props) {
 
           <ProfileSection
             walletAddress={targetWalletAddress}
-            hasSearched={!isLoading}
-            isLoadingProfileData={isLoading}
-            profileData={{ profiles: profiles || [] }}
-            title="related_profiles"
+            hasSearched={!isLoadingIdentities && !!targetWalletAddress}
+            isLoadingProfileData={
+              isLoadingIdentities || isLoadingWallet || !targetWalletAddress
+            }
+            profileData={{
+              profiles:
+                !identitiesError && !isLoadingIdentities && identities
+                  ? identities
+                  : [],
+            }}
+            title={
+              identitiesError ? 'error_loading_profiles' : 'related_profiles'
+            }
           />
         </div>
       </div>
@@ -224,6 +243,7 @@ export function ProfileContent({ username }: Props) {
           onProfileUpdated={handleProfileUpdated}
         />
       )}
+      </>
     </div>
   )
 }

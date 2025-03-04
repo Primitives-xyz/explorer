@@ -9,9 +9,11 @@ async function fetchFollowing(url: string): Promise<IGetSocialResponse> {
   return res.json()
 }
 
-export function useProfileFollowing(username: string | null) {
+export function useProfileFollowing(username: string | null, namespace: string | null | undefined) {
+  const namespaceQuery = namespace ? `?namespace=${namespace}` : '';  
+
   const { data, error, mutate } = useSWR<IGetSocialResponse>(
-    username ? `/api/profiles/${username}/following` : null,
+    username ? `/api/profiles/${username}/following${namespaceQuery}` : null,
     fetchFollowing,
     {
       revalidateOnFocus: false,

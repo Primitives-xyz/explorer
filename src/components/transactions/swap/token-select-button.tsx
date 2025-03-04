@@ -30,27 +30,31 @@ export function TokenSelectButton({
 }: TokenSelectButtonProps) {
   return (
     <button
-      className="bg-green-900/20  p-3 rounded-lg w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors group"
+      className="bg-green-900/20 p-2 sm:p-3 rounded-lg w-full text-left flex items-center justify-between hover:bg-green-900/30 transition-colors group"
       onClick={onClick}
       disabled={disabled}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {tokenInfo.image && (
           <img
             src={tokenInfo.image}
             alt={tokenInfo.symbol || currentToken}
-            className="w-7 h-7 rounded-full"
+            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full"
           />
         )}
         <div>
-          <div className="font-medium">{tokenInfo.symbol || currentToken}</div>
+          <div className="text-sm sm:text-base font-medium">
+            {tokenInfo.symbol || currentToken}
+          </div>
           {isLoggedIn && (
-            <div className="text-sm ">{isBalanceLoading ? '...' : balance}</div>
+            <div className="text-xs sm:text-sm text-green-100/70">
+              {isBalanceLoading ? '...' : balance}
+            </div>
           )}
         </div>
       </div>
       <div className="opacity-50 group-hover:opacity-100 transition-opacity">
-        <ArrowLeftRight className="h-4 w-4 rotate-90" />
+        <ArrowLeftRight className="h-3 w-3 sm:h-4 sm:w-4 rotate-90" />
       </div>
     </button>
   )

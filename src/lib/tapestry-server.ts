@@ -22,7 +22,6 @@ export async function fetchTapestryServer<T = any>({
   // Add query parameter separator based on existing params
   const separator = cleanEndpoint.includes('?') ? '&' : '?'
   const url = `${BASE_URL}/${cleanEndpoint}${separator}apiKey=${API_KEY}`
-
   try {
     const options: RequestInit = {
       method,
@@ -40,20 +39,10 @@ export async function fetchTapestryServer<T = any>({
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('[Tapestry] API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        endpoint: cleanEndpoint,
-        error: errorText,
-        url: url.replace(API_KEY, '***'), // Redact API key from logs
-      })
 
       // Handle specific status codes
       switch (response.status) {
         case 404:
-          console.error(
-            `[Tapestry] Resource not found at endpoint: ${cleanEndpoint}`
-          )
           throw new Error(
             `API endpoint or resource not found: ${cleanEndpoint}`
           )
@@ -84,11 +73,7 @@ export async function fetchTapestryServer<T = any>({
     return responseData
   } catch (error: any) {
     // Log the full error for debugging
-    console.error('[Tapestry] Server Error:', {
-      error: error.message,
-      stack: error.stack,
-      endpoint: cleanEndpoint,
-    })
+
     throw error
   }
 }
