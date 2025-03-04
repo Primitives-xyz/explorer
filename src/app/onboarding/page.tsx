@@ -2,19 +2,12 @@
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { OnboardingSteps } from './onboarding-steps'
 
 export default function OnboardingPage() {
-  const router = useRouter()
-  const {
-    walletAddress,
-    mainUsername,
-    isLoggedIn,
-    loadingProfiles,
-    sdkHasLoaded,
-  } = useCurrentWallet()
+  const { walletAddress, mainUsername, loadingProfiles, sdkHasLoaded } =
+    useCurrentWallet()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
