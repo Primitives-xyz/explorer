@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/tapestry_explorer_statking_contract.json`.
  */
 export type SSEStaking = {
-  "address": "Duz2eqNJeK41LkRfnb8aBmEvxTTi7PP7JZvUUevSWVzM",
+  "address": "H799pQrKs8W84t6svhBog62tWSHjCNLQxpH41J6RUZ8z",
   "metadata": {
     "name": "tapestryExplorerStatkingContract",
     "version": "0.1.0",
@@ -835,7 +835,7 @@ export type SSEStaking = {
           },
           {
             "name": "totalRate",
-            "type": "u64"
+            "type": "f64"
           },
           {
             "name": "totalStakers",
