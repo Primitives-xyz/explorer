@@ -22,19 +22,11 @@ export function handleProfileNavigation(
     if (profile.namespace.name === EXPLORER_NAMESPACE) {
       router.push(route('address', { id: profile.profile.username }))
       return
+    } else {
+      // For other namespaces, redirect to the new URL format
+      router.push(`/namespace/${profile.namespace?.name}/profile/${profile.profile.username}`)
     }
 
-    // For other namespaces, redirect to their profile URL if available
-    if (profile.namespace.userProfileURL) {
-      const url = `${profile.namespace.userProfileURL.replace(/\/?$/, '/')}${
-        profile.profile.username
-      }`
-      window.open(url, '_blank')
-      return
-    }
-
-    // Fallback to namespace view
-    router.push(route('namespace', { namespace: profile.namespace.name }))
     return
   }
 
@@ -48,15 +40,9 @@ export function handleProfileNavigation(
   if (profile.namespace.name === EXPLORER_NAMESPACE) {
     router.push(route('address', { id: profile.profile.username }))
     return
-  }
-
-  // For other namespaces, redirect to their profile URL if available
-  if (profile.namespace.userProfileURL) {
-    const url = `${profile.namespace.userProfileURL.replace(/\/?$/, '/')}${
-      profile.profile.username
-    }`
-    window.open(url, '_blank')
-    return
+  } else {
+    // For other namespaces, redirect to the new URL format
+    router.push(`/namespace/${profile.namespace?.name}/profile/${profile.profile.username}`)
   }
 
   // Fallback to namespace view
