@@ -81,7 +81,7 @@ export function OnboardingSteps({
                 your first comment!
               </div>
               <Button
-                onClick={() => router.push(`/profile/${username}`)}
+                onClick={() => router.push(`/${username}`)}
                 className="bg-violet-600 hover:bg-violet-700 text-white"
               >
                 Go to my profile
@@ -98,7 +98,7 @@ export function OnboardingSteps({
       setCurrentStep(currentStep + 1)
     } else {
       // Handle completion
-      router.push(`/profile/${username}`)
+      router.push(`/${username}`)
     }
   }
 
