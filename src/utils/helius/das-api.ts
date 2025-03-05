@@ -30,9 +30,9 @@ interface SearchAssetsResponse {
 export async function fetchTokenInfo(
   id: string
 ): Promise<TokenResponse | null> {
+  console.log("RPC_URL:", RPC_URL)
   try {
     if (!RPC_URL) {
-      console.log("RPC_URL:", RPC_URL)
       throw new Error('RPC_URL is not configured')
     }
 
