@@ -252,7 +252,10 @@
     "explain_transaction": "Explain this transaction"
   },
   "portfolio_assets": {
-    "title": "portfolio_assets"
+    "title": "portfolio_assets",
+    "name": "name",
+    "mint": "mint",
+    "create": "creator"
   },
   "tapestry_social": {
     "title": "tapestry_social",

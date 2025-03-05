@@ -37,6 +37,7 @@ export async function generateMetadata({
     switch (routeType) {
       case 'token':
         const tokenInfo = await fetchTokenInfo(id)
+        console.log("tokenInfo: ", tokenInfo)
         if (tokenInfo?.result) {
           const imageUrl = resolveTokenImage(tokenInfo.result)
           const collection = tokenInfo.result.grouping?.find(

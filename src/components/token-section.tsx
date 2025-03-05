@@ -1,7 +1,7 @@
 'use client'
 
 import { formatNumber } from '@/utils/format'
-import type { FungibleToken, NFT } from '@/utils/types'
+import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useState } from 'react'
 import { ImageModal } from './tokens/image-modal'
 import { NFTGrid } from './tokens/NFT-grid'
@@ -24,10 +24,7 @@ export const TokenSection = ({
 }: TokenSectionProps) => {
   const [expandedTokenId, setExpandedTokenId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'value' | 'balance' | 'symbol'>('value')
-  const [selectedImage, setSelectedImage] = useState<{
-    url: string
-    symbol: string
-  } | null>(null)
+  const [selectedToken, setSelectedToken] = useState<NFT | TokenWithInscription | FungibleToken | null>(null)
 
   // Filter items based on token type
   const tokens = items.filter(
@@ -165,8 +162,8 @@ export const TokenSection = ({
             {nfts.length > 0 && (
               <NFTGrid
                 tokens={nfts}
-                onImageClick={(url, symbol) =>
-                  setSelectedImage({ url, symbol })
+                onImageClick={(token) =>
+                  setSelectedToken(token)
                 }
               />
             )}
@@ -174,12 +171,12 @@ export const TokenSection = ({
         )}
       </div>
 
-      {selectedImage && (
+      {selectedToken && (
         <ImageModal
           isOpen={true}
-          onClose={() => setSelectedImage(null)}
-          imageUrl={selectedImage.url}
-          symbol={selectedImage.symbol}
+          onClose={() => setSelectedToken(null)}
+          imageUrl={selectedToken.imageUrl}
+          symbol={selectedToken.symbol}
         />
       )}
     </div>

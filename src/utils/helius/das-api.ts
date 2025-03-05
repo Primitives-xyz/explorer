@@ -32,6 +32,7 @@ export async function fetchTokenInfo(
 ): Promise<TokenResponse | null> {
   try {
     if (!RPC_URL) {
+      console.log("RPC_URL:", RPC_URL)
       throw new Error('RPC_URL is not configured')
     }
 
