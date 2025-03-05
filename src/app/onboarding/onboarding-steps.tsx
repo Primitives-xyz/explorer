@@ -3,6 +3,7 @@
 import { SwapForm } from '@/components/transactions/swap/swap-form'
 import { Button } from '@/components/ui/button'
 import { DataCard } from '@/components/ui/data-card'
+import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { FollowSuggestedUsers } from './follow-suggested-users'
@@ -81,7 +82,9 @@ export function OnboardingSteps({
                 your first comment!
               </div>
               <Button
-                onClick={() => router.push(`/${username}`)}
+                onClick={() =>
+                  router.push(route('address', { id: username ?? '' }))
+                }
                 className="bg-violet-600 hover:bg-violet-700 text-white"
               >
                 Go to my profile
@@ -98,7 +101,7 @@ export function OnboardingSteps({
       setCurrentStep(currentStep + 1)
     } else {
       // Handle completion
-      router.push(`/${username}`)
+      router.push(route('address', { id: username ?? '' }))
     }
   }
 
