@@ -25,7 +25,8 @@
       "@drizzle/*": ["./drizzle/*"],
       "@components/*": ["src/components/*"],
       "@app/*": ["app/*"],
-      "@locales/*": ["locales/*"]
+      "@locales/*": ["locales/*"],
+      "@coral-xyz/anchor": ["./node_modules/@coral-xyz/anchor"]
     },
     "types": ["jest", "node"]
   },
