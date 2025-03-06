@@ -83,7 +83,7 @@ export function OnboardingSteps({
               </div>
               <Button
                 onClick={() =>
-                  router.push(route('address', { id: username ?? '' }))
+                  router.push(`/${username ?? ''}`)
                 }
                 className="bg-violet-600 hover:bg-violet-700 text-white"
               >
@@ -101,7 +101,7 @@ export function OnboardingSteps({
       setCurrentStep(currentStep + 1)
     } else {
       // Handle completion
-      router.push(route('address', { id: username ?? '' }))
+      router.push(`/${username ?? ''}`)
     }
   }
 
