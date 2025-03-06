@@ -123,7 +123,7 @@ export const NFTSection = ({
           onClose={() => setSelectedToken(null)}
           imageUrl={selectedToken.imageUrl}
           symbol={selectedToken.symbol}
-          nft={selectedToken}
+          token={selectedToken}
         />
       )}
     </div>

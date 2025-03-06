@@ -152,8 +152,8 @@ export const TokenSection = ({
                 onExpand={(id) =>
                   setExpandedTokenId(expandedTokenId === id ? null : id)
                 }
-                onImageClick={(url, symbol) =>
-                  setSelectedImage({ url, symbol })
+                onImageClick={(token) =>
+                  setSelectedToken(token)
                 }
                 sortBy={sortBy}
                 onSort={setSortBy}
@@ -177,6 +177,7 @@ export const TokenSection = ({
           onClose={() => setSelectedToken(null)}
           imageUrl={selectedToken.imageUrl}
           symbol={selectedToken.symbol}
+          token={selectedToken}
         />
       )}
     </div>

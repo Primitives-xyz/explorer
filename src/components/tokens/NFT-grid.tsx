@@ -141,16 +141,21 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
             <div className="space-y-2">
               <button
                 onClick={() => router.push(route('address', { id: token.id }))}
-                className="font-mono text-base uppercase truncate font-semibold group-hover: transition-colors w-full text-left hover:"
+                className="font-mono text-base uppercase truncate group-hover: transition-colors w-full text-left hover:"
               >
-                {t('portfolio_assets.name')}: {name} ({symbol && <span>{symbol}</span>})
+                <div className="flex flex-row gap-2">
+                  <p>{t('portfolio_assets.name')}:</p>
+                  <p>
+                    {name} {symbol.length ? <span>({symbol})</span> : null}
+                  </p>
+                </div>
               </button>
               <div className="font-mono text-base uppercase flex items-center gap-1">
                 <div className="flex items-center gap-1">
                   {t('portfolio_assets.mint')}:<TokenAddress address={token.id} />
                 </div>
               </div>
-              <div className="/80 flex items-center font-mono text-base uppercase group-hover:/80 transition-colors">
+              <div className="flex items-center font-mono text-base uppercase group-hover:/80 transition-colors">
                 {t('portfolio_assets.create')}:  {formatCreators(creators)}
               </div>
 
