@@ -97,7 +97,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-400 font-mono">
-            Connected Identities:
+            Connected Profiles:
           </span>
         </div>
       </div>
