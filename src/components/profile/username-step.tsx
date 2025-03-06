@@ -146,21 +146,22 @@ export function UsernameStep({
                         </span>
                       </div>
                       {hasMultipleNamespaces && (
-                        <div className="absolute -top-2 -right-2 bg-green-500 text-black text-xs rounded-full w-6 h-6 flex items-center justify-center font-medium shadow-lg shadow-black/20 transition-transform group-hover:scale-110">
-                          {relatedUsernames.length}
-                        </div>
-                      )}
-                      {hasMultipleNamespaces && (
-                        <div className="absolute left-0 right-0 -bottom-1 translate-y-full pt-2 hidden group-hover:block z-10">
-                          <div className="bg-black/90 border border-green-800 rounded-lg p-3 shadow-xl">
-                            <div className="text-xs text-green-400 mb-2">
+                        <>
+                          {/* Badge showing number of namespaces */}
+                          <div className="absolute -top-2 -right-2 bg-green-500 text-black text-xs rounded-full w-6 h-6 flex items-center justify-center font-medium shadow-lg shadow-black/20 transition-transform group-hover:scale-110">
+                            {relatedUsernames.length}
+                          </div>
+                          
+                          {/* Always visible namespace information */}
+                          <div className="mt-2 bg-black/90 border border-green-800 rounded-lg p-2 shadow-xl z-20 relative">
+                            <div className="text-xs text-green-400 mb-1">
                               Available on:
                             </div>
-                            <div className="space-y-2">
+                            <div className="flex flex-wrap gap-2">
                               {relatedUsernames.map((related) => (
                                 <div
                                   key={related.namespace}
-                                  className="flex items-center gap-2"
+                                  className="flex items-center gap-1"
                                 >
                                   {related.faviconURL && (
                                     <img
@@ -176,7 +177,7 @@ export function UsernameStep({
                               ))}
                             </div>
                           </div>
-                        </div>
+                        </>
                       )}
                     </button>
                   )
