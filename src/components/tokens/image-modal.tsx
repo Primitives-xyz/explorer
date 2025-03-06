@@ -4,6 +4,7 @@ import { useWallet } from '../auth/wallet-context'
 import { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 
 interface ImageModalProps {
   isOpen: boolean
@@ -25,6 +26,7 @@ export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageMo
         try {
           const response = await fetch(`/api/token?mint=${token.id}`)
           const tInfo = await response.json()
+          console.log("tInfo:", tInfo)
           if (['V1_NFT', 'V2_NFT', 'ProgrammableNFT', 'LEGACY_NFT', 'MplCoreAsset'].includes(token.interface)) {
             setTokenInfo(tInfo?.result as NFTTokenInfo)
             setTokenType("NFT")
@@ -50,31 +52,39 @@ export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageMo
             <div className="flex flex-col gap-6 md:flex-row h-full">
               <div className="md:w-2/5">
                 {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={symbol}
-                    className="rounded-lg"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.style.display = 'none'
-                      target.parentElement?.classList.add(
-                        'min-h-[200px]',
-                        'flex',
-                        'items-center',
-                        'justify-center'
-                      )
-                      target.insertAdjacentHTML(
-                        'afterend',
-                        `<div className="font-mono text-sm">Image failed to load</div>`
-                      )
-                    }}
-                  />
+                  <Link href={imageUrl} target='_blank'>
+                    <img
+                      src={imageUrl}
+                      alt={symbol}
+                      className="rounded-lg"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        target.parentElement?.classList.add(
+                          'min-h-[200px]',
+                          'flex',
+                          'items-center',
+                          'justify-center'
+                        )
+                        target.insertAdjacentHTML(
+                          'afterend',
+                          `<div className="font-mono text-sm">Image failed to load</div>`
+                        )
+                      }}
+                    /></Link>
+
                 ) : (
                   <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
                     <div className="font-mono text-sm">No image available</div>
                   </div>
                 )}
-                <div className='border border-green-500 mt-5 p-2 rounded-lg'>
+                <div
+                  className='flex justify-center items-center px-2 py-1 bg-green-600 hover:bg-green-700 rounded-lg my-1 cursor-pointer'
+                  onClick={() => { }}
+                >
+                  <span className='font-mono font-medium uppercase'>sell</span>
+                </div>
+                <div className='border border-green-500 my-1 p-2 rounded-lg'>
                   <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
                     Description
                   </h3>
