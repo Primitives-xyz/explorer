@@ -64,7 +64,7 @@ export default function UserHeader({
   const solBalance = solToken?.uiAmount ?? 0
   const solValue = solToken?.valueUsd ?? 0
   const processedProfileURL = ['kolscan', 'triberun'].includes(user.namespace || '') 
-    ? `${user.userProfileURL}/${user.walletAddress}` : `${user.userProfileURL}/${user.username}`
+    ? `${user.userProfileURL}${user.walletAddress}` : `${user.userProfileURL}${user.username}`
 
   // Format SOL balance with 3 decimal places
   const formattedSolBalance = solBalance.toFixed(3).replace(/\.?0+$/, '')
