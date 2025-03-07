@@ -12,10 +12,10 @@ interface ModalProps {
 
 export function Modal({
   isOpen,
-  onClose,
   children,
   title,
   className,
+  onClose,
 }: ModalProps) {
   const modalRoot = useRef<Element | null>(null)
 
