@@ -130,6 +130,11 @@ export function ProfileContent({ username, namespace }: Props) {
     { id: 'swaps', label: 'Swaps' },
   ] as const
 
+  let nsLink = profileData?.namespace?.userProfileURL ? profileData?.namespace?.userProfileURL : null;
+  if(nsLink != null){
+    nsLink = ['kolscan', 'tribe.run'].includes(nsLink) ? `${nsLink}${targetWalletAddress}` : `${nsLink}${username}`
+  }
+
   return (
     <div className="py-8">
      < >
@@ -140,7 +145,7 @@ export function ProfileContent({ username, namespace }: Props) {
         walletAddressError={walletAddressError}
         onEditProfile={handleEditProfile}
         isOwnProfile={isOwnWallet}
-        namespaceLink={profileData?.namespace?.userProfileURL ? `${profileData?.namespace?.userProfileURL}/${username}` : null}
+        namespaceLink={nsLink}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
