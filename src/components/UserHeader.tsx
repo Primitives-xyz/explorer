@@ -63,7 +63,7 @@ export default function UserHeader({
   const solToken = items.find((item) => item.symbol === 'SOL')
   const solBalance = solToken?.uiAmount ?? 0
   const solValue = solToken?.valueUsd ?? 0
-  const processedProfileURL = ['kolscan', 'triberun'].includes(user.namespace || '') 
+  const processedProfileURL = ['kolscan', 'tribe.run'].includes(user.namespace || '') 
     ? `${user.userProfileURL}${user.walletAddress}` : `${user.userProfileURL}${user.username}`
 
   // Format SOL balance with 3 decimal places
