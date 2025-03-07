@@ -42,7 +42,7 @@ export const DataContainer = ({
   }
 
   const colors = colorClasses[accentColor]
-  const heightClass = height === 'large' && 'h-[400px] lg:h-[600px]'
+  const heightClass = height === 'large' && 'h-[600px]'
 
   return (
     <div

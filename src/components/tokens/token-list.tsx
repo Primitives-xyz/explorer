@@ -8,7 +8,7 @@ interface TokenListProps {
   totalValue: number
   expandedTokenId: string | null
   onExpand: (id: string) => void
-  onImageClick: (url: string, symbol: string) => void
+  onImageClick: (token: FungibleToken) => void
   sortBy: 'value' | 'balance' | 'symbol'
   onSort: (sort: 'value' | 'balance' | 'symbol') => void
 }

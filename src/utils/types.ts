@@ -9,6 +9,7 @@ export interface BaseToken {
     | 'V2_NFT'
     | 'ProgrammableNFT'
     | 'LEGACY_NFT'
+    | 'MplCoreAsset'
   name: string
   symbol: string
   imageUrl: string | null
@@ -60,7 +61,7 @@ export interface NFTSupply {
 }
 
 export interface NFT extends BaseToken {
-  interface: 'V1_NFT' | 'V2_NFT' | 'ProgrammableNFT' | 'LEGACY_NFT'
+  interface: 'V1_NFT' | 'V2_NFT' | 'ProgrammableNFT' | 'LEGACY_NFT' | 'MplCoreAsset'
   supply?: NFTSupply
 }
 
