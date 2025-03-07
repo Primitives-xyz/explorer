@@ -63,6 +63,8 @@ export default function UserHeader({
   const solToken = items.find((item) => item.symbol === 'SOL')
   const solBalance = solToken?.uiAmount ?? 0
   const solValue = solToken?.valueUsd ?? 0
+  const processedProfileURL = ['kolscan', 'tribe.run'].includes(user.namespace || '') 
+    ? `${user.userProfileURL}${user.walletAddress}` : `${user.userProfileURL}${user.username}`
 
   // Format SOL balance with 3 decimal places
   const formattedSolBalance = solBalance.toFixed(3).replace(/\.?0+$/, '')
@@ -112,7 +114,7 @@ export default function UserHeader({
                   @{user.username}
                 </h1>
                 {user.userProfileURL && user.namespace != EXPLORER_NAMESPACE &&
-                <a href={`${user.userProfileURL}/${user.username}`} target="_blank">
+                <a href={`${processedProfileURL}`} target="_blank">
                     <button 
                     className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0">
                     See original
