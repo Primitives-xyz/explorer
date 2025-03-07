@@ -131,11 +131,9 @@ export function ProfileContent({ username, namespace }: Props) {
   ] as const
 
   let nsLink = profileData?.namespace?.userProfileURL ? profileData?.namespace?.userProfileURL : null;
-  console.log("🚀 ~ ProfileContent ~ nsLink:", nsLink)
-  if(nsLink != null){
-    nsLink = ['kolscan', 'tribe.run'].includes(nsLink) ? `${nsLink}${targetWalletAddress}` : `${nsLink}${username}`
+  if(nsLink != null && namespace != null){
+    nsLink = ['kolscan', 'tribe.run'].includes(namespace) ? `${nsLink}${targetWalletAddress}` : `${nsLink}${username}`
   }
-  console.log("🚀 ~ ProfileContent ~ nsLink:", nsLink)
 
   return (
     <div className="py-8">
