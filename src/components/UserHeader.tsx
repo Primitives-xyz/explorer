@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { usePortfolioData } from '@/hooks/usePortfolioData'
 import type { TokenPortfolioResponse } from '@/types/Token'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
@@ -51,11 +52,13 @@ interface UserHeaderProps {
 
 export default function UserHeader({
   user,
-  portfolioData,
-  isPortfolioLoading = false,
   isOwnProfile = false,
 }: UserHeaderProps) {
   const t = useTranslations()
+  // Fetch portfolio data for the wallet address
+  const { portfolioData, isLoading: isPortfolioLoading } = usePortfolioData(
+    user.walletAddress
+  )
   const { items = [], totalUsd = 0 } = portfolioData?.data || {}
   const [showUpdateModal, setShowUpdateModal] = useState(false)
 
