@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import type { TokenPortfolioResponse } from '@/types/Token'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
 import {
   CalendarIcon,
@@ -25,7 +26,6 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { FollowButton } from './profile/follow-button'
 import { UpdateProfileModal } from './profile/update-profile-modal'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
 
 interface User {
   username: string
@@ -63,8 +63,11 @@ export default function UserHeader({
   const solToken = items.find((item) => item.symbol === 'SOL')
   const solBalance = solToken?.uiAmount ?? 0
   const solValue = solToken?.valueUsd ?? 0
-  const processedProfileURL = ['kolscan', 'tribe.run'].includes(user.namespace || '') 
-    ? `${user.userProfileURL}${user.walletAddress}` : `${user.userProfileURL}${user.username}`
+  const processedProfileURL = ['kolscan', 'tribe.run'].includes(
+    user.namespace || ''
+  )
+    ? `${user.userProfileURL}${user.walletAddress}`
+    : `${user.userProfileURL}${user.username}`
 
   // Format SOL balance with 3 decimal places
   const formattedSolBalance = solBalance.toFixed(3).replace(/\.?0+$/, '')
@@ -113,14 +116,14 @@ export default function UserHeader({
                 <h1 className="text-xl font-mono font-bold text-green-500">
                   @{user.username}
                 </h1>
-                {user.userProfileURL && user.namespace != EXPLORER_NAMESPACE &&
-                <a href={`${processedProfileURL}`} target="_blank">
-                    <button 
-                    className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0">
-                    See original
-                    </button>
-                  </a>
-                }
+                {user.userProfileURL &&
+                  user.namespace != EXPLORER_NAMESPACE && (
+                    <a href={`${processedProfileURL}`} target="_blank">
+                      <button className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0">
+                        See original
+                      </button>
+                    </a>
+                  )}
                 <div className="flex gap-2">
                   {isOwnProfile && (
                     <Button

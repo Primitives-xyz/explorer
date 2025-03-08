@@ -1,4 +1,4 @@
-import type { IProfileResponse } from '@/models/profile.models'
+import { IProfileResponse } from '@/types/profile.types'
 import useSWR from 'swr'
 
 async function fetchProfile(url: string): Promise<IProfileResponse | null> {

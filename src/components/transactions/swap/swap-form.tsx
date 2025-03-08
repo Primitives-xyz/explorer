@@ -171,25 +171,6 @@ export function SwapForm({
     return true
   }
 
-  // Function to update effective amount with debounce
-  const updateEffectiveAmount = (value: string) => {
-    if (debouncedUpdate) clearTimeout(debouncedUpdate)
-
-    const timeout = setTimeout(() => {
-      if (validateAmount(value)) {
-        if (value !== '') {
-          setEffectiveAmount(value)
-        } else {
-          setEffectiveAmount('')
-        }
-      } else {
-        setEffectiveAmount('')
-      }
-    }, 500) // 500ms delay
-
-    setDebouncedUpdate(timeout)
-  }
-
   const handleSwapDirection = () => {
     // Reset all quote-related state first
     resetQuoteState()
