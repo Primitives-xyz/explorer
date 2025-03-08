@@ -60,7 +60,7 @@ export const DataContainer = ({
               className={`w-2 h-2 flex-shrink-0 ${colors.dot} rounded-full animate-pulse`}
             />
             <span className="truncate">
-              {'>'} {title}
+              {'>'} {typeof title === 'string' && title.includes('.') ? t(title) : title}
             </span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">

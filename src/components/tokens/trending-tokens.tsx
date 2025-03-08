@@ -174,6 +174,8 @@ export const TrendingTokens = () => {
     overscan: 5, // Number of items to render outside the visible area
   })
 
+  const t = useTranslations()
+
   useEffect(() => {
     const fetchTrendingTokens = async () => {
       try {
@@ -225,20 +227,20 @@ export const TrendingTokens = () => {
   }, [sortBy])
 
   return (
-    <DataContainer title="trending_tokens" count={tokens.length} error={error}>
+    <DataContainer title={t('trending_tokens.title')} count={tokens.length} error={error}>
       <FilterBar>
         <FilterButton
-          label="Volume 24h"
+          label={t('trending_tokens.volume_24h')}
           isSelected={sortBy === 'volume24hUSD'}
           onClick={() => setSortBy('volume24hUSD')}
         />
         <FilterButton
-          label="Rank"
+          label={t('trending_tokens.rank')}
           isSelected={sortBy === 'rank'}
           onClick={() => setSortBy('rank')}
         />
         <FilterButton
-          label="Liquidity"
+          label={t('trending_tokens.liquidity')}
           isSelected={sortBy === 'liquidity'}
           onClick={() => setSortBy('liquidity')}
         />
@@ -247,8 +249,8 @@ export const TrendingTokens = () => {
       <ScrollableContent
         isLoading={isLoading}
         isEmpty={tokens.length === 0}
-        loadingText=">>> FETCHING TRENDING TOKENS..."
-        emptyText=">>> NO TOKENS FOUND"
+        loadingText={t('trending_tokens.fetching_trending_tokens')}
+        emptyText={t('trending_tokens.no_tokens_found')}
       >
         <div
           ref={scrollContainerRef}
