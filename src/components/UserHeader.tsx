@@ -366,7 +366,7 @@ export default function UserHeader({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {isOwnProfile && (
+            {isOwnProfile && user.namespace === EXPLORER_NAMESPACE && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
