@@ -8,7 +8,6 @@ import {
 import { ProfileSectionProps } from '@/types/profile'
 import { extractUniqueNamespaces } from '@/utils/namespace-utils'
 import { Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { NamespaceFilters } from './profile/namespace-filters'
 import { ProfileCreationModal } from './profile/profile-creation-modal'
@@ -23,7 +22,6 @@ export const ProfileSection = ({
   title = 'profile_info',
 }: ProfileSectionProps) => {
   const key = walletAddress || 'default'
-  const router = useRouter()
   const [selectedNamespace, setSelectedNamespace] = useState<string | null>(
     null
   )
