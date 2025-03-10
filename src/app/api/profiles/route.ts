@@ -21,8 +21,9 @@ export async function GET(request: Request) {
       }
       
       let url = `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}`;
+      
       if(contactType) {
-        url += `&ContactType=${contactType}`;
+        url += `&contactType=${contactType}`;
       }
       console.log("🚀 ~ GET ~ url:", url)
       
