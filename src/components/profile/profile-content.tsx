@@ -2,6 +2,8 @@
 
 import { useIdentities } from '@/hooks/use-identities'
 import { useProfileData } from '@/hooks/use-profile-data'
+import { useProfileFollowers } from '@/hooks/use-profile-followers'
+import { useProfileFollowing } from '@/hooks/use-profile-following'
 import { useTargetWallet } from '@/hooks/use-target-wallet'
 import { cn } from '@/utils/utils'
 import { memo, useCallback, useState } from 'react'
@@ -61,7 +63,6 @@ const ErrorCard = memo(function ErrorCard() {
   )
 })
 
-
 export function ProfileContent({ username, namespace }: Props) {
   const { mainUsername } = useCurrentWallet()
   const [showFollowersModal, setShowFollowersModal] = useState(false)
@@ -77,6 +78,17 @@ export function ProfileContent({ username, namespace }: Props) {
     isOwnWallet,
   } = useTargetWallet(username, namespace)
 
+  const { followers, isLoading: isLoadingFollowers } = useProfileFollowers(
+    username,
+    namespace
+  )
+  const { following, isLoading: isLoadingFollowing } = useProfileFollowing(
+    username,
+    namespace
+  )
+
+  const { profileData, comments, isLoading, isLoadingComments } =
+    useProfileData(username, mainUsername, namespace)
   const {
     profileData,
     followers,
@@ -132,75 +144,79 @@ export function ProfileContent({ username, namespace }: Props) {
     { id: 'swaps', label: 'Swaps' },
   ] as const
 
-  let nsLink = profileData?.namespace?.userProfileURL ? profileData?.namespace?.userProfileURL : null;
-  if(nsLink != null && namespace != null){
-    nsLink = ['kolscan', 'tribe.run'].includes(namespace) ? `${nsLink}${targetWalletAddress}` : `${nsLink}${username}`
+  let nsLink = profileData?.namespace?.userProfileURL
+    ? profileData?.namespace?.userProfileURL
+    : null
+  if (nsLink != null && namespace != null) {
+    nsLink = ['kolscan', 'tribe.run'].includes(namespace)
+      ? `${nsLink}${targetWalletAddress}`
+      : `${nsLink}${username}`
   }
 
   return (
     <div className="py-8">
-     < >
-      <ProfileHeader
-        username={username}
-        profileData={profileData}
-        isLoading={isLoading || isLoadingWallet}
-        walletAddressError={walletAddressError}
-        onEditProfile={handleEditProfile}
-        isOwnProfile={isOwnWallet}
-        namespaceLink={nsLink}
-      />
+      <>
+        <ProfileHeader
+          username={username}
+          profileData={profileData}
+          isLoading={isLoading || isLoadingWallet}
+          walletAddressError={walletAddressError}
+          onEditProfile={handleEditProfile}
+          isOwnProfile={isOwnWallet}
+          namespaceLink={nsLink}
+        />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <ProfileStats
-            profileData={profileData}
-            isLoading={isLoading}
-            onFollowersClick={handleFollowersClick}
-            onFollowingClick={handleFollowingClick}
-          />
-          {!namespace && (
-          <Card>
-            <div className="border-b border-green-900/20">
-              <nav className="flex" aria-label="Tabs">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
-                      activeTab === tab.id
-                        ? 'border-green-500 '
-                        : 'border-transparent text-gray-400 hover: hover:border-green-400/50'
-                    )}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <ProfileStats
+              profileData={profileData}
+              isLoading={isLoading}
+              onFollowersClick={handleFollowersClick}
+              onFollowingClick={handleFollowingClick}
+            />
+            {!namespace && (
+              <Card>
+                <div className="border-b border-green-900/20">
+                  <nav className="flex" aria-label="Tabs">
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={cn(
+                          'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+                          activeTab === tab.id
+                            ? 'border-green-500 '
+                            : 'border-transparent text-gray-400 hover: hover:border-green-400/50'
+                        )}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </nav>
+                </div>
 
-            <div className="p-4">
-              {activeTab === 'comments' ? (
-                <CommentWall
-                  username={username}
-                  isLoading={isLoadingComments}
-                  comments={comments}
-                  targetWalletAddress={targetWalletAddress}
-                />
-              ) : (
-                <ProfileContentFeed username={username} />
-              )}
-            </div>
-          </Card>
+                <div className="p-4">
+                  {activeTab === 'comments' ? (
+                    <CommentWall
+                      username={username}
+                      isLoading={isLoadingComments}
+                      comments={comments}
+                      targetWalletAddress={targetWalletAddress}
+                    />
+                  ) : (
+                    <ProfileContentFeed username={username} />
+                  )}
+                </div>
+              </Card>
             )}
-        </div>
+          </div>
 
-        <div className="space-y-6">
-          {walletAddressError ? (
-            <ErrorCard />
-          ) : (
-            profileData && <ProfileInfo profileData={profileData} />
-          )}
+          <div className="space-y-6">
+            {walletAddressError ? (
+              <ErrorCard />
+            ) : (
+              profileData && <ProfileInfo profileData={profileData} />
+            )}
 
           <ProfileSection
             walletAddress={targetWalletAddress}
@@ -221,37 +237,36 @@ export function ProfileContent({ username, namespace }: Props) {
             }
           />
         </div>
-      </div>
 
-      {/* Modals */}
-      <SocialModal
-        isOpen={showFollowersModal}
-        onClose={handleCloseFollowers}
-        title={`@${username}'s Followers`}
-        users={followers}
-        isLoading={isLoadingFollowers}
-        type="followers"
-      />
-
-      <SocialModal
-        isOpen={showFollowingModal}
-        onClose={handleCloseFollowing}
-        title={`@${username}'s Following`}
-        users={following}
-        isLoading={isLoadingFollowing}
-        type="following"
-      />
-
-      {!!profileData && (
-        <UpdateProfileModal
-          isOpen={showUpdateModal}
-          onClose={handleCloseUpdate}
-          currentUsername={username}
-          currentBio={profileData?.profile.bio}
-          currentImage={profileData?.profile.image}
-          onProfileUpdated={handleProfileUpdated}
+        {/* Modals */}
+        <SocialModal
+          isOpen={showFollowersModal}
+          onClose={handleCloseFollowers}
+          title={`@${username}'s Followers`}
+          users={followers}
+          isLoading={isLoadingFollowers}
+          type="followers"
         />
-      )}
+
+        <SocialModal
+          isOpen={showFollowingModal}
+          onClose={handleCloseFollowing}
+          title={`@${username}'s Following`}
+          users={following}
+          isLoading={isLoadingFollowing}
+          type="following"
+        />
+
+        {!!profileData && (
+          <UpdateProfileModal
+            isOpen={showUpdateModal}
+            onClose={handleCloseUpdate}
+            currentUsername={username}
+            currentBio={profileData?.profile.bio}
+            currentImage={profileData?.profile.image}
+            onProfileUpdated={handleProfileUpdated}
+          />
+        )}
       </>
     </div>
   )

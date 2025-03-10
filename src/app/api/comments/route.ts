@@ -1,4 +1,4 @@
-import { tapestryServer } from '@/lib/tapestry-server'
+import { tapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {

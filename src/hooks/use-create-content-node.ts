@@ -1,6 +1,6 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { TransactionContent } from '@/types/content'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 
 interface CreateContentNodeParams {
   signature: string

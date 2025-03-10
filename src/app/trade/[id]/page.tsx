@@ -1,7 +1,7 @@
 import ShareButton from '@/components/share-button'
-import { contentServer } from '@/lib/content-server'
 import type { TransactionContent } from '@/types/content'
 import { getTransactionDisplayData, isCopiedSwap } from '@/types/content'
+import { contentServer } from '@/utils/content-server'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/server-routes'
 import { ArrowRight, ExternalLink, Share2 } from 'lucide-react'

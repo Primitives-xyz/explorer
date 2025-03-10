@@ -1,5 +1,5 @@
-import { contentServer } from '@/lib/content-server'
-import { sendNotification } from '@/lib/tapestry'
+import { contentServer } from '@/utils/content-server'
+import { sendNotification } from '@/utils/notification'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
