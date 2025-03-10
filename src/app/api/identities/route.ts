@@ -46,6 +46,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
   const ContactType = searchParams.get('ContactType')
+  console.log("🚀 ~ GET ~ ContactType:", ContactType)
+  console.log("🚀 ~ GET ~ walletAddress:", walletAddress)
 
   if (!walletAddress) {
     return NextResponse.json({ profiles: [] })

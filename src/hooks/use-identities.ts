@@ -28,7 +28,7 @@ interface IdentitiesResponse {
 export const useIdentities = (walletAddress: string, namespace?: string) => {
   const fetcher = async (url: string) => {
     // Validate wallet address before making the API call
-    if (walletAddress && !isValidSolanaAddress(walletAddress)) {
+    if (namespace !== 'x' && walletAddress && !isValidSolanaAddress(walletAddress)) {
       throw new Error('Invalid Solana wallet address')
     }
 

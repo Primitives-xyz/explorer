@@ -90,6 +90,7 @@ export function ProfileContent({ username, namespace }: Props) {
   console.log("🚀 ~ ProfileContent ~ username:", username)
   console.log("🚀 ~ ProfileContent ~ mainUsername:", mainUsername)
   console.log("🚀 ~ ProfileContent ~ namespace:", namespace)
+  console.log("🚀 ~ ProfileContent ~ namespace === 'x':", namespace === 'x')
 
   const {
     identities,
