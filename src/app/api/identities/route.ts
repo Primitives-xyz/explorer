@@ -45,14 +45,20 @@ function processContactRelatedProfile(elem: any) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
+  const ContactType = searchParams.get('ContactType')
 
   if (!walletAddress) {
     return NextResponse.json({ profiles: [] })
   }
+  let url = `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20`;
+
+  if(ContactType) {
+    url += `&contactType=${ContactType}`;
+  }
 
   try {
     const identitiesResponse = await fetch(
-      `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20`,
+      url,
       {
         method: 'GET',
         headers: {

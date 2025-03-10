@@ -43,6 +43,9 @@ export const TAPESTRY_ASSETS_URL =
 export const EXPLORER_NAMESPACE =
   process.env.NEXT_PUBLIC_EXPLORER_NAMESPACE || 'nemoapp'
 
+export const X_NAMESPACE =
+  process.env.X_NAMESPACE || 'x'
+
 // Solana Configuration
 export const SOLANA_RPC_URL =
   process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
