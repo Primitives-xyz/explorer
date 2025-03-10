@@ -86,7 +86,7 @@ export function ProfileContent({ username, namespace }: Props) {
     isLoadingFollowing,
     isLoadingComments,
   } = useProfileData(username, mainUsername, namespace)
-  
+
   console.log("🚀 ~ ProfileContent ~ username:", username)
   console.log("🚀 ~ ProfileContent ~ mainUsername:", mainUsername)
   console.log("🚀 ~ ProfileContent ~ namespace:", namespace)
@@ -95,7 +95,7 @@ export function ProfileContent({ username, namespace }: Props) {
     identities,
     loading: isLoadingIdentities,
     error: identitiesError,
-  } = useIdentities(namespace == 'x' ? username : targetWalletAddress || '', namespace)
+  } = useIdentities(namespace === 'x' ? username : targetWalletAddress || '', namespace)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)

@@ -68,6 +68,7 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
     keepPreviousData: true,
     isPaused: () => !walletAddress,
   })
+  console.log("🚀 ~ useIdentities ~ identities:", identities)
 
   return {
     identities,
@@ -78,6 +79,11 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
 }
 
 // Export a function to manually trigger revalidation
-export const refreshIdentities = (walletAddress: string) => {
-  return mutate(`/api/identities?walletAddress=${walletAddress}`)
+export const refreshIdentities = (walletAddress: string, namespace?: string) => {
+  let queryCondition = `/api/identities?walletAddress=${walletAddress}`
+  if(namespace === 'x' || namespace === 'X') { 
+    queryCondition += `&ContactType=TWITTER&useIdentities=true`
+  }
+
+  return mutate(`${queryCondition}`)
 }
