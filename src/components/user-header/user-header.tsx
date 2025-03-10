@@ -12,8 +12,9 @@ import {
 } from '@/components/ui/tooltip'
 import { IUser } from '@/components/user-header/models/user.models'
 import { SocialStats } from '@/components/user-header/social-stats'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
+import { usePortfolioData } from '@/hooks/usePortfolioData'
 import type { TokenPortfolioResponse } from '@/types/Token'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
 import {
   CalendarIcon,
@@ -36,13 +37,12 @@ interface Props {
   isOwnProfile?: boolean
 }
 
-export function UserHeader({
-  user,
-  portfolioData,
-  isPortfolioLoading = false,
-  isOwnProfile = false,
-}: Props) {
+export function UserHeader({ user, isOwnProfile = false }: Props) {
   const t = useTranslations()
+  // Fetch portfolio data for the wallet address
+  const { portfolioData, isLoading: isPortfolioLoading } = usePortfolioData(
+    user.walletAddress
+  )
   const { items = [], totalUsd = 0 } = portfolioData?.data || {}
   const [showUpdateModal, setShowUpdateModal] = useState(false)
 

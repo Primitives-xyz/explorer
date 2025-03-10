@@ -1,4 +1,4 @@
-import type { IGetSocialResponse } from '@/models/profile.models'
+import { IGetSocialResponse } from '@/types/profile.types'
 import useSWR from 'swr'
 
 async function fetchFollowing(url: string): Promise<IGetSocialResponse> {
@@ -9,8 +9,11 @@ async function fetchFollowing(url: string): Promise<IGetSocialResponse> {
   return res.json()
 }
 
-export function useProfileFollowing(username: string | null, namespace: string | null | undefined) {
-  const namespaceQuery = namespace ? `?namespace=${namespace}` : '';  
+export function useProfileFollowing(
+  username: string | null,
+  namespace: string | null | undefined
+) {
+  const namespaceQuery = namespace ? `?namespace=${namespace}` : ''
 
   const { data, error, mutate } = useSWR<IGetSocialResponse>(
     username ? `/api/profiles/${username}/following${namespaceQuery}` : null,

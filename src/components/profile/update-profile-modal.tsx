@@ -1,5 +1,5 @@
 import { useFileUpload } from '@/hooks/use-file-upload'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { DICEBEAR_API_BASE } from '@/utils/constants'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useState } from 'react'
 import { Alert } from '../common/alert'

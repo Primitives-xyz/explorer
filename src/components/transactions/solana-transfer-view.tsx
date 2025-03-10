@@ -1,7 +1,7 @@
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/avatar'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { Profile } from '@/utils/api'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
 import { formatTimeAgo } from '@/utils/format-time'
 import type { Transaction } from '@/utils/helius/types'

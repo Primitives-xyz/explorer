@@ -1,5 +1,5 @@
-import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
+import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextResponse, type NextRequest } from 'next/server'
 
 type RouteContext = {
