@@ -11,7 +11,8 @@ export async function GET(request: Request) {
   const contactType = searchParams.get('ContactType')
   const useIdentities = searchParams.get('useIdentities') === 'true'
   const namespace = searchParams.get('namespace')
-
+  console.log("🚀 ~ GET ~ useIdentities:", useIdentities)
+  
   try {
     if (useIdentities) {
       // For related profiles, use identities endpoint
@@ -23,7 +24,8 @@ export async function GET(request: Request) {
       if(contactType) {
         url += `&ContactType=${contactType}`;
       }
-
+      console.log("🚀 ~ GET ~ url:", url)
+      
       const identitiesResponse = await fetch(
         url,
         {
