@@ -8,17 +8,24 @@ const API_KEY = process.env.TAPESTRY_API_KEY
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
+  const contactType = searchParams.get('ContactType')
   const useIdentities = searchParams.get('useIdentities') === 'true'
   const namespace = searchParams.get('namespace')
+
   try {
     if (useIdentities) {
       // For related profiles, use identities endpoint
       if (!walletAddress) {
         return NextResponse.json({ profiles: [] })
       }
+      
+      let url = `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}`;
+      if(contactType) {
+        url += `&ContactType=${contactType}`;
+      }
 
       const identitiesResponse = await fetch(
-        `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}`,
+        url,
         {
           method: 'GET',
           headers: {
@@ -67,7 +74,6 @@ export async function GET(request: Request) {
     } else {
       // For regular profile fetching, use profiles endpoint
       // TODO: shouldIncludeExternalProfiles was deprecated and no longer exists in tapestry. It should get from the identities.
-
       let url = `${BASE_URL}/profiles?apiKey=${API_KEY}`
 
       if (!!walletAddress) {

@@ -25,7 +25,7 @@ interface IdentitiesResponse {
   profiles: Identity[]
 }
 
-export const useIdentities = (walletAddress: string) => {
+export const useIdentities = (walletAddress: string, namespace?: string) => {
   const fetcher = async (url: string) => {
     // Validate wallet address before making the API call
     if (walletAddress && !isValidSolanaAddress(walletAddress)) {
@@ -40,9 +40,14 @@ export const useIdentities = (walletAddress: string) => {
     const data = (await res.json()) as IdentitiesResponse
     return data.profiles
   }
+  let queryCondition = `walletAddress=${walletAddress}`
+
+  if(namespace === 'x' || namespace === 'X') { 
+    queryCondition += `&ContactType=TWITTER`
+  }
 
   const key = walletAddress
-    ? `/api/identities?walletAddress=${walletAddress}`
+    ? `/api/identities?${queryCondition}`
     : null
 
   const {

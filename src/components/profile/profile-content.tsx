@@ -90,7 +90,7 @@ export function ProfileContent({ username, namespace }: Props) {
     identities,
     loading: isLoadingIdentities,
     error: identitiesError,
-  } = useIdentities(targetWalletAddress || '')
+  } = useIdentities(targetWalletAddress || '', namespace)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
