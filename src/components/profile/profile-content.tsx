@@ -16,6 +16,7 @@ import { ProfileHeader } from './profile-header'
 import { ProfileStats } from './profile-stats'
 import { ProfileInfo } from './ProfileInfo'
 import { UpdateProfileModal } from './update-profile-modal'
+import { X_NAMESPACE } from '@/lib/constants'
 
 interface Props {
   username: string
@@ -87,19 +88,11 @@ export function ProfileContent({ username, namespace }: Props) {
     isLoadingComments,
   } = useProfileData(username, mainUsername, namespace)
 
-  console.log("🚀 ~ ProfileContent ~ username:", username)
-  console.log("🚀 ~ ProfileContent ~ mainUsername:", mainUsername)
-  console.log("🚀 ~ ProfileContent ~ namespace:", namespace)
-  console.log("🚀 ~ ProfileContent ~ namespace === 'x':", namespace === 'x')
-
   const {
     identities,
     loading: isLoadingIdentities,
     error: identitiesError,
-  } = useIdentities(namespace === 'x' ? username : targetWalletAddress || '', namespace)
-    console.log("🚀 ~ ProfileContent ~ identitiesError:", identitiesError)
-    console.log("🚀 ~ ProfileContent ~ isLoadingIdentities:", isLoadingIdentities)
-    console.log("🚀 ~ ProfileContent ~ identities:", identities)
+  } = useIdentities(namespace === X_NAMESPACE ? username : targetWalletAddress || '', namespace)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
@@ -213,7 +206,9 @@ export function ProfileContent({ username, namespace }: Props) {
             walletAddress={targetWalletAddress}
             hasSearched={!isLoadingIdentities && !!targetWalletAddress}
             isLoadingProfileData={
-              isLoadingIdentities || isLoadingWallet || !targetWalletAddress
+              isLoadingIdentities 
+              || isLoadingWallet 
+              || (namespace === X_NAMESPACE || !targetWalletAddress ) // don't wait for wallet if it's a x profile.
             }
             profileData={{
               profiles:

@@ -78,7 +78,6 @@ export async function GET(request: Request) {
     }
     
     const identitiesData = await identitiesResponse.json()
-    console.log("🚀 ~ GET ~ identitiesData:", identitiesData)
 
     // Transform identities data to match profiles shape
     const transformedIdentities = identitiesData.identities.flatMap((identity: any) => 

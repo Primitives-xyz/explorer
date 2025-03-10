@@ -10,7 +10,6 @@ export async function GET(request: Request) {
   const walletAddress = searchParams.get('walletAddress')
   const useIdentities = searchParams.get('useIdentities') === 'true'
   const namespace = searchParams.get('namespace')
-  console.log("🚀 ~ GET ~ useIdentities:", useIdentities)
   
   try {
     if (useIdentities) {

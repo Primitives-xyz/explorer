@@ -1,5 +1,6 @@
 import { isValidSolanaAddress } from '@/utils/validation'
 import useSWR, { mutate } from 'swr'
+import { X_NAMESPACE } from '@/lib/constants'
 
 export interface Identity {
   profile: {
@@ -28,7 +29,7 @@ interface IdentitiesResponse {
 export const useIdentities = (walletAddress: string, namespace?: string) => {
   const fetcher = async (url: string) => {
     // Validate wallet address before making the API call
-    if (namespace !== 'x' && walletAddress && !isValidSolanaAddress(walletAddress)) {
+    if (namespace !== X_NAMESPACE && walletAddress && !isValidSolanaAddress(walletAddress)) {
       throw new Error('Invalid Solana wallet address')
     }
 
@@ -43,10 +44,9 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
 
   let queryCondition = `walletAddress=${walletAddress}`
 
-  if(namespace === 'x' || namespace === 'X') { 
+  if(namespace === X_NAMESPACE) { 
     queryCondition += `&ContactType=TWITTER&useIdentities=true`
   }
-  console.log("🚀 ~ useIdentities ~ queryCondition:", queryCondition)
 
   const key = walletAddress
   ? `/api/identities?${queryCondition}`
@@ -81,10 +81,9 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
 // Export a function to manually trigger revalidation
 export const refreshIdentities = (walletAddress: string, namespace?: string) => {
   let queryCondition = `/api/identities?walletAddress=${walletAddress}`
-  if(namespace === 'x' || namespace === 'X') { 
+  if(namespace === X_NAMESPACE) { 
     queryCondition += `&ContactType=TWITTER&useIdentities=true`
   }
-  console.log("🚀 ~ refreshIdentities ~ queryCondition:", queryCondition)
 
   return mutate(`${queryCondition}`)
 }
