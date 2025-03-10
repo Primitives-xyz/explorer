@@ -25,6 +25,7 @@ export async function GET(request: Request) {
       if(contactType) {
         url += `&contactType=${contactType}`;
       }
+      console.log("🚀 ~ GET ~ url:", url)
       
       const identitiesResponse = await fetch(
         url,
