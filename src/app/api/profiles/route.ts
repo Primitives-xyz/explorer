@@ -8,7 +8,6 @@ const API_KEY = process.env.TAPESTRY_API_KEY
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
-  const contactType = searchParams.get('ContactType')
   const useIdentities = searchParams.get('useIdentities') === 'true'
   const namespace = searchParams.get('namespace')
   console.log("🚀 ~ GET ~ useIdentities:", useIdentities)
@@ -21,11 +20,6 @@ export async function GET(request: Request) {
       }
       
       let url = `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20`;
-      
-      if(contactType) {
-        url += `&contactType=${contactType}`;
-      }
-      console.log("🚀 ~ GET ~ url:", url)
       
       const identitiesResponse = await fetch(
         url,

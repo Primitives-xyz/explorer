@@ -46,16 +46,19 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
   const ContactType = searchParams.get('ContactType')
-  console.log("🚀 ~ GET ~ ContactType:", ContactType)
-  console.log("🚀 ~ GET ~ walletAddress:", walletAddress)
 
   if (!walletAddress) {
     return NextResponse.json({ profiles: [] })
   }
+  let url = `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20`;
+
+  if(ContactType) {
+    url += `&contactType=${ContactType}`;
+  }
 
   try {
     const identitiesResponse = await fetch(
-      `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20&contactType=${ContactType}`,
+      url,
       {
         method: 'GET',
         headers: {
@@ -63,7 +66,6 @@ export async function GET(request: Request) {
         },
       }
     )
-    console.log("🚀 ~ GET ~ identitiesResponse:", identitiesResponse)
     
     if (!identitiesResponse.ok) {
       console.error('IDENTITIES Tapestry API Error: ', {
