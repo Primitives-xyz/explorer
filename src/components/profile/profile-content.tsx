@@ -208,7 +208,7 @@ export function ProfileContent({ username, namespace }: Props) {
             isLoadingProfileData={
               isLoadingIdentities 
               || isLoadingWallet 
-              || (namespace === X_NAMESPACE || !targetWalletAddress ) // don't wait for wallet if it's a x profile.
+              || (namespace !== X_NAMESPACE || !targetWalletAddress ) // don't wait for wallet if it's a x profile.
             }
             profileData={{
               profiles:
