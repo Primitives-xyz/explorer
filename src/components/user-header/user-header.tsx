@@ -10,6 +10,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { IUser } from '@/components/user-header/models/user.models'
+import { SocialStats } from '@/components/user-header/social-stats'
 import { usePortfolioData } from '@/hooks/usePortfolioData'
 import type { TokenPortfolioResponse } from '@/types/Token'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
@@ -25,35 +27,17 @@ import {
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
-import { FollowButton } from './profile/follow-button'
-import { UpdateProfileModal } from './profile/update-profile-modal'
+import { FollowButton } from '../profile/follow-button'
+import { UpdateProfileModal } from '../profile/update-profile-modal'
 
-interface User {
-  username: string
-  walletAddress: string
-  namespace?: string
-  userProfileURL?: string
-  avatarUrl: string | null
-  bio: string
-  socialCounts?: {
-    followers: number
-    following: number
-  }
-  isLoading?: boolean
-  createdAt?: string
-}
-
-interface UserHeaderProps {
-  user: User
+interface Props {
+  user: IUser
   portfolioData?: TokenPortfolioResponse
   isPortfolioLoading?: boolean
   isOwnProfile?: boolean
 }
 
-export default function UserHeader({
-  user,
-  isOwnProfile = false,
-}: UserHeaderProps) {
+export function UserHeader({ user, isOwnProfile = false }: Props) {
   const t = useTranslations()
   // Fetch portfolio data for the wallet address
   const { portfolioData, isLoading: isPortfolioLoading } = usePortfolioData(
@@ -300,6 +284,7 @@ export default function UserHeader({
                     <div className="space-y-2">
                       <div className="flex justify-between gap-4">
                         <span>{formattedSolBalance} SOL</span>
+
                         <span>${formatNumber(solValue)}</span>
                       </div>
                       {tokenCount > 0 && (
@@ -320,28 +305,7 @@ export default function UserHeader({
               </TooltipProvider>
 
               {/* Social Stats */}
-              <Badge
-                variant="outline"
-                className="text-xs font-mono border-green-500/50 text-green-400"
-              >
-                <Users className="w-3 h-3 mr-1" />
-                {user.isLoading ? (
-                  <span className="animate-pulse">...</span>
-                ) : (
-                  `${user.socialCounts?.followers || 0} followers`
-                )}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="text-xs font-mono border-green-500/50 text-green-400"
-              >
-                <Users className="w-3 h-3 mr-1" />
-                {user.isLoading ? (
-                  <span className="animate-pulse">...</span>
-                ) : (
-                  `${user.socialCounts?.following || 0} following`
-                )}
-              </Badge>
+              <SocialStats user={user} />
             </div>
 
             {/* Bio */}

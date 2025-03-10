@@ -1,9 +1,9 @@
 'use client'
 
-import UserHeader from '@/components/UserHeader'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { ProfileIdentities } from '@/components/profile/profile-identities'
 import { ProfileTabs } from '@/components/profile/profile-tabs'
+import { UserHeader } from '@/components/user-header/user-header'
 import { useProfileData } from '@/hooks/use-profile-data'
 
 interface Props {
