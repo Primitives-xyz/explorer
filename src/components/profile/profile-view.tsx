@@ -47,8 +47,6 @@ export function ProfileView({ username }: Props) {
         isOwnProfile={isOwnWallet}
       />
       {username && <ProfileIdentities 
-        namespace={profileData?.namespace?.name}
-        username={username}
         walletAddress={targetWalletAddress} />}
       <div className="container mx-auto">
         <ProfileTabs username={username} />
