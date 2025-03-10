@@ -20,12 +20,11 @@ export async function GET(request: Request) {
         return NextResponse.json({ profiles: [] })
       }
       
-      let url = `${BASE_URL}/profiles?apiKey=${API_KEY}&walletAddress=${walletAddress}`;
+      let url = `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20`;
       
       if(contactType) {
         url += `&contactType=${contactType}`;
       }
-      console.log("🚀 ~ GET ~ url:", url)
       
       const identitiesResponse = await fetch(
         url,
