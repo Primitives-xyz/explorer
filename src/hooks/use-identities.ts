@@ -47,9 +47,10 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
   }
 
   const key = walletAddress
-    ? `/api/identities?${queryCondition}`
-    : null
-
+  ? `/api/identities?${queryCondition}`
+  : null
+  
+  console.log("🚀 ~ useIdentities ~ key:", key)
   const {
     data: identities,
     error,

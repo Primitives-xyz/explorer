@@ -86,6 +86,10 @@ export function ProfileContent({ username, namespace }: Props) {
     isLoadingFollowing,
     isLoadingComments,
   } = useProfileData(username, mainUsername, namespace)
+  
+  console.log("🚀 ~ ProfileContent ~ username:", username)
+  console.log("🚀 ~ ProfileContent ~ mainUsername:", mainUsername)
+  console.log("🚀 ~ ProfileContent ~ namespace:", namespace)
 
   const {
     identities,
