@@ -18,7 +18,7 @@ import { ProfileHeader } from './profile-header'
 import { ProfileStats } from './profile-stats'
 import { ProfileInfo } from './ProfileInfo'
 import { UpdateProfileModal } from './update-profile-modal'
-import { X_NAMESPACE } from '@/lib/constants'
+import { X_NAMESPACE } from '@/utils/constants'
 
 interface Props {
   username: string
@@ -89,16 +89,6 @@ export function ProfileContent({ username, namespace }: Props) {
 
   const { profileData, comments, isLoading, isLoadingComments } =
     useProfileData(username, mainUsername, namespace)
-  const {
-    profileData,
-    followers,
-    following,
-    comments,
-    isLoading,
-    isLoadingFollowers,
-    isLoadingFollowing,
-    isLoadingComments,
-  } = useProfileData(username, mainUsername, namespace)
 
   const {
     identities,
@@ -267,6 +257,7 @@ export function ProfileContent({ username, namespace }: Props) {
             onProfileUpdated={handleProfileUpdated}
           />
         )}
+      </div>
       </>
     </div>
   )

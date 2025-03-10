@@ -1,6 +1,6 @@
 import { isValidSolanaAddress } from '@/utils/validation'
 import useSWR, { mutate } from 'swr'
-import { X_NAMESPACE } from '@/lib/constants'
+import { X_NAMESPACE } from '@/utils/constants'
 
 export interface Identity {
   profile: {
