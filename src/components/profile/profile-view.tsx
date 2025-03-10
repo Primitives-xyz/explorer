@@ -46,7 +46,10 @@ export function ProfileView({ username }: Props) {
         isPortfolioLoading={isLoadingPortfolio}
         isOwnProfile={isOwnWallet}
       />
-      {username && <ProfileIdentities walletAddress={targetWalletAddress} />}
+      {username && <ProfileIdentities 
+        namespace={profileData?.namespace?.name}
+        username={username}
+        walletAddress={targetWalletAddress} />}
       <div className="container mx-auto">
         <ProfileTabs username={username} />
       </div>

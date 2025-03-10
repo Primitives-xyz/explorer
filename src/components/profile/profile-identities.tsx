@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react'
 
 interface ProfileIdentitiesProps {
   walletAddress: string
+  namespace?: string
+  username?: string
 }
 
 // Skeleton loader for identity cards
@@ -52,12 +54,12 @@ const LoadingSkeletons = () => (
   </div>
 )
 
-export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
+export function ProfileIdentities({ walletAddress, namespace, username }: ProfileIdentitiesProps) {
   const {
     identities,
     loading: isLoading,
     error,
-  } = useIdentities(walletAddress || '')
+  } = useIdentities(namespace == 'x' ? username || '' : walletAddress, namespace)
 
   const [isVisible, setIsVisible] = useState(false)
   // Add a state to track if we should show content
