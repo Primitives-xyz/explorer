@@ -74,7 +74,7 @@ export const ProfileHeader = memo(function ProfileHeader({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {isOwnProfile && (
+          {isOwnProfile && profileData?.namespace?.name === EXPLORER_NAMESPACE && (
             <button
               onClick={onEditProfile}
               className="px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors"
