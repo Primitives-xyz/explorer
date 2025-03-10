@@ -5,6 +5,10 @@ import { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { VersionedTransaction } from '@solana/web3.js'
+import { Connection } from '@solana/web3.js'
+import { useToast } from '@/hooks/use-toast'
+import { useTranslations } from 'next-intl'
 
 interface ImageModalProps {
   isOpen: boolean
@@ -16,9 +20,100 @@ interface ImageModalProps {
 
 export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageModalProps) => {
   if (!isOpen) return null
-  const { walletAddress } = useWallet()
+  const { primaryWallet, walletAddress } = useWallet()
+  const { toast } = useToast()
+  const t = useTranslations()
   const [tokenInfo, setTokenInfo] = useState<any>(null)
   const [tokenType, setTokenType] = useState<string | null>(null)
+  const [showNftSellLoading, setShowNftSellLoading] = useState<boolean>(false)
+
+  // Add handler for nft sell
+  const handleNftSell = async () => {
+    try {
+      // setShowNftSellLoading(true)
+      const bestOfferRes = await fetch(`api/magiceden/mmm/token/${tokenInfo.id}/pools`)
+      const bestOfferData = await bestOfferRes.json()
+
+      console.log("------------------------------------------")
+      console.log(bestOfferData)
+
+      // const query = {
+      //   pool: bestOfferData.pool,
+      //   minPaymentAmount: bestOfferData.minPaymentAmount,
+      //   seller: walletAddress,
+      //   assetMint: tokenInfo.id,
+      //   assetTokenAccount: tokenInfo.id,
+      //   assetAmount: 1
+      // }
+
+      // const sellNftRes = await fetch(`/api/magiceden/mmm/sol-fulfill-buy?pool=${query.pool}&minPaymentAmount=${query.minPaymentAmount}&seller=${query.seller}&assetMint=${query.assetMint}&assetTokenAccount=${query.assetTokenAccount}&assetAmount=${query.assetAmount}`, {
+      //   method: 'GET',
+      //   headers: {
+      //     "ccept": "application/json"
+      //   }
+      // })
+
+      // const sellNftResData = await sellNftRes.json()
+      // console.log("++++++++++++++++++++", sellNftResData)
+
+      // const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+      // const sellTxData = sellNftResData.sellTx
+      // const serializedBuffer = Buffer.from(sellTxData, 'base64')
+      // const vtx: VersionedTransaction = VersionedTransaction.deserialize(
+      //   Uint8Array.from(serializedBuffer)
+      // )
+
+      // const signer = await primaryWallet.getSigner()
+
+      // // simulate sellTx
+      // const simulateTx = await connection.simulateTransaction(vtx, { replaceRecentBlockhash: true })
+      // console.log('sim:', simulateTx)
+
+      // const sellTxid = await signer.signAndSendTransaction(vtx)
+      // const confirmToast = toast({
+      //   title: t('trade.confirming_transaction'),
+      //   description: t('trade.waiting_for_confirmation'),
+      //   variant: 'pending',
+      //   duration: 1000000000,
+      // })
+
+      // const tx = await connection.confirmTransaction({
+      //   signature: sellTxid.signature,
+      //   ...(await connection.getLatestBlockhash()),
+      // })
+
+      // confirmToast.dismiss()
+
+      // if (tx.value.err) {
+      //   toast({
+      //     title: t('trade.transaction_failed'),
+      //     description: t('trade.the_sell_transaction_failed_please_try_again'),
+      //     variant: 'error',
+      //     duration: 5000,
+      //   })
+      // } else {
+      //   toast({
+      //     title: t('trade.transaction_successful'),
+      //     description: t(
+      //       'trade.the_sell_transaction_was_successful_creating_shareable_link'
+      //     ),
+      //     variant: 'success',
+      //     duration: 5000,
+      //   })
+      // }
+
+      // setShowNftSellLoading(false)
+    } catch (error) {
+      console.log('Error in making stake tx:', error)
+      setShowNftSellLoading(false)
+      toast({
+        title: t('trade.transaction_failed'),
+        description: t('trade.the_sell_transaction_failed_please_try_again'),
+        variant: 'error',
+        duration: 5000,
+      })
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -80,7 +175,7 @@ export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageMo
                 )}
                 <div
                   className='flex justify-center items-center px-2 py-1 bg-green-600 hover:bg-green-700 rounded-lg my-1 cursor-pointer'
-                  onClick={() => { }}
+                  onClick={handleNftSell}
                 >
                   <span className='font-mono font-medium uppercase'>sell</span>
                 </div>

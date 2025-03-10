@@ -197,7 +197,9 @@
     "trading_stats": "Trading Stats",
     "most_traded": "Most traded",
     "no_trades_found_for_selected_period": ">>> NO TRADES FOUND FOR SELECTED PERIOD",
-    "auto": "Auto"
+    "auto": "Auto",
+    "the_sell_transaction_failed_please_try_again": "Nft Sell Transaction Failed. Please try again later",
+    "the_sell_transaction_was_successful_creating_shareable_link": "The Nft sell transaction was successful"
   },
   "priority_levels": {
     "minimum": "Minimum",

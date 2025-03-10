@@ -89,7 +89,7 @@ export default function NFTCollectionDetail({ id, tokenInfo }: NftCollectionDeta
 
     useEffect(() => {
         (async () => {
-            const response = await fetch(`/api/collection/${id}`)
+            const response = await fetch(`/api/magiceden/collection/${id}`)
             const data = await response.json()
             setCollectionSymbol(data.collectionSymbol)
         })()
@@ -98,13 +98,13 @@ export default function NFTCollectionDetail({ id, tokenInfo }: NftCollectionDeta
     useEffect(() => {
         (async () => {
             if (collectionSymbol) {
-                const collectionStatsRes = await fetch(`/api/collection/${collectionSymbol}/stats`)
+                const collectionStatsRes = await fetch(`/api/magiceden/collection/${collectionSymbol}/stats`)
                 const collectionStatsResData = await collectionStatsRes.json()
                 setNftCollectionStat(collectionStatsResData)
 
                 await new Promise((resolve) => { setTimeout(resolve, 1000) })
 
-                const collectionListsRes = await fetch(`/api/collection/${collectionSymbol}/lists`)
+                const collectionListsRes = await fetch(`/api/magiceden/collection/${collectionSymbol}/lists`)
                 const collectionListsResData = await collectionListsRes.json()
                 setCollectionLists(collectionListsResData.collectionLists)
             }
