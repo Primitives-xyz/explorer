@@ -86,11 +86,12 @@ export function ProfileContent({ username, namespace }: Props) {
     isLoadingFollowing,
     isLoadingComments,
   } = useProfileData(username, mainUsername, namespace)
+
   const {
     identities,
     loading: isLoadingIdentities,
     error: identitiesError,
-  } = useIdentities(targetWalletAddress || '', namespace)
+  } = useIdentities(namespace == 'x' ? username : targetWalletAddress || '', namespace)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
