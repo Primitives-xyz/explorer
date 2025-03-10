@@ -1,22 +1,10 @@
-import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import useSWR from 'swr'
+import { ProfileWithStats } from '@/components/profile/profile-card'
+import { getProfiles } from '@/utils/api'
+import { useCallback, useEffect, useState } from 'react'
 
 export interface ProfileData {
-  walletAddress: string
-  socialCounts?: {
-    followers: number
-    following: number
-  }
-  profile: {
-    created_at: string
-    image: string | null
-    bio?: string
-  }
-  namespace?: {
-    name?: string
-    userProfileURL?: string
-  }
+  profiles: ProfileWithStats[]
+  totalCount?: number
 }
 
 interface LoadingState {
@@ -48,152 +36,107 @@ const fetcher = async (url: string) => {
   return res.json()
 }
 
-export function useProfileData(
-  username: string,
-  mainUsername?: string | null,
-  namespace?: string | null
-) {
-  const [state, setState] = useState<ProfileState>({ type: 'loading' })
-  const prevDataRef = useRef<LoadedState | null>(null)
-  const isInitialLoadRef = useRef(true)
+interface UseProfileDataProps {
+  walletAddress?: string
+  profileData?: ProfileData | null
+  hasSearched?: boolean
+  isLoadingProfileData?: boolean
+  propError?: string | null
+}
 
-  // Memoize the hasNamespace value to prevent unnecessary recalculations
-  const hasNamespace = useMemo(
-    () => namespace !== undefined && namespace !== null && namespace !== '',
-    [namespace]
-  )
+interface UseProfileDataResult {
+  profiles: ProfileWithStats[]
+  isLoading: boolean
+  error: string | null
+  resetState: () => void
+}
 
-  // Memoize the URL to prevent unnecessary recreations
-  const url = useMemo(() => {
-    return !hasNamespace
-      ? `/api/profiles/${username}?fromUsername=${mainUsername}`
-      : `/api/profiles/${username}?namespace=${namespace}`
-  }, [username, mainUsername, namespace, hasNamespace])
+/**
+ * Custom hook to fetch and manage profile data
+ */
+export const useProfileData = ({
+  walletAddress,
+  profileData,
+  hasSearched,
+  isLoadingProfileData,
+  propError,
+}: UseProfileDataProps): UseProfileDataResult => {
+  const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Configure SWR with optimized settings
-  const { data, isLoading } = useSWR<ProfileData>(url, fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 60000, // Increased to 1 minute
-    refreshInterval: 60000, // Increased to 1 minute
-    revalidateIfStale: false,
-    keepPreviousData: true,
-  })
-
-  // Memoize the wallet address to prevent unnecessary rerenders
-  const walletAddress = useMemo(
-    () => data?.walletAddress || '',
-    [data?.walletAddress]
-  )
-
-  const {
-    profiles,
-    loading: loadingProfiles,
-    error: profilesError,
-  } = useGetProfiles(walletAddress)
-
-  // Handle initial loading state
-  useEffect(() => {
-    if (isInitialLoadRef.current && isLoading) {
-      setState({ type: 'loading' })
-      isInitialLoadRef.current = false
-    }
-  }, [isLoading])
-
-  // Create a stable comparison function for deep equality checks
-  const isEqual = useCallback((objA: any, objB: any) => {
-    if (objA === objB) return true
-    if (!objA || !objB) return false
-
-    // Compare only the essential properties to reduce unnecessary updates
-    const keysToCompare = ['walletAddress', 'profile', 'namespace']
-
-    for (const key of keysToCompare) {
-      if (JSON.stringify(objA[key]) !== JSON.stringify(objB[key])) {
-        return false
-      }
-    }
-
-    return true
+  // Cleanup function to reset state
+  const resetState = useCallback(() => {
+    setProfiles([])
+    setError(null)
+    setIsLoading(false)
   }, [])
 
-  // Handle data updates with optimized dependency array and deep comparison
   useEffect(() => {
-    // Skip if we're still loading any data
-    if (isLoading) {
-      return
-    }
+    // Reset state on mount and cleanup on unmount
+    resetState()
+    return resetState
+  }, [resetState])
 
-    // Handle server error
-    if (profilesError?.message?.includes('Server error')) {
-      setState({ type: 'error', error: 'Server error' })
-      return
-    }
+  useEffect(() => {
+    let isMounted = true
 
-    // Only proceed if we have the main profile data
-    if (!data) {
-      return
-    }
+    const fetchProfiles = async () => {
+      if (!walletAddress && !profileData && !hasSearched) return
+      if (isLoadingProfileData) return
 
-    const newState: LoadedState = {
-      type: 'loaded',
-      data,
-      profiles,
-      walletAddressError:
-        profilesError?.message === 'Invalid Solana wallet address',
-    }
+      // Reset state before fetching new data
+      resetState()
+      if (!isMounted) return
 
-    // Only update if the data has actually changed using deep comparison
-    if (
-      !prevDataRef.current ||
-      !isEqual(prevDataRef.current.data, newState.data)
-    ) {
-      prevDataRef.current = newState
-      setState(newState)
-    }
-  }, [data, profiles, isLoading, profilesError, isEqual])
+      setIsLoading(true)
 
-  // Transform state into the expected return type with memoization
-  return useMemo(() => {
-    if (state.type === 'loading') {
-      // If we have previous data, return it with loading flags
-      if (prevDataRef.current) {
-        return {
-          profileData: prevDataRef.current.data,
-          profiles: prevDataRef.current.profiles,
-          isLoading: true,
-          walletAddressError: prevDataRef.current.walletAddressError,
-          serverError: false,
+      try {
+        if (profileData && isMounted) {
+          setProfiles(profileData.profiles)
+        } else if (walletAddress && isMounted) {
+          const profilesData = await getProfiles(walletAddress)
+
+          if (!isMounted) return
+
+          if (!profilesData.items || profilesData.items.length === 0) {
+            setProfiles([])
+            return
+          }
+
+          setProfiles(profilesData.items)
+        }
+      } catch (error) {
+        console.error('Profiles fetch error:', error)
+        if (isMounted) {
+          setError(propError || 'Failed to fetch profiles.')
+          setProfiles([])
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false)
         }
       }
-
-      return {
-        profileData: undefined,
-        profiles: null,
-        isLoading: true,
-        walletAddressError: false,
-        serverError: false,
-      }
     }
 
-    if (state.type === 'error') {
-      return {
-        profileData: undefined,
-        profiles: null,
-        comments: [],
-        isLoading: false,
-        isLoadingComments: false,
-        walletAddressError: false,
-        serverError: true,
-      }
-    }
+    fetchProfiles()
 
-    return {
-      profileData: state.data,
-      profiles: state.profiles,
-      isLoading: false,
-      walletAddressError: state.walletAddressError,
-      serverError: false,
+    return () => {
+      isMounted = false
     }
-  }, [state, isLoading])
+  }, [
+    walletAddress,
+    profileData,
+    propError,
+    hasSearched,
+    isLoadingProfileData,
+    resetState,
+  ])
+
+  return {
+    profiles,
+    isLoading,
+    error,
+    resetState,
+  }
 }
