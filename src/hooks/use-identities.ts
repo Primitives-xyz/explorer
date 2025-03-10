@@ -45,12 +45,12 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
   if(namespace === 'x' || namespace === 'X') { 
     queryCondition += `&ContactType=TWITTER&useIdentities=true`
   }
+  console.log("🚀 ~ useIdentities ~ queryCondition:", queryCondition)
 
   const key = walletAddress
   ? `/api/identities?${queryCondition}`
   : null
   
-  console.log("🚀 ~ useIdentities ~ key:", key)
   const {
     data: identities,
     error,
