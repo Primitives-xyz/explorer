@@ -38,6 +38,7 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
       throw new Error(errorData.error || 'Failed to fetch identities')
     }
     const data = (await res.json()) as IdentitiesResponse
+    console.log("🚀 ~ fetcher ~ data:", data)
     return data.profiles
   }
   let queryCondition = `walletAddress=${walletAddress}`
