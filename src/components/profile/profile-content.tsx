@@ -97,9 +97,10 @@ export function ProfileContent({ username, namespace }: Props) {
     loading: isLoadingIdentities,
     error: identitiesError,
   } = useIdentities(namespace === 'x' ? username : targetWalletAddress || '', namespace)
-    console.log("🚀 ~ ProfileContent ~ identitiesError:", identitiesError)
-    console.log("🚀 ~ ProfileContent ~ isLoadingIdentities:", isLoadingIdentities)
-    console.log("🚀 ~ ProfileContent ~ identities:", identities)
+
+  console.log("🚀 ~ ProfileContent ~ identitiesError:", identitiesError)
+  console.log("🚀 ~ ProfileContent ~ isLoadingIdentities:", isLoadingIdentities)
+  console.log("🚀 ~ ProfileContent ~ identities:", identities)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
@@ -211,9 +212,9 @@ export function ProfileContent({ username, namespace }: Props) {
 
           <ProfileSection
             walletAddress={targetWalletAddress}
-            hasSearched={!isLoadingIdentities && !!targetWalletAddress}
+            hasSearched={!isLoadingIdentities}
             isLoadingProfileData={
-              isLoadingIdentities || isLoadingWallet || !targetWalletAddress
+              isLoadingIdentities || isLoadingWallet 
             }
             profileData={{
               profiles:
