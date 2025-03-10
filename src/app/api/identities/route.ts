@@ -85,6 +85,7 @@ export async function GET(request: Request) {
         return null; 
       })
     );
+    console.log("🚀 ~ GET ~ transformedIdentities:", transformedIdentities)
     return NextResponse.json({profiles: transformedIdentities})
   } catch (error) {
     console.error('Error fetching identities from Tapestry:', error)
