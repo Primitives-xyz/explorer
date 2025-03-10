@@ -55,6 +55,9 @@ const LoadingSkeletons = () => (
 )
 
 export function ProfileIdentities({ walletAddress, namespace, username }: ProfileIdentitiesProps) {
+  console.log("🚀 ~ ProfileIdentities ~ namespace:", namespace)
+  console.log("🚀 ~ ProfileIdentities ~ username:", username)
+  console.log("🚀 ~ ProfileIdentities ~ walletAddress:", walletAddress)
   const {
     identities,
     loading: isLoading,
