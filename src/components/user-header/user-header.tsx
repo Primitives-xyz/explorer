@@ -284,6 +284,7 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
                     <div className="space-y-2">
                       <div className="flex justify-between gap-4">
                         <span>{formattedSolBalance} SOL</span>
+
                         <span>${formatNumber(solValue)}</span>
                       </div>
                       {tokenCount > 0 && (
