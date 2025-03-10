@@ -45,7 +45,7 @@ function processContactRelatedProfile(elem: any) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
-  console.log("🚀 ~ GET ~ walletAddress:", walletAddress)
+  const ContactType = searchParams.get('ContactType')
 
   if (!walletAddress) {
     return NextResponse.json({ profiles: [] })
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
 
   try {
     const identitiesResponse = await fetch(
-      `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20`,
+      `${BASE_URL}/identities/${walletAddress}?apiKey=${API_KEY}&page=1&pageSize=20&contactType=${ContactType}`,
       {
         method: 'GET',
         headers: {
@@ -85,7 +85,6 @@ export async function GET(request: Request) {
         return null; 
       })
     );
-    console.log("🚀 ~ GET ~ transformedIdentities:", transformedIdentities)
     return NextResponse.json({profiles: transformedIdentities})
   } catch (error) {
     console.error('Error fetching identities from Tapestry:', error)
