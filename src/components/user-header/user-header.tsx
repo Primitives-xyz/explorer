@@ -330,7 +330,7 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {isOwnProfile && (
+            {isOwnProfile && user.namespace === EXPLORER_NAMESPACE && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
