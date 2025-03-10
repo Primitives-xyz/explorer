@@ -45,6 +45,7 @@ function processContactRelatedProfile(elem: any) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
+  console.log("🚀 ~ GET ~ walletAddress:", walletAddress)
 
   if (!walletAddress) {
     return NextResponse.json({ profiles: [] })
@@ -60,6 +61,7 @@ export async function GET(request: Request) {
         },
       }
     )
+    console.log("🚀 ~ GET ~ identitiesResponse:", identitiesResponse)
     
     if (!identitiesResponse.ok) {
       console.error('IDENTITIES Tapestry API Error: ', {
@@ -72,6 +74,7 @@ export async function GET(request: Request) {
     }
     
     const identitiesData = await identitiesResponse.json()
+    console.log("🚀 ~ GET ~ identitiesData:", identitiesData)
 
     // Transform identities data to match profiles shape
     const transformedIdentities = identitiesData.identities.flatMap((identity: any) => 
