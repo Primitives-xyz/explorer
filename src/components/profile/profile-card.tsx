@@ -7,6 +7,7 @@ import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { getReadableNamespace } from '@/utils/namespace-utils'
 import { handleProfileNavigation } from '@/utils/profile-navigation'
 import { route } from '@/utils/routes'
+import { useRouter } from 'next/navigation'
 import { memo, useCallback } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
 
@@ -19,10 +20,10 @@ export interface ProfileWithStats extends Profile {
 
 interface ProfileCardProps {
   profile: ProfileWithStats
-  router: any
 }
 
-export const ProfileCard = memo(({ profile, router }: ProfileCardProps) => {
+export const ProfileCard = memo(({ profile }: ProfileCardProps) => {
+  const router = useRouter()
   const { mainUsername } = useCurrentWallet()
   const isExplorerApp = profile.namespace?.name === EXPLORER_NAMESPACE
 

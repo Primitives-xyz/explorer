@@ -100,7 +100,6 @@ export const ProfileSection = ({
       <ProfileList
         profiles={filteredProfiles}
         isLoading={isLoading || !!isLoadingProfileData}
-        router={router}
       />
     </DataContainer>
   )

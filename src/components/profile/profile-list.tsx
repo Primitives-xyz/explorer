@@ -5,14 +5,9 @@ import { ProfileCard, ProfileWithStats } from './profile-card'
 interface ProfileListProps {
   profiles: ProfileWithStats[]
   isLoading: boolean
-  router: any
 }
 
-export const ProfileList = ({
-  profiles,
-  isLoading,
-  router,
-}: ProfileListProps) => {
+export const ProfileList = ({ profiles, isLoading }: ProfileListProps) => {
   const t = useTranslations()
 
   return (
@@ -27,7 +22,6 @@ export const ProfileList = ({
           <ProfileCard
             key={`${profile.profile.username}-${profile.namespace?.name}`}
             profile={profile}
-            router={router}
           />
         ))}
       </div>
