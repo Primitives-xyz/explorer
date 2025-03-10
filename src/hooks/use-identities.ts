@@ -38,9 +38,9 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
       throw new Error(errorData.error || 'Failed to fetch identities')
     }
     const data = (await res.json()) as IdentitiesResponse
-    console.log("🚀 ~ fetcher ~ data:", data)
     return data.profiles
   }
+
   let queryCondition = `walletAddress=${walletAddress}`
 
   if(namespace === 'x' || namespace === 'X') { 
@@ -69,7 +69,6 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
     keepPreviousData: true,
     isPaused: () => !walletAddress,
   })
-  console.log("🚀 ~ useIdentities ~ identities:", identities)
 
   return {
     identities,
@@ -85,6 +84,7 @@ export const refreshIdentities = (walletAddress: string, namespace?: string) => 
   if(namespace === 'x' || namespace === 'X') { 
     queryCondition += `&ContactType=TWITTER&useIdentities=true`
   }
+  console.log("🚀 ~ refreshIdentities ~ queryCondition:", queryCondition)
 
   return mutate(`${queryCondition}`)
 }
