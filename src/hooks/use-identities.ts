@@ -43,7 +43,6 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
   }
 
   let queryCondition = `walletAddress=${walletAddress}`
-
   if(namespace === X_NAMESPACE) { 
     queryCondition += `&ContactType=TWITTER&useIdentities=true`
   }
