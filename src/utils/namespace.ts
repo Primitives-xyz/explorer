@@ -1,5 +1,5 @@
 import { INamespaceDetails } from '@/hooks/use-get-namespace-details'
-import { fetchTapestryServer } from '@/lib/tapestry-server'
+import { fetchTapestryServer } from '@/utils/tapestry-server'
 
 export async function getNamespaceDetails(
   name: string

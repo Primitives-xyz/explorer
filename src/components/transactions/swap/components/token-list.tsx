@@ -51,9 +51,9 @@ export function TokenList({
     )
   }
 
-  const filteredResults = sortTokenResults(searchResults, sortBy).filter(
-    (token) => !verifiedOnly || token.verified
-  )
+  const filteredResults = sortTokenResults(searchResults, sortBy)
+    .filter((token) => !verifiedOnly || token.verified)
+    .sort((a, b) => (b.prioritized ? 1 : -1))
 
   if (filteredResults.length === 0) {
     return (

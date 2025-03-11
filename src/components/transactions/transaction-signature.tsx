@@ -1,4 +1,4 @@
-import { getSolscanTxUrl } from '@/lib/constants'
+import { getSolscanTxUrl } from '@/utils/constants'
 import { ExternalLinkIcon } from 'lucide-react'
 
 interface TransactionSignatureProps {

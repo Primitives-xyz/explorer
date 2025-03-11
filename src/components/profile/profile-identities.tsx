@@ -1,7 +1,7 @@
 'use client'
 
 import { useIdentities } from '@/hooks/use-identities'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import Image from 'next/image'

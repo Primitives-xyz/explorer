@@ -3,6 +3,7 @@
 import { DataContainer } from '@/components/common/data-container'
 import { TokenAddress } from '@/components/tokens/token-address'
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl'
 
 import {
   INamespaceDetails,
@@ -50,11 +51,12 @@ export function NamespaceClient({
   totalCount,
 }: NamespaceClientProps) {
   const router = useRouter();
+  const t = useTranslations();
 
   if (!namespaceDetails) {
     return (
       <div className="min-h-screen bg-black p-8">
-        <div className="text-center font-mono">{'>>> NAMESPACE NOT FOUND'}</div>
+        <div className="text-center font-mono">{t('common.no')} {t('profile_info.no_profile_found')}</div>
       </div>
     )
   }
@@ -64,7 +66,7 @@ export function NamespaceClient({
       <NamespaceHeader namespaceDetails={namespaceDetails} />
 
       {/* Profiles Section */}
-      <DataContainer title="recent_profiles" count={totalCount} height="max">
+      <DataContainer title={t('recent_profiles.title')} count={totalCount} height="max">
         <div className="divide-y divide-green-800/30">
           {(profiles ?? []).map((profile: INamespaceProfile) => (
             <div

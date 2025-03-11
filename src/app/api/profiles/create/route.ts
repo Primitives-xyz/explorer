@@ -1,7 +1,7 @@
 // app/api/profiles/create/route.ts
-import { DICEBEAR_API_BASE } from '@/lib/constants'
-import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
+import { DICEBEAR_API_BASE } from '@/utils/constants'
+import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {

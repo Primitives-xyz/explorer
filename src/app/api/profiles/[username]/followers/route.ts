@@ -1,5 +1,5 @@
-import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
+import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RouteContext = {
@@ -25,7 +25,9 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     }
 
     const response = await fetchTapestryServer({
-      endpoint: `profiles/${username}/followers${namespace ? `?namespace=${namespace}` : ''}`,
+      endpoint: `profiles/${username}/followers${
+        namespace ? `?namespace=${namespace}` : ''
+      }`,
       method: FetchMethod.GET,
     })
 
