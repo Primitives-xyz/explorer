@@ -52,7 +52,7 @@ const LoadingSkeletons = () => (
   </div>
 )
 
-export function ProfileIdentities({ walletAddress}: ProfileIdentitiesProps) {
+export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
   const {
     identities,
     loading: isLoading,
