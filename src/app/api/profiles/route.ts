@@ -6,9 +6,6 @@ const BASE_URL = process.env.TAPESTRY_URL
 const API_KEY = process.env.TAPESTRY_API_KEY
 
 export async function GET(request: Request) {
-  console.log('BASE_URL --->', BASE_URL)
-  console.log('API_KEY --->', API_KEY)
-
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
   const useIdentities = searchParams.get('useIdentities') === 'true'
@@ -106,8 +103,6 @@ export async function GET(request: Request) {
       return NextResponse.json(data)
     }
   } catch (error) {
-    console.log('base url --->', BASE_URL)
-
     console.error('Error fetching from Tapestry:', error)
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 })
   }

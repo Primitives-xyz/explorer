@@ -110,36 +110,7 @@ export async function GET(request: Request, context: RouteContext) {
     // Fetch assets
     const assets = await helius.rpc.getAssetsByOwner(requestParams)
 
-    // Check if we need to prioritize owned assets    
-    // First, get the list of all tokens/assets the user already owns
-    const userOwnedAssets = assets.items || []
-
-    // Now fetch the search results (assuming you have a search endpoint or functionality)
-    // For example, using a hypothetical searchAssets function:
-    const searchParamsAssets = {
-      searchTerm: 'test',
-      limit: queryParams.limit,
-    }
-    
-    // This is a placeholder for your actual search function
-    const searchResults = await helius.rpc.searchAssets(searchParamsAssets)
-
-    console.log('searchResults --->', searchResults)
-    
-    // Prioritize by moving owned assets to the top
-    const ownedAssetIds = new Set(userOwnedAssets.map(asset => asset.id))
-    
-    // Split search results into owned and not owned
-    const ownedResults = searchResults?.items.filter(asset => ownedAssetIds.has(asset.id))
-    const otherResults = searchResults?.items.filter(asset => !ownedAssetIds.has(asset.id))
-    
-    // Combine with owned assets first
-    const prioritizedResults = {
-      ...searchResults,
-      items: [...(ownedResults ?? []), ...(otherResults ?? [])]
-    }
-    
-    return NextResponse.json(prioritizedResults)        
+    return NextResponse.json(assets)
   } catch (error) {
     return createErrorResponse(error, 'Failed to fetch assets')
   }

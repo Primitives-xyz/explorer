@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('[API] Error fetching profile: -->', error)
+    console.error('[API] Error fetching profile:', error)
 
     // Handle 404 specifically
     if (
