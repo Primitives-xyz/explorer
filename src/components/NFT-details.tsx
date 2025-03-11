@@ -1,15 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
+import { useState } from 'react'
 
-import { Loader2 } from 'lucide-react'
 import { DAS } from 'helius-sdk'
+import { Loader2 } from 'lucide-react'
 
 import { CopyPaste } from '@/components/common/copy-paste'
 import { TransactionSection } from '@/components/transaction-section'
 import type { NFTTokenInfo } from '@/types/Token'
-
 
 interface NFTDetailsProps {
   id: string
@@ -17,8 +16,8 @@ interface NFTDetailsProps {
 }
 
 enum NFTTab {
-  Transaction = "transaction",
-  Technical = "technical",
+  Transaction = 'transaction',
+  Technical = 'technical',
 }
 
 export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
@@ -27,46 +26,41 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
   const getTabStyle = (tab: NFTTab) => {
     const isActive = activeTab === tab
 
-    return `font-mono text-sm py-1 cursor-pointer uppercase ${isActive ? 'font-bold text-green-500 border-b border-b-green-500' : ''}`
+    return `font-mono text-sm py-1 cursor-pointer uppercase ${
+      isActive ? 'font-bold text-green-500 border-b border-b-green-500' : ''
+    }`
   }
 
   const renderTechnicalTab = () => (
     <>
-      <div className='border border-green-500 mt-5 p-2 rounded-lg'>
+      <div className="border border-green-500 mt-5 p-2 rounded-lg">
         <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
           schema & rpc
         </h3>
         <div className="grid grid-cols-1 gap-2 mt-2">
-          <div
-            className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
-          >
-            <div className="text-sm text-green-500 mb-1 font-mono">
-              schema
-            </div>
+          <div className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group">
+            <div className="text-sm text-green-500 mb-1 font-mono">schema</div>
             <div className="text-sm font-mono group-hover: transition-colors">
-              {tokenInfo.content.$schema?.toString() || "NONE"}
+              {tokenInfo.content.$schema?.toString() || 'NONE'}
             </div>
           </div>
-          <div
-            className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
-          >
+          <div className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group">
             <div className="text-sm text-green-500 mb-1 font-mono">
               json rpc
             </div>
             <div className="text-sm font-mono">
               {/* {tokenInfo.content.json_uri.slice(0, 34)}...${tokenInfo.content.json_uri.slice(-4)} */}
-              {tokenInfo.content.json_uri?.toString() || "NONE"}
+              {tokenInfo.content.json_uri?.toString() || 'NONE'}
             </div>
           </div>
         </div>
       </div>
-      <div className='border border-green-500 mt-5 p-2 rounded-lg'>
+      <div className="border border-green-500 mt-5 p-2 rounded-lg">
         <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
           compression details
         </h3>
         <div className="grid grid-cols-3 gap-2 mt-2">
-          {
-            tokenInfo.compression &&
+          {tokenInfo.compression &&
             Object.keys(tokenInfo.compression).map((key, indx) => (
               <>
                 <div
@@ -77,12 +71,13 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                     {key}
                   </div>
                   <div className="text-sm font-mono group-hover: transition-colors">
-                    {tokenInfo.compression?.[key as keyof typeof tokenInfo.compression]?.toString() || "NONE"}
+                    {tokenInfo.compression?.[
+                      key as keyof typeof tokenInfo.compression
+                    ]?.toString() || 'NONE'}
                   </div>
                 </div>
               </>
-            ))
-          }
+            ))}
         </div>
       </div>
       <div className="space-y-6">
@@ -99,14 +94,16 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                 >
                   <div className="grid grid-cols-1 gap-1">
                     <div>
-                      <span className="text-sm text-green-500 mb-1 font-mono">URI</span>
-                      <div className="text-sm mb-1 font-mono">
-                        {file.uri}
-                      </div>
+                      <span className="text-sm text-green-500 mb-1 font-mono">
+                        URI
+                      </span>
+                      <div className="text-sm mb-1 font-mono">{file.uri}</div>
                     </div>
                     {file.cdn_uri && (
                       <div className="md:col-span-2">
-                        <span className="text-sm text-green-500 mb-1 font-mono">CDN URI</span>
+                        <span className="text-sm text-green-500 mb-1 font-mono">
+                          CDN URI
+                        </span>
                         <div className="font-mono  break-all text-sm">
                           {file.cdn_uri}
                         </div>
@@ -114,7 +111,9 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                     )}
                     {file.mime && (
                       <div>
-                        <span className="text-sm text-green-500 mb-1 font-mono">Type</span>
+                        <span className="text-sm text-green-500 mb-1 font-mono">
+                          Type
+                        </span>
                         <div className="font-mono  text-sm">{file.mime}</div>
                       </div>
                     )}
@@ -136,7 +135,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
             <div className="md:w-1/3">
               {tokenInfo.content.links?.image ? (
                 <>
-                  <Link href={tokenInfo.content.links.image} target='_blank'>
+                  <Link href={tokenInfo.content.links.image} target="_blank">
                     <img
                       src={tokenInfo.content.links.image}
                       alt={tokenInfo.content.metadata.symbol}
@@ -155,8 +154,9 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                           `<div className="font-mono text-sm">Image failed to load</div>`
                         )
                       }}
-                    /></Link>
-                  <div className='border border-green-500 my-1 p-2 rounded-lg'>
+                    />
+                  </Link>
+                  <div className="border border-green-500 my-1 p-2 rounded-lg">
                     <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
                       Description
                     </h3>
@@ -167,38 +167,44 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                         </p>
                       </div>
                     )}
-                  </div></>
+                  </div>
+                </>
               ) : (
                 <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
                   <div className="font-mono text-sm">No image available</div>
                 </div>
-              )
-              }
+              )}
             </div>
             <div className="md:w-2/3">
-              <h2 className="text-xl font-bold text-green-500">{tokenInfo.content.metadata.name} | NFT</h2>
+              <h2 className="text-xl font-bold text-green-500">
+                {tokenInfo.content.metadata.name} | NFT
+              </h2>
 
               <div className="flex items-center gap-1">
                 <p className="text-sm">{tokenInfo.id}</p>
                 <CopyPaste content={tokenInfo.id} />
               </div>
 
-              <div className='border border-green-500 mt-5 p-2 rounded-lg'>
+              <div className="border border-green-500 mt-5 p-2 rounded-lg">
                 <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
                   Details
                 </h3>
-                <div className='flex flex-col gap-2 text-sm mt-2'>
+                <div className="flex flex-col gap-2 text-sm mt-2">
                   <div className="flex justify-between items-center gap-1 uppercase">
                     <div>Owner</div>
-                    <div className='flex gap-1'>
-                      <p className='text-green-500'>{tokenInfo.ownership.owner}</p>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.ownership.owner}
+                      </p>
                       <CopyPaste content={tokenInfo.ownership.owner} />
                     </div>
                   </div>
                   <div className="flex justify-between items-center gap-1 uppercase">
                     <div>Mint Address</div>
-                    <div className='flex gap-1'>
-                      <p className='text-green-500'>{tokenInfo.content.metadata.name}</p>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.content.metadata.name}
+                      </p>
                       <CopyPaste content={tokenInfo.id} />
                     </div>
                   </div>
@@ -209,8 +215,8 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                         authority: { address: string; scopes: string[] },
                         i: number
                       ) => (
-                        <div className='flex gap-1'>
-                          <p className='text-green-500'>{authority.address}</p>
+                        <div className="flex gap-1" key={`authority-${i}`}>
+                          <p className="text-green-500">{authority.address}</p>
                           <CopyPaste content={authority.address} />
                         </div>
                       )
@@ -218,41 +224,48 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                   </div>
                   <div className="flex justify-between items-center gap-1 uppercase">
                     <div>COLLECTION ADDRESS</div>
-                    <div className='flex gap-1'>
-                      <p className='text-green-500'>{tokenInfo.grouping?.find(
-                        (g: { group_key: string; group_value: string }) =>
-                          g.group_key === 'collection'
-                      )?.group_value || 'None'}</p>
-                      <CopyPaste content={tokenInfo.grouping?.find(
-                        (g: { group_key: string; group_value: string }) =>
-                          g.group_key === 'collection'
-                      )?.group_value || 'None'} />
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.grouping?.find(
+                          (g: { group_key: string; group_value: string }) =>
+                            g.group_key === 'collection'
+                        )?.group_value || 'None'}
+                      </p>
+                      <CopyPaste
+                        content={
+                          tokenInfo.grouping?.find(
+                            (g: { group_key: string; group_value: string }) =>
+                              g.group_key === 'collection'
+                          )?.group_value || 'None'
+                        }
+                      />
                     </div>
                   </div>
                   <div className="flex justify-between items-center gap-1 uppercase">
                     <div>TOKEN STANDARD</div>
-                    <div className='flex gap-1'>
-                      <p className='text-green-500'>
-                        {tokenInfo.interface}
-                      </p>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">{tokenInfo.interface}</p>
                     </div>
                   </div>
                   <div className="flex justify-between items-center gap-1 uppercase">
                     <div>ROYALTIES</div>
-                    <div className='flex gap-1'>
-                      <p className='text-green-500'>
-                        {tokenInfo.royalty?.percent ? tokenInfo.royalty.percent * 100 : 0}%
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.royalty?.percent
+                          ? tokenInfo.royalty.percent * 100
+                          : 0}
+                        %
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className='border border-green-500 mt-5 p-2 rounded-lg'>
+              <div className="border border-green-500 mt-5 p-2 rounded-lg">
                 <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
                   TOKEN CREATORS
                 </h3>
-                <div className='text-sm mt-2'>
+                <div className="text-sm mt-2">
                   <div className="flex justify-between items-center gap-1 uppercase">
                     {tokenInfo.creators ? (
                       tokenInfo.creators.map(
@@ -264,9 +277,14 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                           },
                           index: number
                         ) => (
-                          <div key={index} className='w-full flex flex-row justify-between'>
-                            <div className='flex gap-1'>
-                              <p className='text-green-500'>{creator.address}</p>
+                          <div
+                            key={index}
+                            className="w-full flex flex-row justify-between"
+                          >
+                            <div className="flex gap-1">
+                              <p className="text-green-500">
+                                {creator.address}
+                              </p>
                               <CopyPaste content={creator.address} />
                             </div>
                             <span>{creator.share || 0}%</span>
@@ -274,19 +292,18 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                         )
                       )
                     ) : (
-                      <div className='w-full flex flex-row justify-between'>
-                        <div className='flex gap-1'>
-                          <p className='text-green-500'>NONE</p>
+                      <div className="w-full flex flex-row justify-between">
+                        <div className="flex gap-1">
+                          <p className="text-green-500">NONE</p>
                           <CopyPaste content="NONE" />
                         </div>
                         <span>0%</span>
                       </div>
-                    )
-                    }
+                    )}
                   </div>
                 </div>
               </div>
-              <div className='border border-green-500 mt-5 p-2 rounded-lg'>
+              <div className="border border-green-500 mt-5 p-2 rounded-lg">
                 <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
                   Attributes
                 </h3>
@@ -311,7 +328,7 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
                   )}
                 </div>
               </div>
-              <div className='h-[20px]'></div>
+              <div className="h-[20px]"></div>
             </div>
           </div>
         ) : (
@@ -321,10 +338,16 @@ export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
 
       {/* Tabs */}
       <div className="flex flex-row gap-3">
-        <p className={getTabStyle(NFTTab.Technical)} onClick={() => setActiveTab(NFTTab.Technical)}>
+        <p
+          className={getTabStyle(NFTTab.Technical)}
+          onClick={() => setActiveTab(NFTTab.Technical)}
+        >
           Technical
         </p>
-        <p className={getTabStyle(NFTTab.Transaction)} onClick={() => setActiveTab(NFTTab.Transaction)}>
+        <p
+          className={getTabStyle(NFTTab.Transaction)}
+          onClick={() => setActiveTab(NFTTab.Transaction)}
+        >
           Transactions
         </p>
       </div>
