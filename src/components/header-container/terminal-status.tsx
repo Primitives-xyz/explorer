@@ -72,17 +72,19 @@ export function TerminalStatus({
               >
                 {t('header.terminal.user')}: {mainUsername}
               </Link>
-              <DropdownMenu>
+            </div>
+          )}
+          {walletAddress && (
+          <DropdownMenu>
                 <DropdownMenuTrigger>
                   <EllipsisVertical className="w-4 h-4" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleLogoutClick}>
-                    {t('header.logout')}
-                  </DropdownMenuItem>
+                <DropdownMenuContent align="end" className="bg-black/20 border border-green-800/30 rounded-sm text-[10px] p-0">
+                <DropdownMenuItem onClick={handleLogoutClick} className="font-bold text-white text-[10px] px-6 py-1.5 hover:opacity-80">
+                  {t('header.logout')}
+                </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
           )}
         </div>
       </div>
