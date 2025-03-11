@@ -72,7 +72,10 @@ export function TerminalStatus({
               >
                 {t('header.terminal.user')}: {mainUsername}
               </Link>
-              <DropdownMenu>
+            </div>
+          )}
+          {walletAddress && (
+          <DropdownMenu>
                 <DropdownMenuTrigger>
                   <EllipsisVertical className="w-4 h-4" />
                 </DropdownMenuTrigger>
@@ -82,7 +85,6 @@ export function TerminalStatus({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
           )}
         </div>
       </div>
