@@ -1,7 +1,7 @@
 import { importSPKI, jwtVerify } from 'jose'
 
 // Using the same public key from middleware
-const PUBLIC_KEY = process.env.PUBLIC_KEY ?? ''
+const DYNAMIC_KEY = process.env.DYNAMIC_KEY ?? ''
 
 export interface JWTPayload {
   sub?: string
@@ -13,7 +13,7 @@ export async function verifyAuthToken(
   token: string
 ): Promise<JWTPayload | null> {
   try {
-    const publicKey = await importSPKI(PUBLIC_KEY, 'RS256')
+    const publicKey = await importSPKI(DYNAMIC_KEY, 'RS256')
     const { payload } = await jwtVerify(token, publicKey, {
       algorithms: ['RS256'],
     })

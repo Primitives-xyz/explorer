@@ -26,9 +26,9 @@ export async function middleware(request: NextRequest) {
     )
   }
 
-  const PUBLIC_KEY = process.env.PUBLIC_KEY || productionPublicKeys
+  const DYNAMIC_KEY = process.env.DYNAMIC_KEY || productionPublicKeys
   try {
-    const publicKey = await importSPKI(PUBLIC_KEY, 'RS256')
+    const publicKey = await importSPKI(DYNAMIC_KEY, 'RS256')
     const { payload } = await jwtVerify(jwt as string, publicKey, {
       algorithms: ['RS256'],
     })
@@ -53,4 +53,4 @@ export const config = {
   matcher: ['/api/profiles/create', '/api/comments'],
 }
 
-const productionPublicKeys = process.env.PUBLIC_KEY || ''
+const productionPublicKeys = process.env.DYNAMIC_KEY || ''
