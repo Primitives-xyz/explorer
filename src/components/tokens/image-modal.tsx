@@ -1,14 +1,16 @@
-import { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
-import { CopyPaste } from '../common/copy-paste'
-import { useWallet } from '../auth/wallet-context'
-import { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 import { useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { VersionedTransaction } from '@solana/web3.js'
-import { Connection } from '@solana/web3.js'
-import { useToast } from '@/hooks/use-toast'
 import { useTranslations } from 'next-intl'
+import { VersionedTransaction, Connection } from '@solana/web3.js'
+import { Loader2 } from 'lucide-react'
+
+import { useToast } from '@/hooks/use-toast'
+import { useWallet } from '../auth/wallet-context'
+
+import { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
+import { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
+
+import { CopyPaste } from '../common/copy-paste'
 
 interface ImageModalProps {
   isOpen: boolean
@@ -18,123 +20,208 @@ interface ImageModalProps {
   token?: NFT | TokenWithInscription | FungibleToken // Adding typed NFT parameter
 }
 
+interface NFTPoolInfo {
+  pool: string
+  minPaymentAmount: number
+}
+
+interface OfferInterface {
+  pdaAddress: string
+  tokenMint: string
+  auctionHouse: string
+  buyer: string,
+  buyerReferral: string,
+  tokenSize: number
+  price: number,
+  expiry: number
+}
+
 export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageModalProps) => {
   if (!isOpen) return null
   const { primaryWallet, walletAddress } = useWallet()
   const { toast } = useToast()
   const t = useTranslations()
-  const [tokenInfo, setTokenInfo] = useState<any>(null)
-  const [tokenType, setTokenType] = useState<string | null>(null)
+
+  // Loading & UI states
+  const [showNftListLoading, setShowNftListLoading] = useState<boolean>(false)
   const [showNftSellLoading, setShowNftSellLoading] = useState<boolean>(false)
 
-  // Add handler for nft sell
-  const handleNftSell = async () => {
+  // Token-related states
+  const [listAmount, setListAmount] = useState<string>('')
+  const [tokenInfo, setTokenInfo] = useState<any>(null)
+  const [tokenType, setTokenType] = useState<string | null>(null)
+  const [collectionSymbol, setCollectionSymbol] = useState<string | null>(null)
+
+  // Auction-related states
+  const [auctionHose, setAuctionHouse] = useState<string | null>(null)
+  const [bestSellOffer, setBestSellOffer] = useState<OfferInterface | null>(null)
+
+  const validateAmount = (value: string): boolean => {
+    // Empty check
+    if (value === '') return false;
+
+    // Convert to number and check if it's valid
+    const numericValue = Number(value);
+
+    // Check if NaN or not positive
+    if (isNaN(numericValue) || numericValue <= 0) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleNftList = async () => {
     try {
-      // setShowNftSellLoading(true)
-      const bestOfferRes = await fetch(`api/magiceden/mmm/token/${tokenInfo.id}/pools`)
-      const bestOfferData = await bestOfferRes.json()
+      setShowNftListLoading(true)
 
-      console.log("------------------------------------------")
-      console.log(bestOfferData)
+      if (!token || !auctionHose) {
+        toast({
+          title: t('trade.transaction_failed'),
+          description: t('trade.the_list_transaction_failed_please_try_again'),
+          variant: 'error',
+          duration: 5000,
+        })
+        return
+      }
 
-      // const query = {
-      //   pool: bestOfferData.pool,
-      //   minPaymentAmount: bestOfferData.minPaymentAmount,
-      //   seller: walletAddress,
-      //   assetMint: tokenInfo.id,
-      //   assetTokenAccount: tokenInfo.id,
-      //   assetAmount: 1
-      // }
+      if (!validateAmount(listAmount)) {
+        toast({
+          title: "List Amount Error",
+          description: "Invalid List Amount. Please try to input again",
+          variant: 'error',
+          duration: 5000,
+        })
+        return
+      }
 
-      // const sellNftRes = await fetch(`/api/magiceden/mmm/sol-fulfill-buy?pool=${query.pool}&minPaymentAmount=${query.minPaymentAmount}&seller=${query.seller}&assetMint=${query.assetMint}&assetTokenAccount=${query.assetTokenAccount}&assetAmount=${query.assetAmount}`, {
-      //   method: 'GET',
-      //   headers: {
-      //     "ccept": "application/json"
-      //   }
-      // })
+      // Step 1: Fetch listing transaction from backend
+      const listRes = await fetch(
+        `/api/magiceden/instructions/list?seller=${walletAddress}&auctionHouseAddress=${auctionHose}&tokenMint=${token.id}&tokenAccount=${token.id}&price=${Number(listAmount)}`
+      )
+      const listResData = await listRes.json()
 
-      // const sellNftResData = await sellNftRes.json()
-      // console.log("++++++++++++++++++++", sellNftResData)
+      // Step 2: Deserialize the transaction
+      const serializedBuffer = Buffer.from(listResData.listTx, 'base64')
+      const vtx: VersionedTransaction = VersionedTransaction.deserialize(
+        Uint8Array.from(serializedBuffer)
+      )
 
-      // const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-      // const sellTxData = sellNftResData.sellTx
-      // const serializedBuffer = Buffer.from(sellTxData, 'base64')
-      // const vtx: VersionedTransaction = VersionedTransaction.deserialize(
-      //   Uint8Array.from(serializedBuffer)
-      // )
+      // Step 3: Get wallet signer & RPC connection
+      const signer = await primaryWallet.getSigner()
+      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
-      // const signer = await primaryWallet.getSigner()
+      // Step 4: Simulate the transaction (optional debugging step)
+      const simulateTx = await connection.simulateTransaction(vtx, { replaceRecentBlockhash: true })
+      console.log("Simulation result:", simulateTx)
 
-      // // simulate sellTx
-      // const simulateTx = await connection.simulateTransaction(vtx, { replaceRecentBlockhash: true })
-      // console.log('sim:', simulateTx)
+      // Step 5: Sign & send the transaction
+      const listTxid = await signer.signAndSendTransaction(vtx)
 
-      // const sellTxid = await signer.signAndSendTransaction(vtx)
-      // const confirmToast = toast({
-      //   title: t('trade.confirming_transaction'),
-      //   description: t('trade.waiting_for_confirmation'),
-      //   variant: 'pending',
-      //   duration: 1000000000,
-      // })
+      // Step 6: Show "confirming transaction" toast
+      const confirmToast = toast({
+        title: t('trade.confirming_transaction'),
+        description: t('trade.waiting_for_confirmation'),
+        variant: 'pending',
+        duration: 1000000000,
+      })
 
-      // const tx = await connection.confirmTransaction({
-      //   signature: sellTxid.signature,
-      //   ...(await connection.getLatestBlockhash()),
-      // })
+      // Step 7: Confirm the transaction
+      const latestBlockhash = await connection.getLatestBlockhash()
+      const tx = await connection.confirmTransaction({
+        signature: listTxid.signature,
+        ...latestBlockhash,
+      })
 
-      // confirmToast.dismiss()
+      // Step 8: Dismiss the confirmation toast
+      confirmToast.dismiss()
 
-      // if (tx.value.err) {
-      //   toast({
-      //     title: t('trade.transaction_failed'),
-      //     description: t('trade.the_sell_transaction_failed_please_try_again'),
-      //     variant: 'error',
-      //     duration: 5000,
-      //   })
-      // } else {
-      //   toast({
-      //     title: t('trade.transaction_successful'),
-      //     description: t(
-      //       'trade.the_sell_transaction_was_successful_creating_shareable_link'
-      //     ),
-      //     variant: 'success',
-      //     duration: 5000,
-      //   })
-      // }
-
-      // setShowNftSellLoading(false)
+      // Step 9: Handle transaction success or failure
+      if (tx.value.err) {
+        toast({
+          title: t('trade.transaction_failed'),
+          description: t('trade.the_list_transaction_failed_please_try_again'),
+          variant: 'error',
+          duration: 5000,
+        })
+      } else {
+        toast({
+          title: t('trade.transaction_successful'),
+          description: t(
+            'trade.the_list_transaction_was_successful_creating_shareable_link'
+          ),
+          variant: 'success',
+          duration: 5000,
+        })
+      }
     } catch (error) {
-      console.log('Error in making stake tx:', error)
-      setShowNftSellLoading(false)
       toast({
         title: t('trade.transaction_failed'),
-        description: t('trade.the_sell_transaction_failed_please_try_again'),
+        description: t('trade.the_list_transaction_failed_please_try_again'),
         variant: 'error',
         duration: 5000,
       })
+    } finally {
+      setShowNftListLoading(false)
     }
+  }
+
+  const handleNftSell = async () => {
   }
 
   useEffect(() => {
     (async () => {
-      if (token) {
-        try {
-          const response = await fetch(`/api/token?mint=${token.id}`)
-          const tInfo = await response.json()
-          console.log("tInfo:", tInfo)
-          if (['V1_NFT', 'V2_NFT', 'ProgrammableNFT', 'LEGACY_NFT', 'MplCoreAsset'].includes(token.interface)) {
-            setTokenInfo(tInfo?.result as NFTTokenInfo)
-            setTokenType("NFT")
-          } else if (['FungibleToken', 'FungibleAsset'].includes(token.interface)) {
-            setTokenInfo(tInfo?.result as FungibleTokenInfo)
-            setTokenType("FT")
-          }
-        } catch (error) {
-          console.log("Error in fetching token info")
+      if (!token) return
+
+      try {
+        // Fetch token information
+        const response = await fetch(`/api/token?mint=${token.id}`)
+        const tInfo = await response.json()
+
+        // Determine token type
+        if (['V1_NFT', 'V2_NFT', 'ProgrammableNFT', 'LEGACY_NFT', 'MplCoreAsset'].includes(token.interface)) {
+          setTokenInfo(tInfo?.result as NFTTokenInfo)
+          setTokenType("NFT")
+        } else if (['FungibleToken', 'FungibleAsset'].includes(token.interface)) {
+          setTokenInfo(tInfo?.result as FungibleTokenInfo)
+          setTokenType("FT")
         }
+
+        // Fetch collection symbol if available
+        const collectionAddy = tInfo?.result.grouping?.find(
+          (g: { group_key: string; group_value: string }) => g.group_key === 'collection'
+        )?.group_value
+
+        if (collectionAddy) {
+          const getCollectionSymbolRes = await fetch(`/api/magiceden/collection/${collectionAddy}`)
+          const collectionSymbolData = await getCollectionSymbolRes.json()
+          setCollectionSymbol(collectionSymbolData.collectionSymbol)
+        }
+
+        // Fetch Best Buy Offer for nft
+        const bestOfferRes = await fetch(`/api/magiceden/tokens/${token.id}/offers_received`)
+        const bestOfferResData = await bestOfferRes.json()
+        setBestSellOffer(bestOfferResData.bestOffer)
+      } catch (error) {
+        console.error("Error fetching token info:", error)
       }
     })()
-  }, [walletAddress, token])
+  }, [token])
+
+  useEffect(() => {
+    (async () => {
+      if (!collectionSymbol) return
+
+      try {
+        const auctionHouseRes = await fetch(`/api/magiceden/collection/${collectionSymbol}/auctionHose`)
+        const auctionHouseResData = await auctionHouseRes.json()
+        setAuctionHouse(auctionHouseResData.auctionHouse)
+      } catch (error) {
+        console.error("Error fetching auction house info:", error)
+      }
+    })()
+
+  }, [collectionSymbol])
 
   return (
     <div
@@ -167,18 +254,30 @@ export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageMo
                         )
                       }}
                     /></Link>
-
                 ) : (
                   <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
                     <div className="font-mono text-sm">No image available</div>
                   </div>
                 )}
-                <div
-                  className='flex justify-center items-center px-2 py-1 bg-green-600 hover:bg-green-700 rounded-lg my-1 cursor-pointer'
+                <button
+                  className='w-full flex justify-center items-center px-2 py-1 bg-green-600 hover:bg-green-700 rounded-lg my-2 cursor-pointer'
+                  disabled={showNftSellLoading || !bestSellOffer}
                   onClick={handleNftSell}
                 >
-                  <span className='font-mono font-medium uppercase'>sell</span>
-                </div>
+                  {
+                    showNftSellLoading ? (
+                      <>
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                      </>
+                    ) : (
+                      <>
+                        <span className='font-mono font-medium uppercase'>
+                          {bestSellOffer ? "Instant Sell" : "No Offers"}
+                        </span>
+                      </>
+                    )
+                  }
+                </button>
                 <div className='border border-green-500 my-1 p-2 rounded-lg'>
                   <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
                     Description
@@ -191,6 +290,7 @@ export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageMo
                     </div>
                   )}
                 </div>
+
               </div>
 
               <div className="md:w-3/5">
@@ -199,6 +299,51 @@ export const ImageModal = ({ isOpen, onClose, imageUrl, symbol, token }: ImageMo
                 <div className="flex items-center gap-1">
                   <p className="text-sm">{tokenInfo.id}</p>
                   <CopyPaste content={tokenInfo.id} />
+                </div>
+
+                <div className='my-[10px]'>
+                  <div className="bg-green-900/20 rounded-lg w-full transition-all duration-200 border border-green-500/20 focus-within:border-green-500/30 focus-within:ring-2 focus-within:ring-green-500/20 p-1">
+                    <div className="flex flex-row items-baseline justify-between">
+                      <input
+                        inputMode="decimal"
+                        placeholder="0.00"
+                        className="bg-transparent text-base w-full font-medium placeholder:text-green-100/30 outline-none"
+                        type="text"
+                        onChange={(e) => {
+                          const value = e.target.value
+                          if (
+                            value === '' ||
+                            value === '.' ||
+                            /^[0]?\.[0-9]*$/.test(value) ||
+                            /^[0-9]*\.?[0-9]*$/.test(value)
+                          ) {
+                            const cursorPosition = e.target.selectionStart
+                            setListAmount(value)
+                            window.setTimeout(() => {
+                              e.target.focus()
+                              e.target.setSelectionRange(cursorPosition, cursorPosition)
+                            }, 0)
+                          }
+                        }}
+                        value={listAmount}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    className='w-full flex justify-center items-center px-2 py-1 bg-green-600 hover:bg-green-700 rounded-lg my-1 cursor-pointer'
+                    disabled={showNftListLoading}
+                    onClick={handleNftList}
+                  >
+                    {
+                      showNftListLoading ? (
+                        <>
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                        </>
+                      ) : (
+                        <><span className='font-mono font-medium uppercase'>List</span></>
+                      )
+                    }
+                  </button>
                 </div>
 
                 <div className='border border-green-500 mt-5 p-2 rounded-lg'>

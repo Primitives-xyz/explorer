@@ -1,16 +1,21 @@
 'use client'
 
+// React and Next.js imports
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
+// UI components and icons
+import { Loader2 } from 'lucide-react';
 import { CopyPaste } from '@/components/common/copy-paste';
+import { useToast } from '@/hooks/use-toast';
+
+// Solana-related imports
+import { Connection, VersionedTransaction } from '@solana/web3.js';
+
+// Local types and hooks
 import type { NFTTokenInfo } from '@/types/Token';
 import { useCurrentWallet } from './auth/hooks/use-current-wallet';
-import { VersionedTransaction } from '@solana/web3.js';
-import { Connection } from '@solana/web3.js';
-import { useToast } from '@/hooks/use-toast';
-import { useTranslations } from 'next-intl';
 
 interface CollectionList {
     pdaAddress: string,
@@ -86,87 +91,87 @@ interface NftCollectionDetailProps {
 }
 
 export default function NFTCollectionDetail({ id, tokenInfo }: NftCollectionDetailProps) {
-    const { toast } = useToast()
-    const t = useTranslations()
-    const { primaryWallet, walletAddress } = useCurrentWallet()
-    const [nftCollectionStat, setNftCollectionStat] = useState<CollectionStat | null>(null)
-    const [collectionSymbol, setCollectionSymbol] = useState<string | null>(null)
-    const [collectionLists, setCollectionLists] = useState<CollectionList[]>([])
-    const [selectedNft, setSelectedNft] = useState<CollectionList | null>(null)
-    const [selectedTokenModal, setSelectedTokenModal] = useState<boolean>(false)
-    const [showNftBuyLoading, setShowNftBuyLoading] = useState<boolean>(false)
+    // Context hooks
+    const { toast } = useToast();
+    const t = useTranslations();
+    const { primaryWallet, walletAddress } = useCurrentWallet();
+
+    // Collection-related state
+    const [collectionSymbol, setCollectionSymbol] = useState<string | null>(null);
+    const [nftCollectionStat, setNftCollectionStat] = useState<CollectionStat | null>(null);
+    const [collectionLists, setCollectionLists] = useState<CollectionList[]>([]);
+
+    // NFT selection state
+    const [selectedNft, setSelectedNft] = useState<CollectionList | null>(null);
+    const [selectedTokenModal, setSelectedTokenModal] = useState<boolean>(false);
+
+    // Loading state
+    const [showNftBuyLoading, setShowNftBuyLoading] = useState<boolean>(false);
 
     const handleNftBuy = async () => {
         try {
-            if (selectedNft) {
-                const buyer = walletAddress
-                const { seller, auctionHouse, tokenMint, price } = selectedNft
-                const reqUrl = `/api/magiceden/instructions/buy_now?buyer=${buyer}&seller=${seller}&auctionHouseAddress=${auctionHouse}&tokenMint=${tokenMint}&tokenATA=${tokenMint}&price=${price}`
-
-                setShowNftBuyLoading(true)
-
-                const buyNftApiRes = await fetch(reqUrl, {
-                    method: 'GET',
-                    headers: {
-                        "accept": "application/json"
-                    }
-                })
-
-                const buyNftApiResData = await buyNftApiRes.json()
-                const buyTxData = buyNftApiResData.buyTx
-                const serializedBuffer = Buffer.from(buyTxData, 'base64')
-                const vtx: VersionedTransaction = VersionedTransaction.deserialize(
-                    Uint8Array.from(serializedBuffer)
-                )
-
-                const signer = await primaryWallet.getSigner()
-                const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-
-                const simulateTx = await connection.simulateTransaction(vtx, { replaceRecentBlockhash: true })
-                console.log('sim:', simulateTx)
-
-                const buyTxid = await signer.signAndSendTransaction(vtx)
-
-                const confirmToast = toast({
-                    title: t('trade.confirming_transaction'),
-                    description: t('trade.waiting_for_confirmation'),
-                    variant: 'pending',
-                    duration: 1000000000,
-                })
-
+            if (!selectedNft) {
                 toast({
-                    title: t('trade.confirming_transaction'),
-                    description: t('trade.waiting_for_confirmation'),
+                    title: "NFT Buy Error",
+                    description: "Please select a NFT to purchase",
                     variant: 'pending',
                     duration: 1000000000,
                 })
+                return
+            }
 
-                const tx = await connection.confirmTransaction({
-                    signature: buyTxid.signature,
-                    ...(await connection.getLatestBlockhash()),
+            setShowNftBuyLoading(true)
+
+            const { seller, auctionHouse, tokenMint, price } = selectedNft
+            const buyNftApiRes = await fetch(
+                `/api/magiceden/instructions/buy_now?buyer=${walletAddress}&seller=${seller}&auctionHouseAddress=${auctionHouse}&tokenMint=${tokenMint}&tokenATA=${tokenMint}&price=${price}`
+            )
+
+            const buyNftApiResData = await buyNftApiRes.json()
+            const buyTxData = buyNftApiResData.buyTx
+            const serializedBuffer = Buffer.from(buyTxData, 'base64')
+            const vtx: VersionedTransaction = VersionedTransaction.deserialize(
+                Uint8Array.from(serializedBuffer)
+            )
+
+            const signer = await primaryWallet.getSigner()
+            const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+
+            const simulateTx = await connection.simulateTransaction(vtx, { replaceRecentBlockhash: true })
+            console.log('simulateTx:', simulateTx)
+
+            const buyTxid = await signer.signAndSendTransaction(vtx)
+
+            const confirmToast = toast({
+                title: t('trade.confirming_transaction'),
+                description: t('trade.waiting_for_confirmation'),
+                variant: 'pending',
+                duration: 1000000000,
+            })
+
+            const tx = await connection.confirmTransaction({
+                signature: buyTxid.signature,
+                ...(await connection.getLatestBlockhash()),
+            })
+
+            confirmToast.dismiss()
+
+            if (tx.value.err) {
+                toast({
+                    title: t('trade.transaction_failed'),
+                    description: t('trade.the_buy_transaction_failed_please_try_again'),
+                    variant: 'error',
+                    duration: 5000,
                 })
-
-                confirmToast.dismiss()
-
-                if (tx.value.err) {
-                    toast({
-                        title: t('trade.transaction_failed'),
-                        description: t('trade.the_buy_transaction_failed_please_try_again'),
-                        variant: 'error',
-                        duration: 5000,
-                    })
-                } else {
-                    toast({
-                        title: t('trade.transaction_successful'),
-                        description: t(
-                            'trade.the_buy_transaction_was_successful_creating_shareable_link'
-                        ),
-                        variant: 'success',
-                        duration: 5000,
-                    })
-                }
-
-                setShowNftBuyLoading(false)
+            } else {
+                toast({
+                    title: t('trade.transaction_successful'),
+                    description: t(
+                        'trade.the_buy_transaction_was_successful_creating_shareable_link'
+                    ),
+                    variant: 'success',
+                    duration: 5000,
+                })
             }
         } catch (error) {
             toast({
@@ -175,6 +180,7 @@ export default function NFTCollectionDetail({ id, tokenInfo }: NftCollectionDeta
                 variant: 'error',
                 duration: 5000,
             })
+        } finally {
             setShowNftBuyLoading(false)
         }
     }
@@ -198,6 +204,7 @@ export default function NFTCollectionDetail({ id, tokenInfo }: NftCollectionDeta
 
                 const collectionListsRes = await fetch(`/api/magiceden/collection/${collectionSymbol}/lists`)
                 const collectionListsResData = await collectionListsRes.json()
+                console.log('collectionListsResData:', collectionListsResData)
                 setCollectionLists(collectionListsResData.collectionLists)
             }
         })()
