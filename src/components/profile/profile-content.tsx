@@ -143,6 +143,8 @@ export function ProfileContent({ username, namespace }: Props) {
       : `${nsLink}${username}`
   }
 
+  const isLoadingTargetWallet = (namespace !== X_NAMESPACE && !targetWalletAddress ) // don't wait for wallet if it's a x profile.
+
   return (
     <div className="py-8">
       <>
@@ -214,8 +216,7 @@ export function ProfileContent({ username, namespace }: Props) {
             isLoadingProfileData={
               isLoadingIdentities 
               || isLoadingWallet 
-              || (namespace !== X_NAMESPACE && !targetWalletAddress ) // don't wait for wallet if it's a x profile.
-            }
+              || isLoadingTargetWallet            }
             profileData={{
               profiles:
                 !identitiesError && !isLoadingIdentities && identities

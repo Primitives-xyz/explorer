@@ -44,7 +44,7 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
 
   let queryCondition = `walletAddress=${walletAddress}`
   if(namespace === X_NAMESPACE) { 
-    queryCondition += `&ContactType=TWITTER&useIdentities=true`
+    queryCondition += `&contactType=TWITTER&useIdentities=true`
   }
 
   const key = walletAddress
@@ -81,7 +81,7 @@ export const useIdentities = (walletAddress: string, namespace?: string) => {
 export const refreshIdentities = (walletAddress: string, namespace?: string) => {
   let queryCondition = `/api/identities?walletAddress=${walletAddress}`
   if(namespace === X_NAMESPACE) { 
-    queryCondition += `&ContactType=TWITTER&useIdentities=true`
+    queryCondition += `&contactType=TWITTER&useIdentities=true`
   }
 
   return mutate(`${queryCondition}`)
