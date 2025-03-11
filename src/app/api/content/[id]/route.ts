@@ -1,4 +1,4 @@
-import { contentServer } from '@/lib/content-server'
+import { contentServer } from '@/utils/content-server'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {

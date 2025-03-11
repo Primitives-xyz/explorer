@@ -1,5 +1,5 @@
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { ProfileSearchResult } from '@/types'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/routes'
 import type { Profile } from './api'
 

@@ -1,5 +1,5 @@
 import { refreshProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { DICEBEAR_API_BASE } from '@/lib/constants'
+import { DICEBEAR_API_BASE } from '@/utils/constants'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { useState } from 'react'
 

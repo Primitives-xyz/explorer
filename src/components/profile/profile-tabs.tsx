@@ -4,7 +4,6 @@ import NFTShowcase from '@/components/NFTShowcase'
 import TokenDashboard from '@/components/TokenDashboard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMediaQuery } from '@/hooks/use-media-query'
-import { useTargetWallet } from '@/hooks/use-target-wallet'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { TransactionSection } from '../transaction-section'
@@ -13,11 +12,13 @@ import { ProfileContentFeed } from './profile-content-feed'
 
 interface ProfileTabsProps {
   username: string
+  targetWalletAddress: string
 }
 
-export function ProfileTabs({ username }: ProfileTabsProps) {
-  const { targetWalletAddress } = useTargetWallet(username)
-
+export function ProfileTabs({
+  username,
+  targetWalletAddress,
+}: ProfileTabsProps) {
   const [activeTab, setActiveTab] = useState('social')
   const isMobile = useMediaQuery('(max-width: 768px)')
 

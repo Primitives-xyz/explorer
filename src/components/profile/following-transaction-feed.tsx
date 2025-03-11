@@ -85,42 +85,41 @@ export const FollowingTransactionFeed = ({
   setSelectedType,
 }: FollowingTransactionFeedProps) => {
   const { walletAddress } = useCurrentWallet()
-
   const t = useTranslations()
 
   // Get unique transaction types from the results
   const transactionTypes = useMemo(() => {
     return [
-      { value: 'all', label: t('following-transaction.all') },
-      { value: 'swap', label: t('following-transaction.swap') },
-      { value: 'transfer', label: t('following-transaction.transfer') },
+      { value: 'all', label: t('following_transaction.all') },
+      { value: 'swap', label: t('following_transaction.swap') },
+      { value: 'transfer', label: t('following_transaction.transfer') },
       {
         value: 'compressed_nft_mint',
-        label: t('following-transaction.compressed_nft_mint'),
+        label: t('following_transaction.compressed_nft_mint'),
       },
     ]
-  }, [])
+  }, [t])
 
   // Helper to format the loading/empty text
   const getDisplayText = (type: string) => {
     switch (type) {
       case 'all':
-        return 'TRANSACTIONS'
+        return t('following_transaction.transactions').toUpperCase()
       case 'swap':
-        return 'SWAP TRANSACTIONS'
+        return t('following_transaction.swap_transactions').toUpperCase()
       case 'transfer':
-        return 'TRANSFERS'
+        return t('following_transaction.transfers').toUpperCase()
       case 'compressed_nft_mint':
-        return 'CNFT MINTS'
+        return t('following_transaction.cnft_mints').toUpperCase()
       default:
-        return 'TRANSACTIONS'
+        return t('following_transaction.transactions').toUpperCase()
     }
   }
 
   // If not logged in, show the preview with CTA
   if (!isLoggedIn) {
     return (
-      <DataContainer title="following_activity" height="large">
+      <DataContainer title={t('following_activity.title')} height="large">
         <div className="relative h-full flex flex-col">
           {/* Blurred mock transactions in background */}
           <div className="absolute inset-0 divide-y divide-green-800/30 blur-sm">
@@ -136,12 +135,11 @@ export const FollowingTransactionFeed = ({
           {/* Create Profile CTA */}
           <div className="relative flex-1 flex flex-col items-center justify-center bg-background-80/95 backdrop-blur-sm px-4 py-8 sm:p-4 text-center z-10">
             <h3 className="font-mono text-base sm:text-lg mb-6 sm:mb-4 max-w-[280px] sm:max-w-none">
-              Create a profile to follow wallets onchain and see their swaps in
-              real time!
+              {t('following_transaction.create_a_profile_to_follow')}
             </h3>
             <DynamicConnectButton>
               <div className="px-4 sm:px-6 py-3 sm:py-2 bg-green-500 hover:bg-green-400 text-black font-mono rounded transition-colors cursor-pointer text-sm sm:text-base">
-                Create Profile
+                {t('following_transaction.create_profile')}
               </div>
             </DynamicConnectButton>
           </div>
@@ -158,7 +156,7 @@ export const FollowingTransactionFeed = ({
 
   return (
     <DataContainer
-      title="following_activity"
+      title={t('following_activity.title')}
       count={transactions.length}
       height="large"
       headerRight={headerRight}
@@ -179,8 +177,8 @@ export const FollowingTransactionFeed = ({
       <ScrollableContent
         isLoading={isLoading}
         isEmpty={!isLoading && transactions.length === 0}
-        loadingText={`>>> LOADING ${getDisplayText(selectedType)}...`}
-        emptyText={`>>> NO ${getDisplayText(selectedType)} FOUND`}
+        loadingText={`${t('common.loading')} ${getDisplayText(selectedType)}...`}
+        emptyText={`${t('common.no')} ${getDisplayText(selectedType)} ${t('common.found')}`}
       >
         <div className="divide-y divide-green-800/30">
           {isLoading ? (

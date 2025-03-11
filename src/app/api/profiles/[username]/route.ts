@@ -1,6 +1,6 @@
-import { verifyAuthToken } from '@/lib/auth'
-import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod, Profile } from '@/utils/api'
+import { verifyAuthToken } from '@/utils/auth'
+import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RouteContext = {
@@ -28,11 +28,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
       endpoint = `profiles/new/${username}?username=${fromUsername}`
     }
 
-    if(namespace) {
+    if (namespace) {
       endpoint = `profiles/${username}?namespace=${namespace}`
     }
 
-    const data : Profile = await fetchTapestryServer({
+    const data: Profile = await fetchTapestryServer({
       endpoint,
       method: FetchMethod.GET,
     })
