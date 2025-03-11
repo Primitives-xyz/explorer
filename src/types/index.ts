@@ -1,5 +1,3 @@
-import type { Profile as ApiProfile } from '@/utils/api'
-
 export interface Profile {
   id: string
   username: string
@@ -8,14 +6,6 @@ export interface Profile {
   namespace: string
   blockchain: string
   created_at: number
-}
-
-export interface ProfileWithStats extends Omit<ApiProfile, 'profile'> {
-  followStats?: {
-    followers: number
-    following: number
-  }
-  profile: Profile
 }
 
 export interface Wallet {

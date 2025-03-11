@@ -6,18 +6,15 @@ import { ActivityFeedContainer } from '@/components/profile/following-container'
 import SearchBar from '@/components/search-bar'
 import { TrendingTokens } from '@/components/tokens/trending-tokens'
 import { TopTraders } from '@/components/traders/top-traders'
+import { IProfilesListResponse } from '@/types/profile.types'
 import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-interface ProfileData {
-  profiles: any[]
-}
-
 export default function Home() {
   const router = useRouter()
   const { mainUsername } = useCurrentWallet()
-  const [profileData, setProfileData] = useState<ProfileData | null>(null)
+  const [profileData, setProfileData] = useState<IProfilesListResponse>()
   const [error, setError] = useState<string | undefined>(undefined)
   const [isLoadingProfileData, setIsLoadingProfileData] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)

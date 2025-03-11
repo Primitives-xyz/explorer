@@ -1,22 +1,8 @@
+import { IProfile } from '@/types/profile.types'
 import useSWR from 'swr'
 
-interface Wallet {
-  id: string
-  blockchain: string
-}
-
-interface Profile {
-  id: string
-  created_at: number
-  namespace: string
-  username: string
-  bio: string | null
-  image: string | null
-  wallet: Wallet | null
-}
-
 interface GetFollowingResponse {
-  profiles: Profile[]
+  profiles: IProfile[]
   page: number
   pageSize: number
 }

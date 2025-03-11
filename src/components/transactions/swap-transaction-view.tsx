@@ -5,7 +5,7 @@ import { Modal } from '@/components/common/modal'
 import { useTokenInfo } from '@/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/hooks/use-token-usdc-price'
 import type { TokenInfo } from '@/types/Token'
-import type { Profile } from '@/utils/api'
+import { IGetProfileResponse } from '@/types/profile.types'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
 import { formatTimeAgo } from '@/utils/format-time'
@@ -72,7 +72,7 @@ export function SwapTransactionView({
   // Add profile lookup for source wallet
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
-    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
+    (p: IGetProfileResponse) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   // Check if this is a comment transaction (80/20 split)
@@ -88,7 +88,7 @@ export function SwapTransactionView({
 
   const { profiles: destProfiles } = useGetProfiles(destinationWallet || '')
   const destProfile = destProfiles?.find(
-    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
+    (p: IGetProfileResponse) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   // Add useTokenInfo hooks for both tokens

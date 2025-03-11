@@ -5,10 +5,10 @@ export interface IUser {
   userProfileURL?: string
   avatarUrl: string | null
   bio: string
+  isLoading?: boolean
+  createdAt?: string
   socialCounts?: {
     followers: number
     following: number
   }
-  isLoading?: boolean
-  createdAt?: string
 }

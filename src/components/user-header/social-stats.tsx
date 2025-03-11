@@ -2,13 +2,12 @@
 
 import { Button } from '@/components/common/button'
 import { Modal } from '@/components/common/modal'
+import { ProfileCard } from '@/components/profile-card'
 import { useGetFollowers } from '@/components/profile/hooks/use-get-followers'
 import { useGetFollowing } from '@/components/profile/hooks/use-get-following'
 import { Badge } from '@/components/ui/badge'
 import { IUser } from '@/components/user-header/models/user.models'
-import { route } from '@/utils/routes'
 import { Users } from 'lucide-react'
-import Link from 'next/link'
 import { useState } from 'react'
 
 interface Props {
@@ -69,14 +68,10 @@ export function SocialStats({ user }: Props) {
         className="!max-w-[500px]"
       >
         {data?.length ? (
-          <ul>
-            {data.map((elem, index) => (
-              <li key={index} className="hover:underline">
-                <Link href={route('address', { id: elem.username })}>
-                  {elem.username}
-                </Link>
-              </li>
-            ))}
+          <ul className="h-[400px] overflow-auto">
+            {data.map((elem) => {
+              return <ProfileCard key={elem.id} profile={elem} />
+            })}
           </ul>
         ) : (
           <p className="text-center text-gray-500">No {selectedTab} found.</p>
