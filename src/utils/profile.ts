@@ -1,6 +1,6 @@
-import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
 import { ProfileMetadata } from '@/utils/metadata/profile-metadata'
+import { fetchTapestryServer } from '@/utils/tapestry-server'
 
 /**
  * Gets the profile metadata for a given username

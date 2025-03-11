@@ -1,5 +1,5 @@
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
-import { IGetProfilesResponse } from '@/models/profile.models'
+import { IGetProfilesResponse } from '@/types/profile.types'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const MAX_DAYS_SHOW_UPDATE_PROFILE_MODAL = 5

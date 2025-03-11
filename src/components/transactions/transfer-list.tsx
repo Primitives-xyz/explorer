@@ -1,4 +1,4 @@
-import { getSolscanAddressUrl } from '@/lib/constants'
+import { getSolscanAddressUrl } from '@/utils/constants'
 import { formatAddress, formatLamportsToSol } from '@/utils/transaction'
 import { ExternalLinkIcon } from 'lucide-react'
 

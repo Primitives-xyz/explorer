@@ -1,12 +1,10 @@
 'use client'
 
-import UserHeader from '@/components/UserHeader'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { ProfileIdentities } from '@/components/profile/profile-identities'
 import { ProfileTabs } from '@/components/profile/profile-tabs'
+import { UserHeader } from '@/components/user-header/user-header'
 import { useProfileData } from '@/hooks/use-profile-data'
-import { useTargetWallet } from '@/hooks/use-target-wallet'
-import { usePortfolioData } from '@/hooks/usePortfolioData'
 
 interface Props {
   username: string
@@ -16,17 +14,10 @@ export function ProfileView({ username }: Props) {
   // Get the mainUsername from the useCurrentWallet hook
   const { mainUsername } = useCurrentWallet()
 
-  const {
-    targetWalletAddress,
-    isLoading: isLoadingWallet,
-    isOwnWallet,
-  } = useTargetWallet(username)
-
   const { profileData, isLoading } = useProfileData(username, mainUsername)
 
-  // Fetch portfolio data for the wallet address
-  const { portfolioData, isLoading: isLoadingPortfolio } =
-    usePortfolioData(targetWalletAddress)
+  const targetWalletAddress = profileData?.walletAddress || ''
+  const isOwnWallet = mainUsername === username
 
   return (
     <div className="min-h-screen bg-[#111111] text-gray-200 font-mono">
@@ -40,15 +31,16 @@ export function ProfileView({ username }: Props) {
           userProfileURL: profileData?.namespace?.userProfileURL,
           namespace: profileData?.namespace?.name,
           createdAt: profileData?.profile.created_at,
-          isLoading: isLoading || isLoadingWallet,
+          isLoading: isLoading,
         }}
-        portfolioData={portfolioData}
-        isPortfolioLoading={isLoadingPortfolio}
         isOwnProfile={isOwnWallet}
       />
       {username && <ProfileIdentities walletAddress={targetWalletAddress} />}
       <div className="container mx-auto">
-        <ProfileTabs username={username} />
+        <ProfileTabs
+          username={username}
+          targetWalletAddress={targetWalletAddress}
+        />
       </div>
     </div>
   )

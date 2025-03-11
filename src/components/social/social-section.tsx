@@ -1,12 +1,12 @@
 'use client'
 
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
 import { memo } from 'react'
 import { Avatar } from '../common/avatar'
 import { FollowButton } from '../profile/follow-button'
 import { TokenAddress } from '../tokens/token-address'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
 
 interface SocialUser {
   id: string
@@ -27,42 +27,42 @@ interface SocialSectionProps {
   type: 'followers' | 'following'
 }
 
-const SocialCard = memo(({ user }: { user: SocialUser; type: string, namespace?: string }) => {
-  const router = useRouter()
-  return (
-    <div className="p-3 hover:bg-green-900/10">
-      <div className="flex items-center gap-3">
-        <Avatar username={user.username} size={40} imageUrl={user.image} />
+const SocialCard = memo(
+  ({ user }: { user: SocialUser; type: string; namespace?: string }) => {
+    const router = useRouter()
+    return (
+      <div className="p-3 hover:bg-green-900/10">
+        <div className="flex items-center gap-3">
+          <Avatar username={user.username} size={40} imageUrl={user.image} />
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <button
-              onClick={() =>
-                router.push(route('address', { id: user.username }))
-              }
-              className=" font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors"
-            >
-              @{user.username}
-            </button>
-            {user.namespace === EXPLORER_NAMESPACE && // only give the possibility of follow for users inside explorer app
-            (
-              <div className="flex-shrink-0">
-                <FollowButton username={user.username} size="sm" />
-              </div>
-            )
-            }
-          </div>
-
-          {user.wallet?.id && (
-            <div className="flex items-center text-xs">
-              <TokenAddress address={user.wallet.id} />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <button
+                onClick={() =>
+                  router.push(route('address', { id: user.username }))
+                }
+                className=" font-mono text-sm bg-green-900/20 px-2 py-1 rounded-lg hover:bg-green-900/40 transition-colors"
+              >
+                @{user.username}
+              </button>
+              {user.namespace === EXPLORER_NAMESPACE && ( // only give the possibility of follow for users inside explorer app
+                <div className="flex-shrink-0">
+                  <FollowButton username={user.username} size="sm" />
+                </div>
+              )}
             </div>
-          )}
+
+            {user.wallet?.id && (
+              <div className="flex items-center text-xs">
+                <TokenAddress address={user.wallet.id} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)
 
 SocialCard.displayName = 'SocialCard'
 
@@ -96,11 +96,12 @@ export function SocialSection({
           <div className="p-4 text-center  font-mono">No {type} found</div>
         ) : (
           users.map((user) => (
-            <SocialCard 
+            <SocialCard
               key={user.id}
               user={user}
               namespace={user.namespace}
-              type={type} />
+              type={type}
+            />
           ))
         )}
       </div>

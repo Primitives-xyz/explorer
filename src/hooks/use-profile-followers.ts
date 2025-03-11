@@ -1,4 +1,4 @@
-import type { IGetSocialResponse } from '@/models/profile.models'
+import { IGetSocialResponse } from '@/types/profile.types'
 import useSWR from 'swr'
 
 async function fetchFollowers(url: string): Promise<IGetSocialResponse> {
@@ -9,8 +9,11 @@ async function fetchFollowers(url: string): Promise<IGetSocialResponse> {
   return res.json()
 }
 
-export function useProfileFollowers(username: string | null, namespace?: string | null | undefined) {
-  const namespaceQuery = namespace ? `?namespace=${namespace}` : '';  
+export function useProfileFollowers(
+  username: string | null,
+  namespace?: string | null | undefined
+) {
+  const namespaceQuery = namespace ? `?namespace=${namespace}` : ''
 
   const { data, error, mutate } = useSWR<IGetSocialResponse>(
     username ? `/api/profiles/${username}/followers${namespaceQuery}` : null,
@@ -19,7 +22,7 @@ export function useProfileFollowers(username: string | null, namespace?: string 
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       dedupingInterval: 30000, // 30 seconds
-      revalidateIfStale: false
+      revalidateIfStale: false,
     }
   )
 
