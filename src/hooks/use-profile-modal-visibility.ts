@@ -1,4 +1,4 @@
-import { IGetProfilesResponse } from '@/types/profile.types'
+import { IGetProfileResponse } from '@/types/profile.types'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -8,7 +8,7 @@ interface UseProfileModalVisibilityProps {
   walletAddress: string | undefined
   mainUsername: string | undefined
   loadingProfiles: boolean
-  profiles: IGetProfilesResponse[] | null
+  profiles: IGetProfileResponse[] | null
   forceOpen?: boolean
   updateProfileSetupModalShownStatus: (walletAddress: string) => Promise<void>
 }
@@ -28,7 +28,7 @@ export function useProfileModalVisibility({
     if (!profiles) return true
 
     if (profiles && profiles.length > 0) {
-      const profile = profiles.find((profile: IGetProfilesResponse) => {
+      const profile = profiles.find((profile: IGetProfileResponse) => {
         return (
           profile.namespace?.name == EXPLORER_NAMESPACE &&
           profile.profile?.username === mainUsername

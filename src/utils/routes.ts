@@ -7,6 +7,13 @@ const routes = {
   trade: () => '/trade',
   tradeId: ({ id }: { id: string }) => `/trade/${id}`,
   namespace: ({ namespace }: { namespace: string }) => `/n/${namespace}`,
+  namespaceProfile: ({
+    namespace,
+    username,
+  }: {
+    namespace: string
+    username: string
+  }) => `/n/${namespace}/${username}`,
 }
 
 export function route<T extends keyof typeof routes>(
