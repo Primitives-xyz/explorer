@@ -34,7 +34,7 @@ export async function TokenView({ id }: { id: string }) {
             />
           )
         } else {
-          return <NFTDetails id={id} tokenInfo={tokenInfo.result as NFTTokenInfo} />
+          return <NFTDetails tokenInfo={tokenInfo.result as NFTTokenInfo} />
         }
       } else {
         return <WalletView address={id} />
