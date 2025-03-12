@@ -1,467 +1,362 @@
 'use client'
 
-import { CopyPaste } from '@/components/common/copy-paste'
-import { LoadCircle } from '@/components/common/load-circle'
-import { TransactionSection } from '@/components/transaction-section'
-import { useNFTImage } from '@/hooks/use-nft-image'
-import type { NFTTokenInfo } from '@/types/Token'
-import { route } from '@/utils/routes'
-import { DAS } from 'helius-sdk'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+
+import { DAS } from 'helius-sdk'
+import { Loader2 } from 'lucide-react'
+
+import { CopyPaste } from '@/components/common/copy-paste'
+import { TransactionSection } from '@/components/transaction-section'
+import type { NFTTokenInfo } from '@/types/Token'
 
 interface NFTDetailsProps {
   id: string
   tokenInfo: NFTTokenInfo
 }
 
-type NFTTab = 'overview' | 'technical' | 'transactions'
-
-interface NFTImageProps {
-  url: string | null
-  name: string
-  isLoading: boolean
-  className?: string
-}
-
-function NFTImage({ url, name, isLoading, className = '' }: NFTImageProps) {
-  const [error, setError] = useState(false)
-
-  if (isLoading) {
-    return (
-      <div
-        className={`${className} bg-black/40 flex items-center justify-center`}
-      >
-        <LoadCircle />
-      </div>
-    )
-  }
-
-  if (error || !url) {
-    return (
-      <div
-        className={`${className} bg-gradient-to-br from-green-950/40 to-black/40 flex items-center justify-center p-4`}
-      >
-        <div className="text-center">
-          <div className=" text-4xl mb-2">🖼️</div>
-          <div className="/60 font-mono text-sm break-words">
-            {name || 'NFT'}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className={`${className} relative`}>
-      <Image
-        src={url}
-        alt={name}
-        fill
-        className="object-cover"
-        onError={() => setError(true)}
-      />
-    </div>
-  )
+enum NFTTab {
+  Transaction = 'transaction',
+  Technical = 'technical',
 }
 
 export default function NFTDetails({ id, tokenInfo }: NFTDetailsProps) {
-  const [activeTab, setActiveTab] = useState<NFTTab>('overview')
-  const { url: imageUrl, isLoading: imageLoading } = useNFTImage(
-    tokenInfo.content
-  )
+  const [activeTab, setActiveTab] = useState<NFTTab>(NFTTab.Technical)
 
   const getTabStyle = (tab: NFTTab) => {
     const isActive = activeTab === tab
-    return `px-4 py-2 font-mono text-sm transition-all duration-300 relative ${
-      isActive
-        ? ' bg-green-500/10 border border-green-500/30'
-        : ' hover: hover:bg-green-500/10'
+
+    return `font-mono text-sm py-1 cursor-pointer uppercase ${
+      isActive ? 'font-bold text-green-500 border-b border-b-green-500' : ''
     }`
   }
 
-  const renderOverviewTab = () => (
+  const renderTechnicalTab = () => (
     <>
-      {/* Key Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl hover:border-green-600/40 transition-all group">
-          <h3 className="/60 text-sm font-mono mb-2">Ownership Model</h3>
-          <div className="text-xl font-bold  font-mono group-hover: transition-colors capitalize">
-            {tokenInfo.ownership.ownership_model}
+      <div className="border border-green-500 mt-5 p-2 rounded-lg">
+        <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
+          schema & rpc
+        </h3>
+        <div className="grid grid-cols-1 gap-2 mt-2">
+          <div className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group">
+            <div className="text-sm text-green-500 mb-1 font-mono">schema</div>
+            <div className="text-sm font-mono group-hover: transition-colors">
+              {tokenInfo.content.$schema?.toString() || 'NONE'}
+            </div>
           </div>
-        </div>
-
-        <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl hover:border-green-600/40 transition-all group">
-          <h3 className="/60 text-sm font-mono mb-2">NFT Type</h3>
-          <div className="text-xl font-bold  font-mono group-hover: transition-colors">
-            {tokenInfo.compression?.compressed ? 'Compressed' : 'Regular'} NFT
-          </div>
-        </div>
-
-        <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl hover:border-green-600/40 transition-all group">
-          <h3 className="/60 text-sm font-mono mb-2">Royalty</h3>
-          <div className="text-xl font-bold  font-mono group-hover: transition-colors">
-            {tokenInfo.royalty?.percent || 0}%
+          <div className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group">
+            <div className="text-sm text-green-500 mb-1 font-mono">
+              json rpc
+            </div>
+            <div className="text-sm font-mono">
+              {/* {tokenInfo.content.json_uri.slice(0, 34)}...${tokenInfo.content.json_uri.slice(-4)} */}
+              {tokenInfo.content.json_uri?.toString() || 'NONE'}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* NFT Details Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {/* Left Column - Basic Info */}
-        <div className="space-y-6">
-          {/* NFT Info */}
-          <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-            <h3 className="text-xl font-mono  mb-4">NFT Info</h3>
-            <div className="space-y-3">
-              {[
-                { label: 'NFT Address', value: id },
-                { label: 'Owner', value: tokenInfo.ownership.owner },
-                {
-                  label: 'Collection',
-                  value:
-                    tokenInfo.grouping?.find(
-                      (g: { group_key: string; group_value: string }) =>
-                        g.group_key === 'collection'
-                    )?.group_value || 'None',
-                  extraContent: (value: string) =>
-                    value !== 'None' && (
-                      <a
-                        href={`https://www.tensor.trade/trade/${value}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2 py-1 text-xs font-mono bg-green-900/30  hover:bg-green-900/50 transition-colors rounded-md flex items-center gap-1"
-                      >
-                        <svg
-                          viewBox="0 0 500 500"
-                          className="w-3 h-3 fill-current"
-                        >
-                          <path d="M250 0L31.25 125v250L250 500l218.75-125v-250L250 0zm156.25 334.375L250 428.125l-156.25-93.75v-187.5L250 71.875l156.25 93.75v168.75z" />
-                        </svg>
-                        Trade
-                      </a>
-                    ),
-                },
-                {
-                  label: 'Status',
-                  value: tokenInfo.burnt
-                    ? 'Burnt'
-                    : tokenInfo.ownership.frozen
-                    ? 'Frozen'
-                    : 'Active',
-                },
-              ].map((item, i) => (
-                <div key={i} className="flex flex-col">
-                  <span className="/60 text-sm">{item.label}</span>
-                  <div className="flex items-center gap-2">
-                    {item.label === 'NFT Address' || item.label === 'Owner' ? (
-                      <Link
-                        href={route('address', { id: item.value })}
-                        className="font-mono  break-all hover: transition-colors"
-                      >
-                        {item.value}
-                      </Link>
-                    ) : (
-                      <span className="font-mono  break-all">{item.value}</span>
+      <div className="border border-green-500 mt-5 p-2 rounded-lg">
+        <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
+          compression details
+        </h3>
+        <div className="grid grid-cols-3 gap-2 mt-2">
+          {tokenInfo.compression &&
+            Object.keys(tokenInfo.compression).map((key, indx) => (
+              <>
+                <div
+                  key={indx}
+                  className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
+                >
+                  <div className="text-sm text-green-500 mb-1 font-mono">
+                    {key}
+                  </div>
+                  <div className="text-sm font-mono group-hover: transition-colors">
+                    {tokenInfo.compression?.[
+                      key as keyof typeof tokenInfo.compression
+                    ]?.toString() || 'NONE'}
+                  </div>
+                </div>
+              </>
+            ))}
+        </div>
+      </div>
+      <div className="space-y-6">
+        {tokenInfo.content.files && tokenInfo.content.files.length > 0 && (
+          <div className="border border-green-500 mt-5 p-2 rounded-lg">
+            <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
+              Files details
+            </h3>
+            <div className="flex flex-col gap-2 mt-2">
+              {tokenInfo.content.files.map((file: DAS.File, index: number) => (
+                <div
+                  key={index}
+                  className="p-4 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
+                >
+                  <div className="grid grid-cols-1 gap-1">
+                    <div>
+                      <span className="text-sm text-green-500 mb-1 font-mono">
+                        URI
+                      </span>
+                      <div className="text-sm mb-1 font-mono">{file.uri}</div>
+                    </div>
+                    {file.cdn_uri && (
+                      <div className="md:col-span-2">
+                        <span className="text-sm text-green-500 mb-1 font-mono">
+                          CDN URI
+                        </span>
+                        <div className="font-mono  break-all text-sm">
+                          {file.cdn_uri}
+                        </div>
+                      </div>
                     )}
-                    {(item.label === 'NFT Address' ||
-                      item.label === 'Owner' ||
-                      (item.label === 'Collection' &&
-                        item.value !== 'None')) && (
-                      <CopyPaste content={item.value} />
+                    {file.mime && (
+                      <div>
+                        <span className="text-sm text-green-500 mb-1 font-mono">
+                          Type
+                        </span>
+                        <div className="font-mono  text-sm">{file.mime}</div>
+                      </div>
                     )}
-                    {item.extraContent?.(item.value)}
                   </div>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Authorities */}
-          <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-            <h3 className="text-xl font-mono  mb-4">Authorities</h3>
-            <div className="space-y-3">
-              {tokenInfo.authorities.map(
-                (
-                  authority: { address: string; scopes: string[] },
-                  i: number
-                ) => (
-                  <div key={i} className="flex flex-col">
-                    <span className="/60 text-sm">Address</span>
-                    <Link
-                      href={route('address', { id: authority.address })}
-                      className="font-mono  break-all hover: transition-colors"
-                    >
-                      {authority.address}
-                    </Link>
-                    <span className="/60 text-sm mt-1">Scopes</span>
-                    <div className="flex flex-wrap gap-2">
-                      {authority.scopes.map((scope: string, j: number) => (
-                        <span
-                          key={j}
-                          className="px-2 py-1 bg-green-500/10 rounded-md  text-sm"
-                        >
-                          {scope}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column - Attributes and Creators */}
-        <div className="space-y-6">
-          {/* Attributes */}
-          {tokenInfo.content.metadata.attributes && (
-            <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-              <h3 className="text-xl font-mono  mb-4">Attributes</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {tokenInfo.content.metadata.attributes.map(
-                  (
-                    attr: { trait_type: string; value: string },
-                    index: number
-                  ) => (
-                    <div
-                      key={index}
-                      className="p-3 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
-                    >
-                      <h4 className="/60 text-xs mb-1 font-mono">
-                        {attr.trait_type}
-                      </h4>
-                      <p className=" font-mono group-hover: transition-colors">
-                        {attr.value}
-                      </p>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Creators */}
-          {tokenInfo.creators && tokenInfo.creators.length > 0 && (
-            <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-              <h3 className="text-xl font-mono  mb-4">Creators</h3>
-              <div className="space-y-3">
-                {tokenInfo.creators.map(
-                  (
-                    creator: {
-                      address: string
-                      share?: number
-                      verified?: boolean
-                    },
-                    index: number
-                  ) => (
-                    <div key={index} className="flex flex-col">
-                      <div className="flex justify-between items-center">
-                        <Link
-                          href={route('address', { id: creator.address })}
-                          className="font-mono  break-all hover: transition-colors"
-                        >
-                          {creator.address}
-                        </Link>
-                        <div className="flex items-center gap-2">
-                          <span className="/60 text-sm">
-                            {creator.share || 0}%
-                          </span>
-                          {creator.verified && (
-                            <span className=" text-xs">✓</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </>
   )
 
-  const renderTechnicalTab = () => (
-    <div className="space-y-6">
-      {/* JSON URI */}
-      {tokenInfo.content.$schema && (
-        <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h4 className="/60 text-sm font-mono mb-2">Schema</h4>
-          <div className="font-mono  break-all text-sm">
-            {tokenInfo.content.$schema}
-          </div>
-        </div>
-      )}
+  return (
+    <div className="py-2 px-10 max-w-[1400px] mx-auto">
+      <div className="flex items-center justify-center w-full from-green-500/10">
+        {tokenInfo ? (
+          <div className="flex flex-col gap-6 md:flex-row h-full">
+            <div className="md:w-1/3">
+              {tokenInfo.content.links?.image ? (
+                <>
+                  <Link href={tokenInfo.content.links.image} target="_blank">
+                    <img
+                      src={tokenInfo.content.links.image}
+                      alt={tokenInfo.content.metadata.symbol}
+                      className="rounded-lg"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        target.parentElement?.classList.add(
+                          'min-h-[200px]',
+                          'flex',
+                          'items-center',
+                          'justify-center'
+                        )
+                        target.insertAdjacentHTML(
+                          'afterend',
+                          `<div className="font-mono text-sm">Image failed to load</div>`
+                        )
+                      }}
+                    />
+                  </Link>
+                  <div className="border border-green-500 my-1 p-2 rounded-lg">
+                    <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
+                      Description
+                    </h3>
+                    {tokenInfo && tokenInfo.content?.metadata?.description && (
+                      <div className="mt-2">
+                        <p className="font-mono text-base text-gray-300 max-h-24 overflow-y-auto">
+                          {tokenInfo.content?.metadata.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
+                  <div className="font-mono text-sm">No image available</div>
+                </div>
+              )}
+            </div>
+            <div className="md:w-2/3">
+              <h2 className="text-xl font-bold text-green-500">
+                {tokenInfo.content.metadata.name} | NFT
+              </h2>
 
-      {/* Files */}
-      {tokenInfo.content.files && tokenInfo.content.files.length > 0 && (
-        <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h4 className="/60 text-sm font-mono mb-4">Files</h4>
-          <div className="space-y-4">
-            {tokenInfo.content.files.map((file: DAS.File, index: number) => (
-              <div
-                key={index}
-                className="p-4 bg-black/30 rounded-lg border border-green-800/40"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <span className="/60 text-xs font-mono">URI</span>
-                    <div className="font-mono  break-all text-sm">
-                      {file.uri}
+              <div className="flex items-center gap-1">
+                <p className="text-sm">{tokenInfo.id}</p>
+                <CopyPaste content={tokenInfo.id} />
+              </div>
+
+              <div className="border border-green-500 mt-5 p-2 rounded-lg">
+                <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
+                  Details
+                </h3>
+                <div className="flex flex-col gap-2 text-sm mt-2">
+                  <div className="flex justify-between items-center gap-1 uppercase">
+                    <div>Owner</div>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.ownership.owner}
+                      </p>
+                      <CopyPaste content={tokenInfo.ownership.owner} />
                     </div>
                   </div>
-                  {file.mime && (
-                    <div>
-                      <span className="/60 text-xs font-mono">Type</span>
-                      <div className="font-mono  text-sm">{file.mime}</div>
+                  <div className="flex justify-between items-center gap-1 uppercase">
+                    <div>Mint Address</div>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.content.metadata.name}
+                      </p>
+                      <CopyPaste content={tokenInfo.id} />
                     </div>
-                  )}
-                  {file.cdn_uri && (
-                    <div className="md:col-span-2">
-                      <span className="/60 text-xs font-mono">CDN URI</span>
-                      <div className="font-mono  break-all text-sm">
-                        {file.cdn_uri}
+                  </div>
+                  <div className="flex justify-between items-center gap-1 uppercase">
+                    <div>Mint Authority</div>
+                    {tokenInfo.authorities.map(
+                      (
+                        authority: { address: string; scopes: string[] },
+                        i: number
+                      ) => (
+                        <div className="flex gap-1" key={`authority-${i}`}>
+                          <p className="text-green-500">{authority.address}</p>
+                          <CopyPaste content={authority.address} />
+                        </div>
+                      )
+                    )}
+                  </div>
+                  <div className="flex justify-between items-center gap-1 uppercase">
+                    <div>COLLECTION ADDRESS</div>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.grouping?.find(
+                          (g: { group_key: string; group_value: string }) =>
+                            g.group_key === 'collection'
+                        )?.group_value || 'None'}
+                      </p>
+                      <CopyPaste
+                        content={
+                          tokenInfo.grouping?.find(
+                            (g: { group_key: string; group_value: string }) =>
+                              g.group_key === 'collection'
+                          )?.group_value || 'None'
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center gap-1 uppercase">
+                    <div>TOKEN STANDARD</div>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">{tokenInfo.interface}</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center gap-1 uppercase">
+                    <div>ROYALTIES</div>
+                    <div className="flex gap-1">
+                      <p className="text-green-500">
+                        {tokenInfo.royalty?.percent
+                          ? tokenInfo.royalty.percent * 100
+                          : 0}
+                        %
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border border-green-500 mt-5 p-2 rounded-lg">
+                <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
+                  TOKEN CREATORS
+                </h3>
+                <div className="text-sm mt-2">
+                  <div className="flex justify-between items-center gap-1 uppercase">
+                    {tokenInfo.creators ? (
+                      tokenInfo.creators.map(
+                        (
+                          creator: {
+                            address: string
+                            share?: number
+                            verified?: boolean
+                          },
+                          index: number
+                        ) => (
+                          <div
+                            key={index}
+                            className="w-full flex flex-row justify-between"
+                          >
+                            <div className="flex gap-1">
+                              <p className="text-green-500">
+                                {creator.address}
+                              </p>
+                              <CopyPaste content={creator.address} />
+                            </div>
+                            <span>{creator.share || 0}%</span>
+                          </div>
+                        )
+                      )
+                    ) : (
+                      <div className="w-full flex flex-row justify-between">
+                        <div className="flex gap-1">
+                          <p className="text-green-500">NONE</p>
+                          <CopyPaste content="NONE" />
+                        </div>
+                        <span>0%</span>
                       </div>
-                    </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="border border-green-500 mt-5 p-2 rounded-lg">
+                <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
+                  Attributes
+                </h3>
+                <div className="grid grid-cols-3 gap-2 mt-2">
+                  {tokenInfo.content.metadata.attributes?.map(
+                    (
+                      attr: { trait_type: string; value: string },
+                      index: number
+                    ) => (
+                      <div
+                        key={index}
+                        className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
+                      >
+                        <div className="text-sm text-green-500 mb-1 font-mono">
+                          {attr.trait_type}
+                        </div>
+                        <div className="text-sm font-mono group-hover: transition-colors">
+                          {attr.value}
+                        </div>
+                      </div>
+                    )
                   )}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Compression Info */}
-      {tokenInfo.compression && (
-        <div className="p-6 bg-black/40 border border-green-800/40 rounded-xl">
-          <h4 className="/60 text-sm font-mono mb-4">Compression Details</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                label: 'Data Hash',
-                value: tokenInfo.compression.data_hash,
-              },
-              {
-                label: 'Creator Hash',
-                value: tokenInfo.compression.creator_hash,
-              },
-              {
-                label: 'Asset Hash',
-                value: tokenInfo.compression.asset_hash,
-              },
-              { label: 'Tree', value: tokenInfo.compression.tree },
-              {
-                label: 'Sequence',
-                value: tokenInfo.compression.seq.toString(),
-              },
-              {
-                label: 'Leaf ID',
-                value: tokenInfo.compression.leaf_id.toString(),
-              },
-              {
-                label: 'Eligible',
-                value: tokenInfo.compression.eligible ? 'Yes' : 'No',
-              },
-            ].map(
-              (item, i) =>
-                item.value && (
-                  <div key={i} className="space-y-1">
-                    <span className="/60 text-xs font-mono">{item.label}</span>
-                    <div className="font-mono  break-all text-sm">
-                      {item.value}
-                    </div>
-                  </div>
-                )
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-
-  return (
-    <div className="py-8">
-      {/* Hero Section with NFT Identity */}
-      <div className="relative mb-12">
-        <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent blur-3xl" />
-        <div className="relative flex flex-col md:flex-row items-center gap-8 p-8 bg-black/40 border border-green-800 rounded-2xl backdrop-blur-sm">
-          <div className="relative w-64 h-64 rounded-2xl border-2 border-green-500 overflow-hidden">
-            <NFTImage
-              url={imageUrl}
-              name={tokenInfo.content.metadata.name}
-              isLoading={imageLoading}
-              className="w-full h-full"
-            />
-          </div>
-
-          <div className="flex-1 text-center md:text-left">
-            <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-              <h1 className="text-4xl font-bold  font-mono">
-                {tokenInfo.content.metadata.name}
-              </h1>
-              <div className="flex items-center gap-3">
-                {tokenInfo.content.metadata.symbol && (
-                  <span className="px-4 py-1 bg-green-500/10 border border-green-500/20 rounded-full  font-mono">
-                    {tokenInfo.content.metadata.symbol}
-                  </span>
-                )}
-                <span className="text-xs px-3 py-1 bg-green-900/30 rounded-full /80 font-mono">
-                  {tokenInfo.interface}
-                </span>
-              </div>
+              <div className="h-[20px]"></div>
             </div>
-
-            <p className="/70 max-w-2xl">
-              {tokenInfo.content.metadata.description}
-            </p>
-
-            {tokenInfo.content.links?.external_url && (
-              <a
-                href={tokenInfo.content.links.external_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4  hover: transition-colors font-mono text-sm"
-              >
-                View External Link →
-              </a>
-            )}
           </div>
-        </div>
+        ) : (
+          <Loader2 className="h-10 w-10 animate-spin" />
+        )}
       </div>
 
       {/* Tabs */}
-      <div className="bg-black/50 w-full overflow-hidden flex flex-col mb-6">
-        <div className="flex flex-wrap gap-4">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={getTabStyle('overview')}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setActiveTab('technical')}
-            className={getTabStyle('technical')}
-          >
-            Technical
-          </button>
-          <button
-            onClick={() => setActiveTab('transactions')}
-            className={getTabStyle('transactions')}
-          >
-            Transactions
-          </button>
-        </div>
+      <div className="flex flex-row gap-3">
+        <p
+          className={getTabStyle(NFTTab.Technical)}
+          onClick={() => setActiveTab(NFTTab.Technical)}
+        >
+          Technical
+        </p>
+        <p
+          className={getTabStyle(NFTTab.Transaction)}
+          onClick={() => setActiveTab(NFTTab.Transaction)}
+        >
+          Transactions
+        </p>
       </div>
 
       {/* Tab Content */}
       <div className="mt-6">
-        {activeTab === 'overview' && renderOverviewTab()}
-        {activeTab === 'technical' && renderTechnicalTab()}
-        {activeTab === 'transactions' && (
-          <TransactionSection walletAddress={id} hasSearched={true} />
+        {activeTab === NFTTab.Technical && renderTechnicalTab()}
+        {activeTab === NFTTab.Transaction && (
+          <TransactionSection walletAddress={tokenInfo.id} hasSearched={true} />
         )}
       </div>
     </div>

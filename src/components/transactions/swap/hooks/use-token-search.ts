@@ -121,7 +121,11 @@ export function useTokenSearch() {
 
       // If not found by address or not an address, use keyword search
       const results = await searchTokensByKeyword(query, verifiedOnly)
-      setSearchResults(results)
+
+      // Prioritize tokens from the wallet
+      const prioritizedResults = prioritizeWalletTokens(results, items, query)
+
+      setSearchResults(prioritizedResults)
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t('error.an_error_occurred')
@@ -129,6 +133,64 @@ export function useTokenSearch() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Function to prioritize wallet tokens in search results
+  const prioritizeWalletTokens = (
+    searchResults: TokenSearchResult[],
+    walletItems: any[], // Using any[] since we don't have the exact type
+    query: string
+  ): TokenSearchResult[] => {
+    if (!walletItems.length) return searchResults
+
+    // Create a map of wallet token addresses for quick lookup
+    const walletTokensMap = new Map()
+
+    // Convert wallet items to TokenSearchResult format and store in map
+    walletItems.forEach((item) => {
+      // Only include tokens that match the search query
+      const nameMatch = item.name?.toLowerCase().includes(query.toLowerCase())
+      const symbolMatch = item.symbol
+        ?.toLowerCase()
+        .includes(query.toLowerCase())
+
+      if (nameMatch || symbolMatch) {
+        walletTokensMap.set(item.address, {
+          name: item.name,
+          symbol: item.symbol,
+          address: item.address,
+          decimals: item.decimals,
+          logoURI: item.logoURI || item.icon,
+          icon: item.icon,
+          chainId: item.chainId,
+          price: item.priceUsd,
+          priceUsd: item.priceUsd,
+          balance: item.balance,
+          uiAmount: item.uiAmount,
+          valueUsd: item.valueUsd || 0,
+          volume_24h_usd: 0,
+          verified: true,
+          market_cap: 0,
+          prioritized: true,
+        })
+      }
+    })
+
+    // Filter out wallet tokens from search results to avoid duplicates
+    const filteredResults = searchResults.filter(
+      (token) => !walletTokensMap.has(token.address)
+    )
+
+    // Get wallet tokens that match the search query
+    const matchingWalletTokens = Array.from(walletTokensMap.values())
+
+    // Sort wallet tokens by valueUsd in descending order
+    const sortedWalletTokens = matchingWalletTokens.sort(
+      (a, b) => (b.valueUsd || 0) - (a.valueUsd || 0)
+    )
+
+    // Combine sorted wallet tokens with filtered search results
+    return [...sortedWalletTokens, ...filteredResults]
   }
 
   useEffect(() => {

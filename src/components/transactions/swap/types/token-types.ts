@@ -17,6 +17,7 @@ export interface TokenSearchResult extends TokenInfo {
   uiAmount?: number
   valueUsd?: number
   priceUsd?: number
+  prioritized?: boolean
 }
 
 export interface SortOption {

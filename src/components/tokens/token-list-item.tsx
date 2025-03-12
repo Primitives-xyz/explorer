@@ -1,5 +1,5 @@
 import { formatNumber } from '@/utils/format'
-import type { FungibleToken } from '@/utils/helius/types'
+import type { FungibleToken } from '@/utils/types'
 import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
 import { TokenAddress } from './token-address'
@@ -9,7 +9,7 @@ interface TokenListItemProps {
   totalValue: number
   expandedTokenId: string | null
   onExpand: (id: string) => void
-  onImageClick: (url: string, symbol: string) => void
+  onImageClick: (token: FungibleToken) => void
 }
 
 export const TokenListItem = ({
@@ -33,8 +33,8 @@ export const TokenListItem = ({
             className="relative group cursor-pointer"
             onClick={(e) => {
               e.stopPropagation()
-              if (token.imageUrl) {
-                onImageClick(token.imageUrl, token.symbol)
+              if (token) {
+                onImageClick(token)
               }
             }}
           >

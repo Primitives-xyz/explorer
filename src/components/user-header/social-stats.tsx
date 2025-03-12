@@ -36,28 +36,32 @@ export function SocialStats({ user }: Props) {
       <Button variant="ghost" onClick={() => handleOpenModal('followers')}>
         <Badge
           variant="outline"
-          className="text-xs font-mono border-green-500/50 text-green-400"
+          className="py-2 md:py-[2px] w-full md:w-auto text-xs font-mono border-green-500/50 text-green-400"
         >
-          <Users className="w-3 h-3 mr-1" />
-          {user.isLoading ? (
-            <span className="animate-pulse">...</span>
-          ) : (
-            `${user.socialCounts?.followers || 0} followers`
-          )}
+          <span className="flex items-center justify-center w-full">
+            <Users className="w-3 h-3 mr-1" />
+            {user.isLoading ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              `${user.socialCounts?.followers || 0} followers`
+            )}
+          </span>
         </Badge>
       </Button>
 
       <Button variant="ghost" onClick={() => handleOpenModal('following')}>
         <Badge
           variant="outline"
-          className="text-xs font-mono border-green-500/50 text-green-400"
+          className="py-2 md:py-[2px] w-full md:w-auto text-xs font-mono border-green-500/50 text-green-400"
         >
-          <Users className="w-3 h-3 mr-1" />
-          {user.isLoading ? (
-            <span className="animate-pulse">...</span>
-          ) : (
-            `${user.socialCounts?.following || 0} following`
-          )}
+          <span className="flex items-center justify-center w-full">
+            <Users className="w-3 h-3 mr-1" />
+            {user.isLoading ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              `${user.socialCounts?.following || 0} following`
+            )}
+          </span>
         </Badge>
       </Button>
 
@@ -65,7 +69,7 @@ export function SocialStats({ user }: Props) {
         isOpen={displayModal}
         onClose={() => setDisplayModal(false)}
         title={`View ${selectedTab}`}
-        className="!max-w-[500px]"
+        className="!max-w-[500px] mr-1 ml-1"
       >
         {data?.length ? (
           <ul className="h-[400px] overflow-auto">
