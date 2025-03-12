@@ -23,7 +23,6 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
   const { handleNftList, listAmount, setListAmount, showNftListLoading } = useNftListing(tokenInfo, walletAddress, primaryWallet)
   const { handleNftSell, showNftSellLoading, bestSellOffer } = useNftSell(tokenInfo, walletAddress, primaryWallet)
   const [isNftOwner, setIsNftOwner] = useState<boolean>(false)
-  const [showBuyOrSellLoading, setShowBuyOrSellLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<NFTTab>(NFTTab.Technical)
 
   const getTabStyle = (tab: NFTTab) => {
@@ -51,7 +50,6 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
               json rpc
             </div>
             <div className="text-sm font-mono">
-              {/* {tokenInfo.content.json_uri.slice(0, 34)}...${tokenInfo.content.json_uri.slice(-4)} */}
               {tokenInfo.content.json_uri?.toString() || 'NONE'}
             </div>
           </div>
@@ -196,7 +194,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                     onClick={handleNftSell}
                   >
                     {showNftSellLoading ? (
-                      <Loader2 className="h-10 w-10 animate-spin" />
+                      <Loader2 className="h-6 w-6 animate-spin" />
                     ) : (
                       isNftOwner ? (
                         <span className="font-mono font-medium uppercase">

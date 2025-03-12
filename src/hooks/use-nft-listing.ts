@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useToast } from '@/hooks/use-toast'
-import { NFTTokenInfo } from '@/types/Token'
 import { useTranslations } from 'next-intl'
-import { VersionedTransaction } from '@solana/web3.js'
-import { Connection } from '@solana/web3.js'
+
+import { useToast } from '@/hooks/use-toast'
+
+import { Connection, VersionedTransaction } from '@solana/web3.js'
+
+import { NFTTokenInfo } from '@/types/Token'
 
 export function useNftListing(
   token: NFTTokenInfo | null,

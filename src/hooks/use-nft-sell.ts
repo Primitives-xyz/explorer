@@ -1,8 +1,9 @@
-import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
-import { useToast } from '@/hooks/use-toast'
-import { VersionedTransaction } from "@solana/web3.js"
-import { Connection } from "@solana/web3.js"
+import { useTranslations } from "next-intl"
+import { useToast } from "@/hooks/use-toast"
+
+import { Connection, VersionedTransaction } from "@solana/web3.js"
+
 import { NFTTokenInfo } from "@/types/Token"
 
 interface OfferInterface {
