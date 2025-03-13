@@ -14,35 +14,46 @@ import NFTCollectionDetail from '../NFT-collection-details'
  * 3. Falls back to wallet view if token fetch fails
  */
 export async function TokenView({ id }: { id: string }) {
-  const tokenInfo: TokenInfo | null = await fetchTokenInfo(id)
+  let tokenInfo: TokenInfo | null = null
 
-  if (!tokenInfo) {
+  try {
+    tokenInfo = await fetchTokenInfo(id)
+  } catch (error) {
+    console.error('Error fetching token info:', error)
     return <WalletView address={id} />
   }
 
+  // If no token info found, treat as a wallet
+  if (!tokenInfo?.result) {
+    return <WalletView address={id} />
+  }
+
+  // Determine token type and render appropriate view
+  const isFungibleToken = tokenInfo.result.interface === 'FungibleToken'
+  const isFungibleAsset = tokenInfo.result.interface === 'FungibleAsset'
+
+  if (isFungibleToken || isFungibleAsset) {
+    return (
+      <FungibleTokenDetailsWrapper
+        id={id}
+        tokenInfo={tokenInfo.result as FungibleTokenInfo}
+      />
+    )
+  }
+
+  // Check if it's an NFT collection
   const groupingInfos = tokenInfo.result?.grouping
-
-  if (groupingInfos) {
+  if (groupingInfos && groupingInfos.length > 0) {
     const [groupingInfo] = groupingInfos
-    if (groupingInfo?.hasOwnProperty('group_key')) {
-      if (tokenInfo.result?.interface) {
-        if (['FungibleToken', 'FungibleAsset'].includes(tokenInfo.result?.interface)) {
-          return (
-            <FungibleTokenDetailsWrapper
-              id={id}
-              tokenInfo={tokenInfo.result as FungibleTokenInfo}
-            />
-          )
-        } else {
-          return <NFTDetails id={id} tokenInfo={tokenInfo.result as NFTTokenInfo} />
-        }
-      } else {
-        return <WalletView address={id} />
-      }
-    } else {
-      return <NFTCollectionDetail id={id} tokenInfo={tokenInfo.result as NFTTokenInfo} />
+    if (!groupingInfo?.hasOwnProperty('group_key')) {
+      return (
+        <NFTCollectionDetail
+          id={id}
+          tokenInfo={tokenInfo.result as NFTTokenInfo}
+        />
+      )
     }
-  } else {
-    return <WalletView address={id} />
   }
+
+  return <NFTDetails tokenInfo={tokenInfo.result as NFTTokenInfo} />
 }
