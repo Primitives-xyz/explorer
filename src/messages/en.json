@@ -249,7 +249,8 @@
       "silver_requirement": "200,000+ SSE",
       "gold_requirement": "500,000+ SSE",
       "swap_fee_discount": "% off swap fees",
-      "comment_fee_discount": "% off comment fees"
+      "comment_fee_discount": "% off comment fees",
+      "disclaimer": "Crypto involves risk. Rewards vary and are not guaranteed based on platform usage."
     },
     "the_sell_transaction_failed_please_try_again": "Nft Sell Transaction Failed. Please try again later",
     "the_sell_transaction_was_successful_creating_shareable_link": "The Nft sell transaction was successful",
