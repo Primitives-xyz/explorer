@@ -235,7 +235,7 @@ export default function NFTCollectionDetail({
                     className="rounded-lg"
                     width={500}
                     height={500}
-                    onError={(e) => {
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                       const target = e.target as HTMLImageElement
                       target.style.display = 'none'
                       target.parentElement?.classList.add(
@@ -394,7 +394,7 @@ export default function NFTCollectionDetail({
                       className="rounded-t-lg h-[160px]"
                       width={160}
                       height={160}
-                      onError={(e) => {
+                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                         const target = e.target as HTMLImageElement
                         target.style.display = 'none'
                         target.parentElement?.classList.add(
@@ -442,7 +442,9 @@ export default function NFTCollectionDetail({
                             className="rounded-lg"
                             width={500}
                             height={500}
-                            onError={(e) => {
+                            onError={(
+                              e: React.SyntheticEvent<HTMLImageElement>
+                            ) => {
                               const target = e.target as HTMLImageElement
                               target.style.display = 'none'
                               target.parentElement?.classList.add(
