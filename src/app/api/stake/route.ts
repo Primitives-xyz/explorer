@@ -17,10 +17,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest) {
   try {
     const { amount, walletAddy } = await req.json()
-    console.log('amount: ', amount)
-    console.log('walletAddy: ', walletAddy)
-    console.log('RPC_URL: ', process.env.RPC_URL)
-    console.log('TOKEN_ADDRESS: ', SSE_MINT)
+
     const connection = new Connection(process.env.RPC_URL || '')
     const wallet = new NodeWallet(Keypair.generate())
     const provider = new anchor.AnchorProvider(connection, wallet, {
@@ -39,7 +36,6 @@ export async function POST(req: NextRequest) {
       new PublicKey(walletAddy),
       new PublicKey(SSE_MINT)
     )
-    console.log('userTokenAccount: ', userTokenAccount.toBase58())
     const stakeAmount = new BN(Number(amount) * Math.pow(10, SSE_TOKEN_DECIMAL))
     const stakeTx = await program.methods
       .stake(stakeAmount)

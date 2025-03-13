@@ -1,12 +1,9 @@
 import { SSE_MINT } from '@/components/trading/constants'
 import { SseStake } from '@/sse_stake'
 import stakingProgramIdl from '@/sse_stake.json'
+import { getAssociatedTokenAccount } from '@/utils/token'
 import * as anchor from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
-import {
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  TOKEN_PROGRAM_ID,
-} from '@solana/spl-token'
 import {
   Connection,
   Keypair,
@@ -16,17 +13,6 @@ import {
 } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
 
-export const getAssociatedTokenAccount = (
-  ownerPubkey: PublicKey,
-  mintPk: PublicKey
-): PublicKey => {
-  let associatedTokenAccountPubkey = PublicKey.findProgramAddressSync(
-    [ownerPubkey.toBytes(), TOKEN_PROGRAM_ID.toBytes(), mintPk.toBytes()],
-    ASSOCIATED_TOKEN_PROGRAM_ID
-  )[0]
-
-  return associatedTokenAccountPubkey
-}
 export async function POST(req: NextRequest) {
   try {
     const { walletAddy } = await await req.json()
