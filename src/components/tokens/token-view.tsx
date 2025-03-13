@@ -15,7 +15,6 @@ import NFTCollectionDetail from '../NFT-collection-details'
  */
 export async function TokenView({ id }: { id: string }) {
   let tokenInfo: TokenInfo | null = null
-
   try {
     tokenInfo = await fetchTokenInfo(id)
   } catch (error) {
@@ -27,10 +26,12 @@ export async function TokenView({ id }: { id: string }) {
   if (!tokenInfo?.result) {
     return <WalletView address={id} />
   }
-
+  const tokenInterface = tokenInfo?.result?.interface
+  //log interface
+  console.log('Interface:', tokenInterface)
   // Determine token type and render appropriate view
-  const isFungibleToken = tokenInfo.result.interface === 'FungibleToken'
-  const isFungibleAsset = tokenInfo.result.interface === 'FungibleAsset'
+  const isFungibleToken = tokenInterface === 'FungibleToken'
+  const isFungibleAsset = tokenInterface === 'FungibleAsset'
 
   if (isFungibleToken || isFungibleAsset) {
     return (
@@ -43,8 +44,11 @@ export async function TokenView({ id }: { id: string }) {
 
   // Check if it's an NFT collection
   const groupingInfos = tokenInfo.result?.grouping
-  if (groupingInfos && groupingInfos.length > 0) {
-    const [groupingInfo] = groupingInfos
+  if (
+    tokenInterface === 'MplCoreCollection' ||
+    (groupingInfos && groupingInfos.length > 0)
+  ) {
+    const [groupingInfo] = groupingInfos || []
     if (!groupingInfo?.hasOwnProperty('group_key')) {
       return (
         <NFTCollectionDetail

@@ -98,7 +98,12 @@ export interface NFTCollectionInfo extends BaseTokenInfo {
 }
 
 export interface NFTTokenInfo extends BaseTokenInfo {
-  interface: 'V1_NFT' | 'V2_NFT' | 'LEGACY_NFT' | 'ProgrammableNFT'
+  interface:
+    | 'V1_NFT'
+    | 'V2_NFT'
+    | 'LEGACY_NFT'
+    | 'ProgrammableNFT'
+    | 'MplCoreCollection'
 }
 
 // Fungible token-specific properties
