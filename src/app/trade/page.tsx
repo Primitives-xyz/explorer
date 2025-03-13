@@ -5,9 +5,9 @@ import type { Metadata } from 'next'
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { mode?: string }
+  searchParams: Promise<{ mode?: string }>
 }): Promise<Metadata> {
-  const mode = searchParams.mode || 'swap'
+  const mode = (await searchParams).mode || 'swap'
 
   // Create mode-specific titles
   const titles = {
@@ -42,10 +42,6 @@ export async function generateMetadata({
   }
 }
 
-export default function SwapPage({
-  searchParams,
-}: {
-  searchParams: { mode?: string }
-}) {
+export default function SwapPage() {
   return <Swap />
 }
