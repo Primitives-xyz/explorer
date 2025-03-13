@@ -149,8 +149,8 @@ export const ClaimForm = () => {
         <div className="mb-4 p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-lg">
           <p className="text-yellow-400 font-medium">No Rewards Available</p>
           <p className="text-sm text-gray-300">
-            You don't have any rewards to claim at the moment. Stake more tokens
-            or wait for rewards to accumulate.
+            You don&apos;t have any rewards to claim at the moment. Stake more
+            tokens or wait for rewards to accumulate.
           </p>
         </div>
       )}
