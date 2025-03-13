@@ -1,5 +1,5 @@
 {
-  "address": "sse8RjyWVkAoLdRVxfXPECnAKYU232a6DfVF6LJye4s",
+  "address": "sseobVr99LLaERn6JvFDC7E9EjYFdP4ggpM51P9XBHJ",
   "metadata": {
     "name": "sse_stake",
     "version": "0.1.0",
@@ -200,12 +200,12 @@
           "signer": true
         },
         {
-          "name": "invester",
+          "name": "investor",
           "writable": true,
           "signer": true
         },
         {
-          "name": "invester_token_account",
+          "name": "investor_token_account",
           "writable": true
         },
         {
@@ -335,6 +335,166 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "distribute_trading_fees",
+      "discriminator": [
+        108,
+        35,
+        150,
+        51,
+        108,
+        32,
+        249,
+        8
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "investor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "investor_token_account",
+          "writable": true
+        },
+        {
+          "name": "global_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "global_config"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "global_config.token_mint_config",
+                "account": "Config"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     },
     {
       "name": "nominate_authority",
@@ -722,18 +882,18 @@
     },
     {
       "code": 6002,
-      "name": "DepositInvesterTokenMintError",
-      "msg": "Invester token mint error"
+      "name": "DepositinvestorTokenMintError",
+      "msg": "investor token mint error"
     },
     {
       "code": 6003,
-      "name": "DepositInvesterTokenOwnerError",
-      "msg": "Invester token owner error"
+      "name": "DepositinvestorTokenOwnerError",
+      "msg": "investor token owner error"
     },
     {
       "code": 6004,
-      "name": "DepositInvesterTokenAmountError",
-      "msg": "Invester token Amount error"
+      "name": "DepositinvestorTokenAmountError",
+      "msg": "investor token Amount error"
     },
     {
       "code": 6005,
@@ -883,6 +1043,39 @@
           {
             "name": "initialized",
             "type": "bool"
+          },
+          {
+            "name": "daily_deposits",
+            "docs": [
+              "Array of daily trading fee deposits (30 days rolling window)"
+            ],
+            "type": {
+              "array": [
+                "u64",
+                30
+              ]
+            }
+          },
+          {
+            "name": "current_day_index",
+            "docs": [
+              "Current index in the daily_deposits array"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "last_deposit_day",
+            "docs": [
+              "Last day when deposits were updated"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "avg_daily_deposit",
+            "docs": [
+              "Average daily deposit over the rolling window"
+            ],
+            "type": "u64"
           }
         ]
       }

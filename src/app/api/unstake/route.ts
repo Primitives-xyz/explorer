@@ -1,5 +1,5 @@
 import { SSE_MINT } from '@/components/trading/constants'
-import { SseStake } from '@/sse-staking'
+import { SseStake } from '@/sse_stake'
 import stakingProgramIdl from '@/sse_stake.json'
 import * as anchor from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
@@ -35,14 +35,12 @@ export async function POST(req: NextRequest) {
     const provider = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: 'confirmed',
     })
-    anchor.setProvider(provider)
     const stakingProgramInterface = JSON.parse(
       JSON.stringify(stakingProgramIdl)
     )
-    const program = new anchor.Program(
-      stakingProgramInterface,
-      provider
-    ) as anchor.Program<SseStake>
+    const program = new anchor.Program(stakingProgramIdl as SseStake, {
+      connection,
+    })
 
     const [configPda, _] = PublicKey.findProgramAddressSync(
       [Buffer.from('config')],
