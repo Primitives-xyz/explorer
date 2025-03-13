@@ -18,23 +18,6 @@ export async function TokenView({ id }: { id: string }) {
 
   try {
     tokenInfo = await fetchTokenInfo(id)
-
-    // Debug log to see token info structure
-    console.log(
-      'Token info:',
-      JSON.stringify(
-        {
-          id,
-          interface: tokenInfo?.result?.interface,
-          hasGrouping: !!tokenInfo?.result?.grouping,
-          groupingLength: tokenInfo?.result?.grouping?.length,
-          firstGroupingHasGroupKey:
-            tokenInfo?.result?.grouping?.[0]?.hasOwnProperty('group_key'),
-        },
-        null,
-        2
-      )
-    )
   } catch (error) {
     console.error('Error fetching token info:', error)
     return <WalletView address={id} />
@@ -42,7 +25,6 @@ export async function TokenView({ id }: { id: string }) {
 
   // If no token info found, treat as a wallet
   if (!tokenInfo?.result) {
-    console.log('No token info found, showing wallet view')
     return <WalletView address={id} />
   }
 
@@ -50,14 +32,7 @@ export async function TokenView({ id }: { id: string }) {
   const isFungibleToken = tokenInfo.result.interface === 'FungibleToken'
   const isFungibleAsset = tokenInfo.result.interface === 'FungibleAsset'
 
-  console.log('Token type detection:', {
-    interface: tokenInfo.result.interface,
-    isFungibleToken,
-    isFungibleAsset,
-  })
-
   if (isFungibleToken || isFungibleAsset) {
-    console.log('Rendering FungibleTokenDetailsWrapper')
     return (
       <FungibleTokenDetailsWrapper
         id={id}
@@ -71,7 +46,6 @@ export async function TokenView({ id }: { id: string }) {
   if (groupingInfos && groupingInfos.length > 0) {
     const [groupingInfo] = groupingInfos
     if (!groupingInfo?.hasOwnProperty('group_key')) {
-      console.log('Rendering NFTCollectionDetail')
       return (
         <NFTCollectionDetail
           id={id}
@@ -81,6 +55,5 @@ export async function TokenView({ id }: { id: string }) {
     }
   }
 
-  console.log('Rendering NFTDetails')
   return <NFTDetails tokenInfo={tokenInfo.result as NFTTokenInfo} />
 }
