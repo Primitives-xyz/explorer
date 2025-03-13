@@ -145,8 +145,10 @@
     "7d": "7D"
   },
   "trade": {
+    "refresh_quote_and_balances": "Refresh Quote and Balances",
     "swap_tokens": "Swap",
     "unstake_sse": "UnStake SSE",
+    "refresh_quote": "Refresh Quote",
     "your_info": "Your Info",
     "total_staking_amount": "Total Stake Amount",
     "total_reward_amount": "Total Reward Amount",
@@ -169,6 +171,8 @@
     "checking_wallet_status": "Checking wallet status",
     "connect_wallet_to_swap": "Connect Wallet to Swap",
     "connect_wallet_to_stake": "Connect Wallet to Stake",
+    "copy_swap_link": "Copy Swap Link",
+    "share": "Share",
     "confirming_transaction": "Confirming Transaction",
     "executing_swap": "Executing Swap",
     "execute_swap": "Execute Swap",

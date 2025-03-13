@@ -45,13 +45,15 @@ export function AmountInput({
   const updateEffectiveAmount = (value: string) => {
     if (debouncedUpdate) clearTimeout(debouncedUpdate)
 
+    // If the value is empty, update immediately without debounce
+    if (value === '') {
+      onEffectiveAmountChange('')
+      return
+    }
+
     const timeout = setTimeout(() => {
       if (!validateAmount || validateAmount(value)) {
-        if (value !== '') {
-          onEffectiveAmountChange(value)
-        } else {
-          onEffectiveAmountChange('')
-        }
+        onEffectiveAmountChange(value)
       } else {
         onEffectiveAmountChange('')
       }
