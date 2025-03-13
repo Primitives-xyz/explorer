@@ -15,7 +15,9 @@ export const ClaimForm = () => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState<string | null>(null)
-  const { rewardsAmount, showUserInfoLoading } = useStakeInfo({})
+  const { rewardsAmount, showUserInfoLoading, refreshUserInfo } = useStakeInfo(
+    {}
+  )
 
   // Format the token amounts with proper decimal places (dividing by 10^6)
   const formattedRewardsAmount = rewardsAmount
@@ -100,6 +102,9 @@ export const ClaimForm = () => {
           'trade.the_claim_transaction_was_successful_creating_shareable_link'
         ),
       })
+
+      // Refresh user info after successful claim
+      refreshUserInfo()
 
       // Refresh the page to update the rewards amount
       router.refresh()

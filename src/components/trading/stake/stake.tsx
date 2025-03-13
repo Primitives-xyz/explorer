@@ -6,6 +6,7 @@ import { Connection } from '@solana/web3.js'
 import { Loader2 } from 'lucide-react'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { useStakeInfo } from '@/hooks/use-stake-info'
 import { useToast } from '@/hooks/use-toast'
 import { useTokenBalance } from '@/hooks/use-token-balance'
 
@@ -38,6 +39,7 @@ export const StakeForm = ({ initialAmount = '' }: StakeFormProps) => {
   )
   const { isLoggedIn, sdkHasLoaded, primaryWallet, walletAddress } =
     useCurrentWallet()
+  const { refreshUserInfo } = useStakeInfo({})
 
   const LoadingDots = () => {
     return (
@@ -246,6 +248,9 @@ export const StakeForm = ({ initialAmount = '' }: StakeFormProps) => {
           variant: 'success',
           duration: 5000,
         })
+
+        // Refresh user info after successful stake
+        refreshUserInfo()
       }
 
       setShowStakeLoading(false)

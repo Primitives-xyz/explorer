@@ -6,6 +6,7 @@ import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { Loader2 } from 'lucide-react'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { useStakeInfo } from '@/hooks/use-stake-info'
 import { useToast } from '@/hooks/use-toast'
 
 const DynamicConnectButton = dynamic(
@@ -22,6 +23,7 @@ export const UnstakeForm = () => {
   const { isLoggedIn, sdkHasLoaded, walletAddress, primaryWallet } =
     useCurrentWallet()
   const [showUnstakeLoading, setShowUnstakeLoading] = useState<boolean>(false)
+  const { refreshUserInfo } = useStakeInfo({})
 
   const LoadingDots = () => {
     return (
@@ -89,6 +91,9 @@ export const UnstakeForm = () => {
           variant: 'success',
           duration: 5000,
         })
+
+        // Refresh user info after successful unstake
+        refreshUserInfo()
       }
 
       setShowUnstakeLoading(false)
