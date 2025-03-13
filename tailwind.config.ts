@@ -1,7 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 
-import tailwindDefaultConfig from './src/styles/tailwind.default.config'
-
 module.exports = {
   darkMode: ['class'],
   content: [
@@ -9,8 +7,20 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  presets: [tailwindDefaultConfig],
   theme: {
+    borderRadius: {
+      DEFAULT: 'var(--radius-md)',
+      sm: 'var(--radius-sm)',
+      md: 'var(--radius-md)',
+      lg: 'var(--radius-lg)',
+      button: 'var(--radius-button)',
+      input: 'var(--radius-input)',
+      card: 'var(--radius-card)',
+      'popover-card': 'var(--radius-popover-card)',
+      tabs: 'var(--radius-tabs)',
+      full: '9999px',
+      none: '0px',
+    },
     extend: {
       colors: {
         background: 'hsl(var(--background))',
@@ -20,6 +30,7 @@ module.exports = {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
+          accent: 'hsl(var(--card-accent))',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',

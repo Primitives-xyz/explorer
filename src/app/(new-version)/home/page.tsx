@@ -1,7 +1,17 @@
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/components-new-version/ui/card'
+
 export default async function Home() {
   return (
-    <div>
-      <p>new version</p>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>today’s summary</CardTitle>
+      </CardHeader>
+      <CardContent>content</CardContent>
+    </Card>
   )
 }
