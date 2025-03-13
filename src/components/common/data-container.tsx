@@ -42,7 +42,7 @@ export const DataContainer = ({
   }
 
   const colors = colorClasses[accentColor]
-  const heightClass = height === 'large' && 'h-[400px] lg:h-[600px]'
+  const heightClass = height === 'large' && 'h-[600px]'
 
   return (
     <div
@@ -60,7 +60,7 @@ export const DataContainer = ({
               className={`w-2 h-2 flex-shrink-0 ${colors.dot} rounded-full animate-pulse`}
             />
             <span className="truncate">
-              {'>'} {title}
+              {'>'} {typeof title === 'string' && title.includes('.') ? t(title) : title}
             </span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">

@@ -1,4 +1,4 @@
-import { createURL } from '@/lib/utils'
+import { createURL } from '@/utils'
 import { useState } from 'react'
 
 interface UseFileUploadReturn {

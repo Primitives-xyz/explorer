@@ -1,6 +1,6 @@
 'use client'
 
-import type { FungibleToken, NFT } from '@/utils/types'
+import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ImageModal } from './tokens/image-modal'
@@ -23,10 +23,7 @@ export const NFTSection = ({
   error,
   items = [],
 }: NFTSectionProps) => {
-  const [selectedImage, setSelectedImage] = useState<{
-    url: string
-    symbol: string
-  } | null>(null)
+  const [selectedToken, setSelectedToken] = useState<NFT | TokenWithInscription | FungibleToken | null>(null)
 
   const t = useTranslations('tokens')
 
@@ -115,17 +112,18 @@ export const NFTSection = ({
         ) : (
           <NFTGrid
             tokens={items}
-            onImageClick={(url, symbol) => setSelectedImage({ url, symbol })}
+            onImageClick={(token) => setSelectedToken(token)}
           />
         )}
       </div>
 
-      {selectedImage && (
+      {selectedToken && (
         <ImageModal
           isOpen={true}
-          onClose={() => setSelectedImage(null)}
-          imageUrl={selectedImage.url}
-          symbol={selectedImage.symbol}
+          onClose={() => setSelectedToken(null)}
+          imageUrl={selectedToken.imageUrl}
+          symbol={selectedToken.symbol}
+          token={selectedToken}
         />
       )}
     </div>

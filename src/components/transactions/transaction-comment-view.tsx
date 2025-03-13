@@ -1,8 +1,9 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/avatar'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
-import type { Profile } from '@/utils/api'
+import { IGetProfileResponse } from '@/types/profile.types'
+
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import Link from 'next/link'
@@ -25,12 +26,12 @@ export function TransactionCommentView({
   // Get profiles for both source and destination wallets
   const { profiles: sourceProfiles } = useGetProfiles(sourceWallet)
   const sourceProfile = sourceProfiles?.find(
-    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
+    (p: IGetProfileResponse) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   const { profiles: destProfiles } = useGetProfiles(destinationWallet || '')
   const destProfile = destProfiles?.find(
-    (p: Profile) => p.namespace.name === EXPLORER_NAMESPACE
+    (p: IGetProfileResponse) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
   const isOwnComment = currentWalletAddress === sourceWallet

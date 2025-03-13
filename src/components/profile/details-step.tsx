@@ -2,7 +2,7 @@
 
 import { SubmitButton } from '@/components/form/submit-button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { DICEBEAR_API_BASE, DICEBEAR_AVATAR_STYLES } from '@/lib/constants'
+import { DICEBEAR_API_BASE, DICEBEAR_AVATAR_STYLES } from '@/utils/constants'
 import { cn } from '@/utils/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'

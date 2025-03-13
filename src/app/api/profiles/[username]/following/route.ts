@@ -1,5 +1,5 @@
-import { fetchTapestryServer } from '@/lib/tapestry-server'
 import { FetchMethod } from '@/utils/api'
+import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RouteContext = {
@@ -12,7 +12,7 @@ export const revalidate = 60 // Revalidate every 60 seconds
 export async function GET(_req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
-    
+
     const searchParams = _req.nextUrl.searchParams
     const namespace = searchParams.get('namespace')
 
@@ -24,7 +24,9 @@ export async function GET(_req: NextRequest, context: RouteContext) {
       )
     }
     const response = await fetchTapestryServer({
-      endpoint: `profiles/${username}/following${namespace ? `?namespace=${namespace}` : ''}`,
+      endpoint: `profiles/${username}/following${
+        namespace ? `?namespace=${namespace}` : ''
+      }`,
       method: FetchMethod.GET,
     })
     return NextResponse.json(response)

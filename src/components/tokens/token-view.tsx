@@ -5,6 +5,7 @@ import type { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 
 import type { TokenInfo } from '@/types/Token'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
+import NFTCollectionDetail from '../NFT-collection-details'
 
 /**
  * Handles token-related views
@@ -13,32 +14,35 @@ import { fetchTokenInfo } from '@/utils/helius/das-api'
  * 3. Falls back to wallet view if token fetch fails
  */
 export async function TokenView({ id }: { id: string }) {
-  let tokenInfo: TokenInfo | null = null
+  const tokenInfo: TokenInfo | null = await fetchTokenInfo(id)
 
-  try {
-    tokenInfo = await fetchTokenInfo(id)
-  } catch (error) {
-    console.error('Error fetching token info:', error)
+  if (!tokenInfo) {
     return <WalletView address={id} />
   }
 
-  // If no token info found, treat as a wallet
-  if (!tokenInfo?.result) {
+  const groupingInfos = tokenInfo.result?.grouping
+
+  if (groupingInfos) {
+    const [groupingInfo] = groupingInfos
+    if (groupingInfo?.hasOwnProperty('group_key')) {
+      if (tokenInfo.result?.interface) {
+        if (['FungibleToken', 'FungibleAsset'].includes(tokenInfo.result?.interface)) {
+          return (
+            <FungibleTokenDetailsWrapper
+              id={id}
+              tokenInfo={tokenInfo.result as FungibleTokenInfo}
+            />
+          )
+        } else {
+          return <NFTDetails id={id} tokenInfo={tokenInfo.result as NFTTokenInfo} />
+        }
+      } else {
+        return <WalletView address={id} />
+      }
+    } else {
+      return <NFTCollectionDetail id={id} tokenInfo={tokenInfo.result as NFTTokenInfo} />
+    }
+  } else {
     return <WalletView address={id} />
   }
-
-  // Determine token type and render appropriate view
-  const isFungibleToken = tokenInfo.result.interface === 'FungibleToken'
-  const isFungibleAsset = tokenInfo.result.interface === 'FungibleAsset'
-
-  if (isFungibleToken || isFungibleAsset) {
-    return (
-      <FungibleTokenDetailsWrapper
-        id={id}
-        tokenInfo={tokenInfo.result as FungibleTokenInfo}
-      />
-    )
-  }
-
-  return <NFTDetails id={id} tokenInfo={tokenInfo.result as NFTTokenInfo} />
 }

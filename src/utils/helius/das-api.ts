@@ -32,7 +32,8 @@ export async function fetchTokenInfo(
 ): Promise<TokenResponse | null> {
   try {
     if (!RPC_URL) {
-      throw new Error('RPC_URL is not configured')
+      console.error('RPC_URL is not configured')
+      return null
     }
 
     const response = await fetch(RPC_URL, {
@@ -51,19 +52,22 @@ export async function fetchTokenInfo(
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      console.error(`HTTP error! status: ${response.status}`)
+      return null
     }
 
     const data: RPCResponse = await response.json()
 
     // Check for RPC error response
     if (data.error) {
-      throw new Error(`RPC error: ${data.error.message}`)
+      console.error(`RPC error: ${data.error.message}`)
+      return null
     }
 
     // Validate that we have a result
     if (!data.result) {
-      throw new Error('No token data found')
+      console.log('No token data found')
+      return null
     }
 
     return {
@@ -72,10 +76,7 @@ export async function fetchTokenInfo(
       result: data.result,
     }
   } catch (error) {
-    console.error(
-      'Error fetching token info:',
-      error instanceof Error ? error.message : 'Unknown error'
-    )
+    console.error('Error fetching token info:', error instanceof Error ? error.message : 'Unknown error')
     return null
   }
 }

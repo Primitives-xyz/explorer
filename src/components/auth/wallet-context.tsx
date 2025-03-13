@@ -1,4 +1,4 @@
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import {
   useDynamicContext,
   useIsLoggedIn,

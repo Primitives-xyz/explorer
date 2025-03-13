@@ -1,4 +1,4 @@
-import { getDicebearUrl } from '@/lib/constants'
+import { getDicebearUrl } from '@/utils/constants'
 import { cn } from '@/utils/utils'
 import Image from 'next/image'
 import { useState } from 'react'

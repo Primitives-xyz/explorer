@@ -1,7 +1,7 @@
 'use client'
 
 import { useIdentities } from '@/hooks/use-identities'
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import Image from 'next/image'
@@ -97,7 +97,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-400 font-mono">
-            Connected Identities:
+            Connected Profiles:
           </span>
         </div>
       </div>
@@ -114,7 +114,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
               href={
                 identity.namespace.name === EXPLORER_NAMESPACE
                   ? `/${identity.profile.username}`
-                  : `/namespace/${identity.namespace.name}/profile/${identity.profile.username}`
+                  : `/n/${identity.namespace.name}/${identity.profile.username}`
               }
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}

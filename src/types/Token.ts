@@ -93,13 +93,12 @@ export interface NFTMetadata {
 }
 
 // NFT-specific properties
+export interface NFTCollectionInfo extends BaseTokenInfo {
+  interface: 'Mpl Core Asset'
+}
+
 export interface NFTTokenInfo extends BaseTokenInfo {
-  interface:
-    | 'MplCoreAsset'
-    | 'V1_NFT'
-    | 'V2_NFT'
-    | 'LEGACY_NFT'
-    | 'ProgrammableNFT'
+  interface: 'V1_NFT' | 'V2_NFT' | 'LEGACY_NFT' | 'ProgrammableNFT'
 }
 
 // Fungible token-specific properties

@@ -4,7 +4,6 @@ import { useCommentLikes } from '@/hooks/use-comment-likes'
 import { usePostComment } from '@/hooks/use-post-comment'
 import type { CommentItem } from '@/hooks/use-profile-comments'
 import { useProfileComments } from '@/hooks/use-profile-comments'
-import { useProfileData } from '@/hooks/use-profile-data'
 import { useToast } from '@/hooks/use-toast'
 import { route } from '@/utils/routes'
 import {
@@ -12,7 +11,6 @@ import {
   HeartIcon as HeartOutline,
 } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid'
-import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -40,7 +38,11 @@ interface Props {
 
 export function CommentWall({ username, targetWalletAddress }: Props) {
   const { mainUsername } = useCurrentWallet()
-  const { comments, isLoadingComments } = useProfileData(username, mainUsername)
+  const {
+    comments: rawComments,
+    isLoading: isLoadingComments,
+    mutate: refreshComments,
+  } = useProfileComments(username, mainUsername || undefined)
 
   const [commentText, setCommentText] = useState('')
   const [replyToCommentId, setReplyToCommentId] = useState<string | null>(null)
@@ -51,13 +53,6 @@ export function CommentWall({ username, targetWalletAddress }: Props) {
     unlikeComment,
     isLoading: likeLoading,
   } = useCommentLikes()
-
-  const t = useTranslations()
-
-  const { mutate: refreshComments } = useProfileComments(
-    username,
-    mainUsername || undefined
-  )
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -157,7 +152,7 @@ export function CommentWall({ username, targetWalletAddress }: Props) {
               <div className="text-center  font-mono py-4">
                 Loading comments...
               </div>
-            ) : comments.length === 0 ? (
+            ) : rawComments.length === 0 ? (
               !mainUsername ? (
                 <div className="flex items-center justify-center min-h-[300px]">
                   <DynamicConnectButton>
@@ -172,7 +167,7 @@ export function CommentWall({ username, targetWalletAddress }: Props) {
                 </div>
               )
             ) : (
-              comments.map((comment) => (
+              rawComments.map((comment) => (
                 <div key={comment.comment.id}>
                   <div className="border border-green-800/30 rounded-lg p-3">
                     {comment.author && (

@@ -47,6 +47,7 @@
   "header": {
     "title": "solana_social_explorer",
     "search": "search",
+    "play": "play",
     "trade": "trade",
     "portfolio": "portfolio",
     "connect_wallet": "connect wallet",
@@ -73,7 +74,7 @@
     "awaiting_input": "AWAITING INPUT",
     "execute": "execute"
   },
-  "following-transaction": {
+  "following_transaction": {
     "all": "All",
     "swap": "Swaps",
     "transfer": "Transfers",
@@ -85,8 +86,14 @@
     "transfers": "transfers",
     "cnft_mints": "cnft mints"
   },
+  "following_activity": {
+    "title": "following_activity",
+    "no_activity": "No activity",
+    "view_all": "View all",
+    "recent_activity": "Recent Activity"
+  },
   "profile_info": {
-    "title": "profile_info",
+    "title": "profile_information",
     "create_new_profile": "Create New Profile",
     "create_a_blink_profile": "Create A .Blink Profile",
     "create_a_sol_profile": "Create a .Sol Profile",
@@ -95,22 +102,30 @@
     "fetching_profiles": ">>> FETCHING PROFILES...",
     "no_profile_found": ">>> NO PROFILES FOUND"
   },
+  "recent_profiles": {
+    "title": "recent_profiles",
+    "view_all": "view_all",
+    "no_recent_profiles": "no_recent_profiles"
+  },
   "trending_tokens": {
     "title": "trending_tokens",
-    "volume_24h": "Volume 24h",
-    "rank": "Rank",
-    "liquidity": "Liquidity",
+    "volume_24h": "volume_24h",
+    "rank": "rank",
+    "liquidity": "liquidity",
     "fetching_trending_tokens": ">>> FETCHING TRENDING TOKENS...",
-    "no_tokens_found": ">>> NO TOKENS FOUND"
+    "no_tokens_found": ">>> NO TOKENS FOUND",
+    "view_all": "view_all",
+    "top_tokens": "top_tokens",
+    "price_change": "price_change"
   },
   "top_traders": {
     "title": "top_traders",
-    "most_active": "Most Active Traders",
-    "analyzing_trader_activity": "ANALYZING TRADER ACTIVITY",
-    "analyzing_trader_performance": "ANALYZING TRADER PERFORMANCE",
-    "pnl_trade": "PNL/Trade",
-    "unrealized": "Unrealized",
-    "no_trades": "No trades",
+    "most_active": "most_active",
+    "analyzing_trader_activity": "analyzing_trader_activity",
+    "analyzing_trader_performance": "analyzing_trader_performance",
+    "pnl_trade": "pnl_trade",
+    "unrealized": "unrealized",
+    "no_trades": "no_trades",
     "average_profit_per_trade": "Average Profit per Trade",
     "no_trading_activity": "No trading activity",
     "volume": "Volume",
@@ -230,7 +245,13 @@
       "gold_requirement": "500,000+ SSE",
       "swap_fee_discount": "% off swap fees",
       "comment_fee_discount": "% off comment fees"
-    }
+    },
+    "the_sell_transaction_failed_please_try_again": "Nft Sell Transaction Failed. Please try again later",
+    "the_sell_transaction_was_successful_creating_shareable_link": "The Nft sell transaction was successful",
+    "the_buy_transaction_failed_please_try_again": "Nft Buy Transaction Failed. Please try again later",
+    "the_list_transaction_failed_please_try_again": "List Nft Transaction Failed. Please try again later",
+    "the_buy_transaction_was_successful_creating_shareable_link": "The Nft Buy transaction was successful",
+    "the_list_transaction_was_successful_creating_shareable_link": "The Nft List transaction was successful"
   },
   "priority_levels": {
     "minimum": "Minimum",
@@ -260,10 +281,10 @@
     "this_wallet_doesnt_have_any_tokens_yet": "This wallet doesn't have any tokens yet"
   },
   "portfolio_balance": {
-    "title": "portfolio_balance"
+    "title": "Portfolio Balance"
   },
   "transaction_log": {
-    "title": "transaction_log",
+    "title": "Transaction Log",
     "new_transaction": "new transaction",
     "loading_transactions": "loading transactions",
     "no_transactions_found": "no transactions found",
@@ -285,10 +306,13 @@
     "explain_transaction": "Explain this transaction"
   },
   "portfolio_assets": {
-    "title": "portfolio_assets"
+    "title": "portfolio_assets",
+    "name": "name",
+    "mint": "mint",
+    "create": "creator"
   },
   "tapestry_social": {
-    "title": "tapestry_social",
+    "title": "Tapestry Social",
     "are_you_a_solana_builder": "Are you a Solana builder?",
     "solana_need_you": "Solana needs YOU to add social features to your app! Get started with Tapestry's powerful social toolkit.",
     "start_building": "Start Building"

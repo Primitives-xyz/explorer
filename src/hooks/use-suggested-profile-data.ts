@@ -1,10 +1,9 @@
-import { Identity } from '@/hooks/use-identities'
-import { SuggestedUsername } from '@/types/profile.types'
+import { IGetProfileResponse, SuggestedUsername } from '@/types/profile.types'
 import { useMemo } from 'react'
 import { useGroupedNFTData } from './use-grouped-nft-data'
 
 interface UseSuggestedProfileDataProps {
-  suggestedProfiles: Identity[] | undefined
+  suggestedProfiles?: IGetProfileResponse[]
   loadingSuggestions: boolean
   walletAddress?: string
 }

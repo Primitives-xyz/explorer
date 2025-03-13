@@ -1,7 +1,7 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { IGetSocialResponse } from '@/types/profile.types'
 import type { Transaction } from '@/utils/helius/types'
 import { useEffect, useState } from 'react'
-import type { GetFollowingResponse } from '../types'
 
 // Helper to fetch transactions for a single wallet
 async function fetchWalletTransactions(
@@ -37,9 +37,7 @@ async function fetchWalletTransactions(
   }
 }
 
-export const useFollowingTransactions = (
-  following: GetFollowingResponse | undefined
-) => {
+export const useFollowingTransactions = (following?: IGetSocialResponse) => {
   const [aggregatedTransactions, setAggregatedTransactions] = useState<
     Transaction[]
   >([])

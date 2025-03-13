@@ -1,10 +1,11 @@
-import { EXPLORER_NAMESPACE } from '@/lib/constants'
 import type { ProfileSearchResult } from '@/types'
+import { IGetProfileResponse } from '@/types/profile.types'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/routes'
-import type { Profile } from './api'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 function isProfileSearchResult(
-  profile: Profile | ProfileSearchResult
+  profile: IGetProfileResponse | ProfileSearchResult
 ): profile is ProfileSearchResult {
   return (
     'namespace' in profile &&
@@ -14,27 +15,25 @@ function isProfileSearchResult(
 }
 
 export function handleProfileNavigation(
-  profile: Profile | ProfileSearchResult,
-  router: any
+  profile: IGetProfileResponse | ProfileSearchResult,
+  router: AppRouterInstance | string[]
 ): void {
   // Handle ProfileSearchResult type
   if (isProfileSearchResult(profile)) {
     if (profile.namespace.name === EXPLORER_NAMESPACE) {
       router.push(route('address', { id: profile.profile.username }))
       return
+    } else {
+      // For other namespaces, redirect to the new URL format
+
+      router.push(
+        route('namespaceProfile', {
+          namespace: profile.namespace.name,
+          username: profile.profile.username,
+        })
+      )
     }
 
-    // For other namespaces, redirect to their profile URL if available
-    if (profile.namespace.userProfileURL) {
-      const url = `${profile.namespace.userProfileURL.replace(/\/?$/, '/')}${
-        profile.profile.username
-      }`
-      window.open(url, '_blank')
-      return
-    }
-
-    // Fallback to namespace view
-    router.push(route('namespace', { namespace: profile.namespace.name }))
     return
   }
 
@@ -48,15 +47,14 @@ export function handleProfileNavigation(
   if (profile.namespace.name === EXPLORER_NAMESPACE) {
     router.push(route('address', { id: profile.profile.username }))
     return
-  }
-
-  // For other namespaces, redirect to their profile URL if available
-  if (profile.namespace.userProfileURL) {
-    const url = `${profile.namespace.userProfileURL.replace(/\/?$/, '/')}${
-      profile.profile.username
-    }`
-    window.open(url, '_blank')
-    return
+  } else {
+    // For other namespaces, redirect to the new URL format
+    router.push(
+      route('namespaceProfile', {
+        namespace: profile.namespace.name,
+        username: profile.profile.username,
+      })
+    )
   }
 
   // Fallback to namespace view
