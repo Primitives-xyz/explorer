@@ -1,11 +1,12 @@
 import { useStakeInfo } from '@/hooks/use-stake-info'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { ClaimForm } from './claim/claim'
 import { StakeForm } from './stake/stake'
 import { UnstakeForm } from './unstake/unstake'
 
 interface StakingContainerProps {
-  mode: 'stake' | 'unstake'
+  mode: 'stake' | 'unstake' | 'claim'
 }
 
 export const StakingContainer = ({ mode }: StakingContainerProps) => {
@@ -142,9 +143,9 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
                 </div>
                 <div className="h-1 w-full bg-gradient-to-r from-green-500 to-green-300 rounded-full mt-2"></div>
 
-                {!hasStaked && mode === 'unstake' && (
+                {!hasStaked && (mode === 'unstake' || mode === 'claim') && (
                   <p className="text-sm text-yellow-500 mt-3 font-medium">
-                    You haven't staked yet. Stake tokens first to see your
+                    You haven&apos;t staked yet. Stake tokens first to see your
                     balance here.
                   </p>
                 )}
@@ -158,18 +159,22 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
       <div className="mb-8">
         {mode === 'stake' ? (
           <StakeForm />
-        ) : (
+        ) : mode === 'unstake' ? (
           <>
             {!hasStaked && (
               <div className="mb-4 p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-lg">
                 <p className="text-yellow-400 font-medium">No Staking Found</p>
                 <p className="text-sm text-gray-300">
-                  You haven't staked any tokens yet. Please use the Stake tab to
-                  stake tokens before attempting to unstake.
+                  You haven&apos;t staked any tokens yet. Please use the Stake
+                  tab to stake tokens before attempting to unstake.
                 </p>
               </div>
             )}
             <UnstakeForm />
+          </>
+        ) : (
+          <>
+            <ClaimForm />
           </>
         )}
       </div>
