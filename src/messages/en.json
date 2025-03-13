@@ -150,6 +150,7 @@
     "your_info": "Your Info",
     "total_staking_amount": "Total Stake Amount",
     "total_reward_amount": "Total Reward Amount",
+    "platform_total_stake": "Platform Total Stake",
     "unstake_available_in": "Unstake available in",
     "maximum": "Maximum",
     "decimal_places_allowed": "decimal places allowed",
@@ -240,8 +241,8 @@
       "bronze_tier": "Bronze",
       "silver_tier": "Silver",
       "gold_tier": "Gold",
-      "bronze_requirement": "1,000+ SSE",
-      "silver_requirement": "25,000+ SSE",
+      "bronze_requirement": "50,000+ SSE",
+      "silver_requirement": "200,000+ SSE",
       "gold_requirement": "500,000+ SSE",
       "swap_fee_discount": "% off swap fees",
       "comment_fee_discount": "% off comment fees"

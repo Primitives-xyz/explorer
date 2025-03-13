@@ -84,11 +84,15 @@ const getUserInfo = (
     userDebt
   )
 
-  const divisor = 10 ** 6
-
   return {
-    userDeposit: (userDeposit / divisor).toString(),
-    rewards: (rewards / divisor).toString(),
+    userDeposit: userDeposit,
+    rewards: rewards,
+    times: nTimeStamp,
+    lastRewardTime: lastRewardTime,
+    totalDeposit: totalDeposit,
+    totalRate: totalRate,
+    claimPeriod: claimPeriod,
+    rewardMultiplier: rewardMultiplier,
   }
 }
 

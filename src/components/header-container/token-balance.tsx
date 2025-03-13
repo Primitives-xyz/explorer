@@ -1,5 +1,6 @@
 'use client'
 
+import { SSE_TOKEN_MINT } from '@/constants/jupiter'
 import { useEffect, useState } from 'react'
 
 interface TokenBalanceProps {
@@ -33,7 +34,7 @@ export const TokenBalance = ({ walletAddress }: TokenBalanceProps) => {
       setLoading(true)
       try {
         const response = await fetch(
-          `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump`
+          `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=${SSE_TOKEN_MINT}`
         )
         const data = await response.json()
         setBalance(formatNumber(data.balance.uiAmountString))
