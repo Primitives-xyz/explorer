@@ -27,13 +27,30 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
   const formatTokenAmount = (amount: string) => {
     if (!amount || amount === '0') return '0.000000'
     const num = parseInt(amount)
-    return (num / 1000000).toFixed(6)
+    const value = num / 1000000
+
+    // For mobile-friendly display of large numbers
+    if (value >= 1000000) {
+      // For values >= 1M, show as X.XX M (e.g., 1.23M)
+      return `${(value / 1000000).toFixed(2)}M`
+    } else if (value >= 1000) {
+      // For values >= 1K, show as X.XX K (e.g., 123.45K)
+      return `${(value / 1000).toFixed(2)}K`
+    } else {
+      // Add thousand separators for better readability
+      return value.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      })
+    }
   }
 
   const formattedTotalStake = formatTokenAmount(
     totalStakeAmount === '0' ? totalStakeAmount2 : totalStakeAmount
   )
   const formattedStakeAmount = formatTokenAmount(stakeAmount)
+
+  // Format rewards amount with the same approach as token amounts
   const formattedRewardsAmount = rewardsAmount
     ? parseFloat(rewardsAmount).toFixed(6)
     : '0.000000'
@@ -63,10 +80,10 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
             ) : (
               <div className="flex flex-col">
                 <div className="flex items-baseline">
-                  <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300">
+                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300 break-all">
                     {formattedTotalStake}
                   </span>
-                  <span className="ml-2 text-green-500 font-medium text-sm">
+                  <span className="ml-2 text-green-500 font-medium text-xs md:text-sm">
                     tokens
                   </span>
                 </div>
@@ -97,10 +114,10 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
             ) : (
               <div className="flex flex-col">
                 <div className="flex items-baseline">
-                  <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300">
+                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300 break-all">
                     {formattedRewardsAmount}
                   </span>
-                  <span className="ml-2 text-green-500 font-medium text-sm">
+                  <span className="ml-2 text-green-500 font-medium text-xs md:text-sm">
                     tokens
                   </span>
                 </div>
@@ -134,10 +151,10 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
             ) : (
               <div className="flex flex-col">
                 <div className="flex items-baseline">
-                  <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300">
+                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300 break-all">
                     {formattedStakeAmount}
                   </span>
-                  <span className="ml-2 text-green-500 font-medium text-sm">
+                  <span className="ml-2 text-green-500 font-medium text-xs md:text-sm">
                     tokens
                   </span>
                 </div>
