@@ -19,6 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const url = 'https://sse.gg'
 
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || url),
     title: process.env.NEXT_PUBLIC_APP_NAME || name,
     description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
     keywords:

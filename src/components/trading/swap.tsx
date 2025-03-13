@@ -1,29 +1,57 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { LeaderboardTable } from '../leaderboards/leaderboard-table'
 import { JupiterSwapForm } from '../transactions/jupiter-swap-form'
 import { StakingContainer } from './StakingContainer'
 
+type ModeType = 'swap' | 'stake' | 'unstake' | 'claim'
+
 export const Swap = () => {
   const t = useTranslations()
-  const [mode, setMode] = useState<string>('swap')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [mode, setMode] = useState<ModeType>('swap')
+
+  // Initialize mode from URL query parameter on component mount
+  useEffect(() => {
+    const modeParam = searchParams.get('mode') as ModeType
+    if (
+      modeParam &&
+      ['swap', 'stake', 'unstake', 'claim'].includes(modeParam)
+    ) {
+      setMode(modeParam)
+    }
+  }, [searchParams])
+
+  // Update URL when mode changes
+  const updateMode = (newMode: ModeType) => {
+    setMode(newMode)
+
+    // Create new URLSearchParams object
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('mode', newMode)
+
+    // Update URL without refreshing the page
+    router.push(`/trade?${params.toString()}`, { scroll: false })
+  }
 
   const handleSwapBtnClick = () => {
-    setMode('swap')
+    updateMode('swap')
   }
 
   const handleStakeBtnClick = () => {
-    setMode('stake')
+    updateMode('stake')
   }
 
   const handleUnstakeBtnClick = () => {
-    setMode('unstake')
+    updateMode('unstake')
   }
 
   const handleClaimBtnClick = () => {
-    setMode('claim')
+    updateMode('claim')
   }
 
   return (
