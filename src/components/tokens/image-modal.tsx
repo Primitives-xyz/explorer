@@ -345,7 +345,7 @@ export const ImageModal = ({
                       className="rounded-lg"
                       width={500}
                       height={500}
-                      onError={(e) => {
+                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                         const target = e.target as HTMLImageElement
                         target.style.display = 'none'
                         target.parentElement?.classList.add(

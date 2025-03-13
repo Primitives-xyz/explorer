@@ -13,7 +13,7 @@ import {
   type IdParams as Params,
   type RouteType,
 } from '@/utils/validation'
-import type { Metadata } from 'next'
+import Metadata from 'next'
 
 /**
  * Generates metadata for the page based on the ID parameter
