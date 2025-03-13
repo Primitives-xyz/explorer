@@ -43,6 +43,7 @@ next-env.d.ts
 .vscode/
 *.swp
 *.swo
+.qodo
 
 # OS generated files
 .DS_Store

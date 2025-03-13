@@ -26,6 +26,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "0.30.1",
     "@dialectlabs/react-sdk-blockchain-solana": "^2.1.1",
     "@dialectlabs/react-ui": "^2.2.0",
     "@dynamic-labs/sdk-react-core": "^3.9.5",
@@ -67,7 +68,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "2.15.1",
-    "socialfi": "^0.1.5",
+    "socialfi": "0.1.5",
     "sonner": "1.7.4",
     "swr": "^2.3.0",
     "tailwind-merge": "3.0.1",
@@ -80,7 +81,9 @@
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "eslint": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "8.26.0",
+    "@typescript-eslint/parser": "8.26.0",
+    "eslint": "^9.19.0",
     "eslint-config-next": "15.1.2",
     "postcss": "^8",
     "prettier": "2.8.8",
