@@ -5,6 +5,7 @@ import { GlobalSearch } from '@/components/global-search'
 import { Header } from '@/components/header-container/header'
 import { CreateProfile } from '@/components/profile/create-profile'
 import { Toaster } from '@/components/toast/toaster'
+import './legacy.css'
 
 export default async function LegacyLayout({
   children,
