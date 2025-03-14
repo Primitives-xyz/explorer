@@ -8,10 +8,11 @@ import { Loader2 } from 'lucide-react'
 
 import { CopyPaste } from '@/components/common/copy-paste'
 import { TransactionSection } from '@/components/transaction-section'
-import type { NFTTokenInfo } from '@/types/Token'
-import { useWallet } from './auth/wallet-context'
 import { useNftListing } from '@/hooks/use-nft-listing'
 import { useNftSell } from '@/hooks/use-nft-sell'
+import type { NFTTokenInfo } from '@/types/Token'
+import { useWallet } from './auth/wallet-context'
+import { TokenAddress } from './tokens/token-address'
 
 enum NFTTab {
   Transaction = 'transaction',
@@ -20,16 +21,22 @@ enum NFTTab {
 
 export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
   const { primaryWallet, walletAddress } = useWallet()
-  const { handleNftList, listAmount, setListAmount, showNftListLoading } = useNftListing(tokenInfo, walletAddress, primaryWallet)
-  const { handleNftSell, showNftSellLoading, bestSellOffer } = useNftSell(tokenInfo, walletAddress, primaryWallet)
+  const { handleNftList, listAmount, setListAmount, showNftListLoading } =
+    useNftListing(tokenInfo, walletAddress, primaryWallet)
+  const { handleNftSell, showNftSellLoading, bestSellOffer } = useNftSell(
+    tokenInfo,
+    walletAddress,
+    primaryWallet
+  )
   const [isNftOwner, setIsNftOwner] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<NFTTab>(NFTTab.Technical)
 
   const getTabStyle = (tab: NFTTab) => {
     const isActive = activeTab === tab
 
-    return `font-mono text-sm py-1 cursor-pointer uppercase ${isActive ? 'font-bold text-green-500 border-b border-b-green-500' : ''
-      }`
+    return `font-mono text-sm py-1 cursor-pointer uppercase ${
+      isActive ? 'font-bold text-green-500 border-b border-b-green-500' : ''
+    }`
   }
 
   const renderTechnicalTab = () => (
@@ -62,21 +69,19 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
         <div className="grid grid-cols-3 gap-2 mt-2">
           {tokenInfo.compression &&
             Object.keys(tokenInfo.compression).map((key, indx) => (
-              <>
-                <div
-                  key={indx}
-                  className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
-                >
-                  <div className="text-sm text-green-500 mb-1 font-mono">
-                    {key}
-                  </div>
-                  <div className="text-sm font-mono group-hover: transition-colors">
-                    {tokenInfo.compression?.[
-                      key as keyof typeof tokenInfo.compression
-                    ]?.toString() || 'NONE'}
-                  </div>
+              <div
+                key={indx}
+                className="px-2 py-1 bg-black/30 rounded-lg border border-green-800/40 hover:border-green-600/40 transition-all group"
+              >
+                <div className="text-sm text-green-500 mb-1 font-mono">
+                  {key}
                 </div>
-              </>
+                <div className="text-sm font-mono group-hover: transition-colors">
+                  {tokenInfo.compression?.[
+                    key as keyof typeof tokenInfo.compression
+                  ]?.toString() || 'NONE'}
+                </div>
+              </div>
             ))}
         </div>
       </div>
@@ -128,22 +133,21 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
   )
 
   useEffect(() => {
-    console.log("walletAddress;", walletAddress)
+    console.log('walletAddress;', walletAddress)
     console.log(tokenInfo)
     if (walletAddress && tokenInfo) {
       if (walletAddress === tokenInfo.ownership.owner) {
         setIsNftOwner(true)
       }
     }
-  }, [walletAddress, tokenInfo]);
-
+  }, [walletAddress, tokenInfo])
 
   return (
     <div className="py-2 px-10 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-center w-full from-green-500/10">
         <div className="flex flex-col gap-6 md:flex-row h-full">
           <div className="md:w-1/3">
-            <div className='block md:hidden my-4'>
+            <div className="block md:hidden my-4">
               <h2 className="text-xl font-bold text-green-500">
                 {tokenInfo.content.metadata.name}
               </h2>
@@ -189,22 +193,26 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 </div>
                 <div>
                   <button
-                    className={`w-full flex justify-center items-center px-2 py-1 bg-green-600 hover:bg-green-700 rounded-lg my-2 ${(showNftSellLoading || showNftListLoading || !bestSellOffer) ? "cursor-not-allowed" : "cursor-pointer"}`}
-                    disabled={showNftSellLoading || showNftListLoading || !bestSellOffer}
+                    className={`w-full flex justify-center items-center px-2 py-1 bg-green-600 hover:bg-green-700 rounded-lg my-2 ${
+                      showNftSellLoading || showNftListLoading || !bestSellOffer
+                        ? 'cursor-not-allowed'
+                        : 'cursor-pointer'
+                    }`}
+                    disabled={
+                      showNftSellLoading || showNftListLoading || !bestSellOffer
+                    }
                     onClick={handleNftSell}
                   >
                     {showNftSellLoading ? (
                       <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : isNftOwner ? (
+                      <span className="font-mono font-medium uppercase">
+                        {bestSellOffer ? 'Accept Offer' : 'No Offer for Sell'}
+                      </span>
                     ) : (
-                      isNftOwner ? (
-                        <span className="font-mono font-medium uppercase">
-                          {
-                            bestSellOffer ? "Accept Offer" : "No Offer for Sell"
-                          }
-                        </span>
-                      ) : (
-                        <span className="font-mono font-medium uppercase">Buy</span>
-                      )
+                      <span className="font-mono font-medium uppercase">
+                        Buy
+                      </span>
                     )}
                   </button>
                 </div>
@@ -216,13 +224,12 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
             )}
           </div>
           <div className="md:w-2/3">
-            <div className='hidden md:block'>
+            <div className="hidden md:block">
               <h2 className="text-xl font-bold text-green-500">
                 {tokenInfo.content.metadata.name}
               </h2>
               <div className="flex items-center gap-1">
-                <p className="text-sm">{tokenInfo.id}</p>
-                <CopyPaste content={tokenInfo.id} />
+                <TokenAddress address={tokenInfo.id} />
               </div>
             </div>
             <div className="border border-green-500 mt-5 p-2 rounded-lg">
@@ -233,19 +240,13 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 <div className="flex justify-between items-center gap-1 uppercase">
                   <div>Owner</div>
                   <div className="flex gap-1">
-                    <p className="text-green-500">
-                      {tokenInfo.ownership.owner}
-                    </p>
-                    <CopyPaste content={tokenInfo.ownership.owner} />
+                    <TokenAddress address={tokenInfo.ownership.owner} />
                   </div>
                 </div>
                 <div className="flex justify-between items-center gap-1 uppercase">
                   <div>Mint Address</div>
                   <div className="flex gap-1">
-                    <p className="text-green-500">
-                      {tokenInfo.content.metadata.name}
-                    </p>
-                    <CopyPaste content={tokenInfo.id} />
+                    <TokenAddress address={tokenInfo.id} />
                   </div>
                 </div>
                 <div className="flex justify-between items-center gap-1 uppercase">
@@ -256,8 +257,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                       i: number
                     ) => (
                       <div className="flex gap-1" key={`authority-${i}`}>
-                        <p className="text-green-500">{authority.address}</p>
-                        <CopyPaste content={authority.address} />
+                        <TokenAddress address={authority.address} />
                       </div>
                     )
                   )}
@@ -265,14 +265,8 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 <div className="flex justify-between items-center gap-1 uppercase">
                   <div>COLLECTION ADDRESS</div>
                   <div className="flex gap-1">
-                    <p className="text-green-500">
-                      {tokenInfo.grouping?.find(
-                        (g: { group_key: string; group_value: string }) =>
-                          g.group_key === 'collection'
-                      )?.group_value || 'None'}
-                    </p>
-                    <CopyPaste
-                      content={
+                    <TokenAddress
+                      address={
                         tokenInfo.grouping?.find(
                           (g: { group_key: string; group_value: string }) =>
                             g.group_key === 'collection'
@@ -322,9 +316,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                           className="w-full flex flex-row justify-between"
                         >
                           <div className="flex gap-1">
-                            <p className="text-green-500">
-                              {creator.address}
-                            </p>
+                            <p className="text-green-500">{creator.address}</p>
                             <CopyPaste content={creator.address} />
                           </div>
                           <span>{creator.share || 0}%</span>
@@ -368,12 +360,12 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 )}
               </div>
             </div>
-            {
-              isNftOwner && <div className="border border-green-500 my-[20px] p-2 rounded-lg">
+            {isNftOwner && (
+              <div className="border border-green-500 my-[20px] p-2 rounded-lg">
                 <h3 className="text-md font-bold text-green-500 border-b-2 border-green-500/30 uppercase">
                   List
                 </h3>
-                <div className='flex flex-col gap-1 my-2'>
+                <div className="flex flex-col gap-1 my-2">
                   <div className="bg-green-900/20 rounded-lg w-full transition-all duration-200 border border-green-500/20 focus-within:border-green-500/30 focus-within:ring-2 focus-within:ring-green-500/20 p-1">
                     <div className="flex flex-row items-baseline justify-between">
                       <input
@@ -423,7 +415,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                   </button>
                 </div>
               </div>
-            }
+            )}
           </div>
         </div>
       </div>

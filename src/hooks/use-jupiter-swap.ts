@@ -15,7 +15,7 @@ import type {
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useCreateContentNode } from './use-create-content-node'
 import { useSSEPrice } from './use-sse-price'
 import { useTokenInfo } from './use-token-info'
@@ -57,6 +57,8 @@ export function useJupiterSwap({
   const { ssePrice } = useSSEPrice()
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const outputTokenInfo = useTokenInfo(outputMint)
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
     setExpectedOutput('')
@@ -66,11 +68,12 @@ export function useJupiterSwap({
     setShowTradeLink(false)
     setIsFullyConfirmed(false)
     setIsQuoteRefreshing(false)
+    setSseFeeAmount('0')
   }, [])
 
   const t = useTranslations()
 
-  const fetchQuote = async () => {
+  const fetchQuote = useCallback(async () => {
     if (!inputAmount || !inputMint || !outputMint) {
       resetQuoteState()
       return
@@ -147,7 +150,68 @@ export function useJupiterSwap({
       setLoading(false)
       setIsQuoteRefreshing(false)
     }
-  }
+  }, [
+    inputAmount,
+    inputMint,
+    outputMint,
+    inputDecimals,
+    platformFeeBps,
+    quoteResponse,
+    outputTokenInfo.decimals,
+    ssePrice,
+    t,
+    resetQuoteState,
+  ])
+
+  // Setup automatic refresh interval
+  useEffect(() => {
+    // Clear any existing interval
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current)
+      refreshIntervalRef.current = null
+    }
+
+    // Only set up interval if we have valid inputs and not in a transaction
+    if (
+      inputAmount &&
+      inputMint &&
+      outputMint &&
+      !loading &&
+      !isFullyConfirmed &&
+      !isQuoteRefreshing // Add this check to prevent setting up interval during refresh
+    ) {
+      refreshIntervalRef.current = setInterval(() => {
+        // Use a flag to prevent multiple concurrent refreshes
+        if (!isQuoteRefreshing && !loading) {
+          fetchQuote()
+        }
+      }, 15000) // Refresh every 15 seconds
+    }
+
+    // Cleanup on unmount or when dependencies change
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current)
+        refreshIntervalRef.current = null
+      }
+    }
+  }, [
+    inputAmount,
+    inputMint,
+    outputMint,
+    loading,
+    isFullyConfirmed,
+    isQuoteRefreshing,
+    // Remove fetchQuote from dependencies to prevent circular updates
+  ])
+
+  // Manual refresh function that can be called from outside
+  const refreshQuote = useCallback(() => {
+    // Only refresh if not already refreshing or loading
+    if (!isQuoteRefreshing && !loading) {
+      fetchQuote()
+    }
+  }, [fetchQuote, isQuoteRefreshing, loading])
 
   const handleSwap = async () => {
     if (!primaryWallet || !walletAddress) {
@@ -256,10 +320,13 @@ export function useJupiterSwap({
       })
 
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-      const tx = await connection.confirmTransaction({
-        signature: txid.signature,
-        ...(await connection.getLatestBlockhash()),
-      })
+      const tx = await connection.confirmTransaction(
+        {
+          signature: txid.signature,
+          ...(await connection.getLatestBlockhash()),
+        },
+        'confirmed'
+      )
 
       // Dismiss the confirmation toast before showing the result
       confirmToast.dismiss()
@@ -322,8 +389,18 @@ export function useJupiterSwap({
     }
   }
 
+  // Modify the final useEffect to prevent unnecessary refreshes
   useEffect(() => {
-    fetchQuote()
+    // Only fetch quote if we have the necessary inputs and not already refreshing
+    if (
+      inputAmount &&
+      inputMint &&
+      outputMint &&
+      !isQuoteRefreshing &&
+      !loading
+    ) {
+      fetchQuote()
+    }
   }, [
     inputAmount,
     inputMint,
@@ -331,6 +408,7 @@ export function useJupiterSwap({
     slippageBps,
     platformFeeBps,
     ssePrice,
+    // Remove fetchQuote from dependencies to prevent circular updates
   ])
 
   return {
@@ -350,6 +428,7 @@ export function useJupiterSwap({
     resetQuoteState,
     isQuoteRefreshing,
     sseFeeAmount,
+    refreshQuote, // Expose the refresh function
   }
 }
 

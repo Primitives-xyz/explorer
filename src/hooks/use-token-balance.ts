@@ -123,7 +123,6 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     revalidateOnFocus: false,
     keepPreviousData: true,
   })
-  console.log({ tokenData, mintAddress, walletAddress })
 
   // Process the data based on token type
   let balance = { formatted: '0', raw: 0n }

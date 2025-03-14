@@ -4,10 +4,10 @@ import { TokenChart } from '@/components/tokens/token-details/token-chart'
 import { TokenDetailsTabs } from '@/components/tokens/token-details/token-details-tabs'
 import { TokenHeader } from '@/components/tokens/token-details/token-header'
 import { TokenMetrics } from '@/components/tokens/token-details/token-metrics'
-import { TokenSwapSection } from '@/components/tokens/token-details/token-swap-section'
 import { TransactionSection } from '@/components/transaction-section'
 import { useBirdeyeTokenOverview } from '@/hooks/use-birdeye-token-overview'
 import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
+import { TokenSwapSection } from './tokens/token-details/token-swap-section'
 
 // Define the people in common data type
 interface PeopleInCommonData {

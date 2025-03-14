@@ -19,6 +19,7 @@ export function TokenSwapSection({
         inputTokenName="SOL"
         outputTokenName={tokenSymbol}
         inputDecimals={inputDecimals}
+        disableUrlUpdates={true}
       />
     </div>
   )

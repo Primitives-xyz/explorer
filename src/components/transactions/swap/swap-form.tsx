@@ -6,19 +6,17 @@ import { SwapSettings } from '@/components/transactions/swap/swap-settings'
 import { SwapShareSection } from '@/components/transactions/swap/swap-share-section'
 import { TokenSearch } from '@/components/transactions/swap/token-search'
 import { TokenSelectButton } from '@/components/transactions/swap/token-select-button'
-import {
-  DEFAULT_PRIORITY_LEVEL,
-  DEFAULT_SLIPPAGE_BPS,
-} from '@/constants/jupiter'
 import { useJupiterSwap } from '@/hooks/use-jupiter-swap'
+import { useToast } from '@/hooks/use-toast'
 import { useTokenBalance } from '@/hooks/use-token-balance'
 import { useTokenInfo } from '@/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/hooks/use-token-usdc-price'
 import { JupiterSwapFormProps } from '@/types/jupiter'
-import { ArrowLeftRight, Loader2 } from 'lucide-react'
+import { ArrowLeftRight, Loader2, RefreshCw, Share2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -51,6 +49,7 @@ export function SwapForm({
   inputDecimals = 9,
   sourceWallet,
   hideWhenGlobalSearch,
+  disableUrlUpdates,
 }: JupiterSwapFormProps) {
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
   const [effectiveAmount, setEffectiveAmount] = useState(initialAmount)
@@ -69,6 +68,12 @@ export function SwapForm({
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
   const [isRouteInfoOpen, setIsRouteInfoOpen] = useState(false)
+
+  // Add router and searchParams for URL updates
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const hasInitializedRef = useRef(false)
+  const hasProcessedUrlParamsRef = useRef(false)
 
   // Add token info hooks
   const inputTokenInfo = useTokenInfo(inputMint)
@@ -97,6 +102,9 @@ export function SwapForm({
     loading: outputBalanceLoading,
   } = useTokenBalance(walletAddress, outputMint)
 
+  // Add toast hook
+  const { toast } = useToast()
+
   // Update input decimals when input token changes
   useEffect(() => {
     setCurrentInputDecimals(inputTokenInfo.decimals ?? inputDecimals)
@@ -118,6 +126,7 @@ export function SwapForm({
     resetQuoteState,
     isQuoteRefreshing,
     sseFeeAmount,
+    refreshQuote,
   } = useJupiterSwap({
     inputMint,
     outputMint,
@@ -134,6 +143,34 @@ export function SwapForm({
       inputRef.current.focus()
     }
   }, [])
+
+  // Add useEffect to read URL parameters on component mount
+  useEffect(() => {
+    // Skip if we've already processed URL parameters or if URL updates are disabled
+    if (hasProcessedUrlParamsRef.current || disableUrlUpdates) {
+      hasInitializedRef.current = true
+      return
+    }
+
+    // Get token addresses from URL if they exist
+    const inputMintParam = searchParams.get('inputMint')
+    const outputMintParam = searchParams.get('outputMint')
+
+    // Only update if the URL parameters exist and are different from the current state
+    if (inputMintParam && inputMintParam !== inputMint) {
+      setInputMint(inputMintParam)
+    }
+
+    if (outputMintParam && outputMintParam !== outputMint) {
+      setOutputMint(outputMintParam)
+    }
+
+    // Mark as initialized and processed
+    hasInitializedRef.current = true
+    hasProcessedUrlParamsRef.current = true
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disableUrlUpdates, searchParams])
 
   // Function to validate amount
   const validateAmount = (value: string): boolean => {
@@ -171,6 +208,48 @@ export function SwapForm({
     return true
   }
 
+  // Function to update URL with current token addresses
+  const updateTokensInURL = useCallback(
+    (input: string, output: string) => {
+      // Skip URL updates if disableUrlUpdates is true
+      if (disableUrlUpdates) return
+
+      const params = new URLSearchParams(searchParams.toString())
+
+      // Only update token parameters if mode is 'swap' or not set
+      const currentMode = params.get('mode') || 'swap'
+      if (currentMode === 'swap') {
+        params.set('inputMint', input)
+        params.set('outputMint', output)
+
+        // Keep the mode parameter if it exists
+        if (!params.has('mode')) {
+          params.set('mode', 'swap')
+        }
+
+        // Update URL without refreshing the page
+        router.push(`/trade?${params.toString()}`, { scroll: false })
+      }
+    },
+    [disableUrlUpdates, router, searchParams]
+  )
+
+  // Update URL when tokens change
+  useEffect(() => {
+    // Skip URL updates if disableUrlUpdates is true or if we haven't processed URL params yet
+    if (disableUrlUpdates || !hasProcessedUrlParamsRef.current) return
+
+    // Only update URL after the component has initialized from URL parameters
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true
+      return
+    }
+
+    if (inputMint && outputMint) {
+      updateTokensInURL(inputMint, outputMint)
+    }
+  }, [inputMint, outputMint, disableUrlUpdates, updateTokensInURL])
+
   const handleSwapDirection = () => {
     // Reset all quote-related state first
     resetQuoteState()
@@ -179,14 +258,20 @@ export function SwapForm({
     if (debouncedUpdate) clearTimeout(debouncedUpdate)
 
     // Then swap the tokens
+    const tempInputMint = inputMint
+    const tempInputToken = currentInputToken
+    const tempInputDecimals = currentInputDecimals
+
+    // Use setState callbacks to ensure state updates happen in the correct order
     setInputMint(outputMint)
-    setOutputMint(inputMint)
+    setOutputMint(tempInputMint)
     setCurrentInputToken(currentOutputToken)
-    setCurrentOutputToken(currentInputToken)
+    setCurrentOutputToken(tempInputToken)
+    setCurrentInputDecimals(outputTokenInfo.decimals ?? 9)
   }
 
   // Show loading overlay when refreshing quote
-  const showLoadingState = loading || isFullyConfirmed
+  const showLoadingState = loading
 
   const handleInputTokenSelect = (token: {
     address: string
@@ -240,23 +325,26 @@ export function SwapForm({
     }).format(value)
   }
 
-  const handleReset = () => {
-    // Reset all form states
-    setDisplayAmount('')
-    setEffectiveAmount('')
+  const handleReset = (resetAmount = true) => {
+    // Reset all necessary state
     setInputError(null)
     if (debouncedUpdate) clearTimeout(debouncedUpdate)
     resetQuoteState()
-    // Reset to initial values
-    setInputMint(initialInputMint)
-    setOutputMint(initialOutputMint)
-    setCurrentInputToken(inputTokenName)
-    setCurrentOutputToken(outputTokenName)
-    setCurrentInputDecimals(inputDecimals)
-    setUseSSEForFees(false)
-    setPriorityLevel(DEFAULT_PRIORITY_LEVEL)
-    setSlippageBps(DEFAULT_SLIPPAGE_BPS)
+
+    // Reset input amount fields only if resetAmount is true
+    if (resetAmount) {
+      setDisplayAmount('')
+      setEffectiveAmount('')
+    }
+
+    // Close the route info panel
     setIsRouteInfoOpen(false)
+
+    // Trigger a refresh of balances and quotes after a short delay
+    // to ensure state updates have completed
+    setTimeout(() => {
+      refreshQuote()
+    }, 100)
   }
 
   // Utility function to format raw token amounts
@@ -352,9 +440,72 @@ export function SwapForm({
     }
   }
 
+  // Add a function to copy the current URL to clipboard
+  const copySwapLinkToClipboard = () => {
+    // Get the current URL
+    const url =
+      window.location.origin +
+      window.location.pathname +
+      '?' +
+      searchParams.toString()
+
+    // Copy to clipboard
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        // Show a toast notification
+        toast({
+          title: t('trade.swap_link_copied'),
+          description: t('trade.link_copied_to_clipboard'),
+          variant: 'success',
+          duration: 3000,
+        })
+      })
+      .catch((err) => {
+        console.error('Failed to copy URL: ', err)
+        toast({
+          title: t('error.failed_to_copy'),
+          description: t('error.please_try_again'),
+          variant: 'error',
+          duration: 3000,
+        })
+      })
+  }
+
   return (
     <div className="p-2 sm:p-3 bg-green-900/10 rounded-lg space-y-2 sm:space-y-3">
       <div className="flex flex-col gap-2">
+        {/* Header with Share Button */}
+        <div className="flex justify-between items-center">
+          <h3 className="text-sm font-medium text-green-100/80">
+            {t('trade.swap_tokens')}
+          </h3>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (!loading && !isQuoteRefreshing) {
+                  refreshQuote()
+                }
+              }}
+              className="flex items-center gap-1 text-xs text-green-400 hover:text-green-300 transition-colors p-1 rounded-full hover:bg-green-900/20"
+              title={t('trade.refresh_quote_and_balances')}
+              disabled={loading || isQuoteRefreshing}
+            >
+              <RefreshCw
+                className={`h-3 w-3 ${isQuoteRefreshing ? 'animate-spin' : ''}`}
+              />
+            </button>
+            <button
+              onClick={copySwapLinkToClipboard}
+              className="flex items-center gap-1 text-xs text-green-400 hover:text-green-300 transition-colors"
+              title={t('trade.copy_swap_link')}
+            >
+              <Share2 className="h-3 w-3" />
+              <span>{t('trade.share')}</span>
+            </button>
+          </div>
+        </div>
+
         {/* Amount Input */}
         <AmountInput
           value={displayAmount}
@@ -379,7 +530,7 @@ export function SwapForm({
 
         {/* Token Selection */}
         <div className="flex items-center gap-2">
-          <div className="flex-1">
+          <div className="flex-1 relative">
             <TokenSelectButton
               tokenInfo={inputTokenInfo}
               currentToken={currentInputToken}
@@ -389,6 +540,12 @@ export function SwapForm({
               disabled={showLoadingState}
               onClick={() => setShowInputTokenSearch(true)}
             />
+            {inputBalanceLoading && (
+              <div className="absolute top-1 right-1 w-2 h-2">
+                <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></div>
+                <div className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></div>
+              </div>
+            )}
           </div>
 
           <button
@@ -400,7 +557,7 @@ export function SwapForm({
             <ArrowLeftRight className="h-4 w-4" />
           </button>
 
-          <div className="flex-1">
+          <div className="flex-1 relative">
             <TokenSelectButton
               tokenInfo={outputTokenInfo}
               currentToken={currentOutputToken}
@@ -410,6 +567,12 @@ export function SwapForm({
               disabled={showLoadingState}
               onClick={() => setShowOutputTokenSearch(true)}
             />
+            {outputBalanceLoading && (
+              <div className="absolute top-1 right-1 w-2 h-2">
+                <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></div>
+                <div className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -418,7 +581,13 @@ export function SwapForm({
           <div className="mt-1">
             <div className="bg-green-900/20 p-2 rounded-lg">
               {/* You Receive Section - Compact */}
-              <div className="flex items-center justify-between p-2 bg-green-900/20 rounded-lg mb-2">
+              <div className="flex items-center justify-between p-2 bg-green-900/20 rounded-lg mb-2 relative">
+                {isQuoteRefreshing && (
+                  <div className="absolute top-1 right-1 w-2 h-2">
+                    <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></div>
+                    <div className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></div>
+                  </div>
+                )}
                 <div className="text-xs text-green-100/80">
                   {t('trade.you_receive')}
                 </div>
@@ -539,27 +708,59 @@ export function SwapForm({
               <div className="space-y-2">
                 {/* Settings - Collapsible */}
                 <div className="rounded-lg overflow-hidden border border-green-900/30">
-                  <button
-                    onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
-                    className="flex items-center justify-between w-full p-2 bg-green-900/20 hover:bg-green-900/30 transition-colors text-xs font-medium"
-                  >
-                    <span>{t('trade.route_information_fees')}</span>
-                    <svg
-                      className={`w-4 h-4 transition-transform ${
-                        isRouteInfoOpen ? 'rotate-180' : ''
-                      }`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                  <div className="flex items-center justify-between w-full p-2 bg-green-900/20 hover:bg-green-900/30 transition-colors text-xs font-medium">
+                    <span
+                      className="flex-1 cursor-pointer"
+                      onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
+                      {t('trade.route_information_fees')}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (!loading && !isQuoteRefreshing) {
+                            refreshQuote()
+                          }
+                        }}
+                        className="text-green-400 hover:text-green-300 transition-colors cursor-pointer p-1 rounded-full hover:bg-green-900/20"
+                        title={t('trade.refresh_quote')}
+                        role="button"
+                        aria-label={t('trade.refresh_quote')}
+                        style={{
+                          opacity: loading || isQuoteRefreshing ? 0.5 : 1,
+                          pointerEvents:
+                            loading || isQuoteRefreshing ? 'none' : 'auto',
+                        }}
+                      >
+                        <RefreshCw
+                          className={`h-3 w-3 ${
+                            isQuoteRefreshing ? 'animate-spin' : ''
+                          }`}
+                        />
+                      </span>
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
+                      >
+                        <svg
+                          className={`w-4 h-4 transition-transform ${
+                            isRouteInfoOpen ? 'rotate-180' : ''
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
 
                   {isRouteInfoOpen && (
                     <div className="p-2 bg-green-900/10 text-xs">
@@ -694,7 +895,10 @@ export function SwapForm({
         )}
 
         {txSignature && showTradeLink && (
-          <SwapShareSection txSignature={txSignature} onReset={handleReset} />
+          <SwapShareSection
+            txSignature={txSignature}
+            onReset={() => handleReset(false)}
+          />
         )}
       </div>
 

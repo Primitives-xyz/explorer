@@ -15,7 +15,11 @@ export const Swap = () => {
   const searchParams = useSearchParams()
   const [mode, setMode] = useState<ModeType>('swap')
 
-  // Initialize mode from URL query parameter on component mount
+  // Get token addresses from URL
+  const [inputMint, setInputMint] = useState<string | undefined>(undefined)
+  const [outputMint, setOutputMint] = useState<string | undefined>(undefined)
+
+  // Initialize mode and token addresses from URL query parameters on component mount
   useEffect(() => {
     const modeParam = searchParams.get('mode') as ModeType
     if (
@@ -23,6 +27,18 @@ export const Swap = () => {
       ['swap', 'stake', 'unstake', 'claim'].includes(modeParam)
     ) {
       setMode(modeParam)
+    }
+
+    // Get token addresses from URL
+    const inputMintParam = searchParams.get('inputMint')
+    const outputMintParam = searchParams.get('outputMint')
+
+    if (inputMintParam) {
+      setInputMint(inputMintParam)
+    }
+
+    if (outputMintParam) {
+      setOutputMint(outputMintParam)
     }
   }, [searchParams])
 
@@ -33,6 +49,12 @@ export const Swap = () => {
     // Create new URLSearchParams object
     const params = new URLSearchParams(searchParams.toString())
     params.set('mode', newMode)
+
+    // Remove inputMint and outputMint parameters if mode is not 'swap'
+    if (newMode !== 'swap') {
+      params.delete('inputMint')
+      params.delete('outputMint')
+    }
 
     // Update URL without refreshing the page
     router.push(`/trade?${params.toString()}`, { scroll: false })
@@ -96,7 +118,11 @@ export const Swap = () => {
             <div className="bg-black/50 backdrop-blur-sm rounded-xl shadow-xl border border-green-500/20">
               <div className="p-6">
                 {mode === 'swap' ? (
-                  <JupiterSwapForm hideWhenGlobalSearch />
+                  <JupiterSwapForm
+                    hideWhenGlobalSearch
+                    initialInputMint={inputMint}
+                    initialOutputMint={outputMint}
+                  />
                 ) : (
                   <StakingContainer
                     mode={mode as 'stake' | 'unstake' | 'claim'}
