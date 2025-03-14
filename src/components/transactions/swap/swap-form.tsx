@@ -16,7 +16,7 @@ import { ArrowLeftRight, Loader2, RefreshCw, Share2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -49,6 +49,7 @@ export function SwapForm({
   inputDecimals = 9,
   sourceWallet,
   hideWhenGlobalSearch,
+  disableUrlUpdates,
 }: JupiterSwapFormProps) {
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
   const [effectiveAmount, setEffectiveAmount] = useState(initialAmount)
@@ -72,6 +73,7 @@ export function SwapForm({
   const router = useRouter()
   const searchParams = useSearchParams()
   const hasInitializedRef = useRef(false)
+  const hasProcessedUrlParamsRef = useRef(false)
 
   // Add token info hooks
   const inputTokenInfo = useTokenInfo(inputMint)
@@ -144,6 +146,12 @@ export function SwapForm({
 
   // Add useEffect to read URL parameters on component mount
   useEffect(() => {
+    // Skip if we've already processed URL parameters or if URL updates are disabled
+    if (hasProcessedUrlParamsRef.current || disableUrlUpdates) {
+      hasInitializedRef.current = true
+      return
+    }
+
     // Get token addresses from URL if they exist
     const inputMintParam = searchParams.get('inputMint')
     const outputMintParam = searchParams.get('outputMint')
@@ -157,12 +165,12 @@ export function SwapForm({
       setOutputMint(outputMintParam)
     }
 
-    // Mark as initialized after reading URL parameters
+    // Mark as initialized and processed
     hasInitializedRef.current = true
+    hasProcessedUrlParamsRef.current = true
 
-    // This effect should only run once on component mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [disableUrlUpdates, searchParams])
 
   // Function to validate amount
   const validateAmount = (value: string): boolean => {
@@ -201,27 +209,36 @@ export function SwapForm({
   }
 
   // Function to update URL with current token addresses
-  const updateTokensInURL = (input: string, output: string) => {
-    const params = new URLSearchParams(searchParams.toString())
+  const updateTokensInURL = useCallback(
+    (input: string, output: string) => {
+      // Skip URL updates if disableUrlUpdates is true
+      if (disableUrlUpdates) return
 
-    // Only update token parameters if mode is 'swap' or not set
-    const currentMode = params.get('mode') || 'swap'
-    if (currentMode === 'swap') {
-      params.set('inputMint', input)
-      params.set('outputMint', output)
+      const params = new URLSearchParams(searchParams.toString())
 
-      // Keep the mode parameter if it exists
-      if (!params.has('mode')) {
-        params.set('mode', 'swap')
+      // Only update token parameters if mode is 'swap' or not set
+      const currentMode = params.get('mode') || 'swap'
+      if (currentMode === 'swap') {
+        params.set('inputMint', input)
+        params.set('outputMint', output)
+
+        // Keep the mode parameter if it exists
+        if (!params.has('mode')) {
+          params.set('mode', 'swap')
+        }
+
+        // Update URL without refreshing the page
+        router.push(`/trade?${params.toString()}`, { scroll: false })
       }
-
-      // Update URL without refreshing the page
-      router.push(`/trade?${params.toString()}`, { scroll: false })
-    }
-  }
+    },
+    [disableUrlUpdates, router, searchParams]
+  )
 
   // Update URL when tokens change
   useEffect(() => {
+    // Skip URL updates if disableUrlUpdates is true or if we haven't processed URL params yet
+    if (disableUrlUpdates || !hasProcessedUrlParamsRef.current) return
+
     // Only update URL after the component has initialized from URL parameters
     if (!hasInitializedRef.current) {
       hasInitializedRef.current = true
@@ -231,7 +248,7 @@ export function SwapForm({
     if (inputMint && outputMint) {
       updateTokensInURL(inputMint, outputMint)
     }
-  }, [inputMint, outputMint])
+  }, [inputMint, outputMint, disableUrlUpdates, updateTokensInURL])
 
   const handleSwapDirection = () => {
     // Reset all quote-related state first
