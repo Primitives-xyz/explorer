@@ -30,18 +30,20 @@ export const ClaimForm = () => {
   const handleClaimRewards = async () => {
     if (!walletAddress || !primaryWallet) {
       toast({
-        title: t('error'),
+        title: t('trade.transaction_failed'),
         description: t('error.wallet_not_connected'),
         variant: 'error',
+        duration: 5000,
       })
       return
     }
 
     if (!hasRewards) {
       toast({
-        title: t('error'),
-        description: 'You have no rewards to claim',
+        title: t('trade.transaction_failed'),
+        description: t('trade.no_rewards_to_claim'),
         variant: 'error',
+        duration: 5000,
       })
       return
     }
@@ -107,24 +109,29 @@ export const ClaimForm = () => {
       confirmToast.dismiss()
 
       if (tx.value.err) {
-        throw new Error('Transaction failed')
+        toast({
+          title: t('trade.transaction_failed'),
+          description: t('trade.the_claim_transaction_failed_please_try_again'),
+          variant: 'error',
+          duration: 5000,
+        })
+      } else {
+        setCurrentStep('transaction_successful')
+        toast({
+          title: t('trade.transaction_successful'),
+          description: t(
+            'trade.the_claim_transaction_was_successful_creating_shareable_link'
+          ),
+          variant: 'success',
+          duration: 5000,
+        })
+
+        // Refresh user info after successful claim
+        refreshUserInfo()
+
+        // Refresh the page to update the rewards amount
+        router.refresh()
       }
-
-      setCurrentStep('transaction_successful')
-      toast({
-        title: t('trade.transaction_successful'),
-        description: t(
-          'trade.the_claim_transaction_was_successful_creating_shareable_link'
-        ),
-        variant: 'success',
-        duration: 5000,
-      })
-
-      // Refresh user info after successful claim
-      refreshUserInfo()
-
-      // Refresh the page to update the rewards amount
-      router.refresh()
     } catch (error) {
       console.error('Claim rewards error:', error)
       toast({
