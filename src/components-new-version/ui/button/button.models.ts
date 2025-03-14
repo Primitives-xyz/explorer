@@ -2,8 +2,8 @@ export enum ButtonVariant {
   DEFAULT = 'default',
   DESTRUCTIVE = 'destructive',
   OUTLINE = 'outline',
+  OUTLINE_WHITE = 'outline-white',
   SECONDARY = 'secondary',
-  TERTIARY = 'tertiary',
   GHOST = 'ghost',
   LINK = 'link',
 }

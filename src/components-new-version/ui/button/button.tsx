@@ -15,23 +15,25 @@ const buttonBase = cn(
   focus
 )
 
-const buttonVariants = cva(cn(buttonBase, 'rounded-button font-semibold'), {
+const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
   variants: {
     variant: {
-      default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+      default: 'bg-primary text-primary-foreground hover:bg-primary/80',
       destructive:
-        'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        'bg-destructive text-destructive-foreground hover:bg-destructive/80',
       outline:
         'border border-primary text-primary bg-transparent hover:bg-accent',
-      secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-      tertiary: 'bg-tertiary text-tertiary-foreground hover:bg-tertiary/80',
-      ghost: 'hover:bg-accent text-muted-foreground font-semibold',
+      'outline-white':
+        'border border-foreground text-foreground bg-transparent hover:bg-accent',
+      secondary:
+        'bg-secondary/10 text-secondary-foreground border border-secondary hover:bg-secondary/20',
+      ghost: 'hover:bg-accent text-foreground',
       link: 'underline-offset-4 hover:opacity-80 underline h-auto! p-0! rounded-sm',
     },
     size: {
       default: 'h-9 px-4 py-2',
       sm: 'h-7 px-3.5 text-xs',
-      lg: 'h-16 px-12 text-xl font-semibold uppercase',
+      lg: 'h-16 px-12 text-xl uppercase',
       icon: 'h-10 w-10',
       icon_sm: 'h-6 w-6',
       icon_lg: 'h-11 w-11',

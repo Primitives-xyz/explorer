@@ -12,6 +12,7 @@
   --popover-foreground: var(--foreground);
 
   --border: 0 0% 100% / 20%;
+  /* --border-secondary: 245deg 100% 88%; */
 
   --input: var(--background) / 0.6;
   --input-foreground: var(--foreground);
@@ -24,11 +25,9 @@
   --primary: 109deg 58% 67%;
   --primary-foreground: 67deg 78% 15%;
 
-  --secondary: 338deg 82% 61%;
-  --secondary-foreground: 338deg 82% 10%;
-
-  --tertiary: 177deg 73% 59%;
-  --tertiary-foreground: 177deg 73% 15%;
+  /* --secondary: 252deg 5% 27%; */
+  --secondary: 245deg 100% 88%;
+  --secondary-foreground: 221deg 72% 98%;
 
   /* --outline: 177deg 73% 45%; */
   /* --outline-foreground: var(--background); */
@@ -43,9 +42,6 @@
 
   --progress-foreground: var(--tertiary);
 
-  --tab-active: var(--tertiary);
-  --tab-active-foreground: var(--tertiary-foreground);
-
   /* Fonts */
   --text-lg: 20px;
   --text-xl: 24px;
@@ -57,7 +53,7 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1.25rem;
-  --radius-button: var(--radius-sm);
+  --radius-button: var(--radius-md);
   --radius-input: var(--radius-sm);
   --radius-card: var(--radius-lg);
   --radius-tabs: var(--radius-sm);

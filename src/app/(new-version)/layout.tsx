@@ -17,7 +17,10 @@ export default async function NewVersionLayout({
 }) {
   return (
     <div
-      className={cn('w-full background-image-gradient', rethinkSans.className)}
+      className={cn(
+        'w-full min-h-screen background-image-gradient',
+        rethinkSans.className
+      )}
     >
       <Header />
       <div className="w-full mx-auto container">{children}</div>
