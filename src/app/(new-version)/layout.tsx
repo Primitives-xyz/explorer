@@ -1,5 +1,5 @@
 import { Header } from '@/components-new-version/common/header'
-import { LeftSideHome } from '@/components-new-version/home/left-side-home/left-side-home'
+import { LeftSideMenu } from '@/components-new-version/common/left-side-menu/left-side-menu'
 import { cn } from '@/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
@@ -26,7 +26,7 @@ export default async function NewVersionLayout({
       <Header />
       <div className="w-full mx-auto container">
         <div className="grid grid-cols-[1fr_2fr_1fr] gap-8">
-          <LeftSideHome />
+          <LeftSideMenu />
           {children}
         </div>
       </div>

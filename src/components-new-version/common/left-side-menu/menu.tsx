@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components-new-version/ui/button'
+import { Button, ButtonVariant } from '@/components-new-version/ui/button'
 import { route } from '@/components-new-version/utils/route'
 import { cn } from '@/components-new-version/utils/utils'
 import {
@@ -54,7 +54,7 @@ export function Menu() {
       {data.map((item, i) => (
         <Button
           key={i}
-          variant="ghost"
+          variant={ButtonVariant.GHOST}
           className={cn(
             'justify-start gap-4 hover:bg-primary hover:text-background',
             pathname === item.href && 'bg-primary text-background'
