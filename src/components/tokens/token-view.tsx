@@ -44,9 +44,10 @@ export async function TokenView({ id }: { id: string }) {
 
   // Check if it's an NFT collection
   const groupingInfos = tokenInfo.result?.grouping
+
   if (
     tokenInterface === 'MplCoreCollection' ||
-    (groupingInfos && groupingInfos.length > 0)
+    (groupingInfos && groupingInfos.length === 0)
   ) {
     const [groupingInfo] = groupingInfos || []
     if (!groupingInfo?.hasOwnProperty('group_key')) {

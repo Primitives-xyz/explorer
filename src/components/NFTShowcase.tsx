@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { useNFTData } from '@/hooks/use-nft-data'
 import { useNFTImage } from '@/hooks/use-nft-image'
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { DAS } from 'helius-sdk/dist/src/types/das-types'
 import { useRouter } from 'next/navigation'
 import { useMemo, useRef, useState } from 'react'
@@ -386,31 +386,12 @@ export default function NFTShowcase({
   const [sortOption, setSortOption] = useState<
     'default' | 'name' | 'newest' | 'rarity' | 'attributes'
   >('default')
-  const [filterOption, setFilterOption] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [showTraitFilters, setShowTraitFilters] = useState(false)
   const [selectedTraits, setSelectedTraits] = useState<
     Record<string, string[]>
   >({})
   const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: containerRef })
-  const opacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
-  const router = useRouter()
-
-  // Extract all unique collections
-  const collections = useMemo(() => {
-    const collectionSet = new Set<string>()
-    nfts.forEach((nft) => {
-      if (nft.grouping && nft.grouping.length > 0) {
-        const grouping = nft.grouping[0]
-        collectionSet.add(
-          grouping.collection_metadata?.name || 'Unknown Collection'
-        )
-      }
-    })
-    return ['all', ...Array.from(collectionSet)]
-  }, [nfts])
 
   // Calculate trait rarity data and extract unique traits
   const { rarityData, traitTypes } = useMemo(() => {
@@ -435,33 +416,6 @@ export default function NFTShowcase({
 
     return { rarityData: data, traitTypes: types }
   }, [nfts])
-
-  // Toggle trait selection
-  const toggleTrait = (traitType: string, traitValue: string) => {
-    setSelectedTraits((prev) => {
-      const newTraits = { ...prev }
-
-      if (!newTraits[traitType]) {
-        newTraits[traitType] = [traitValue]
-      } else if (newTraits[traitType].includes(traitValue)) {
-        newTraits[traitType] = newTraits[traitType].filter(
-          (v) => v !== traitValue
-        )
-        if (newTraits[traitType].length === 0) {
-          delete newTraits[traitType]
-        }
-      } else {
-        newTraits[traitType] = [...newTraits[traitType], traitValue]
-      }
-
-      return newTraits
-    })
-  }
-
-  // Clear all trait filters
-  const clearTraitFilters = () => {
-    setSelectedTraits({})
-  }
 
   // Filter NFTs based on search term only (removed collection and trait filtering)
   const filteredNFTs = useMemo(() => {
