@@ -1,3 +1,5 @@
+import { LeftSideHome } from '@/components/components-new-version/home/left-side-home/left-side-home'
+import { RightSideHome } from '@/components/components-new-version/home/right-side-home/right-side-home'
 import {
   Card,
   CardContent,
@@ -8,15 +10,7 @@ import {
 export default async function Home() {
   return (
     <div className="grid grid-cols-[1fr_2fr_1fr] gap-4">
-      <div className="pt-[100px]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Left Sidebar</CardTitle>
-          </CardHeader>
-          <CardContent>content</CardContent>
-        </Card>
-      </div>
-
+      <LeftSideHome />
       <div className="h-screen overflow-auto scrollbar-hide relative">
         <div className="absolute pt-[100px] w-full">
           <Card>
@@ -38,15 +32,7 @@ export default async function Home() {
           </Card>
         </div>
       </div>
-
-      <div className="pt-[100px]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Right Sidebar</CardTitle>
-          </CardHeader>
-          <CardContent>content</CardContent>
-        </Card>
-      </div>
+      <RightSideHome />
     </div>
   )
 }

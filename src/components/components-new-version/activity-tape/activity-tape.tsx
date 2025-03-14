@@ -8,7 +8,7 @@ export function ActivityTape() {
     useActivityTape()
 
   return (
-    <div className="flex items-center pt-2">
+    <div className="flex items-center">
       <div
         className="flex-1 overflow-hidden relative"
         onMouseEnter={() => setIsPaused(true)}
