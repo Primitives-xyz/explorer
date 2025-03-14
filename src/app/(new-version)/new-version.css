@@ -10,7 +10,7 @@
   :root {
     
     --background: 0, 0%, 20%, 1;
-    
+
     --foreground: 220 50% 97%;
 
     --muted: 230 7% 75%;
@@ -48,6 +48,8 @@
 .background-image-gradient {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.567) -44.93%, rgba(0, 0, 0, 0.7) 106.67%), radial-gradient(74.83% 113.15% at 50% -13.15%, rgba(242, 255, 239, 0.52) 0%, rgba(244, 244, 235, 0.513954) 30.5%, rgba(126, 97, 100, 0.85) 64.5%, rgba(86, 54, 57, 0.91338) 79.5%, #181818 100%);
 }
+
+
 
 /* ========================= */
 /* 🎨 STYLES SCROLLBAR */
