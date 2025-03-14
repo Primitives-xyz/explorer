@@ -1,21 +1,30 @@
 import {
+  Badge,
   Button,
   ButtonVariant,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Container,
   Heading1,
   Heading2,
   Heading3,
   Heading4,
   Paragraph,
+  Separator,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/components-new-version/ui'
-import { Badge } from '@/components-new-version/ui/badge'
+import { Toggle } from '@/components-new-version/ui/switch/toggle'
+import { FormMockup } from './form-mockup'
 
 export default function DesignSystem() {
   return (
-    <div className="p-20 space-y-5 bg-background min-h-screen">
+    <Container className="p-20 space-y-5 bg-background min-h-screen">
       <div className="space-y-5">
         <Heading1>The quick brown fox jumps over the lazy dog.</Heading1>
         <Heading2>The quick brown fox jumps over the lazy dog.</Heading2>
@@ -28,6 +37,7 @@ export default function DesignSystem() {
           deserunt?
         </Paragraph>
       </div>
+      <Separator />
       <div className="flex flex-col items-start gap-3">
         <Button variant={ButtonVariant.DEFAULT} className="w-[150px]">
           Default
@@ -45,6 +55,7 @@ export default function DesignSystem() {
           Outline white
         </Button>
       </div>
+      <Separator />
       <div>
         <Tabs defaultValue="tab1">
           <TabsList>
@@ -71,9 +82,53 @@ export default function DesignSystem() {
           </TabsContent>
         </Tabs>
       </div>
+      <Separator />
       <div>
         <Badge>25%</Badge>
       </div>
-    </div>
+      <Separator />
+      <div className="max-w-xs">
+        <FormMockup />
+      </div>
+      <Separator />
+      <div>
+        <Toggle />
+      </div>
+      <Separator />
+      <div className="grid grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Create project</CardTitle>
+            <CardDescription>
+              Deploy your new project in one-click.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Paragraph className="text-muted-foreground">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias
+              quia aliquid officia tenetur reprehenderit. Sunt dolor id porro
+              quae fugiat, atque ratione voluptatibus placeat dolorem earum quam
+              dignissimos commodi eius!
+            </Paragraph>
+          </CardContent>
+        </Card>
+        <Card className="background-gradient-card">
+          <CardHeader>
+            <CardTitle>Create project</CardTitle>
+            <CardDescription>
+              Deploy your new project in one-click.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Paragraph className="text-muted-foreground">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias
+              quia aliquid officia tenetur reprehenderit. Sunt dolor id porro
+              quae fugiat, atque ratione voluptatibus placeat dolorem earum quam
+              dignissimos commodi eius!
+            </Paragraph>
+          </CardContent>
+        </Card>
+      </div>
+    </Container>
   )
 }

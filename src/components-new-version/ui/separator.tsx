@@ -20,7 +20,7 @@ const Separator = React.forwardRef<
       label,
       ...props
     },
-    ref,
+    ref
   ) => (
     <SeparatorPrimitive.Root
       ref={ref}
@@ -34,7 +34,7 @@ const Separator = React.forwardRef<
           'bg-linear-to-r from-transparent via-border to-transparent':
             fadedEdges,
         },
-        className,
+        className
       )}
       {...props}
     >
@@ -44,7 +44,7 @@ const Separator = React.forwardRef<
         </div>
       )}
     </SeparatorPrimitive.Root>
-  ),
+  )
 )
 Separator.displayName = SeparatorPrimitive.Root.displayName
 

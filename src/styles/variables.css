@@ -11,16 +11,16 @@
   --popover: var(--background);
   --popover-foreground: var(--foreground);
 
-  --border: 0 0% 100% / 20%;
-  /* --border-secondary: 245deg 100% 88%; */
+  --border: 360deg 1% 39%;
 
-  --input: var(--background) / 0.6;
+  --input: var(--foreground) / 0.2;
   --input-foreground: var(--foreground);
-  --input-border: var(--foreground) / 0.1;
+  --input-border: 30deg 0% 90%;
 
-  --card: 220 50% 98% / 10%;
+  --card: var(--foreground) / 0.1;
   --card-foreground: 220 50% 97%;
   --card-accent: 0 0% 100% / 10%;
+  --card-border: 30deg 0% 62%;
 
   --primary: 109deg 58% 67%;
   --primary-foreground: 67deg 78% 15%;
@@ -35,10 +35,10 @@
   --destructive: 0 100% 70%;
   --destructive-foreground: 2 73% 67%;
 
-  --switch: var(--secondary);
-  --switch-foreground: var(--primary);
-  --switch-checked: var(--primary);
-  --switch-checked-foreground: var(--secondary);
+  --switch: var(--foreground) / 0.2;
+  --switch-foreground: var(--foreground) / 0.4;
+  --switch-checked: var(--foreground);
+  --switch-checked-foreground: var(--background) / 0.4;
 
   --progress-foreground: var(--tertiary);
 
@@ -52,9 +52,9 @@
   --radius: 0.5rem;
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
-  --radius-lg: 1.25rem;
+  --radius-lg: 0.75rem;
   --radius-button: var(--radius-md);
-  --radius-input: var(--radius-sm);
+  --radius-input: var(--radius-lg);
   --radius-card: var(--radius-lg);
   --radius-tabs: var(--radius-sm);
   --radius-popover-card: var(--radius-md);
