@@ -5,7 +5,7 @@ export function Heading1({
   children,
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <h1 className={cn('scroll-m-20 text-6xl font-bold uppercase', className)}>
+    <h1 className={cn('scroll-m-20 text-3xl font-bold', className)}>
       {children}
     </h1>
   )
@@ -16,7 +16,7 @@ export function Heading2({
   children,
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <h2 className={cn('scroll-m-20 text-4xl font-bold uppercase', className)}>
+    <h2 className={cn('scroll-m-20 text-2xl font-bold uppercase', className)}>
       {children}
     </h2>
   )

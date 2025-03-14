@@ -1,11 +1,11 @@
-import { LeftSideHome } from '@/components/components-new-version/home/left-side-home/left-side-home'
-import { RightSideHome } from '@/components/components-new-version/home/right-side-home/right-side-home'
+import { LeftSideHome } from '@/components-new-version/home/left-side-home/left-side-home'
+import { RightSideHome } from '@/components-new-version/home/right-side-home/right-side-home'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/components-new-version/ui/card'
+} from '@/components-new-version/ui'
 
 export default function Home() {
   return (

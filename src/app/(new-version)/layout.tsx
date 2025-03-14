@@ -1,5 +1,5 @@
-import { Header } from '@/components/components-new-version/common/header'
-import { cn } from '@/components/components-new-version/utils/utils'
+import { Header } from '@/components-new-version/common/header'
+import { cn } from '@/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
 import './global.css'
