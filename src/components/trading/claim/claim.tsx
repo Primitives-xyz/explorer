@@ -1,8 +1,8 @@
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { Button } from '@/components/ui/button'
 import { useStakeInfo } from '@/hooks/use-stake-info'
 import { useToast } from '@/hooks/use-toast'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { Connection, Transaction } from '@solana/web3.js'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
@@ -11,7 +11,8 @@ import { useState } from 'react'
 export const ClaimForm = () => {
   const t = useTranslations()
   const { toast } = useToast()
-  const wallet = useWallet()
+  const { isLoggedIn, sdkHasLoaded, primaryWallet, walletAddress } =
+    useCurrentWallet()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState<string | null>(null)
@@ -27,7 +28,7 @@ export const ClaimForm = () => {
   const hasRewards = rewardsAmount && parseFloat(rewardsAmount) > 0
 
   const handleClaimRewards = async () => {
-    if (!wallet.publicKey || !wallet.signTransaction) {
+    if (!walletAddress || !primaryWallet) {
       toast({
         title: t('error'),
         description: t('error.wallet_not_connected'),
@@ -56,7 +57,7 @@ export const ClaimForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          walletAddy: wallet.publicKey.toString(),
+          walletAddy: walletAddress,
         }),
       })
 
@@ -72,35 +73,51 @@ export const ClaimForm = () => {
 
       // Deserialize the transaction
       setCurrentStep('sending_transaction')
-      const transactionBuffer = Buffer.from(data.claimRewardTx, 'base64')
-      const transaction = Transaction.from(transactionBuffer)
-
-      // Sign the transaction
-      const signedTransaction = await wallet.signTransaction(transaction)
-
-      // Send the signed transaction
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-      const signature = await connection.sendRawTransaction(
-        signedTransaction.serialize()
+      const serializedBuffer = Buffer.from(data.claimRewardTx, 'base64')
+      const vtx = VersionedTransaction.deserialize(
+        Uint8Array.from(serializedBuffer)
       )
+
+      // Get signer and sign+send transaction
+      const signer = await primaryWallet.getSigner()
+      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+
+      // Simulate transaction first (optional but good for debugging)
+      const simulateTx = await connection.simulateTransaction(vtx)
+      console.log('sim:', simulateTx)
+
+      // Sign and send transaction
+      const txid = await signer.signAndSendTransaction(vtx)
+
+      // Show confirmation toast
+      const confirmToast = toast({
+        title: t('trade.confirming_transaction'),
+        description: t('trade.waiting_for_confirmation'),
+        variant: 'pending',
+        duration: 1000000000,
+      })
 
       setCurrentStep('waiting_for_confirmation')
       // Wait for confirmation
-      const confirmation = await connection.confirmTransaction(
-        signature,
-        'confirmed'
-      )
+      const tx = await connection.confirmTransaction({
+        signature: txid.signature,
+        ...(await connection.getLatestBlockhash()),
+      })
 
-      if (confirmation.value.err) {
+      confirmToast.dismiss()
+
+      if (tx.value.err) {
         throw new Error('Transaction failed')
       }
 
       setCurrentStep('transaction_successful')
       toast({
-        title: t('success'),
+        title: t('trade.transaction_successful'),
         description: t(
           'trade.the_claim_transaction_was_successful_creating_shareable_link'
         ),
+        variant: 'success',
+        duration: 5000,
       })
 
       // Refresh user info after successful claim
@@ -114,6 +131,7 @@ export const ClaimForm = () => {
         title: t('error'),
         description: t('trade.the_claim_transaction_failed_please_try_again'),
         variant: 'error',
+        duration: 5000,
       })
     } finally {
       setIsLoading(false)
@@ -163,7 +181,7 @@ export const ClaimForm = () => {
       {hasRewards && (
         <Button
           onClick={handleClaimRewards}
-          disabled={isLoading || !hasRewards || !wallet.connected}
+          disabled={isLoading || !hasRewards}
           className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center h-12"
         >
           {isLoading ? (
@@ -179,7 +197,7 @@ export const ClaimForm = () => {
                 t('trade.transaction_successful')}
               {!currentStep && t('common.loading')}
             </>
-          ) : !!wallet.connected ? (
+          ) : !!walletAddress ? (
             t('trade.claim_available_rewards')
           ) : (
             t('common.connect_wallet')
