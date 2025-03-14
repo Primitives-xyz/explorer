@@ -17,10 +17,12 @@ import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useCurrentWallet } from './auth/hooks/use-current-wallet'
 
 import {
-  CollectionList,
+  CollectionListItem,
   CollectionStat,
   NftCollectionDetailProps,
 } from '@/types/nft/magic-eden'
+import { collectionListItemToNFT } from '@/utils/nft'
+import { NFTGrid } from './tokens/NFT-grid'
 
 export default function NFTCollectionDetail({
   id,
@@ -35,10 +37,14 @@ export default function NFTCollectionDetail({
   const [collectionSymbol, setCollectionSymbol] = useState<string | null>(null)
   const [nftCollectionStat, setNftCollectionStat] =
     useState<CollectionStat | null>(null)
-  const [collectionLists, setCollectionLists] = useState<CollectionList[]>([])
+  const [collectionLists, setCollectionLists] = useState<CollectionListItem[]>(
+    []
+  )
 
   // NFT selection state
-  const [selectedNft, setSelectedNft] = useState<CollectionList | null>(null)
+  const [selectedNft, setSelectedNft] = useState<CollectionListItem | null>(
+    null
+  )
   const [selectedTokenModal, setSelectedTokenModal] = useState<boolean>(false)
 
   // Loading state
@@ -308,52 +314,14 @@ export default function NFTCollectionDetail({
 
       <div className="mt-6 border border-green-500 rounded-lg p-2">
         {collectionLists.length ? (
-          <div className="grid grid-flow-row gap-3 grid-cols-1 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8">
-            {collectionLists.map((collectionList, index) => (
-              <div
-                key={index}
-                className="bg-black/30 border border-green-800/40 rounded-lg flex flex-col gap-1 cursor-pointer hover:scale-105"
-              >
-                <div
-                  onClick={() => {
-                    setSelectedNft(collectionList)
-                    setSelectedTokenModal(true)
-                  }}
-                >
-                  <div>
-                    <Image
-                      src={collectionList.extra.img}
-                      alt={collectionList.token.name}
-                      className="rounded-t-lg h-[160px]"
-                      width={160}
-                      height={160}
-                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                        const target = e.target as HTMLImageElement
-                        target.style.display = 'none'
-                        target.parentElement?.classList.add(
-                          'h-[160px]',
-                          'flex',
-                          'items-center',
-                          'justify-center'
-                        )
-                        target.insertAdjacentHTML(
-                          'afterend',
-                          `<div className="font-mono text-sm">Image failed to load</div>`
-                        )
-                      }}
-                    />
-                  </div>
-                  <div className="p-3 flex flex-col gap-2">
-                    <p className="font-mono font-semibold text-xs text-green-500">
-                      {collectionList.token.name}
-                    </p>
-                    <p className="font-mono font-semibold text-xs text-green-500">
-                      {collectionList.price} SOL
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50 hover-scroll-indicator">
+            <NFTGrid
+              tokens={collectionLists.map((e) => collectionListItemToNFT(e))}
+              onImageClick={(token) => {
+                setSelectedNft(token as unknown as CollectionListItem)
+              }}
+            />
+
             {selectedTokenModal && (
               <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
                 <div className="relative max-w-4xl flex items-center justify-center w-full p-4 bg-black/90 border border-green-800 rounded-lg h-[520px] overflow-y-auto">
