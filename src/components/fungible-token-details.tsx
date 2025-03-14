@@ -7,6 +7,7 @@ import { TokenMetrics } from '@/components/tokens/token-details/token-metrics'
 import { TransactionSection } from '@/components/transaction-section'
 import { useBirdeyeTokenOverview } from '@/hooks/use-birdeye-token-overview'
 import type { FungibleTokenDetailsProps } from '@/utils/helius/types'
+import { TokenSwapSection } from './tokens/token-details/token-swap-section'
 
 // Define the people in common data type
 interface PeopleInCommonData {
@@ -115,11 +116,11 @@ export default function FungibleTokenDetails({
         {/* Right Column - Swap & Transactions */}
         <div className="lg:col-span-1">
           {/* Swap Section */}
-          {/* <TokenSwapSection
+          <TokenSwapSection
             tokenId={id}
             tokenSymbol={tokenInfo.content.metadata.symbol}
             inputDecimals={9}
-          /> */}
+          />
 
           <div className="text-lg font-mono mb-4 mt-6 text-gray-300">
             Transaction History
