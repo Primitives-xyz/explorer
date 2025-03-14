@@ -1,4 +1,4 @@
-import { ActivityTape } from '@/components/components-new-version/activity-tape/activity-tape'
+import { Header } from '@/components/components-new-version/common/header'
 import { cn } from '@/components/components-new-version/utils/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
@@ -21,14 +21,6 @@ export default async function NewVersionLayout({
     >
       <Header />
       <div className="w-full mx-auto container">{children}</div>
-    </div>
-  )
-}
-
-function Header() {
-  return (
-    <div className="absolute top-0 left-0">
-      <ActivityTape />
     </div>
   )
 }
