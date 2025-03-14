@@ -24,7 +24,12 @@ export function LeftSideMenu() {
       </div>
       <div className="w-full flex flex-col items-center gap-6">
         <LanguageSwitcher />
-        <Button variant={ButtonVariant.OUTLINE_WHITE} expand>
+        <Button
+          variant={ButtonVariant.OUTLINE_WHITE}
+          expand
+          href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
+          newTab
+        >
           <MessageCircle />
           Give Feedback
         </Button>
