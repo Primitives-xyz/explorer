@@ -128,7 +128,7 @@ export const ClaimForm = () => {
     } catch (error) {
       console.error('Claim rewards error:', error)
       toast({
-        title: t('error'),
+        title: t('trade.transaction_failed'),
         description: t('trade.the_claim_transaction_failed_please_try_again'),
         variant: 'error',
         duration: 5000,
