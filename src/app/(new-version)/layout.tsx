@@ -2,7 +2,7 @@ import { ActivityTape } from '@/components/components-new-version/activity-tape/
 import { cn } from '@/components/components-new-version/utils/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
-import './new-version.css'
+import './global.css'
 
 const rethinkSans = Rethink_Sans({
   subsets: ['latin'],

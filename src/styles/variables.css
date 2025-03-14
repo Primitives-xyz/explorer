@@ -1,0 +1,85 @@
+:root {
+  --background: 0, 0%, 20%, 1;
+  --foreground: 220 50% 97%;
+
+  --muted: 230 7% 75%;
+  --muted-foreground: 218deg 10% 60%;
+
+  --accent: 126 76% 75%;
+  --accent-foreground: var(--foreground);
+
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
+
+  --border: 0 0% 100% / 20%;
+
+  --input: var(--background) / 0.6;
+  --input-foreground: var(--foreground);
+  --input-border: var(--foreground) / 0.1;
+
+  --card: 220 50% 98% / 10%;
+  --card-foreground: 220 50% 97%;
+  --card-accent: 0 0% 100% / 10%;
+
+  --primary: 67deg 78% 66%;
+  --primary-foreground: 67deg 78% 15%;
+
+  --secondary: 338deg 82% 61%;
+  --secondary-foreground: 338deg 82% 10%;
+
+  --tertiary: 177deg 73% 59%;
+  --tertiary-foreground: 177deg 73% 15%;
+
+  /* --outline: 177deg 73% 45%; */
+  /* --outline-foreground: var(--background); */
+
+  --destructive: 0 100% 70%;
+  --destructive-foreground: 2 73% 67%;
+
+  --switch: var(--secondary);
+  --switch-foreground: var(--primary);
+  --switch-checked: var(--primary);
+  --switch-checked-foreground: var(--secondary);
+
+  --progress-foreground: var(--tertiary);
+
+  --tab-active: var(--tertiary);
+  --tab-active-foreground: var(--tertiary-foreground);
+
+  /* Radius */
+  --radius: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1.25rem;
+  --radius-button: var(--radius-sm);
+  --radius-input: var(--radius-sm);
+  --radius-card: var(--radius-lg);
+  --radius-tabs: var(--radius-sm);
+  --radius-popover-card: var(--radius-md);
+
+  /* Dark */
+  --background-dark: 221deg 9% 18%;
+  --foreground-dark: 218deg 57% 98%;
+
+  /* Shadow */
+  /* --shadow-card: 0 10px 0 0 hsl(var(--primary)); */
+  --shadow-sm: 0 2px 6px hsla(var(--foreground) / 0.05);
+  /* --shadow-card: var(--shadow-lg); */
+  --shadow-card-sm: 0 5px 0 0 hsl(var(--primary));
+}
+
+/* .dark {
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+
+  --secondary-foreground: 221deg 9% 18%;
+
+  --card: 221deg 6% 24%;
+  --simple-card: 221deg 9% 12% / 0.7;
+  --simple-card-border: 221deg 9% 10% / 0.6;
+
+  --border: var(--foreground-dark) / 0.1;
+
+  --muted: var(--foreground-dark) / 0.1;
+  --muted-foreground: var(--foreground-dark) / 0.6;
+} */

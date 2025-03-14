@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from '@/components/components-new-version/ui/card'
 
-export default async function Home() {
+export default function Home() {
   return (
     <div className="grid grid-cols-[1fr_2fr_1fr] gap-4">
       <div className="pt-[100px]">
