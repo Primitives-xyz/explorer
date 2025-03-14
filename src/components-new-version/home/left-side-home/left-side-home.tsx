@@ -1,4 +1,4 @@
-import { LanguageSwitcher } from '@/components/components-new-version/common/language-switcher'
+import { LanguageSwitcher } from '@/components-new-version/common/language-switcher'
 
 export function LeftSideHome() {
   return (

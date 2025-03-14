@@ -3,7 +3,7 @@
 import {
   IActivity,
   ITransaction,
-} from '@/components/components-new-version/models/transaction.model'
+} from '@/components-new-version/models/transaction.model'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // Store base timestamp for fake activities

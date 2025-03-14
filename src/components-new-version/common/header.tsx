@@ -1,4 +1,4 @@
-import { ActivityTape } from '@/components/components-new-version/activity-tape/activity-tape'
+import { ActivityTape } from '@/components-new-version/activity-tape/activity-tape'
 
 export function Header() {
   return (

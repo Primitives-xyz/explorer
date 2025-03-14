@@ -1,6 +1,6 @@
 'use client'
 
-import { useActivityTape } from '@/components/components-new-version/activity-tape/hooks/use-activity-tape'
+import { useActivityTape } from '@/components-new-version/activity-tape/hooks/use-activity-tape'
 import Link from 'next/link'
 
 export function ActivityTape() {

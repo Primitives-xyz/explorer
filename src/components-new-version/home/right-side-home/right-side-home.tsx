@@ -3,7 +3,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/components-new-version/ui/card'
+} from '@/components-new-version/ui/card'
 
 export function RightSideHome() {
   return (
