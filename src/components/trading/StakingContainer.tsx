@@ -52,7 +52,7 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
 
   // Format rewards amount with the same approach as token amounts
   const formattedRewardsAmount = rewardsAmount
-    ? parseFloat(rewardsAmount).toFixed(6)
+    ? parseFloat((Number(rewardsAmount) / 10 ** 6).toFixed(6))
     : '0.000000'
 
   return (
@@ -341,7 +341,9 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>10% {t('trade.staking.swap_fee_discount').substring(1)}</span>
+                      <span>
+                        10% {t('trade.staking.swap_fee_discount').substring(1)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <svg
@@ -355,7 +357,10 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>30% {t('trade.staking.comment_fee_discount').substring(1)}</span>
+                      <span>
+                        30%{' '}
+                        {t('trade.staking.comment_fee_discount').substring(1)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -386,7 +391,9 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>25% {t('trade.staking.swap_fee_discount').substring(1)}</span>
+                      <span>
+                        25% {t('trade.staking.swap_fee_discount').substring(1)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <svg
@@ -400,7 +407,10 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>40% {t('trade.staking.comment_fee_discount').substring(1)}</span>
+                      <span>
+                        40%{' '}
+                        {t('trade.staking.comment_fee_discount').substring(1)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -431,7 +441,9 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>50% {t('trade.staking.swap_fee_discount').substring(1)}</span>
+                      <span>
+                        50% {t('trade.staking.swap_fee_discount').substring(1)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <svg
@@ -445,13 +457,16 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span>60% {t('trade.staking.comment_fee_discount').substring(1)}</span>
+                      <span>
+                        60%{' '}
+                        {t('trade.staking.comment_fee_discount').substring(1)}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {/* Disclaimer */}
             <div className="mt-4 text-sm text-gray-400 italic text-center">
               {t('trade.staking.disclaimer')}
