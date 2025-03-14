@@ -4,6 +4,9 @@ import { DICEBEAR_API_BASE } from '@/utils/constants'
 import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
+// Blocklist of reserved usernames
+const RESERVED_USERNAMES = ['home', 'design-system']
+
 export async function POST(req: NextRequest) {
   try {
     const { username, ownerWalletAddress, profileImageUrl } = await req.json()
@@ -50,6 +53,14 @@ export async function POST(req: NextRequest) {
           error: 'Username can only contain letters, numbers, and underscores',
         },
         { status: 400 }
+      )
+    }
+
+    // Check if username is in the blocklist
+    if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
+      return NextResponse.json(
+        { error: 'This username is already taken' },
+        { status: 409 }
       )
     }
 
