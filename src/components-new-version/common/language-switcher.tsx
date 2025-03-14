@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components-new-version/ui'
 import { locales } from '@/i18n'
 import { useEffect, useState } from 'react'
 
@@ -27,7 +28,8 @@ export function LanguageSwitcher() {
     <div className="flex items-center">
       <p className="font-light">languages: </p>
       {locales.map((locale) => (
-        <button
+        <Button
+          variant="ghost"
           key={locale}
           onClick={() => changeLanguage(locale)}
           className={`px-2 ${
@@ -35,7 +37,7 @@ export function LanguageSwitcher() {
           }`}
         >
           {locale}
-        </button>
+        </Button>
       ))}
     </div>
   )
