@@ -1,4 +1,5 @@
 import { ActivityTape } from '@/components/components-new-version/activity-tape/activity-tape'
+import { cn } from '@/components/components-new-version/utils/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
 import './new-version.css'
@@ -16,10 +17,18 @@ export default async function NewVersionLayout({
 }) {
   return (
     <div
-      className={`w-full h-screen background-image-gradient ${rethinkSans.className}`}
+      className={cn('w-full background-image-gradient', rethinkSans.className)}
     >
+      <Header />
+      <div className="w-full mx-auto container">{children}</div>
+    </div>
+  )
+}
+
+function Header() {
+  return (
+    <div className="absolute top-0 left-0">
       <ActivityTape />
-      <div className="w-full mx-auto container mt-14">{children}</div>
     </div>
   )
 }

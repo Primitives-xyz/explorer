@@ -3,7 +3,6 @@ import WalletProvider from '@/components/auth/wallet-provider'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-//import './globals.css'
 
 export async function generateMetadata(): Promise<Metadata> {
   const name = 'Solana Social Explorer | Tapestry Protocol'

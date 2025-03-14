@@ -8,7 +8,9 @@
 
 @layer base {
   :root {
+    
     --background: 0, 0%, 20%, 1;
+    
     --foreground: 220 50% 97%;
 
     --muted: 230 7% 75%;
