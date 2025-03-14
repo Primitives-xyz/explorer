@@ -8,12 +8,6 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    fontSize: {
-      lg: 'var(--text-lg)',
-      xl: 'var(--text-xl)',
-      '2xl': 'var(--text-2xl)',
-      '3xl': 'var(--text-3xl)',
-    },
     borderRadius: {
       DEFAULT: 'var(--radius-md)',
       sm: 'var(--radius-sm)',
@@ -28,6 +22,12 @@ module.exports = {
       none: '0px',
     },
     extend: {
+      fontSize: {
+        lg: 'var(--text-lg)',
+        xl: 'var(--text-xl)',
+        '2xl': 'var(--text-2xl)',
+        '3xl': 'var(--text-3xl)',
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
