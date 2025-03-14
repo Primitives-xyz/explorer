@@ -3,11 +3,17 @@
 module.exports = {
   darkMode: ['class'],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components-new-version/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontSize: {
+      lg: 'var(--text-lg)',
+      xl: 'var(--text-xl)',
+      '2xl': 'var(--text-2xl)',
+      '3xl': 'var(--text-3xl)',
+    },
     borderRadius: {
       DEFAULT: 'var(--radius-md)',
       sm: 'var(--radius-sm)',
@@ -59,6 +65,7 @@ module.exports = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -126,11 +133,6 @@ module.exports = {
         scan: 'scan 1.5s ease-in-out infinite',
         blink: 'blink 1s ease-in-out infinite',
         bounce: 'bounce 0.8s ease-in-out infinite',
-      },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
       },
     },
   },

@@ -16,7 +16,7 @@ export function Heading2({
   children,
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <h2 className={cn('scroll-m-20 text-2xl font-bold uppercase', className)}>
+    <h2 className={cn('scroll-m-20 text-2xl font-bold', className)}>
       {children}
     </h2>
   )
@@ -27,21 +27,25 @@ export function Heading3({
   children,
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <h2 className={cn('scroll-m-20 text-3xl font-bold', className)}>
+    <h3 className={cn('scroll-m-20 text-xl font-bold', className)}>
       {children}
-    </h2>
+    </h3>
   )
 }
 
-export function Subtitle({
+export function Heading4({
   className,
   children,
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <h2
-      className={cn('scroll-m-20 text-lg uppercase leading-tight', className)}
-    >
-      {children}
-    </h2>
-  )
+  return <h4 className={cn('scroll-m-20 text-lg', className)}>{children}</h4>
+}
+
+export function Paragraph({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return <p className={cn('text-base', className)}>{children}</p>
 }

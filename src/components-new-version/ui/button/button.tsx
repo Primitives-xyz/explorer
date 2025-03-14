@@ -12,7 +12,7 @@ const focus =
 
 const buttonBase = cn(
   'inline-flex items-center justify-center whitespace-nowrap gap-1.5 transition-all duration-100 focus-visible:outline-hidden shrink-0 relative cursor-pointer',
-  focus,
+  focus
 )
 
 const buttonVariants = cva(cn(buttonBase, 'rounded-button font-semibold'), {
@@ -21,14 +21,15 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-semibold'), {
       default: 'bg-primary text-primary-foreground hover:bg-primary/90',
       destructive:
         'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-      outline: 'border border-input-border bg-background hover:bg-accent',
+      outline:
+        'border border-primary text-primary bg-transparent hover:bg-accent',
       secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       tertiary: 'bg-tertiary text-tertiary-foreground hover:bg-tertiary/80',
-      ghost: 'hover:bg-accent hover:text-accent-foreground font-semibold',
+      ghost: 'hover:bg-accent text-muted-foreground font-semibold',
       link: 'underline-offset-4 hover:opacity-80 underline h-auto! p-0! rounded-sm',
     },
     size: {
-      default: 'h-10 px-4 py-2',
+      default: 'h-9 px-4 py-2',
       sm: 'h-7 px-3.5 text-xs',
       lg: 'h-16 px-12 text-xl font-semibold uppercase',
       icon: 'h-10 w-10',
@@ -71,7 +72,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       href,
       ...props
     },
-    ref,
+    ref
   ) => {
     const Comp = asChild || !!href ? Slot : 'button'
     const content = (
@@ -98,7 +99,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 {
                   'hover:opacity-80': !disableHoverFeedback,
                 },
-                className,
+                className
               )
             : buttonVariants({ variant, size, className }),
           {
@@ -106,7 +107,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             'active:opacity-80 active:scale-95': !disableActiveFeedback,
             'pointer-events-none opacity-50':
               !disableActiveFeedback && disabled,
-          },
+          }
         )}
         ref={ref}
         disabled={disabled}
@@ -115,7 +116,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </Comp>
     )
-  },
+  }
 )
 Button.displayName = 'Button'
 
