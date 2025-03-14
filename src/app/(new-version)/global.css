@@ -79,6 +79,15 @@ kbd {
     );
 }
 
+.background-gradient-card {
+  background: linear-gradient(
+      180deg,
+      rgba(71, 60, 68, 0.1) 0%,
+      rgba(131, 75, 81, 0.1) 100%
+    ),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
+}
+
 /* ========================= */
 /* 🎨 STYLES SCROLLBAR */
 /* ========================= */

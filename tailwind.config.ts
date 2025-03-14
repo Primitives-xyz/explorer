@@ -88,6 +88,7 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           accent: 'hsl(var(--card-accent))',
           foreground: 'hsl(var(--card-foreground))',
+          border: 'hsl(var(--card-border))',
         },
         progress: {
           DEFAULT: 'hsl(var(--progress))',
