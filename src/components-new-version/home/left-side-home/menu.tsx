@@ -2,15 +2,20 @@
 
 import { Button } from '@/components-new-version/ui/button'
 import { route } from '@/components-new-version/utils/route'
+import { cn } from '@/components-new-version/utils/utils'
 import {
   ArrowRightLeft,
   CircleDollarSign,
   House,
+  PaintbrushVertical,
   Search,
   User,
 } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export function Menu() {
+  const pathname = usePathname()
+
   const data = [
     {
       title: 'Home',
@@ -18,24 +23,29 @@ export function Menu() {
       href: route('home'),
     },
     {
+      title: 'Design System',
+      icon: PaintbrushVertical,
+      href: route('designSystem'),
+    },
+    {
       title: 'Trade',
       icon: ArrowRightLeft,
-      href: route('home'),
+      href: route('trade'),
     },
     {
       title: 'Discover',
       icon: Search,
-      href: route('home'),
+      href: route('discover'),
     },
     {
       title: 'Tokens',
       icon: CircleDollarSign,
-      href: '/',
+      href: route('tokens'),
     },
     {
       title: 'Profile',
       icon: User,
-      href: route('home'),
+      href: route('profile'),
     },
   ]
 
@@ -45,7 +55,10 @@ export function Menu() {
         <Button
           key={i}
           variant="ghost"
-          className="justify-start gap-4"
+          className={cn(
+            'justify-start gap-4 hover:bg-primary hover:text-background',
+            pathname === item.href && 'bg-primary text-background'
+          )}
           href={item.href}
         >
           <item.icon size={20} />

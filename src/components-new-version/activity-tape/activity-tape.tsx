@@ -20,7 +20,7 @@ export function ActivityTape() {
               key={i}
               href={activity.signature ? `/${activity.signature}` : '#'}
             >
-              <div className="inline-flex items-center gap-2 text-xs hover:opacity-80 bg-card-accent rounded-lg px-4 py-1">
+              <div className="inline-flex items-center gap-2 text-xs hover:opacity-80 bg-card rounded-lg px-4 py-1">
                 <span className="bg-background py-1 px-1.5 rounded">
                   {activity.action}
                 </span>

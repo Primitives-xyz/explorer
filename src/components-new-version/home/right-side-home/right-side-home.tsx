@@ -13,10 +13,12 @@ export function RightSideHome() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Pay</span>
-            <span className="text-sm text-muted">Balance: 0.055</span>
+            <span className="text-xs text-muted">Balance: 0.055</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>0.00</CardContent>
+        <CardContent>
+          <p className="text-primary text-xl">0.00</p>
+        </CardContent>
       </Card>
 
       <div className="flex items-center w-full justify-center">
@@ -27,7 +29,9 @@ export function RightSideHome() {
         <CardHeader>
           <CardTitle>Receive</CardTitle>
         </CardHeader>
-        <CardContent>0.00</CardContent>
+        <CardContent>
+          <p className="text-primary text-xl">0.00</p>
+        </CardContent>
       </Card>
     </div>
   )

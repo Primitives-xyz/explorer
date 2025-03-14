@@ -15,7 +15,7 @@ export function LeftSideHome() {
             height={30}
             alt="icon"
           />
-          <h1 className="text-md font-mono font-bold tracking-tight text-accent">
+          <h1 className="text-md font-mono font-bold tracking-tight text-primary">
             solana_social_explorer
           </h1>
         </div>

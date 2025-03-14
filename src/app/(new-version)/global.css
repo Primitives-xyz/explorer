@@ -63,7 +63,7 @@ kbd {
   @apply bg-muted text-muted-foreground rounded-sm px-1 py-0.5;
 }
 
-.background-image-gradient {
+.background-gradient {
   background: linear-gradient(
       180deg,
       rgba(0, 0, 0, 0.567) -44.93%,

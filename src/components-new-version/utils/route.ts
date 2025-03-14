@@ -1,7 +1,12 @@
 'use client'
 
 const routes = {
-  home: () => '/',
+  home: () => '/home',
+  designSystem: () => '/design-system',
+  trade: () => '/trade',
+  discover: () => '/discover',
+  tokens: () => '/tokens',
+  profile: () => '/profile',
   address: ({ id }: { id: string }) => `/${id}`,
 }
 

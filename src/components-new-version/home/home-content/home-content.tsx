@@ -1,15 +1,20 @@
+import { Summary } from '@/components-new-version/home/home-content/summary'
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@/components-new-version/ui'
 
 export function HomeContent() {
+  enum LeaderboardTypeTabs {
+    GLOBAL = 'following',
+    FRIENDS = 'twitter KOLs',
+  }
   return (
     <div
       className="h-screen overflow-auto scrollbar-hide relative"
@@ -18,17 +23,29 @@ export function HomeContent() {
         msOverflowStyle: 'none',
       }}
     >
-      <div className="absolute pt-[100px] w-full mb-[100px]">
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="AccordionTrigger">
-              <span>Trigger text</span>
-            </AccordionTrigger>
-            <AccordionContent className="AccordionContent">
-              <p>This is the content inside the accordion</p>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      <div className="absolute pt-[100px] w-full mb-[100px] space-y-4">
+        <Summary />
+
+        <Tabs defaultValue={LeaderboardTypeTabs.GLOBAL}>
+          <div className="px-5">
+            <TabsList className="w-full">
+              <TabsTrigger
+                value={LeaderboardTypeTabs.GLOBAL}
+                className="w-full"
+              >
+                Global
+              </TabsTrigger>
+              <TabsTrigger
+                value={LeaderboardTypeTabs.FRIENDS}
+                className="w-full"
+              >
+                Friends
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value={LeaderboardTypeTabs.GLOBAL}></TabsContent>
+          <TabsContent value={LeaderboardTypeTabs.FRIENDS}></TabsContent>
+        </Tabs>
 
         <Card>
           <CardHeader>
