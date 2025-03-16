@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="w-full border-t border-green-800/50 py-4 mt-auto">
       <div className="container mx-auto flex justify-center items-center text-xs text-gray-400">
         <Link 
-          href="https://legal.sse.gg" 
+          href="https://cdn.sse.gg/legal" 
           target="_blank" 
           rel="noopener noreferrer"
           className="hover:text-green-500 transition-colors"
