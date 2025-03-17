@@ -18,6 +18,7 @@ import { ProfileHeader } from './profile-header'
 import { ProfileStats } from './profile-stats'
 import { ProfileInfo } from './ProfileInfo'
 import { UpdateProfileModal } from './update-profile-modal'
+import { X_NAMESPACE } from '@/utils/constants'
 
 interface Props {
   username: string
@@ -88,11 +89,12 @@ export function ProfileContent({ username, namespace }: Props) {
 
   const { profileData, comments, isLoading, isLoadingComments } =
     useProfileData(username, mainUsername, namespace)
+
   const {
     identities,
     loading: isLoadingIdentities,
     error: identitiesError,
-  } = useIdentities(targetWalletAddress || '')
+  } = useIdentities(namespace === X_NAMESPACE ? username : targetWalletAddress || '', namespace)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
@@ -140,6 +142,8 @@ export function ProfileContent({ username, namespace }: Props) {
       ? `${nsLink}${targetWalletAddress}`
       : `${nsLink}${username}`
   }
+
+  const isLoadingTargetWallet = (namespace !== X_NAMESPACE && !targetWalletAddress ) // don't wait for wallet if it's a x profile.
 
   return (
     <div className="py-8">
@@ -206,23 +210,23 @@ export function ProfileContent({ username, namespace }: Props) {
               profileData && <ProfileInfo profileData={profileData} />
             )}
 
-            <ProfileSection
-              walletAddress={targetWalletAddress}
-              hasSearched={!isLoadingIdentities && !!targetWalletAddress}
-              isLoadingProfileData={
-                isLoadingIdentities || isLoadingWallet || !targetWalletAddress
-              }
-              profileData={{
-                profiles:
-                  !identitiesError && !isLoadingIdentities && identities
-                    ? identities
-                    : [],
-              }}
-              title={
-                identitiesError ? 'error_loading_profiles' : 'related_profiles'
-              }
-            />
-          </div>
+          <ProfileSection
+            walletAddress={targetWalletAddress}
+            hasSearched={!isLoadingIdentities && !!targetWalletAddress}
+            isLoadingProfileData={
+              isLoadingIdentities 
+              || isLoadingWallet 
+              || isLoadingTargetWallet            }
+            profileData={{
+              profiles:
+                !identitiesError && !isLoadingIdentities && identities
+                  ? identities
+                  : [],
+            }}
+            title={
+              identitiesError ? 'error_loading_profiles' : 'related_profiles'
+            }
+          />
         </div>
 
         {/* Modals */}
@@ -254,6 +258,7 @@ export function ProfileContent({ username, namespace }: Props) {
             onProfileUpdated={handleProfileUpdated}
           />
         )}
+      </div>
       </>
     </div>
   )

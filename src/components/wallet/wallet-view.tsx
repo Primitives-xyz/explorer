@@ -15,6 +15,7 @@ import { TransactionSection } from '../transaction-section'
 /**
  * Renders a wallet view with portfolio tabs
  */
+
 export function WalletView({ address }: { address: string }) {
   const { walletAddress } = useCurrentWallet()
   const { portfolioData, isLoading, error } = usePortfolioData(address)

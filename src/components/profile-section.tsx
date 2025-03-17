@@ -1,226 +1,52 @@
 'use client'
 
-import { Avatar } from '@/components/common/avatar'
 import { DataContainer } from '@/components/common/data-container'
 import { FilterBar } from '@/components/common/filter-bar'
 import { FilterButton } from '@/components/common/filter-button'
 import { Modal } from '@/components/common/modal'
 import { ScrollableContent } from '@/components/common/scrollable-content'
-import { FollowButton } from '@/components/profile/follow-button'
-import { useFollowStats } from '@/hooks/use-follow-stats'
-import { getProfiles, type Profile } from '@/utils/api'
-import { EXPLORER_NAMESPACE } from '@/utils/constants'
-import { handleProfileNavigation } from '@/utils/profile-navigation'
-import { route } from '@/utils/routes'
-import { ArrowDown, ArrowUp, Plus, Search } from 'lucide-react'
+import { ProfileCard } from '@/components/profile-card'
+import {
+  IGetProfileResponse,
+  INameSpace,
+  IProfilesListResponse,
+} from '@/types/profile.types'
+import { getProfiles } from '@/utils/api'
+import { Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { useCurrentWallet } from './auth/hooks/use-current-wallet'
-import { TokenAddress } from './tokens/token-address'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-interface ProfileWithStats extends Profile {
-  followStats?: {
-    followers: number
-    following: number
-  }
-}
-
-interface ProfileData {
-  profiles: any[]
-  totalCount?: number
-}
-
-interface ProfileSectionProps {
+interface Props {
   walletAddress?: string
   hasSearched?: boolean
-  profileData?: ProfileData | null
+  profileData?: IProfilesListResponse
   error?: string | null
   isLoadingProfileData?: boolean
   title?: string
 }
 
-// Memoize the profile card component
-const ProfileCard = memo(
-  ({ profile, router }: { profile: ProfileWithStats; router: any }) => {
-    const { mainUsername } = useCurrentWallet()
-    const isExplorerApp = profile.namespace?.name === EXPLORER_NAMESPACE
-
-    const getReadableNamespace = (namespace: any) => {
-      // Special cases for namespace display names
-      const specialNames: Record<string, string> = {
-        nemoapp: 'Explorer',
-        farcaster_external: 'Farcaster',
-        allDomains: 'All Domains',
-      }
-
-      return (
-        specialNames[namespace.name] || namespace.readableName || namespace.name
-      )
-    }
-
-    const { stats } = useFollowStats(
-      isExplorerApp ? profile.profile.username : '',
-      mainUsername || ''
-    )
-
-    // Move conditional logic after hook call
-    const followers =
-      isExplorerApp && typeof stats?.followers === 'number'
-        ? stats.followers
-        : 0
-    const following =
-      isExplorerApp && typeof stats?.following === 'number'
-        ? stats.following
-        : 0
-
-    // Store follower count in profile object for sorting
-    profile.followStats = {
-      followers,
-      following
-    }
-
-    const handleProfileClick = useCallback(() => {
-      if (!profile) return // Add guard clause
-      try {
-        handleProfileNavigation(profile, router)
-      } catch (error) {
-        console.error('Error navigating to profile:', error)
-      }
-    }, [profile, router])
-
-    const handleNamespaceClick = useCallback(
-      (e: React.MouseEvent) => {
-        e.stopPropagation() // Prevent event bubbling
-        if (!profile?.namespace?.name) return // Add guard clause
-
-        try {
-          if (profile.namespace.name === EXPLORER_NAMESPACE) {
-            router.push(route('address', { id: profile.profile.username }))
-          } else {
-            router.push(
-              route('namespace', { namespace: profile.namespace.name })
-            )
-          }
-        } catch (error) {
-          console.error('Error navigating to namespace:', error)
-        }
-      },
-      [router, profile?.namespace?.name]
-    )
-
-    return (
-      <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
-        <div className="flex items-start gap-3 h-full">
-          <div className="relative flex-shrink-0">
-            <button
-              onClick={handleProfileClick}
-              className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-full"
-              aria-label={`View ${profile.profile.username}'s profile`}
-            >
-              <Avatar
-                username={profile.profile.username}
-                size={48}
-                imageUrl={profile.profile.image}
-              />
-            </button>
-            {profile.namespace?.faviconURL &&
-            profile.namespace?.name !== EXPLORER_NAMESPACE ? (
-              <button
-                onClick={handleNamespaceClick}
-                className="absolute -bottom-1.5 -right-1.5 hover:scale-110 transition-transform"
-              >
-                <img
-                  src={profile.namespace.faviconURL}
-                  alt={profile.namespace.readableName}
-                  className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
-                />
-              </button>
-            ) : profile.namespace?.faviconURL ? (
-              <div className="absolute -bottom-1.5 -right-1.5">
-                <img
-                  src={profile.namespace.faviconURL}
-                  alt={profile.namespace.readableName}
-                  className="w-5 h-5 rounded-full bg-black ring-1 ring-green-500/20"
-                />
-              </div>
-            ) : null}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 w-3/5">
-                  <button
-                    onClick={handleProfileClick}
-                    className=" font-mono text-sm bg-green-900/20 py-1 rounded-lg hover:bg-green-900/40 transition-colors font-bold truncate"
-                  >
-                    @{profile.profile.username}
-                  </button>
-                </div>
-                {profile.namespace?.name === EXPLORER_NAMESPACE && (
-                  <div className="flex-shrink-0">
-                    <FollowButton username={profile.profile.username} />
-                  </div>
-                )}
-              </div>
-
-              {isExplorerApp && (
-                <div className="flex items-center gap-2 text-xs  font-mono">
-                  <span>Followers: {followers}</span>
-                  <span>Following: {following}</span>
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
-                {profile.wallet?.address && (
-                  <div className="flex items-center gap-1.5 bg-black/30 py-0.5 rounded-md">
-                    <span className="/60 text-xs">address:</span>
-                    <TokenAddress address={profile.wallet.address} />
-                  </div>
-                )}
-              </div>
-
-              {profile.profile.bio && (
-                <div className="flex items-center gap-2">
-                  <span className=" font-mono text-xs truncate">
-                    {profile.profile.bio}
-                  </span>
-                </div>
-              )}
-
-              {profile.namespace && (
-                <div className="flex items-center gap-2">
-                  <span className=" text-xs">
-                    <button
-                      onClick={handleNamespaceClick}
-                      className="hover: transition-colors"
-                    >
-                      {getReadableNamespace(profile.namespace)}
-                    </button>
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+export const getReadableNamespace = (namespace?: INameSpace) => {
+  if (!namespace) return ''
+  const specialNames: Record<string, string> = {
+    nemoapp: 'Explorer',
+    farcaster_external: 'Farcaster',
+    allDomains: 'All Domains',
   }
-)
+  return (
+    specialNames[namespace.name] || namespace.readableName || namespace.name
+  )
+}
 
-ProfileCard.displayName = 'ProfileCard'
-
-export const ProfileSection = ({
+export function ProfileSection({
   walletAddress,
   hasSearched,
   profileData,
   error: propError,
   isLoadingProfileData,
   title = 'profile_info',
-}: ProfileSectionProps) => {
+}: Props) {
   const key = walletAddress || 'default'
-  const router = useRouter()
-  const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
+  const [profiles, setProfiles] = useState<IGetProfileResponse[]>([])
   const [selectedNamespace, setSelectedNamespace] = useState<string | null>(
     null
   )
@@ -228,55 +54,15 @@ export const ProfileSection = ({
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const t = useTranslations()
-  
-  // Add new state for sorting
-  const [sortByFollowers, setSortByFollowers] = useState<'none' | 'asc' | 'desc'>('none')
 
-  const getReadableNamespace = (namespace: any) => {
-    // Special cases for namespace display names
-    const specialNames: Record<string, string> = {
-      nemoapp: 'Explorer',
-      farcaster_external: 'Farcaster',
-      allDomains: 'All Domains',
-    }
-
-    return (
-      specialNames[namespace.name] || namespace.readableName || namespace.name
-    )
-  }
-
-  // Toggle sort function
-  const toggleSortByFollowers = useCallback(() => {
-    setSortByFollowers((prev) => {
-      if (prev === 'none') return 'desc'
-      if (prev === 'desc') return 'asc'
-      return 'none'
-    })
-  }, [])
-
-  // Memoize filtered and sorted profiles
-  const filteredAndSortedProfiles = useMemo(() => {
+  // Memoize filtered profiles
+  const filteredProfiles = useMemo(() => {
     if (!profiles || !Array.isArray(profiles)) return []
-    
-    // First filter by namespace if selected
-    let result = !selectedNamespace 
-      ? [...profiles] 
-      : profiles.filter(profile => profile?.namespace?.name === selectedNamespace)
-    
-    // Then sort by followers if applicable
-    if (sortByFollowers !== 'none') {
-      result = [...result].sort((a, b) => {
-        const followersA = a.followStats?.followers || 0
-        const followersB = b.followStats?.followers || 0
-        
-        return sortByFollowers === 'desc' 
-          ? followersB - followersA 
-          : followersA - followersB
-      })
-    }
-    
-    return result
-  }, [profiles, selectedNamespace, sortByFollowers])
+    if (!selectedNamespace) return profiles
+    return profiles.filter(
+      (profile) => profile?.namespace?.name === selectedNamespace
+    )
+  }, [profiles, selectedNamespace])
 
   // Memoize unique namespaces
   const namespaces = useMemo(() => {
@@ -301,7 +87,6 @@ export const ProfileSection = ({
   const resetState = useCallback(() => {
     setProfiles([])
     setSelectedNamespace(null)
-    setSortByFollowers('none')
     setError(null)
     setIsLoading(false)
   }, [])
@@ -374,45 +159,20 @@ export const ProfileSection = ({
 
   if (!shouldShowContent) return null
 
-  // Function to render the sort icon
-  const renderSortIcon = () => {
-    if (sortByFollowers === 'none') {
-      return <Search size={16} />
-    } else if (sortByFollowers === 'desc') {
-      return <ArrowDown size={16} />
-    } else {
-      return <ArrowUp size={16} />
-    }
-  }
-
   return (
     <DataContainer
       key={key}
       title={title}
-      count={profileData?.totalCount ?? filteredAndSortedProfiles?.length ?? 0}
+      count={profileData?.totalCount ?? filteredProfiles?.length ?? 0}
       error={error}
       height="large"
       headerRight={
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleSortByFollowers}
-            className="flex items-center gap-1 px-2 py-1 rounded bg-green-900/20 hover:bg-green-900/40 transition-colors text-xs font-mono"
-            title={sortByFollowers === 'none' 
-              ? t('profile_info.sort_by_followers') 
-              : sortByFollowers === 'desc' 
-                ? t('profile_info.sort_followers_descending') 
-                : t('profile_info.sort_followers_ascending')}
-          >
-            {t('profile_info.followers')}
-            {renderSortIcon()}
-          </button>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10 transition-colors"
-          >
-            <Plus size={16} />
-          </button>
-        </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10  transition-colors"
+        >
+          <Plus size={16} />
+        </button>
       }
     >
       {/* Domain Creation Modal */}
@@ -468,16 +228,15 @@ export const ProfileSection = ({
       {/* Profile List */}
       <ScrollableContent
         isLoading={isLoading || isLoadingProfileData}
-        isEmpty={filteredAndSortedProfiles.length === 0}
+        isEmpty={filteredProfiles.length === 0}
         loadingText={t('profile_info.fetching_profiles')}
         emptyText={t('profile_info.no_profile_found')}
       >
         <div className="divide-y divide-green-800/30">
-          {filteredAndSortedProfiles.map((profile) => (
+          {filteredProfiles.map((profile) => (
             <ProfileCard
               key={`${profile.profile.username}-${profile.namespace?.name}`}
-              profile={profile}
-              router={router}
+              profileAll={profile}
             />
           ))}
         </div>

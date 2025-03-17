@@ -12,6 +12,17 @@ export interface IProfileResponse {
   isFollowing: boolean
 }
 
+export interface IGetSocialResponse extends IPaginatedResponse {
+  profiles: IProfile[]
+}
+
+export interface IWallet {
+  id: string
+  created_at: number
+  blockchain: string
+  wallet_type: string
+}
+
 export interface IProfile {
   id: string
   created_at: number
@@ -21,68 +32,30 @@ export interface IProfile {
   namespace: string
   blockchain: BLOCKCHAIN
   isWaitListed?: boolean
+  hasSeenProfileSetupModal?: boolean
+  wallet: IWallet
 }
 
-export interface IGetSocialResponse {
-  profiles: IProfile[]
-  page: number
-  pageSize: number
+export interface INameSpace {
+  id: number
+  name: string
+  readableName: string
+  faviconURL?: string | null
+  createdAt: string
+  updatedAt: string
+  isDefault: boolean
+  team_id: number
+  userProfileURL: string
 }
 
-export interface IGetProfilesResponse {
-  namespace: {
-    name: string
-    readableName: string
-    faviconURL?: string | null
-  }
-  profile: {
-    blockchain: string
-    namespace: string
-    id: string
-    username: string
-    image: string
-    hasSeenProfileSetupModal?: boolean
-  }
+export interface IProfilesListResponse extends IPaginatedResponse {
+  profiles: IGetProfileResponse[]
+}
+
+export interface IGetProfileResponse {
+  namespace: INameSpace
+  profile: IProfile
   wallet: { address: string }
-}
-
-export interface ISuggestedProfile {
-  namespaces: {
-    name: string
-    readableName: string
-    faviconURL?: string | null
-  }[]
-  profile: {
-    blockchain: string
-    namespace: string
-    id: string
-    username: string
-    image: string
-  }
-  wallet: { address: string }
-}
-
-export interface ISuggestedProfiles {
-  id: string
-  username: string
-  walletAddress: string
-  bio?: string
-  avatar?: string
-}
-
-export interface SuggestedProfile {
-  profile?: {
-    username?: string
-    namespace?: string
-    image?: string | null
-    bio?: string
-    hasSeenProfileSetupModal?: boolean
-  }
-  namespace?: {
-    name: string
-    readableName: string
-    faviconURL?: string | null
-  }
 }
 
 export interface SuggestedUsername {
@@ -92,12 +65,14 @@ export interface SuggestedUsername {
   faviconURL?: string | null
   image?: string | null
 }
+
 export enum BLOCKCHAIN {
   SOLANA = 'SOLANA',
   ETHEREUM = 'ETHEREUM',
 }
 
 export interface IPaginatedResponse {
-  page: number
-  pageSize: number
+  page?: number
+  pageSize?: number
+  totalCount?: number
 }

@@ -56,7 +56,7 @@ export interface BaseTokenInfo {
     verified?: boolean
     share?: number
   }>
-  supply: any | null
+  supply?: any
   mutable: boolean
   burnt: boolean
   plugins?: Record<string, any>
@@ -93,13 +93,17 @@ export interface NFTMetadata {
 }
 
 // NFT-specific properties
+export interface NFTCollectionInfo extends BaseTokenInfo {
+  interface: 'Mpl Core Asset'
+}
+
 export interface NFTTokenInfo extends BaseTokenInfo {
   interface:
-    | 'MplCoreAsset'
     | 'V1_NFT'
     | 'V2_NFT'
     | 'LEGACY_NFT'
     | 'ProgrammableNFT'
+    | 'MplCoreCollection'
 }
 
 // Fungible token-specific properties

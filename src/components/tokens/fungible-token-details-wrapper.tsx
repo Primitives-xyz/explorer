@@ -10,7 +10,7 @@ export function FungibleTokenDetailsWrapper({
 }: FungibleTokenDetailsProps) {
   // Fetch people in common data
   const { topUsers, totalAmount, isLoading, error } = usePeopleInCommon(id)
-
+  console.log('FUNGIBLE TOKEN DETAILS')
   // Log any errors that occur during data fetching
   if (error) {
     console.error('Error fetching people in common:', error)

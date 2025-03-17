@@ -23,7 +23,6 @@ import {
   Edit,
   NetworkIcon,
   Share2,
-  Users,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
@@ -179,28 +178,8 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
             </Badge>
 
             {/* Social Stats */}
-            <Badge
-              variant="outline"
-              className="text-xs font-mono border-green-500/50 text-green-400 flex justify-center py-2"
-            >
-              <Users className="w-3 h-3 mr-1" />
-              {user.isLoading ? (
-                <span className="animate-pulse">...</span>
-              ) : (
-                `${user.socialCounts?.followers || 0} followers`
-              )}
-            </Badge>
-            <Badge
-              variant="outline"
-              className="text-xs font-mono border-green-500/50 text-green-400 flex justify-center py-2"
-            >
-              <Users className="w-3 h-3 mr-1" />
-              {user.isLoading ? (
-                <span className="animate-pulse">...</span>
-              ) : (
-                `${user.socialCounts?.following || 0} following`
-              )}
-            </Badge>
+
+            <SocialStats user={user} />
           </div>
 
           {/* Bio */}

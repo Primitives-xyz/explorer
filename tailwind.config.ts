@@ -1,29 +1,56 @@
 /** @type {import('tailwindcss').Config} */
 
-import tailwindDefaultConfig from './src/styles/tailwind.default.config'
-
 module.exports = {
   darkMode: ['class'],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components-new-version/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  presets: [tailwindDefaultConfig],
   theme: {
+    borderRadius: {
+      DEFAULT: 'var(--radius-md)',
+      sm: 'var(--radius-sm)',
+      md: 'var(--radius-md)',
+      lg: 'var(--radius-lg)',
+      button: 'var(--radius-button)',
+      input: 'var(--radius-input)',
+      card: 'var(--radius-card)',
+      'popover-card': 'var(--radius-popover-card)',
+      full: '9999px',
+      none: '0px',
+    },
     extend: {
+      fontSize: {
+        lg: 'var(--text-lg)',
+        xl: 'var(--text-xl)',
+        '2xl': 'var(--text-2xl)',
+        '3xl': 'var(--text-3xl)',
+      },
+      boxShadow: {
+        sm: 'var(--shadow-sm)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+        card: 'var(--shadow-card)',
+        toolkit: 'var(--shadow-toolkit)',
+        'card-sm': 'var(--shadow-card-sm)',
+      },
+      height: {
+        topbar: 'var(--topbar-height)',
+        'screen-minus-topbar': 'calc(100vh - var(--topbar-height))',
+      },
+      spacing: {
+        topbar: 'var(--topbar-height)',
+      },
       colors: {
+        border: 'hsl(var(--border))',
+        ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        'text-body': 'var(--text-body)',
-        'text-header': 'var(--text-header)',
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+        input: {
+          DEFAULT: 'hsl(var(--input))',
+          foreground: 'hsl(var(--input-foreground))',
+          border: 'hsl(var(--input-border))',
         },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
@@ -33,6 +60,14 @@ module.exports = {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
         },
+        tertiary: {
+          DEFAULT: 'hsl(var(--tertiary))',
+          foreground: 'hsl(var(--tertiary-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
@@ -41,13 +76,33 @@ module.exports = {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
         },
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
+        modal: {
+          DEFAULT: 'hsl(var(--modal))',
+          foreground: 'hsl(var(--modal-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          accent: 'hsl(var(--card-accent))',
+          foreground: 'hsl(var(--card-foreground))',
+          border: 'hsl(var(--card-border))',
+        },
+        progress: {
+          DEFAULT: 'hsl(var(--progress))',
+          foreground: 'hsl(var(--progress-foreground))',
+        },
+        switch: {
+          DEFAULT: 'hsl(var(--switch))',
+          foreground: 'hsl(var(--switch-foreground))',
+          checked: {
+            DEFAULT: 'hsl(var(--switch-checked))',
+            foreground: 'hsl(var(--switch-checked-foreground))',
+          },
+        },
+
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -115,11 +170,6 @@ module.exports = {
         scan: 'scan 1.5s ease-in-out infinite',
         blink: 'blink 1s ease-in-out infinite',
         bounce: 'bounce 0.8s ease-in-out infinite',
-      },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
       },
     },
   },

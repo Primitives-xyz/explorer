@@ -1,4 +1,5 @@
 import type { PaginatedData } from '@/types/pagination'
+import { IGetProfileResponse } from '@/types/profile.types'
 
 export enum FetchMethod {
   GET = 'GET',
@@ -7,39 +8,13 @@ export enum FetchMethod {
   DELETE = 'DELETE',
 }
 
-export interface Profile {
-  profile: {
-    id: string
-    namespace: string
-    username: string
-    bio: string | null
-    image: string | null
-    blockchain: string
-    created_at: number
-  }
-  wallet: {
-    address: string
-  }
-  namespace: {
-    id: number
-    name: string
-    readableName: string
-    faviconURL?: string | null
-    createdAt: string
-    updatedAt: string
-    isDefault: boolean
-    team_id: number
-    userProfileURL: string
-  }
-}
-
 export const ITEMS_PER_PAGE = 20
 
 export async function getProfiles(
   walletAddress: string,
   useIdentities: boolean = false,
   page: number = 1
-): Promise<PaginatedData<Profile>> {
+): Promise<PaginatedData<IGetProfileResponse>> {
   try {
     let response
     if (useIdentities) {
@@ -108,13 +83,6 @@ export async function fetchTapestry<T>({
   return response.json()
 }
 
-/**
- * Create a standardized error response for API routes
- * @param error Error object
- * @param customMessage Optional custom error message
- * @param statusCode HTTP status code (defaults to 500)
- * @returns NextResponse with error details
- */
 export const createErrorResponse = (
   error: unknown,
   customMessage?: string,

@@ -1,6 +1,6 @@
 'use client'
 
-import NFTShowcase from '@/components/NFTShowcase'
+import NFTShowcaseContainer from '@/components/nft/nft-showcase-container'
 import TokenDashboard from '@/components/TokenDashboard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMediaQuery } from '@/hooks/use-media-query'
@@ -75,8 +75,8 @@ export function ProfileTabs({
                 </div>
               </TabsContent>
               <TabsContent value="nfts" className="mt-0 w-full">
-                <div className="container mx-auto px-2 md:px-4">
-                  <NFTShowcase walletAddress={targetWalletAddress} />
+                <div className="">
+                  <NFTShowcaseContainer walletAddress={targetWalletAddress} />
                 </div>
               </TabsContent>
               <TabsContent value="tokens" className="mt-0 w-full">

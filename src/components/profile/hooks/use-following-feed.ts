@@ -1,9 +1,9 @@
+import { IGetSocialResponse } from '@/types/profile.types'
 import type { Transaction } from '@/utils/helius/types'
 import useSWR from 'swr'
-import type { GetFollowingResponse } from '../types'
 
 interface FeedResponse {
-  profiles: GetFollowingResponse['profiles']
+  profiles: IGetSocialResponse['profiles']
   transactions: Transaction[]
 }
 

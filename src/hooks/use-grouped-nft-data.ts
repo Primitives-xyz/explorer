@@ -5,7 +5,7 @@ import {
 } from 'helius-sdk/dist/src/types/enums'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNFTData } from './use-nft-data'
+import { useParseNFTData } from './use-parse-nft-data'
 
 // Define the collection group type
 interface CollectionGroup {
@@ -103,7 +103,7 @@ export function useGroupedNFTData(
 
   // Use the existing NFT data hook
   const { nfts, isLoading, error, refetch, loadMore, hasMore, totalCount } =
-    useNFTData(
+    useParseNFTData(
       address,
       showFungible,
       showNativeBalance,

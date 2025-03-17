@@ -2,13 +2,12 @@
 
 import { Button } from '@/components/common/button'
 import { Modal } from '@/components/common/modal'
+import { ProfileCard } from '@/components/profile-card'
 import { useGetFollowers } from '@/components/profile/hooks/use-get-followers'
 import { useGetFollowing } from '@/components/profile/hooks/use-get-following'
 import { Badge } from '@/components/ui/badge'
 import { IUser } from '@/components/user-header/models/user.models'
-import { route } from '@/utils/routes'
 import { Users } from 'lucide-react'
-import Link from 'next/link'
 import { useState } from 'react'
 
 interface Props {
@@ -37,28 +36,32 @@ export function SocialStats({ user }: Props) {
       <Button variant="ghost" onClick={() => handleOpenModal('followers')}>
         <Badge
           variant="outline"
-          className="text-xs font-mono border-green-500/50 text-green-400"
+          className="py-2 md:py-[2px] w-full md:w-auto text-xs font-mono border-green-500/50 text-green-400"
         >
-          <Users className="w-3 h-3 mr-1" />
-          {user.isLoading ? (
-            <span className="animate-pulse">...</span>
-          ) : (
-            `${user.socialCounts?.followers || 0} followers`
-          )}
+          <span className="flex items-center justify-center w-full">
+            <Users className="w-3 h-3 mr-1" />
+            {user.isLoading ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              `${user.socialCounts?.followers || 0} followers`
+            )}
+          </span>
         </Badge>
       </Button>
 
       <Button variant="ghost" onClick={() => handleOpenModal('following')}>
         <Badge
           variant="outline"
-          className="text-xs font-mono border-green-500/50 text-green-400"
+          className="py-2 md:py-[2px] w-full md:w-auto text-xs font-mono border-green-500/50 text-green-400"
         >
-          <Users className="w-3 h-3 mr-1" />
-          {user.isLoading ? (
-            <span className="animate-pulse">...</span>
-          ) : (
-            `${user.socialCounts?.following || 0} following`
-          )}
+          <span className="flex items-center justify-center w-full">
+            <Users className="w-3 h-3 mr-1" />
+            {user.isLoading ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              `${user.socialCounts?.following || 0} following`
+            )}
+          </span>
         </Badge>
       </Button>
 
@@ -66,17 +69,13 @@ export function SocialStats({ user }: Props) {
         isOpen={displayModal}
         onClose={() => setDisplayModal(false)}
         title={`View ${selectedTab}`}
-        className="!max-w-[500px]"
+        className="!max-w-[500px] mr-1 ml-1"
       >
         {data?.length ? (
-          <ul>
-            {data.map((elem, index) => (
-              <li key={index} className="hover:underline">
-                <Link href={route('address', { id: elem.username })}>
-                  {elem.username}
-                </Link>
-              </li>
-            ))}
+          <ul className="h-[400px] overflow-auto">
+            {data.map((elem) => {
+              return <ProfileCard key={elem.id} profile={elem} />
+            })}
           </ul>
         ) : (
           <p className="text-center text-gray-500">No {selectedTab} found.</p>

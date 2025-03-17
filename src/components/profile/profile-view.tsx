@@ -11,11 +11,8 @@ interface Props {
 }
 
 export function ProfileView({ username }: Props) {
-  // Get the mainUsername from the useCurrentWallet hook
   const { mainUsername } = useCurrentWallet()
-
   const { profileData, isLoading } = useProfileData(username, mainUsername)
-
   const targetWalletAddress = profileData?.walletAddress || ''
   const isOwnWallet = mainUsername === username
 
@@ -36,7 +33,7 @@ export function ProfileView({ username }: Props) {
         isOwnProfile={isOwnWallet}
       />
       {username && <ProfileIdentities walletAddress={targetWalletAddress} />}
-      <div className="container mx-auto">
+      <div className="mx-6">
         <ProfileTabs
           username={username}
           targetWalletAddress={targetWalletAddress}

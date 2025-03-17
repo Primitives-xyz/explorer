@@ -1,7 +1,7 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { IGetSocialResponse } from '@/types/profile.types'
 import type { Transaction } from '@/utils/helius/types'
 import { useEffect, useState, useMemo } from 'react'
-import type { GetFollowingResponse } from '../types'
 
 // Helper to fetch transactions for a single wallet
 async function fetchWalletTransactions(
@@ -11,8 +11,7 @@ async function fetchWalletTransactions(
   url.searchParams.set('address', walletId)
   url.searchParams.set('limit', '7') // Limit to 7 transactions per wallet
 
-  // Always fetch all transaction types
-  // No type filtering at API level
+  // Always fetch all transaction types - no filtering at API level
 
   try {
     const response = await fetch(url)
@@ -30,9 +29,7 @@ async function fetchWalletTransactions(
   }
 }
 
-export const useFollowingTransactions = (
-  following: GetFollowingResponse | undefined
-) => {
+export const useFollowingTransactions = (following?: IGetSocialResponse) => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
   const [loadedWallets, setLoadedWallets] = useState<Set<string>>(new Set())
@@ -40,7 +37,6 @@ export const useFollowingTransactions = (
   const [selectedType, setSelectedType] = useState<string>('all')
   const { walletAddress } = useCurrentWallet()
 
-  // Fetch all transactions only when following or wallet changes
   useEffect(() => {
     setLoadedWallets(new Set())
     setTotalWallets(following?.profiles?.length ?? 0)
@@ -61,9 +57,8 @@ export const useFollowingTransactions = (
 
         const transactionsByWallet: { [key: string]: Transaction[] } = {}
 
-        // Fetch transactions for all wallets concurrently
+        // Fetch transactions for all wallets concurrently - always fetch all types
         const fetchPromises = walletIds.map(async (walletId) => {
-          // Always fetch all transaction types
           const transactions = await fetchWalletTransactions(walletId)
           transactionsByWallet[walletId] = transactions
           setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
@@ -90,7 +85,7 @@ export const useFollowingTransactions = (
     }
 
     fetchAllTransactions()
-  }, [following, walletAddress]) // Removed selectedType dependency
+  }, [following, walletAddress]) // Removed selectedType dependency to avoid refetching
 
   // Filter transactions client-side based on selectedType
   const aggregatedTransactions = useMemo(() => {

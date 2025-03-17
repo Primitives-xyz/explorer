@@ -1,20 +1,21 @@
 import { useNFTImage } from '@/hooks/use-nft-image'
 import { route } from '@/utils/routes'
 import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { TokenAddress } from './token-address'
 
 interface NFTGridProps {
   tokens: (NFT | TokenWithInscription | FungibleToken)[]
-  onImageClick: (url: string, symbol: string) => void
+  onImageClick: (token: NFT | TokenWithInscription | FungibleToken) => void
   onAddressSearch?: (address: string) => void
 }
 
 interface NFTImageContainerProps {
   token: NFT | TokenWithInscription | FungibleToken
   name: string
-  onImageClick: (url: string, symbol: string) => void
+  onImageClick: (token: NFT | TokenWithInscription | FungibleToken) => void
   onImageError: () => void
 }
 
@@ -24,20 +25,28 @@ const NFTImageContainer = ({
   onImageClick,
   onImageError,
 }: NFTImageContainerProps) => {
-  const { url: imageUrl, isLoading: imageLoading } = useNFTImage(token.content)
+  const { url: imageUrl, isLoading: imageLoading } = useNFTImage(token as NFT)
+
+  // If we don't have a valid imageUrl from useNFTImage, fall back to other image sources
+  const finalImageUrl =
+    imageUrl ||
+    token.imageUrl ||
+    token.metadata?.image ||
+    (token.links?.image ?? null)
+  const isLoading = imageLoading && !finalImageUrl
 
   return (
     <div className="relative aspect-square w-full mb-4 bg-black/20 rounded-lg overflow-hidden">
-      {imageLoading ? (
+      {isLoading ? (
         <div className="w-full h-full flex items-center justify-center">
           <div className="animate-pulse w-full h-full bg-gradient-to-br from-green-900/40 to-green-800/20" />
         </div>
-      ) : imageUrl ? (
+      ) : finalImageUrl ? (
         <img
-          src={imageUrl}
+          src={finalImageUrl}
           alt={name}
           className="w-full h-full object-cover cursor-pointer transition-transform duration-200 group-hover:scale-105"
-          onClick={() => onImageClick(imageUrl, name)}
+          onClick={() => onImageClick(token)}
           onError={onImageError}
         />
       ) : (
@@ -50,6 +59,7 @@ const NFTImageContainer = ({
 }
 
 export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
+  const t = useTranslations()
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
   const router = useRouter()
 
@@ -139,26 +149,23 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
             <div className="space-y-2">
               <button
                 onClick={() => router.push(route('address', { id: token.id }))}
-                className=" font-mono text-base truncate font-semibold group-hover: transition-colors w-full text-left hover:"
+                className="font-mono text-base uppercase truncate group-hover: transition-colors w-full text-left hover:"
               >
-                {name}
+                <div className="flex flex-row gap-2">
+                  <p>{t('portfolio_assets.name')}:</p>
+                  <p>
+                    {name} {symbol.length ? <span>({symbol})</span> : null}
+                  </p>
+                </div>
               </button>
-              {symbol && (
-                <button
-                  onClick={() =>
-                    router.push(route('address', { id: token.id }))
-                  }
-                  className=" font-mono text-sm group-hover: transition-colors w-full text-left hover:"
-                >
-                  {symbol}
-                </button>
-              )}
-              <div className="/80 font-mono text-xs flex items-center gap-1">
-                <span className="">NFT:</span>
-                <TokenAddress address={token.id} />
+              <div className="font-mono text-base uppercase flex items-center gap-1">
+                <div className="flex items-center gap-1">
+                  {t('portfolio_assets.mint')}:
+                  <TokenAddress address={token.id} />
+                </div>
               </div>
-              <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
-                <span className="">Creator:</span> {formatCreators(creators)}
+              <div className="flex items-center font-mono text-base uppercase group-hover:/80 transition-colors">
+                {t('portfolio_assets.create')}: {formatCreators(creators)}
               </div>
 
               {/* Supply Info for NFTs */}
