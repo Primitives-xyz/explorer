@@ -20,15 +20,17 @@ export const formatNumber = (
   number: number,
   { withComma = false }: { withComma?: boolean } = {}
 ) => {
+  if (isNaN(number)) return '0.00'
+
   if (withComma) {
-    return number?.toLocaleString('en-US')
+    return number.toLocaleString('en-US')
   } else {
-    if (number >= 1000 && number <= 999999) {
-      return `${Math.round((number / 1000) * 10) / 10}K`
-    } else if (number >= 1000000) {
-      return `${Math.floor((number / 1000000) * 10) / 10}M`
+    if (number >= 1_000_000) {
+      return `${(number / 1_000_000).toFixed(1)}M`
+    } else if (number >= 1000) {
+      return `${(number / 1000).toFixed(1)}K`
     } else {
-      return number
+      return number.toFixed(2).toString()
     }
   }
 }
