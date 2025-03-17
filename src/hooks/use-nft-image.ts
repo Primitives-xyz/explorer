@@ -1,29 +1,5 @@
 import { NFT } from '@/utils/types'
 import { useEffect, useState } from 'react'
-interface NFTContent {
-  $schema?: string
-  json_uri?: string
-  files?: Array<{
-    uri: string
-    cdn_uri?: string
-    mime?: string
-    type?: string
-  }>
-  metadata: {
-    name: string
-    symbol: string
-    description: string
-    attributes?: Array<{
-      trait_type: string
-      value: string
-    }>
-    image?: string
-  }
-  links?: {
-    image?: string
-    external_url?: string
-  }
-}
 
 interface ImageState {
   url: string | null
@@ -34,15 +10,6 @@ interface ImageState {
 
 export function useNFTImage(nft: NFT) {
   const content = nft?.content || false
-
-  if (!content && nft.imageUrl) {
-    return {
-      url: nft.imageUrl,
-      isLoading: false,
-      error: null,
-      source: 'direct',
-    }
-  }
   const [imageState, setImageState] = useState<ImageState>({
     url: null,
     isLoading: false,
@@ -51,6 +18,16 @@ export function useNFTImage(nft: NFT) {
   })
 
   useEffect(() => {
+    if (!content && nft.imageUrl) {
+      setImageState({
+        url: nft.imageUrl,
+        isLoading: false,
+        error: null,
+        source: 'direct',
+      })
+      return
+    }
+
     async function resolveImage() {
       if (!content) {
         setImageState({
