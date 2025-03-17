@@ -151,7 +151,6 @@ export function useToast() {
 
   useEffect(() => {
     const listener = (newState: State) => {
-      console.log('Updated toasts:', newState.toasts)
       setState({ ...newState })
     }
 

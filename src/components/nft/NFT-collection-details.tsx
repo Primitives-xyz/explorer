@@ -91,7 +91,7 @@ export default function NFTCollectionDetail({
   const [activeTab, setActiveTab] = useState<'nfts' | 'activity'>('nfts')
 
   return (
-    <div className="py-6 px-4 md:px-10 max-w-[1400px] mx-auto">
+    <div className="py-6 px-4  mx-auto">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -101,7 +101,7 @@ export default function NFTCollectionDetail({
         {tokenInfo ? (
           <div className="flex flex-col gap-8 md:flex-row h-full">
             {/* Collection Image and Info */}
-            <motion.div variants={itemVariants} className="md:w-1/3">
+            <motion.div variants={itemVariants} className="md:w-1/4">
               <div className="sticky top-4">
                 {tokenInfo.content.links?.image ? (
                   <motion.div
@@ -110,7 +110,7 @@ export default function NFTCollectionDetail({
                     className="relative group overflow-hidden rounded-xl border border-green-800/40 bg-gradient-to-br from-black/40 to-black/20"
                   >
                     <Link href={tokenInfo.content.links.image} target="_blank">
-                      <div className="relative aspect-square">
+                      <div className="relative aspect-square ">
                         <Image
                           src={tokenInfo.content.links.image}
                           alt={tokenInfo.content.metadata.symbol}
@@ -199,7 +199,7 @@ export default function NFTCollectionDetail({
             </motion.div>
 
             {/* Stats and Content */}
-            <motion.div variants={itemVariants} className="md:w-2/3">
+            <motion.div variants={itemVariants} className="md:w-3/4">
               {/* Stats Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {isLoading ? (

@@ -1,4 +1,4 @@
-import { NFT } from '@/utils/types'
+import { FungibleToken, NFT } from '@/utils/types'
 import { useEffect, useState } from 'react'
 
 interface ImageState {
@@ -8,7 +8,7 @@ interface ImageState {
   source: 'direct' | 'cdn' | 'file' | 'json' | 'metadata' | null
 }
 
-export function useNFTImage(nft: NFT) {
+export function useNFTImage(nft: NFT | FungibleToken) {
   const content = nft?.content || false
   const [imageState, setImageState] = useState<ImageState>({
     url: null,

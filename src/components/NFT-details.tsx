@@ -42,13 +42,6 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
   const [activeTab, setActiveTab] = useState<NFTTab>(NFTTab.Technical)
   const [isHovered, setIsHovered] = useState(false)
 
-  console.log('NFTDetails - Current wallet address:', walletAddress)
-  console.log('NFTDetails - NFT owner:', tokenInfo.ownership.owner)
-  console.log(
-    'NFTDetails - Is owner?',
-    walletAddress === tokenInfo.ownership.owner
-  )
-
   const nft = magicEdenNFTToNFT(magicEdenNFT)
   const isOwner = walletAddress === nft?.owner
   const isListed = nft?.marketplace?.listed

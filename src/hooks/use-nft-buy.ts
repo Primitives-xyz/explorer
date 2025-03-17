@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { useToast } from '@/hooks/use-toast'
 
-import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { Connection, Transaction, VersionedTransaction } from '@solana/web3.js'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { NFT } from '@/utils/types'
@@ -123,9 +123,11 @@ export function useNftBuy(nft: NFT | null, refreshNFTs: () => void) {
       if (buyResData.error) {
         throw new Error(buyResData.error)
       }
+      const txNew = new Transaction()
 
       // Step 2: Deserialize the transaction
       const serializedBuffer = Buffer.from(buyResData.buyTx, 'base64')
+
       const vtx: VersionedTransaction = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
