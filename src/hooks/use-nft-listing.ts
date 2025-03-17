@@ -1,15 +1,15 @@
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
+import { useFetchAuctionHouse } from '@/hooks/use-fetch-auction-house'
 import { useToast } from '@/hooks/use-toast'
 
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 
-// Cache for collection symbols and auction houses to prevent redundant API calls
+// Cache for collection symbols to prevent redundant API calls
 const collectionSymbolCache = new Map<string, string>()
-const auctionHouseCache = new Map<string, string>()
 
 export function useNftListing({
   tokenId,
@@ -25,6 +25,7 @@ export function useNftListing({
   const { toast } = useToast()
   const [listAmount, setListAmount] = useState<string>('')
   const [showNftListLoading, setShowNftListLoading] = useState<boolean>(false)
+  const { fetchAuctionHouse } = useFetchAuctionHouse()
 
   const validateAmount = (value: string): boolean => {
     // Empty check
@@ -69,34 +70,6 @@ export function useNftListing({
     }
   }
 
-  // Fetch auction house address only when needed
-  const fetchAuctionHouse = async (
-    collectionSymbol: string
-  ): Promise<string | null> => {
-    try {
-      // Check if we already have this auction house in cache
-      if (auctionHouseCache.has(collectionSymbol)) {
-        return auctionHouseCache.get(collectionSymbol) || null
-      }
-
-      const auctionHouseRes = await fetch(
-        `/api/magiceden/collection/${collectionSymbol}/auctionHouse`
-      )
-      const auctionHouseResData = await auctionHouseRes.json()
-      const auctionHouseAddress = auctionHouseResData.auctionHouse
-
-      // Cache the result
-      if (auctionHouseAddress) {
-        auctionHouseCache.set(collectionSymbol, auctionHouseAddress)
-      }
-
-      return auctionHouseAddress || null
-    } catch (error) {
-      console.error('Error fetching auction house info:', error)
-      return null
-    }
-  }
-
   const handleNftList = async () => {
     try {
       setShowNftListLoading(true)
@@ -124,17 +97,7 @@ export function useNftListing({
       }
 
       // Fetch auction house
-      const auctionHouse = await fetchAuctionHouse(collectionSymbol)
-      if (!auctionHouse) {
-        toast({
-          title: t('trade.transaction_failed'),
-          description: t('trade.auction_house_not_found'),
-          variant: 'error',
-          duration: 5000,
-        })
-        return
-      }
-
+      const auctionHouse = await fetchAuctionHouse(collectionFamily)
       // Step 1: Fetch listing transaction from backend
       const listRes = await fetch(
         `/api/magiceden/instructions/list?seller=${walletAddress}&auctionHouseAddress=${auctionHouse}&tokenMint=${tokenId}&tokenAccount=${tokenId}&price=${Number(

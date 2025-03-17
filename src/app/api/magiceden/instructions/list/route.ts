@@ -8,27 +8,29 @@ export async function GET(request: NextRequest) {
     const tokenMint = searchParams.get('tokenMint')
     const tokenAccount = searchParams.get('tokenAccount')
     const price = searchParams.get('price')
-    const ME_API_KEY = process.env.NEXT_ME_API_KEY || ""
+    const ME_API_KEY = process.env.NEXT_ME_API_KEY || ''
 
-    if (!seller || !auctionHouseAddress || !tokenMint || !tokenAccount || !price) {
+    if (
+      !seller ||
+      !auctionHouseAddress ||
+      !tokenMint ||
+      !tokenAccount ||
+      !price
+    ) {
       return NextResponse.json(
-        { error: "endpoint query requested" },
+        { error: 'endpoint query requested' },
         { status: 400 }
       )
     }
 
     if (!ME_API_KEY.length) {
-      return NextResponse.json(
-        { error: 'No Bearer token' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No Bearer token' }, { status: 400 })
     }
-
 
     const reqUrl = `https://api-mainnet.magiceden.dev/v2/instructions/sell?seller=${seller}&auctionHouseAddress=${auctionHouseAddress}&tokenMint=${tokenMint}&tokenAccount=${tokenAccount}&price=${price}`
 
     const response = await fetch(reqUrl, {
-      method: "GET",
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${ME_API_KEY}`,
       },

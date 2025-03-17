@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     }
 
     const response = await fetch(
-      `https://api-mainnet.magiceden.dev/v2/collections/${id}/listings?limit=1`,
+      `https://api-mainnet.magiceden.dev/v2/collections/${id}/listings?limit=5`,
       {
         method: 'GET',
         headers: {
@@ -27,11 +27,12 @@ export async function GET(req: NextRequest, context: RouteContext) {
       }
     )
     const datas = await response.json()
-
     if (datas && datas.length > 0) {
-      const [data] = datas
+      const auctionHouse = datas.find(
+        (item: any) => item.auctionHouse && item.auctionHouse !== ''
+      )?.auctionHouse
       return NextResponse.json({
-        auctionHouse: data.auctionHouse,
+        auctionHouse,
       })
     } else {
       return NextResponse.json(
