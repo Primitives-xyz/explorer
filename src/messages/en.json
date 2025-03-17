@@ -145,6 +145,8 @@
     "7d": "7D"
   },
   "trade": {
+    "the_cancel_transaction_was_successful": "The Nft Cancel transaction was successful",
+    "the_cancel_transaction_failed_please_try_again": "The Nft Cancel transaction failed. Please try again.",
     "refresh_quote_and_balances": "Refresh Quote and Balances",
     "swap_tokens": "Swap",
     "unstake_sse": "UnStake SSE",

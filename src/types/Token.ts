@@ -56,7 +56,7 @@ export interface BaseTokenInfo {
     verified?: boolean
     share?: number
   }>
-  supply: any | null
+  supply?: any
   mutable: boolean
   burnt: boolean
   plugins?: Record<string, any>

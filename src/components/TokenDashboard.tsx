@@ -4,13 +4,13 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useNFTImage } from '@/hooks/use-nft-image'
 import { useGetWalletTokens } from '@/hooks/use-token-data'
 import { formatNumber } from '@/utils/format'
+import { route } from '@/utils/routes'
 import { FungibleToken } from '@/utils/types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { route } from '@/utils/routes'
 import { ImageModal } from './tokens/image-modal'
 
 // Token Image component
@@ -21,14 +21,14 @@ const TokenImage = ({
   token: FungibleToken
   onImageClick: (url: string, symbol: string) => void
 }) => {
-  const { url: imageUrl } = useNFTImage(token.content)
+  const { url: imageUrl } = useNFTImage(token)
 
   return (
     <div
       className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center"
       onClick={(e) => {
-        e.stopPropagation();
-        imageUrl && onImageClick(imageUrl, token.symbol);
+        e.stopPropagation()
+        imageUrl && onImageClick(imageUrl, token.symbol)
       }}
     >
       {imageUrl ? (

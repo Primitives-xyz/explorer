@@ -16,22 +16,30 @@ export async function GET(req: NextRequest, context: RouteContext) {
       )
     }
 
+    const options = { method: 'GET', headers: { accept: 'application/json' } }
 
-    const options = { method: 'GET', headers: { accept: 'application/json' } };
-
-    const response = await fetch(`https://api-mainnet.magiceden.dev/v2/collections/${id}/listings?limit=1`, options)
+    const response = await fetch(
+      `https://api-mainnet.magiceden.dev/v2/collections/${id}/listings?limit=1`,
+      options
+    )
     const datas = await response.json()
 
-    if (datas) {
+    if (datas && datas.length > 0) {
       const [data] = datas
       return NextResponse.json({
-        auctionHouse: data.auctionHouse
+        auctionHouse: data.auctionHouse,
       })
     } else {
-      return NextResponse.json({ error: "Failed to fetch collection auctionhouse" }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Failed to fetch collection auctionhouse' },
+        { status: 500 }
+      )
     }
   } catch (error: any) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch collection auctionhouse'
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : 'Failed to fetch collection auctionhouse'
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

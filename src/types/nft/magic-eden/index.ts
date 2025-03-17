@@ -1,6 +1,6 @@
 // Local types and hooks
 import type { NFTTokenInfo } from '@/types/Token'
-export interface CollectionList {
+export interface CollectionListItem {
   pdaAddress: string
   auctionHouse: string
   tokenAddress: string
@@ -57,9 +57,11 @@ export interface CollectionList {
 }
 
 export interface CollectionStat {
+  symbol?: string
   floorPrice: number
   listedCount: number
   volume24hr: number
+  avgPrice24hr?: number
   txns24hr: number
   volumeAll: number
   supply: number
@@ -69,4 +71,60 @@ export interface CollectionStat {
 export interface NftCollectionDetailProps {
   id: string
   tokenInfo: NFTTokenInfo
+}
+
+export interface MagicEdenNFT {
+  // Core identifiers
+  mintAddress: string
+  name: string
+
+  // Ownership & Control
+  owner: string
+  updateAuthority: string
+  primarySaleHappened: boolean
+  sellerFeeBasisPoints: number
+
+  // Classification
+  supply: number
+  collection: string
+  collectionName: string
+  isCompressed: boolean
+
+  // Media
+  image: string
+
+  // Attributes & Properties
+  attributes: Array<{
+    trait_type: string
+    value: string
+  }>
+  properties: {
+    files: Array<{
+      uri: string
+    }>
+    // Optional fields that might be present
+    creators?: Array<{
+      address: string
+      share?: number
+    }>
+    edition?: number
+  }
+
+  // Marketplace data
+  price?: number
+  listStatus?: string
+  tokenAddress?: string
+  priceInfo?: {
+    solPrice: {
+      rawAmount: string
+      address: string
+      decimals: number
+    }
+  }
+
+  // Additional metadata that might be present
+  description?: string
+  externalUrl?: string
+  animationUrl?: string
+  category?: string
 }

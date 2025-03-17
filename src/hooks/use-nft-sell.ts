@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react"
-import { useTranslations } from "next-intl"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from '@/hooks/use-toast'
+import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 
-import { Connection, VersionedTransaction } from "@solana/web3.js"
-
-import { NFTTokenInfo } from "@/types/Token"
+import { Connection, VersionedTransaction } from '@solana/web3.js'
 
 interface OfferInterface {
   pdaAddress: string
@@ -18,18 +16,20 @@ interface OfferInterface {
 }
 
 export function useNftSell(
-  token: NFTTokenInfo | null,
+  tokenId: string,
   walletAddress: string,
   primaryWallet: any
 ) {
   const { toast } = useToast()
   const t = useTranslations()
   const [showNftSellLoading, setShowNftSellLoading] = useState<boolean>(false)
-  const [bestSellOffer, setBestSellOffer] = useState<OfferInterface | null>(null)
+  const [bestSellOffer, setBestSellOffer] = useState<OfferInterface | null>(
+    null
+  )
 
   const handleNftSell = async () => {
     try {
-      if (!token || !bestSellOffer) {
+      if (!tokenId || !bestSellOffer) {
         toast({
           title: 'Not Found offer for sell',
           description: t('Not Found offer for sell. Try try again later'),
@@ -104,11 +104,11 @@ export function useNftSell(
   }
 
   useEffect(() => {
-    if (!token) return
-    (async () => {
+    if (!tokenId) return
+    ;(async () => {
       try {
         const bestOfferRes = await fetch(
-          `/api/magiceden/tokens/${token.id}/offers_received`
+          `/api/magiceden/tokens/${tokenId}/offers_received`
         )
         const bestOfferResData = await bestOfferRes.json()
         setBestSellOffer(bestOfferResData.bestOffer)
@@ -116,11 +116,11 @@ export function useNftSell(
         console.error('Error fetching token info:', error)
       }
     })()
-  }, [token])
+  }, [tokenId])
 
   return {
     handleNftSell,
     showNftSellLoading,
-    bestSellOffer
+    bestSellOffer,
   }
 }
