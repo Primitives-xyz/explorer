@@ -49,3 +49,11 @@ export function formatUSD(num: number): string {
 export function shortenAddress(address: string, chars = 4): string {
   return `${address.slice(0, chars)}...${address.slice(-chars)}`
 }
+
+export function formatTokenBalance(balance: number, decimals: number): number {
+  if (balance === undefined || balance === null) return 0
+  if (decimals === undefined || decimals === null) return balance
+  
+  // Adjust the balance by moving the decimal point according to the token's decimals
+  return balance / Math.pow(10, decimals)
+}
