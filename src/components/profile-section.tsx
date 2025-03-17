@@ -12,7 +12,7 @@ import { getProfiles, type Profile } from '@/utils/api'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { handleProfileNavigation } from '@/utils/profile-navigation'
 import { route } from '@/utils/routes'
-import { Plus } from 'lucide-react'
+import { ArrowDown, ArrowUp, Plus, Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
@@ -73,6 +73,12 @@ const ProfileCard = memo(
       isExplorerApp && typeof stats?.following === 'number'
         ? stats.following
         : 0
+
+    // Store follower count in profile object for sorting
+    profile.followStats = {
+      followers,
+      following
+    }
 
     const handleProfileClick = useCallback(() => {
       if (!profile) return // Add guard clause
@@ -222,6 +228,9 @@ export const ProfileSection = ({
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const t = useTranslations()
+  
+  // Add new state for sorting
+  const [sortByFollowers, setSortByFollowers] = useState<'none' | 'asc' | 'desc'>('none')
 
   const getReadableNamespace = (namespace: any) => {
     // Special cases for namespace display names
@@ -236,14 +245,38 @@ export const ProfileSection = ({
     )
   }
 
-  // Memoize filtered profiles
-  const filteredProfiles = useMemo(() => {
+  // Toggle sort function
+  const toggleSortByFollowers = useCallback(() => {
+    setSortByFollowers((prev) => {
+      if (prev === 'none') return 'desc'
+      if (prev === 'desc') return 'asc'
+      return 'none'
+    })
+  }, [])
+
+  // Memoize filtered and sorted profiles
+  const filteredAndSortedProfiles = useMemo(() => {
     if (!profiles || !Array.isArray(profiles)) return []
-    if (!selectedNamespace) return profiles
-    return profiles.filter(
-      (profile) => profile?.namespace?.name === selectedNamespace
-    )
-  }, [profiles, selectedNamespace])
+    
+    // First filter by namespace if selected
+    let result = !selectedNamespace 
+      ? [...profiles] 
+      : profiles.filter(profile => profile?.namespace?.name === selectedNamespace)
+    
+    // Then sort by followers if applicable
+    if (sortByFollowers !== 'none') {
+      result = [...result].sort((a, b) => {
+        const followersA = a.followStats?.followers || 0
+        const followersB = b.followStats?.followers || 0
+        
+        return sortByFollowers === 'desc' 
+          ? followersB - followersA 
+          : followersA - followersB
+      })
+    }
+    
+    return result
+  }, [profiles, selectedNamespace, sortByFollowers])
 
   // Memoize unique namespaces
   const namespaces = useMemo(() => {
@@ -268,6 +301,7 @@ export const ProfileSection = ({
   const resetState = useCallback(() => {
     setProfiles([])
     setSelectedNamespace(null)
+    setSortByFollowers('none')
     setError(null)
     setIsLoading(false)
   }, [])
@@ -340,20 +374,45 @@ export const ProfileSection = ({
 
   if (!shouldShowContent) return null
 
+  // Function to render the sort icon
+  const renderSortIcon = () => {
+    if (sortByFollowers === 'none') {
+      return <Search size={16} />
+    } else if (sortByFollowers === 'desc') {
+      return <ArrowDown size={16} />
+    } else {
+      return <ArrowUp size={16} />
+    }
+  }
+
   return (
     <DataContainer
       key={key}
       title={title}
-      count={profileData?.totalCount ?? filteredProfiles?.length ?? 0}
+      count={profileData?.totalCount ?? filteredAndSortedProfiles?.length ?? 0}
       error={error}
       height="large"
       headerRight={
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10  transition-colors"
-        >
-          <Plus size={16} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleSortByFollowers}
+            className="flex items-center gap-1 px-2 py-1 rounded bg-green-900/20 hover:bg-green-900/40 transition-colors text-xs font-mono"
+            title={sortByFollowers === 'none' 
+              ? t('profile_info.sort_by_followers') 
+              : sortByFollowers === 'desc' 
+                ? t('profile_info.sort_followers_descending') 
+                : t('profile_info.sort_followers_ascending')}
+          >
+            {t('profile_info.followers')}
+            {renderSortIcon()}
+          </button>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-500/10 transition-colors"
+          >
+            <Plus size={16} />
+          </button>
+        </div>
       }
     >
       {/* Domain Creation Modal */}
@@ -409,12 +468,12 @@ export const ProfileSection = ({
       {/* Profile List */}
       <ScrollableContent
         isLoading={isLoading || isLoadingProfileData}
-        isEmpty={filteredProfiles.length === 0}
+        isEmpty={filteredAndSortedProfiles.length === 0}
         loadingText={t('profile_info.fetching_profiles')}
         emptyText={t('profile_info.no_profile_found')}
       >
         <div className="divide-y divide-green-800/30">
-          {filteredProfiles.map((profile) => (
+          {filteredAndSortedProfiles.map((profile) => (
             <ProfileCard
               key={`${profile.profile.username}-${profile.namespace?.name}`}
               profile={profile}

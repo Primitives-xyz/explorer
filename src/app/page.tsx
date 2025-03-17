@@ -1,6 +1,7 @@
 'use client'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { MostFollowedFeed } from '@/components/MostFollowedFeed'
 import { ProfileSection } from '@/components/profile-section'
 import { ActivityFeedContainer } from '@/components/profile/following-container'
 import SearchBar from '@/components/search-bar'
@@ -85,6 +86,7 @@ export default function Home() {
 
       {/* Following list for logged-in users */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+        <MostFollowedFeed />
         <TrendingTokens />
         <TopTraders />
       </div>
