@@ -39,6 +39,7 @@ export default function Home() {
         throw new Error('Failed to fetch profiles')
       }
       const data = await response.json()
+      console.log(data)
       setProfileData(data)
     } catch (err) {
       console.error('Error fetching profiles:', err)
@@ -86,7 +87,7 @@ export default function Home() {
 
       {/* Following list for logged-in users */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        <MostFollowedFeed />
+        {/* <MostFollowedFeed /> */}
         <TrendingTokens />
         <TopTraders />
       </div>
