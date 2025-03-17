@@ -15,7 +15,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Modal } from '../common/modal'
-import { Tooltip, TooltipTrigger } from '../ui/tooltip'
+import { Tooltip, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 
 interface NFTListingModalProps {
   isOpen: boolean
@@ -383,36 +383,38 @@ export function NFTListingModal({
           ) : (
             floorPrice > 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
-                {priceSuggestions.map((suggestion) => (
-                  <Tooltip key={suggestion.label}>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setListAmount(
-                            suggestion.value
+                {priceSuggestions.map((suggestion, index) => (
+                  <TooltipProvider key={index}>
+                    <Tooltip key={suggestion.label + index}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setListAmount(
+                              suggestion.value
+                                ? suggestion.value.toFixed(2)
+                                : (
+                                    floorPrice * (suggestion.multiplier || 1)
+                                  ).toFixed(2)
+                            )
+                          }
+                          className="px-3 py-1.5 text-xs bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 rounded-md transition-colors flex flex-col items-center"
+                        >
+                          <span className="text-gray-300 mb-0.5">
+                            {suggestion.label}
+                          </span>
+                          <span className="font-bold text-green-400">
+                            ◎{' '}
+                            {suggestion.value
                               ? suggestion.value.toFixed(2)
                               : (
                                   floorPrice * (suggestion.multiplier || 1)
-                                ).toFixed(2)
-                          )
-                        }
-                        className="px-3 py-1.5 text-xs bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 rounded-md transition-colors flex flex-col items-center"
-                      >
-                        <span className="text-gray-300 mb-0.5">
-                          {suggestion.label}
-                        </span>
-                        <span className="font-bold text-green-400">
-                          ◎{' '}
-                          {suggestion.value
-                            ? suggestion.value.toFixed(2)
-                            : (
-                                floorPrice * (suggestion.multiplier || 1)
-                              ).toFixed(2)}
-                        </span>
-                      </button>
-                    </TooltipTrigger>
-                  </Tooltip>
+                                ).toFixed(2)}
+                          </span>
+                        </button>
+                      </TooltipTrigger>
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
               </div>
             )
