@@ -33,7 +33,7 @@ export function ProfileView({ username }: Props) {
         isOwnProfile={isOwnWallet}
       />
       {username && <ProfileIdentities walletAddress={targetWalletAddress} />}
-      <div className="container mx-auto">
+      <div className="mx-6">
         <ProfileTabs
           username={username}
           targetWalletAddress={targetWalletAddress}

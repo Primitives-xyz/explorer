@@ -15,7 +15,7 @@ export function NFTShowcaseContainer({
   const [page, setPage] = useState<number>(1)
   const [hasMore, setHasMore] = useState<boolean>(true)
 
-  const { nfts, isLoading, error } = useMagicEdenNFTs(walletAddress)
+  const { nfts, isLoading, error, mutate } = useMagicEdenNFTs(walletAddress)
 
   // Initial load
   useEffect(() => {
@@ -30,19 +30,21 @@ export function NFTShowcaseContainer({
       setPage(nextPage)
     }
   }, [isLoading, hasMore, page])
-  console.log({ nfts })
 
   return (
     <div className="space-y-4">
-      <NFTShowcase nfts={nfts} isLoading={isLoading} error={error} />
+      <NFTShowcase
+        nfts={nfts}
+        isLoading={isLoading}
+        error={error}
+        refreshNFTs={() => mutate()}
+      />
 
-      {hasMore && !error && (
-        <LoadMoreObserver
-          hasMore={hasMore}
-          onLoadMore={loadMore}
-          loading={isLoading}
-        />
-      )}
+      <LoadMoreObserver
+        hasMore={hasMore}
+        onLoadMore={loadMore}
+        loading={isLoading}
+      />
     </div>
   )
 }

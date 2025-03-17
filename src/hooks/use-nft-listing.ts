@@ -6,13 +6,20 @@ import { useToast } from '@/hooks/use-toast'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { NFT } from '@/utils/types'
 
 // Cache for collection symbols and auction houses to prevent redundant API calls
 const collectionSymbolCache = new Map<string, string>()
 const auctionHouseCache = new Map<string, string>()
 
-export function useNftListing(token: NFT | null) {
+export function useNftListing({
+  tokenId,
+  collectionFamily,
+  refreshNFTs,
+}: {
+  tokenId: string
+  collectionFamily: string
+  refreshNFTs: () => void
+}) {
   const { walletAddress, primaryWallet } = useCurrentWallet()
   const t = useTranslations()
   const { toast } = useToast()
@@ -73,7 +80,7 @@ export function useNftListing(token: NFT | null) {
       }
 
       const auctionHouseRes = await fetch(
-        `/api/magiceden/collection/${collectionSymbol}/zauctionHouse`
+        `/api/magiceden/collection/${collectionSymbol}/auctionHouse`
       )
       const auctionHouseResData = await auctionHouseRes.json()
       const auctionHouseAddress = auctionHouseResData.auctionHouse
@@ -94,16 +101,6 @@ export function useNftListing(token: NFT | null) {
     try {
       setShowNftListLoading(true)
 
-      if (!token) {
-        toast({
-          title: t('trade.transaction_failed'),
-          description: t('trade.the_list_transaction_failed_please_try_again'),
-          variant: 'error',
-          duration: 5000,
-        })
-        return
-      }
-
       if (!validateAmount(listAmount)) {
         toast({
           title: 'List Amount Error',
@@ -114,20 +111,8 @@ export function useNftListing(token: NFT | null) {
         return
       }
 
-      // Get collection address
-      const collectionAddress = token.metadata?.collection?.family
-      if (!collectionAddress) {
-        toast({
-          title: t('trade.transaction_failed'),
-          description: t('trade.missing_collection_information'),
-          variant: 'error',
-          duration: 5000,
-        })
-        return
-      }
-
       // Fetch collection symbol
-      const collectionSymbol = await fetchCollectionSymbol(collectionAddress)
+      const collectionSymbol = await fetchCollectionSymbol(collectionFamily)
       if (!collectionSymbol) {
         toast({
           title: t('trade.transaction_failed'),
@@ -152,9 +137,9 @@ export function useNftListing(token: NFT | null) {
 
       // Step 1: Fetch listing transaction from backend
       const listRes = await fetch(
-        `/api/magiceden/instructions/list?seller=${walletAddress}&auctionHouseAddress=${auctionHouse}&tokenMint=${
-          token.id
-        }&tokenAccount=${token.id}&price=${Number(listAmount)}`
+        `/api/magiceden/instructions/list?seller=${walletAddress}&auctionHouseAddress=${auctionHouse}&tokenMint=${tokenId}&tokenAccount=${tokenId}&price=${Number(
+          listAmount
+        )}`
       )
       const listResData = await listRes.json()
 
@@ -197,7 +182,6 @@ export function useNftListing(token: NFT | null) {
 
       // Step 8: Dismiss the confirmation toast
       confirmToast.dismiss()
-
       // Step 9: Handle transaction success or failure
       if (tx.value.err) {
         toast({
@@ -215,6 +199,10 @@ export function useNftListing(token: NFT | null) {
           variant: 'success',
           duration: 5000,
         })
+        // wait like 250 ms
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        console.log('Refreshing NFTs')
+        refreshNFTs()
       }
     } catch (error) {
       toast({

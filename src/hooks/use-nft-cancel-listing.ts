@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 import { useToast } from '@/hooks/use-toast'
 
@@ -11,13 +11,15 @@ import { NFT } from '@/utils/types'
 // Cache for auction house addresses to prevent redundant API calls
 const auctionHouseCache = new Map<string, string>()
 
-export function useNftCancelListing(token: NFT | null) {
+export function useNftCancelListing(
+  token: NFT | null,
+  refreshNFTs: () => void
+) {
   const { walletAddress, primaryWallet } = useCurrentWallet()
   const t = useTranslations()
   const { toast } = useToast()
   const [showNftCancelLoading, setShowNftCancelLoading] =
     useState<boolean>(false)
-  const fetchingRef = useRef(false)
 
   const handleNftCancelListing = async () => {
     try {
@@ -78,7 +80,7 @@ export function useNftCancelListing(token: NFT | null) {
           if (collectionSymbol) {
             // Then get auction house address
             const auctionHouseRes = await fetch(
-              `/api/magiceden/collection/${collectionSymbol}/bauctionHouse`
+              `/api/magiceden/collection/${collectionSymbol}/auctionHouse`
             )
             const auctionHouseResData = await auctionHouseRes.json()
             auctionHouse = auctionHouseResData.auctionHouse
@@ -160,10 +162,13 @@ export function useNftCancelListing(token: NFT | null) {
 
       // Step 7: Confirm the transaction
       const latestBlockhash = await connection.getLatestBlockhash()
-      const tx = await connection.confirmTransaction({
-        signature: cancelTxid.signature,
-        ...latestBlockhash,
-      })
+      const tx = await connection.confirmTransaction(
+        {
+          signature: cancelTxid.signature,
+          ...latestBlockhash,
+        },
+        'confirmed'
+      )
 
       // Step 8: Dismiss the confirmation toast
       confirmToast.dismiss()
@@ -185,6 +190,10 @@ export function useNftCancelListing(token: NFT | null) {
           variant: 'success',
           duration: 5000,
         })
+        // wait like 250 ms
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        refreshNFTs()
       }
     } catch (error) {
       console.error('Cancel listing error:', error)

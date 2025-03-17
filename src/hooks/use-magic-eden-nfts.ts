@@ -1,13 +1,24 @@
 import { MagicEdenNFT } from '@/types/nft/magic-eden'
 import { magicEdenNFTToNFT } from '@/utils/nft'
 import { NFT } from '@/utils/types'
-import { useEffect, useState } from 'react'
+import useSWR, { KeyedMutator } from 'swr'
 
-interface UseMagicEdenNFTsResult {
-  walletAddress: string
+// Fetcher function for SWR
+const fetcher = async (url: string) => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.error || 'Failed to fetch wallet NFTs')
+  }
+  const data = await response.json()
+  return data.map((item: MagicEdenNFT) => magicEdenNFTToNFT(item))
+}
+
+export interface UseMagicEdenNFTsResult {
   nfts: NFT[]
   isLoading: boolean
   error: string | null
+  mutate: KeyedMutator<NFT[]>
 }
 
 /**
@@ -17,56 +28,32 @@ interface UseMagicEdenNFTsResult {
  * @returns An object containing the wallet address, NFTs, original tokens, loading state, and any error
  */
 export function useMagicEdenNFTs(address: string): UseMagicEdenNFTsResult {
-  const [walletAddress] = useState<string>(address)
-  const [nfts, setNfts] = useState<NFT[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const fetchWalletNFTs = async () => {
-      if (!walletAddress) {
-        setError('Wallet address is required')
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        setIsLoading(true)
-        setError(null)
-
-        // Fetch NFTs from the Magic Eden API
-        const response = await fetch(`/api/magiceden/wallet/${walletAddress}`)
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || 'Failed to fetch wallet NFTs')
-        }
-
-        const data = await response.json()
-
-        // Convert the tokens to our NFT type
-        const convertedNfts = data.map((item: MagicEdenNFT) =>
-          magicEdenNFTToNFT(item)
-        )
-
-        setNfts(convertedNfts)
-      } catch (error) {
-        console.error('Error fetching wallet NFTs:', error)
-        setError(
-          error instanceof Error ? error.message : 'Failed to fetch wallet NFTs'
-        )
-      } finally {
-        setIsLoading(false)
-      }
+  const {
+    data: nfts,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR<NFT[]>(
+    address ? `/api/magiceden/wallet/${address}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 1000, // 1 second
+      revalidateIfStale: true,
+      revalidateOnMount: true,
+      refreshInterval: 0, // Disable auto-refresh
+      shouldRetryOnError: true,
+      errorRetryCount: 2,
+      keepPreviousData: true,
+      isPaused: () => !address,
     }
-
-    fetchWalletNFTs()
-  }, [walletAddress])
+  )
 
   return {
-    walletAddress,
-    nfts,
+    nfts: nfts || [],
     isLoading,
-    error,
+    error: error || null,
+    mutate,
   }
 }

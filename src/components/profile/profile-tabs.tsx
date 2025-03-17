@@ -75,7 +75,7 @@ export function ProfileTabs({
                 </div>
               </TabsContent>
               <TabsContent value="nfts" className="mt-0 w-full">
-                <div className="container mx-auto px-2 md:px-4">
+                <div className="">
                   <NFTShowcaseContainer walletAddress={targetWalletAddress} />
                 </div>
               </TabsContent>

@@ -11,7 +11,7 @@ import { NFT } from '@/utils/types'
 // Cache for auction house addresses to prevent redundant API calls
 const auctionHouseCache = new Map<string, string>()
 
-export function useNftBuy(nft: NFT | null) {
+export function useNftBuy(nft: NFT | null, refreshNFTs: () => void) {
   const { walletAddress, primaryWallet } = useCurrentWallet()
   const t = useTranslations()
   const { toast } = useToast()
@@ -187,6 +187,9 @@ export function useNftBuy(nft: NFT | null) {
       })
     } finally {
       setShowNftBuyLoading(false)
+      // wait like 750 ms
+      await new Promise((resolve) => setTimeout(resolve, 750))
+      refreshNFTs()
     }
   }
 

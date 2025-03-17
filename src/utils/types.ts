@@ -99,6 +99,10 @@ export interface NFT extends BaseToken {
   owner?: string
   tokenAccount?: string
   address?: string
+  royalty?: {
+    percent?: number
+    basisPoints?: number
+  }
 }
 
 export interface Inscription {

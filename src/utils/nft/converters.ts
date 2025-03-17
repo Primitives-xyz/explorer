@@ -7,7 +7,8 @@ import type { NFT, NFTSupply } from '@/utils/types'
  * @param item The Magic Eden CollectionListItem to convert
  * @returns An NFT object with data mapped from the CollectionListItem
  */
-export function magicEdenNFTToNFT(item: MagicEdenNFT): NFT {
+export function magicEdenNFTToNFT(item: MagicEdenNFT | null): NFT {
+  if (!item) return {} as NFT
   // Determine the NFT interface type - defaulting to V1_NFT if unknown
   const nftInterface = 'V1_NFT'
   // Get the image URL from the image property
@@ -125,6 +126,7 @@ export function collectionListItemToNFT(item: CollectionListItem): NFT {
     id: item.tokenMint, // Using tokenMint as the unique identifier
     interface: nftInterface,
     name: item.token.name,
+
     symbol: '', // CollectionListItem doesn't seem to have a symbol field
     imageUrl: imageUrl,
     mint: item.tokenMint,

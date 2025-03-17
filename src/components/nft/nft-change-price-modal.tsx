@@ -8,12 +8,14 @@ interface NFTChangePriceModalProps {
   isOpen: boolean
   onClose: () => void
   nft: NFT
+  refreshNFTs: () => void
 }
 
 export function NFTChangePriceModal({
   isOpen,
   onClose,
   nft,
+  refreshNFTs,
 }: NFTChangePriceModalProps) {
   const {
     handleNftChangePrice,
@@ -21,7 +23,7 @@ export function NFTChangePriceModal({
     setNewPrice,
     showNftChangePriceLoading,
     setIsChangePriceModalOpen,
-  } = useNftChangePrice(nft)
+  } = useNftChangePrice(nft, refreshNFTs)
 
   // Sync the modal state with the parent component
   useEffect(() => {

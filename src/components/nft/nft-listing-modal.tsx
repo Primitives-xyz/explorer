@@ -21,6 +21,7 @@ interface NFTListingModalProps {
   isOpen: boolean
   onClose: () => void
   nft: NFT
+  refreshNFTs: () => void
 }
 
 // Define the type for price suggestions
@@ -35,9 +36,14 @@ export function NFTListingModal({
   isOpen,
   onClose,
   nft,
+  refreshNFTs,
 }: NFTListingModalProps) {
   const { handleNftList, listAmount, setListAmount, showNftListLoading } =
-    useNftListing(nft)
+    useNftListing({
+      tokenId: nft.id,
+      collectionFamily: nft.metadata?.collection?.family || '',
+      refreshNFTs,
+    })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [marketInsights, setMarketInsights] = useState<{
     trend: 'up' | 'down' | 'stable'
@@ -94,6 +100,41 @@ export function NFTListingModal({
       setIsSubmitting(false)
     }
   }
+
+  // Loading animation component
+  const LoadingSpinner = () => (
+    <div className="relative">
+      {/* Outer ring */}
+      <div className="absolute inset-0 border-2 border-green-400/20 rounded-full"></div>
+      {/* Inner spinning ring */}
+      <div className="absolute inset-0 border-2 border-green-400 rounded-full border-t-transparent animate-spin"></div>
+      {/* Center dot */}
+      <div className="absolute inset-[2px] bg-green-400/10 rounded-full"></div>
+    </div>
+  )
+
+  // Loading overlay component
+  const LoadingOverlay = () => (
+    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12">
+          <LoadingSpinner />
+        </div>
+        <div className="text-center">
+          <h3 className="text-lg font-bold text-green-400 mb-1">
+            Listing Your NFT
+          </h3>
+          <p className="text-sm text-gray-400">
+            Please wait while we process your request...
+          </p>
+        </div>
+        {/* Progress bar */}
+        <div className="w-48 h-1 bg-green-900/30 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-green-500 to-green-400 animate-progress-indeterminate"></div>
+        </div>
+      </div>
+    </div>
+  )
 
   // Generate price suggestions based on floor and market data
   const generatePriceSuggestions = () => {
@@ -162,20 +203,27 @@ export function NFTListingModal({
       isOpen={isOpen}
       onClose={onClose}
       title="List Your NFT"
-      className="max-w-md"
+      className="max-w-md relative"
     >
+      {(isSubmitting || showNftListLoading) && <LoadingOverlay />}
       <div className="flex flex-col space-y-4">
         {/* NFT Preview Row */}
         <div className="flex items-center space-x-3 bg-black/30 p-3 rounded-lg">
           {/* NFT Image - Larger size */}
           <div className="relative w-24 h-24 rounded-md overflow-hidden border border-green-500/20 flex-shrink-0">
-            {nft.imageUrl && (
+            {nft.imageUrl ? (
               <Image
                 src={nft.imageUrl}
                 alt={nft.name || 'NFT'}
                 fill
                 className="object-cover"
               />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-green-900/20">
+                <div className="w-8 h-8">
+                  <LoadingSpinner />
+                </div>
+              </div>
             )}
           </div>
 
@@ -184,7 +232,7 @@ export function NFTListingModal({
             <h3 className="text-sm font-bold text-white/95 truncate">
               {nft.name || 'NFT'}
             </h3>
-            {nft.metadata.collection?.name && (
+            {nft.metadata?.collection?.name && (
               <p className="text-xs text-green-400/90 truncate">
                 {nft.metadata.collection.name}
                 {nft.metadata.collection.verified && (
@@ -201,107 +249,115 @@ export function NFTListingModal({
               </p>
             )}
 
-            {/* Collection Stats Improved Display */}
-            {!statsLoading && floorPrice > 0 && (
-              <div className="flex flex-col gap-1 text-xs text-gray-300 mt-1">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center">
-                    <TagIcon className="w-3 h-3 mr-1 text-green-400" />
-                    Floor:
-                    <span className="text-green-400 ml-1">◎{floorPrice}</span>
-                  </span>
-
-                  {collectionStat?.listedCount && (
-                    <span className="text-gray-400">
-                      {collectionStat.listedCount} listed
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between">
-                  {collectionStat?.avgPrice24hr && (
-                    <span className="flex items-center">
-                      <span className="text-gray-400 mr-1">Avg 24h:</span>
-                      <span className="text-green-400">
-                        ◎{collectionStat.avgPrice24hr.toFixed(3)}
-                      </span>
-                    </span>
-                  )}
-
-                  {collectionStat?.txns24hr && (
-                    <span className="text-gray-400">
-                      {collectionStat.txns24hr} sales
-                    </span>
-                  )}
-                </div>
-
-                {/* Supply and Holders Info */}
-                {(collectionStat?.supply || collectionStat?.holders) && (
-                  <div className="flex items-center justify-between">
-                    {collectionStat?.supply && (
-                      <span className="flex items-center">
-                        <span className="text-gray-400 mr-1">Supply:</span>
-                        <span className="text-white">
-                          {collectionStat.supply.toLocaleString()}
-                        </span>
-                      </span>
-                    )}
-
-                    {collectionStat?.holders && (
-                      <span className="flex items-center">
-                        <span className="text-gray-400 mr-1">Holders:</span>
-                        <span className="text-white">
-                          {collectionStat.holders.toLocaleString()}
-                        </span>
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Volume Info */}
-                {collectionStat?.volume24hr && (
-                  <div className="flex items-center mt-0.5">
-                    <BarChart3Icon className="w-3 h-3 mr-1 text-blue-400" />
-                    <span className="text-gray-400 mr-1">24h Vol:</span>
-                    <span className="text-blue-400">
-                      ◎{collectionStat.volume24hr.toFixed(2)}
-                    </span>
-                    {collectionStat?.volumeAll && (
-                      <span className="text-gray-400 ml-2">
-                        All-time:{' '}
-                        <span className="text-blue-400">
-                          ◎{collectionStat.volumeAll.toLocaleString()}
-                        </span>
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {marketInsights && (
-                  <span className="flex items-center mt-0.5">
-                    {marketInsights.trend === 'up' ? (
-                      <TrendingUpIcon className="w-3 h-3 mr-1 text-green-500" />
-                    ) : marketInsights.trend === 'down' ? (
-                      <TrendingDownIcon className="w-3 h-3 mr-1 text-red-500" />
-                    ) : null}
-                    <span
-                      className={
-                        marketInsights.trend === 'up'
-                          ? 'text-green-400'
-                          : marketInsights.trend === 'down'
-                          ? 'text-red-400'
-                          : ''
-                      }
-                    >
-                      {marketInsights.trend === 'up'
-                        ? 'Trending up'
-                        : marketInsights.trend === 'down'
-                        ? 'Trending down'
-                        : 'Stable'}
-                    </span>
-                  </span>
-                )}
+            {/* Collection Stats Loading State */}
+            {statsLoading ? (
+              <div className="mt-2 space-y-2">
+                <div className="h-3 bg-green-900/20 rounded w-24 animate-pulse"></div>
+                <div className="h-3 bg-green-900/20 rounded w-32 animate-pulse"></div>
               </div>
+            ) : (
+              // Collection Stats Improved Display
+              floorPrice > 0 && (
+                <div className="flex flex-col gap-1 text-xs text-gray-300 mt-1">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center">
+                      <TagIcon className="w-3 h-3 mr-1 text-green-400" />
+                      Floor:
+                      <span className="text-green-400 ml-1">◎{floorPrice}</span>
+                    </span>
+
+                    {collectionStat?.listedCount && (
+                      <span className="text-gray-400">
+                        {collectionStat.listedCount} listed
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    {collectionStat?.avgPrice24hr && (
+                      <span className="flex items-center">
+                        <span className="text-gray-400 mr-1">Avg 24h:</span>
+                        <span className="text-green-400">
+                          ◎{collectionStat.avgPrice24hr.toFixed(3)}
+                        </span>
+                      </span>
+                    )}
+
+                    {collectionStat?.txns24hr && (
+                      <span className="text-gray-400">
+                        {collectionStat.txns24hr} sales
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Supply and Holders Info */}
+                  {(collectionStat?.supply || collectionStat?.holders) && (
+                    <div className="flex items-center justify-between">
+                      {collectionStat?.supply && (
+                        <span className="flex items-center">
+                          <span className="text-gray-400 mr-1">Supply:</span>
+                          <span className="text-white">
+                            {collectionStat.supply.toLocaleString()}
+                          </span>
+                        </span>
+                      )}
+
+                      {collectionStat?.holders && (
+                        <span className="flex items-center">
+                          <span className="text-gray-400 mr-1">Holders:</span>
+                          <span className="text-white">
+                            {collectionStat.holders.toLocaleString()}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Volume Info */}
+                  {collectionStat?.volume24hr && (
+                    <div className="flex items-center mt-0.5">
+                      <BarChart3Icon className="w-3 h-3 mr-1 text-blue-400" />
+                      <span className="text-gray-400 mr-1">24h Vol:</span>
+                      <span className="text-blue-400">
+                        ◎{collectionStat.volume24hr.toFixed(2)}
+                      </span>
+                      {collectionStat?.volumeAll && (
+                        <span className="text-gray-400 ml-2">
+                          All-time:{' '}
+                          <span className="text-blue-400">
+                            ◎{collectionStat.volumeAll.toLocaleString()}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {marketInsights && (
+                    <span className="flex items-center mt-0.5">
+                      {marketInsights.trend === 'up' ? (
+                        <TrendingUpIcon className="w-3 h-3 mr-1 text-green-500" />
+                      ) : marketInsights.trend === 'down' ? (
+                        <TrendingDownIcon className="w-3 h-3 mr-1 text-red-500" />
+                      ) : null}
+                      <span
+                        className={
+                          marketInsights.trend === 'up'
+                            ? 'text-green-400'
+                            : marketInsights.trend === 'down'
+                            ? 'text-red-400'
+                            : ''
+                        }
+                      >
+                        {marketInsights.trend === 'up'
+                          ? 'Trending up'
+                          : marketInsights.trend === 'down'
+                          ? 'Trending down'
+                          : 'Stable'}
+                      </span>
+                    </span>
+                  )}
+                </div>
+              )
             )}
           </div>
         </div>
@@ -314,38 +370,50 @@ export function NFTListingModal({
           </h4>
 
           {/* Price Suggestions */}
-          {floorPrice > 0 && (
+          {statsLoading ? (
             <div className="flex flex-wrap gap-2 mb-3">
-              {priceSuggestions.map((suggestion) => (
-                <Tooltip key={suggestion.label} content={suggestion.tooltip}>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setListAmount(
-                        suggestion.value
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="px-3 py-1.5 bg-green-900/20 rounded-md w-24 h-[52px] animate-pulse"
+                  style={{ animationDelay: `${i * 100}ms` }}
+                />
+              ))}
+            </div>
+          ) : (
+            floorPrice > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {priceSuggestions.map((suggestion) => (
+                  <Tooltip key={suggestion.label} content={suggestion.tooltip}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setListAmount(
+                          suggestion.value
+                            ? suggestion.value.toFixed(2)
+                            : (
+                                floorPrice * (suggestion.multiplier || 1)
+                              ).toFixed(2)
+                        )
+                      }
+                      className="px-3 py-1.5 text-xs bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 rounded-md transition-colors flex flex-col items-center"
+                    >
+                      <span className="text-gray-300 mb-0.5">
+                        {suggestion.label}
+                      </span>
+                      <span className="font-bold text-green-400">
+                        ◎{' '}
+                        {suggestion.value
                           ? suggestion.value.toFixed(2)
                           : (floorPrice * (suggestion.multiplier || 1)).toFixed(
                               2
-                            )
-                      )
-                    }
-                    className="px-3 py-1.5 text-xs bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 rounded-md transition-colors flex flex-col items-center"
-                  >
-                    <span className="text-gray-300 mb-0.5">
-                      {suggestion.label}
-                    </span>
-                    <span className="font-bold text-green-400">
-                      ◎{' '}
-                      {suggestion.value
-                        ? suggestion.value.toFixed(2)
-                        : (floorPrice * (suggestion.multiplier || 1)).toFixed(
-                            2
-                          )}
-                    </span>
-                  </button>
-                </Tooltip>
-              ))}
-            </div>
+                            )}
+                      </span>
+                    </button>
+                  </Tooltip>
+                ))}
+              </div>
+            )
           )}
 
           {/* Price Input */}
@@ -365,8 +433,10 @@ export function NFTListingModal({
                   required
                   className="w-full pl-8 pr-3 py-3 bg-black/50 border border-green-500/30 focus:border-green-500/60 focus:ring-1 focus:ring-green-500/60 rounded-md outline-none transition-colors text-lg font-bold"
                   placeholder="0.00"
+                  disabled={isSubmitting || showNftListLoading}
                 />
               </div>
+
               {/* Price Feedback */}
               {floorPrice > 0 && listAmount && (
                 <div className="flex items-center gap-1 text-xs">
@@ -398,18 +468,23 @@ export function NFTListingModal({
               <motion.button
                 type="submit"
                 disabled={isSubmitting || !listAmount || showNftListLoading}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 px-4 rounded-md text-base"
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 px-4 rounded-md text-base relative overflow-hidden group"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {isSubmitting || showNftListLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-black"></div>
-                    Processing...
-                  </span>
-                ) : (
-                  `List for ◎ ${listAmount || '0.00'}`
-                )}
+                <span className="relative z-10">
+                  {isSubmitting || showNftListLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4">
+                        <LoadingSpinner />
+                      </div>
+                      Processing...
+                    </span>
+                  ) : (
+                    `List for ◎ ${listAmount || '0.00'}`
+                  )}
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.button>
               <p className="text-xs text-center text-gray-400">
                 Your NFT will be listed on Magic Eden marketplace

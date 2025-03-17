@@ -11,7 +11,7 @@ import { NFT } from '@/utils/types'
 // Cache for auction house addresses to prevent redundant API calls
 const auctionHouseCache = new Map<string, string>()
 
-export function useNftChangePrice(token: NFT | null) {
+export function useNftChangePrice(token: NFT | null, refreshNFTs: () => void) {
   const { walletAddress, primaryWallet } = useCurrentWallet()
   const t = useTranslations()
   const { toast } = useToast()
@@ -210,6 +210,7 @@ export function useNftChangePrice(token: NFT | null) {
           duration: 5000,
         })
         setIsChangePriceModalOpen(false)
+        refreshNFTs()
       }
     } catch (error) {
       console.error('Change price error:', error)
@@ -239,6 +240,7 @@ export function useNftChangePrice(token: NFT | null) {
     showNftChangePriceLoading,
     newPrice,
     setNewPrice,
+    isChangePriceModalOpen,
     setIsChangePriceModalOpen,
   }
 }

@@ -6,7 +6,6 @@ import { AnimatePresence } from 'framer-motion'
 import { useRef, useState } from 'react'
 import { NFTCard } from './nft-card'
 import { NFTLoadingError } from './nft-loading-error'
-import { NFTViewToggle } from './nft-view-toggle'
 import { ShimmerEffect } from './shimmer-effect'
 type ViewMode = 'grid' | 'list'
 
@@ -14,12 +13,14 @@ export interface NFTShowcaseProps {
   nfts: NFT[]
   isLoading: boolean
   error: string | null
+  refreshNFTs: () => void
 }
 
 export default function NFTShowcase({
   nfts,
   isLoading,
   error,
+  refreshNFTs,
 }: NFTShowcaseProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -63,7 +64,7 @@ export default function NFTShowcase({
             </div>
 
             {/* View mode toggle */}
-            <NFTViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+            {/* <NFTViewToggle viewMode={viewMode} setViewMode={setViewMode} /> */}
           </div>
 
           {/* <div className="flex flex-wrap items-center gap-3 w-full md:w-auto"> */}
@@ -102,7 +103,12 @@ export default function NFTShowcase({
             >
               <AnimatePresence>
                 {nfts.map((nft, index) => (
-                  <NFTCard key={nft.id} nft={nft} index={index} />
+                  <NFTCard
+                    key={nft.id}
+                    nft={nft}
+                    index={index}
+                    refreshNFTs={refreshNFTs}
+                  />
                 ))}
               </AnimatePresence>
             </div>

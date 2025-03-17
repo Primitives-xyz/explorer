@@ -12,16 +12,26 @@ import { NFTImage } from './nft-image'
 import { NFTListingModal } from './nft-listing-modal'
 
 // Main NFT Card component that renders either grid or list view
-export function NFTCard({ nft, index }: { nft: NFT; index: number }) {
+export function NFTCard({
+  nft,
+  index,
+  refreshNFTs,
+}: {
+  nft: NFT
+  index: number
+  refreshNFTs: () => void
+}) {
   const cardRef = useRef<HTMLDivElement>(null)
   const { walletAddress } = useCurrentWallet()
   const router = useRouter()
   const [isHovered, setIsHovered] = useState(false)
   const [isListingModalOpen, setIsListingModalOpen] = useState(false)
   const [isChangePriceModalOpen, setIsChangePriceModalOpen] = useState(false)
-  const { handleNftCancelListing, showNftCancelLoading } =
-    useNftCancelListing(nft)
-  const { handleNftBuy, showNftBuyLoading } = useNftBuy(nft)
+  const { handleNftCancelListing, showNftCancelLoading } = useNftCancelListing(
+    nft,
+    refreshNFTs
+  )
+  const { handleNftBuy, showNftBuyLoading } = useNftBuy(nft, refreshNFTs)
 
   const navigateToNFTPage = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -210,6 +220,7 @@ export function NFTCard({ nft, index }: { nft: NFT; index: number }) {
         isOpen={isListingModalOpen}
         onClose={() => setIsListingModalOpen(false)}
         nft={nft}
+        refreshNFTs={refreshNFTs}
       />
 
       {/* Change Price Modal */}
@@ -217,6 +228,7 @@ export function NFTCard({ nft, index }: { nft: NFT; index: number }) {
         isOpen={isChangePriceModalOpen}
         onClose={() => setIsChangePriceModalOpen(false)}
         nft={nft}
+        refreshNFTs={refreshNFTs}
       />
     </>
   )
