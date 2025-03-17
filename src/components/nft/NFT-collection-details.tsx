@@ -381,6 +381,7 @@ export default function NFTCollectionDetail({
                             nfts={nfts}
                             isLoading={isLoading}
                             error={error}
+                            refreshNFTs={() => {}}
                           />
                         </div>
                       ) : (

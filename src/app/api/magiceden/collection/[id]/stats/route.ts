@@ -74,17 +74,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
       activitiesData =
         (await activitiesResponse.json()) as MagicEdenActivitiesResponse
     }
-    console.dir(
-      {
-        statsData,
-        holdersData,
-        attributesData,
-        activitiesData,
-      },
-      {
-        depth: null,
-      }
-    )
 
     // Check if we have at least the basic stats data
     if (!statsData) {
