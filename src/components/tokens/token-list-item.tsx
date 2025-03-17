@@ -1,4 +1,4 @@
-import { formatNumber } from '@/utils/format'
+import { formatNumber, formatTokenBalance } from '@/utils/format'
 import type { FungibleToken } from '@/utils/types'
 import { route } from '@/utils/routes'
 import { useRouter } from 'next/navigation'
@@ -96,13 +96,13 @@ export const TokenListItem = ({
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <span className="">Balance:</span>
                 <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
-                  {formatNumber(token.balance)}
+                  {formatNumber(formatTokenBalance(token.balance, token.decimals))}
                 </span>
               </div>
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <span className="">Value:</span>
                 <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
-                  ${formatNumber(token.balance * (token.price || 0))}
+                  ${formatNumber(formatTokenBalance(token.balance, token.decimals) * (token.price || 0))}
                 </span>
               </div>
             </div>
@@ -117,7 +117,7 @@ export const TokenListItem = ({
                 <span className="">Share:</span>
                 <span className=" bg-green-900/20 px-1.5 py-0.5 rounded">
                   {(
-                    (token.balance * (token.price || 0) * 100) /
+                    (formatTokenBalance(token.balance, token.decimals) * (token.price || 0) * 100) /
                     totalValue
                   ).toFixed(1)}
                   %

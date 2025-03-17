@@ -1,6 +1,6 @@
 'use client'
 
-import { formatNumber } from '@/utils/format'
+import { formatNumber, formatTokenBalance } from '@/utils/format'
 import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useState } from 'react'
 import { ImageModal } from './tokens/image-modal'
@@ -59,7 +59,7 @@ export const TokenSection = ({
 
   // Calculate total value of tokens
   const totalValue = fungibleTokens.reduce<number>((acc, token) => {
-    return acc + (token.price || 0) * token.balance
+    return acc + (token.price || 0) * formatTokenBalance(token.balance, token.decimals)
   }, 0)
 
   const shouldShowContent = isLoading || tokens.length > 0

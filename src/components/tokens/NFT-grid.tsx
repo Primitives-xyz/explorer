@@ -1,5 +1,6 @@
 import { useNFTImage } from '@/hooks/use-nft-image'
 import { route } from '@/utils/routes'
+import { formatNumber, formatTokenBalance } from '@/utils/format'
 import type { FungibleToken, NFT, TokenWithInscription } from '@/utils/types'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
@@ -181,11 +182,11 @@ export const NFTGrid = ({ tokens, onImageClick }: NFTGridProps) => {
               {/* Balance Info for Fungible Tokens */}
               {isFungible(token) && (
                 <div className="/80 font-mono text-xs group-hover:/80 transition-colors">
-                  Balance: {token.balance.toLocaleString()}
+                  Balance: {formatNumber(formatTokenBalance(token.balance, token.decimals))}
                   {token.price > 0 && (
                     <div className=" group-hover: transition-colors">
                       ≈ $
-                      {(token.price * token.balance).toLocaleString(undefined, {
+                      {(token.price * formatTokenBalance(token.balance, token.decimals)).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
