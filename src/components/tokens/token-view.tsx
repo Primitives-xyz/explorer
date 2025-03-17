@@ -3,9 +3,9 @@ import { FungibleTokenDetailsWrapper } from '@/components/tokens/fungible-token-
 import { WalletView } from '@/components/wallet/wallet-view'
 import type { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 
+import NFTCollectionDetail from '@/components/nft/NFT-collection-details'
 import type { TokenInfo } from '@/types/Token'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
-import NFTCollectionDetail from '../NFT-collection-details'
 
 /**
  * Handles token-related views

@@ -1,4 +1,4 @@
-import type { DAS } from 'helius-sdk'
+import { NFT } from '@/utils/types'
 import { useEffect, useState } from 'react'
 interface NFTContent {
   $schema?: string
@@ -32,7 +32,17 @@ interface ImageState {
   source: 'direct' | 'cdn' | 'file' | 'json' | 'metadata' | null
 }
 
-export function useNFTImage(content: DAS.Content | undefined) {
+export function useNFTImage(nft: NFT) {
+  const content = nft?.content || false
+
+  if (!content && nft.imageUrl) {
+    return {
+      url: nft.imageUrl,
+      isLoading: false,
+      error: null,
+      source: 'direct',
+    }
+  }
   const [imageState, setImageState] = useState<ImageState>({
     url: null,
     isLoading: false,

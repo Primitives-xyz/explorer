@@ -24,16 +24,9 @@ export interface BaseToken {
     name: string
     symbol: string
     description: string
-    attributes?: Array<{
-      trait_type: string
-      value: string
-    }>
+    attributes?: Array<NFTAttribute>
     image?: string
-    collection?: {
-      name: string
-      family?: string
-      verified?: boolean
-    }
+    collection?: NFTCollection
   }
   links?: {
     image?: string
@@ -53,6 +46,24 @@ export interface FungibleToken extends BaseToken {
   associatedTokenAddress: string
 }
 
+export interface NFTAttribute {
+  trait_type: string
+  value: string
+  display_type?: string
+  max_value?: number
+  trait_count?: number
+  frequency?: number
+}
+
+export interface NFTCollection {
+  name: string
+  family?: string
+  verified?: boolean
+  description?: string
+  image?: string
+  external_url?: string
+}
+
 export interface NFTSupply {
   printMaxSupply: number
   printCurrentSupply: number
@@ -61,8 +72,33 @@ export interface NFTSupply {
 }
 
 export interface NFT extends BaseToken {
-  interface: 'V1_NFT' | 'V2_NFT' | 'ProgrammableNFT' | 'LEGACY_NFT' | 'MplCoreAsset'
+  interface:
+    | 'V1_NFT'
+    | 'V2_NFT'
+    | 'ProgrammableNFT'
+    | 'LEGACY_NFT'
+    | 'MplCoreAsset'
   supply?: NFTSupply
+  price?: {
+    amount?: number
+    currency?: string
+    usdValue?: number
+    lastSoldPrice?: number
+  }
+  marketplace?: {
+    listed: boolean
+    source?: string
+    listingId?: string
+    expiry?: number
+  }
+  rarity?: {
+    rank?: number
+    score?: number
+    totalSupply?: number
+  }
+  owner?: string
+  tokenAccount?: string
+  address?: string
 }
 
 export interface Inscription {

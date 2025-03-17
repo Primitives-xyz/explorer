@@ -25,7 +25,7 @@ const NFTImageContainer = ({
   onImageClick,
   onImageError,
 }: NFTImageContainerProps) => {
-  const { url: imageUrl, isLoading: imageLoading } = useNFTImage(token.content)
+  const { url: imageUrl, isLoading: imageLoading } = useNFTImage(token as NFT)
 
   // If we don't have a valid imageUrl from useNFTImage, fall back to other image sources
   const finalImageUrl =

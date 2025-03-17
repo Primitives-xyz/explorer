@@ -122,7 +122,7 @@ export const ImageModal = ({
     ;(async () => {
       try {
         const auctionHouseRes = await fetch(
-          `/api/magiceden/collection/${collectionSymbol}/auctionHose`
+          `/api/magiceden/collection/${collectionSymbol}/auctionHouse`
         )
         const auctionHouseResData = await auctionHouseRes.json()
         setAuctionHouse(auctionHouseResData.auctionHouse)
