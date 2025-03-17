@@ -7,7 +7,7 @@ import {
 } from '@/types/nft/magic-eden/api'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
-
+const ME_API_KEY = process.env.NEXT_ME_API_KEY || ''
 // Route context type
 type RouteContext = {
   params: Promise<{ id: string }>
@@ -33,7 +33,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
       10
     )
 
-    const options = { method: 'GET', headers: { accept: 'application/json' } }
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${ME_API_KEY}`,
+      },
+    }
 
     // Define all API endpoints
     const endpoints = {
