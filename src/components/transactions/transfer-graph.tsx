@@ -213,9 +213,15 @@ const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemPro
             <span className="font-mono text-xs">
               {transfer.amount}
             </span>
-            <span className="text-[10px] text-gray-500">
+            <a
+              href={getSolscanAddressUrl(transfer.mint)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-0.5"
+            >
               {displaySymbol}
-            </span>
+              <ExternalLink className="w-2 h-2" />
+            </a>
           </div>
         </div>
       </div>
