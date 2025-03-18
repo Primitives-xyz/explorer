@@ -64,6 +64,7 @@ export const TransactionCard = memo(function TransactionCard({
     if (isNFTTransaction) return 'NFT'
     return 'OTHER'
   }, [isComment, isSwap, isSolanaTransfer, isSPLTransfer, isNFTTransaction])
+
   const { toast } = useToast()
   // Handle signature copy
   const handleCopy = () => {
@@ -157,18 +158,22 @@ export const TransactionCard = memo(function TransactionCard({
           {isSwap && (
             <SwapTransactionView tx={tx} sourceWallet={sourceWallet} />
           )}
+
           {isSolanaTransfer && (
             <SolanaTransferView tx={tx} sourceWallet={sourceWallet} />
           )}
+
           {isSPLTransfer && (
             <SPLTransferView tx={tx} sourceWallet={sourceWallet} />
           )}
+
           {isNFTTransaction && (
             <NFTTransactionView
               tx={extendedTransaction}
               sourceWallet={sourceWallet}
             />
           )}
+
           {!isComment && !isSolanaTransfer && !isSPLTransfer && (
             <TransferList
               nativeTransfers={tx.nativeTransfers}

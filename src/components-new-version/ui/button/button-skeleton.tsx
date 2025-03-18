@@ -1,5 +1,5 @@
-import { cn } from '../../utils/utils'
-import { Skeleton } from '../skeleton'
+import { cn } from '@/components-new-version/utils/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ButtonProps, buttonVariants } from './button'
 
 export function ButtonSkeleton(props: ButtonProps) {

@@ -11,6 +11,7 @@ export const ActivityFeedContainer = ({
   username,
 }: ActivityFeedContainerProps) => {
   const { following, loading } = useGetFollowing(username)
+
   const isLoggedIn = useIsLoggedIn()
   const {
     aggregatedTransactions,
