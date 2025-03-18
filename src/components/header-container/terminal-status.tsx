@@ -32,7 +32,6 @@ export function TerminalStatus({
   const handleLogoutClick = async () => {
     try {
       await handleLogOut()
-      window.location.href = '/'
     } catch (error) {
       console.error('Failed to logout:', error)
     }
@@ -75,16 +74,22 @@ export function TerminalStatus({
             </div>
           )}
           {walletAddress && (
-          <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <EllipsisVertical className="w-4 h-4" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-black/20 border border-green-800/30 rounded-sm text-[10px] p-0">
-                <DropdownMenuItem onClick={handleLogoutClick} className="font-bold text-white text-[10px] px-6 py-1.5 hover:opacity-80">
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <EllipsisVertical className="w-4 h-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="bg-black/20 border border-green-800/30 rounded-sm text-[10px] p-0"
+              >
+                <DropdownMenuItem
+                  onClick={handleLogoutClick}
+                  className="font-bold text-white text-[10px] px-6 py-1.5 hover:opacity-80"
+                >
                   {t('header.logout')}
                 </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
