@@ -46,7 +46,8 @@ export function useCurrentWallet() {
 
   const { mainUsername, image } = useMemo(() => {
     if (!profiles) return { mainUsername: '', image: null }
-    const mainProfile = profiles.find(
+
+    const mainProfile = profiles.profiles.find(
       (profile) =>
         profile.namespace.name === EXPLORER_NAMESPACE &&
         profile.wallet.address === walletAddress
@@ -66,7 +67,7 @@ export function useCurrentWallet() {
     primaryWallet,
     sdkHasLoaded,
     image,
-    profiles: profiles || [],
+    profiles,
     logout: handleLogOut,
     setShowAuthFlow,
   }

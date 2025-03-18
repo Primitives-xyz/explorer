@@ -14,7 +14,7 @@ export const useGetProfiles = (walletAddress: string) => {
   })
 
   return {
-    profiles: data?.profiles ?? null,
+    profiles: data,
     loading,
     error,
     refetch,

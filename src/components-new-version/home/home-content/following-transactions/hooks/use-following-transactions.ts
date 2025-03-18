@@ -1,5 +1,5 @@
-import { TransactionType } from '@/components-new-version/home/home-content/following-transactions/following-transactions'
-import { Transaction } from '@/components-new-version/models/helius/helius.models'
+import { TransactionType } from '@/components-new-version/home/home-content/following-transactions/filters-button'
+import { Transaction } from '@/components-new-version/models/helius.models'
 import { IGetSocialResponse } from '@/components-new-version/tapestry/models/profiles.models'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useEffect, useState } from 'react'

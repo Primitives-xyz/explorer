@@ -74,6 +74,7 @@ export const getDicebearUrl = (seed: string) =>
   `${DICEBEAR_API_BASE}/shapes/svg?seed=${seed}`
 
 export const SOL_MINT = 'So11111111111111111111111111111111111111112'
+export const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
 
 // Platform fee configuration
 export const PLATFORM_FEE_BPS = 80 // 0.8% = 80 basis points
