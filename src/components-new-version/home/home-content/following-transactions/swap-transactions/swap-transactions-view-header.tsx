@@ -65,40 +65,46 @@ export function SwapTransactionsViewHeader({
         imageUrl={sourceProfile?.image}
       />
 
-      <div className="flex flex-col space-y-2">
-        <div className="flex items-center gap-2">
-          <div>
-            {sourceProfile?.username &&
-            sourceProfile.username !== sourceWallet ? (
-              `@${sourceProfile.username}`
-            ) : (
-              <span>{abbreviateWalletAddress({ address: sourceWallet })}</span>
-            )}
+      <div className="flex flex-col space-y-2 w-full">
+        <div className="flex items-center gap-2 justify-between w-full">
+          <div className="flex items-center gap-2">
+            <div>
+              {sourceProfile?.username &&
+              sourceProfile.username !== sourceWallet ? (
+                `@${sourceProfile.username}`
+              ) : (
+                <span>
+                  {abbreviateWalletAddress({ address: sourceWallet })}
+                </span>
+              )}
+            </div>
+            <div>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                onClick={handleCopy}
+                size={ButtonSize.SM}
+              >
+                {abbreviateWalletAddress({ address: transaction.signature })}
+                <ClipboardIcon size={12} />
+              </Button>
+            </div>
+            <p className="muted-foreground text-xs">
+              • {formatTimeAgo(new Date(transaction.timestamp))}
+            </p>
           </div>
-          <div>
-            <Button
-              variant={ButtonVariant.SECONDARY}
-              onClick={handleCopy}
-              size={ButtonSize.SM}
-            >
-              {abbreviateWalletAddress({ address: transaction.signature })}
-              <ClipboardIcon size={12} />
-            </Button>
-          </div>
-          <p className="muted-foreground text-xs">
-            • {formatTimeAgo(new Date(transaction.timestamp))}
-          </p>
-          <Badge variant="outline" className="rounded-md">
-            {primaryType}
-          </Badge>
-        </div>
 
-        {transaction.fee && (
-          <div>
-            <TransactionsFeeSvg />
-            <span>{Number(transaction.fee)} SOL</span>
+          <div className="flex items-center gap-2">
+            {transaction.fee && (
+              <div className="flex items-center gap-1 text-xs">
+                <TransactionsFeeSvg />
+                <span>{Number(transaction.fee)} SOL</span>
+              </div>
+            )}
+            <Badge variant="outline" className="rounded-md">
+              {primaryType}
+            </Badge>
           </div>
-        )}
+        </div>
 
         <div className="flex items-center gap-2 text-xs">
           <p>swapped on </p>
