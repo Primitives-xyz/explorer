@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
     const { id } = params
-
+    const ME_API_KEY = process.env.NEXT_ME_API_KEY || ''
     if (!id) {
       return NextResponse.json(
         { error: 'collection symbol is required' },
@@ -16,18 +16,23 @@ export async function GET(req: NextRequest, context: RouteContext) {
       )
     }
 
-    const options = { method: 'GET', headers: { accept: 'application/json' } }
-
     const response = await fetch(
-      `https://api-mainnet.magiceden.dev/v2/collections/${id}/listings?limit=1`,
-      options
+      `https://api-mainnet.magiceden.dev/v2/collections/${id}/listings?limit=5`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${ME_API_KEY}`,
+          accept: 'application/json',
+        },
+      }
     )
     const datas = await response.json()
-
     if (datas && datas.length > 0) {
-      const [data] = datas
+      const auctionHouse = datas.find(
+        (item: any) => item.auctionHouse && item.auctionHouse !== ''
+      )?.auctionHouse
       return NextResponse.json({
-        auctionHouse: data.auctionHouse,
+        auctionHouse,
       })
     } else {
       return NextResponse.json(

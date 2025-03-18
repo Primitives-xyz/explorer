@@ -119,7 +119,6 @@ export const Swap = () => {
               <div className="p-6">
                 {mode === 'swap' ? (
                   <JupiterSwapForm
-                    hideWhenGlobalSearch
                     initialInputMint={inputMint}
                     initialOutputMint={outputMint}
                   />

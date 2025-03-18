@@ -22,7 +22,7 @@ export const ClaimForm = () => {
 
   // Format the token amounts with proper decimal places (dividing by 10^6)
   const formattedRewardsAmount = rewardsAmount
-    ? parseFloat(rewardsAmount).toFixed(6)
+    ? parseFloat((Number(rewardsAmount) / 10 ** 6).toFixed(6))
     : '0.000000'
 
   const hasRewards = rewardsAmount && parseFloat(rewardsAmount) > 0

@@ -32,7 +32,6 @@ export function TerminalStatus({
   const handleLogoutClick = async () => {
     try {
       await handleLogOut()
-      window.location.href = '/'
     } catch (error) {
       console.error('Failed to logout:', error)
     }
