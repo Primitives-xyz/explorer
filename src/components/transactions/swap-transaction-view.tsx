@@ -7,7 +7,7 @@ import { IGetProfileResponse } from '@/types/profile.types'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
 import { formatTimeAgo } from '@/utils/format-time'
-import type { AccountData, ParsedInstruction, Transaction, TransactionEvent } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -16,6 +16,7 @@ import { useState, useMemo } from 'react'
 import { JupiterSwapForm } from './jupiter-swap-form'
 import { TransactionBadge } from './transaction-badge'
 import { TransactionCommentView } from './transaction-comment-view'
+import { normalizeTimestamp } from '@/utils/time'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -290,7 +291,7 @@ export function SwapTransactionView({
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-gray-300 transition-colors"
             >
-              • {formatTimeAgo(new Date(tx.timestamp))}
+              • {formatTimeAgo(new Date(normalizeTimestamp(tx.timestamp)))}
             </Link>
             <span className="text-gray-500">•</span>
             <TransactionBadge type={tx.type} source={tx.source} />

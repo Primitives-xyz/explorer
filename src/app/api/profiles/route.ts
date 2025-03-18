@@ -88,8 +88,6 @@ export async function GET(request: Request) {
         url = `${url}&pageSize=${pageSize}`
       }
 
-      console.log("Fetching data from Tapestry: ", url)
-
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -112,7 +110,6 @@ export async function GET(request: Request) {
       }
 
       const data = await response.json()
-      console.log(data)
       return NextResponse.json(data)
     }
   } catch (error) {

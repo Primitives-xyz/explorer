@@ -19,6 +19,7 @@ import {
   transformToExtendedTransaction,
 } from './transaction-utils'
 import { TransferList } from './transfer-list'
+import TransferGraph from './transfer-graph'
 
 const COMMISSION_WALLET = '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 
@@ -26,7 +27,6 @@ export const TransactionCard = memo(function TransactionCard({
   transaction: tx,
   sourceWallet,
 }: BaseTransactionDisplayProps) {
-  console.log(tx)
   // Memoize expensive computations
   const { extendedTransaction } = useMemo(
     () => ({
@@ -89,8 +89,6 @@ export const TransactionCard = memo(function TransactionCard({
       </div>
     )
   }
-
-  console.log("Swap", isSwap, sourceWallet)
 
   return (
     <div className="p-2 sm:p-3 hover:bg-green-900/10 transition-all duration-200">
@@ -173,10 +171,11 @@ export const TransactionCard = memo(function TransactionCard({
             />
           )}
           {!isComment && !isSolanaTransfer && !isSPLTransfer && (
-            <TransferList
+            <TransferGraph
               nativeTransfers={tx.nativeTransfers}
               tokenTransfers={tx.tokenTransfers}
               sourceWallet={sourceWallet}
+              sourceProfile={sourceProfile}
             />
           )}
         </div>
