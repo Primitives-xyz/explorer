@@ -289,8 +289,7 @@ export default function TokenDashboard({
                               <div className="text-right">
                                 <div>${formatNumber(token.totalPrice)}</div>
                                 <div className="text-sm">
-                                  {token.balance / Math.pow(10, token.decimals)}{' '}
-                                  {token.symbol}
+                                  {token.balance} {token.symbol}
                                 </div>
                               </div>
                             </div>

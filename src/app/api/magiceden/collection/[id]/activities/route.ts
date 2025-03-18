@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 type RouteContext = {
   params: Promise<{ id: string }>
 }
-
+const ME_API_KEY = process.env.NEXT_ME_API_KEY || ''
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
@@ -32,7 +32,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
       type = 'all'
     }
 
-    const options = { method: 'GET', headers: { accept: 'application/json' } }
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${ME_API_KEY}`,
+      },
+    }
 
     // Construct the API URL with query parameters
     const apiUrl = new URL(

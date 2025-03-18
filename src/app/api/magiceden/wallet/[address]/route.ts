@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 type RouteContext = {
   params: Promise<{ address: string }>
 }
-
+const ME_API_KEY = process.env.NEXT_ME_API_KEY || ''
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const params = await context.params
@@ -16,7 +16,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
       )
     }
 
-    const options = { method: 'GET', headers: { accept: 'application/json' } }
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${ME_API_KEY}`,
+      },
+    }
     const response = await fetch(
       `https://api-mainnet.magiceden.dev/v2/wallets/${address}/tokens`,
       options
