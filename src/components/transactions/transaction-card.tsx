@@ -26,6 +26,7 @@ export const TransactionCard = memo(function TransactionCard({
   transaction: tx,
   sourceWallet,
 }: BaseTransactionDisplayProps) {
+  console.log(tx)
   // Memoize expensive computations
   const { extendedTransaction } = useMemo(
     () => ({
@@ -88,6 +89,8 @@ export const TransactionCard = memo(function TransactionCard({
       </div>
     )
   }
+
+  console.log("Swap", isSwap, sourceWallet)
 
   return (
     <div className="p-2 sm:p-3 hover:bg-green-900/10 transition-all duration-200">

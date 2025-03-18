@@ -7,7 +7,7 @@ import { IGetProfileResponse } from '@/types/profile.types'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
 import { formatTimeAgo } from '@/utils/format-time'
-import type { Transaction } from '@/utils/helius/types'
+import type { AccountData, ParsedInstruction, Transaction, TransactionEvent } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -58,6 +58,7 @@ interface SwapDetails {
   to: SwapToken | null
 }
 
+
 export function SwapTransactionView({
   tx,
   sourceWallet,
@@ -89,22 +90,27 @@ export function SwapTransactionView({
       const fromTransfer = tx.tokenTransfers.find(
         t => t.from === sourceWallet || t.fromUserAccount === sourceWallet
       );
-      
+
       const toTransfer = tx.tokenTransfers.find(
         t => t.to === sourceWallet || t.toUserAccount === sourceWallet
       );
-      
-      if (fromTransfer) {
-        fromMint = fromTransfer.tokenMint;
+
+      if (fromTransfer && (fromTransfer.mint || fromTransfer.tokenMint)) {
+        fromMint = fromTransfer.mint || fromTransfer.tokenMint;
         fromAmount = fromTransfer.amount || fromTransfer.tokenAmount;
+        
+        // Set tokenMint if .mint or .tokenMint exists
+        fromTransfer.tokenMint = fromTransfer.mint || fromTransfer.tokenMint;
       }
-      
-      if (toTransfer) {
-        toMint = toTransfer.tokenMint;
+
+      if (toTransfer && (toTransfer.mint || toTransfer.tokenMint)) {
+        toMint = toTransfer.mint || toTransfer.tokenMint;
         toAmount = toTransfer.amount || toTransfer.tokenAmount;
+        
+        // Set tokenMint if .mint or .tokenMint exists
+        toTransfer.tokenMint = toTransfer.mint || toTransfer.tokenMint;
       }
     }
-    
     // If we couldn't find from the transfers, try to parse from description
     if ((!fromMint || !toMint) && tx.description) {
       const descRegex = /swapped\s+([\d.]+)\s+([A-Za-z0-9]+)\s+for\s+([\d.]+)\s+([A-Za-z0-9]+)/i;

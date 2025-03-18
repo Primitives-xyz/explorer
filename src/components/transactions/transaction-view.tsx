@@ -42,7 +42,6 @@ export default function TransactionDetails({
 
   useEffect(() => {
     if (!signature) return
-
     const fetchTransaction = async () => {
       try {
         const response = await fetch('/api/parse-transaction', {
