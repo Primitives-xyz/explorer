@@ -1,8 +1,8 @@
 import useSWR from 'swr'
 
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-const SOL_MINT = 'So11111111111111111111111111111111111111112'
-
+export const BAD_SOL_MINT = 'So11111111111111111111111111111111111111111'
+export const GOOD_INPUT_SOL = 'So11111111111111111111111111111111111111112'
 const fetcher = async (url: string) => {
   const response = await fetch(url)
   if (!response.ok) {
@@ -20,7 +20,8 @@ export function useTokenUSDCPrice(
 ) {
   const shouldFetch = tokenMint && tokenMint !== USDC_MINT
   const amount = Math.pow(10, decimals || 6) // 1 token in base units
-
+  const isSol = tokenMint === BAD_SOL_MINT
+  tokenMint = isSol ? GOOD_INPUT_SOL : tokenMint
   const url =
     shouldFetch && tokenMint !== USDC_MINT
       ? `/api/jupiter/quote?inputMint=${tokenMint}&outputMint=${USDC_MINT}&amount=${amount}&slippageBps=50`

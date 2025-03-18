@@ -10,11 +10,7 @@ import {
   TokenSearchResult,
 } from './types/token-types'
 
-export function TokenSearch({
-  onSelect,
-  onClose,
-  hideWhenGlobalSearch,
-}: TokenSearchProps) {
+export function TokenSearch({ onSelect, onClose }: TokenSearchProps) {
   const {
     searchQuery,
     setSearchQuery,
@@ -26,14 +22,11 @@ export function TokenSearch({
     sortOptions,
     sortBy,
     setSortBy,
-    isGlobalSearchActive,
   } = useTokenSearch()
 
-  const t = useTranslations()
+  console.log({ searchResults })
 
-  if (hideWhenGlobalSearch && isGlobalSearchActive) {
-    return null
-  }
+  const t = useTranslations()
 
   const handleSelect = (token: TokenSearchResult) => {
     const selectedToken: TokenInfo = {

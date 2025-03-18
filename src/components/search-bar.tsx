@@ -31,7 +31,6 @@ interface SearchBarProps {
   onPickRecentAddress?: (addr: string) => void
   autoFocus?: boolean
   onSelectToken?: (token: TokenSearchResult) => void
-  hideWhenGlobalSearch?: boolean
   variant?: 'home' | 'inline'
 }
 
