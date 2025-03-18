@@ -36,7 +36,6 @@ export default function Home() {
         throw new Error('Failed to fetch profiles')
       }
       const data = await response.json()
-      console.log(data)
       setProfileData(data)
     } catch (err) {
       console.error('Error fetching profiles:', err)
