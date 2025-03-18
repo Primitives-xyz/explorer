@@ -28,5 +28,4 @@ export interface SortOption {
 export interface TokenSearchProps {
   onSelect: (token: TokenInfo) => void
   onClose: () => void
-  hideWhenGlobalSearch?: boolean
 }

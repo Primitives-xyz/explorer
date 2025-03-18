@@ -25,7 +25,7 @@ export default async function NewVersionLayout({
     >
       <Header />
       <div className="w-full mx-auto container">
-        <div className="grid grid-cols-[1fr_2fr_1fr] gap-8">
+        <div className="grid grid-cols-[1fr_3fr_1fr] gap-10">
           <LeftSideMenu />
           {children}
         </div>

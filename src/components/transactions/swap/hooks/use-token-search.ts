@@ -1,10 +1,10 @@
 'use client'
 
-import { useWallet } from '@/components/auth/wallet-context'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { usePortfolioData } from '@/hooks/usePortfolioData'
 import { debounce } from 'lodash'
 import { useTranslations } from 'next-intl'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   searchTokensByAddress,
   searchTokensByKeyword,
@@ -14,223 +14,147 @@ import { DEFAULT_TOKENS } from '../utils/token-utils'
 
 export function useTokenSearch() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] =
-    useState<TokenSearchResult[]>(DEFAULT_TOKENS)
+  const [searchResults, setSearchResults] = useState<TokenSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isWalletTokensLoading, setIsWalletTokensLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [verifiedOnly, setVerifiedOnly] = useState(true)
-  const [isGlobalSearchActive, setIsGlobalSearchActive] = useState(false)
-  const { walletAddress } = useWallet()
-  const { items } = usePortfolioData(walletAddress)
+
   const t = useTranslations()
-  const initialLoadComplete = useRef(false)
+  const { walletAddress } = useCurrentWallet()
+  const { items, isLoading: isPortfolioLoading } =
+    usePortfolioData(walletAddress)
 
-  // Set wallet tokens loading state when wallet address changes
-  useEffect(() => {
-    if (walletAddress && !initialLoadComplete.current) {
-      setIsWalletTokensLoading(true)
-    }
-  }, [walletAddress])
-
-  // Process wallet tokens if wallet address exists and items are loaded
-  useEffect(() => {
-    // If no wallet address, just use default tokens and mark initial load as complete
-    if (!walletAddress) {
-      setSearchResults(DEFAULT_TOKENS)
-      initialLoadComplete.current = true
-      setIsWalletTokensLoading(false)
-      return
-    }
-
-    // If we have wallet items, process them
-    if (items.length > 0) {
-      console.log(items)
-      const walletTokens = items.map((item) => ({
-        name: item.name,
-        symbol: item.symbol,
-        address: item.address,
-        decimals: item.decimals,
-        logoURI: item.logoURI || item.icon,
-        icon: item.icon,
-        chainId: item.chainId,
-        price: item.priceUsd,
-        priceUsd: item.priceUsd,
-        balance: item.balance,
-        uiAmount: item.uiAmount,
-        valueUsd: item.valueUsd,
-        volume_24h_usd: 0,
-        verified: true,
-        market_cap: 0,
-      }))
-
-      setSearchResults(walletTokens)
-      initialLoadComplete.current = true
-      setIsWalletTokensLoading(false)
-    }
-  }, [walletAddress, items])
-
-  const sortOptions: SortOption[] = [
-    {
-      value: 'marketcap',
-      label: t('trade.marketcap'),
-    },
-    {
-      value: 'volume',
-      label: t('common.volume'),
-    },
-    {
-      value: 'name',
-      label: t('trade.name'),
-    },
-    {
-      value: 'balance',
-      label: t('common.balance') || 'Balance',
-    },
-  ]
+  // Create sort options only once
+  const sortOptions: SortOption[] = useMemo(
+    () => [
+      { value: 'marketcap', label: t('trade.marketcap') },
+      { value: 'volume', label: t('common.volume') },
+      { value: 'name', label: t('trade.name') },
+      { value: 'balance', label: t('common.balance') || 'Balance' },
+    ],
+    [t]
+  )
 
   const [sortBy, setSortBy] = useState(sortOptions[0])
 
-  const searchTokens = async (query: string) => {
-    if (!query.trim()) {
-      // When clearing search, show wallet tokens if available, otherwise default tokens
-      if (walletAddress && items.length > 0) {
-        // Don't do anything, keep the current wallet tokens
-        setIsLoading(false)
-        return
-      } else {
-        setSearchResults(DEFAULT_TOKENS)
-        setIsLoading(false)
-        return
+  // Convert wallet items to token format
+  const walletTokens = useMemo(() => {
+    if (!items.length) return []
+
+    return items.map((item) => ({
+      name: item.name,
+      symbol: item.symbol,
+      address: item.address,
+      decimals: item.decimals,
+      logoURI: item.logoURI || item.icon,
+      icon: item.icon,
+      chainId: item.chainId,
+      price: item.priceUsd,
+      priceUsd: item.priceUsd,
+      balance: item.balance,
+      uiAmount: item.uiAmount,
+      valueUsd: item.valueUsd,
+      volume_24h_usd: 0,
+      verified: true,
+      market_cap: 0,
+    }))
+  }, [items]).filter((token) => token.name)
+
+  // Process wallet tokens when they're available
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      const newResults =
+        walletAddress && walletTokens.length > 0 ? walletTokens : DEFAULT_TOKENS
+
+      // Only update if the results are different
+      if (JSON.stringify(newResults) !== JSON.stringify(searchResults)) {
+        setSearchResults(newResults)
       }
-    }
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      // First try to get token by address if the query looks like a Solana address
-      if (query.length === 44 || query.length === 43) {
-        const token = await searchTokensByAddress(query)
-        if (token) {
-          setSearchResults([token])
-          setIsLoading(false)
-          return
-        }
-      }
-
-      // If not found by address or not an address, use keyword search
-      const results = await searchTokensByKeyword(query, verifiedOnly)
-
-      // Prioritize tokens from the wallet
-      const prioritizedResults = prioritizeWalletTokens(results, items, query)
-
-      setSearchResults(prioritizedResults)
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t('error.an_error_occurred')
-      )
-    } finally {
       setIsLoading(false)
     }
-  }
+  }, [walletAddress, walletTokens, searchQuery, searchResults])
 
   // Function to prioritize wallet tokens in search results
-  const prioritizeWalletTokens = (
-    searchResults: TokenSearchResult[],
-    walletItems: any[], // Using any[] since we don't have the exact type
-    query: string
-  ): TokenSearchResult[] => {
-    if (!walletItems.length) return searchResults
+  const prioritizeWalletTokens = useCallback(
+    (results: TokenSearchResult[], query: string): TokenSearchResult[] => {
+      if (!walletTokens.length) return results
 
-    // Create a map of wallet token addresses for quick lookup
-    const walletTokensMap = new Map()
+      // Get wallet tokens that match the search query
+      const matchingWalletTokens = walletTokens
+        .filter(
+          (token) =>
+            token.name?.toLowerCase().includes(query.toLowerCase()) ||
+            token.symbol?.toLowerCase().includes(query.toLowerCase())
+        )
+        .map((token) => ({ ...token, prioritized: true }))
+        .sort((a, b) => (b.valueUsd || 0) - (a.valueUsd || 0))
 
-    // Convert wallet items to TokenSearchResult format and store in map
-    walletItems.forEach((item) => {
-      // Only include tokens that match the search query
-      const nameMatch = item.name?.toLowerCase().includes(query.toLowerCase())
-      const symbolMatch = item.symbol
-        ?.toLowerCase()
-        .includes(query.toLowerCase())
+      // Filter out wallet tokens from search results to avoid duplicates
+      const walletAddresses = new Set(
+        matchingWalletTokens.map((t) => t.address)
+      )
+      const filteredResults = results.filter(
+        (token) => !walletAddresses.has(token.address)
+      )
 
-      if (nameMatch || symbolMatch) {
-        walletTokensMap.set(item.address, {
-          name: item.name,
-          symbol: item.symbol,
-          address: item.address,
-          decimals: item.decimals,
-          logoURI: item.logoURI || item.icon,
-          icon: item.icon,
-          chainId: item.chainId,
-          price: item.priceUsd,
-          priceUsd: item.priceUsd,
-          balance: item.balance,
-          uiAmount: item.uiAmount,
-          valueUsd: item.valueUsd || 0,
-          volume_24h_usd: 0,
-          verified: true,
-          market_cap: 0,
-          prioritized: true,
-        })
+      return [...matchingWalletTokens, ...filteredResults]
+    },
+    [walletTokens]
+  )
+
+  const searchTokens = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        return // Early return as the useEffect will handle empty query state
       }
-    })
 
-    // Filter out wallet tokens from search results to avoid duplicates
-    const filteredResults = searchResults.filter(
-      (token) => !walletTokensMap.has(token.address)
-    )
+      setIsLoading(true)
+      setError(null)
 
-    // Get wallet tokens that match the search query
-    const matchingWalletTokens = Array.from(walletTokensMap.values())
+      try {
+        // First try to get token by address if the query looks like a Solana address
+        if (query.length === 44 || query.length === 43) {
+          const token = await searchTokensByAddress(query)
+          if (token) {
+            setSearchResults([token])
+            return
+          }
+        }
 
-    // Sort wallet tokens by valueUsd in descending order
-    const sortedWalletTokens = matchingWalletTokens.sort(
-      (a, b) => (b.valueUsd || 0) - (a.valueUsd || 0)
-    )
-
-    // Combine sorted wallet tokens with filtered search results
-    return [...sortedWalletTokens, ...filteredResults]
-  }
-
-  useEffect(() => {
-    const handleGlobalSearch = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        setIsGlobalSearchActive(true)
+        // If not found by address or not an address, use keyword search
+        const results = await searchTokensByKeyword(query, verifiedOnly)
+        setSearchResults(results)
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : t('error.an_error_occurred')
+        )
+      } finally {
+        setIsLoading(false)
       }
-    }
+    },
+    [verifiedOnly, t]
+  )
 
-    const handleGlobalSearchClose = () => {
-      setIsGlobalSearchActive(false)
-    }
-
-    window.addEventListener('keydown', handleGlobalSearch)
-    window.addEventListener('globalSearchClose', handleGlobalSearchClose)
-
-    return () => {
-      window.removeEventListener('keydown', handleGlobalSearch)
-      window.removeEventListener('globalSearchClose', handleGlobalSearchClose)
-    }
-  }, [])
-
-  const debouncedSearch = debounce(searchTokens, 300)
+  const debouncedSearch = useMemo(
+    () => debounce(searchTokens, 300),
+    [searchTokens]
+  )
 
   useEffect(() => {
     debouncedSearch(searchQuery)
     return () => debouncedSearch.cancel()
-  }, [searchQuery, verifiedOnly])
+  }, [searchQuery, debouncedSearch])
 
   return {
     searchQuery,
     setSearchQuery,
     searchResults,
-    isLoading: isLoading || isWalletTokensLoading,
+    isLoading: isLoading || isPortfolioLoading,
     error,
     verifiedOnly,
     setVerifiedOnly,
     sortOptions,
     sortBy,
     setSortBy,
-    isGlobalSearchActive,
   }
 }

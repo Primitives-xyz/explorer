@@ -10,7 +10,11 @@ import { useJupiterSwap } from '@/hooks/use-jupiter-swap'
 import { useToast } from '@/hooks/use-toast'
 import { useTokenBalance } from '@/hooks/use-token-balance'
 import { useTokenInfo } from '@/hooks/use-token-info'
-import { useTokenUSDCPrice } from '@/hooks/use-token-usdc-price'
+import {
+  BAD_SOL_MINT,
+  GOOD_INPUT_SOL,
+  useTokenUSDCPrice,
+} from '@/hooks/use-token-usdc-price'
 import { JupiterSwapFormProps } from '@/types/jupiter'
 import { ArrowLeftRight, Loader2, RefreshCw, Share2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -48,14 +52,11 @@ export function SwapForm({
   outputTokenName = 'USDC',
   inputDecimals = 9,
   sourceWallet,
-  hideWhenGlobalSearch,
   disableUrlUpdates,
 }: JupiterSwapFormProps) {
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
   const [effectiveAmount, setEffectiveAmount] = useState(initialAmount)
-  const [debouncedUpdate, setDebouncedUpdate] = useState<NodeJS.Timeout | null>(
-    null
-  )
+
   const [inputError, setInputError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputMint, setInputMint] = useState(initialInputMint)
@@ -255,7 +256,6 @@ export function SwapForm({
     resetQuoteState()
     setDisplayAmount('')
     setEffectiveAmount('')
-    if (debouncedUpdate) clearTimeout(debouncedUpdate)
 
     // Then swap the tokens
     const tempInputMint = inputMint
@@ -279,7 +279,11 @@ export function SwapForm({
     name: string
     decimals: number
   }) => {
-    setInputMint(token.address)
+    if (token.address === BAD_SOL_MINT) {
+      setInputMint(GOOD_INPUT_SOL)
+    } else {
+      setInputMint(token.address)
+    }
     setCurrentInputToken(token.symbol)
     setCurrentInputDecimals(token.decimals)
   }
@@ -290,7 +294,11 @@ export function SwapForm({
     name: string
     decimals: number
   }) => {
-    setOutputMint(token.address)
+    if (token.address === BAD_SOL_MINT) {
+      setOutputMint(GOOD_INPUT_SOL)
+    } else {
+      setOutputMint(token.address)
+    }
     setCurrentOutputToken(token.symbol)
   }
 
@@ -328,7 +336,6 @@ export function SwapForm({
   const handleReset = (resetAmount = true) => {
     // Reset all necessary state
     setInputError(null)
-    if (debouncedUpdate) clearTimeout(debouncedUpdate)
     resetQuoteState()
 
     // Reset input amount fields only if resetAmount is true
@@ -393,7 +400,6 @@ export function SwapForm({
       if (validateAmount(formattedQuarter)) {
         setDisplayAmount(formattedQuarter)
         setEffectiveAmount(formattedQuarter)
-        if (debouncedUpdate) clearTimeout(debouncedUpdate)
       }
     } catch (err) {
       console.error('Error calculating quarter amount:', err)
@@ -414,7 +420,6 @@ export function SwapForm({
       if (validateAmount(formattedHalf)) {
         setDisplayAmount(formattedHalf)
         setEffectiveAmount(formattedHalf)
-        if (debouncedUpdate) clearTimeout(debouncedUpdate)
       }
     } catch (err) {
       console.error('Error calculating half amount:', err)
@@ -433,7 +438,6 @@ export function SwapForm({
       if (validateAmount(formattedMax)) {
         setDisplayAmount(formattedMax)
         setEffectiveAmount(formattedMax)
-        if (debouncedUpdate) clearTimeout(debouncedUpdate)
       }
     } catch (err) {
       console.error('Error calculating max amount:', err)
@@ -907,14 +911,12 @@ export function SwapForm({
         <TokenSearch
           onSelect={handleInputTokenSelect}
           onClose={() => setShowInputTokenSearch(false)}
-          hideWhenGlobalSearch={hideWhenGlobalSearch}
         />
       )}
       {showOutputTokenSearch && (
         <TokenSearch
           onSelect={handleOutputTokenSelect}
           onClose={() => setShowOutputTokenSearch(false)}
-          hideWhenGlobalSearch={hideWhenGlobalSearch}
         />
       )}
     </div>
