@@ -1,6 +1,6 @@
 import { useFileUpload } from '@/hooks/use-file-upload'
 import { DICEBEAR_API_BASE } from '@/utils/constants'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import { useState } from 'react'
 import { Alert } from '../common/alert'
 import { Avatar } from '../common/avatar'
@@ -30,7 +30,7 @@ export function UpdateProfileModal({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { fileUrl, isUploading, uploadFile } = useFileUpload()
-  const { authToken } = useDynamicContext()
+  const authToken = getAuthToken()
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
