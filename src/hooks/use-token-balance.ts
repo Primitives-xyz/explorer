@@ -29,7 +29,7 @@ const fetchSolBalance = async (walletAddress: string) => {
         jsonrpc: '2.0',
         id: 1,
         method: 'getBalance',
-        params: [walletAddress],
+        params: [walletAddress, { commitment: 'confirmed' }],
       }),
     }
   )
@@ -100,11 +100,12 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     error: solError,
     isLoading: solLoading,
     isValidating: solRefreshing,
+    mutate: mutateSolBalance,
   } = useSWR(solKey, () => fetchSolBalance(walletAddress!), {
-    refreshInterval: 10000, // 10 seconds
-    dedupingInterval: 2000,
-    revalidateOnFocus: false,
-    keepPreviousData: true,
+    // refreshInterval: 10000, // 10 seconds
+    // dedupingInterval: 2000,
+    // revalidateOnFocus: false,
+    // keepPreviousData: true,
   })
 
   // For SPL token balance
@@ -117,11 +118,12 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     error: tokenError,
     isLoading: tokenLoading,
     isValidating: tokenRefreshing,
+    mutate: mutateTokenBalance,
   } = useSWR(tokenKey, fetcher, {
-    refreshInterval: 10000, // 10 seconds
-    dedupingInterval: 2000,
-    revalidateOnFocus: false,
-    keepPreviousData: true,
+    // refreshInterval: 10000, // 10 seconds
+    // dedupingInterval: 2000,
+    // revalidateOnFocus: false,
+    // keepPreviousData: true,
   })
 
   // Process the data based on token type
@@ -129,6 +131,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
   let error = null
   let loading = false
   let isRefreshing = false
+  let mutate = () => {}
 
   if (mintAddress === SOL_MINT) {
     if (solData !== undefined) {
@@ -138,6 +141,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     error = solError ? t('error.failed_to_fetch_balance') : null
     loading = solLoading
     isRefreshing = solRefreshing
+    mutate = mutateSolBalance
   } else {
     if (tokenData) {
       balance = formatBalance(tokenData.balance.uiAmountString)
@@ -145,6 +149,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     error = tokenError ? t('error.failed_to_fetch_balance') : null
     loading = tokenLoading
     isRefreshing = tokenRefreshing
+    mutate = mutateTokenBalance
   }
 
   return {
@@ -153,5 +158,6 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     loading,
     error,
     isRefreshing,
+    mutate,
   }
 }

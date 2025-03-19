@@ -96,11 +96,13 @@ export function SwapForm({
     balance: inputBalance,
     rawBalance: inputRawBalance,
     loading: inputBalanceLoading,
+    mutate: mutateInputBalance,
   } = useTokenBalance(walletAddress, inputMint)
   const {
     balance: outputBalance,
     rawBalance: rawOutputBalance,
     loading: outputBalanceLoading,
+    mutate: mutateOutputBalance,
   } = useTokenBalance(walletAddress, outputMint)
 
   // Add toast hook
@@ -347,10 +349,13 @@ export function SwapForm({
     // Close the route info panel
     setIsRouteInfoOpen(false)
 
-    // Trigger a refresh of balances and quotes after a short delay
+    // Trigger a refresh of quotes after a short delay
     // to ensure state updates have completed
     setTimeout(() => {
       refreshQuote()
+      // Revalidate token balances
+      mutateInputBalance()
+      mutateOutputBalance()
     }, 100)
   }
 
@@ -488,6 +493,9 @@ export function SwapForm({
             <button
               onClick={() => {
                 if (!loading && !isQuoteRefreshing) {
+                  // Refresh token balances along with quote
+                  mutateInputBalance()
+                  mutateOutputBalance()
                   refreshQuote()
                 }
               }}
@@ -724,6 +732,9 @@ export function SwapForm({
                         onClick={(e) => {
                           e.stopPropagation()
                           if (!loading && !isQuoteRefreshing) {
+                            // Refresh token balances along with quote
+                            mutateInputBalance()
+                            mutateOutputBalance()
                             refreshQuote()
                           }
                         }}
