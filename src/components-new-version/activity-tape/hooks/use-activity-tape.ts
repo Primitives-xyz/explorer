@@ -157,7 +157,12 @@ export function useActivityTape() {
 
   const realActivities = transactions.map((tx) => ({
     type: tx.type,
-    text: `${tx.username || tx.walletAddress} bought`,
+    text: `${
+      tx.username ||
+      (tx.walletAddress
+        ? tx.walletAddress.slice(0, 4) + '...' + tx.walletAddress.slice(-4)
+        : '')
+    } bought`,
     action: '💱',
     wallet: tx.username || tx.walletAddress,
     timestamp: Math.floor(new Date(tx.timestamp).getTime() / 1000),
