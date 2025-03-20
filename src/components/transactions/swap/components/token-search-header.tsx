@@ -35,13 +35,13 @@ export function TokenSearchHeader({
   }, [])
 
   return (
-    <div className="p-4 border-b border-green-800 bg-green-950/50">
+    <div className="p-4 border-b border-white/20 bg-white/5">
       <div className="relative">
         <input
           ref={inputRef}
           type="text"
           placeholder={t('trade.search_tokens')}
-          className="w-full bg-black/80 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+          className="w-full bg-black/80 p-2 pl-10 rounded border border-white/20 focus:border-white/30 focus:outline-none"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -69,10 +69,10 @@ export function TokenSearchHeader({
             <button
               key={option.value}
               onClick={() => setSortBy(option)}
-              className={`text-xs px-2 py-1 rounded ${
+              className={`text-xs px-2 py-1 rounded text-[#292C31] font-bold ${
                 sortBy.value === option.value
-                  ? 'bg-green-600'
-                  : 'bg-green-900/40'
+                  ? 'bg-[#97EF83]'
+                  : 'bg-[#97EF83] opacity-40'
               }`}
             >
               {option.label}

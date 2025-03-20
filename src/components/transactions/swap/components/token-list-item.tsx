@@ -29,7 +29,7 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
 
   return (
     <button
-      className="w-full p-3 flex items-center gap-3 hover:bg-green-950/50 transition-colors text-left"
+      className="w-full p-3 flex items-center gap-3 hover:bg-white/10 transition-colors text-left"
       onClick={() => onSelect(token)}
     >
       <div className="relative w-8 h-8 flex-shrink-0">
@@ -44,14 +44,14 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
             />
           </div>
         ) : (
-          <div className="w-8 h-8 rounded-full bg-green-950 ring-1 ring-green-800/50 flex items-center justify-center">
-            <span className="text-sm font-medium">
+          <div className="w-8 h-8 rounded-full bg-[#97EF83] ring-1 ring-green-800/50 flex items-center justify-center">
+            <span className="text-sm font-medium text-[#292C31]">
               {(token.symbol || '??').slice(0, 2)}
             </span>
           </div>
         )}
         {token.verified && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 rounded-full flex items-center justify-center ring-1 ring-black">
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#97EF83] rounded-full flex items-center justify-center ring-1 ring-black">
             <span className="text-black text-xs">✓</span>
           </div>
         )}
@@ -61,7 +61,7 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
           <span className="font-medium">{token.symbol}</span>
           <span className="text-sm truncate">{token.name}</span>
           {token.chainId && (
-            <span className="text-xs px-1.5 py-0.5 bg-green-950 rounded-full">
+            <span className="text-xs px-1.5 py-0.5 bg-[#97EF83] rounded-full">
               {token.chainId}
             </span>
           )}
@@ -70,14 +70,14 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
           <div className="text-sm font-medium flex items-center gap-2">
             <span>{formatPrice(token.price || token.priceUsd || 0)}</span>
             {formattedBalance && (
-              <span className="text-xs text-green-400">
+              <span className="text-xs text-[#97EF83]">
                 {formattedBalance} {token.symbol}
               </span>
             )}
           </div>
           <div className="flex items-center gap-2 text-xs">
             {formattedValue ? (
-              <span className="font-medium text-green-400">
+              <span className="font-medium text-[#97EF83]">
                 {formattedValue}
               </span>
             ) : (

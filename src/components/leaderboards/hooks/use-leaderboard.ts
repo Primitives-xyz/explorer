@@ -72,7 +72,7 @@ export function useLeaderboard() {
     }
 
     fetchTopTraders()
-  }, [])
+  }, [traders])
 
   return {
     traders,

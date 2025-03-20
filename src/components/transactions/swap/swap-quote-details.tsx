@@ -76,7 +76,7 @@ export function SwapQuoteDetails({
       </div>
 
       {quoteResponse.routePlan && (
-        <div className="pt-2 border-t border-green-900/30">
+        <div className="pt-2 border-t border-white/10">
           <p className="text-sm mb-1">{t('trade.route')}</p>
           <div className="text-xs space-y-1">
             {quoteResponse.routePlan.map((step, index) => (

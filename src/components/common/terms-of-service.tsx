@@ -2,10 +2,10 @@
 
 import Link from 'next/link'
 
-export function Footer() {
+export function TermsOfService() {
   return (
-    <footer className="w-full border-t border-green-800/50 py-4 mt-auto">
-      <div className="container mx-auto flex justify-center items-center text-xs text-gray-400">
+    <div className="w-full border-t border-white/20 py-4 mt-auto">
+      <div className="container mx-auto flex justify-center items-center text-[16px] text-gray-400">
         <Link 
           href="https://cdn.sse.gg/legal" 
           target="_blank" 
@@ -15,6 +15,6 @@ export function Footer() {
           Terms of Service
         </Link>
       </div>
-    </footer>
+    </div>
   )
 } 

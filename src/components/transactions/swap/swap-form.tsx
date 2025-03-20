@@ -5,7 +5,6 @@ import { SwapQuoteDetails } from '@/components/transactions/swap/swap-quote-deta
 import { SwapSettings } from '@/components/transactions/swap/swap-settings'
 import { SwapShareSection } from '@/components/transactions/swap/swap-share-section'
 import { TokenSearch } from '@/components/transactions/swap/token-search'
-import { TokenSelectButton } from '@/components/transactions/swap/token-select-button'
 import { useJupiterSwap } from '@/hooks/use-jupiter-swap'
 import { useToast } from '@/hooks/use-toast'
 import { useTokenBalance } from '@/hooks/use-token-balance'
@@ -17,6 +16,7 @@ import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { TokenSelectButton } from '../token-select-button'
 
 const DynamicConnectButton = dynamic(
   () =>

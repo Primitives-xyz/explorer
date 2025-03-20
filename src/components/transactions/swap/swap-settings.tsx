@@ -19,11 +19,11 @@ export function SwapSettings({
 }: SwapSettingsProps) {
   const t = useTranslations()
   return (
-    <div className="flex items-center gap-4 pt-4 border-t border-green-900/20">
+    <div className="flex items-center gap-4 pt-4 border-t border-white/10">
       <div className="flex-1">
         <div className="text-sm mb-2">{t('trade.slippage')}</div>
         <select
-          className="bg-green-900/20 p-2 rounded w-full"
+          className="bg-white/10 p-2 rounded w-full outline-none"
           value={slippageBps}
           onChange={(e) =>
             onSlippageChange(
@@ -33,7 +33,7 @@ export function SwapSettings({
           disabled={disabled}
         >
           {SLIPPAGE_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option key={option.value} value={option.value} className='text-[#000000]'>
               {option.label}
             </option>
           ))}
@@ -43,7 +43,7 @@ export function SwapSettings({
       <div className="flex-1">
         <div className="text-sm mb-2">{t('trade.priority')}</div>
         <select
-          className="bg-green-900/20 p-2 rounded w-full"
+          className="bg-white/10 p-2 rounded w-full outline-none"
           value={priorityLevel}
           onChange={(e) => onPriorityChange(e.target.value as PriorityLevel)}
           disabled={disabled}
@@ -53,6 +53,7 @@ export function SwapSettings({
               key={level.value}
               value={level.value}
               title={level.description}
+              className='text-[#000000]'
             >
               {level.label}
             </option>

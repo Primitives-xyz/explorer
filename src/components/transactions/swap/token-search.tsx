@@ -49,7 +49,7 @@ export function TokenSearch({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-black border border-green-800 rounded-lg w-full max-w-md overflow-hidden shadow-xl">
+      <div className="bg-black border border-white/20 rounded-lg w-full max-w-md overflow-hidden shadow-xl">
         {/* Search Header */}
         <TokenSearchHeader
           searchQuery={searchQuery}
@@ -75,10 +75,10 @@ export function TokenSearch({
         </div>
 
         {/* Close Button */}
-        <div className="p-4 border-t border-green-800 bg-green-950/50">
+        <div className="p-4 border-t border-white/20 bg-white/5">
           <button
             onClick={onClose}
-            className="w-full bg-green-950 hover:bg-green-900 p-2 rounded transition-colors font-medium"
+            className="w-full bg-[#97EF83] hover:opacity-85 p-2 rounded transition-colors font-medium text-[#292C31]"
           >
             {t('common.close')}
           </button>

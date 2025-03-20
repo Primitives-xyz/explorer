@@ -120,7 +120,7 @@ export default function DesignSystem() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Paragraph className="text-muted-foreground">
+            <Paragraph className="text-muted-foreground border-green-500">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias
               quia aliquid officia tenetur reprehenderit. Sunt dolor id porro
               quae fugiat, atque ratione voluptatibus placeat dolorem earum quam

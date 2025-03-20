@@ -1,11 +1,10 @@
 import { ActivityTape } from '@/components/activity-tape'
-import { FeedbackButton } from '@/components/common/feedback-button'
-import { Footer } from '@/components/common/footer'
 import { GlobalSearch } from '@/components/global-search'
-import { Header } from '@/components/header-container/header'
 import { CreateProfile } from '@/components/profile/create-profile'
 import { Toaster } from '@/components/toast/toaster'
 import './legacy.css'
+import '../(new-version)/global.css'
+import { LeftSideMenu } from '@/components/common/left-side-bar'
 
 export default async function LegacyLayout({
   children,
@@ -13,17 +12,19 @@ export default async function LegacyLayout({
   children: React.ReactNode
 }) {
   return (
-    <>
-      <Toaster />
+    <div className='background-gradient'>
+      {/* <Toaster /> */}
       <ActivityTape />
-      <div className="xl:p-2 w-full overflow-hidden bg-[#292C31] text-[#F5F8FD] font-mono min-h-dvh flex flex-col">
-        <Header />
-        {children}
-        <Footer />
-        <CreateProfile />
-        <FeedbackButton />
+      <div>
+        <div className="flex flex-row">
+          <LeftSideMenu />
+          <div className='w-full h-[calc(100vh-50px)] overflow-y-auto border border-white/20 border-l-0 p-8'>
+            {children}
+          </div>
+        </div>
       </div>
+      <CreateProfile />
       <GlobalSearch />
-    </>
+    </div>
   )
 }

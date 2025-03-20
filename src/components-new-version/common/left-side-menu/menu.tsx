@@ -1,20 +1,21 @@
 'use client'
 
-import { Button, ButtonVariant } from '@/components-new-version/ui/button'
-import { route } from '@/components-new-version/utils/route'
-import { cn } from '@/components-new-version/utils/utils'
+import Link from 'next/link'
+import { clsx, type ClassValue } from 'clsx'
+import { route } from '@/utils/routes'
 import {
   ArrowRightLeft,
+  Beef,
   CircleDollarSign,
   House,
   PaintbrushVertical,
   Search,
   User,
 } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 export function Menu() {
-  const pathname = usePathname()
+  const [clickedBtn, setClickedBtn] = useState<string | null>(null)
 
   const data = [
     {
@@ -30,40 +31,45 @@ export function Menu() {
     {
       title: 'Trade',
       icon: ArrowRightLeft,
-      href: route('trade'),
+      href: route('swap'),
     },
     {
       title: 'Discover',
       icon: Search,
-      href: route('discover'),
+      href: route('home'),
     },
     {
       title: 'Tokens',
       icon: CircleDollarSign,
-      href: route('tokens'),
+      href: route('trade'),
     },
     {
       title: 'Profile',
       icon: User,
-      href: route('profile'),
+      href: route('home'),
+    },
+    {
+      title: 'Stake',
+      icon: Beef,
+      href: route('home'),
     },
   ]
 
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col gap-4">
       {data.map((item, i) => (
-        <Button
-          key={i}
-          variant={ButtonVariant.GHOST}
-          className={cn(
-            'justify-start gap-4 hover:bg-primary hover:text-background',
-            pathname === item.href && 'bg-primary text-background'
-          )}
-          href={item.href}
-        >
-          <item.icon size={20} />
-          {item.title}
-        </Button>
+        <Link key={i} href={item.href}>
+          <div
+            className={`flex flex-row items-center gap-4 px-1 py-2 text-[#F5F8FD] text-[20px] font-bold leading-[150%] capitalize rounded-[6px] ${clsx((clickedBtn == item.title) && 'bg-[#97EF83] text-[#292C31]')} md:px-4`}
+            onClick={() => {
+              setClickedBtn(item.title)
+              console.log(item.title)
+            }}
+          >
+            <item.icon size={20} />
+            <span className='hidden md:block'>{item.title}</span>
+          </div>
+        </Link>
       ))}
     </div>
   )

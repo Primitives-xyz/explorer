@@ -2,9 +2,11 @@
 
 const routes = {
   home: () => '/',
+  designSystem: () => '/design-system',
   graphVisualization: () => '/graph-visualization',
   address: ({ id }: { id: string }) => `/${id}`,
   trade: () => '/trade',
+  swap: () => '/swap',
   tradeId: ({ id }: { id: string }) => `/trade/${id}`,
   namespace: ({ namespace }: { namespace: string }) => `/n/${namespace}`,
   namespaceProfile: ({
