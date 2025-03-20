@@ -1,7 +1,7 @@
 'use client'
 
 import { SwapTransactionsViewDetails } from '@/components-new-version/home/home-content/following-transactions/swap-transactions/swap-transactions-view-details'
-import { SwapTransactionsViewHeader } from '@/components-new-version/home/home-content/following-transactions/swap-transactions/swap-transactions-view-header'
+import { TransactionsHeader } from '@/components-new-version/home/home-content/following-transactions/transactions-header'
 import {
   Transaction,
   TransactionEvent,
@@ -10,8 +10,14 @@ import { TokenInfo } from '@/components-new-version/models/token.models'
 import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
-import { Card, CardContent, CardHeader } from '@/components-new-version/ui'
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+} from '@/components-new-version/ui'
 import { SOL_MINT, USDC_MINT } from '@/components-new-version/utils/constants'
+import { getSourceIcon } from '@/components-new-version/utils/transactions'
 import { useEffect, useState } from 'react'
 
 export type TokenDisplay = {
@@ -225,12 +231,26 @@ export function SwapTransactionsView({
   return (
     <Card>
       <CardHeader>
-        <SwapTransactionsViewHeader
+        <TransactionsHeader
           transaction={transaction}
           sourceWallet={sourceWallet}
-          primaryType={primaryType}
           profiles={profiles}
-        />
+        >
+          <div className="flex items-center gap-2 text-xs">
+            <Badge variant="outline" className="rounded-md">
+              Swap
+            </Badge>
+            {transaction.source && (
+              <>
+                <p>on</p>
+                <Badge className="rounded-md" variant="outline">
+                  {getSourceIcon(transaction.source)}
+                  <span>{transaction.source}</span>
+                </Badge>
+              </>
+            )}
+          </div>
+        </TransactionsHeader>
       </CardHeader>
 
       <CardContent className="space-y-4">

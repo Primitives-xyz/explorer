@@ -1,4 +1,4 @@
-import { TransactionType } from '@/components-new-version/home/home-content/following-transactions/filters-button'
+import { FilterType } from '@/components-new-version/home/home-content/following-transactions/filters-button'
 import { Transaction } from '@/components-new-version/models/helius.models'
 import { IGetSocialResponse } from '@/components-new-version/tapestry/models/profiles.models'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
@@ -47,9 +47,7 @@ export const useFollowingTransactions = ({
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
   const [loadedWallets, setLoadedWallets] = useState<Set<string>>(new Set())
   const [totalWallets, setTotalWallets] = useState<number>(0)
-  const [selectedType, setSelectedType] = useState<TransactionType>(
-    TransactionType.ALL
-  )
+  const [selectedType, setSelectedType] = useState<FilterType>(FilterType.ALL)
   const { walletAddress } = useCurrentWallet()
 
   useEffect(() => {

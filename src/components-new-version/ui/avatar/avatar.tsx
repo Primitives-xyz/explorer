@@ -49,24 +49,15 @@ export function Avatar({
         'relative inline-block overflow-hidden rounded-full bg-card',
         className
       )}
-      style={{ width: size, height: size }}
     >
-      <div className="relative h-full w-full">
+      <div className="h-full w-full">
         <Image
           src={finalImageUrl}
           alt={`Avatar for ${username}`}
-          width={size * 2}
-          height={size * 2}
-          className="rounded-full object-cover"
+          width={size}
+          height={size}
+          className="rounded-full object-cover aspect-square"
           onError={() => setImageError(true)}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-          }}
-          quality={90}
-          priority={size > 64}
           unoptimized={finalImageUrl === dicebearUrl}
         />
       </div>

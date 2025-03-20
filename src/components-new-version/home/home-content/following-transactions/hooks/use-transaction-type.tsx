@@ -1,31 +1,54 @@
 import type { Transaction } from '@/utils/helius/types'
+import { useMemo } from 'react'
 
 const COMMISSION_WALLET = '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 
-export function useTransactionType(tx: Transaction) {
-  const isComment =
-    tx.tokenTransfers?.length === 2 &&
-    tx.tokenTransfers.some(
-      (t) => t.to === COMMISSION_WALLET && t.amount === 20
-    ) &&
-    tx.tokenTransfers.some((t) => t.to !== COMMISSION_WALLET && t.amount === 80)
+export enum TransactionType {
+  COMMENT = 'COMMENT',
+  SWAP = 'SWAP',
+  SOL_TRANSFER = 'SOL TRANSFER',
+  SPL_TRANSFER = 'SPL TRANSFER',
+  NFT = 'NFT',
+  OTHER = 'OTHER',
+}
 
-  const isSwap = tx.type === 'SWAP'
-  const isSolanaTransfer =
-    tx.source === 'SYSTEM_PROGRAM' && tx.type === 'TRANSFER'
-  const isSPLTransfer =
-    (tx.source === 'SOLANA_PROGRAM_LIBRARY' || tx.source === 'PHANTOM') &&
-    tx.type === 'TRANSFER'
-  const isNFTTransaction =
-    tx.source === 'MAGIC_EDEN' ||
-    tx.source === 'TENSOR' ||
-    tx.type === 'COMPRESSED_NFT_MINT'
+export function useTransactionType(transaction: Transaction): TransactionType {
+  return useMemo(() => {
+    const conditions = [
+      {
+        check:
+          transaction.tokenTransfers?.length === 2 &&
+          transaction.tokenTransfers.some(
+            (t) => t.to === COMMISSION_WALLET && t.amount === 20
+          ) &&
+          transaction.tokenTransfers.some(
+            (t) => t.to !== COMMISSION_WALLET && t.amount === 80
+          ),
+        type: TransactionType.COMMENT,
+      },
+      { check: transaction.type === 'SWAP', type: TransactionType.SWAP },
+      {
+        check:
+          transaction.source === 'SYSTEM_PROGRAM' &&
+          transaction.type === 'TRANSFER',
+        type: TransactionType.SOL_TRANSFER,
+      },
+      {
+        check:
+          (transaction.source === 'SOLANA_PROGRAM_LIBRARY' ||
+            transaction.source === 'PHANTOM') &&
+          transaction.type === 'TRANSFER',
+        type: TransactionType.SPL_TRANSFER,
+      },
+      {
+        check:
+          transaction.source === 'MAGIC_EDEN' ||
+          transaction.source === 'TENSOR' ||
+          transaction.type === 'COMPRESSED_NFT_MINT',
+        type: TransactionType.NFT,
+      },
+    ]
 
-  return {
-    isComment,
-    isSwap,
-    isSolanaTransfer,
-    isSPLTransfer,
-    isNFTTransaction,
-  }
+    return conditions.find((c) => c.check)?.type || TransactionType.OTHER
+  }, [transaction])
 }

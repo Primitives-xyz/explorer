@@ -14,18 +14,20 @@ import { cn } from '@/components-new-version/utils/utils'
 
 import {
   ArrowRightLeft,
+  Beef,
   CircleDollarSign,
+  Compass,
   EllipsisVertical,
   House,
   PaintbrushVertical,
-  Search,
   User,
 } from 'lucide-react'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 export function Menu() {
   const pathname = usePathname()
-  const { mainUsername, walletAddress, logout, setShowAuthFlow } =
+  const { mainUsername, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useTokenBalance({ walletAddress })
 
@@ -36,18 +38,13 @@ export function Menu() {
       href: route('home'),
     },
     {
-      title: 'Design System',
-      icon: PaintbrushVertical,
-      href: route('designSystem'),
-    },
-    {
       title: 'Trade',
       icon: ArrowRightLeft,
       href: route('trade'),
     },
     {
       title: 'Discover',
-      icon: Search,
+      icon: Compass,
       href: route('discover'),
     },
     {
@@ -60,12 +57,22 @@ export function Menu() {
       icon: User,
       href: route('profile'),
     },
+    {
+      title: 'Stake',
+      icon: Beef,
+      href: route('profile'),
+    },
+    {
+      title: 'Design System',
+      icon: PaintbrushVertical,
+      href: route('designSystem'),
+    },
   ]
 
   return (
     <div className="flex flex-col space-y-2">
       <div className="pb-6 pt-10">
-        {!walletAddress ? (
+        {!isLoggedIn ? (
           <Button
             expand
             variant={ButtonVariant.OUTLINE_WHITE}
@@ -80,7 +87,19 @@ export function Menu() {
               <p className="font-bold text-xs max-w-28 truncate pr-1">
                 {mainUsername}
               </p>
-              <p className="text-xs">| $SSE Bal: ${balance}</p>
+              <p className="text-xs flex items-center gap-1">
+                <span>|</span>
+                <span>
+                  <Image
+                    src="/images/sse.png"
+                    width={16}
+                    height={16}
+                    alt="icon"
+                    className="rounded-full aspect-square object-cover"
+                  />
+                </span>
+                <span className="text-primary">$SSE </span>Bal: {balance}
+              </p>
             </div>
 
             <DropdownMenu>
