@@ -20,7 +20,6 @@ export function useTransactionType(tx: Transaction) {
     tx.source === 'MAGIC_EDEN' ||
     tx.source === 'TENSOR' ||
     tx.type === 'COMPRESSED_NFT_MINT'
-
   return {
     isComment,
     isSwap,

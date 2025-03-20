@@ -100,7 +100,12 @@
     "explore_all_domains": "Explore All Domains",
     "create_a_nimbus_app": "Create a Nimbus App",
     "fetching_profiles": ">>> FETCHING PROFILES...",
+    "sort_by_followers": "Sort by followers",
+    "sort_followers_ascending": "Sort followers ascending",
+    "sort_followers_descending": "Sort followers descending",
+    "followers": "followers",
     "no_profile_found": ">>> NO PROFILES FOUND"
+
   },
   "recent_profiles": {
     "title": "recent_profiles",

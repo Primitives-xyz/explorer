@@ -42,7 +42,6 @@ export default function TransactionDetails({
 
   useEffect(() => {
     if (!signature) return
-
     const fetchTransaction = async () => {
       try {
         const response = await fetch('/api/parse-transaction', {
@@ -106,21 +105,31 @@ export default function TransactionDetails({
   }
 
   return (
-    <div className="py-8">
-      <div className="mb-8">
+    <div className="py-8 ">
+      <div className="mb-8 justify-center flex flex-col items-center">
         <h1 className="text-2xl font-mono mb-2">
           {t('transaction_log.transaction_details')}
         </h1>
         <TransactionSignature signature={signature} />
       </div>
 
+      <div className="border border-green-800/40 rounded-xl bg-black/40">
+        <TransactionCard
+          transaction={transaction}
+          sourceWallet={transaction.feePayer || ''}
+        />
+      </div>
+      <br />
+
       <div className="mb-8">
+        <div className="justify-center flex flex-col items-center">
         <button
           onClick={handleTransactionExplanationClick}
           className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0"
         >
           {t('transaction_log.explain_transaction')}
         </button>
+        </div>
 
         {transactionExplanationLoading && (
           <div className="py-8">
@@ -276,6 +285,7 @@ export default function TransactionDetails({
             t('transaction_log.no_description_available')}
         </div>
       </div>
+      <br />
 
       <div className="mb-8 p-6 bg-black/40 border border-green-800/40 rounded-xl">
         <h3 className="text-sm font-mono mb-4">
@@ -342,13 +352,6 @@ export default function TransactionDetails({
               </div>
             ))}
         </div>
-      </div>
-
-      <div className="border border-green-800/40 rounded-xl bg-black/40">
-        <TransactionCard
-          transaction={transaction}
-          sourceWallet={transaction.feePayer || ''}
-        />
       </div>
     </div>
   )

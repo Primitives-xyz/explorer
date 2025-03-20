@@ -2,22 +2,21 @@ import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { Avatar } from '@/components/common/avatar'
 import { Modal } from '@/components/common/modal'
-import { useTokenInfo } from '@/hooks/use-token-info'
-import { useTokenUSDCPrice } from '@/hooks/use-token-usdc-price'
-import type { TokenInfo } from '@/types/Token'
+import { useTokenInfo } from '@/hooks/use-token-info-cache' // Import our custom hook
 import { IGetProfileResponse } from '@/types/profile.types'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { formatNumber } from '@/utils/format'
 import { formatTimeAgo } from '@/utils/format-time'
-import type { Transaction, TransactionEvent } from '@/utils/helius/types'
+import type { Transaction } from '@/utils/helius/types'
 import { route } from '@/utils/routes'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState, useMemo } from 'react'
 import { JupiterSwapForm } from './jupiter-swap-form'
 import { TransactionBadge } from './transaction-badge'
 import { TransactionCommentView } from './transaction-comment-view'
+import { normalizeTimestamp } from '@/utils/time'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -29,7 +28,6 @@ const DynamicConnectButton = dynamic(
 
 // Constants
 const SOL_MINT = 'So11111111111111111111111111111111111111112'
-const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
 
 // Helper function to format source name
 const formatSourceName = (source: string) => {
@@ -45,27 +43,30 @@ const formatSourceName = (source: string) => {
   }
 }
 
-interface TokenDisplay {
+// Helper to determine if a string looks like a mint address
+const isMintAddress = (str: string): boolean => {
+  return /^[A-Za-z0-9]{32,44}$/.test(str);
+};
+
+interface SwapToken {
   mint: string
   amount: number
-  tokenInfo?: TokenInfo
-  loading?: boolean
-  error?: string
+  symbol?: string
 }
+
+interface SwapDetails {
+  from: SwapToken | null
+  to: SwapToken | null
+}
+
 
 export function SwapTransactionView({
   tx,
   sourceWallet,
-  fromMint,
-  toMint,
 }: {
   tx: Transaction
   sourceWallet: string
-  fromMint?: string
-  toMint?: string
 }) {
-  const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
-  const [toToken, setToToken] = useState<TokenDisplay | null>(null)
   const [showSwapModal, setShowSwapModal] = useState(false)
   const { isLoggedIn, walletAddress: currentWalletAddress } = useCurrentWallet()
 
@@ -75,208 +76,165 @@ export function SwapTransactionView({
     (p: IGetProfileResponse) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
+  // Extract swap details from transaction - memoized
+  const swapDetails = useMemo(() => {
+    if (!tx) return { from: null, to: null };
+    
+    let fromMint = '';
+    let fromAmount = 0;
+    let toMint = '';
+    let toAmount = 0;
+    
+    // Look for direct token transfers involving the sourceWallet
+    if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
+      // Find transfers where the sourceWallet is directly involved
+      const fromTransfer = tx.tokenTransfers.find(
+        t => t.from === sourceWallet || t.fromUserAccount === sourceWallet
+      );
+
+      const toTransfer = tx.tokenTransfers.find(
+        t => t.to === sourceWallet || t.toUserAccount === sourceWallet
+      );
+
+      if (fromTransfer && (fromTransfer.mint || fromTransfer.tokenMint)) {
+        fromMint = fromTransfer.mint || fromTransfer.tokenMint;
+        fromAmount = fromTransfer.amount || fromTransfer.tokenAmount;
+        
+        // Set tokenMint if .mint or .tokenMint exists
+        fromTransfer.tokenMint = fromTransfer.mint || fromTransfer.tokenMint;
+      }
+
+      if (toTransfer && (toTransfer.mint || toTransfer.tokenMint)) {
+        toMint = toTransfer.mint || toTransfer.tokenMint;
+        toAmount = toTransfer.amount || toTransfer.tokenAmount;
+        
+        // Set tokenMint if .mint or .tokenMint exists
+        toTransfer.tokenMint = toTransfer.mint || toTransfer.tokenMint;
+      }
+    }
+    // If we couldn't find from the transfers, try to parse from description
+    if ((!fromMint || !toMint) && tx.description) {
+      const descRegex = /swapped\s+([\d.]+)\s+([A-Za-z0-9]+)\s+for\s+([\d.]+)\s+([A-Za-z0-9]+)/i;
+      const match = tx.description.match(descRegex);
+      
+      if (match) {
+        // If we have a match from the description, parse it
+        if (!fromMint || !fromAmount) {
+          fromAmount = parseFloat(match[1]);
+          
+          // Check if the second part is a mint address
+          if (match[2].length > 30) {
+            fromMint = match[2];
+          }
+        }
+        
+        if (!toMint || !toAmount) {
+          toAmount = parseFloat(match[3]);
+          
+          // Check if the fourth part is a mint address
+          if (match[4].length > 30) {
+            toMint = match[4];
+          }
+        }
+      }
+    }
+    
+    // Final fallback: check all token transfers for the right pattern
+    if (!fromMint || !toMint) {
+      if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
+        // Look for the last transfer to the sourceWallet - likely to be the received token
+        const lastToSource = [...tx.tokenTransfers]
+          .reverse()
+          .find(t => t.to === sourceWallet || t.toUserAccount === sourceWallet);
+        
+        // Look for the first transfer from the sourceWallet - likely to be the sent token
+        const firstFromSource = tx.tokenTransfers
+          .find(t => t.from === sourceWallet || t.fromUserAccount === sourceWallet);
+        
+        if (firstFromSource && !fromMint) {
+          fromMint = firstFromSource.tokenMint;
+          fromAmount = firstFromSource.amount || firstFromSource.tokenAmount;
+        }
+        
+        if (lastToSource && !toMint) {
+          toMint = lastToSource.tokenMint;
+          toAmount = lastToSource.amount || lastToSource.tokenAmount;
+        }
+      }
+    }
+    
+    return {
+      from: fromMint ? {
+        mint: fromMint,
+        amount: fromAmount,
+        symbol: fromMint === SOL_MINT ? 'SOL' : undefined
+      } : null,
+      to: toMint ? {
+        mint: toMint,
+        amount: toAmount,
+        symbol: toMint === SOL_MINT ? 'SOL' : undefined
+      } : null
+    };
+  }, [tx, sourceWallet]);
+
   // Check if this is a comment transaction (80/20 split)
-  const isCommentTransaction =
+  const isCommentTransaction = useMemo(() => 
     tx.tokenTransfers?.length === 2 &&
     tx.tokenTransfers[0].tokenAmount === 80 &&
-    tx.tokenTransfers[1].tokenAmount === 20
+    tx.tokenTransfers[1].tokenAmount === 20,
+    [tx.tokenTransfers]
+  );
 
   // For comments, we want to show the destination as the second transfer recipient
-  const destinationWallet = isCommentTransaction
-    ? tx.tokenTransfers[1].toUserAccount
-    : tx.nativeTransfers?.[0]?.toUserAccount
+  const destinationWallet = useMemo(() => 
+    isCommentTransaction
+      ? tx.tokenTransfers?.[1].toUserAccount
+      : tx.nativeTransfers?.[0]?.toUserAccount,
+    [isCommentTransaction, tx.tokenTransfers, tx.nativeTransfers]
+  );
 
   const { profiles: destProfiles } = useGetProfiles(destinationWallet || '')
   const destProfile = destProfiles?.find(
     (p: IGetProfileResponse) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
 
-  // Add useTokenInfo hooks for both tokens
+  // Use our optimized token info hooks
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
-    fromToken?.mint === SOL_MINT ? null : fromToken?.mint
-  )
+    swapDetails.from?.mint || null
+  );
+  
   const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
-    toToken?.mint === SOL_MINT ? null : toToken?.mint
-  )
+    swapDetails.to?.mint || null
+  );
 
-  // Only fetch prices for SOL and USDC tokens
-  const shouldFetchFromPrice =
-    fromToken?.mint &&
-    (fromToken.mint === SOL_MINT || fromToken.mint === USDC_MINT)
+  // Early return if we don't have complete swap details
+  if (!swapDetails.from || !swapDetails.to) return null;
 
-  const shouldFetchToPrice =
-    toToken?.mint && (toToken.mint === SOL_MINT || toToken.mint === USDC_MINT)
+  const isOwnTrade = currentWalletAddress === sourceWallet;
 
-  // Always call hooks, but pass null when we don't want to fetch
-  const { price: fromTokenPriceRaw, loading: fromPriceLoadingRaw } =
-    useTokenUSDCPrice(
-      shouldFetchFromPrice ? fromToken?.mint : null,
-      shouldFetchFromPrice
-        ? fromToken?.mint === SOL_MINT
-          ? 9 // SOL has 9 decimals
-          : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-            fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-          ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
-          : 6
-        : 0
-    )
-
-  const { price: toTokenPriceRaw, loading: toPriceLoadingRaw } =
-    useTokenUSDCPrice(
-      shouldFetchToPrice ? toToken?.mint : null,
-      shouldFetchToPrice
-        ? toToken?.mint === SOL_MINT
-          ? 9 // SOL has 9 decimals
-          : toToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-            toToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-          ? toToken.tokenInfo.result.token_info?.decimals ?? 6
-          : 6
-        : 0
-    )
-
-  // Use the results conditionally
-  const fromTokenPrice = shouldFetchFromPrice ? fromTokenPriceRaw : null
-  const fromPriceLoading = shouldFetchFromPrice ? fromPriceLoadingRaw : false
-  const toTokenPrice = shouldFetchToPrice ? toTokenPriceRaw : null
-  const toPriceLoading = shouldFetchToPrice ? toPriceLoadingRaw : false
-
-  useEffect(() => {
-    async function loadTokenInfo() {
-      if (!tx.events) return
-      // Handle swap event format
-      const swapEvent = Array.isArray(tx.events)
-        ? tx.events.find(
-            (event): event is Extract<TransactionEvent, { type: 'SWAP' }> =>
-              event.type === 'SWAP'
-          )
-        : undefined
-      if (swapEvent) {
-        // For token -> token swaps
-        if (
-          swapEvent.swap.tokenInputs?.[0] &&
-          swapEvent.swap.tokenOutputs?.[0]
-        ) {
-          setFromToken({
-            mint: swapEvent.swap.tokenInputs[0].mint,
-            amount: swapEvent.swap.tokenInputs[0].tokenAmount,
-          })
-
-          setToToken({
-            mint: swapEvent.swap.tokenOutputs[0].mint,
-            amount: swapEvent.swap.tokenOutputs[0].tokenAmount,
-          })
-        }
-        // For SOL -> token swaps
-        else if (
-          swapEvent.swap.nativeInput &&
-          swapEvent.swap.tokenOutputs?.[0]
-        ) {
-          setFromToken({
-            mint: SOL_MINT,
-            amount: parseFloat(swapEvent.swap.nativeInput.amount),
-          })
-
-          setToToken({
-            mint: swapEvent.swap.tokenOutputs[0].mint,
-            amount: swapEvent.swap.tokenOutputs[0].tokenAmount,
-          })
-        }
-        // For token -> SOL swaps
-        else if (
-          swapEvent.swap.tokenInputs?.[0] &&
-          swapEvent.swap.nativeOutput
-        ) {
-          setFromToken({
-            mint: swapEvent.swap.tokenInputs[0].mint,
-            amount: swapEvent.swap.tokenInputs[0].tokenAmount,
-          })
-
-          setToToken({
-            mint: SOL_MINT,
-            amount: parseFloat(swapEvent.swap.nativeOutput.amount),
-          })
-        }
-        return
-      }
-
-      // Fallback to description parsing for older format
-      const descParts = tx.description?.split(' ') || []
-      const fromAmount = parseFloat(descParts[2] || '0')
-      const toAmount = parseFloat(descParts[5] || '0')
-      const fromTokenMint = fromMint || descParts[3] || ''
-      const toTokenMint = toMint || descParts[6] || ''
-
-      // Check if this is a SOL -> Token swap or Token -> SOL swap
-      const isFromSol = fromTokenMint.toLowerCase() === 'sol'
-      const isToSol = toTokenMint.toLowerCase() === 'sol'
-
-      // Handle SOL -> Token swap
-      if (isFromSol) {
-        setFromToken({
-          mint: SOL_MINT,
-          amount: fromAmount,
-        })
-
-        if (toTokenMint) {
-          setToToken({
-            mint: toTokenMint,
-            amount: toAmount,
-          })
-        }
-      }
-      // Handle Token -> SOL swap
-      else if (isToSol) {
-        setToToken({
-          mint: SOL_MINT,
-          amount: toAmount,
-        })
-
-        if (fromTokenMint) {
-          setFromToken({
-            mint: fromTokenMint,
-            amount: fromAmount,
-          })
-        }
-      }
-      // Handle Token -> Token swap (including when mints are provided directly)
-      else {
-        if (fromTokenMint) {
-          setFromToken({
-            mint: fromTokenMint,
-            amount: fromAmount,
-          })
-        }
-        if (toTokenMint) {
-          setToToken({
-            mint: toTokenMint,
-            amount: toAmount,
-          })
-        }
-      }
+  // Helper to get display symbol for a token
+  const getDisplaySymbol = (token: SwapToken, tokenInfo?: any): string => {
+    // Special case for SOL
+    if (token.mint === SOL_MINT) return 'SOL';
+    
+    // Try to get symbol from loaded token info (asset API)
+    if (tokenInfo) {
+      const symbolFromInfo = tokenInfo.token_info?.symbol ||
+                            tokenInfo.content?.metadata?.symbol;
+      if (symbolFromInfo) return symbolFromInfo;
     }
-
-    loadTokenInfo()
-  }, [tx, sourceWallet, fromMint, toMint])
-
-  // Update token info when data is loaded
-  useEffect(() => {
-    if (fromToken && fromTokenInfo) {
-      setFromToken((prev) =>
-        prev ? { ...prev, tokenInfo: fromTokenInfo } : null
-      )
+    
+    // If we have a symbol from parsing, use it
+    if (token.symbol) return token.symbol;
+    
+    // Last resort - if it looks like a mint address, truncate it
+    if (isMintAddress(token.mint)) {
+      return `${token.mint.slice(0, 4)}...${token.mint.slice(-4)}`;
     }
-  }, [fromTokenInfo])
-
-  useEffect(() => {
-    if (toToken && toTokenInfo) {
-      setToToken((prev) => (prev ? { ...prev, tokenInfo: toTokenInfo } : null))
-    }
-  }, [toTokenInfo])
-
-  if (!fromToken || !toToken) return null
-
-  const isOwnTrade = currentWalletAddress === sourceWallet
-  const isUserToUser = destinationWallet && sourceWallet !== destinationWallet
+    
+    // If all else fails, return "Unknown Token"
+    return "Unknown Token";
+  };
 
   // For comment transactions, use the TransactionCommentView
   if (isCommentTransaction) {
@@ -286,22 +244,21 @@ export function SwapTransactionView({
           tx={tx}
           sourceWallet={sourceWallet}
           destinationWallet={destinationWallet}
-          amount={fromToken.amount}
-          tokenSymbol={
-            fromToken.mint === SOL_MINT
-              ? 'SOL'
-              : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`
-          }
+          amount={swapDetails.from.amount}
+          tokenSymbol={getDisplaySymbol(swapDetails.from, fromTokenInfo)}
         />
       </div>
-    )
+    );
   }
+
+  // Get token prices from asset API if available
+  const fromPriceFromAsset = fromTokenInfo?.token_info?.price_info?.price_per_token;
+  const toPriceFromAsset = toTokenInfo?.token_info?.price_info?.price_per_token;
 
   // For regular swaps, use the existing UI
   return (
     <div className="flex flex-col gap-3">
-      {/* Transaction Header - Simplified */}
+      {/* Transaction Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm">
           <div className="flex items-center gap-2">
@@ -334,7 +291,7 @@ export function SwapTransactionView({
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-gray-300 transition-colors"
             >
-              • {formatTimeAgo(new Date(tx.timestamp))}
+              • {formatTimeAgo(new Date(normalizeTimestamp(tx.timestamp)))}
             </Link>
             <span className="text-gray-500">•</span>
             <TransactionBadge type={tx.type} source={tx.source} />
@@ -370,7 +327,7 @@ export function SwapTransactionView({
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-              {fromToken.mint === SOL_MINT ? (
+              {swapDetails.from.mint === SOL_MINT ? (
                 <Image
                   src="/images/solana-icon.svg"
                   alt="solana icon"
@@ -380,18 +337,22 @@ export function SwapTransactionView({
                 />
               ) : fromTokenLoading ? (
                 <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
-              ) : fromToken.tokenInfo?.result?.content?.links?.image ? (
+              ) : fromTokenInfo?.content?.links?.image ? (
                 <img
-                  src={fromToken.tokenInfo.result.content.links.image}
-                  alt={
-                    fromToken.tokenInfo.result?.content?.metadata?.symbol ||
-                    'Token'
-                  }
+                  src={fromTokenInfo.content.links.image}
+                  alt={getDisplaySymbol(swapDetails.from, fromTokenInfo)}
                   className="w-8 h-8 rounded-lg"
+                  onError={(e) => {
+                    // Fallback if image load fails
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    (e.target as HTMLImageElement).parentElement!.innerHTML = `
+                      <span class="font-mono text-xs">${swapDetails.from ? getDisplaySymbol(swapDetails.from, fromTokenInfo).slice(0, 2) : ''}</span>
+                    `;
+                  }}
                 />
               ) : (
                 <span className="font-mono text-xs">
-                  {fromToken.mint.slice(0, 2)}
+                  {getDisplaySymbol(swapDetails.from, fromTokenInfo).slice(0, 2)}
                 </span>
               )}
             </div>
@@ -400,25 +361,18 @@ export function SwapTransactionView({
             <div className="flex items-baseline gap-1">
               <span className="text-red-400 text-sm">-</span>
               <span className="font-mono text-lg">
-                {formatNumber(fromToken.amount)}
+                {formatNumber(swapDetails.from.amount)}
               </span>
               <Link
-                href={route('address', { id: fromToken.mint })}
+                href={route('address', { id: swapDetails.from.mint })}
                 className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
               >
-                {fromToken.mint === SOL_MINT
-                  ? 'SOL'
-                  : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                    `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(
-                      -4
-                    )}`}
+                {getDisplaySymbol(swapDetails.from, fromTokenInfo)}
               </Link>
             </div>
             <span className="text-xs text-gray-500">
-              {fromTokenPrice !== null && !fromPriceLoading
-                ? `$${formatNumber(fromToken.amount * fromTokenPrice)}`
-                : fromPriceLoading
-                ? 'Loading...'
+              {fromPriceFromAsset 
+                ? `$${formatNumber(swapDetails.from.amount * fromPriceFromAsset)}`
                 : ''}
             </span>
           </div>
@@ -429,7 +383,7 @@ export function SwapTransactionView({
           <div className="relative">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
             <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
-              {toToken.mint === SOL_MINT ? (
+              {swapDetails.to.mint === SOL_MINT ? (
                 <Image
                   src="/images/solana-icon.svg"
                   alt="solana icon"
@@ -439,18 +393,22 @@ export function SwapTransactionView({
                 />
               ) : toTokenLoading ? (
                 <div className="animate-pulse w-6 h-6 bg-green-500/20 rounded-lg" />
-              ) : toToken.tokenInfo?.result?.content?.links?.image ? (
+              ) : toTokenInfo?.content?.links?.image ? (
                 <img
-                  src={toToken.tokenInfo.result.content.links.image}
-                  alt={
-                    toToken.tokenInfo.result?.content?.metadata?.symbol ||
-                    'Token'
-                  }
+                  src={toTokenInfo.content.links.image}
+                  alt={getDisplaySymbol(swapDetails.to, toTokenInfo)}
                   className="w-8 h-8 rounded-lg"
+                  onError={(e) => {
+                    // Fallback if image load fails
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    (e.target as HTMLImageElement).parentElement!.innerHTML = `
+                      <span class="font-mono text-xs">${swapDetails.to ? getDisplaySymbol(swapDetails.to, toTokenInfo).slice(0, 2) : ''}</span>
+                    `;
+                  }}
                 />
               ) : (
                 <span className="font-mono text-xs">
-                  {toToken.mint.slice(0, 2)}
+                  {getDisplaySymbol(swapDetails.to, toTokenInfo).slice(0, 2)}
                 </span>
               )}
             </div>
@@ -459,23 +417,18 @@ export function SwapTransactionView({
             <div className="flex items-baseline gap-1">
               <span className="text-green-400 text-sm">+</span>
               <span className="font-mono text-lg">
-                {formatNumber(toToken.amount)}
+                {formatNumber(swapDetails.to.amount)}
               </span>
               <Link
-                href={route('address', { id: toToken.mint })}
+                href={route('address', { id: swapDetails.to.mint })}
                 className="font-mono text-base text-gray-400 hover:text-gray-300 transition-colors"
               >
-                {toToken.mint === SOL_MINT
-                  ? 'SOL'
-                  : toToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                    `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`}
+                {getDisplaySymbol(swapDetails.to, toTokenInfo)}
               </Link>
             </div>
             <span className="text-xs text-gray-500">
-              {toTokenPrice !== null && !toPriceLoading
-                ? `$${formatNumber(toToken.amount * toTokenPrice)}`
-                : toPriceLoading
-                ? 'Loading...'
+              {toPriceFromAsset 
+                ? `$${formatNumber(swapDetails.to.amount * toPriceFromAsset)}`
                 : ''}
             </span>
           </div>
@@ -490,28 +443,15 @@ export function SwapTransactionView({
       >
         {isLoggedIn ? (
           <JupiterSwapForm
-            initialInputMint={fromToken.mint}
-            initialOutputMint={toToken.mint}
-            initialAmount={fromToken.amount.toString()}
-            inputTokenName={
-              fromToken.mint === SOL_MINT
-                ? 'SOL'
-                : fromToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                  `${fromToken.mint.slice(0, 4)}...${fromToken.mint.slice(-4)}`
-            }
-            outputTokenName={
-              toToken.mint === SOL_MINT
-                ? 'SOL'
-                : toToken.tokenInfo?.result?.content?.metadata?.symbol ||
-                  `${toToken.mint.slice(0, 4)}...${toToken.mint.slice(-4)}`
-            }
+            initialInputMint={swapDetails.from.mint}
+            initialOutputMint={swapDetails.to.mint}
+            initialAmount={swapDetails.from.amount.toString()}
+            inputTokenName={getDisplaySymbol(swapDetails.from, fromTokenInfo)}
+            outputTokenName={getDisplaySymbol(swapDetails.to, toTokenInfo)}
             inputDecimals={
-              fromToken.mint === SOL_MINT
+              swapDetails.from.mint === SOL_MINT
                 ? 9
-                : fromToken.tokenInfo?.result &&
-                  'token_info' in fromToken.tokenInfo.result
-                ? fromToken.tokenInfo.result.token_info?.decimals ?? 9
-                : 9
+                : fromTokenInfo?.token_info?.decimals ?? 9
             }
             sourceWallet={sourceWallet}
           />

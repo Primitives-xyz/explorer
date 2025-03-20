@@ -1,25 +1,17 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { IGetSocialResponse } from '@/types/profile.types'
 import type { Transaction } from '@/utils/helius/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 // Helper to fetch transactions for a single wallet
 async function fetchWalletTransactions(
-  walletId: string,
-  type?: string
+  walletId: string
 ): Promise<Transaction[]> {
   const url = new URL('/api/transactions', window.location.origin)
   url.searchParams.set('address', walletId)
   url.searchParams.set('limit', '7') // Limit to 7 transactions per wallet
 
-  // Map the UI type to the Helius API type (only if not 'all')
-  if (type && type !== 'all') {
-    const apiType =
-      type === 'compressed_nft_mint'
-        ? 'COMPRESSED_NFT_MINT'
-        : type.toUpperCase()
-    url.searchParams.set('type', apiType)
-  }
+  // Always fetch all transaction types - no filtering at API level
 
   try {
     const response = await fetch(url)
@@ -38,9 +30,7 @@ async function fetchWalletTransactions(
 }
 
 export const useFollowingTransactions = (following?: IGetSocialResponse) => {
-  const [aggregatedTransactions, setAggregatedTransactions] = useState<
-    Transaction[]
-  >([])
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
   const [loadedWallets, setLoadedWallets] = useState<Set<string>>(new Set())
   const [totalWallets, setTotalWallets] = useState<number>(0)
@@ -52,13 +42,13 @@ export const useFollowingTransactions = (following?: IGetSocialResponse) => {
     setTotalWallets(following?.profiles?.length ?? 0)
 
     if (!following?.profiles?.length) {
-      setAggregatedTransactions([])
+      setAllTransactions([])
       return
     }
 
     const fetchAllTransactions = async () => {
       setIsLoadingTransactions(true)
-      setAggregatedTransactions([]) // Clear current transactions while loading
+      setAllTransactions([]) // Clear current transactions while loading
 
       try {
         const walletIds = following.profiles
@@ -67,12 +57,9 @@ export const useFollowingTransactions = (following?: IGetSocialResponse) => {
 
         const transactionsByWallet: { [key: string]: Transaction[] } = {}
 
-        // Fetch transactions for all wallets concurrently
+        // Fetch transactions for all wallets concurrently - always fetch all types
         const fetchPromises = walletIds.map(async (walletId) => {
-          const transactions = await fetchWalletTransactions(
-            walletId,
-            selectedType
-          )
+          const transactions = await fetchWalletTransactions(walletId)
           transactionsByWallet[walletId] = transactions
           setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
 
@@ -86,7 +73,7 @@ export const useFollowingTransactions = (following?: IGetSocialResponse) => {
             })
             .slice(0, 50)
 
-          setAggregatedTransactions(allCurrentTransactions)
+          setAllTransactions(allCurrentTransactions)
         })
 
         await Promise.all(fetchPromises)
@@ -98,7 +85,28 @@ export const useFollowingTransactions = (following?: IGetSocialResponse) => {
     }
 
     fetchAllTransactions()
-  }, [following, walletAddress, selectedType])
+  }, [following, walletAddress]) // Removed selectedType dependency to avoid refetching
+
+  // Filter transactions client-side based on selectedType
+  const aggregatedTransactions = useMemo(() => {
+    if (selectedType === 'all') {
+      return allTransactions
+    }
+    
+    // Client-side filtering based on type
+    return allTransactions.filter(tx => {
+      if (selectedType === 'compressed_nft_mint') {
+        return tx.type === 'COMPRESSED_NFT_MINT'
+      } 
+      if (selectedType === 'swap') {
+        return tx.type === 'SWAP'
+      }
+      if (selectedType === 'transfer') {
+        return tx.type === 'TRANSFER'
+      }
+      return tx.type === selectedType.toUpperCase()
+    })
+  }, [allTransactions, selectedType])
 
   return {
     aggregatedTransactions,
