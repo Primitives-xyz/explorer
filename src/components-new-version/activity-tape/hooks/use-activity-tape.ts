@@ -1,10 +1,34 @@
 'use client'
 
-import {
-  IActivity,
-  ITransaction,
-} from '@/components-new-version/models/transaction.model'
 import { useCallback, useEffect, useRef, useState } from 'react'
+
+interface ITransaction {
+  type: string
+  source: string
+  description: string
+  fee: number
+  timestamp: string
+  signature: string
+  success: boolean
+  walletAddress: string
+  username: string
+  from: { amount: number; token: string }
+  to: { amount: number; token: string }
+  accountsInvolved: string[]
+}
+
+interface IActivity {
+  type: string
+  text: string
+  action: string
+  wallet: string
+  timestamp: number
+  highlight: string
+  amount?: string
+  amountSuffix?: string
+  isSSEBuy?: boolean
+  signature?: string
+}
 
 // Store base timestamp for fake activities
 const BASE_TIME = Math.floor(Date.now() / 1000) // Unix timestamp in seconds

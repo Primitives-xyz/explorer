@@ -4,12 +4,15 @@ import { FilterButton } from '@/components-new-version/home/home-content/followi
 import { useFollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/hooks/use-following-transactions'
 import { TransactionsEntry } from '@/components-new-version/home/home-content/following-transactions/transactions-entry'
 import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get-following'
-import { Spinner } from '@/components-new-version/ui'
+import { Button, Card, CardContent, Spinner } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { useTranslations } from 'next-intl'
 
 export function FollowingTransactions() {
-  const { mainUsername } = useCurrentWallet()
+  const { mainUsername, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
   const { following } = useGetFollowing(mainUsername)
+
+  const t = useTranslations()
 
   const {
     aggregatedTransactions,
@@ -18,6 +21,17 @@ export function FollowingTransactions() {
     selectedType,
     setSelectedType,
   } = useFollowingTransactions({ following })
+
+  if (!isLoggedIn) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col space-y-10 items-center justify-center">
+          <p>{t('following_transaction.create_a_profile_to_follow')}</p>
+          <Button onClick={() => setShowAuthFlow(true)}>connect wallet</Button>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <>
@@ -31,6 +45,7 @@ export function FollowingTransactions() {
           <Spinner large />
         </div>
       )}
+
       {aggregatedTransactions.map((transaction, index) => (
         <TransactionsEntry key={index} transaction={transaction} />
       ))}

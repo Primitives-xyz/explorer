@@ -1,10 +1,13 @@
 'use client'
 
-import { useTransactionType } from '@/components-new-version/home/home-content/following-transactions/hooks/use-transaction-type'
+import {
+  TransactionType,
+  useTransactionType,
+} from '@/components-new-version/home/home-content/following-transactions/hooks/use-transaction-type'
+import { NftTransactionsView } from '@/components-new-version/home/home-content/following-transactions/nft-transactions.tsx/nft-transactions-view'
 import { SwapTransactionsView } from '@/components-new-version/home/home-content/following-transactions/swap-transactions/swap-transactions-view'
 import { Transaction } from '@/components-new-version/models/helius.models'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { useMemo } from 'react'
 
 interface Props {
   transaction: Transaction
@@ -13,33 +16,36 @@ interface Props {
 export function TransactionsEntry({ transaction }: Props) {
   const { walletAddress } = useCurrentWallet()
 
-  const {
-    isComment,
-    isSwap,
-    isSolanaTransfer,
-    isSPLTransfer,
-    isNFTTransaction,
-  } = useTransactionType(transaction)
-
-  const primaryType = useMemo(() => {
-    if (isComment) return 'COMMENT'
-    if (isSwap) return 'SWAP'
-    if (isSolanaTransfer) return 'SOL TRANSFER'
-    if (isSPLTransfer) return 'SPL TRANSFER'
-    if (isNFTTransaction) return 'NFT'
-    return 'OTHER'
-  }, [isComment, isSwap, isSolanaTransfer, isSPLTransfer, isNFTTransaction])
+  const primaryType = useTransactionType(transaction)
 
   return (
     <>
       <>
-        {isSwap && (
+        {primaryType === TransactionType.SWAP && (
           <SwapTransactionsView
             transaction={transaction}
             sourceWallet={transaction.sourceWallet || walletAddress || ''}
             primaryType={primaryType}
           />
         )}
+
+        {primaryType === TransactionType.NFT && (
+          <NftTransactionsView
+            transaction={transaction}
+            sourceWallet={transaction.sourceWallet || walletAddress || ''}
+            primaryType={primaryType}
+          />
+        )}
+
+        {/* {primaryType === TransactionType.COMMENT && <p>is comment</p>} */}
+
+        {/* {isSolanaTransfer && <p>solana transfer</p>}
+
+        {isSPLTransfer && <p>spl transfer</p>}
+
+        {!isComment && !isSolanaTransfer && !isSPLTransfer && (
+          <p>transfer list</p>
+        )} */}
       </>
     </>
   )

@@ -2,15 +2,15 @@
 
 import { Button, ButtonVariant } from '@/components-new-version/ui'
 
-export enum TransactionType {
+export enum FilterType {
   ALL = 'all',
   SWAP = 'swap',
   COMPRESSED_NFT_MINT = 'compressed_nft_mint',
 }
 
 interface Props {
-  selectedType: TransactionType
-  setSelectedType: (type: TransactionType) => void
+  selectedType: FilterType
+  setSelectedType: (type: FilterType) => void
 }
 
 export function FilterButton({ selectedType, setSelectedType }: Props) {
@@ -19,33 +19,33 @@ export function FilterButton({ selectedType, setSelectedType }: Props) {
       <Button
         className="rounded-full"
         variant={
-          selectedType === TransactionType.ALL
+          selectedType === FilterType.ALL
             ? ButtonVariant.DEFAULT
             : ButtonVariant.GHOST
         }
-        onClick={() => setSelectedType(TransactionType.ALL)}
+        onClick={() => setSelectedType(FilterType.ALL)}
       >
         All
       </Button>
       <Button
         className="rounded-full"
         variant={
-          selectedType === TransactionType.SWAP
+          selectedType === FilterType.SWAP
             ? ButtonVariant.DEFAULT
             : ButtonVariant.GHOST
         }
-        onClick={() => setSelectedType(TransactionType.SWAP)}
+        onClick={() => setSelectedType(FilterType.SWAP)}
       >
         Swap
       </Button>
       <Button
         className="rounded-full"
         variant={
-          selectedType === TransactionType.COMPRESSED_NFT_MINT
+          selectedType === FilterType.COMPRESSED_NFT_MINT
             ? ButtonVariant.DEFAULT
             : ButtonVariant.GHOST
         }
-        onClick={() => setSelectedType(TransactionType.COMPRESSED_NFT_MINT)}
+        onClick={() => setSelectedType(FilterType.COMPRESSED_NFT_MINT)}
       >
         CNFT Mints
       </Button>

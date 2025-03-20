@@ -196,3 +196,59 @@ export interface FungibleTokenDetailsProps {
     }
   }
 }
+
+export interface Transfer {
+  to: string
+  from: string
+  amount: number
+}
+
+export interface Instruction {
+  programId: string
+  accounts: string[]
+  data: string
+  innerInstructions?: {
+    programId: string
+    accounts: string[]
+    data: string
+  }[]
+  decodedData?: {
+    name: string
+    data?: any
+    type?: string
+  }
+}
+
+export interface TokenTransfer {
+  fromTokenAccount: string
+  toTokenAccount: string
+  fromUserAccount: string
+  toUserAccount: string
+  tokenAmount: number
+  mint: string
+  tokenStandard: string
+}
+
+export interface ExtendedTransaction
+  extends Omit<
+    Transaction,
+    | 'nativeTransfers'
+    | 'tokenTransfers'
+    | 'accountData'
+    | 'balanceChanges'
+    | 'events'
+  > {
+  transfers?: Transfer[]
+  instructions?: Instruction[]
+  parsedInstructions?: Instruction[]
+  accountData?: AccountData[]
+  accountsInvolved?: string[]
+  nativeTransfers?: {
+    fromUserAccount: string
+    toUserAccount: string
+    amount: number
+  }[]
+  balanceChanges?: { [address: string]: number }
+  tokenTransfers?: TokenTransfer[]
+  events?: TransactionEvent[]
+}

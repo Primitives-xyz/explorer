@@ -5,7 +5,7 @@ import {
 import { useQuery } from '@/components-new-version/utils/api'
 
 const isFungibleToken = (
-  data: TokenResponse | null | undefined
+  data?: TokenResponse | null
 ): data is TokenResponse & { result: FungibleTokenInfo } => {
   return (
     !!data &&

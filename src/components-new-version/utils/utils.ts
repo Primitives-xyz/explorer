@@ -89,3 +89,7 @@ export function formatTimeAgo(date: Date): string {
 
   return 'just now'
 }
+
+export const handleCopy = ({ copyText }: { copyText: string }) => {
+  navigator.clipboard.writeText(copyText)
+}
