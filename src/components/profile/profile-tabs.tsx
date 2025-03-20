@@ -11,7 +11,7 @@ import { CommentWall } from './comment-wall'
 import { ProfileContentFeed } from './profile-content-feed'
 
 interface ProfileTabsProps {
-  username: string
+  username?: string
   targetWalletAddress: string
 }
 
@@ -19,17 +19,22 @@ export function ProfileTabs({
   username,
   targetWalletAddress,
 }: ProfileTabsProps) {
-  const [activeTab, setActiveTab] = useState('social')
+  const [activeTab, setActiveTab] = useState(username ? 'social' : 'nfts')
   const isMobile = useMediaQuery('(max-width: 768px)')
 
   // Tab options with icons for better mobile experience
   const tabOptions = [
-    { id: 'social', label: 'Social' },
-    { id: 'activity', label: 'Activity' },
     { id: 'nfts', label: 'NFTs' },
     { id: 'tokens', label: 'Tokens' },
     { id: 'transactions', label: 'Tx' },
   ]
+  // if user name is set add
+  if (username) {
+    tabOptions.unshift(
+      { id: 'social', label: 'Social' },
+      { id: 'activity', label: 'Activity' }
+    )
+  }
 
   return (
     <div className=" w-full">
@@ -61,19 +66,23 @@ export function ProfileTabs({
               transition={{ duration: 0.15 }}
               className="py-4 md:py-6 w-full"
             >
-              <TabsContent value="social" className="mt-0 w-full">
-                <div className="container mx-auto px-2 md:px-4">
-                  <CommentWall
-                    username={username}
-                    targetWalletAddress={targetWalletAddress}
-                  />
-                </div>
-              </TabsContent>
-              <TabsContent value="activity" className="mt-0 w-full">
-                <div className="container mx-auto px-2 md:px-4">
-                  <ProfileContentFeed username={username} />
-                </div>
-              </TabsContent>
+              {username && (
+                <>
+                  <TabsContent value="social" className="mt-0 w-full">
+                    <div className="container mx-auto px-2 md:px-4">
+                      <CommentWall
+                        username={username || ''}
+                        targetWalletAddress={targetWalletAddress}
+                      />
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="activity" className="mt-0 w-full">
+                    <div className="container mx-auto px-2 md:px-4">
+                      <ProfileContentFeed username={username || ''} />
+                    </div>
+                  </TabsContent>
+                </>
+              )}
               <TabsContent value="nfts" className="mt-0 w-full">
                 <div className="">
                   <NFTShowcaseContainer walletAddress={targetWalletAddress} />
