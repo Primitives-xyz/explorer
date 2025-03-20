@@ -196,23 +196,21 @@ export function UserHeader({ user, isOwnProfile = false, username }: Props) {
         {/* Desktop Layout */}
         <div className="hidden md:flex md:flex-row items-start gap-6">
           {/* Avatar */}
-          {user.avatarUrl && (
-            <Avatar className="w-24 h-24 border-2 border-green-500 shadow-lg shadow-green-500/20">
-              <AvatarImage src={user.avatarUrl ?? ''} alt={username ?? ''} />
-              <AvatarFallback className="text-green-500">
-                {username?.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          )}
+
+          <Avatar className="w-24 h-24 border-2 border-green-500 shadow-lg shadow-green-500/20">
+            <AvatarImage src={user.avatarUrl ?? ''} alt={username ?? ''} />
+            <AvatarFallback className="text-green-500">
+              {username?.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
 
           {/* User Info */}
           <div className="flex-1">
             <div className="flex flex-row items-center gap-4">
-              {username && (
-                <h1 className="text-2xl font-mono font-bold text-green-500">
-                  @{username}
-                </h1>
-              )}
+              <h1 className="text-2xl font-mono font-bold text-green-500">
+                @{username}
+              </h1>
+
               <TokenAddress address={user.walletAddress} />
             </div>
 
