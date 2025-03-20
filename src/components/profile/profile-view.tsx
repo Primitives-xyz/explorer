@@ -20,7 +20,6 @@ export function ProfileView({ username, walletAddress }: Props) {
     undefined,
     walletAddress
   )
-  console.log('profileData', profileData)
   const targetWalletAddress =
     walletAddress || profileData?.wallet?.address || ''
   const displayUsername = username || profileData?.profile?.username || ''
