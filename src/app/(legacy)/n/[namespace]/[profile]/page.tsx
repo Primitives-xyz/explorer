@@ -1,8 +1,6 @@
 import { ProfileContent } from '@/components/profile/profile-content'
-import { FetchMethod } from '@/utils/api'
 import { generateProfileMetadata } from '@/utils/metadata'
 import { ProfileMetadata } from '@/utils/metadata/profile-metadata'
-import { fetchTapestryServer } from '@/utils/tapestry-server'
 import type { Metadata } from 'next'
 
 type Props = {
@@ -20,11 +18,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     // First, fetch the following list
-    const data = await fetchTapestryServer({
-      endpoint: `profiles/${profile}?namespace=${namespace}`,
-      method: FetchMethod.GET,
-    })
-
+    console.log('==================================')
+    const data: any = await fetch(
+      `/api/profiles/${profile}?namespace=${namespace}`
+    )
+    console.log('data', JSON.stringify(data, null, 2))
     const profileData: ProfileMetadata = data.profile
 
     return await generateProfileMetadata(profile, profileData)

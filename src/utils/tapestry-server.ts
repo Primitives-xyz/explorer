@@ -35,6 +35,11 @@ export async function fetchTapestryServer<T = any>({
       options.body = JSON.stringify(data)
     }
 
+    console.log('##########')
+    console.log('url', url)
+    console.log('options', options)
+    console.log('##########')
+
     const response = await fetch(url, options)
 
     if (!response.ok) {

@@ -12,11 +12,14 @@ type RouteContext = {
 export const revalidate = 60 // Revalidate every 60 seconds
 
 export async function GET(request: NextRequest, context: RouteContext) {
+  console.log('***********************************')
   let username = ''
 
   try {
     const params = await context.params
     username = params.username
+
+    console.log('username', username)
 
     // get from username from search params
     const searchParams = request.nextUrl.searchParams
@@ -24,6 +27,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const namespace = searchParams.get('namespace')
 
     let endpoint = `profiles/new/${username}`
+
+    console.log('endpoint', endpoint)
 
     if (fromUsername) {
       endpoint = `profiles/new/${username}?username=${fromUsername}`
@@ -33,10 +38,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       endpoint = `profiles/${username}?namespace=${namespace}`
     }
 
+    console.log('endpoint', endpoint)
+
     const data: IGetProfileResponse = await fetchTapestryServer({
       endpoint,
       method: FetchMethod.GET,
     })
+
+    console.log('data::', JSON.stringify(data, null, 2))
 
     return NextResponse.json(data)
   } catch (error) {
