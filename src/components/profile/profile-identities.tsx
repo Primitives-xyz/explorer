@@ -110,7 +110,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
         >
           {identities.map((identity, index) => (
             <motion.a
-              key={`${identity.namespace.name}-${identity.profile.username}`}
+              key={`${identity.namespace.name}-${identity.profile.username}-${index}`}
               href={
                 identity.namespace.name === EXPLORER_NAMESPACE
                   ? `/${identity.profile.username}`

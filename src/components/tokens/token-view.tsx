@@ -1,11 +1,11 @@
 import NFTDetails from '@/components/NFT-details'
 import { FungibleTokenDetailsWrapper } from '@/components/tokens/fungible-token-details-wrapper'
-import { WalletView } from '@/components/wallet/wallet-view'
 import type { FungibleTokenInfo, NFTTokenInfo } from '@/types/Token'
 
 import NFTCollectionDetail from '@/components/nft/NFT-collection-details'
 import type { TokenInfo } from '@/types/Token'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
+import { ProfileView } from '../profile/profile-view'
 
 /**
  * Handles token-related views
@@ -19,12 +19,12 @@ export async function TokenView({ id }: { id: string }) {
     tokenInfo = await fetchTokenInfo(id)
   } catch (error) {
     console.error('Error fetching token info:', error)
-    return <WalletView address={id} />
+    return <ProfileView walletAddress={id} />
   }
 
   // If no token info found, treat as a wallet
   if (!tokenInfo?.result) {
-    return <WalletView address={id} />
+    return <ProfileView walletAddress={id} />
   }
   const tokenInterface = tokenInfo?.result?.interface
   //log interface

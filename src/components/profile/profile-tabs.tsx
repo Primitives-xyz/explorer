@@ -11,7 +11,7 @@ import { CommentWall } from './comment-wall'
 import { ProfileContentFeed } from './profile-content-feed'
 
 interface ProfileTabsProps {
-  username: string
+  username?: string
   targetWalletAddress: string
 }
 
@@ -64,14 +64,14 @@ export function ProfileTabs({
               <TabsContent value="social" className="mt-0 w-full">
                 <div className="container mx-auto px-2 md:px-4">
                   <CommentWall
-                    username={username}
+                    username={username || ''}
                     targetWalletAddress={targetWalletAddress}
                   />
                 </div>
               </TabsContent>
               <TabsContent value="activity" className="mt-0 w-full">
                 <div className="container mx-auto px-2 md:px-4">
-                  <ProfileContentFeed username={username} />
+                  <ProfileContentFeed username={username || ''} />
                 </div>
               </TabsContent>
               <TabsContent value="nfts" className="mt-0 w-full">

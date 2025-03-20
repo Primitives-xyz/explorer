@@ -7,35 +7,48 @@ import { UserHeader } from '@/components/user-header/user-header'
 import { useProfileData } from '@/hooks/use-profile-data'
 
 interface Props {
-  username: string
+  username?: string
+  walletAddress?: string
 }
 
-export function ProfileView({ username }: Props) {
+export function ProfileView({ username, walletAddress }: Props) {
   const { mainUsername } = useCurrentWallet()
-  const { profileData, isLoading } = useProfileData(username, mainUsername)
-  const targetWalletAddress = profileData?.walletAddress || ''
-  const isOwnWallet = mainUsername === username
+
+  // Pass username as is (possibly undefined) to useProfileData
+  const { profileData, isLoading } = useProfileData(
+    username,
+    mainUsername,
+    undefined,
+    walletAddress
+  )
+
+  const targetWalletAddress = walletAddress || profileData?.walletAddress || ''
+  const displayUsername = username || profileData?.profile?.username || ''
+  const isOwnWallet = mainUsername === displayUsername
 
   return (
     <div className="min-h-screen bg-[#111111] text-gray-200 font-mono">
       <UserHeader
+        username={displayUsername}
         user={{
-          username: username,
+          username: displayUsername,
           walletAddress: targetWalletAddress,
-          avatarUrl: profileData?.profile.image || null,
-          bio: profileData?.profile.bio || '',
+          avatarUrl: profileData?.profile?.image || null,
+          bio: profileData?.profile?.bio || '',
           socialCounts: profileData?.socialCounts,
           userProfileURL: profileData?.namespace?.userProfileURL,
           namespace: profileData?.namespace?.name,
-          createdAt: profileData?.profile.created_at,
+          createdAt: profileData?.profile?.created_at,
           isLoading: isLoading,
         }}
         isOwnProfile={isOwnWallet}
       />
-      {username && <ProfileIdentities walletAddress={targetWalletAddress} />}
+      {displayUsername && (
+        <ProfileIdentities walletAddress={targetWalletAddress} />
+      )}
       <div className="mx-6">
         <ProfileTabs
-          username={username}
+          username={displayUsername}
           targetWalletAddress={targetWalletAddress}
         />
       </div>

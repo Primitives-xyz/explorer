@@ -31,12 +31,13 @@ import { UpdateProfileModal } from '../profile/update-profile-modal'
 
 interface Props {
   user: IUser
+  username?: string
   portfolioData?: TokenPortfolioResponse
   isPortfolioLoading?: boolean
   isOwnProfile?: boolean
 }
 
-export function UserHeader({ user, isOwnProfile = false }: Props) {
+export function UserHeader({ user, isOwnProfile = false, username }: Props) {
   const t = useTranslations()
   // Fetch portfolio data for the wallet address
   const { portfolioData, isLoading: isPortfolioLoading } = usePortfolioData(
@@ -53,7 +54,7 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
     user.namespace || ''
   )
     ? `${user.userProfileURL}${user.walletAddress}`
-    : `${user.userProfileURL}${user.username}`
+    : `${user.userProfileURL}${username ?? ''}`
 
   // Format SOL balance with 3 decimal places
   const formattedSolBalance = solBalance.toFixed(3).replace(/\.?0+$/, '')
@@ -90,9 +91,9 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
           <div className="flex items-start gap-4 mb-4">
             {/* Avatar */}
             <Avatar className="w-20 h-20 border-2 border-green-500 shadow-lg shadow-green-500/20 flex-shrink-0">
-              <AvatarImage src={user.avatarUrl ?? ''} alt={user.username} />
+              <AvatarImage src={user.avatarUrl ?? ''} alt={username ?? ''} />
               <AvatarFallback className="text-green-500">
-                {user.username.slice(0, 2).toUpperCase()}
+                {username?.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
 
@@ -100,7 +101,7 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <h1 className="text-xl font-mono font-bold text-green-500">
-                  @{user.username}
+                  @{username}
                 </h1>
                 {user.userProfileURL &&
                   user.namespace != EXPLORER_NAMESPACE && (
@@ -194,9 +195,9 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
         <div className="hidden md:flex md:flex-row items-start gap-6">
           {/* Avatar */}
           <Avatar className="w-24 h-24 border-2 border-green-500 shadow-lg shadow-green-500/20">
-            <AvatarImage src={user.avatarUrl ?? ''} alt={user.username} />
+            <AvatarImage src={user.avatarUrl ?? ''} alt={username ?? ''} />
             <AvatarFallback className="text-green-500">
-              {user.username.slice(0, 2).toUpperCase()}
+              {username?.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
 
@@ -204,7 +205,7 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
           <div className="flex-1">
             <div className="flex flex-row items-center gap-4">
               <h1 className="text-2xl font-mono font-bold text-green-500">
-                @{user.username}
+                @{username}
               </h1>
               <TokenAddress address={user.walletAddress} />
             </div>
@@ -328,7 +329,7 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
                 </Tooltip>
               </TooltipProvider>
             )}
-            <FollowButton username={user.username} size="lg" />
+            <FollowButton username={username ?? ''} size="lg" />
           </div>
         </div>
       </div>
@@ -338,7 +339,7 @@ export function UserHeader({ user, isOwnProfile = false }: Props) {
         <UpdateProfileModal
           isOpen={showUpdateModal}
           onClose={handleCloseUpdate}
-          currentUsername={user.username}
+          currentUsername={username ?? ''}
           currentBio={user.bio}
           currentImage={user.avatarUrl}
           onProfileUpdated={handleProfileUpdated}
