@@ -89,8 +89,8 @@ export function useProfileData(
       profilesError?.message === 'Invalid Solana wallet address'
 
     return {
-      profiles: isLoadingData ? null : profiles,
-      profileData: isLoadingData ? null : explorerProfile || data,
+      profiles: profiles,
+      profileData: explorerProfile,
       isLoading: isLoadingData,
       walletAddressError,
       serverError,

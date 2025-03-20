@@ -87,8 +87,11 @@ export function ProfileContent({ username, namespace }: Props) {
     namespace
   )
 
-  const { profileData, comments, isLoading, isLoadingComments } =
-    useProfileData(username, mainUsername, namespace)
+  const { profileData, isLoading } = useProfileData(
+    username,
+    mainUsername,
+    namespace
+  )
 
   const {
     identities,
@@ -195,8 +198,6 @@ export function ProfileContent({ username, namespace }: Props) {
                   {activeTab === 'comments' ? (
                     <CommentWall
                       username={username}
-                      isLoading={isLoadingComments}
-                      comments={comments}
                       targetWalletAddress={targetWalletAddress}
                     />
                   ) : (

@@ -14,15 +14,15 @@ interface Props {
 export function ProfileView({ username, walletAddress }: Props) {
   const { mainUsername } = useCurrentWallet()
 
-  // Pass username as is (possibly undefined) to useProfileData
   const { profileData, isLoading } = useProfileData(
     username,
     mainUsername,
     undefined,
     walletAddress
   )
-
-  const targetWalletAddress = walletAddress || profileData?.walletAddress || ''
+  console.log('profileData', profileData)
+  const targetWalletAddress =
+    walletAddress || profileData?.wallet?.address || ''
   const displayUsername = username || profileData?.profile?.username || ''
   const isOwnWallet = mainUsername === displayUsername
 

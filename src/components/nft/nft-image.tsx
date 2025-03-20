@@ -1,7 +1,6 @@
 import { useNFTImage } from '@/hooks/use-nft-image'
 import { NFT } from '@/utils/types'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { useState } from 'react'
 
 interface NFTImageProps {
@@ -115,15 +114,12 @@ export function NFTImage({ nft, onClick, viewMode }: NFTImageProps) {
         whileHover={{ scale: 1.05 }}
         transition={{ duration: 0.4 }}
       >
-        <Image
+        <img
           src={imageUrl}
           alt={nft.name || 'NFT'}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
           onLoad={handleImageLoad}
           onError={handleImageError}
-          priority={viewMode === 'list'}
         />
       </motion.div>
     </div>
