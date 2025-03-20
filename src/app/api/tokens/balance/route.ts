@@ -35,7 +35,10 @@ export async function GET(request: Request) {
       )
 
       // Check if the token account exists
-      const accountInfo = await connection.getAccountInfo(tokenAccountToQuery)
+      const accountInfo = await connection.getAccountInfo(
+        tokenAccountToQuery,
+        'confirmed'
+      )
       if (!accountInfo) {
         return NextResponse.json(
           {

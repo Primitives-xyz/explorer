@@ -1,6 +1,6 @@
 import { refreshProfiles } from '@/components/auth/hooks/use-get-profiles'
 import { DICEBEAR_API_BASE } from '@/utils/constants'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import { useState } from 'react'
 
 interface UseProfileCreationProps {
@@ -27,8 +27,7 @@ export function useProfileCreation({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [response, setResponse] = useState<any | null>(null)
-  const { authToken } = useDynamicContext()
-
+  const authToken = getAuthToken()
   const createProfile = async (
     username: string,
     bio: string,
