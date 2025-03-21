@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
-import { EllipsisVertical, Loader2, Lock, LogOut, MessageCircle } from 'lucide-react'
+import { ArrowRightLeft, EllipsisVertical, Info, Loader2, Lock, LogOut, MessageCircle } from 'lucide-react'
 
 import { LanguageSwitcher } from '@/components-new-version/common/language-switcher'
 import { Menu } from '@/components/common/left-side-bar/menu'
@@ -16,7 +16,6 @@ import { SSE_MINT } from '@/components/trading/constants'
 export function LeftSideMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { walletAddress } = useCurrentWallet()
-  const t = useTranslations()
   const { balance: sseBalance, loading: sseBalanceLoading } = useTokenBalance(walletAddress, SSE_MINT)
   const { handleLogOut } = useDynamicContext()
 
@@ -31,7 +30,7 @@ export function LeftSideMenu() {
 
   // Standardized text style classes
   const textStyle = "font-mono text-[#97EF83] leading-150";
-  const buttonStyle = "flex flex-row justify-center items-center gap-2 border rounded-md px-4 py-2 transition-colors hover:bg-green-200 hover:text-gray-800";
+  const buttonStyle = "flex flex-row justify-center items-center gap-2 border rounded-[6px] px-4 py-2 transition-colors hover:border-[#97EF83] hover:text-[#97EF83]";
 
   return (
     <aside className='h-[calc(100vh-50px)] w-[400px] flex flex-col'>
@@ -108,11 +107,31 @@ export function LeftSideMenu() {
           </div>
 
           {/* Footer Section */}
-          <div className='flex flex-col gap-4 mt-auto'>
+          <div className='flex flex-col gap-10 mt-12'>
+            <div className="p-4 border border-[#97EF83] rounded-[12px] bg-white/10 flex flex-col gap-4">
+              <div className='flex justify-between items-center'>
+                <h3 className="text-[#97EF83] text-[12px] font-medium">Low Fee Trades with SSE</h3>
+                <button className="text-gray-300 hover:text-gray-400 transition-colors">
+                  <Info size={18} className='text-[#97EF83]' />
+                </button>
+              </div>
+
+              <p className='text-[12px] font-normal leading-normal text-white/70'>
+                SSE offers the cheapest fee across all current platforms.
+              </p>
+
+              <Link
+                href="/trade"
+                className="w-full flex justify-center items-center px-4 py-1 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] hover:bg-[#64e947]"
+              >
+                <ArrowRightLeft size={20} />
+                <span>Trade</span>
+              </Link>
+            </div>
             <div className='w-full flex flex-col justify-center items-center gap-4'>
-              <button className={`${buttonStyle} border-green-300 text-green-300 w-full`}>
+              <button className={`${buttonStyle} w-full`}>
                 <Lock />
-                <span className={`${textStyle} text-sm font-bold`}>Unlock Perpetuals</span>
+                <span className="font-mono leading-150 text-[14px] font-bold">Unlock Perpetuals</span>
               </button>
 
               <LanguageSwitcher />
@@ -120,7 +139,7 @@ export function LeftSideMenu() {
               <Link href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr" className='w-full'>
                 <div className={`${buttonStyle} border-white text-white w-full`}>
                   <MessageCircle />
-                  <span className={`${textStyle} text-sm font-bold`}>Give Feedback</span>
+                  <span className="font-mono leading-150 text-[14px] font-bold">Give Feedback</span>
                 </div>
               </Link>
             </div>
