@@ -2,119 +2,131 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-
-import { EllipsisVertical, Loader2, Lock, MessageCircle } from 'lucide-react'
+import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { EllipsisVertical, Loader2, Lock, LogOut, MessageCircle } from 'lucide-react'
 
 import { LanguageSwitcher } from '@/components-new-version/common/language-switcher'
 import { Menu } from '@/components/common/left-side-bar/menu'
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { useTranslations } from 'next-intl'
 import { useTokenBalance } from '@/hooks/use-token-balance'
 import { SSE_MINT } from '@/components/trading/constants'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components-new-version/ui'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 
 export function LeftSideMenu() {
+  const [isOpen, setIsOpen] = useState(false);
   const { walletAddress } = useCurrentWallet()
   const t = useTranslations()
-  const {
-    balance: sseBalance,
-    loading: sseBalanceLoading,
-  } = useTokenBalance(walletAddress, SSE_MINT)
+  const { balance: sseBalance, loading: sseBalanceLoading } = useTokenBalance(walletAddress, SSE_MINT)
   const { handleLogOut } = useDynamicContext()
 
   const handleLogoutClick = async () => {
     try {
       await handleLogOut()
-      window.location.href = '/'
+      setIsOpen(false)
     } catch (error) {
       console.error('Failed to logout:', error)
     }
   }
 
+  // Standardized text style classes
+  const textStyle = "font-mono text-[#97EF83] leading-150";
+  const buttonStyle = "flex flex-row justify-center items-center gap-2 border rounded-md px-4 py-2 transition-colors hover:bg-green-200 hover:text-gray-800";
+
   return (
-    <div className='h-[calc(100vh-50px)] w-[400px] flex flex-col justify-between border border-white/20'>
-      <div className='h-full flex flex-col justify-between overflow-y-auto'>
-        <div className="h-[calc(100%-50px)] min-h-[750px] flex flex-col justify-between p-[32px]">
+    <aside className='h-[calc(100vh-50px)] w-[400px] flex flex-col'>
+      <div className='h-full flex flex-col overflow-y-auto'>
+        <div className="h-full min-h-750 flex flex-col justify-between p-8">
           <div className='flex flex-col gap-6'>
+            {/* Logo & Title */}
             <div className="flex flex-row justify-center items-center gap-2">
               <Image
                 src="/images/sonala-social-explorer-icon.svg"
                 width={30}
                 height={30}
-                alt="icon"
+                alt="SSE Icon"
+                priority
               />
-              <p className="font-mono font-bold text-[20px] text-[#97EF83] leading-[150%] hidden md:block">
+              <p className={`${textStyle} font-bold text-lg hidden md:block`}>
                 solana_social_explorer
               </p>
             </div>
+
+            {/* Balance Section */}
             <div className="flex flex-row justify-between">
-              <div className='flex flex-row gap-2'>
+              <div className='flex flex-row gap-2 items-center'>
                 <Image
                   src="/images/sse.png"
-                  alt="sse logo"
+                  alt="SSE Logo"
                   width={24}
                   height={24}
                   className='rounded-full'
                 />
-                <div className='flex flex-row items-center gap-1 font-bold text-[#97EF83]'>
-                  <p>Balance:</p>
-                  {
-                    sseBalanceLoading ? (
-                      <Loader2 className='w-5 h-5 animate-spin' />
-                    ) : (
-                      <span>
-                        {walletAddress ? sseBalance : 0}
-                      </span>
-                    )
-                  }
-                  <span>$SSE</span>
+                <div className={`flex flex-row items-center gap-1 ${textStyle} font-bold text-[18px]`}>
+                  <p>$SSE Bal:</p>
+                  {sseBalanceLoading ? (
+                    <Loader2 className='w-5 h-5 animate-spin' />
+                  ) : (
+                    <span>{walletAddress ? sseBalance : 0}</span>
+                  )}
                 </div>
               </div>
+
               {walletAddress && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <EllipsisVertical className="w-4 h-4 text-[#97EF83]" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-black/20 border border-green-800/30 rounded-sm text-[10px] p-0">
-                    <DropdownMenuItem onClick={handleLogoutClick} className="font-bold text-white text-[10px] px-6 py-1.5 hover:opacity-80">
-                      {t('header.logout')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="text-green-300 hover:bg-gray-700 p-1 rounded-full transition-colors"
+                  aria-label="Menu"
+                >
+                  <EllipsisVertical className="w-6 h-6" />
+                </button>
               )}
             </div>
+
+            {/* Dropdown Menu */}
+            {isOpen && (
+              <div className="w-full z-50 transition-all duration-200 text-[#97EF83]">
+                <div
+                  className="border border-green-300/20 bg-green-300/20 shadow-lg backdrop-blur-lg rounded-[20px]"
+                  style={{
+                    boxShadow: '0px 0px 4.6px 0px rgba(151, 239, 131, 0.20)'
+                  }}
+                >
+                  <button
+                    onClick={handleLogoutClick}
+                    className="w-full flex items-center justify-between px-6 py-4 hover:bg-green-300/30 transition-colors rounded-[20px]"
+                  >
+                    <span className={`${textStyle} font-medium text-[16px]`}>Logout</span>
+                    <LogOut className="h-5 w-5 text-green-300" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Main Menu */}
             <Menu />
           </div>
-          <div className='flex flex-col gap-4'>
+
+          {/* Footer Section */}
+          <div className='flex flex-col gap-4 mt-auto'>
             <div className='w-full flex flex-col justify-center items-center gap-4'>
-              <div className='w-full flex flex-row justify-center items-center gap-2 border border-[#97EF83] rounded-[6px] px-4 py-2 text-[#97EF83] hover:bg-[#97EF83] hover:text-[#292C31] cursor-pointer'>
+              <button className={`${buttonStyle} border-green-300 text-green-300 w-full`}>
                 <Lock />
-                <p className='text-[14px] font-bold leading-[150%] caption-bottom'>Unlock Perpetuals</p>
-              </div>
+                <span className={`${textStyle} text-sm font-bold`}>Unlock Perpetuals</span>
+              </button>
+
               <LanguageSwitcher />
+
               <Link href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr" className='w-full'>
-                <div className='flex flex-row justify-center items-center gap-2 border border-[#F5F8FD] rounded-[6px] px-4 py-2 text-[#F5F8FD] hover:bg-[#97EF83] hover:text-[#292C31] cursor-pointer'>
+                <div className={`${buttonStyle} border-white text-white w-full`}>
                   <MessageCircle />
-                  <p className='text-[14px] font-bold leading-[150%] caption-bottom'>Give Feedback</p>
+                  <span className={`${textStyle} text-sm font-bold`}>Give Feedback</span>
                 </div>
               </Link>
             </div>
           </div>
         </div>
-        <div className="w-full border-t border-white/20 py-2 text-[20px]">
-          <div className="flex justify-center items-center text-gray-400">
-            <Link
-              href="https://cdn.sse.gg/legal"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#97EF83] font-bold transition-colors"
-            >
-              Terms of Service
-            </Link>
-          </div>
-        </div>
       </div>
-    </div>
+    </aside>
   )
 }
