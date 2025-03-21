@@ -7,6 +7,7 @@ import {
   ArrowRightLeft,
   Beef,
   CircleDollarSign,
+  Compass,
   House,
   PaintbrushVertical,
   Search,
@@ -32,9 +33,10 @@ export function Menu() {
 
   const navigationItems = [
     { title: 'Home', icon: House, href: route('home') },
+    { title: 'Search', icon: Search, href: route('home') },
     { title: 'Trade', icon: ArrowRightLeft, href: route('swap') },
-    { title: 'Discover', icon: Search, href: route('home') },
-    { title: 'Tokens', icon: CircleDollarSign, href: route('trade') },
+    { title: 'Discover', icon: Compass, href: route('home') },
+    { title: 'Tokens', icon: CircleDollarSign, href: route('home') },
     { title: 'Profile', icon: User, href: route('home') },
     { title: 'Stake', icon: Beef, href: route('home') },
   ]

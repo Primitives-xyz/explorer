@@ -15,7 +15,7 @@ export default function NavigationItem({ title, icon: Icon, isActive = false, on
   return (
     <div
       className={clsx(
-        "flex flex-row items-center gap-4 px-1 py-2 text-[#F5F8FD] text-[20px] font-bold leading-[150%] capitalize rounded-[6px] cursor-pointer transition-colors",
+        "flex flex-row items-center gap-4 px-1 py-2 text-[#F5F8FD] text-[16px] font-bold leading-[150%] capitalize rounded-[6px] cursor-pointer transition-colors",
         "md:px-4",
         isActive && "bg-[#97EF83] text-black/90",
       )}

@@ -13,6 +13,7 @@ import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic';
 import { TokenChart } from '@/components/tokens/token-details/token-chart';
 import { TokenSearch } from '@/components/transactions/swap/token-search';
+import SwapDivider from './swap-divider';
 
 const LoadingDots = () => {
   return (
@@ -32,11 +33,19 @@ const DynamicConnectButton = dynamic(
   { ssr: false }
 )
 
+const DEFAULT_INPUT_TOKEN_MINT = "So11111111111111111111111111111111111111112"
+const DEFAULT_INPUT_TOKEN_SYMBOL = "SOL"
+const DEFAULT_OUT_TOKEN_MINT = "H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump"
+const DEFAULT_OUT_TOKEN_SYMBOL = "SSE"
+const DEFAULT_INPUT_TOKEN_IMAGEURI = "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+const DEFAULT_OUTPUT_TOKEN_IMAGEURI = "https://ipfs.io/ipfs/QmT4fG3jhXv3dcvEVdkvAqi8RjXEmEcLS48PsUA5zSb1RY"
+
 const SwapView = () => {
   const t = useTranslations()
-  const [inputTokenMint, setInputTokenMint] = useState<string>("So11111111111111111111111111111111111111112")
-  const [outputTokenMint, setOutTokenMint] = useState<string>("H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump")
+  const [inputTokenMint, setInputTokenMint] = useState<string>(DEFAULT_INPUT_TOKEN_MINT)
+  const [outputTokenMint, setOutTokenMint] = useState<string>(DEFAULT_OUT_TOKEN_MINT)
   const [inputTokenAmount, setInputTokenAmount] = useState<string>("")
+  console.log("inputTokenAmount", inputTokenAmount)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState<boolean>(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState<boolean>(false)
   const { symbol: inputTokenSymbol, decimals: inputTokenDecimals, image: inputTokenImageUri } = useTokenInfo(inputTokenMint)
@@ -78,6 +87,8 @@ const SwapView = () => {
     sourceWallet: walletAddress,
     platformFeeBps: useSSEForFees ? 1 : undefined,
   })
+
+  console.log("expectedOutput:", expectedOutput)
 
   const handleSwapDirection = () => {
     const tempInputTokenMint = inputTokenMint
@@ -249,14 +260,14 @@ const SwapView = () => {
         <div className='flex flex-col gap-4 w-[600px]'>
           <div className='border border-white/20 bg-white/5 rounded-[20px] flex flex-col gap-2 p-4'>
             <div className='flex flex-row justify-between items-center'>
-              <p className='text-[#F5F8FD] text-[16px] font-normal leading-[150%]'>Pay</p>
-              <p className='text-[#F5F8FD] text-[16px] font-normal leading-[150%]'>Balance: {inputBalance}</p>
+              <p className='text-[#F5F8FD] text-[14px] font-normal leading-[150%]'>Pay</p>
+              <p className='text-[#F5F8FD] text-[12px] font-normal leading-[150%]'>Balance: {inputBalance}</p>
             </div>
             <div className='flex flex-row justify-between items-center'>
               <input
                 inputMode="decimal"
                 placeholder="0.00"
-                className="text-[#97EF83] text-[24px] bg-transparent text-base w-full font-normal outline-none"
+                className="text-[#97EF83] text-[24px] bg-transparent w-full font-normal outline-none"
                 type="text"
                 onChange={(e) => {
                   const val = e.target.value
@@ -279,12 +290,18 @@ const SwapView = () => {
                 }}
                 value={inputTokenAmount}
               />
-              <p className='text-[16px] text-[#97EF83] font-normal leading-[150%]'>
+              <p className='text-[14px] text-[#97EF83] font-normal leading-[150%]'>
                 {
-                  inputTokenUsdPriceLoading ? (
-                    <Loader2 width={10} height={10} />
+                  (inputTokenUsdPriceLoading || !inputTokenUsdPrice) ? (
+                    <span className="flex items-center" aria-label="Loading price information">
+                      <Loader2 className="w-[14px] h-[14px] animate-spin" />
+                    </span>
                   ) : (
-                    inputTokenUsdPrice ? formatUsdValue(inputTokenUsdPrice * parseFloat(inputTokenAmount)) : 0
+                    <>
+                      {isNaN(Number.parseFloat(inputTokenAmount))
+                        ? formatUsdValue(0)
+                        : formatUsdValue(inputTokenUsdPrice * Number.parseFloat(inputTokenAmount))}
+                    </>
                   )
                 }
               </p>
@@ -297,74 +314,69 @@ const SwapView = () => {
                 <div className='flex flex-row justify-center items-center gap-3'>
                   <div>
                     <Image
-                      src={inputTokenImageUri!}
+                      src={inputTokenImageUri ? inputTokenImageUri : DEFAULT_INPUT_TOKEN_IMAGEURI}
                       alt='input token image'
                       width={24}
                       height={24}
                       className='rounded-full'
                     />
                   </div>
-                  <p className='text-[20px] font-bold leading-[150%]'>{inputTokenSymbol}</p>
+                  <p className='text-[14px] font-bold leading-[150%]'>{inputTokenSymbol ? inputTokenSymbol : DEFAULT_INPUT_TOKEN_SYMBOL}</p>
                 </div>
                 <ChevronDown className="h-4 w-4" />
               </button>
             </div>
             <div className='flex flex-row gap-2 justify-end py-2'>
               <Badge
-                className='text-[#97EF83] border-[#97EF83] cursor-pointer'
+                className='cursor-pointer hover:scale-105'
                 onClick={handleQuarterAmount}
               >
                 25%
               </Badge>
               <Badge
-                className='text-[#97EF83] border-[#97EF83] cursor-pointer'
+                className='cursor-pointer hover:scale-105'
                 onClick={handleHalfAmount}
               >
                 50%
               </Badge>
               <Badge
-                className='text-[#97EF83] border-[#97EF83] cursor-pointer'
+                className='cursor-pointer hover:scale-105'
                 onClick={handleMaxAmount}
               >
                 Max
               </Badge>
             </div>
-            <div className='relative flex justify-center items-center gap-2 w-full h-[1px] bg-white/10'>
-              <button
-                onClick={handleSwapDirection}
-                // disabled={showLoadingState}
-                className="flex justify-center items-center cursor-pointer"
-                title="Swap direction"
-              >
-                <ArrowUpDown className="h-5 w-5 text-[#F5F8FD]  hover:text-[#97EF83]" />
-              </button>
-            </div>
+            <SwapDivider
+              onSwap={handleSwapDirection}
+            // disabled={isLoading}
+            />
             <div className='flex flex-row justify-between items-center'>
+              <p className='text-[#F5F8FD] text-[14px] font-normal leading-[150%]'>Receive</p>
+            </div>
+            <div className='flex flex-row justify-between items-center text-[#97EF83] h-[30px]'>
               {
-                loading ? (
-                  <Loader2 width={10} height={10} />
+                (isQuoteRefreshing || loading) ? (
+                  <Loader2 className='w-[14px] h-[14px] animate-spin' />
                 ) : (
-                  <>
-                    <input
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      className="text-[#97EF83] text-[24px] bg-transparent text-base w-full font-normal outline-none"
-                      type="text"
-                      disabled={true}
-                      value={inputTokenAmount.length ? formatLargeNumber(parseFloat(expectedOutput)) : ""}
-                    />
-                    < p className='text-[16px] text-[#97EF83] font-normal leading-[150%]'>
-                      {
-                        (outputTokenUsdPriceLoading || !outputTokenUsdPrice) ? (
-                          <Loader2 width={10} height={10} />
-                        ) : (
-                          formatUsdValue(outputTokenUsdPrice * parseFloat(expectedOutput))
-                        )
-                      }
-                    </p>
-                  </>
+                  <input
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    className="text-[24px] bg-transparent w-full font-normal outline-none"
+                    type="text"
+                    disabled={true}
+                    value={(quoteResponse && !isNaN(parseFloat(expectedOutput))) ? formatLargeNumber(parseFloat(expectedOutput)) : ''}
+                  />
                 )
               }
+              < p className='text-[14px]  font-normal leading-[150%]'>
+                {
+                  (isQuoteRefreshing || outputTokenUsdPriceLoading || !outputTokenUsdPrice) ? (
+                    <Loader2 className='w-[14px] h-[14px] animate-spin' />
+                  ) : (
+                    formatUsdValue(outputTokenUsdPrice * parseFloat(expectedOutput))
+                  )
+                }
+              </p>
             </div>
             <div className='bg-white/10 rounded-[6px]'>
               <button
@@ -372,14 +384,14 @@ const SwapView = () => {
                 <div className='flex flex-row justify-center items-center gap-3'>
                   <div>
                     <Image
-                      src={outputTokenImageUri!}
+                      src={outputTokenImageUri ? outputTokenImageUri : DEFAULT_OUTPUT_TOKEN_IMAGEURI}
                       alt='out token image'
                       width={24}
                       height={24}
                       className='rounded-full'
                     />
                   </div>
-                  <p className='text-[20px] font-bold leading-[150%]'>{outputTokenSymbol}</p>
+                  <p className='text-[14px] font-bold leading-[150%]'>{outputTokenSymbol ? outputTokenSymbol : DEFAULT_OUT_TOKEN_SYMBOL}</p>
                 </div>
                 <ChevronDown className="h-4 w-4" />
               </button>
@@ -389,14 +401,14 @@ const SwapView = () => {
             {!isFullyConfirmed && (
               <>
                 {!sdkHasLoaded ? (
-                  <div className="w-full p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer text-center">
+                  <div className="w-full p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer text-center hover:bg-[#64e947]">
                     {t('trade.checking_wallet_status')}
                     <LoadingDots />
                   </div>
                 ) : !isLoggedIn ? (
                   <div className='w-full'>
                     <DynamicConnectButton buttonClassName='w-full'>
-                      <div className="p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer text-center">
+                      <div className="p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer text-center hover:bg-[#64e947]">
                         {t('trade.connect_wallet_to_swap')}
                       </div>
                     </DynamicConnectButton>
@@ -405,7 +417,7 @@ const SwapView = () => {
                   <button
                     onClick={handleSwap}
                     disabled={loading}
-                    className="w-full p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer"
+                    className="w-full p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer hover:bg-[#64e947]"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center gap-2">
@@ -553,7 +565,7 @@ const SwapView = () => {
         )}
       </div>
       <div className="h-[20px]"></div>
-    </div>
+    </div >
   )
 }
 

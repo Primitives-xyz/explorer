@@ -6,40 +6,34 @@ import clsx from "clsx"
 import SwapView from "@/components/trade-new-version/swap"
 import Perpetual from "@/components/trade-new-version/perpetual"
 
-const Swap = () => {
-  const [tradeMode, setTradeMode] = useState("swap")
+type TradeMode = "spot" | "perpetual"
 
-  const handleModeChange = (mode: string) => {
-    setTradeMode(mode)
-  }
+const TradeView = () => {
+  const [tradeMode, setTradeMode] = useState<TradeMode>("spot")
+
+  const tradeModes: TradeMode[] = ["spot", "perpetual"]
 
   return (
     <div className="w-full h-full">
       <div className="flex flex-row gap-14 mb-4">
-        {["swap", "perpetual"].map((mode) => (
+        {tradeModes.map((mode, index) => (
           <button
-            key={mode}
-            onClick={() => handleModeChange(mode)}
+            key={index}
+            onClick={() => setTradeMode(mode)}
             className={clsx(
-              "text-[20px] font-bold leading-[150%] px-4 py-1 rounded-[20px]",
-              tradeMode === mode
-                ? "text-[#2A2C31] bg-[#97EF83]"
-                : "text-[#F5F8FD]"
+              "text-[14px] font-bold leading-[150%] px-4 py-1 rounded-[20px] transition-colors",
+              tradeMode === mode ? "text-[#2A2C31] bg-[#97EF83]" :
+              "text-[#F5F8FD]",
             )}
           >
             {mode.charAt(0).toUpperCase() + mode.slice(1)}
           </button>
         ))}
       </div>
-      {
-        (tradeMode == "swap") ? (
-          <SwapView />
-        ) : (
-          <Perpetual />
-        )
-      }
+
+      {tradeMode === "spot" ? <SwapView /> : <Perpetual />}
     </div>
   )
 }
 
-export default Swap;
+export default TradeView;

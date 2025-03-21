@@ -57,14 +57,14 @@ export function LeftSideMenu() {
                 <Image
                   src="/images/sse.png"
                   alt="SSE Logo"
-                  width={24}
-                  height={24}
+                  width={20}
+                  height={20}
                   className='rounded-full'
                 />
-                <div className={`flex flex-row items-center gap-1 ${textStyle} font-bold text-[18px]`}>
+                <div className={`flex flex-row items-center gap-1 ${textStyle} font-bold text-[14px]`}>
                   <p>$SSE Bal:</p>
                   {sseBalanceLoading ? (
-                    <Loader2 className='w-5 h-5 animate-spin' />
+                    <Loader2 className='w-4 h-4 animate-spin' />
                   ) : (
                     <span>{walletAddress ? sseBalance : 0}</span>
                   )}
@@ -74,10 +74,10 @@ export function LeftSideMenu() {
               {walletAddress && (
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="text-green-300 hover:bg-gray-700 p-1 rounded-full transition-colors"
+                  className="text-green-300 hover:bg-white/10 p-1 rounded-full transition-colors"
                   aria-label="Menu"
                 >
-                  <EllipsisVertical className="w-6 h-6" />
+                  <EllipsisVertical className="w-4 h-4" />
                 </button>
               )}
             </div>
