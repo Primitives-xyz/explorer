@@ -11,6 +11,7 @@ import { route } from '@/utils/routes'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { TransactionBadge } from './transaction-badge'
+import { normalizeTimestamp } from '@/utils/time'
 
 // Legacy format
 interface TokenTransferLegacy {
@@ -139,7 +140,7 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-gray-300 transition-colors"
             >
-              • {formatTimeAgo(new Date(tx.timestamp))}
+              • {formatTimeAgo(new Date(normalizeTimestamp(tx.timestamp)))}
             </Link>
             <span className="text-gray-500">•</span>
             <TransactionBadge type={tx.type} source={tx.source} />
