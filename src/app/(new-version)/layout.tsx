@@ -1,9 +1,10 @@
 import { Header } from '@/components-new-version/common/header'
-import { LeftSideMenu } from '@/components-new-version/common/left-side-menu/left-side-menu'
 import { cn } from '@/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
 import './global.css'
+import { LeftSideMenu } from '@/components-new-version/common/left-side-bar'
+import { ActivityTape } from '@/components-new-version/activity-tape'
 
 const rethinkSans = Rethink_Sans({
   subsets: ['latin'],
@@ -17,17 +18,15 @@ export default async function NewVersionLayout({
   children: ReactNode
 }) {
   return (
-    <div
-      className={cn(
-        'w-full min-h-screen background-gradient',
-        rethinkSans.className
-      )}
-    >
-      <Header />
-      <div className="w-full mx-auto container">
-        <div className="grid grid-cols-[1fr_3fr_1fr] gap-10">
+    <div className='background-gradient'>
+      {/* <Toaster /> */}
+      <ActivityTape />
+      <div>
+        <div className="flex flex-row">
           <LeftSideMenu />
-          {children}
+          <div className='w-full h-[calc(100vh-50px)] overflow-y-auto p-8'>
+            {children}
+          </div>
         </div>
       </div>
     </div>

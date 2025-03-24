@@ -4,6 +4,7 @@ const routes = {
   home: () => '/home',
   designSystem: () => '/design-system',
   trade: () => '/trade',
+  swap: () => '/swap',
   discover: () => '/discover',
   tokens: () => '/tokens',
   profile: () => '/profile',

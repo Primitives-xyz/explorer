@@ -74,6 +74,7 @@
     "graphology-types": "0.24.8",
     "helius-sdk": "1.4.2",
     "jose": "5.9.6",
+    "lightweight-charts": "5.0.4",
     "lucide-react": "^0.469.0",
     "next": "^15.1.7",
     "next-intl": "3.26.3",
