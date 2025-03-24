@@ -60,7 +60,7 @@ export function Menu() {
       {
         !walletAddress && (
           <DynamicConnectButton>
-            <div className="flex flex-row items-center gap-4 px-1 py-2 text-[#F5F8FD] text-[20px] font-bold leading-[150%] capitalize rounded-[6px] cursor-pointer transition-colors md:px-4">
+            <div className="flex flex-row items-center gap-4 px-1 py-2 text-[#F5F8FD] text-[16px] font-bold leading-[150%] capitalize rounded-[6px] cursor-pointer transition-colors md:px-4">
               <Wallet size={20} />
               Connect Wallet
             </div>
