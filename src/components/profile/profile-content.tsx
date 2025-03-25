@@ -1,10 +1,9 @@
 'use client'
 
 import { useIdentities } from '@/hooks/use-identities'
-import { useProfileData } from '@/hooks/use-profile-data'
+import { useNamespaceProfile } from '@/hooks/use-namespace-profile'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useProfileFollowing } from '@/hooks/use-profile-following'
-import { useTargetWallet } from '@/hooks/use-target-wallet'
 import { X_NAMESPACE } from '@/utils/constants'
 import { cn } from '@/utils/utils'
 import { memo, useCallback, useState } from 'react'
@@ -70,14 +69,6 @@ export function ProfileContent({ username, namespace }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'comments' | 'swaps'>('comments')
 
-  const {
-    targetWalletAddress,
-    isLoading: isLoadingWallet,
-    walletAddressError,
-    serverError,
-    isOwnWallet,
-  } = useTargetWallet(username, namespace)
-
   const { followers, isLoading: isLoadingFollowers } = useProfileFollowers(
     username,
     namespace
@@ -87,20 +78,21 @@ export function ProfileContent({ username, namespace }: Props) {
     namespace
   )
 
-  const { profileData, isLoading } = useProfileData(
-    username,
-    mainUsername,
-    namespace
-  )
+  const { profileData, comments, isLoading, isLoadingComments } =
+    useNamespaceProfile(username, mainUsername, namespace)
 
+  const targetWalletAddress = profileData?.walletAddress
   const {
     identities,
     loading: isLoadingIdentities,
     error: identitiesError,
   } = useIdentities(
-    namespace === X_NAMESPACE ? username : targetWalletAddress || '',
+    profileData?.walletAddress ? profileData?.walletAddress : username,
     namespace
   )
+  const isOwnWallet = profileData?.walletAddress === mainUsername
+  console.log('identitiesError', identitiesError)
+  console.log('identities', identities)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
@@ -130,11 +122,6 @@ export function ProfileContent({ username, namespace }: Props) {
     window.location.reload()
   }, [])
 
-  if (serverError) {
-    window.location.href = '/'
-    throw new Error('Server error')
-  }
-
   const tabs = [
     { id: 'comments', label: 'Comments' },
     { id: 'swaps', label: 'Swaps' },
@@ -158,8 +145,7 @@ export function ProfileContent({ username, namespace }: Props) {
         <ProfileHeader
           username={username}
           profileData={profileData}
-          isLoading={isLoading || isLoadingWallet}
-          walletAddressError={walletAddressError}
+          isLoading={isLoading}
           onEditProfile={handleEditProfile}
           isOwnProfile={isOwnWallet}
           namespaceLink={nsLink}
@@ -198,6 +184,8 @@ export function ProfileContent({ username, namespace }: Props) {
                   {activeTab === 'comments' ? (
                     <CommentWall
                       username={username}
+                      isLoading={isLoadingComments}
+                      comments={comments}
                       targetWalletAddress={targetWalletAddress}
                     />
                   ) : (
@@ -209,17 +197,13 @@ export function ProfileContent({ username, namespace }: Props) {
           </div>
 
           <div className="space-y-6">
-            {walletAddressError ? (
-              <ErrorCard />
-            ) : (
-              profileData && <ProfileInfo profileData={profileData} />
-            )}
+            {profileData && <ProfileInfo profileData={profileData} />}
 
             <ProfileSection
               walletAddress={targetWalletAddress}
               hasSearched={!isLoadingIdentities && !!targetWalletAddress}
               isLoadingProfileData={
-                isLoadingIdentities || isLoadingWallet || isLoadingTargetWallet
+                isLoadingIdentities || isLoadingTargetWallet
               }
               profileData={{
                 profiles:
