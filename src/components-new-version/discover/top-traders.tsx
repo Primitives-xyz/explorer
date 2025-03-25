@@ -6,12 +6,15 @@ import {
   useTopTraders,
 } from '@/components-new-version/discover/hooks/use-top-traders'
 import { ITopTraders } from '@/components-new-version/models/token.models'
+import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
 import {
   abbreviateWalletAddress,
+  cn,
   formatNumber,
+  handleCopy,
 } from '@/components-new-version/utils/utils'
 import { Column, ColumnDef } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp } from 'lucide-react'
+import { ArrowDown, ArrowUp, ClipboardIcon } from 'lucide-react'
 
 interface SortableHeaderProps {
   label: string
@@ -50,12 +53,26 @@ export function TopTraders({ timeFrame }: Props) {
 
         return (
           <span className="flex items-center gap-2">
-            <div className="relative mr-2 w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-background">
+            <div
+              className={cn(
+                'relative mr-2 w-8 h-8 rounded-full flex items-center justify-center  font-bold border border-secondary',
+                {
+                  'bg-secondary text-background': row.index <= 2,
+                  'bg-transparent text-secondary': row.index > 2,
+                }
+              )}
+            >
               <p className="text-xs">#{row.index + 1}</p>
             </div>
-            <p className="font-bold">
+
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              onClick={() => handleCopy({ copyText: traders.address })}
+              size={ButtonSize.SM}
+            >
               {abbreviateWalletAddress({ address: traders.address })}
-            </p>
+              <ClipboardIcon size={12} />
+            </Button>
           </span>
         )
       },
@@ -124,6 +141,20 @@ export function TopTraders({ timeFrame }: Props) {
               : row.original.pnl !== 0
               ? 'Holding'
               : '0'}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: 'trade_count',
+      header: '',
+      enableSorting: false,
+      cell: ({ getValue }) => {
+        return (
+          <span>
+            <Button disabled variant={ButtonVariant.SECONDARY}>
+              Follow
+            </Button>
           </span>
         )
       },

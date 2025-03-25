@@ -6,7 +6,6 @@ export function HomeContent() {
   return (
     <OverflowContentWrapper>
       <Summary />
-
       <FollowingTransactions />
     </OverflowContentWrapper>
   )

@@ -58,7 +58,8 @@ export function DataTable<TData>({
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody>
+
+      <TableBody className="!max-h-[400px] !overflow-y-auto">
         {table.getRowModel().rows.length ? (
           table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>

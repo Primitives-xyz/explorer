@@ -37,11 +37,17 @@ export function TransactionsHeader({
   return (
     <div className="flex flex-row gap-2 items-start">
       <div className="w-12">
-        <Avatar
-          username={sourceProfile?.username || sourceWallet}
-          size={40}
-          imageUrl={sourceProfile?.image}
-        />
+        <Button
+          variant={ButtonVariant.GHOST}
+          href={`/${sourceProfile?.username || sourceWallet}`}
+          className="p-0 hover:bg-transparent"
+        >
+          <Avatar
+            username={sourceProfile?.username || sourceWallet}
+            size={40}
+            imageUrl={sourceProfile?.image}
+          />
+        </Button>
       </div>
 
       <div className="flex flex-col space-y-2 w-full">
@@ -76,17 +82,21 @@ function Username({
   sourceWallet: string
 }) {
   return (
-    <div>
+    <Button
+      variant={ButtonVariant.GHOST}
+      href={`/${sourceProfile?.username || sourceWallet}`}
+      className="p-0 hover:bg-transparent"
+    >
       {sourceProfile?.username && sourceProfile.username !== sourceWallet ? (
         `@${sourceProfile.username}`
       ) : (
         <span>{abbreviateWalletAddress({ address: sourceWallet })}</span>
       )}
-    </div>
+    </Button>
   )
 }
 
-function WalletAddress({
+export function WalletAddress({
   transaction,
 }: {
   transaction: Transaction | ExtendedTransaction

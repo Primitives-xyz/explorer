@@ -3,7 +3,8 @@
 import { DataTable } from '@/components-new-version/discover/data-table'
 import { useTrendingTokens } from '@/components-new-version/discover/hooks/use-trending-tokens'
 import { ITrendingToken } from '@/components-new-version/models/token.models'
-import { formatNumber } from '@/components-new-version/utils/utils'
+import { Button } from '@/components-new-version/ui'
+import { cn, formatNumber } from '@/components-new-version/utils/utils'
 import { Column, ColumnDef } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import Image from 'next/image'
@@ -52,7 +53,16 @@ export function TrendingTokens() {
                   className="rounded-full object-cover aspect-square"
                 />
               )}
-              <div className="-top-1.5 -right-1.5 bg-secondary rounded-full aspect-square absolute w-4 h-4 flex items-center justify-center text-[8px] text-background font-bold">
+              <div
+                className={cn(
+                  '-top-2 -right-2 bg-secondary rounded-full aspect-square absolute w-5 h-5 flex items-center justify-center text-[8px] font-bold border border-secondary',
+                  {
+                    'bg-secondary text-background': token.rank <= 3,
+                    'bg-transparent text-secondary backdrop-blur-xl':
+                      token.rank > 3,
+                  }
+                )}
+              >
                 #{token.rank}
               </div>
             </div>
@@ -88,12 +98,18 @@ export function TrendingTokens() {
         <span>${formatNumber(getValue() as number)}</span>
       ),
     },
-    // {
-    //   accessorKey: 'holders',
-    //   enableSorting: true,
-    //   header: ({ column }) => <SortableHeader label="Holders" column={column} />,
-    //   cell: ({ getValue }) => <span>${formatNumber(getValue() as number)}</span>,
-    // },
+    {
+      accessorKey: 'holders',
+      header: '',
+      enableSorting: false,
+      cell: ({ getValue }) => {
+        return (
+          <span>
+            <Button disabled>BUY</Button>
+          </span>
+        )
+      },
+    },
   ]
 
   return <DataTable data={tokens} columns={columns} />

@@ -83,22 +83,30 @@ export function Menu() {
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start">
-              <p className="text-xs pr-1">hi </p>
+              <p className="text-xs pr-1">hi</p>
               <p className="font-bold text-xs max-w-28 truncate pr-1">
                 {mainUsername}
               </p>
               <p className="text-xs flex items-center gap-1">
                 <span>|</span>
-                <span>
-                  <Image
-                    src="/images/sse.png"
-                    width={16}
-                    height={16}
-                    alt="icon"
-                    className="rounded-full aspect-square object-cover"
-                  />
-                </span>
-                <span className="text-primary">$SSE </span>Bal: {balance}
+                <Button
+                  variant={ButtonVariant.GHOST}
+                  className="p-0 hover:bg-transparent"
+                  //href={route('home')}
+                  href={'/'}
+                >
+                  <span>
+                    <Image
+                      src="/images/sse.png"
+                      width={16}
+                      height={16}
+                      alt="icon"
+                      className="rounded-full aspect-square object-cover"
+                    />
+                  </span>
+                  <span className="text-primary">$SSE </span>
+                </Button>
+                <span>Bal: {balance}</span>
               </p>
             </div>
 
