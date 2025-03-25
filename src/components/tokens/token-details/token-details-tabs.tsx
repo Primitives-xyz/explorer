@@ -25,6 +25,7 @@ export function TokenDetailsTabs({
   totalSupply,
 }: TokenDetailsTabsProps) {
   const [activeTab, setActiveTab] = useState('about')
+  console.log("overview:", overview)
 
   return (
     <div className="bg-black/40 border border-green-800/40 rounded-xl overflow-hidden">

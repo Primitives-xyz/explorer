@@ -1,17 +1,7 @@
-import type { FungibleTokenInfo, TokenResponse } from '@/types/Token'
+import type { TokenResponse } from '@/types/Token'
+import isFungibleToken from '@/utils/helper'
 import { useTranslations } from 'next-intl'
 import useSWR from 'swr'
-
-// Helper function to check if token is fungible
-const isFungibleToken = (
-  data: TokenResponse | null | undefined
-): data is TokenResponse & { result: FungibleTokenInfo } => {
-  return (
-    !!data &&
-    (data.result?.interface === 'FungibleToken' ||
-      data.result?.interface === 'FungibleAsset')
-  )
-}
 
 const CACHE_DURATION = 120_000 // Increased from 30s to 120s (2 minutes)
 

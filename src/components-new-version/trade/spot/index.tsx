@@ -29,6 +29,8 @@ import { DEFAULT_INPUT_TOKEN_IMAGEURI, DEFAULT_INPUT_TOKEN_MINT, DEFAULT_INPUT_T
 
 import DynamicConnectButton from '@/components-new-version/common/dynamic-button';
 import LoadingDots from '@/components-new-version/common/loading-dots';
+import Details from '../common/details';
+import isFungibleToken from '@/utils/helper';
 
 const SpotView = () => {
   const t = useTranslations()
@@ -38,7 +40,8 @@ const SpotView = () => {
   const [showInputTokenSearch, setShowInputTokenSearch] = useState<boolean>(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState<boolean>(false)
   const { symbol: inputTokenSymbol, decimals: inputTokenDecimals, image: inputTokenImageUri } = useTokenInfo(inputTokenMint)
-  const { symbol: outputTokenSymbol, decimals: outputTokenDecimals, image: outputTokenImageUri } = useTokenInfo(outputTokenMint)
+  const { symbol: outputTokenSymbol, decimals: outputTokenDecimals, image: outputTokenImageUri, data: outputTokenData } = useTokenInfo(outputTokenMint)
+  console.log("outputTokenData:", outputTokenData)
   const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } = useTokenUSDCPrice(inputTokenMint, inputTokenDecimals)
   const { price: outputTokenUsdPrice, loading: outputTokenUsdPriceLoading } = useTokenUSDCPrice(outputTokenMint, outputTokenDecimals)
   const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
@@ -59,16 +62,11 @@ const SpotView = () => {
     setPriorityLevel,
     quoteResponse,
     expectedOutput,
-    priceImpact,
-    slippageBps,
-    setSlippageBps,
     showTradeLink,
     isFullyConfirmed,
     handleSwap,
     resetQuoteState,
     isQuoteRefreshing,
-    sseFeeAmount,
-    refreshQuote,
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
@@ -295,7 +293,7 @@ const SpotView = () => {
                     className="text-[24px] bg-transparent w-full font-normal outline-none"
                     type="text"
                     disabled={true}
-                    value={(quoteResponse && !isNaN(parseFloat(expectedOutput))) ? formatLargeNumber(parseFloat(expectedOutput), outputTokenDecimals) : ''}
+                    value={(quoteResponse && !isNaN(parseFloat(expectedOutput)) && inputTokenAmount.length) ? formatLargeNumber(parseFloat(expectedOutput), outputTokenDecimals) : ''}
                   />
                 )
               }
@@ -527,7 +525,7 @@ const SpotView = () => {
 
           </div>
         </div>
-        <div className='w-full'>
+        <div className='w-full flex flex-col gap-4'>
           <div className='bg-white/5 border border-white/10 rounded-[20px] w-full h-[400px] p-4'>
             <iframe
               width="100%"
@@ -537,17 +535,30 @@ const SpotView = () => {
               allowFullScreen
             />
           </div>
+
+          <Details
+            id={outputTokenMint}
+            description={outputTokenData? outputTokenData.result.content.metadata.description : "NONE"}
+            decimals={outputTokenDecimals? outputTokenDecimals : 0 }
+            tokenProgram={isFungibleToken(outputTokenData)? outputTokenData.result.token_info.token_program : "NONE"}
+          />
         </div>
         {showInputTokenSearch && (
           <TokenSearch
             onSelect={handleInputTokenSelect}
-            onClose={() => setShowInputTokenSearch(false)}
+            onClose={() => {
+              setShowInputTokenSearch(false)
+              setInputTokenAmount("")
+            }}
           />
         )}
         {showOutputTokenSearch && (
           <TokenSearch
             onSelect={handleOutputTokenSelect}
-            onClose={() => setShowOutputTokenSearch(false)}
+            onClose={() => {
+              setShowOutputTokenSearch(false)
+              setInputTokenAmount("")
+            }}
           />
         )}
       </div>

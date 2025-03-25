@@ -21,6 +21,14 @@ export async function GET(request: Request) {
       new PublicKey(mintAddress)
     )
 
+  //   address: PublicKey [PublicKey(8CwFqk9tFhARvcyc1t4RG9VXVZBKtBTfqFVNkYyo1UDQ)] {
+  //   _bn: <BN: 6b108b70e1abfcaceab7528bc01ee539a9d72b3093b219d7e33af508be3d23bb>
+  // },
+  // amount: '122820890246932',
+  // decimals: 6,
+  // uiAmount: 122820890.246932,
+  // uiAmountString: '122820890.246932'
+
     // Transform the response to include more readable values
     const holders = response.value.map((holder) => ({
       address: holder.address,
