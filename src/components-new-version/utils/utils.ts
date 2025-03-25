@@ -17,20 +17,22 @@ export const mapEmpty = <T>(amount: number, fn: (index: number) => T): T[] => {
 }
 
 export const formatNumber = (
-  number: number,
+  input: number | string,
   { withComma = false }: { withComma?: boolean } = {}
-) => {
+): string => {
+  const number = Number(input)
+
   if (isNaN(number)) return '0.00'
 
   if (withComma) {
     return number.toLocaleString('en-US')
   } else {
     if (number >= 1_000_000) {
-      return `${(number / 1_000_000).toFixed(1)}M`
-    } else if (number >= 1000) {
-      return `${(number / 1000).toFixed(1)}K`
+      return `${(number / 1_000_000).toFixed(2)}M`
+    } else if (number >= 1_000) {
+      return `${(number / 1_000).toFixed(2)}K`
     } else {
-      return number.toFixed(2).toString()
+      return number.toFixed(2)
     }
   }
 }
