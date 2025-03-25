@@ -1,41 +1,41 @@
-import React, { useMemo } from 'react';
-import { getSolscanAddressUrl } from '@/utils/constants';
-import { formatAddress, formatLamportsToSol } from '@/utils/transaction';
-import { ExternalLink, ArrowRight } from 'lucide-react';
-import { useTokenInfo } from '@/hooks/use-token-info-cache';
-import Image from 'next/image';
+import { useTokenInfo } from '@/hooks/use-token-info-cache'
+import { getSolscanAddressUrl } from '@/utils/constants'
+import { formatAddress, formatLamportsToSol } from '@/utils/transaction'
+import { ArrowRight, ExternalLink } from 'lucide-react'
+import Image from 'next/image'
+import { useMemo } from 'react'
 
 interface Transfer {
-  fromUserAccount: string;
-  toUserAccount: string;
-  amount: number;
+  fromUserAccount: string
+  toUserAccount: string
+  amount: number
 }
 
 interface TokenTransfer {
-  fromUserAccount: string;
-  toUserAccount: string;
-  tokenAmount: number;
-  mint?: string;
-  tokenMint?: string;
+  fromUserAccount: string
+  toUserAccount: string
+  tokenAmount: number
+  mint?: string
+  tokenMint?: string
 }
 
 interface TransferGraphProps {
-  nativeTransfers?: Transfer[];
-  tokenTransfers?: TokenTransfer[];
-  sourceWallet: string;
+  nativeTransfers?: Transfer[]
+  tokenTransfers?: TokenTransfer[]
+  sourceWallet: string
   sourceProfile?: {
-    username?: string;
-    image?: string;
-  };
+    username?: string
+    image?: string
+  }
 }
 
 // Constants
-const SOL_MINT = 'So11111111111111111111111111111111111111112';
+const SOL_MINT = 'So11111111111111111111111111111111111111112'
 
 // Helper to determine if a string looks like a mint address
 const isMintAddress = (str: string): boolean => {
-  return /^[A-Za-z0-9]{32,44}$/.test(str);
-};
+  return /^[A-Za-z0-9]{32,44}$/.test(str)
+}
 
 const TransferGraph = ({
   nativeTransfers,
@@ -43,10 +43,6 @@ const TransferGraph = ({
   sourceWallet,
   sourceProfile,
 }: TransferGraphProps) => {
-  if (!nativeTransfers && !tokenTransfers) {
-    return null;
-  }
-
   // Prepare data for the graph
   const transfers = useMemo(() => {
     // Process SOL native transfers
@@ -58,7 +54,7 @@ const TransferGraph = ({
         amount: formatLamportsToSol(transfer.amount),
         type: 'SOL',
         mint: SOL_MINT,
-      }));
+      }))
 
     // Process token transfers
     const tokenTransfersData = (tokenTransfers || [])
@@ -69,69 +65,77 @@ const TransferGraph = ({
         amount: transfer.tokenAmount?.toLocaleString() || '0',
         type: 'TOKEN',
         mint: transfer.mint || transfer.tokenMint || 'Unknown',
-      }));
+      }))
 
-    return [...solTransfers, ...tokenTransfersData];
-  }, [nativeTransfers, tokenTransfers]);
+    return [...solTransfers, ...tokenTransfersData]
+  }, [nativeTransfers, tokenTransfers])
+
+  if (!nativeTransfers && !tokenTransfers) {
+    return null
+  }
 
   return (
     <div className="space-y-2">
       {transfers.map((transfer, i) => (
-        <TransferItem 
-          key={i} 
-          transfer={transfer} 
-          sourceWallet={sourceWallet} 
+        <TransferItem
+          key={i}
+          transfer={transfer}
+          sourceWallet={sourceWallet}
           sourceProfile={sourceProfile}
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
 // Separate TransferItem component to use hooks for each transfer
 interface TransferItemProps {
   transfer: {
-    from: string;
-    to: string;
-    amount: string;
-    type: string;
-    mint: string;
-  };
-  sourceWallet: string;
+    from: string
+    to: string
+    amount: string
+    type: string
+    mint: string
+  }
+  sourceWallet: string
   sourceProfile?: {
-    username?: string;
-    image?: string;
-  };
+    username?: string
+    image?: string
+  }
 }
 
-const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemProps) => {
-  // Use the token info hook    
+const TransferItem = ({
+  transfer,
+  sourceWallet,
+  sourceProfile,
+}: TransferItemProps) => {
+  // Use the token info hook
   const { data: tokenInfo, loading: tokenLoading } = useTokenInfo(
     transfer.mint !== 'Unknown' ? transfer.mint : null
-  );
+  )
 
   // Helper to get display symbol for a token
   const getDisplaySymbol = (mint: string, tokenInfo: any) => {
     // Special case for SOL
-    if (mint === SOL_MINT) return 'SOL';
-    
+    if (mint === SOL_MINT) return 'SOL'
+
     // Try to get symbol from loaded token info (asset API)
     if (tokenInfo) {
-      const symbolFromInfo = tokenInfo.token_info?.symbol ||
-                           tokenInfo.content?.metadata?.symbol;
-      if (symbolFromInfo) return symbolFromInfo;
+      const symbolFromInfo =
+        tokenInfo.token_info?.symbol || tokenInfo.content?.metadata?.symbol
+      if (symbolFromInfo) return symbolFromInfo
     }
-    
+
     // Last resort - if it looks like a mint address, truncate it
     if (isMintAddress(mint)) {
-      return `${mint.slice(0, 4)}...${mint.slice(-4)}`;
+      return `${mint.slice(0, 4)}...${mint.slice(-4)}`
     }
-    
-    // If all else fails, return "Unknown Token"
-    return "Unknown Token";
-  };
 
-  const displaySymbol = getDisplaySymbol(transfer.mint, tokenInfo);
+    // If all else fails, return "Unknown Token"
+    return 'Unknown Token'
+  }
+
+  const displaySymbol = getDisplaySymbol(transfer.mint, tokenInfo)
 
   // Animation keyframes for the pulsing effect
   const pulseAnimation = `
@@ -143,7 +147,7 @@ const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemPro
     .pulse-arrow {
       animation: pulse 2s infinite;
     }
-  `;
+  `
 
   return (
     <div className="grid grid-cols-5 items-center text-sm">
@@ -166,15 +170,13 @@ const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemPro
           <ExternalLink className="w-3 h-3" />
         </a>
       </div>
-      
+
       {/* Left arrow - second column */}
       <div className="col-span-1 flex justify-center">
         <style>{pulseAnimation}</style>
-        <ArrowRight 
-          className="w-4 h-4 text-green-500 pulse-arrow" 
-        />
+        <ArrowRight className="w-4 h-4 text-green-500 pulse-arrow" />
       </div>
-      
+
       {/* Token info - third column */}
       <div className="col-span-1 flex justify-center">
         <div className="flex items-center gap-2">
@@ -195,10 +197,13 @@ const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemPro
                 alt={displaySymbol}
                 className="w-4 h-4 rounded-full"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                  (e.target as HTMLImageElement).parentElement!.innerHTML = `
-                    <span class="font-mono text-[9px]">${displaySymbol.slice(0, 2)}</span>
-                  `;
+                  ;(e.target as HTMLImageElement).style.display = 'none'
+                  ;(e.target as HTMLImageElement).parentElement!.innerHTML = `
+                    <span class="font-mono text-[9px]">${displaySymbol.slice(
+                      0,
+                      2
+                    )}</span>
+                  `
                 }}
               />
             ) : (
@@ -207,12 +212,10 @@ const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemPro
               </span>
             )}
           </div>
-          
+
           {/* Amount and Symbol */}
           <div className="flex flex-col">
-            <span className="font-mono text-xs">
-              {transfer.amount}
-            </span>
+            <span className="font-mono text-xs">{transfer.amount}</span>
             <a
               href={getSolscanAddressUrl(transfer.mint)}
               target="_blank"
@@ -225,15 +228,15 @@ const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemPro
           </div>
         </div>
       </div>
-      
+
       {/* Right arrow - fourth column */}
       <div className="col-span-1 flex justify-center">
-        <ArrowRight 
-          className="w-4 h-4 text-green-500 pulse-arrow" 
-          style={{ animationDelay: "0.5s" }}
+        <ArrowRight
+          className="w-4 h-4 text-green-500 pulse-arrow"
+          style={{ animationDelay: '0.5s' }}
         />
       </div>
-      
+
       {/* To account - fifth column */}
       <div className="col-span-1 text-left">
         <a
@@ -254,7 +257,7 @@ const TransferItem = ({ transfer, sourceWallet, sourceProfile }: TransferItemPro
         </a>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TransferGraph;
+export default TransferGraph
