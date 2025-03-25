@@ -19,6 +19,9 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
   },
+  experimental: {
+    webpackMemoryOptimizations: true,
+  },
 }
 
 export default withNextIntl(nextConfig)
