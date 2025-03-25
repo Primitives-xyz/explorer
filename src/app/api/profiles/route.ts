@@ -10,6 +10,8 @@ export async function GET(request: Request) {
   const walletAddress = searchParams.get('walletAddress')
   const useIdentities = searchParams.get('useIdentities') === 'true'
   const namespace = searchParams.get('namespace')
+  const sortBy = searchParams.get('sortBy')
+  const pageSize = searchParams.get('pageSize') 
   try {
     if (useIdentities) {
       // For related profiles, use identities endpoint
@@ -76,6 +78,14 @@ export async function GET(request: Request) {
 
       if (!!namespace) {
         url = `${url}&namespace=${namespace}`
+      }
+
+      if (!!sortBy) {
+        url = `${url}&sortBy=${sortBy}`
+      }
+
+      if (!!pageSize) {
+        url = `${url}&pageSize=${pageSize}`
       }
 
       const response = await fetch(url, {

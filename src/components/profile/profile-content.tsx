@@ -5,6 +5,7 @@ import { useProfileData } from '@/hooks/use-profile-data'
 import { useProfileFollowers } from '@/hooks/use-profile-followers'
 import { useProfileFollowing } from '@/hooks/use-profile-following'
 import { useTargetWallet } from '@/hooks/use-target-wallet'
+import { X_NAMESPACE } from '@/utils/constants'
 import { cn } from '@/utils/utils'
 import { memo, useCallback, useState } from 'react'
 import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
@@ -18,7 +19,6 @@ import { ProfileHeader } from './profile-header'
 import { ProfileStats } from './profile-stats'
 import { ProfileInfo } from './ProfileInfo'
 import { UpdateProfileModal } from './update-profile-modal'
-import { X_NAMESPACE } from '@/utils/constants'
 
 interface Props {
   username: string
@@ -87,14 +87,20 @@ export function ProfileContent({ username, namespace }: Props) {
     namespace
   )
 
-  const { profileData, comments, isLoading, isLoadingComments } =
-    useProfileData(username, mainUsername, namespace)
+  const { profileData, isLoading } = useProfileData(
+    username,
+    mainUsername,
+    namespace
+  )
 
   const {
     identities,
     loading: isLoadingIdentities,
     error: identitiesError,
-  } = useIdentities(namespace === X_NAMESPACE ? username : targetWalletAddress || '', namespace)
+  } = useIdentities(
+    namespace === X_NAMESPACE ? username : targetWalletAddress || '',
+    namespace
+  )
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
@@ -143,7 +149,8 @@ export function ProfileContent({ username, namespace }: Props) {
       : `${nsLink}${username}`
   }
 
-  const isLoadingTargetWallet = (namespace !== X_NAMESPACE && !targetWalletAddress ) // don't wait for wallet if it's a x profile.
+  const isLoadingTargetWallet =
+    namespace !== X_NAMESPACE && !targetWalletAddress // don't wait for wallet if it's a x profile.
 
   return (
     <div className="py-8">
@@ -191,8 +198,6 @@ export function ProfileContent({ username, namespace }: Props) {
                   {activeTab === 'comments' ? (
                     <CommentWall
                       username={username}
-                      isLoading={isLoadingComments}
-                      comments={comments}
                       targetWalletAddress={targetWalletAddress}
                     />
                   ) : (
@@ -210,55 +215,54 @@ export function ProfileContent({ username, namespace }: Props) {
               profileData && <ProfileInfo profileData={profileData} />
             )}
 
-          <ProfileSection
-            walletAddress={targetWalletAddress}
-            hasSearched={!isLoadingIdentities && !!targetWalletAddress}
-            isLoadingProfileData={
-              isLoadingIdentities 
-              || isLoadingWallet 
-              || isLoadingTargetWallet            }
-            profileData={{
-              profiles:
-                !identitiesError && !isLoadingIdentities && identities
-                  ? identities
-                  : [],
-            }}
-            title={
-              identitiesError ? 'error_loading_profiles' : 'related_profiles'
-            }
+            <ProfileSection
+              walletAddress={targetWalletAddress}
+              hasSearched={!isLoadingIdentities && !!targetWalletAddress}
+              isLoadingProfileData={
+                isLoadingIdentities || isLoadingWallet || isLoadingTargetWallet
+              }
+              profileData={{
+                profiles:
+                  !identitiesError && !isLoadingIdentities && identities
+                    ? identities
+                    : [],
+              }}
+              title={
+                identitiesError ? 'error_loading_profiles' : 'related_profiles'
+              }
+            />
+          </div>
+
+          {/* Modals */}
+          <SocialModal
+            isOpen={showFollowersModal}
+            onClose={handleCloseFollowers}
+            title={`@${username}'s Followers`}
+            users={followers}
+            isLoading={isLoadingFollowers}
+            type="followers"
           />
+
+          <SocialModal
+            isOpen={showFollowingModal}
+            onClose={handleCloseFollowing}
+            title={`@${username}'s Following`}
+            users={following}
+            isLoading={isLoadingFollowing}
+            type="following"
+          />
+
+          {!!profileData && (
+            <UpdateProfileModal
+              isOpen={showUpdateModal}
+              onClose={handleCloseUpdate}
+              currentUsername={username}
+              currentBio={profileData?.profile.bio}
+              currentImage={profileData?.profile.image}
+              onProfileUpdated={handleProfileUpdated}
+            />
+          )}
         </div>
-
-        {/* Modals */}
-        <SocialModal
-          isOpen={showFollowersModal}
-          onClose={handleCloseFollowers}
-          title={`@${username}'s Followers`}
-          users={followers}
-          isLoading={isLoadingFollowers}
-          type="followers"
-        />
-
-        <SocialModal
-          isOpen={showFollowingModal}
-          onClose={handleCloseFollowing}
-          title={`@${username}'s Following`}
-          users={following}
-          isLoading={isLoadingFollowing}
-          type="following"
-        />
-
-        {!!profileData && (
-          <UpdateProfileModal
-            isOpen={showUpdateModal}
-            onClose={handleCloseUpdate}
-            currentUsername={username}
-            currentBio={profileData?.profile.bio}
-            currentImage={profileData?.profile.image}
-            onProfileUpdated={handleProfileUpdated}
-          />
-        )}
-      </div>
       </>
     </div>
   )

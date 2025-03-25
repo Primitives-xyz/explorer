@@ -6,42 +6,64 @@ import '@dialectlabs/react-ui/index.css'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import type { ISolana } from '@dynamic-labs/solana-core'
 import { PublicKey } from '@solana/web3.js'
-import { useWallet } from '../auth/wallet-context'
+import { useMemo } from 'react'
+import { useCurrentWallet } from '../auth/hooks/use-current-wallet'
+import { ErrorBoundary } from './error-boundary'
 
+// Component that renders just the notifications button with error handling
 export const DialectNotificationsComponent = () => {
+  return (
+    <ErrorBoundary fallback={<div className="w-9 h-9"></div>}>
+      <DialectNotificationsComponentInner />
+    </ErrorBoundary>
+  )
+}
+
+// Inner component with the actual implementation
+const DialectNotificationsComponentInner = () => {
   const DAPP_ADDRESS = process.env.NEXT_PUBLIC_DAPP_ADDRESS
-  const { walletAddress, primaryWallet } = useWallet()
+  const { walletAddress, primaryWallet } = useCurrentWallet()
 
-  if (!DAPP_ADDRESS || !walletAddress) {
+  const walletAdapter = useMemo(() => {
+    if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+      return null
+    }
+
+    return {
+      publicKey: new PublicKey(walletAddress),
+      signMessage: async (msg: Uint8Array) => {
+        console.log('signMessage', msg)
+        // Convert Uint8Array to string for primaryWallet.signMessage
+        const message = new TextDecoder().decode(msg)
+        const signature = await primaryWallet.signMessage(message)
+        // Convert signature back to Uint8Array
+        return signature
+          ? new TextEncoder().encode(signature)
+          : new Uint8Array()
+      },
+      signTransaction: async (tx: any) => {
+        console.log('signTransaction', tx)
+        const signer: ISolana = await primaryWallet.getSigner()
+        const sign = signer.signTransaction(tx)
+        return sign
+      },
+    }
+  }, [walletAddress, primaryWallet])
+
+  if (
+    !DAPP_ADDRESS ||
+    !walletAddress ||
+    !primaryWallet ||
+    !isSolanaWallet(primaryWallet) ||
+    !walletAdapter
+  ) {
     return null
   }
-
-  if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-    return null
-  }
-
-  const walletPK = new PublicKey(walletAddress)
 
   return (
     <DialectSolanaSdk
       dappAddress={DAPP_ADDRESS}
-      customWalletAdapter={{
-        publicKey: walletPK,
-        signMessage: async (msg) => {
-          // Convert Uint8Array to string for primaryWallet.signMessage
-          const message = new TextDecoder().decode(msg)
-          const signature = await primaryWallet.signMessage(message)
-          // Convert signature back to Uint8Array
-          return signature
-            ? new TextEncoder().encode(signature)
-            : new Uint8Array()
-        },
-        signTransaction: async (tx) => {
-          const signer: ISolana = await primaryWallet.getSigner()
-          const sign = signer.signTransaction(tx)
-          return sign
-        },
-      }}
+      customWalletAdapter={walletAdapter}
     >
       <NotificationsButton theme="dark" />
     </DialectSolanaSdk>
