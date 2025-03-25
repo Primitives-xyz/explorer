@@ -142,6 +142,7 @@ export interface Transaction {
     fromTokenAccount: string
     toTokenAccount: string
     tokenMint: string
+    mint?: string //Calls to helius api return mint instead of tokenMint
     amount: number
     from: string
     to: string

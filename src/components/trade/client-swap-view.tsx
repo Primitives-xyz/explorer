@@ -13,15 +13,6 @@ interface ClientSwapViewProps {
 export default function ClientSwapView({
   tx,
   sourceWallet,
-  fromMint,
-  toMint,
 }: ClientSwapViewProps) {
-  return (
-    <SwapTransactionView
-      tx={tx}
-      sourceWallet={sourceWallet}
-      fromMint={fromMint}
-      toMint={toMint}
-    />
-  )
+  return <SwapTransactionView tx={tx} sourceWallet={sourceWallet} />
 }

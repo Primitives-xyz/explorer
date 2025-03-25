@@ -30,7 +30,6 @@ export function useTokenInfo(mint?: string | null) {
       revalidateIfStale: false, // Don't revalidate if data is stale
     }
   )
-
   return {
     data,
     loading: isLoading,

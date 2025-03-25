@@ -1,10 +1,8 @@
-import { Header } from '@/components-new-version/common/header'
-import { cn } from '@/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
-import './global.css'
 import { LeftSideMenu } from '@/components-new-version/common/left-side-bar'
 import { ActivityTape } from '@/components-new-version/activity-tape'
+import './global.css'
 
 const rethinkSans = Rethink_Sans({
   subsets: ['latin'],
