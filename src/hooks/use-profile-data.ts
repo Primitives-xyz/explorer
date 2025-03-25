@@ -16,7 +16,9 @@ export interface ProfileData {
   }
   namespace?: {
     name?: string
+    readableName?: string
     userProfileURL?: string
+    faviconURL?: string
   }
 }
 
