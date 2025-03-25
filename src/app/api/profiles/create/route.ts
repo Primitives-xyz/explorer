@@ -5,7 +5,7 @@ import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Blocklist of reserved usernames
-const RESERVED_USERNAMES = ['home', 'design-system', 'trade', 'n']
+const RESERVED_USERNAMES = ['home', 'design-system', 'trade', 'n', 'discover']
 
 export async function POST(req: NextRequest) {
   try {

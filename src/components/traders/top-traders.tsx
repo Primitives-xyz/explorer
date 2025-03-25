@@ -189,6 +189,7 @@ const TraderCard = memo(
                   }
                   color={trader.pnl >= 0 ? '' : 'text-red-400'}
                 />
+
                 <StatCard
                   label={t('top_traders.volume')}
                   value={
