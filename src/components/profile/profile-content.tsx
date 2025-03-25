@@ -91,8 +91,6 @@ export function ProfileContent({ username, namespace }: Props) {
     namespace
   )
   const isOwnWallet = profileData?.walletAddress === mainUsername
-  console.log('identitiesError', identitiesError)
-  console.log('identities', identities)
 
   const handleEditProfile = useCallback(() => {
     setShowUpdateModal(true)
