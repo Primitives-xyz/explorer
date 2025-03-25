@@ -18,8 +18,8 @@ import {
 import { route } from '@/utils/routes'
 import Link from 'next/link'
 import { memo, useEffect, useMemo, useState } from 'react'
-import { TokenAddress } from '../tokens/token-address'
 import { TransactionBadge } from './transaction-badge'
+import { TokenAddress } from '@/components/tokens/token-address'
 
 interface NFTTransactionViewProps {
   tx: ExtendedTransaction
