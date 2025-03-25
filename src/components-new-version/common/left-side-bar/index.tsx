@@ -12,12 +12,14 @@ import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { useTokenBalance } from '@/hooks/use-token-balance'
 import { SSE_MINT } from '@/components/trading/constants'
 import { Menu } from './menu'
+import AddFundsModal from './add-funds-modal'
 
 export function LeftSideMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { walletAddress } = useCurrentWallet()
   const { balance: sseBalance, loading: sseBalanceLoading } = useTokenBalance(walletAddress, SSE_MINT)
   const { handleLogOut } = useDynamicContext()
+  const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
 
   const handleLogoutClick = async () => {
     try {
@@ -129,7 +131,7 @@ export function LeftSideMenu() {
               </Link>
             </div>
             <div className='w-full flex flex-col justify-center items-center gap-4'>
-              <button className={`${buttonStyle} w-full`}>
+              <button className={`${buttonStyle} w-full`} onClick={() => setIsFundsModalOpen(true)}>
                 <Lock />
                 <span className="font-mono leading-150 text-[14px] font-bold">Unlock Perpetuals</span>
               </button>
@@ -144,6 +146,7 @@ export function LeftSideMenu() {
               </Link>
             </div>
           </div>
+          <AddFundsModal isOpen={isFundsModalOpen} setIsOpen={setIsFundsModalOpen} />
         </div>
       </div>
     </div>

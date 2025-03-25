@@ -41,7 +41,6 @@ const SpotView = () => {
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState<boolean>(false)
   const { symbol: inputTokenSymbol, decimals: inputTokenDecimals, image: inputTokenImageUri } = useTokenInfo(inputTokenMint)
   const { symbol: outputTokenSymbol, decimals: outputTokenDecimals, image: outputTokenImageUri, data: outputTokenData } = useTokenInfo(outputTokenMint)
-  console.log("outputTokenData:", outputTokenData)
   const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } = useTokenUSDCPrice(inputTokenMint, inputTokenDecimals)
   const { price: outputTokenUsdPrice, loading: outputTokenUsdPriceLoading } = useTokenUSDCPrice(outputTokenMint, outputTokenDecimals)
   const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
