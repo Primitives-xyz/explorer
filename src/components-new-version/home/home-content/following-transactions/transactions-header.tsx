@@ -1,5 +1,6 @@
 'use client'
 
+import { WalletAddressButton } from '@/components-new-version/common/wallet-address-button'
 import {
   ExtendedTransaction,
   Transaction,
@@ -8,15 +9,14 @@ import {
   IGetProfilesResponse,
   IProfile,
 } from '@/components-new-version/tapestry/models/profiles.models'
-import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
+import { Button, ButtonVariant } from '@/components-new-version/ui'
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
 import {
   abbreviateWalletAddress,
   formatTimeAgo,
-  handleCopy,
 } from '@/components-new-version/utils/utils'
-import { ArrowRightLeft, ClipboardIcon } from 'lucide-react'
+import { ArrowRightLeft } from 'lucide-react'
 import { ReactNode } from 'react'
 
 export function TransactionsHeader({
@@ -58,12 +58,12 @@ export function TransactionsHeader({
               sourceWallet={sourceWallet}
             />
 
-            <WalletAddress transaction={transaction} />
+            <WalletAddressButton walletAddress={transaction.signature} />
 
             <TimeAgo transaction={transaction} />
           </div>
 
-          <Button variant={ButtonVariant.OUTLINE}>
+          <Button variant={ButtonVariant.OUTLINE} disabled>
             <ArrowRightLeft />
             Copy Trade
           </Button>
@@ -93,25 +93,6 @@ function Username({
         <span>{abbreviateWalletAddress({ address: sourceWallet })}</span>
       )}
     </Button>
-  )
-}
-
-export function WalletAddress({
-  transaction,
-}: {
-  transaction: Transaction | ExtendedTransaction
-}) {
-  return (
-    <div>
-      <Button
-        variant={ButtonVariant.SECONDARY}
-        onClick={() => handleCopy({ copyText: transaction.signature })}
-        size={ButtonSize.SM}
-      >
-        {abbreviateWalletAddress({ address: transaction.signature })}
-        <ClipboardIcon size={12} />
-      </Button>
-    </div>
   )
 }
 

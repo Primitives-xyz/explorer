@@ -1,6 +1,6 @@
 'use client'
 
-import { DataTable } from '@/components-new-version/discover/data-table'
+import { DataTable } from '@/components-new-version/common/table/data-table'
 import { useTrendingTokens } from '@/components-new-version/discover/hooks/use-trending-tokens'
 import { ITrendingToken } from '@/components-new-version/models/token.models'
 import { Button } from '@/components-new-version/ui'
@@ -112,5 +112,5 @@ export function TrendingTokens() {
     },
   ]
 
-  return <DataTable data={tokens} columns={columns} />
+  return <DataTable data={tokens} columns={columns} withPagination />
 }

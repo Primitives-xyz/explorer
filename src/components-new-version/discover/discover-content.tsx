@@ -10,7 +10,7 @@ import { TopTraders } from '@/components-new-version/discover/top-traders'
 import { TrendingTokens } from '@/components-new-version/discover/trending-tokens'
 import { useState } from 'react'
 
-export function DashboardTable() {
+export function DiscoverContent() {
   const [selectedType, setSelectedType] = useState<DiscoverFilterType>(
     DiscoverFilterType.TRENDING_TOKENS
   )

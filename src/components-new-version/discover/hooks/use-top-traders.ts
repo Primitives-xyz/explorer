@@ -13,107 +13,6 @@ interface Props {
   timeFrame: TimeFrame
 }
 
-export const mockTopTraders = [
-  {
-    network: 'solana',
-    address: 'So11111111111111111111111111111111111111112',
-    pnl: 12453.75,
-    trade_count: 18,
-    volume: 58210.94,
-  },
-  {
-    network: 'solana',
-    address: '4xP3r71WzFvKk8NvxwEZ2oPiCKZ9UpHZfRM1PQGz5kY7',
-    pnl: -4350.12,
-    trade_count: 5,
-    volume: 12000.5,
-  },
-  {
-    network: 'solana',
-    address: '7bnN98MxPUh6Fq3LPzJkYokEE9EmgFHQWDckjGowX9Ug',
-    pnl: 980.4,
-    trade_count: 2,
-    volume: 450.0,
-  },
-  {
-    network: 'solana',
-    address: '3ZzXkjo3vbHX84Aa1NTyQ1Myzzw4nnoL52gTpCFcY4dH',
-    pnl: 0,
-    trade_count: 0,
-    volume: 0,
-  },
-  {
-    network: 'solana',
-    address: '4xP3r71WzFvKk8NvxwEZ2oPiCKZ9UpHZfRM1PQGz5kY7',
-    pnl: -4350.12,
-    trade_count: 5,
-    volume: 12000.5,
-  },
-  {
-    network: 'solana',
-    address: '7bnN98MxPUh6Fq3LPzJkYokEE9EmgFHQWDckjGowX9Ug',
-    pnl: 980.4,
-    trade_count: 2,
-    volume: 450.0,
-  },
-  {
-    network: 'solana',
-    address: '3ZzXkjo3vbHX84Aa1NTyQ1Myzzw4nnoL52gTpCFcY4dH',
-    pnl: 0,
-    trade_count: 0,
-    volume: 0,
-  },
-  {
-    network: 'solana',
-    address: 'So11111111111111111111111111111111111111112',
-    pnl: 12453.75,
-    trade_count: 18,
-    volume: 58210.94,
-  },
-  {
-    network: 'solana',
-    address: '4xP3r71WzFvKk8NvxwEZ2oPiCKZ9UpHZfRM1PQGz5kY7',
-    pnl: -4350.12,
-    trade_count: 5,
-    volume: 12000.5,
-  },
-  {
-    network: 'solana',
-    address: '7bnN98MxPUh6Fq3LPzJkYokEE9EmgFHQWDckjGowX9Ug',
-    pnl: 980.4,
-    trade_count: 2,
-    volume: 450.0,
-  },
-  {
-    network: 'solana',
-    address: '3ZzXkjo3vbHX84Aa1NTyQ1Myzzw4nnoL52gTpCFcY4dH',
-    pnl: 0,
-    trade_count: 0,
-    volume: 0,
-  },
-  {
-    network: 'solana',
-    address: '4xP3r71WzFvKk8NvxwEZ2oPiCKZ9UpHZfRM1PQGz5kY7',
-    pnl: -4350.12,
-    trade_count: 5,
-    volume: 12000.5,
-  },
-  {
-    network: 'solana',
-    address: '7bnN98MxPUh6Fq3LPzJkYokEE9EmgFHQWDckjGowX9Ug',
-    pnl: 980.4,
-    trade_count: 2,
-    volume: 450.0,
-  },
-  {
-    network: 'solana',
-    address: '3ZzXkjo3vbHX84Aa1NTyQ1Myzzw4nnoL52gTpCFcY4dH',
-    pnl: 0,
-    trade_count: 0,
-    volume: 0,
-  },
-]
-
 export const useTopTraders = ({ timeFrame }: Props) => {
   const [traders, setTraders] = useState<ITopTraders[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -159,7 +58,6 @@ export const useTopTraders = ({ timeFrame }: Props) => {
       }
     }
 
-    setTraders(mockTopTraders)
     fetchTopTraders()
   }, [timeFrame])
 

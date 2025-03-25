@@ -1,20 +1,16 @@
 'use client'
 
-import { DataTable } from '@/components-new-version/discover/data-table'
+import { DataTable } from '@/components-new-version/common/table/data-table'
+import { WalletAddressButton } from '@/components-new-version/common/wallet-address-button'
 import {
   TimeFrame,
   useTopTraders,
 } from '@/components-new-version/discover/hooks/use-top-traders'
 import { ITopTraders } from '@/components-new-version/models/token.models'
-import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
-import {
-  abbreviateWalletAddress,
-  cn,
-  formatNumber,
-  handleCopy,
-} from '@/components-new-version/utils/utils'
+import { Button, ButtonVariant } from '@/components-new-version/ui'
+import { cn, formatNumber } from '@/components-new-version/utils/utils'
 import { Column, ColumnDef } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, ClipboardIcon } from 'lucide-react'
+import { ArrowDown, ArrowUp } from 'lucide-react'
 
 interface SortableHeaderProps {
   label: string
@@ -65,14 +61,7 @@ export function TopTraders({ timeFrame }: Props) {
               <p className="text-xs">#{row.index + 1}</p>
             </div>
 
-            <Button
-              variant={ButtonVariant.SECONDARY}
-              onClick={() => handleCopy({ copyText: traders.address })}
-              size={ButtonSize.SM}
-            >
-              {abbreviateWalletAddress({ address: traders.address })}
-              <ClipboardIcon size={12} />
-            </Button>
+            <WalletAddressButton walletAddress={traders.address} />
           </span>
         )
       },
@@ -161,5 +150,5 @@ export function TopTraders({ timeFrame }: Props) {
     },
   ]
 
-  return <DataTable data={traders} columns={columns} />
+  return <DataTable data={traders} columns={columns} withPagination />
 }
