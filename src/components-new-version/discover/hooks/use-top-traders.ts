@@ -15,7 +15,7 @@ interface Props {
 
 export const useTopTraders = ({ timeFrame }: Props) => {
   const [traders, setTraders] = useState<ITopTraders[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -61,5 +61,5 @@ export const useTopTraders = ({ timeFrame }: Props) => {
     fetchTopTraders()
   }, [timeFrame])
 
-  return { traders, isLoading, error }
+  return { traders, loading, error }
 }
