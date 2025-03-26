@@ -30,49 +30,47 @@ export function FilterButtonDiscover({
   setTimeFrame,
 }: Props) {
   return (
-    <div className="flex items-center">
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-4">
-          <Button
-            className="rounded-full"
-            variant={
-              selectedType === DiscoverFilterType.TRENDING_TOKENS
-                ? ButtonVariant.DEFAULT
-                : ButtonVariant.GHOST
-            }
-            onClick={() => setSelectedType(DiscoverFilterType.TRENDING_TOKENS)}
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-4">
+        <Button
+          className="rounded-full"
+          variant={
+            selectedType === DiscoverFilterType.TRENDING_TOKENS
+              ? ButtonVariant.DEFAULT
+              : ButtonVariant.GHOST
+          }
+          onClick={() => setSelectedType(DiscoverFilterType.TRENDING_TOKENS)}
+        >
+          Trending Tokens
+        </Button>
+        <Button
+          className="rounded-full"
+          variant={
+            selectedType === DiscoverFilterType.TOP_TRADERS
+              ? ButtonVariant.DEFAULT
+              : ButtonVariant.GHOST
+          }
+          onClick={() => setSelectedType(DiscoverFilterType.TOP_TRADERS)}
+        >
+          Top Traders
+        </Button>
+      </div>
+      <div>
+        {selectedType === DiscoverFilterType.TOP_TRADERS && (
+          <Select
+            value={timeFrame}
+            onValueChange={(value) => setTimeFrame(value as TimeFrame)}
           >
-            Trending Tokens
-          </Button>
-          <Button
-            className="rounded-full"
-            variant={
-              selectedType === DiscoverFilterType.TOP_TRADERS
-                ? ButtonVariant.DEFAULT
-                : ButtonVariant.GHOST
-            }
-            onClick={() => setSelectedType(DiscoverFilterType.TOP_TRADERS)}
-          >
-            Top Traders
-          </Button>
-        </div>
-        <div>
-          {selectedType === DiscoverFilterType.TOP_TRADERS && (
-            <Select
-              value={timeFrame}
-              onValueChange={(value) => setTimeFrame(value as TimeFrame)}
-            >
-              <SelectTrigger className="border-none bg-transparent text-primary">
-                <SelectValue placeholder="Select timeframe" />
-              </SelectTrigger>
-              <SelectContent className="border border-primary text-primary">
-                <SelectItem value={TimeFrame.TODAY}>Today</SelectItem>
-                <SelectItem value={TimeFrame.YESTERDAY}>Yesterday</SelectItem>
-                <SelectItem value={TimeFrame.ONE_WEEK}>1W</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
-        </div>
+            <SelectTrigger className="border-none bg-transparent text-primary h-9">
+              <SelectValue placeholder="Select timeframe" />
+            </SelectTrigger>
+            <SelectContent className="border border-primary text-primary">
+              <SelectItem value={TimeFrame.TODAY}>Today</SelectItem>
+              <SelectItem value={TimeFrame.YESTERDAY}>Yesterday</SelectItem>
+              <SelectItem value={TimeFrame.ONE_WEEK}>1W</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </div>
     </div>
   )

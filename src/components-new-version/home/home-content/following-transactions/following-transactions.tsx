@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl'
 
 export function FollowingTransactions() {
   const { mainUsername, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
-  const { following } = useGetFollowing(mainUsername)
+  const { following } = useGetFollowing({ username: mainUsername })
 
   const t = useTranslations()
 

@@ -8,7 +8,7 @@ import {
 import {
   IGetProfilesResponse,
   IProfile,
-} from '@/components-new-version/tapestry/models/profiles.models'
+} from '@/components-new-version/models/profiles.models'
 import { Button, ButtonVariant } from '@/components-new-version/ui'
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'

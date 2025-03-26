@@ -1,6 +1,7 @@
 'use client'
 
 import { DataTablePagination } from '@/components-new-version/common/table/data-table-pagination'
+import { Spinner } from '@/components-new-version/ui'
 import {
   Table,
   TableBody,
@@ -25,6 +26,7 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   emptyText?: string
   withPagination?: boolean
+  isLoading?: boolean
 }
 
 export function DataTable<TData>({
@@ -32,6 +34,7 @@ export function DataTable<TData>({
   columns,
   emptyText = 'No results.',
   withPagination,
+  isLoading,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
@@ -85,7 +88,15 @@ export function DataTable<TData>({
         </TableHeader>
 
         <TableBody className="!max-h-[400px] !overflow-y-auto">
-          {table.getRowModel().rows.length ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                <span className="flex justify-center items-center">
+                  <Spinner />
+                </span>
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (

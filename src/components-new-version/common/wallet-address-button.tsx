@@ -12,6 +12,7 @@ interface Props {
 export function WalletAddressButton({ walletAddress }: Props) {
   return (
     <Button
+      className="w-fit"
       variant={ButtonVariant.SECONDARY}
       onClick={() => handleCopy({ copyText: walletAddress })}
       size={ButtonSize.SM}

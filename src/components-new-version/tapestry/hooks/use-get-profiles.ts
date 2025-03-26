@@ -1,4 +1,4 @@
-import { IGetProfilesResponse } from '@/components-new-version/tapestry/models/profiles.models'
+import { IGetProfilesResponse } from '@/components-new-version/models/profiles.models'
 import { useQuery } from '@/components-new-version/utils/api'
 import { isValidSolanaAddress } from '@/utils/validation'
 

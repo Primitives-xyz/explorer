@@ -37,7 +37,7 @@ interface Props {
 }
 
 export function TopTraders({ timeFrame }: Props) {
-  const { traders } = useTopTraders({ timeFrame })
+  const { traders, loading } = useTopTraders({ timeFrame })
 
   const columns: ColumnDef<ITopTraders>[] = [
     {
@@ -150,5 +150,12 @@ export function TopTraders({ timeFrame }: Props) {
     },
   ]
 
-  return <DataTable data={traders} columns={columns} withPagination />
+  return (
+    <DataTable
+      data={traders}
+      columns={columns}
+      withPagination
+      isLoading={loading}
+    />
+  )
 }
