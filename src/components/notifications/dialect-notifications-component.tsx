@@ -32,17 +32,12 @@ const DialectNotificationsComponentInner = () => {
     return {
       publicKey: new PublicKey(walletAddress),
       signMessage: async (msg: Uint8Array) => {
-        console.log('signMessage', msg)
-        // Convert Uint8Array to string for primaryWallet.signMessage
-        const message = new TextDecoder().decode(msg)
-        const signature = await primaryWallet.signMessage(message)
-        // Convert signature back to Uint8Array
-        return signature
-          ? new TextEncoder().encode(signature)
-          : new Uint8Array()
+        const signer = await primaryWallet.getSigner()
+
+        const result = await signer.signMessage(msg)
+        return result.signature
       },
       signTransaction: async (tx: any) => {
-        console.log('signTransaction', tx)
         const signer: ISolana = await primaryWallet.getSigner()
         const sign = signer.signTransaction(tx)
         return sign
