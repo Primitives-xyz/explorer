@@ -70,63 +70,29 @@ export const useFollowingTransactions = ({
 
         const transactionsByWallet: { [key: string]: Transaction[] } = {}
 
-        for (const walletId of walletIds) {
-          console.log('-------------------')
-          console.log(logTransactionTypes(transactionsByWallet))
-          console.log('--> walletId ', walletId)
-
-          const transactions = await fetchWalletTransactions(
-            walletId,
-            selectedType
-          )
-          console.log('--> transactions ', transactions.length)
-          transactionsByWallet[walletId] = transactions
-          setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
-          console.log('--> loadedWallets ', loadedWallets)
-
-          // Update aggregated transactions whenever we get new data
-          const allCurrentTransactions = Object.values(transactionsByWallet)
-            .flat()
-            .sort((a, b) => {
-              const timeA = new Date(a.timestamp).getTime()
-              const timeB = new Date(b.timestamp).getTime()
-              return timeB - timeA
-            })
-            .slice(0, 50)
-
-          setAggregatedTransactions((prev) => [
-            ...prev,
-            ...allCurrentTransactions,
-          ])
-          console.log(
-            '--> aggregatedTransactions ',
-            aggregatedTransactions.length
-          )
-        }
-
         // Fetch transactions for all wallets concurrently
-        // const fetchPromises = walletIds.map(async (walletId) => {
-        //   const transactions = await fetchWalletTransactions(
-        //     walletId,
-        //     selectedType
-        //   )
-        //   transactionsByWallet[walletId] = transactions
-        //   setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
+        await Promise.all(
+          walletIds.map(async (walletId) => {
+            const transactions = await fetchWalletTransactions(
+              walletId,
+              selectedType
+            )
 
-        //   // Update aggregated transactions whenever we get new data
-        //   const allCurrentTransactions = Object.values(transactionsByWallet)
-        //     .flat()
-        //     .sort((a, b) => {
-        //       const timeA = new Date(a.timestamp).getTime()
-        //       const timeB = new Date(b.timestamp).getTime()
-        //       return timeB - timeA
-        //     })
-        //     .slice(0, 50)
+            transactionsByWallet[walletId] = transactions
+            setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
 
-        //   setAggregatedTransactions(allCurrentTransactions)
-        // })
+            // Update UI with current progress
+            const currentTransactions = Object.values(transactionsByWallet)
+              .flat()
+              .sort(
+                (a, b) =>
+                  new Date(b.timestamp).getTime() -
+                  new Date(a.timestamp).getTime()
+              )
 
-        // await Promise.all(fetchPromises)
+            setAggregatedTransactions(currentTransactions)
+          })
+        )
       } catch (error) {
         console.error('Error aggregating transactions:', error)
       } finally {
@@ -176,29 +142,4 @@ export const useFollowingTransactions = ({
     selectedType,
     setSelectedType,
   }
-}
-
-// Function to log transactionsByWallet as a string with only transaction types
-function logTransactionTypes(transactionsByWallet: {
-  [key: string]: Transaction[]
-}) {
-  // Create a new object with the same keys but values as arrays of transaction types
-  const transactionTypesByWallet: any = {}
-
-  // Iterate through each wallet
-  Object.keys(transactionsByWallet).forEach((walletId) => {
-    // Map each transaction array to just the transaction types
-    transactionTypesByWallet[walletId] = transactionsByWallet[walletId].map(
-      (transaction) => transaction.type
-    )
-  })
-
-  // Convert to a formatted string
-  const formattedString = JSON.stringify(transactionTypesByWallet, null, 2)
-
-  // Log the result
-  console.log('Transaction types by wallet:')
-  console.log(formattedString)
-
-  return formattedString
 }
