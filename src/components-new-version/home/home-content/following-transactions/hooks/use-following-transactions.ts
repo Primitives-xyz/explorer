@@ -145,7 +145,6 @@ export const useFollowingTransactions = ({
   return {
     aggregatedTransactions,
     isLoadingTransactions,
-    // isLoadingTransactions: isLoadingTransactions || kolscanLoading,
     loadedWallets: loadedWallets.size,
     totalWallets,
     selectedType,
