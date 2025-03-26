@@ -4,6 +4,7 @@ import { route } from '@/utils/routes'
 import { useTranslations } from 'next-intl'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { DialectNotificationsComponent } from '../notifications/dialect-notifications-component'
 
 const DynamicConnectButton = dynamic(
   () =>
@@ -69,7 +70,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
         </Link>
       )}
 
-      {/* <DialectNotificationsComponent /> */}
+      <DialectNotificationsComponent />
 
       {/* <a
         href={route('graphVisualization')}

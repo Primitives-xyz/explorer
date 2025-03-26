@@ -154,14 +154,19 @@
   }
 }
 
+.dialect input {
+  --dt-text-primary: #000;
+}
+
 /* ========================= */
 /* 🎭 DIALECT THEME FIX */
 /* ========================= */
 .dialect[data-theme='dark'] {
-  --dt-button-secondary: #000; /* Correction du bug `#00000` */
+  --dt-button-secondary: #000;
   --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1));
   --dt-icon-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1));
   --dt-input-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1));
   --dt-button-primary: rgb(74 222 128 / var(--tw-text-opacity, 1));
   --dt-icon-primary: rgb(74 222 128 / var(--tw-text-opacity, 1));
 }
+
