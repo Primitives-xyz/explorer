@@ -71,6 +71,7 @@ interface FollowingTransactionFeedProps {
   isLoggedIn: boolean
   loadedWallets?: number
   totalWallets?: number
+  title?: string
   selectedType: string
   setSelectedType: (type: string) => void
 }
@@ -81,6 +82,7 @@ export const FollowingTransactionFeed = ({
   isLoggedIn,
   loadedWallets = 0,
   totalWallets = 0,
+  title,
   selectedType,
   setSelectedType,
 }: FollowingTransactionFeedProps) => {
@@ -156,7 +158,7 @@ export const FollowingTransactionFeed = ({
 
   return (
     <DataContainer
-      title={t('following_activity.title')}
+      title={title || t('following_activity.title')}
       count={transactions.length}
       height="large"
       headerRight={headerRight}
