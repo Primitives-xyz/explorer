@@ -1,4 +1,4 @@
-import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
+// import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
 import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 import { FollowingTransactionFeed } from './following-transaction-feed'
 import { useFollowingTransactions } from './hooks/use-following-transactions'
@@ -26,19 +26,19 @@ export const ActivityFeedContainer = ({
   } = useFollowingTransactions(following)
 
   // kolscan data
-  const { data: kolscanData, isLoading: kolscanLoading } =
-    useGetNamespaceProfiles({
-      name: 'kolscan',
-    })
+  // const { data: kolscanData, isLoading: kolscanLoading } =
+  //   useGetNamespaceProfiles({
+  //     name: 'kolscan',
+  //   })
 
-  const {
-    aggregatedTransactions: kolscanAggregatedTransactions,
-    isLoadingTransactions: kolscanIsLoadingTransactions,
-    loadedWallets: kolscanLoadedWallets,
-    totalWallets: kolscanTotalWallets,
-    selectedType: kolscanSelectedType,
-    setSelectedType: kolscanSetSelectedType,
-  } = useFollowingTransactions(kolscanData)
+  // const {
+  //   aggregatedTransactions: kolscanAggregatedTransactions,
+  //   isLoadingTransactions: kolscanIsLoadingTransactions,
+  //   loadedWallets: kolscanLoadedWallets,
+  //   totalWallets: kolscanTotalWallets,
+  //   selectedType: kolscanSelectedType,
+  //   setSelectedType: kolscanSetSelectedType,
+  // } = useFollowingTransactions(kolscanData)
 
   return (
     <div className="space-y-4">
@@ -51,7 +51,7 @@ export const ActivityFeedContainer = ({
         selectedType={selectedType}
         setSelectedType={setSelectedType}
       />
-      <FollowingTransactionFeed
+      {/* <FollowingTransactionFeed
         title="KOLScan"
         transactions={kolscanAggregatedTransactions}
         isLoading={kolscanIsLoadingTransactions || kolscanLoading}
@@ -60,7 +60,7 @@ export const ActivityFeedContainer = ({
         totalWallets={kolscanTotalWallets}
         selectedType={kolscanSelectedType}
         setSelectedType={kolscanSetSelectedType}
-      />
+      /> */}
     </div>
   )
 }
