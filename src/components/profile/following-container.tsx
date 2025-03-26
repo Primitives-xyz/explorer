@@ -1,5 +1,7 @@
-// import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
+import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
+import { IProfile } from '@/types/profile.types'
 import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
+import { useMemo } from 'react'
 import { FollowingTransactionFeed } from './following-transaction-feed'
 import { useFollowingTransactions } from './hooks/use-following-transactions'
 import { useGetFollowing } from './hooks/use-get-following'
@@ -26,19 +28,35 @@ export const ActivityFeedContainer = ({
   } = useFollowingTransactions(following)
 
   // kolscan data
-  // const { data: kolscanData, isLoading: kolscanLoading } =
-  //   useGetNamespaceProfiles({
-  //     name: 'kolscan',
-  //   })
+  const { data: kolscanData, isLoading: kolscanLoading } =
+    useGetNamespaceProfiles({
+      name: 'kolscan',
+    })
 
-  // const {
-  //   aggregatedTransactions: kolscanAggregatedTransactions,
-  //   isLoadingTransactions: kolscanIsLoadingTransactions,
-  //   loadedWallets: kolscanLoadedWallets,
-  //   totalWallets: kolscanTotalWallets,
-  //   selectedType: kolscanSelectedType,
-  //   setSelectedType: kolscanSetSelectedType,
-  // } = useFollowingTransactions(kolscanData)
+  // transform and memoize
+  const kolscanTransactionsInput = useMemo(() => {
+    return {
+      page: kolscanData?.page || 1,
+      pageSize: kolscanData?.pageSize || 10,
+      profiles: kolscanData
+        ? (kolscanData.profiles.flatMap((p) => ({
+            ...p.profile,
+            wallet: {
+              id: p.wallet.address,
+            },
+          })) as IProfile[])
+        : [],
+    }
+  }, [kolscanData])
+
+  const {
+    aggregatedTransactions: kolscanAggregatedTransactions,
+    isLoadingTransactions: kolscanIsLoadingTransactions,
+    loadedWallets: kolscanLoadedWallets,
+    totalWallets: kolscanTotalWallets,
+    selectedType: kolscanSelectedType,
+    setSelectedType: kolscanSetSelectedType,
+  } = useFollowingTransactions(kolscanTransactionsInput)
 
   return (
     <div className="space-y-4">
@@ -51,8 +69,8 @@ export const ActivityFeedContainer = ({
         selectedType={selectedType}
         setSelectedType={setSelectedType}
       />
-      {/* <FollowingTransactionFeed
-        title="KOLScan"
+      <FollowingTransactionFeed
+        title="Twitter KOLs"
         transactions={kolscanAggregatedTransactions}
         isLoading={kolscanIsLoadingTransactions || kolscanLoading}
         isLoggedIn={isLoggedIn}
@@ -60,7 +78,7 @@ export const ActivityFeedContainer = ({
         totalWallets={kolscanTotalWallets}
         selectedType={kolscanSelectedType}
         setSelectedType={kolscanSetSelectedType}
-      /> */}
+      />
     </div>
   )
 }
