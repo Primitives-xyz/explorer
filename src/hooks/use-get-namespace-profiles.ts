@@ -11,18 +11,6 @@ async function fetchNamespaceProfiles(url: string) {
 }
 
 export const useGetNamespaceProfiles = ({ name }: { name: string }) => {
-  // const { data, error, mutate } = useSWR<IGetProfilesResponse>(
-  //   `/api/profiles?namespace=${name}`,
-  //   fetchNamespaceProfiles
-  // )
-
-  // return {
-  //   data,
-  //   isLoading: !error && !data,
-  //   error,
-  //   mutate,
-  // }
-
   const { data, loading, error, refetch } = useQuery<IGetProfilesResponse>({
     endpoint: `profiles?namespace=${name}`,
     skip: !name,
