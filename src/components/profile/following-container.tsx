@@ -1,4 +1,7 @@
+import { IProfile } from '@/components-new-version/models/profiles.models'
+import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
 import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
+import { useMemo } from 'react'
 import { FollowingTransactionFeed } from './following-transaction-feed'
 import { useFollowingTransactions } from './hooks/use-following-transactions'
 import { useGetFollowing } from './hooks/use-get-following'

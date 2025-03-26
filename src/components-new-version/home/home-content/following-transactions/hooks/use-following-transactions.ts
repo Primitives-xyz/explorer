@@ -1,12 +1,12 @@
 import { FilterType } from '@/components-new-version/home/home-content/following-transactions/filters-button'
 import { Transaction } from '@/components-new-version/models/helius.models'
 import {
+  IGetProfilesResponse,
   IGetSocialResponse,
   IProfile,
-} from '@/components-new-version/tapestry/models/profiles.models'
+} from '@/components-new-version/models/profiles.models'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 async function fetchWalletTransactions(
   walletId: string,
@@ -42,8 +42,10 @@ async function fetchWalletTransactions(
 
 export const useFollowingTransactions = ({
   following,
+  kolData,
 }: {
   following?: IGetSocialResponse
+  kolData?: IGetProfilesResponse
 }) => {
   const [aggregatedTransactions, setAggregatedTransactions] = useState<
     Transaction[]
@@ -54,33 +56,10 @@ export const useFollowingTransactions = ({
   const [selectedType, setSelectedType] = useState<FilterType>(FilterType.ALL)
   const { walletAddress } = useCurrentWallet()
 
-  // kol data
-  const { data: kolscanData, isLoading: kolscanLoading } =
-    useGetNamespaceProfiles({
-      name: 'kolscan',
-    })
-
-  // transform and memoize
-  const kolscanTransactionsInput = useMemo(() => {
-    return {
-      page: kolscanData?.page || 1,
-      pageSize: kolscanData?.pageSize || 10,
-      profiles: kolscanData
-        ? (kolscanData.profiles.flatMap((p) => ({
-            ...p.profile,
-            wallet: {
-              id: p.wallet.address,
-            },
-          })) as IProfile[])
-        : [],
-    }
-  }, [kolscanData])
-
   useEffect(() => {
     setLoadedWallets(new Set())
 
     const fetchAllTransactions = async (data: IGetSocialResponse) => {
-
       setIsLoadingTransactions(true)
       setAggregatedTransactions([]) // Clear current transactions while loading
 
@@ -91,14 +70,19 @@ export const useFollowingTransactions = ({
 
         const transactionsByWallet: { [key: string]: Transaction[] } = {}
 
-        // Fetch transactions for all wallets concurrently
-        const fetchPromises = walletIds.map(async (walletId) => {
+        for (const walletId of walletIds) {
+          console.log('-------------------')
+          console.log(logTransactionTypes(transactionsByWallet))
+          console.log('--> walletId ', walletId)
+
           const transactions = await fetchWalletTransactions(
             walletId,
             selectedType
           )
+          console.log('--> transactions ', transactions.length)
           transactionsByWallet[walletId] = transactions
           setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
+          console.log('--> loadedWallets ', loadedWallets)
 
           // Update aggregated transactions whenever we get new data
           const allCurrentTransactions = Object.values(transactionsByWallet)
@@ -110,10 +94,39 @@ export const useFollowingTransactions = ({
             })
             .slice(0, 50)
 
-          setAggregatedTransactions(allCurrentTransactions)
-        })
+          setAggregatedTransactions((prev) => [
+            ...prev,
+            ...allCurrentTransactions,
+          ])
+          console.log(
+            '--> aggregatedTransactions ',
+            aggregatedTransactions.length
+          )
+        }
 
-        await Promise.all(fetchPromises)
+        // Fetch transactions for all wallets concurrently
+        // const fetchPromises = walletIds.map(async (walletId) => {
+        //   const transactions = await fetchWalletTransactions(
+        //     walletId,
+        //     selectedType
+        //   )
+        //   transactionsByWallet[walletId] = transactions
+        //   setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
+
+        //   // Update aggregated transactions whenever we get new data
+        //   const allCurrentTransactions = Object.values(transactionsByWallet)
+        //     .flat()
+        //     .sort((a, b) => {
+        //       const timeA = new Date(a.timestamp).getTime()
+        //       const timeB = new Date(b.timestamp).getTime()
+        //       return timeB - timeA
+        //     })
+        //     .slice(0, 50)
+
+        //   setAggregatedTransactions(allCurrentTransactions)
+        // })
+
+        // await Promise.all(fetchPromises)
       } catch (error) {
         console.error('Error aggregating transactions:', error)
       } finally {
@@ -131,16 +144,29 @@ export const useFollowingTransactions = ({
 
       fetchAllTransactions(following)
     } else {
-      setTotalWallets(kolscanTransactionsInput?.profiles?.length ?? 0)
+      const kolTransactionInput = {
+        page: kolData?.page || 1,
+        pageSize: kolData?.pageSize || 10,
+        profiles: kolData
+          ? (kolData.profiles.flatMap((p) => ({
+              ...p.profile,
+              wallet: {
+                id: p.wallet.address,
+              },
+            })) as IProfile[])
+          : [],
+      }
 
-      if (!kolscanTransactionsInput?.profiles?.length) {
+      setTotalWallets(kolTransactionInput?.profiles?.length ?? 0)
+
+      if (!kolTransactionInput?.profiles?.length) {
         setAggregatedTransactions([])
         return
       }
 
-      fetchAllTransactions(kolscanTransactionsInput)
+      fetchAllTransactions(kolTransactionInput)
     }
-  }, [following, kolscanTransactionsInput, walletAddress, selectedType])
+  }, [following, kolData, walletAddress, selectedType])
 
   return {
     aggregatedTransactions,
@@ -150,4 +176,29 @@ export const useFollowingTransactions = ({
     selectedType,
     setSelectedType,
   }
+}
+
+// Function to log transactionsByWallet as a string with only transaction types
+function logTransactionTypes(transactionsByWallet: {
+  [key: string]: Transaction[]
+}) {
+  // Create a new object with the same keys but values as arrays of transaction types
+  const transactionTypesByWallet: any = {}
+
+  // Iterate through each wallet
+  Object.keys(transactionsByWallet).forEach((walletId) => {
+    // Map each transaction array to just the transaction types
+    transactionTypesByWallet[walletId] = transactionsByWallet[walletId].map(
+      (transaction) => transaction.type
+    )
+  })
+
+  // Convert to a formatted string
+  const formattedString = JSON.stringify(transactionTypesByWallet, null, 2)
+
+  // Log the result
+  console.log('Transaction types by wallet:')
+  console.log(formattedString)
+
+  return formattedString
 }

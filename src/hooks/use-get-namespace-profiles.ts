@@ -1,5 +1,5 @@
-import { IGetProfilesResponse } from '@/components-new-version/tapestry/models/profiles.models'
-import useSWR from 'swr'
+import { IGetProfilesResponse } from '@/components-new-version/models/profiles.models'
+import { useQuery } from '@/components-new-version/utils/api'
 
 async function fetchNamespaceProfiles(url: string) {
   const res = await fetch(url)
@@ -11,15 +11,27 @@ async function fetchNamespaceProfiles(url: string) {
 }
 
 export const useGetNamespaceProfiles = ({ name }: { name: string }) => {
-  const { data, error, mutate } = useSWR<IGetProfilesResponse>(
-    `/api/profiles?namespace=${name}`,
-    fetchNamespaceProfiles
-  )
+  // const { data, error, mutate } = useSWR<IGetProfilesResponse>(
+  //   `/api/profiles?namespace=${name}`,
+  //   fetchNamespaceProfiles
+  // )
+
+  // return {
+  //   data,
+  //   isLoading: !error && !data,
+  //   error,
+  //   mutate,
+  // }
+
+  const { data, loading, error, refetch } = useQuery<IGetProfilesResponse>({
+    endpoint: `profiles?namespace=${name}`,
+    skip: !name,
+  })
 
   return {
     data,
-    isLoading: !error && !data,
+    loading,
     error,
-    mutate,
+    refetch,
   }
 }
