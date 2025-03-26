@@ -133,40 +133,36 @@
 }
 
 /* ========================= */
-/* ⚡ FIX UI ELEMENTS */
+/* 🎭 DIALECT THEME FIX */
 /* ========================= */
+
 .dialect > * > button {
   height: 34px !important;
 }
 
-/* ========================= */
-/* 📌 MODAL STYLES */
-/* ========================= */
 .dt-modal {
   position: fixed !important;
 }
 
 @media only screen and (min-width: 640px) {
   .dt-modal {
-    top: 35% !important;
+    top: 40% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
   }
 }
 
 .dialect input {
-  --dt-text-primary: #000;
+  --dt-text-primary: #000 !important;;
 }
 
-/* ========================= */
-/* 🎭 DIALECT THEME FIX */
-/* ========================= */
+
 .dialect[data-theme='dark'] {
-  --dt-button-secondary: #000;
-  --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1));
-  --dt-icon-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1));
-  --dt-input-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1));
-  --dt-button-primary: rgb(74 222 128 / var(--tw-text-opacity, 1));
-  --dt-icon-primary: rgb(74 222 128 / var(--tw-text-opacity, 1));
+  --dt-button-secondary: #000 !important;;
+  --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-icon-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
+  --dt-input-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
+  --dt-button-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
+  --dt-icon-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
 }
 
