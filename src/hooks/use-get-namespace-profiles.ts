@@ -1,9 +1,5 @@
-import { IGetProfileResponse, IPaginatedResponse } from '@/types/profile.types'
+import { IGetProfilesResponse } from '@/components-new-version/tapestry/models/profiles.models'
 import useSWR from 'swr'
-
-interface GetNamespaceProfilesResponse extends IPaginatedResponse {
-  profiles: IGetProfileResponse[]
-}
 
 async function fetchNamespaceProfiles(url: string) {
   const res = await fetch(url)
@@ -15,7 +11,7 @@ async function fetchNamespaceProfiles(url: string) {
 }
 
 export const useGetNamespaceProfiles = ({ name }: { name: string }) => {
-  const { data, error, mutate } = useSWR<GetNamespaceProfilesResponse>(
+  const { data, error, mutate } = useSWR<IGetProfilesResponse>(
     `/api/profiles?namespace=${name}`,
     fetchNamespaceProfiles
   )

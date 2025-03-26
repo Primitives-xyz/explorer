@@ -1,8 +1,12 @@
 import { FilterType } from '@/components-new-version/home/home-content/following-transactions/filters-button'
 import { Transaction } from '@/components-new-version/models/helius.models'
-import { IGetSocialResponse } from '@/components-new-version/tapestry/models/profiles.models'
+import {
+  IGetSocialResponse,
+  IProfile,
+} from '@/components-new-version/tapestry/models/profiles.models'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { useEffect, useState } from 'react'
+import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
+import { useEffect, useMemo, useState } from 'react'
 
 async function fetchWalletTransactions(
   walletId: string,
@@ -12,7 +16,7 @@ async function fetchWalletTransactions(
   url.searchParams.set('address', walletId)
   url.searchParams.set('limit', '7')
 
-  if (type && type !== 'all') {
+  if (type && type !== 'all' && type !== 'kol') {
     const apiType =
       type === 'compressed_nft_mint'
         ? 'COMPRESSED_NFT_MINT'
@@ -50,21 +54,39 @@ export const useFollowingTransactions = ({
   const [selectedType, setSelectedType] = useState<FilterType>(FilterType.ALL)
   const { walletAddress } = useCurrentWallet()
 
+  // kol data
+  const { data: kolscanData, isLoading: kolscanLoading } =
+    useGetNamespaceProfiles({
+      name: 'kolscan',
+    })
+
+  // transform and memoize
+  const kolscanTransactionsInput = useMemo(() => {
+    return {
+      page: kolscanData?.page || 1,
+      pageSize: kolscanData?.pageSize || 10,
+      profiles: kolscanData
+        ? (kolscanData.profiles.flatMap((p) => ({
+            ...p.profile,
+            wallet: {
+              id: p.wallet.address,
+            },
+          })) as IProfile[])
+        : [],
+    }
+  }, [kolscanData])
+
   useEffect(() => {
     setLoadedWallets(new Set())
-    setTotalWallets(following?.profiles?.length ?? 0)
 
-    if (!following?.profiles?.length) {
-      setAggregatedTransactions([])
-      return
-    }
+    const fetchAllTransactions = async (data: IGetSocialResponse) => {
+      console.log('---> fetching all txs');
 
-    const fetchAllTransactions = async () => {
       setIsLoadingTransactions(true)
       setAggregatedTransactions([]) // Clear current transactions while loading
 
       try {
-        const walletIds = following.profiles
+        const walletIds = data.profiles
           .map((profile) => profile.wallet?.id)
           .filter((id): id is string => !!id)
 
@@ -100,12 +122,31 @@ export const useFollowingTransactions = ({
       }
     }
 
-    fetchAllTransactions()
-  }, [following, walletAddress, selectedType])
+    if (selectedType !== FilterType.KOL) {
+      setTotalWallets(following?.profiles?.length ?? 0)
+
+      if (!following?.profiles?.length) {
+        setAggregatedTransactions([])
+        return
+      }
+
+      fetchAllTransactions(following)
+    } else {
+      setTotalWallets(kolscanData?.profiles?.length ?? 0)
+
+      if (!kolscanData?.profiles?.length) {
+        setAggregatedTransactions([])
+        return
+      }
+
+      fetchAllTransactions(kolscanTransactionsInput)
+    }
+  }, [following, kolscanData, walletAddress, selectedType])
 
   return {
     aggregatedTransactions,
     isLoadingTransactions,
+    // isLoadingTransactions: isLoadingTransactions || kolscanLoading,
     loadedWallets: loadedWallets.size,
     totalWallets,
     selectedType,
