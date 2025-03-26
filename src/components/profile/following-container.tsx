@@ -1,3 +1,4 @@
+import { useGetNamespaceProfiles } from '@/hooks/use-get-namespace-profiles'
 import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 import { FollowingTransactionFeed } from './following-transaction-feed'
 import { useFollowingTransactions } from './hooks/use-following-transactions'
@@ -10,9 +11,11 @@ interface ActivityFeedContainerProps {
 export const ActivityFeedContainer = ({
   username,
 }: ActivityFeedContainerProps) => {
+  const isLoggedIn = useIsLoggedIn()
+
+  // following data
   const { following, loading } = useGetFollowing(username)
 
-  const isLoggedIn = useIsLoggedIn()
   const {
     aggregatedTransactions,
     isLoadingTransactions,
@@ -21,6 +24,21 @@ export const ActivityFeedContainer = ({
     selectedType,
     setSelectedType,
   } = useFollowingTransactions(following)
+
+  // kolscan data
+  const { data: kolscanData, isLoading: kolscanLoading } =
+    useGetNamespaceProfiles({
+      name: 'kolscan',
+    })
+
+  const {
+    aggregatedTransactions: kolscanAggregatedTransactions,
+    isLoadingTransactions: kolscanIsLoadingTransactions,
+    loadedWallets: kolscanLoadedWallets,
+    totalWallets: kolscanTotalWallets,
+    selectedType: kolscanSelectedType,
+    setSelectedType: kolscanSetSelectedType,
+  } = useFollowingTransactions(kolscanData)
 
   return (
     <div className="space-y-4">
@@ -32,6 +50,16 @@ export const ActivityFeedContainer = ({
         totalWallets={totalWallets}
         selectedType={selectedType}
         setSelectedType={setSelectedType}
+      />
+      <FollowingTransactionFeed
+        title="KOLScan"
+        transactions={kolscanAggregatedTransactions}
+        isLoading={kolscanIsLoadingTransactions || kolscanLoading}
+        isLoggedIn={isLoggedIn}
+        loadedWallets={kolscanLoadedWallets}
+        totalWallets={kolscanTotalWallets}
+        selectedType={kolscanSelectedType}
+        setSelectedType={kolscanSetSelectedType}
       />
     </div>
   )
