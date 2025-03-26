@@ -50,11 +50,13 @@ export function ProfileSection({
   const [selectedNamespace, setSelectedNamespace] = useState<string | null>(
     null
   )
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const t = useTranslations()
 
+  console.log({ profiles, walletAddress })
   // Memoize filtered profiles
   const filteredProfiles = useMemo(() => {
     if (!profiles || !Array.isArray(profiles)) return []

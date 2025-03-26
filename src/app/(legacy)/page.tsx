@@ -1,7 +1,6 @@
 'use client'
 
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { MostFollowedFeed } from '@/components/MostFollowedFeed'
 import { ProfileSection } from '@/components/profile-section'
 import { ActivityFeedContainer } from '@/components/profile/following-container'
 import SearchBar from '@/components/search-bar'

@@ -1,4 +1,4 @@
-import { IPaginatedResponse } from '@/components-new-version/tapestry/models/common.models'
+import { IPaginatedResponse } from '@/components-new-version/models/common.models'
 
 export enum BLOCKCHAIN {
   SOLANA = 'SOLANA',
@@ -56,13 +56,19 @@ export interface IFindOrCreateProfileResponse {
 // GET /profiles
 
 export interface IGetProfilesResponse extends IPaginatedResponse {
-  profiles: {
-    namespace: INameSpace
-    profile: IProfile
-    wallet: {
-      address: string
-    }
-  }[]
+  profiles: IGetProfilesResponseEntry[]
+}
+
+export interface IGetProfilesResponseEntry {
+  namespace: INameSpace
+  profile: IProfile
+  socialCounts?: {
+    followers: number
+    following: number
+  }
+  wallet: {
+    address: string
+  }
 }
 
 // GET /profiles/:id
@@ -117,4 +123,8 @@ export interface ISuggestedProfile {
 
 export interface ISuggestedProfiles {
   [key: string]: ISuggestedProfile
+}
+
+export interface IGetFollowersStateResponse {
+  isFollowing: boolean
 }
