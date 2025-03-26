@@ -1,5 +1,5 @@
 import { Header } from '@/components-new-version/common/header'
-import { LeftSideMenu } from '@/components-new-version/common/left-side-menu/left-side-menu'
+import { LeftSideMenu } from '@/components-new-version/common/left-side-bar'
 import { cn } from '@/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
@@ -24,9 +24,9 @@ export default async function NewVersionLayout({
       )}
     >
       <Header />
-      <div className="w-full px-10">
-        <div className="grid grid-cols-[1fr_3fr_1fr] gap-10">
-          <LeftSideMenu />
+      <div className="flex flex-row">
+        <LeftSideMenu />
+        <div className='w-full h-[calc(100vh-50px)] overflow-y-auto p-8'>
           {children}
         </div>
       </div>
