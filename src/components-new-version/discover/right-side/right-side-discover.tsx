@@ -40,6 +40,7 @@ export function RightSideDiscover() {
 
               return (
                 <span
+                  key={elem.profile.username}
                   className={cn(
                     'flex items-center justify-between p-4',
                     profiles?.profiles.indexOf(elem) !==
