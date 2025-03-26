@@ -47,14 +47,6 @@ export const useFollowingTransactions = (following?: IGetSocialResponse) => {
     }
 
     const fetchAllTransactions = async () => {
-      const isKolScan = following.profiles.some(
-        (profile) => profile.namespace === 'kolscan'
-      )
-
-      if (isKolScan) {
-        console.log('fetching txs')
-      }
-
       setIsLoadingTransactions(true)
       setAllTransactions([]) // Clear current transactions while loading
 
