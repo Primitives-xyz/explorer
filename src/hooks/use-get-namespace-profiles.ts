@@ -1,9 +1,8 @@
-import { IPaginatedResponse, IProfile } from '@/types/profile.types'
+import { IGetProfileResponse, IPaginatedResponse } from '@/types/profile.types'
 import useSWR from 'swr'
 
 interface GetNamespaceProfilesResponse extends IPaginatedResponse {
-  profiles: IProfile[]
-  totalCount: number
+  profiles: IGetProfileResponse[]
 }
 
 async function fetchNamespaceProfiles(url: string) {

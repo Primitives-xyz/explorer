@@ -1,7 +1,7 @@
 import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
 import { IGetSocialResponse } from '@/types/profile.types'
 import type { Transaction } from '@/utils/helius/types'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 // Helper to fetch transactions for a single wallet
 async function fetchWalletTransactions(
@@ -47,6 +47,14 @@ export const useFollowingTransactions = (following?: IGetSocialResponse) => {
     }
 
     const fetchAllTransactions = async () => {
+      const isKolScan = following.profiles.some(
+        (profile) => profile.namespace === 'kolscan'
+      )
+
+      if (isKolScan) {
+        console.log('fetching txs')
+      }
+
       setIsLoadingTransactions(true)
       setAllTransactions([]) // Clear current transactions while loading
 
@@ -92,12 +100,12 @@ export const useFollowingTransactions = (following?: IGetSocialResponse) => {
     if (selectedType === 'all') {
       return allTransactions
     }
-    
+
     // Client-side filtering based on type
-    return allTransactions.filter(tx => {
+    return allTransactions.filter((tx) => {
       if (selectedType === 'compressed_nft_mint') {
         return tx.type === 'COMPRESSED_NFT_MINT'
-      } 
+      }
       if (selectedType === 'swap') {
         return tx.type === 'SWAP'
       }
