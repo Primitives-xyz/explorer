@@ -80,7 +80,6 @@ export const useFollowingTransactions = ({
     setLoadedWallets(new Set())
 
     const fetchAllTransactions = async (data: IGetSocialResponse) => {
-      console.log('---> fetching all txs');
 
       setIsLoadingTransactions(true)
       setAggregatedTransactions([]) // Clear current transactions while loading
@@ -132,16 +131,16 @@ export const useFollowingTransactions = ({
 
       fetchAllTransactions(following)
     } else {
-      setTotalWallets(kolscanData?.profiles?.length ?? 0)
+      setTotalWallets(kolscanTransactionsInput?.profiles?.length ?? 0)
 
-      if (!kolscanData?.profiles?.length) {
+      if (!kolscanTransactionsInput?.profiles?.length) {
         setAggregatedTransactions([])
         return
       }
 
       fetchAllTransactions(kolscanTransactionsInput)
     }
-  }, [following, kolscanData, walletAddress, selectedType])
+  }, [following, kolscanTransactionsInput, walletAddress, selectedType])
 
   return {
     aggregatedTransactions,
