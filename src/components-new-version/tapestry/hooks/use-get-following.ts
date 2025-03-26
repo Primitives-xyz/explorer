@@ -1,8 +1,12 @@
-import { IGetSocialResponse } from '@/components-new-version/tapestry/models/profiles.models'
+import { IGetSocialResponse } from '@/components-new-version/models/profiles.models'
 import { useQuery } from '@/components-new-version/utils/api'
 
-export function useGetFollowing(username: string) {
-  const { data, loading, error } = useQuery<IGetSocialResponse>({
+interface Props {
+  username: string
+}
+
+export function useGetFollowing({ username }: Props) {
+  const { data, loading, error, refetch } = useQuery<IGetSocialResponse>({
     endpoint: `profiles/${username}/following`,
     skip: !username,
   })
@@ -11,5 +15,6 @@ export function useGetFollowing(username: string) {
     following: data,
     loading,
     error,
+    refetch,
   }
 }

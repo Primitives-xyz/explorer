@@ -174,3 +174,9 @@ export interface ITopTraders {
   trade_count: number
   volume: number
 }
+
+export interface ITokenBalanceResponse {
+  balance: {
+    uiAmountString: string
+  }
+}

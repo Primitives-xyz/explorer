@@ -3,7 +3,8 @@
 import { DataTable } from '@/components-new-version/common/table/data-table'
 import { useTrendingTokens } from '@/components-new-version/discover/hooks/use-trending-tokens'
 import { ITrendingToken } from '@/components-new-version/models/token.models'
-import { Button } from '@/components-new-version/ui'
+import { Button, ButtonVariant } from '@/components-new-version/ui'
+import { route } from '@/components-new-version/utils/route'
 import { cn, formatNumber } from '@/components-new-version/utils/utils'
 import { Column, ColumnDef } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp } from 'lucide-react'
@@ -30,7 +31,7 @@ function SortableHeader({ label, column }: SortableHeaderProps) {
 }
 
 export function TrendingTokens() {
-  const { tokens } = useTrendingTokens()
+  const { tokens, loading } = useTrendingTokens()
 
   const columns: ColumnDef<ITrendingToken>[] = [
     {
@@ -39,15 +40,13 @@ export function TrendingTokens() {
       enableSorting: false,
       accessorFn: (row) => row.name,
       cell: ({ row }) => {
-        const token = row.original
-
         return (
           <span className="flex items-center gap-2">
             <div className="relative mr-2">
-              {token.logoURI && (
+              {row.original.logoURI && (
                 <Image
-                  src={token.logoURI}
-                  alt={token.symbol}
+                  src={row.original.logoURI}
+                  alt={row.original.symbol}
                   width={32}
                   height={32}
                   className="rounded-full object-cover aspect-square"
@@ -57,17 +56,23 @@ export function TrendingTokens() {
                 className={cn(
                   '-top-2 -right-2 bg-secondary rounded-full aspect-square absolute w-5 h-5 flex items-center justify-center text-[8px] font-bold border border-secondary',
                   {
-                    'bg-secondary text-background': token.rank <= 3,
+                    'bg-secondary text-background': row.index <= 2,
                     'bg-transparent text-secondary backdrop-blur-xl':
-                      token.rank > 3,
+                      row.index > 2,
                   }
                 )}
               >
-                #{token.rank}
+                #{row.index + 1}
               </div>
             </div>
-            <p className="font-bold">{token.name}</p>
-            <p className="font-thin">${token.symbol}</p>
+            <Button
+              variant={ButtonVariant.GHOST}
+              className="hover:bg-transparent"
+              href={route('address', { id: row.original.address })}
+            >
+              <p className="font-bold">{row.original.name}</p>
+            </Button>
+            <p className="font-thin">${row.original.symbol}</p>
           </span>
         )
       },
@@ -112,5 +117,12 @@ export function TrendingTokens() {
     },
   ]
 
-  return <DataTable data={tokens} columns={columns} withPagination />
+  return (
+    <DataTable
+      data={tokens}
+      columns={columns}
+      withPagination
+      isLoading={loading}
+    />
+  )
 }

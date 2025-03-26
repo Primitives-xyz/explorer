@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components-new-version/ui'
 import { Button, ButtonVariant } from '@/components-new-version/ui/button'
+import { SSE_TOKEN_MINT } from '@/components-new-version/utils/constants'
 import { route } from '@/components-new-version/utils/route'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { cn } from '@/components-new-version/utils/utils'
@@ -92,8 +93,7 @@ export function Menu() {
                 <Button
                   variant={ButtonVariant.GHOST}
                   className="p-0 hover:bg-transparent"
-                  //href={route('home')}
-                  href={'/'}
+                  href={route('address', { id: SSE_TOKEN_MINT })}
                 >
                   <span>
                     <Image

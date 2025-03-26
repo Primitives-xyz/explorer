@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const useIdentities = searchParams.get('useIdentities') === 'true'
   const namespace = searchParams.get('namespace')
   const sortBy = searchParams.get('sortBy')
-  const pageSize = searchParams.get('pageSize') 
+  const pageSize = searchParams.get('pageSize')
   try {
     if (useIdentities) {
       // For related profiles, use identities endpoint

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 export const useTrendingTokens = () => {
   const [tokens, setTokens] = useState<ITrendingToken[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -45,5 +45,5 @@ export const useTrendingTokens = () => {
     fetchTrendingTokens()
   }, [])
 
-  return { tokens, isLoading, error }
+  return { tokens, loading, error }
 }
