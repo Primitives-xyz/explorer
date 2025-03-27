@@ -4,7 +4,7 @@ import { ArrowDownUp } from 'lucide-react'
 
 export function RightSideHome() {
   return (
-    <div className="pt-[100px] space-y-4 flex flex-col">
+    <div className="space-y-4 flex flex-col">
       <Card>
         <CardContent>
           <div className="space-y-3">
