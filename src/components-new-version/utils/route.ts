@@ -5,7 +5,7 @@ const routes = {
   discover: () => '/discover',
   profile: ({ id }: { id: string }) => `/profile/${id}`,
   designSystem: () => '/design-system',
-  trade: () => '/trade',
+  newTrade: () => '/new-trade',
   tokens: () => '/tokens',
   address: ({ id }: { id: string }) => `/${id}`,
 }

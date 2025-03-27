@@ -3,5 +3,5 @@ interface Props {
 }
 
 export function RightSideLayout({ children }: Props) {
-  return <div className="pt-[100px]">{children}</div>
+  return <div className="pt-[100px] min-w-[300px]">{children}</div>
 }

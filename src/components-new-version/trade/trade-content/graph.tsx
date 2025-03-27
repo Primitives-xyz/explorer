@@ -5,16 +5,12 @@ import {
   CardTitle,
 } from '@/components-new-version/ui'
 
-interface Props {
-  id: string
-}
-
-export function ProfileContent({ id }: Props) {
+export function Graph() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Connected Wallets</CardTitle>
-        <CardContent>{id}</CardContent>
+        <CardTitle>TokenGraph</CardTitle>
+        <CardContent>TokenGraph</CardContent>
       </CardHeader>
     </Card>
   )

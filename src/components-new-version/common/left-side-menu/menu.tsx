@@ -41,7 +41,7 @@ export function Menu() {
     {
       title: 'Trade',
       icon: ArrowRightLeft,
-      href: route('trade'),
+      href: route('newTrade'),
     },
     {
       title: 'Discover',

@@ -1,12 +1,18 @@
 'use client'
 
-import { FilterButton } from '@/components-new-version/home/home-content/following-transactions/filters-button'
+import { FilterTabs } from '@/components-new-version/common/filter-tabs'
 import { useFollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/hooks/use-following-transactions'
 import { TransactionsEntry } from '@/components-new-version/home/home-content/following-transactions/transactions-entry'
 import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get-following'
 import { Button, Card, CardContent, Spinner } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
+
+export enum FilterType {
+  ALL = 'all',
+  SWAP = 'swap',
+  COMPRESSED_NFT_MINT = 'compressed_nft_mint',
+}
 
 export function FollowingTransactions() {
   const { mainUsername, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
@@ -22,6 +28,12 @@ export function FollowingTransactions() {
     setSelectedType,
   } = useFollowingTransactions({ following })
 
+  const options = [
+    { label: 'All', value: FilterType.ALL },
+    { label: 'Swap', value: FilterType.SWAP },
+    { label: 'CNFT Mints', value: FilterType.COMPRESSED_NFT_MINT },
+  ]
+
   if (!isLoggedIn) {
     return (
       <Card>
@@ -35,9 +47,10 @@ export function FollowingTransactions() {
 
   return (
     <>
-      <FilterButton
-        selectedType={selectedType}
-        setSelectedType={setSelectedType}
+      <FilterTabs
+        options={options}
+        selected={selectedType}
+        onSelect={setSelectedType}
       />
 
       {isLoadingTransactions && (

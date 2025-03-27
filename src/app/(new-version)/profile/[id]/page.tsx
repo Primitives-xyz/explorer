@@ -15,7 +15,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         <ProfileContent id={id} />
       </OverflowContentWrapper>
       <RightSideLayout>
-        <p>prout</p>
+        <p>right</p>
       </RightSideLayout>
     </>
   )

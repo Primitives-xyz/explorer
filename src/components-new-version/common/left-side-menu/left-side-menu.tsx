@@ -5,7 +5,7 @@ import { MessageCircle } from 'lucide-react'
 
 export function LeftSideMenu() {
   return (
-    <div className="pt-[100px] h-screen flex flex-col justify-between pb-6">
+    <div className="pt-[100px] h-screen flex flex-col justify-between pb-6 min-w-[250px]">
       <div className="space-y-6">
         <h1 className="text-lg font-bold text-primary">
           solana_social_explorer
