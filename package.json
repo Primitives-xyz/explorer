@@ -54,6 +54,7 @@
     "@radix-ui/react-tooltip": "1.1.8",
     "@react-sigma/core": "5.0.2",
     "@react-sigma/layout-forceatlas2": "5.0.2",
+    "@solana/actions": "1.6.6",
     "@solana/spl-token": "^0.4.9",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-wallets": "^0.19.32",
