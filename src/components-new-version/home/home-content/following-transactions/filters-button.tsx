@@ -6,6 +6,7 @@ export enum FilterType {
   ALL = 'all',
   SWAP = 'swap',
   COMPRESSED_NFT_MINT = 'compressed_nft_mint',
+  KOL = 'kol',
 }
 
 interface Props {
@@ -48,6 +49,17 @@ export function FilterButton({ selectedType, setSelectedType }: Props) {
         onClick={() => setSelectedType(FilterType.COMPRESSED_NFT_MINT)}
       >
         CNFT Mints
+      </Button>
+      <Button
+        className="rounded-full"
+        variant={
+          selectedType === FilterType.KOL
+            ? ButtonVariant.DEFAULT
+            : ButtonVariant.GHOST
+        }
+        onClick={() => setSelectedType(FilterType.KOL)}
+      >
+        Twitter KOL
       </Button>
     </div>
   )
