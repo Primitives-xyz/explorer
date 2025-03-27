@@ -1,5 +1,6 @@
 import { OverflowContentWrapper } from '@/components-new-version/common/overflow-content-wrapper'
 import { RightSideLayout } from '@/components-new-version/common/right-side-layout'
+import { ProfileContent } from '@/components-new-version/profile/profile-content'
 
 interface ProfilePageProps {
   params: { id: string }
@@ -11,7 +12,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   return (
     <>
       <OverflowContentWrapper>
-        <h1>Profil de l'utilisateur {id}</h1>
+        <ProfileContent id={id} />
       </OverflowContentWrapper>
       <RightSideLayout>
         <p>prout</p>
