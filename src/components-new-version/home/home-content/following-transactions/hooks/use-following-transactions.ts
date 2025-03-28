@@ -1,4 +1,4 @@
-import { FilterType } from '@/components-new-version/home/home-content/following-transactions/filters-button'
+import { FilterType } from '@/components-new-version/home/home-content/following-transactions/following-transactions'
 import { Transaction } from '@/components-new-version/models/helius.models'
 import {
   IGetProfilesResponse,
@@ -10,15 +10,15 @@ import { useEffect, useState } from 'react'
 
 async function fetchWalletTransactions(
   walletId: string,
-  type?: string
+  type?: FilterType
 ): Promise<Transaction[]> {
   const url = new URL('/api/transactions', window.location.origin)
   url.searchParams.set('address', walletId)
   url.searchParams.set('limit', '7')
 
-  if (type && type !== 'all' && type !== 'kol') {
+  if (type && type !== FilterType.ALL && type !== FilterType.KOL) {
     const apiType =
-      type === 'compressed_nft_mint'
+      type === FilterType.COMPRESSED_NFT_MINT
         ? 'COMPRESSED_NFT_MINT'
         : type.toUpperCase()
     url.searchParams.set('type', apiType)

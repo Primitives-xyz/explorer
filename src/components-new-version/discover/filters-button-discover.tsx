@@ -1,9 +1,8 @@
 'use client'
 
+import { FilterTabs } from '@/components-new-version/common/filter-tabs'
 import { TimeFrame } from '@/components-new-version/discover/hooks/use-top-traders'
 import {
-  Button,
-  ButtonVariant,
   Select,
   SelectContent,
   SelectItem,
@@ -29,32 +28,18 @@ export function FilterButtonDiscover({
   timeFrame,
   setTimeFrame,
 }: Props) {
+  const options = [
+    { label: 'Trending Tokens', value: DiscoverFilterType.TRENDING_TOKENS },
+    { label: 'Top Traders', value: DiscoverFilterType.TOP_TRADERS },
+  ]
+
   return (
     <div className="flex items-center justify-between w-full">
-      <div className="flex items-center gap-4">
-        <Button
-          className="rounded-full"
-          variant={
-            selectedType === DiscoverFilterType.TRENDING_TOKENS
-              ? ButtonVariant.DEFAULT
-              : ButtonVariant.GHOST
-          }
-          onClick={() => setSelectedType(DiscoverFilterType.TRENDING_TOKENS)}
-        >
-          Trending Tokens
-        </Button>
-        <Button
-          className="rounded-full"
-          variant={
-            selectedType === DiscoverFilterType.TOP_TRADERS
-              ? ButtonVariant.DEFAULT
-              : ButtonVariant.GHOST
-          }
-          onClick={() => setSelectedType(DiscoverFilterType.TOP_TRADERS)}
-        >
-          Top Traders
-        </Button>
-      </div>
+      <FilterTabs
+        options={options}
+        selected={selectedType}
+        onSelect={setSelectedType}
+      />
       <div>
         {selectedType === DiscoverFilterType.TOP_TRADERS && (
           <Select

@@ -1,6 +1,5 @@
 'use client'
 
-import { OverflowContentWrapper } from '@/components-new-version/common/overflow-content-wrapper'
 import {
   DiscoverFilterType,
   FilterButtonDiscover,
@@ -18,7 +17,7 @@ export function DiscoverContent() {
   const [timeFrame, setTimeFrame] = useState<TimeFrame>(TimeFrame.TODAY)
 
   return (
-    <OverflowContentWrapper>
+    <>
       <FilterButtonDiscover
         selectedType={selectedType}
         setSelectedType={setSelectedType}
@@ -31,6 +30,6 @@ export function DiscoverContent() {
       {selectedType === DiscoverFilterType.TOP_TRADERS && (
         <TopTraders timeFrame={timeFrame} />
       )}
-    </OverflowContentWrapper>
+    </>
   )
 }

@@ -41,7 +41,7 @@ export function Menu() {
     {
       title: 'Trade',
       icon: ArrowRightLeft,
-      href: route('trade'),
+      href: route('newTrade'),
     },
     {
       title: 'Discover',
@@ -56,12 +56,13 @@ export function Menu() {
     {
       title: 'Profile',
       icon: User,
-      href: route('profile'),
+      //href: route('profile', { id: mainUsername }),
+      href: '/profile',
     },
     {
       title: 'Stake',
       icon: Beef,
-      href: route('profile'),
+      //href: route('profile'),
     },
     {
       title: 'Design System',

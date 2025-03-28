@@ -13,8 +13,10 @@ const rethinkSans = Rethink_Sans({
 
 export default async function NewVersionLayout({
   children,
+  isSimplePage,
 }: {
   children: ReactNode
+  isSimplePage?: boolean
 }) {
   return (
     <div
@@ -25,7 +27,7 @@ export default async function NewVersionLayout({
     >
       <Header />
       <div className="w-full px-10">
-        <div className="grid grid-cols-[1fr_3fr_1fr] gap-10">
+        <div className="flex w-full justify-between">
           <LeftSideMenu />
           {children}
         </div>

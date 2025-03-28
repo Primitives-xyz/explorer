@@ -2,11 +2,11 @@
 
 const routes = {
   home: () => '/home',
-  designSystem: () => '/design-system',
-  trade: () => '/trade',
   discover: () => '/discover',
+  profile: ({ id }: { id: string }) => `/profile/${id}`,
+  designSystem: () => '/design-system',
+  newTrade: () => '/new-trade',
   tokens: () => '/tokens',
-  profile: () => '/profile',
   address: ({ id }: { id: string }) => `/${id}`,
 }
 
