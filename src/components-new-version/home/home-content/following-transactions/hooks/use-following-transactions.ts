@@ -10,13 +10,13 @@ import { useEffect, useState } from 'react'
 
 async function fetchWalletTransactions(
   walletId: string,
-  type?: string
+  type?: FilterType
 ): Promise<Transaction[]> {
   const url = new URL('/api/transactions', window.location.origin)
   url.searchParams.set('address', walletId)
   url.searchParams.set('limit', '7')
 
-  if (type && type !== 'all' && type !== 'kol') {
+  if (type && type !== FilterType.ALL && type !== FilterType.KOL) {
     const apiType =
       type === 'compressed_nft_mint'
         ? 'COMPRESSED_NFT_MINT'

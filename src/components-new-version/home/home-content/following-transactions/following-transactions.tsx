@@ -13,6 +13,7 @@ export enum FilterType {
   ALL = 'all',
   SWAP = 'swap',
   COMPRESSED_NFT_MINT = 'compressed_nft_mint',
+  KOL = 'kol',
 }
 
 export function FollowingTransactions() {
@@ -36,6 +37,7 @@ export function FollowingTransactions() {
     { label: 'All', value: FilterType.ALL },
     { label: 'Swap', value: FilterType.SWAP },
     { label: 'CNFT Mints', value: FilterType.COMPRESSED_NFT_MINT },
+    { label: 'Twitter KOL', value: FilterType.KOL },
   ]
 
   if (!isLoggedIn) {
