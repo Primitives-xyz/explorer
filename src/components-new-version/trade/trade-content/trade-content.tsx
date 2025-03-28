@@ -1,7 +1,7 @@
 'use client'
 
 import { Graph } from '@/components-new-version/trade/trade-content/graph'
-import { TokenDetails } from '@/components-new-version/trade/trade-content/token-details'
+import { TokenDetails } from '@/components-new-version/trade/trade-content/token-details/token-details'
 
 export function TradeContent() {
   return (

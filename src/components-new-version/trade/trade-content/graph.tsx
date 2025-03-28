@@ -10,8 +10,8 @@ export function Graph() {
     <Card>
       <CardHeader>
         <CardTitle>TokenGraph</CardTitle>
-        <CardContent>TokenGraph</CardContent>
       </CardHeader>
+      <CardContent>TokenGraph</CardContent>
     </Card>
   )
 }
