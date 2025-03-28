@@ -4,6 +4,7 @@ import { FilterTabs } from '@/components-new-version/common/filter-tabs'
 import { useFollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/hooks/use-following-transactions'
 import { TransactionsEntry } from '@/components-new-version/home/home-content/following-transactions/transactions-entry'
 import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get-following'
+import { useGetNamespaceProfiles } from '@/components-new-version/tapestry/hooks/use-get-namespace-profiles'
 import { Button, Card, CardContent, Spinner } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
@@ -17,6 +18,9 @@ export enum FilterType {
 export function FollowingTransactions() {
   const { mainUsername, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
   const { following } = useGetFollowing({ username: mainUsername })
+  const { data: kolData } = useGetNamespaceProfiles({
+    name: 'kolscan',
+  })
 
   const t = useTranslations()
 
@@ -26,7 +30,7 @@ export function FollowingTransactions() {
     totalWallets,
     selectedType,
     setSelectedType,
-  } = useFollowingTransactions({ following })
+  } = useFollowingTransactions({ following, kolData })
 
   const options = [
     { label: 'All', value: FilterType.ALL },
