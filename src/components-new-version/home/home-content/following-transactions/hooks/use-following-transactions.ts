@@ -18,7 +18,7 @@ async function fetchWalletTransactions(
 
   if (type && type !== FilterType.ALL && type !== FilterType.KOL) {
     const apiType =
-      type === 'compressed_nft_mint'
+      type === FilterType.COMPRESSED_NFT_MINT
         ? 'COMPRESSED_NFT_MINT'
         : type.toUpperCase()
     url.searchParams.set('type', apiType)
