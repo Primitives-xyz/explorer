@@ -1,17 +1,17 @@
-import { OverflowContentWrapper } from '@/components-new-version/common/overflow-content-wrapper'
-import { RightSideLayout } from '@/components-new-version/common/right-side-layout'
+import { MainContentWrapper } from '@/components-new-version/common/main-content-wrapper'
+import { RightSidebarWrapper } from '@/components-new-version/common/right-sidebar-wrapper'
 import { HomeContent } from '@/components-new-version/home/home-content/home-content'
 import { RightSideHome } from '@/components-new-version/home/right-side-home/right-side-home'
 
 export default function Home() {
   return (
     <>
-      <OverflowContentWrapper className="max-w-main-content mx-auto items-center justify-center">
+      <MainContentWrapper className="min-w-main-content max-w-main-content mx-auto flex justify-center">
         <HomeContent />
-      </OverflowContentWrapper>
-      <RightSideLayout>
+      </MainContentWrapper>
+      <RightSidebarWrapper>
         <RightSideHome />
-      </RightSideLayout>
+      </RightSidebarWrapper>
     </>
   )
 }

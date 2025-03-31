@@ -44,11 +44,9 @@ module.exports = {
         'sidebar-right': 'var(--sidebar-right-width)',
         'main-content': 'var(--main-content-width)',
       },
-      maxWidth: {
-        'main-content': 'var(--main-content-width)',
-      },
       spacing: {
         topbar: 'var(--topbar-height)',
+        'main-content': 'var(--main-content-width)',
       },
       colors: {
         border: 'hsl(var(--border))',
