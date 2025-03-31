@@ -1,6 +1,5 @@
-import { FilterTabs } from '@/components-new-version/common/filter-tabs'
-
 import {
+  FilterTabs,
   Select,
   SelectContent,
   SelectItem,

@@ -1,8 +1,8 @@
 'use client'
 
-import { FilterTabs } from '@/components-new-version/common/filter-tabs'
 import { Perpetual } from '@/components-new-version/trade/left-content/perpetual/perpetual'
 import { Swap } from '@/components-new-version/trade/left-content/swap/swap'
+import { FilterTabs } from '@/components-new-version/ui'
 import { useState } from 'react'
 
 export enum FilterType {
