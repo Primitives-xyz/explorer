@@ -1,16 +1,16 @@
-import { OverflowContentWrapper } from '@/components-new-version/common/overflow-content-wrapper'
-import { RightSideLayout } from '@/components-new-version/common/right-side-layout'
+import { MainContentWrapper } from '@/components-new-version/common/main-content-wrapper'
+import { RightSidebarWrapper } from '@/components-new-version/common/right-sidebar-wrapper'
 import { ProfileContent } from '@/components-new-version/profile/profile-content'
 
 export default function Profile() {
   return (
     <>
-      <OverflowContentWrapper>
+      <MainContentWrapper>
         <ProfileContent id="cedrick" />
-      </OverflowContentWrapper>
-      <RightSideLayout>
+      </MainContentWrapper>
+      <RightSidebarWrapper>
         <p>right</p>
-      </RightSideLayout>
+      </RightSidebarWrapper>
     </>
   )
 }

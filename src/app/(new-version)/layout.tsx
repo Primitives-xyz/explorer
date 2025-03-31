@@ -1,6 +1,5 @@
 import { Header } from '@/components-new-version/common/header'
 import { LeftSideMenu } from '@/components-new-version/common/left-side-menu/left-side-menu'
-import { cn } from '@/utils'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
 import './global.css'
@@ -13,24 +12,20 @@ const rethinkSans = Rethink_Sans({
 
 export default async function NewVersionLayout({
   children,
-  isSimplePage,
 }: {
   children: ReactNode
-  isSimplePage?: boolean
 }) {
   return (
-    <div
-      className={cn(
-        'w-full min-h-screen background-gradient',
-        rethinkSans.className
-      )}
-    >
-      <Header />
-      <div className="w-full px-10">
-        <div className="flex w-full justify-between">
+    <div className={rethinkSans.className}>
+      <div className="fixed inset-0 z-0 background-gradient" />
+      <div className="relative min-h-screen">
+        <Header />
+        <main className="w-full flex justify-between pt-topbar">
           <LeftSideMenu />
-          {children}
-        </div>
+          <div className="flex-1 flex justify-between pt-[50px]">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   )

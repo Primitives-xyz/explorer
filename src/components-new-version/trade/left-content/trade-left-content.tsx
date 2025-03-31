@@ -1,8 +1,8 @@
 'use client'
 
-import { FilterTabs } from '@/components-new-version/common/filter-tabs'
 import { Perpetual } from '@/components-new-version/trade/left-content/perpetual/perpetual'
 import { Swap } from '@/components-new-version/trade/left-content/swap/swap'
+import { FilterTabs } from '@/components-new-version/ui'
 import { useState } from 'react'
 
 interface TradeLeftContentProps {
@@ -25,16 +25,13 @@ export function TradeLeftContent({ mint, setTokenMint }: TradeLeftContentProps) 
 
   return (
     <div className="w-1/3 relative">
-      <div className="absolute -top-12">
-        <FilterTabs
-          options={options}
-          selected={selectedType}
-          onSelect={setSelectedType}
-        />
-      </div>
+      <FilterTabs
+        options={options}
+        selected={selectedType}
+        onSelect={setSelectedType}
+      />
 
       {selectedType === FilterType.SWAP && <Swap mint={mint} setTokenMint={setTokenMint} />}
-
       {selectedType === FilterType.PERPETUAL && <Perpetual />}
     </div>
   )

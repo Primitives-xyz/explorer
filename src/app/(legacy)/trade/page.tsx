@@ -18,10 +18,10 @@ export async function generateMetadata({
 
   // Create mode-specific titles
   const titles = {
-    swap: 'Token Swap | Fast & Efficient Trading',
-    stake: 'Token Staking | Earn Rewards',
-    unstake: 'Unstake Tokens | Manage Your Position',
-    claim: 'Claim Rewards | Access Your Earnings',
+    swap: 'Trade Tokens | Best Rates Guaranteed',
+    stake: 'Stake & Earn | Maximize Rewards',
+    unstake: 'Unstake | Manage Positions',
+    claim: 'Claim Rewards | Instant Access',
   }
 
   // Get the title based on the mode, defaulting to swap if not found
@@ -37,7 +37,7 @@ export async function generateMetadata({
   }
 
   const description =
-    'Swap tokens instantly with the best rates using Jupiter aggregator. Access deep liquidity, minimal slippage, and lightning-fast transactions on Solana.'
+    'Trade tokens with the lowest fees on Solana. Smart routing technology finds you the best rates across all DEXs, saving you money on every swap.'
 
   return {
     title,
