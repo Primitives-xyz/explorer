@@ -20,16 +20,13 @@ export function TradeLeftContent() {
 
   return (
     <div className="w-1/3 relative">
-      <div className="absolute -top-12">
-        <FilterTabs
-          options={options}
-          selected={selectedType}
-          onSelect={setSelectedType}
-        />
-      </div>
+      <FilterTabs
+        options={options}
+        selected={selectedType}
+        onSelect={setSelectedType}
+      />
 
       {selectedType === FilterType.SWAP && <Swap />}
-
       {selectedType === FilterType.PERPETUAL && <Perpetual />}
     </div>
   )

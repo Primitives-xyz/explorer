@@ -68,6 +68,11 @@
   --shadow-sm: 0 2px 6px hsla(var(--foreground) / 0.05);
   /* --shadow-card: var(--shadow-lg); */
   --shadow-card-sm: 0 5px 0 0 hsl(var(--primary));
+
+  --topbar-height: 48px;
+  --sidebar-left-width: 270px;
+  --sidebar-right-width: 350px;
+  --main-content-width: 600px;
 }
 
 /* .dark {

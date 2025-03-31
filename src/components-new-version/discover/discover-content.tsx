@@ -17,7 +17,7 @@ export function DiscoverContent() {
   const [timeFrame, setTimeFrame] = useState<TimeFrame>(TimeFrame.TODAY)
 
   return (
-    <>
+    <div className="flex flex-col w-full">
       <FilterButtonDiscover
         selectedType={selectedType}
         setSelectedType={setSelectedType}
@@ -30,6 +30,6 @@ export function DiscoverContent() {
       {selectedType === DiscoverFilterType.TOP_TRADERS && (
         <TopTraders timeFrame={timeFrame} />
       )}
-    </>
+    </div>
   )
 }
