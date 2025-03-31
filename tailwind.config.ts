@@ -39,6 +39,14 @@ module.exports = {
         topbar: 'var(--topbar-height)',
         'screen-minus-topbar': 'calc(100vh - var(--topbar-height))',
       },
+      width: {
+        'sidebar-left': 'var(--sidebar-left-width)',
+        'sidebar-right': 'var(--sidebar-right-width)',
+        'main-content': 'var(--main-content-width)',
+      },
+      maxWidth: {
+        'main-content': 'var(--main-content-width)',
+      },
       spacing: {
         topbar: 'var(--topbar-height)',
       },

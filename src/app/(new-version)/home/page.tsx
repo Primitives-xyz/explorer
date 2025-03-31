@@ -6,7 +6,7 @@ import { RightSideHome } from '@/components-new-version/home/right-side-home/rig
 export default function Home() {
   return (
     <>
-      <OverflowContentWrapper>
+      <OverflowContentWrapper className="max-w-main-content mx-auto items-center justify-center">
         <HomeContent />
       </OverflowContentWrapper>
       <RightSideLayout>

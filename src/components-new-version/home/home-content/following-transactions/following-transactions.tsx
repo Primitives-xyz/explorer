@@ -52,7 +52,7 @@ export function FollowingTransactions() {
   }
 
   return (
-    <>
+    <div className="w-full">
       <FilterTabs
         options={options}
         selected={selectedType}
@@ -65,9 +65,11 @@ export function FollowingTransactions() {
         </div>
       )}
 
-      {aggregatedTransactions.map((transaction, index) => (
-        <TransactionsEntry key={index} transaction={transaction} />
-      ))}
-    </>
+      <div className="space-y-4">
+        {aggregatedTransactions.map((transaction, index) => (
+          <TransactionsEntry key={index} transaction={transaction} />
+        ))}
+      </div>
+    </div>
   )
 }

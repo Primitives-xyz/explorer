@@ -1,21 +1,11 @@
+import { cn } from '@/utils'
 import { ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
+  className?: string
 }
 
-export function OverflowContentWrapper({ children }: Props) {
-  return (
-    <div
-      className="h-screen overflow-auto scrollbar-hide relative w-full mx-6"
-      style={{
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-      }}
-    >
-      <div className="absolute pt-[100px] w-full pb-[100px] space-y-4">
-        {children}
-      </div>
-    </div>
-  )
+export function OverflowContentWrapper({ children, className }: Props) {
+  return <div className={cn('flex-1 flex px-6', className)}>{children}</div>
 }
