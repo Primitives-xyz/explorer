@@ -3,11 +3,15 @@
 import { Graph } from '@/components-new-version/trade/trade-content/graph'
 import { TokenDetails } from '@/components-new-version/trade/trade-content/token-details/token-details'
 
-export function TradeContent() {
+interface TradeContentProps {
+  id: string
+}
+
+export function TradeContent({ id }: TradeContentProps) {
   return (
     <div className="w-2/3 space-y-6">
-      <Graph />
-      <TokenDetails />
+      <Graph id={id} />
+      <TokenDetails id={id} />
     </div>
   )
 }
