@@ -1,3 +1,4 @@
+import { PLATFORM_FEE_BPS, SSE_TOKEN_MINT } from '@/constants/jupiter'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
 import {
   ActionGetResponse,
@@ -11,8 +12,9 @@ import { NextRequest } from 'next/server'
 const DEFAULT_INPUT_MINT = 'So11111111111111111111111111111111111111112' // SOL
 const DEFAULT_OUTPUT_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump' // PUMP
 const DEFAULT_SLIPPAGE_BPS = 50 // 0.5%
-const PLATFORM_FEE_BPS = 100 // 1%
 const PLATFORM_FEE_ACCOUNT = process.env.PLATFORM_FEE_ACCOUNT || ''
+const SSE_DECIMALS = 6
+const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
 
 // Create a connection to the Solana blockchain
 const connection = new Connection(
@@ -165,13 +167,16 @@ export async function POST(req: NextRequest) {
       Number(amount) * Math.pow(10, inputDecimals)
     )
 
+    // Determine the platform fee - use 1 bps placeholder if using SSE for fees
+    const effectivePlatformFeeBps = useSse ? 1 : PLATFORM_FEE_BPS
+
     // Step 2: Fetch quote from Jupiter
     const quote = await fetchJupiterQuote({
       inputMint,
       outputMint,
       amount: adjustedAmount,
       slippageBps: DEFAULT_SLIPPAGE_BPS,
-      platformFeeBps: PLATFORM_FEE_BPS,
+      platformFeeBps: effectivePlatformFeeBps,
       feeAccount: PLATFORM_FEE_ACCOUNT,
     })
 
@@ -186,12 +191,55 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    // Calculate SSE fee if using SSE for fees
+    let sseFeeAmount = '0'
+    if (useSse) {
+      try {
+        // Fetch SSE price by getting a quote for SSE to USDC
+        const ssePrice = await fetchSsePrice()
+        if (!ssePrice) {
+          throw new Error('Unable to fetch SSE price')
+        }
+
+        // Get the swap USD value from the quote
+        const swapValueUSDC = Number(quote.swapUsdValue ?? '0')
+        const inputAmountUSDC = swapValueUSDC || 0
+
+        // Calculate fees based on USD value
+        const platformFeeUSDC = inputAmountUSDC * (PLATFORM_FEE_BPS / 10000) // Total fee (e.g., 0.8%)
+        const halfFeeUSDC = platformFeeUSDC / 2 // Half for SSE (e.g., 0.4%)
+
+        // Convert USDC fee to SSE using the current SSE/USDC price
+        const sseAmount = halfFeeUSDC / ssePrice
+
+        // Convert to base units (6 decimals)
+        sseFeeAmount = Math.floor(
+          sseAmount * Math.pow(10, SSE_DECIMALS)
+        ).toString()
+
+        console.log('SSE Fee Calculation:', {
+          swapValueUSDC,
+          platformFeeUSDC,
+          halfFeeUSDC,
+          ssePrice,
+          sseAmount,
+          sseFeeAmount,
+        })
+      } catch (err) {
+        console.error('Error calculating SSE fee:', err)
+        sseFeeAmount = '0'
+        // Fall back to standard fees if SSE fee calculation fails
+        // useSse = false;
+      }
+    }
+
     // Step 3: Build swap transaction
     const swapTransaction = await buildSwapTransaction({
       quoteResponse: quote,
       userPublicKey,
       slippageBps: DEFAULT_SLIPPAGE_BPS,
       useSse,
+      sseFeeAmount: useSse ? sseFeeAmount : undefined,
     })
 
     // Step 4: Return transaction to client
@@ -219,6 +267,42 @@ export async function POST(req: NextRequest) {
       JSON.stringify({ error: error.message || 'Failed to process swap' }),
       { status: 500, headers }
     )
+  }
+}
+
+// Function to fetch SSE price
+async function fetchSsePrice(): Promise<number | null> {
+  try {
+    // Use Jupiter quote API to get the SSE/USDC price
+    // Request a quote for 1 SSE to USDC
+    const amount = Math.pow(10, SSE_DECIMALS) // 1 SSE in base units
+    const response = await fetch(
+      `https://quote-api.jup.ag/v6/quote?inputMint=${SSE_TOKEN_MINT}` +
+        `&outputMint=${USDC_MINT}&amount=${amount}` +
+        `&slippageBps=50`
+    ).then((res) => res.json())
+
+    if (response.error) {
+      throw new Error(response.error)
+    }
+
+    // Calculate price in USDC per SSE
+    const outAmount = Number(response.outAmount) / Math.pow(10, SSE_DECIMALS)
+
+    // Validate the price
+    if (isNaN(outAmount) || outAmount <= 0) {
+      throw new Error('Invalid SSE price received')
+    }
+
+    console.log('SSE/USDC Price:', {
+      outAmount,
+      rawOutAmount: response.outAmount,
+    })
+
+    return outAmount
+  } catch (err) {
+    console.error('Failed to fetch SSE price:', err)
+    return null
   }
 }
 
@@ -270,11 +354,13 @@ async function buildSwapTransaction({
   userPublicKey,
   slippageBps,
   useSse,
+  sseFeeAmount,
 }: {
   quoteResponse: any
   userPublicKey: string
   slippageBps: number
   useSse: boolean
+  sseFeeAmount?: string
 }) {
   try {
     // Try multiple Jupiter API endpoints
@@ -305,6 +391,11 @@ async function buildSwapTransaction({
               priorityLevel: 'veryHigh',
             },
           },
+        }
+
+        // Add sseFeeAmount if using SSE for fees
+        if (useSse && sseFeeAmount && sseFeeAmount !== '0') {
+          swapData.sseFeeAmount = sseFeeAmount
         }
 
         // Only add feeAccount if it's actually set
