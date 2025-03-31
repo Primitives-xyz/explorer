@@ -40,22 +40,44 @@ export default function DesignSystem() {
           </Paragraph>
         </div>
         <Separator />
-        <div className="flex flex-col items-start gap-3">
-          <Button variant={ButtonVariant.DEFAULT} className="w-[150px]">
-            Default
-          </Button>
-          <Button variant={ButtonVariant.OUTLINE} className="w-[150px]">
-            Outline
-          </Button>
-          <Button variant={ButtonVariant.GHOST} className="w-[150px]">
-            Ghost
-          </Button>
-          <Button variant={ButtonVariant.SECONDARY} className="w-[150px]">
-            Secondary
-          </Button>
-          <Button variant={ButtonVariant.OUTLINE_WHITE} className="w-[150px]">
-            Outline white
-          </Button>
+        <div className="grid grid-cols-2">
+          <div className="flex flex-col items-center gap-3">
+            <Button variant={ButtonVariant.DEFAULT} className="w-[150px]">
+              Default
+            </Button>
+            <Button variant={ButtonVariant.SECONDARY} className="w-[150px]">
+              Secondary
+            </Button>
+            <Button variant={ButtonVariant.OUTLINE} className="w-[150px]">
+              Outline
+            </Button>
+            <Button variant={ButtonVariant.OUTLINE_WHITE} className="w-[150px]">
+              Outline white
+            </Button>
+            <Button variant={ButtonVariant.GHOST} className="w-[150px]">
+              Ghost
+            </Button>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <Button
+              variant={ButtonVariant.DEFAULT_SOCIAL}
+              className="w-[150px]"
+            >
+              Default
+            </Button>
+            <Button
+              variant={ButtonVariant.SECONDARY_SOCIAL}
+              className="w-[150px]"
+            >
+              Secondary
+            </Button>
+            <Button
+              variant={ButtonVariant.OUTLINE_SOCIAL}
+              className="w-[150px]"
+            >
+              Outline
+            </Button>
+          </div>
         </div>
         <Separator />
         <div>

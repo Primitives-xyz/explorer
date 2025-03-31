@@ -1,9 +1,13 @@
 export enum ButtonVariant {
   DEFAULT = 'default',
-  DESTRUCTIVE = 'destructive',
-  OUTLINE = 'outline',
-  OUTLINE_WHITE = 'outline-white',
   SECONDARY = 'secondary',
+  OUTLINE = 'outline',
+  DEFAULT_SOCIAL = 'default-social',
+  SECONDARY_SOCIAL = 'secondary-social',
+  OUTLINE_SOCIAL = 'outline-social',
+
+  DESTRUCTIVE = 'destructive',
+  OUTLINE_WHITE = 'outline-white',
   GHOST = 'ghost',
   LINK = 'link',
 }
