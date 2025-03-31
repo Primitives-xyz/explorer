@@ -22,12 +22,12 @@ export function RightSideDiscover() {
   const { mainUsername } = useCurrentWallet()
 
   return (
-    <div className="pt-[100px] space-y-4 flex flex-col">
+    <div className="space-y-4 flex flex-col">
       <Card>
         <CardHeader className="!bg-card-accent !rounded-t-lg p-4 text-muted">
           <CardTitle>Recent profiles</CardTitle>
         </CardHeader>
-        <CardContent className="p-0 max-h-[calc(100vh-200px)] overflow-auto">
+        <CardContent className="p-0 max-h-[calc(100vh-174px)] overflow-auto">
           <>
             {loading && (
               <span className="flex justify-center items-center h-48">
