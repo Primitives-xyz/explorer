@@ -74,7 +74,7 @@ export function useProfileInfo({
 
     return {
       profiles: profiles,
-      profileData: explorerProfile,
+      profileInfo: explorerProfile,
       isLoading: isLoadingData,
       walletAddressError,
       serverError,
