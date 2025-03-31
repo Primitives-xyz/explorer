@@ -5,7 +5,7 @@ import { TokenDetails } from '@/components-new-version/trade/trade-content/token
 
 export function TradeContent() {
   return (
-    <div className="w-2/3 space-y-6">
+    <div className="w-2/3 space-y-6 mt-[52px]">
       <Graph />
       <TokenDetails />
     </div>

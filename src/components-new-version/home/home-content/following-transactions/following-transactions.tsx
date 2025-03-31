@@ -52,7 +52,7 @@ export function FollowingTransactions() {
   }
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="w-full">
       <FilterTabs
         options={options}
         selected={selectedType}

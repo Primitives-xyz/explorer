@@ -14,7 +14,7 @@ export function FilterTabs<T extends string>({
   onSelect,
 }: FilterTabsProps<T>) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 mb-4">
       {options.map((option) => (
         <Button
           key={option.value}
