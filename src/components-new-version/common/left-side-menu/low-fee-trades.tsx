@@ -9,7 +9,7 @@ import { ArrowLeftRight } from 'lucide-react'
 
 export function LowFeeTrades() {
   return (
-    <Card className="w-full border-primary my-10">
+    <Card className="border-primary">
       <CardHeader>
         <CardTitle className="text-primary font-bold">
           Low Fee Trades with SSE

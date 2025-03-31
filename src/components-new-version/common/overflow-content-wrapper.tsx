@@ -6,16 +6,8 @@ interface Props {
 
 export function OverflowContentWrapper({ children }: Props) {
   return (
-    <div
-      className="h-screen overflow-auto scrollbar-hide relative w-full mx-6"
-      style={{
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-      }}
-    >
-      <div className="absolute pt-[100px] w-full pb-[100px] space-y-4">
-        {children}
-      </div>
+    <div className="flex-1 flex items-center justify-center max-w-main-content mx-auto">
+      {children}
     </div>
   )
 }

@@ -7,7 +7,7 @@ interface Props {
 export function SimpleContentWrapper({ children }: { children: ReactNode }) {
   return (
     <div
-      className="h-screen overflow-auto scrollbar-hide relative w-full mx-6 pt-[100px] flex flex-row"
+      className="h-screen overflow-auto scrollbar-hide relative w-full mx-6 flex flex-row"
       style={{
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
