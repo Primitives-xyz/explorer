@@ -1,4 +1,4 @@
-import { OverflowContentWrapper } from '@/components-new-version/common/overflow-content-wrapper'
+import { MainContentWrapper } from '@/components-new-version/common/main-content-wrapper'
 import {
   Badge,
   Button,
@@ -24,7 +24,7 @@ import { FormMockup } from './form-mockup'
 
 export default function DesignSystem() {
   return (
-    <OverflowContentWrapper>
+    <MainContentWrapper>
       <div className="space-y-5">
         <Heading1>The quick brown fox jumps over the lazy dog.</Heading1>
         <Heading2>The quick brown fox jumps over the lazy dog.</Heading2>
@@ -129,6 +129,6 @@ export default function DesignSystem() {
           </CardContent>
         </Card>
       </div>
-    </OverflowContentWrapper>
+    </MainContentWrapper>
   )
 }

@@ -58,18 +58,17 @@ export function FollowingTransactions() {
         selected={selectedType}
         onSelect={setSelectedType}
       />
-
-      {isLoadingTransactions && (
-        <div className="w-full flex justify-center items-center pt-24">
+      {isLoadingTransactions ? (
+        <div className="w-full flex justify-center items-center h-[400px]">
           <Spinner large />
         </div>
+      ) : (
+        <div className="space-y-4">
+          {aggregatedTransactions.map((transaction, index) => (
+            <TransactionsEntry key={index} transaction={transaction} />
+          ))}
+        </div>
       )}
-
-      <div className="space-y-4">
-        {aggregatedTransactions.map((transaction, index) => (
-          <TransactionsEntry key={index} transaction={transaction} />
-        ))}
-      </div>
     </div>
   )
 }
