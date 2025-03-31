@@ -1,19 +1,36 @@
 import { cn } from '@/utils'
+import { cva, VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      'rounded-card border border-card-border bg-card text-card-foreground shadow-card',
-      className
-    )}
-    {...props}
-  />
-))
+const cardVariants = cva(
+  cn('rounded-card border text-card-foreground shadow-card'),
+  {
+    variants: {
+      variant: {
+        default: 'bg-card border-foreground/20',
+        accent: 'bg-primary/10 border-primary/10',
+        'accent-social': 'bg-secondary/10 border-secondary/10',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  }
+)
+
+interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, variant, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(cardVariants({ variant, className }))}
+      {...props}
+    />
+  )
+)
 Card.displayName = 'Card'
 
 const CardHeader = React.forwardRef<
