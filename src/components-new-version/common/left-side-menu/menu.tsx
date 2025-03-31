@@ -56,8 +56,8 @@ export function Menu() {
     {
       title: 'Profile',
       icon: User,
-      //href: route('profile', { id: mainUsername }),
-      href: '/profile',
+      href: route('profile', { id: mainUsername }),
+      //href: '/profile',
     },
     {
       title: 'Stake',

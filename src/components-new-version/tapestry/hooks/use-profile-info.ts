@@ -1,23 +1,31 @@
 import { IGetProfileResponse } from '@/components-new-version/models/profiles.models'
+import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
 import { useQuery } from '@/components-new-version/utils/api'
-import { useGetProfiles } from '@/components/auth/hooks/use-get-profiles'
-import { EXPLORER_NAMESPACE } from '@/utils/constants'
+import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
+
 import { useMemo } from 'react'
 
-export function useProfileData(
-  username?: string,
-  mainUsername?: string | null,
-  namespace?: string | null,
+interface Props {
+  username?: string
+  mainUsername?: string | null
+  namespace?: string | null
   walletAddress?: string
-) {
+}
+
+export function useProfileInfo({
+  username,
+  mainUsername,
+  namespace,
+  walletAddress,
+}: Props) {
   // Determine if we have a namespace
   const hasNamespace =
     namespace !== undefined && namespace !== null && namespace !== ''
 
   // Create API URL based on parameters
   const url = !hasNamespace
-    ? `/api/profiles/${username}?fromUsername=${mainUsername}`
-    : `/api/profiles/${username}?namespace=${namespace}`
+    ? `/profiles/${username}?fromUsername=${mainUsername}`
+    : `/profiles/${username}?namespace=${namespace}`
 
   const {
     data,
@@ -46,12 +54,12 @@ export function useProfileData(
 
   // Find the profile with namespace matching EXPLORER_NAMESPACE
   const explorerProfile = useMemo(() => {
-    if (!profiles || profiles.length === 0) return null
+    if (!profiles || profiles.profiles.length === 0) return null
 
     return (
-      profiles.find(
-        (profile: any) => profile.namespace?.name === EXPLORER_NAMESPACE
-      ) || profiles[0]
+      profiles.profiles.find(
+        (profile) => profile.namespace?.name === EXPLORER_NAMESPACE
+      ) || profiles.profiles[0]
     ) // Default to first profile if no match found
   }, [profiles])
 

@@ -2,11 +2,17 @@ import { OverflowContentWrapper } from '@/components-new-version/common/overflow
 import { RightSideLayout } from '@/components-new-version/common/right-side-layout'
 import { ProfileContent } from '@/components-new-version/profile/profile-content'
 
-export default function Profile() {
+export default async function Profile({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+
   return (
     <>
       <OverflowContentWrapper>
-        <ProfileContent id="cedrick" />
+        <ProfileContent id={id} />
       </OverflowContentWrapper>
       <RightSideLayout>
         <p>right</p>
