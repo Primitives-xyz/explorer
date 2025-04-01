@@ -4,10 +4,14 @@ import { TokenContent } from '@/components-new-version/token/token-content'
 import {
   determineRouteType,
   RouteType,
-} from '@/components-new-version/utils/entity-page'
+} from '@/components-new-version/utils/entity'
 
-export default async function Entity({ params }: { params: { id: string } }) {
-  const { id } = params
+export default async function Entity({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
 
   const cleanId = id.startsWith('@') ? id.slice(1) : id
   const routeType = determineRouteType(id)
