@@ -59,7 +59,10 @@ export function formatRawAmount(rawAmount: bigint, decimals: bigint) {
   }
 }
 
-export function formatLargeNumber(num: number, tokenDecimals: number | undefined) {
+export function formatLargeNumber(
+  num: number,
+  tokenDecimals: number | undefined
+) {
   if (num !== 0 && Math.abs(num) < 0.0001) {
     return num.toExponential(4)
   }
@@ -68,8 +71,4 @@ export function formatLargeNumber(num: number, tokenDecimals: number | undefined
     minimumFractionDigits: 2,
     maximumFractionDigits: decimals,
   })
-}
-
-export function shortenAddress(address: string, chars = 4): string {
-  return `${address.slice(0, chars)}...${address.slice(-chars)}`
 }
