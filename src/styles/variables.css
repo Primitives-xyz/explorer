@@ -17,7 +17,7 @@
   --input-foreground: var(--foreground);
   --input-border: 30deg 0% 90%;
 
-  --card: 12, 2%, 29%;
+  --card: var(--foreground) / 0.1;
   --card-foreground: 220 50% 97%;
   --card-accent: 10, 4%, 37%;
   --card-border: 10, 2%, 40%;
@@ -27,7 +27,7 @@
 
   /* --secondary: 252deg 5% 27%; */
   --secondary: 245deg 100% 88%;
-  --secondary-foreground: 221deg 72% 98%;
+  --secondary-foreground: 67deg 78% 15%;
 
   /* --outline: 177deg 73% 45%; */
   /* --outline-foreground: var(--background); */

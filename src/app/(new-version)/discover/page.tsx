@@ -9,7 +9,7 @@ export default function Discover() {
       <MainContentWrapper>
         <DiscoverContent />
       </MainContentWrapper>
-      <RightSidebarWrapper>
+      <RightSidebarWrapper className="pt-[50px]">
         <RightSideDiscover />
       </RightSidebarWrapper>
     </>
