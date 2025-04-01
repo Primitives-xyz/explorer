@@ -62,7 +62,7 @@ export function Pay({
       <div className="flex justify-between items-center">
         <Input
           placeholder="0.00"
-          className="text-primary text-3xl bg-transparent border-none placeholder:text-primary"
+          className="text-primary text-2xl bg-transparent border-none placeholder:text-primary"
           type="text"
           onFocus={() => setSwapMode(SwapMode.EXACT_IN)}
           onChange={(e) => handleInAmountChange(e)}

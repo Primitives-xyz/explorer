@@ -5,11 +5,10 @@ import { useTokenBalance } from '@/components-new-version/tapestry/hooks/use-tok
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
 import PlatformComparison from '@/components-new-version/trade/left-content/swap/platform-comparison'
-import { TopSwap } from '@/components-new-version/trade/left-content/swap/top-swap/top-swap'
+import { CenterButtonSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/center-button-swap'
+import { TopSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/top-swap'
 import { TokenSearch } from '@/components-new-version/transaction/swap/token-search'
-import { Button, ButtonVariant } from '@/components-new-version/ui'
 import { Card, CardContent } from '@/components-new-version/ui/card'
-import LoadingDots from '@/components-new-version/ui/loading-dots'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
 import {
   formatLargeNumber,
@@ -319,37 +318,13 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
         handleSwapDirection={handleSwapDirection}
       />
 
-      <div>
-        {!sdkHasLoaded && (
-          <Button variant={ButtonVariant.DEFAULT} className="w-full">
-            {t('trade.checking_wallet_status')}
-            <LoadingDots />
-          </Button>
-        )}
-
-        {!isLoggedIn ? (
-          <Button
-            expand
-            variant={ButtonVariant.DEFAULT}
-            onClick={() => setShowAuthFlow(true)}
-          >
-            connect wallet
-          </Button>
-        ) : (
-          <Button
-            variant={ButtonVariant.DEFAULT}
-            className="w-full"
-            onClick={handleSwap}
-            disabled={loading}
-          >
-            {loading ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <span>Execute Swap</span>
-            )}
-          </Button>
-        )}
-      </div>
+      <CenterButtonSwap
+        sdkHasLoaded={sdkHasLoaded}
+        loading={loading}
+        isLoggedIn={isLoggedIn}
+        setShowAuthFlow={setShowAuthFlow}
+        handleSwap={handleSwap}
+      />
 
       <Card>
         <CardContent>

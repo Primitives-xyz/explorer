@@ -1,8 +1,8 @@
 'use client'
 
 import { SwapMode } from '@/components-new-version/trade/left-content/swap/swap'
-import { Pay } from '@/components-new-version/trade/left-content/swap/top-swap/pay'
-import { Receive } from '@/components-new-version/trade/left-content/swap/top-swap/received'
+import { Pay } from '@/components-new-version/trade/left-content/swap/swap-elements/pay'
+import { Receive } from '@/components-new-version/trade/left-content/swap/swap-elements/received'
 import { Card, CardContent } from '@/components-new-version/ui/card'
 import { ArrowDownUp } from 'lucide-react'
 
