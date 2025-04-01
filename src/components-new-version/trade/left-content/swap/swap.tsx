@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowDownUp, ChevronDown, ChevronUp, CircleAlert, Loader2 } from 'lucide-react'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components-new-version/ui'
 import { Card, CardContent } from '@/components-new-version/ui/card'
@@ -20,36 +20,14 @@ import PlatformComparison from './platform-comparison'
 import { TokenSearch } from '@/components-new-version/transaction/swap/token-search'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+enum SWAPMODE {
+  ExactIn = "ExactIn",
+  ExactOut = "ExactOut"
+}
+
 interface SwapProps {
   mint: string
   setTokenMint: (value: string) => void
-}
-
-const validateAmount = (value: string, decimals: number = 6): boolean => {
-  if (value === '') return true
-
-  // Check if the value is a valid number
-  const numericValue = Number(value)
-  if (isNaN(numericValue)) {
-    return false
-  }
-
-  // Check if the value is positive
-  if (numericValue <= 0) {
-    return false
-  }
-
-  // Check if the value has too many decimal places
-  const decimalParts = value.split('.')
-  if (
-    decimalParts.length > 1 &&
-    decimalParts[1]?.length &&
-    decimalParts[1]?.length > decimals
-  ) {
-    return false
-  }
-
-  return true
 }
 
 export function Swap({ mint, setTokenMint }: SwapProps) {
@@ -58,7 +36,9 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   const router = useRouter()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setoutputTokenMint] = useState<string>(SSE_MINT)
-  const [inputTokenAmount, setInputTokenAmount] = useState<string>("")
+  const [inAmount, setInAmount] = useState<string>("")
+  const [outAmount, setOutAmount] = useState<string>("")
+  const [swapMode, setSwapMode] = useState<SWAPMODE>(SWAPMODE.ExactIn)
   const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
   const [isRouteInfoOpen, setIsRouteInfoOpen] = useState<boolean>(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState<boolean>(false)
@@ -85,16 +65,70 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     handleSwap,
     isQuoteRefreshing,
     refreshQuote,
+    sseFeeAmount
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
-    inputAmount: inputTokenAmount,
-    inputDecimals: inputTokenDecimals,
-    outputDecimals: outputTokenDecimals,
+    inputAmount: swapMode === SWAPMODE.ExactIn ? inAmount : outAmount,
+    inputDecimals: swapMode === SWAPMODE.ExactIn ? inputTokenDecimals : outputTokenDecimals,
+    outputDecimals: swapMode === SWAPMODE.ExactOut ? inputTokenDecimals : outputTokenDecimals,
     platformFeeBps: useSSEForFees ? 1 : undefined,
     primaryWallet: primaryWallet,
-    walletAddress: walletAddress
+    walletAddress: walletAddress,
+    swapMode: swapMode
   })
+
+  console.log("sseFeeAmount:", sseFeeAmount)
+
+  const displayInAmount = useMemo(() => {
+    if (isQuoteRefreshing && (swapMode === SWAPMODE.ExactOut)) {
+      return "..."
+    }
+    if (inAmount == "") {
+      return ""
+    } else {
+      if (swapMode === SWAPMODE.ExactIn) {
+        return inAmount
+      } else {
+        return formatLargeNumber(parseFloat(inAmount), inputTokenDecimals)
+      }
+    }
+  }, [inAmount, isQuoteRefreshing])
+
+  const displayOutAmount = useMemo(() => {
+    if (isQuoteRefreshing && (swapMode === SWAPMODE.ExactIn)) {
+      return "..."
+    }
+    if (outAmount == "") {
+      return ""
+    } else {
+      if (swapMode === SWAPMODE.ExactOut) {
+        return outAmount
+      } else {
+        return formatLargeNumber(parseFloat(outAmount), outputTokenDecimals)
+      }
+    }
+  }, [outAmount, isQuoteRefreshing])
+
+  const displayInAmountInUsd = useMemo(() => {
+    if (isQuoteRefreshing || !inputTokenUsdPrice || isNaN(parseFloat(inAmount))) {
+      return "..."
+    }
+    return formatUsdValue(inputTokenUsdPrice * parseFloat(inAmount))
+  }, [isQuoteRefreshing, inputTokenUsdPrice, inAmount])
+
+  const displayOutAmountInUsd = useMemo(() => {
+    if (isQuoteRefreshing || !outputTokenUsdPrice || isNaN(parseFloat(outAmount))) {
+      return "..."
+    }
+    return formatUsdValue(outputTokenUsdPrice * parseFloat(outAmount))
+  }, [isQuoteRefreshing, outputTokenUsdPrice, outAmount])
+
+  const displaySseFeeAmount = useMemo(() => {
+    const fee = (Number(sseFeeAmount) / Math.pow(10, 6)).toString()
+    
+    return formatLargeNumber(parseFloat(fee), 6)
+  }, [sseFeeAmount])
 
   const handleInputAmountByPercentage = (percent: number) => {
     if (!inputBalance || typeof inputRawBalance !== 'bigint' || !inputTokenDecimals) return
@@ -107,7 +141,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
       )
 
       if (validateAmount(formattedQuarter, inputTokenDecimals)) {
-        setInputTokenAmount(formattedQuarter)
+        setInAmount(formattedQuarter)
       }
     } catch (err) {
       console.error('Error calculating amount:', err)
@@ -143,6 +177,72 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     router.push(`/new-trade?${params.toString()}`, { scroll: false })
   }, [searchParams])
 
+  const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    if (
+      val === '' ||
+      val === '.' ||
+      /^[0]?\.[0-9]*$/.test(val) ||
+      /^[0-9]*\.?[0-9]*$/.test(val)
+    ) {
+      const cursorPosition = e.target.selectionStart
+      setInAmount(val)
+      window.setTimeout(() => {
+        e.target.focus()
+        e.target.setSelectionRange(
+          cursorPosition,
+          cursorPosition
+        )
+      }, 0)
+    }
+  }
+
+  const handleOutAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    if (
+      val === '' ||
+      val === '.' ||
+      /^[0]?\.[0-9]*$/.test(val) ||
+      /^[0-9]*\.?[0-9]*$/.test(val)
+    ) {
+      const cursorPosition = e.target.selectionStart
+      setOutAmount(val)
+      window.setTimeout(() => {
+        e.target.focus()
+        e.target.setSelectionRange(
+          cursorPosition,
+          cursorPosition
+        )
+      }, 0)
+    }
+  }
+
+  const handleSwapDirection = () => {
+    setInAmount("")
+    setOutAmount("")
+
+    const tempTokenMint = inputTokenMint
+
+    setInputTokenMint(outputTokenMint)
+    setoutputTokenMint(tempTokenMint)
+  }
+
+  useEffect(() => {
+    if (swapMode === SWAPMODE.ExactIn) {
+      if (inAmount == "" || isNaN(parseFloat(expectedOutput))) {
+        setOutAmount("")
+      } else {
+        setOutAmount(expectedOutput)
+      }
+    } else {
+      if (outAmount == "" || isNaN(parseFloat(expectedOutput))) {
+        setInAmount("")
+      } else {
+        setInAmount(expectedOutput)
+      }
+    }
+  }, [expectedOutput])
+
   useEffect(() => {
     setTokenMint(outputTokenMint)
   }, [outputTokenMint])
@@ -154,7 +254,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
   return (
-    <>
+    <div className='space-y-4'>
       <Card>
         <CardContent>
           <div className="space-y-3">
@@ -168,37 +268,12 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
                 placeholder='0.00'
                 className='text-primary text-xl'
                 type='text'
-                onChange={(e) => {
-                  const val = e.target.value
-                  if (
-                    val === '' ||
-                    val === '.' ||
-                    /^[0]?\.[0-9]*$/.test(val) ||
-                    /^[0-9]*\.?[0-9]*$/.test(val)
-                  ) {
-                    const cursorPosition = e.target.selectionStart
-                    setInputTokenAmount(val)
-                    window.setTimeout(() => {
-                      e.target.focus()
-                      e.target.setSelectionRange(
-                        cursorPosition,
-                        cursorPosition
-                      )
-                    }, 0)
-                  }
-                }}
-                value={inputTokenAmount}
+                onFocus={() => setSwapMode(SWAPMODE.ExactIn)}
+                onChange={(e) => handleInAmountChange(e)}
+                value={displayInAmount}
               />
               <p className="text-xs text-muted">
-                {
-                  (inputTokenUsdPriceLoading || !inputTokenUsdPrice) ? (
-                    <span className="flex items-center" aria-label="Loading price information">...</span>
-                  ) : (
-                    <span>
-                      {isNaN(Number.parseFloat(inputTokenAmount)) ? formatUsdValue(0) : formatUsdValue(inputTokenUsdPrice * Number.parseFloat(inputTokenAmount))}
-                    </span>
-                  )
-                }
+                {displayInAmountInUsd}
               </p>
             </div>
 
@@ -252,7 +327,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
 
           <div className="flex items-center w-full justify-between text-muted space-x-2">
             <div className="bg-muted w-full h-[1px]" />
-            <ArrowDownUp size={40} />
+            <ArrowDownUp size={40} className='cursor-pointer' onClick={handleSwapDirection} />
             <div className="bg-muted w-full h-[1px]" />
           </div>
 
@@ -262,28 +337,16 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
             </div>
 
             <div className="flex justify-between items-center">
-              {
-                (isQuoteRefreshing || loading) ? (
-                  <Loader2 className='animate-spin' />
-                ) : (
-                  <Input
-                    inputMode="decimal"
-                    placeholder="0.00"
-                    className="text-primary text-xl"
-                    type="text"
-                    disabled={true}
-                    value={(quoteResponse && !isNaN(parseFloat(expectedOutput)) && inputTokenAmount.length) ? formatLargeNumber(parseFloat(expectedOutput), outputTokenDecimals) : ''}
-                  />
-                )
-              }
+              <Input
+                placeholder='0.00'
+                className='text-primary text-xl'
+                type='text'
+                onFocus={() => setSwapMode(SWAPMODE.ExactOut)}
+                onChange={(e) => handleOutAmountChange(e)}
+                value={displayOutAmount}
+              />
               <p className="text-xs text-muted">
-                {
-                  (isQuoteRefreshing || outputTokenUsdPriceLoading || !outputTokenUsdPrice) ? (
-                    <Loader2 className='animate-spin' />
-                  ) : (
-                    formatUsdValue(outputTokenUsdPrice * parseFloat(expectedOutput))
-                  )
-                }
+                {displayOutAmountInUsd}
               </p>
             </div>
 
@@ -366,7 +429,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
 
             <div className="flex justify-between items-center">
               <p>Rate</p>
-              <CircleAlert />
+              <p>{displaySseFeeAmount} SSE</p>
             </div>
 
             <div className="flex justify-between items-center cursor-pointer" onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}>
@@ -383,7 +446,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
                       <p>You'll get</p>
                     </div>
 
-                    <div>
+                    <>
                       {
                         isQuoteRefreshing ? (
                           <div className='h-full flex justify-center items-center'>
@@ -398,7 +461,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
                           />
                         )
                       }
-                    </div>
+                    </>
                   </CardContent>
                 </Card>
               )
@@ -412,7 +475,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
           onSelect={handleInputTokenSelect}
           onClose={() => {
             setShowInputTokenSearch(false)
-            setInputTokenAmount("")
+            setInAmount("")
           }}
         />
       )}
@@ -421,10 +484,37 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
           onSelect={handleOutputTokenSelect}
           onClose={() => {
             setShowOutputTokenSearch(false)
-            setInputTokenAmount("")
+            setInAmount("")
           }}
         />
       )}
-    </>
+    </div>
   )
+}
+
+const validateAmount = (value: string, decimals: number = 6): boolean => {
+  if (value === '') return true
+
+  // Check if the value is a valid number
+  const numericValue = Number(value)
+  if (isNaN(numericValue)) {
+    return false
+  }
+
+  // Check if the value is positive
+  if (numericValue <= 0) {
+    return false
+  }
+
+  // Check if the value has too many decimal places
+  const decimalParts = value.split('.')
+  if (
+    decimalParts.length > 1 &&
+    decimalParts[1]?.length &&
+    decimalParts[1]?.length > decimals
+  ) {
+    return false
+  }
+
+  return true
 }

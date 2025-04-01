@@ -16,7 +16,7 @@ export function Graph({ id }: GraphProps) {
         <CardTitle>TokenGraph</CardTitle>
       </CardHeader>
       <CardContent>
-        <div>
+        <div className='h-[400px]'>
           <iframe
             width="100%"
             height="100%"
@@ -25,7 +25,6 @@ export function Graph({ id }: GraphProps) {
             allowFullScreen
           />
         </div>
-        TokenGraph
       </CardContent>
     </Card>
   )

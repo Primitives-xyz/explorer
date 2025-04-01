@@ -15,6 +15,7 @@ interface UseJupiterSwapParams {
   platformFeeBps?: number
   primaryWallet: any
   walletAddress: string
+  swapMode?: string
 }
 
 interface QuoteResponse {
@@ -57,8 +58,10 @@ export function useJupiterSwap({
   outputDecimals,
   platformFeeBps = PLATFORM_FEE_BPS,
   primaryWallet,
-  walletAddress
+  walletAddress,
+  swapMode = "ExactIn"
 }: UseJupiterSwapParams) {
+  console.log("platformFeeBps:", platformFeeBps)
   const t = useTranslations()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
@@ -74,18 +77,21 @@ export function useJupiterSwap({
   const { toast } = useToast()
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  const resetQuoteState = useCallback(() => {
+    setQuoteResponse(null)
+    setExpectedOutput('')
+    setPriceImpact('')
+    setTxSignature('')
+    setError(null)
+    setTxSignature('')
+    setIsFullyConfirmed(false)
+    setIsQuoteRefreshing(false)
+    setSseFeeAmount('0')
+  }, [])
+
   const fetchQuote = useCallback(async () => {
-    console.log("9999999999999999999999999999999999999999999999999999999999")
     if (!inputAmount || !inputMint || !outputMint || !outputDecimals || !inputDecimals) {
-      setQuoteResponse(null)
-      setExpectedOutput('')
-      setPriceImpact('')
-      setTxSignature('')
-      setError(null)
-      setTxSignature('')
-      setIsFullyConfirmed(false)
-      setIsQuoteRefreshing(false)
-      setSseFeeAmount('0')
+      resetQuoteState()
       return
     }
 
@@ -98,13 +104,44 @@ export function useJupiterSwap({
 
       const inputAmountInDecimals = Math.floor(Number(inputAmount) * Math.pow(10, inputDecimals))
       const QUOTE_URL = `
-        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1}&feeAccount=${PLATFORM_FEE_ACCOUNT}
+        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1}&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
       `
       const response = await fetch(QUOTE_URL).then((res) => res.json())
-      console.log("=============================")
-      setExpectedOutput((Number(response.outAmount) / Math.pow(10, outputDecimals)).toString())
+      if (swapMode == "ExactIn") {
+        setExpectedOutput((Number(response.outAmount) / Math.pow(10, outputDecimals)).toString())
+      } else {
+        setExpectedOutput((Number(response.inAmount) / Math.pow(10, outputDecimals)).toString())
+      }
       setPriceImpact(response.priceImpactPct)
       setQuoteResponse(response)
+
+      if (platformFeeBps === 1 && ssePrice) {
+        try {
+          // Get the input amount in USDC terms using the quote's USD value
+          const swapValueUSDC = Number(response.swapUsdValue ?? '0')
+          const inputAmountUSDC = swapValueUSDC || 0
+
+          // Calculate fees based on USD value
+          const platformFeeUSDC = inputAmountUSDC * (PLATFORM_FEE_BPS / 10000) // 1% of input
+          const halfFeeUSDC = platformFeeUSDC / 2 // 0.5% for SSE
+
+          // Convert USDC fee to SSE using the current SSE/USDC price
+          // If 1 SSE = 0.00782 USDC, then to get SSE amount we divide USDC by 0.00782
+          const sseAmount = halfFeeUSDC / ssePrice
+
+          // Convert to base units (6 decimals)
+          const currentSseFeeAmount = Math.floor(
+            sseAmount * Math.pow(10, 6)
+          ).toString()
+          setSseFeeAmount(currentSseFeeAmount)
+        } catch (err) {
+          console.error(t('error.error_calculating_sse_fee_during_quote'), err)
+          setSseFeeAmount('0')
+        }
+      } else {
+        setSseFeeAmount('0')
+      }
+
       setError('')
     } catch (err) {
       console.error(err)
@@ -115,7 +152,7 @@ export function useJupiterSwap({
       setIsQuoteRefreshing(false)
     }
 
-  }, [inputAmount, inputMint, inputDecimals, outputMint, outputDecimals])
+  }, [inputAmount, inputMint, inputDecimals, outputMint, outputDecimals, platformFeeBps, resetQuoteState])
 
   const refreshQuote = useCallback(() => {
     if (!isQuoteRefreshing && !loading) {
@@ -181,6 +218,7 @@ export function useJupiterSwap({
             slippageBps === 'auto'
               ? calculateAutoSlippage(priceImpact)
               : slippageBps,
+          swapMode,
         }),
       }).then((res) => res.json())
 
@@ -313,6 +351,7 @@ export function useJupiterSwap({
     handleSwap,
     isQuoteRefreshing,
     refreshQuote,
+    sseFeeAmount
   }
 }
 
