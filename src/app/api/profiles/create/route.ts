@@ -12,7 +12,7 @@ const RESERVED_USERNAMES = [
   'n',
   'discover',
   'new-trade',
-  'profile',
+  'entity',
 ]
 
 export async function POST(req: NextRequest) {
