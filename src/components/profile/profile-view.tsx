@@ -14,6 +14,8 @@ interface Props {
 export function ProfileView({ username, walletAddress }: Props) {
   const { mainUsername } = useCurrentWallet()
 
+  console.log({ walletAddress, username })
+
   const { profileData, isLoading } = useProfileData(
     username,
     mainUsername,
