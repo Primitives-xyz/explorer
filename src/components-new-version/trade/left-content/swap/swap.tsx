@@ -1,28 +1,30 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowDownUp, ChevronDown, ChevronUp, CircleAlert, Loader2 } from 'lucide-react'
-import { Button, ButtonSize, ButtonVariant, Input } from '@/components-new-version/ui'
-import { Card, CardContent } from '@/components-new-version/ui/card'
-import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { TokenBalance } from '@/components-new-version/common/left-side-menu/balance'
-import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
+import { useJupiterSwap } from '@/components-new-version/tapestry/hooks/use-jupiter-swap'
+import { useTokenBalance } from '@/components-new-version/tapestry/hooks/use-token-balance'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
-import { formatUsdValue, formatRawAmount, formatLargeNumber } from '@/components-new-version/utils/format'
-import Image from 'next/image'
-import { DEFAULT_INPUT_TOKEN_IMAGEURI, DEFAULT_INPUT_TOKEN_SYMBOL, DEFAULT_OUTPUT_TOKEN_IMAGEURI, DEFAULT_OUTPUT_TOKEN_SYMBOL } from './constants'
-import { useTokenBalance } from '@/components-new-version/tapestry/hooks/use-token-balance'
-import { useJupiterSwap } from '@/components-new-version/tapestry/hooks/use-jupiter-swap'
-import LoadingDots from '@/components-new-version/ui/loading-dots'
-import { useTranslations } from 'next-intl'
-import PlatformComparison from './platform-comparison'
+import PlatformComparison from '@/components-new-version/trade/left-content/swap/platform-comparison'
+import { TopSwap } from '@/components-new-version/trade/left-content/swap/top-swap/top-swap'
 import { TokenSearch } from '@/components-new-version/transaction/swap/token-search'
+import { Button, ButtonVariant } from '@/components-new-version/ui'
+import { Card, CardContent } from '@/components-new-version/ui/card'
+import LoadingDots from '@/components-new-version/ui/loading-dots'
+import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
+import {
+  formatLargeNumber,
+  formatRawAmount,
+  formatUsdValue,
+} from '@/components-new-version/utils/format'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { ChevronDown, ChevronUp, CircleAlert, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-enum SWAPMODE {
-  ExactIn = "ExactIn",
-  ExactOut = "ExactOut"
+export enum SwapMode {
+  EXACT_IN = 'ExactIn',
+  EXACT_OUT = 'ExactOut',
 }
 
 interface SwapProps {
@@ -36,18 +38,45 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   const router = useRouter()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setoutputTokenMint] = useState<string>(SSE_MINT)
-  const [inAmount, setInAmount] = useState<string>("")
-  const [outAmount, setOutAmount] = useState<string>("")
-  const [swapMode, setSwapMode] = useState<SWAPMODE>(SWAPMODE.ExactIn)
+  const [inAmount, setInAmount] = useState<string>('')
+  const [outAmount, setOutAmount] = useState<string>('')
+  const [swapMode, setSwapMode] = useState<SwapMode>(SwapMode.EXACT_IN)
   const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
   const [isRouteInfoOpen, setIsRouteInfoOpen] = useState<boolean>(false)
-  const [showInputTokenSearch, setShowInputTokenSearch] = useState<boolean>(false)
-  const [showOutputTokenSearch, setShowOutputTokenSearch] = useState<boolean>(false)
-  const { symbol: inputTokenSymbol, decimals: inputTokenDecimals, image: inputTokenImageUri } = useTokenInfo(inputTokenMint)
-  const { symbol: outputTokenSymbol, decimals: outputTokenDecimals, image: outputTokenImageUri } = useTokenInfo(outputTokenMint)
-  const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } = useTokenUSDCPrice({ tokenMint: inputTokenMint, decimals: inputTokenDecimals })
-  const { price: outputTokenUsdPrice, loading: outputTokenUsdPriceLoading } = useTokenUSDCPrice({ tokenMint: outputTokenMint, decimals: outputTokenDecimals })
-  const { isLoggedIn, sdkHasLoaded, walletAddress, primaryWallet, setShowAuthFlow } = useCurrentWallet()
+  const [showInputTokenSearch, setShowInputTokenSearch] =
+    useState<boolean>(false)
+  const [showOutputTokenSearch, setShowOutputTokenSearch] =
+    useState<boolean>(false)
+  const {
+    symbol: inputTokenSymbol,
+    decimals: inputTokenDecimals,
+    image: inputTokenImageUri,
+  } = useTokenInfo(inputTokenMint)
+  const {
+    symbol: outputTokenSymbol,
+    decimals: outputTokenDecimals,
+    image: outputTokenImageUri,
+  } = useTokenInfo(outputTokenMint)
+
+  const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } =
+    useTokenUSDCPrice({
+      tokenMint: inputTokenMint,
+      decimals: inputTokenDecimals,
+    })
+
+  const { price: outputTokenUsdPrice, loading: outputTokenUsdPriceLoading } =
+    useTokenUSDCPrice({
+      tokenMint: outputTokenMint,
+      decimals: outputTokenDecimals,
+    })
+
+  const {
+    isLoggedIn,
+    sdkHasLoaded,
+    walletAddress,
+    primaryWallet,
+    setShowAuthFlow,
+  } = useCurrentWallet()
   const {
     balance: inputBalance,
     rawBalance: inputRawBalance,
@@ -65,73 +94,90 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     handleSwap,
     isQuoteRefreshing,
     refreshQuote,
-    sseFeeAmount
+    sseFeeAmount,
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
-    inputAmount: swapMode === SWAPMODE.ExactIn ? inAmount : outAmount,
-    inputDecimals: swapMode === SWAPMODE.ExactIn ? inputTokenDecimals : outputTokenDecimals,
-    outputDecimals: swapMode === SWAPMODE.ExactOut ? inputTokenDecimals : outputTokenDecimals,
+    inputAmount: swapMode === SwapMode.EXACT_IN ? inAmount : outAmount,
+    inputDecimals:
+      swapMode === SwapMode.EXACT_IN ? inputTokenDecimals : outputTokenDecimals,
+    outputDecimals:
+      swapMode === SwapMode.EXACT_OUT
+        ? inputTokenDecimals
+        : outputTokenDecimals,
     platformFeeBps: useSSEForFees ? 1 : undefined,
     primaryWallet: primaryWallet,
     walletAddress: walletAddress,
-    swapMode: swapMode
+    swapMode: swapMode,
   })
 
-  console.log("sseFeeAmount:", sseFeeAmount)
+  console.log('sseFeeAmount:', sseFeeAmount)
 
   const displayInAmount = useMemo(() => {
-    if (isQuoteRefreshing && (swapMode === SWAPMODE.ExactOut)) {
-      return "..."
+    if (isQuoteRefreshing && swapMode === SwapMode.EXACT_OUT) {
+      return '...'
     }
-    if (inAmount == "") {
-      return ""
+    if (inAmount == '') {
+      return ''
     } else {
-      if (swapMode === SWAPMODE.ExactIn) {
+      if (swapMode === SwapMode.EXACT_IN) {
         return inAmount
       } else {
         return formatLargeNumber(parseFloat(inAmount), inputTokenDecimals)
       }
     }
-  }, [inAmount, isQuoteRefreshing])
+  }, [inAmount, inputTokenDecimals, isQuoteRefreshing, swapMode])
 
   const displayOutAmount = useMemo(() => {
-    if (isQuoteRefreshing && (swapMode === SWAPMODE.ExactIn)) {
-      return "..."
+    if (isQuoteRefreshing && swapMode === SwapMode.EXACT_IN) {
+      return '...'
     }
-    if (outAmount == "") {
-      return ""
+    if (outAmount == '') {
+      return ''
     } else {
-      if (swapMode === SWAPMODE.ExactOut) {
+      if (swapMode === SwapMode.EXACT_OUT) {
         return outAmount
       } else {
         return formatLargeNumber(parseFloat(outAmount), outputTokenDecimals)
       }
     }
-  }, [outAmount, isQuoteRefreshing])
+  }, [isQuoteRefreshing, swapMode, outAmount, outputTokenDecimals])
 
   const displayInAmountInUsd = useMemo(() => {
-    if (isQuoteRefreshing || !inputTokenUsdPrice || isNaN(parseFloat(inAmount))) {
-      return "..."
+    if (
+      isQuoteRefreshing ||
+      !inputTokenUsdPrice ||
+      isNaN(parseFloat(inAmount))
+    ) {
+      return '...'
     }
     return formatUsdValue(inputTokenUsdPrice * parseFloat(inAmount))
   }, [isQuoteRefreshing, inputTokenUsdPrice, inAmount])
 
   const displayOutAmountInUsd = useMemo(() => {
-    if (isQuoteRefreshing || !outputTokenUsdPrice || isNaN(parseFloat(outAmount))) {
-      return "..."
+    if (
+      isQuoteRefreshing ||
+      !outputTokenUsdPrice ||
+      isNaN(parseFloat(outAmount))
+    ) {
+      return '...'
     }
     return formatUsdValue(outputTokenUsdPrice * parseFloat(outAmount))
   }, [isQuoteRefreshing, outputTokenUsdPrice, outAmount])
 
   const displaySseFeeAmount = useMemo(() => {
     const fee = (Number(sseFeeAmount) / Math.pow(10, 6)).toString()
-    
+
     return formatLargeNumber(parseFloat(fee), 6)
   }, [sseFeeAmount])
 
   const handleInputAmountByPercentage = (percent: number) => {
-    if (!inputBalance || typeof inputRawBalance !== 'bigint' || !inputTokenDecimals) return
+    if (
+      !inputBalance ||
+      typeof inputRawBalance !== 'bigint' ||
+      !inputTokenDecimals
+    )
+      return
 
     try {
       const quarterAmount = inputRawBalance / BigInt(100 / percent)
@@ -166,16 +212,19 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     setoutputTokenMint(token.address)
   }
 
-  const updateTokensInURL = useCallback((input: string, output: string) => {
+  const updateTokensInURL = useCallback(
+    (input: string, output: string) => {
+      const params = new URLSearchParams(searchParams.toString())
 
-    const params = new URLSearchParams(searchParams.toString())
+      params.set('inputMint', input)
+      params.set('outputMint', output)
+      params.set('mode', 'swap')
 
-    params.set('inputMint', input)
-    params.set('outputMint', output)
-    params.set('mode', 'swap')
-
-    router.push(`/new-trade?${params.toString()}`, { scroll: false })
-  }, [searchParams])
+      router.push(`/new-trade?${params.toString()}`, { scroll: false })
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [searchParams]
+  )
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -189,10 +238,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
       setInAmount(val)
       window.setTimeout(() => {
         e.target.focus()
-        e.target.setSelectionRange(
-          cursorPosition,
-          cursorPosition
-        )
+        e.target.setSelectionRange(cursorPosition, cursorPosition)
       }, 0)
     }
   }
@@ -209,17 +255,14 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
       setOutAmount(val)
       window.setTimeout(() => {
         e.target.focus()
-        e.target.setSelectionRange(
-          cursorPosition,
-          cursorPosition
-        )
+        e.target.setSelectionRange(cursorPosition, cursorPosition)
       }, 0)
     }
   }
 
   const handleSwapDirection = () => {
-    setInAmount("")
-    setOutAmount("")
+    setInAmount('')
+    setOutAmount('')
 
     const tempTokenMint = inputTokenMint
 
@@ -228,24 +271,25 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   }
 
   useEffect(() => {
-    if (swapMode === SWAPMODE.ExactIn) {
-      if (inAmount == "" || isNaN(parseFloat(expectedOutput))) {
-        setOutAmount("")
+    if (swapMode === SwapMode.EXACT_IN) {
+      if (inAmount == '' || isNaN(parseFloat(expectedOutput))) {
+        setOutAmount('')
       } else {
         setOutAmount(expectedOutput)
       }
     } else {
-      if (outAmount == "" || isNaN(parseFloat(expectedOutput))) {
-        setInAmount("")
+      if (outAmount == '' || isNaN(parseFloat(expectedOutput))) {
+        setInAmount('')
       } else {
         setInAmount(expectedOutput)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expectedOutput])
 
   useEffect(() => {
     setTokenMint(outputTokenMint)
-  }, [outputTokenMint])
+  }, [outputTokenMint, setTokenMint])
 
   useEffect(() => {
     if (inputTokenMint && outputTokenMint) {
@@ -254,155 +298,57 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
   return (
-    <div className='space-y-4'>
-      <Card>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <p>Pay</p>
-              <p className="text-xs text-muted">Balance: <TokenBalance walletAddress={walletAddress} tokenMint={inputTokenMint} /></p>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <Input
-                placeholder='0.00'
-                className='text-primary text-xl'
-                type='text'
-                onFocus={() => setSwapMode(SWAPMODE.ExactIn)}
-                onChange={(e) => handleInAmountChange(e)}
-                value={displayInAmount}
-              />
-              <p className="text-xs text-muted">
-                {displayInAmountInUsd}
-              </p>
-            </div>
-
-            <Button
-              variant={ButtonVariant.GHOST}
-              className='w-full border'
-              onClick={() => setShowInputTokenSearch(true)}
-            >
-              <div className='flex gap-3'>
-                <div>
-                  <Image
-                    src={inputTokenImageUri ? inputTokenImageUri : DEFAULT_INPUT_TOKEN_IMAGEURI}
-                    alt='ITokeImg'
-                    width={24}
-                    height={24}
-                    className='rounded-full'
-                  />
-                </div>
-                <span>{inputTokenSymbol ? inputTokenSymbol : DEFAULT_INPUT_TOKEN_SYMBOL}</span>
-              </div>
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-
-            <div className="flex items-center justify-end space-x-2">
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                className="rounded-full"
-                size={ButtonSize.SM}
-                onClick={() => handleInputAmountByPercentage(25)}
-              >
-                25%
-              </Button>
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                className="rounded-full"
-                size={ButtonSize.SM}
-                onClick={() => handleInputAmountByPercentage(50)}
-              >
-                50%
-              </Button>
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                className="rounded-full"
-                size={ButtonSize.SM}
-                onClick={() => handleInputAmountByPercentage(100)}
-              >
-                max
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex items-center w-full justify-between text-muted space-x-2">
-            <div className="bg-muted w-full h-[1px]" />
-            <ArrowDownUp size={40} className='cursor-pointer' onClick={handleSwapDirection} />
-            <div className="bg-muted w-full h-[1px]" />
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <p>Receive</p>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <Input
-                placeholder='0.00'
-                className='text-primary text-xl'
-                type='text'
-                onFocus={() => setSwapMode(SWAPMODE.ExactOut)}
-                onChange={(e) => handleOutAmountChange(e)}
-                value={displayOutAmount}
-              />
-              <p className="text-xs text-muted">
-                {displayOutAmountInUsd}
-              </p>
-            </div>
-
-            <Button
-              variant={ButtonVariant.GHOST}
-              className='w-full border'
-              onClick={() => setShowOutputTokenSearch(true)}
-            >
-              <div className='flex gap-3'>
-                <div>
-                  <Image
-                    src={outputTokenImageUri ? outputTokenImageUri : DEFAULT_OUTPUT_TOKEN_IMAGEURI}
-                    alt='ITokeImg'
-                    width={24}
-                    height={24}
-                    className='rounded-full'
-                  />
-                </div>
-                <span>{outputTokenSymbol ? outputTokenSymbol : DEFAULT_OUTPUT_TOKEN_SYMBOL}</span>
-              </div>
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-4">
+      <TopSwap
+        walletAddress={walletAddress}
+        inputTokenMint={inputTokenMint}
+        setSwapMode={setSwapMode}
+        handleInAmountChange={handleInAmountChange}
+        displayInAmount={displayInAmount}
+        displayInAmountInUsd={displayInAmountInUsd}
+        setShowInputTokenSearch={setShowInputTokenSearch}
+        inputTokenImageUri={inputTokenImageUri}
+        inputTokenSymbol={inputTokenSymbol}
+        handleInputAmountByPercentage={handleInputAmountByPercentage}
+        handleOutAmountChange={handleOutAmountChange}
+        displayOutAmount={displayOutAmount}
+        displayOutAmountInUsd={displayOutAmountInUsd}
+        setShowOutputTokenSearch={setShowOutputTokenSearch}
+        outputTokenImageUri={outputTokenImageUri}
+        outputTokenSymbol={outputTokenSymbol}
+        handleSwapDirection={handleSwapDirection}
+      />
 
       <div>
-        {
-          !sdkHasLoaded && (
-            <Button variant={ButtonVariant.DEFAULT} className="w-full">
-              {t('trade.checking_wallet_status')}<LoadingDots />
-            </Button>
-          )
-        }
+        {!sdkHasLoaded && (
+          <Button variant={ButtonVariant.DEFAULT} className="w-full">
+            {t('trade.checking_wallet_status')}
+            <LoadingDots />
+          </Button>
+        )}
 
-        {
-          !isLoggedIn ? (
-            <Button
-              expand
-              variant={ButtonVariant.DEFAULT}
-              onClick={() => setShowAuthFlow(true)}
-            >
-              connect wallet
-            </Button>
-          ) : (
-            <Button variant={ButtonVariant.DEFAULT} className="w-full" onClick={handleSwap} disabled={loading} >
-              {
-                loading ? (
-                  <Loader2 className='animate-spin' />
-                ) : (
-                  <span>Execute Swap</span>
-                )
-              }
-            </Button>
-          )
-        }
+        {!isLoggedIn ? (
+          <Button
+            expand
+            variant={ButtonVariant.DEFAULT}
+            onClick={() => setShowAuthFlow(true)}
+          >
+            connect wallet
+          </Button>
+        ) : (
+          <Button
+            variant={ButtonVariant.DEFAULT}
+            className="w-full"
+            onClick={handleSwap}
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <span>Execute Swap</span>
+            )}
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -414,10 +360,15 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
             </div>
 
             <Card className="background-gradient-card">
-              <CardContent className='px-3 py-2'>
-                <div className='flex items-center'>
-                  <div className="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center cursor-pointer" onClick={() => setUseSSEForFees(!useSSEForFees)}>
-                    {useSSEForFees && <div className="w-3 h-3 rounded-full bg-white"></div>}
+              <CardContent className="px-3 py-2">
+                <div className="flex items-center">
+                  <div
+                    className="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center cursor-pointer"
+                    onClick={() => setUseSSEForFees(!useSSEForFees)}
+                  >
+                    {useSSEForFees && (
+                      <div className="w-3 h-3 rounded-full bg-white"></div>
+                    )}
                   </div>
                   <div>
                     <p>Pay fee with SSE</p>
@@ -432,40 +383,43 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
               <p>{displaySseFeeAmount} SSE</p>
             </div>
 
-            <div className="flex justify-between items-center cursor-pointer" onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}>
+            <div
+              className="flex justify-between items-center cursor-pointer"
+              onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
+            >
               <p>SSE offers the cheapest fee across all current platforms.</p>
-              {isRouteInfoOpen ? (<ChevronDown className="h-8 w-8" />) : (<ChevronUp className="h-8 w-8" />)}
+              {isRouteInfoOpen ? (
+                <ChevronDown className="h-8 w-8" />
+              ) : (
+                <ChevronUp className="h-8 w-8" />
+              )}
             </div>
 
-            {
-              isRouteInfoOpen && (
-                <Card>
-                  <CardContent className='px-3 py-2 space-y-2'>
-                    <div className="flex justify-between items-center">
-                      <p className='uppercase'>platforms</p>
-                      <p>You'll get</p>
-                    </div>
+            {isRouteInfoOpen && (
+              <Card>
+                <CardContent className="px-3 py-2 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <p className="uppercase">platforms</p>
+                    <p>You'll get</p>
+                  </div>
 
-                    <>
-                      {
-                        isQuoteRefreshing ? (
-                          <div className='h-full flex justify-center items-center'>
-                            <Loader2 className='w-8 h-8 animate-spin' />
-                          </div>
-                        ) : (
-                          <PlatformComparison
-                            jupiterSwapResponse={quoteResponse}
-                            outputTokenSymbol={outputTokenSymbol}
-                            outputTokenDecimals={outputTokenDecimals}
-                            platformExpectedOutAmount={expectedOutput}
-                          />
-                        )
-                      }
-                    </>
-                  </CardContent>
-                </Card>
-              )
-            }
+                  <>
+                    {isQuoteRefreshing ? (
+                      <div className="h-full flex justify-center items-center">
+                        <Loader2 className="w-8 h-8 animate-spin" />
+                      </div>
+                    ) : (
+                      <PlatformComparison
+                        jupiterSwapResponse={quoteResponse}
+                        outputTokenSymbol={outputTokenSymbol}
+                        outputTokenDecimals={outputTokenDecimals}
+                        platformExpectedOutAmount={expectedOutput}
+                      />
+                    )}
+                  </>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -475,7 +429,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
           onSelect={handleInputTokenSelect}
           onClose={() => {
             setShowInputTokenSearch(false)
-            setInAmount("")
+            setInAmount('')
           }}
         />
       )}
@@ -484,7 +438,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
           onSelect={handleOutputTokenSelect}
           onClose={() => {
             setShowOutputTokenSearch(false)
-            setInAmount("")
+            setInAmount('')
           }}
         />
       )}

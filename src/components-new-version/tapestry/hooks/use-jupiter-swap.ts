@@ -172,25 +172,23 @@ export function useJupiterSwap({
       setLoading(false)
       setIsQuoteRefreshing(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputAmount,
     inputMint,
+    inputDecimals,
     outputMint,
     outputDecimals,
-    inputDecimals,
-    resetQuoteState,
-    quoteResponse,
     platformFeeBps,
-    swapMode,
-    ssePrice,
-    t,
+    resetQuoteState,
   ])
 
   const refreshQuote = useCallback(() => {
     if (!isQuoteRefreshing && !loading) {
       fetchQuote()
     }
-  }, [fetchQuote, isQuoteRefreshing, loading])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isQuoteRefreshing, loading])
 
   const handleSwap = async () => {
     if (platformFeeBps === 1 && !ssePrice) {
@@ -347,6 +345,7 @@ export function useJupiterSwap({
         refreshIntervalRef.current = null
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputAmount,
     inputMint,
@@ -354,7 +353,6 @@ export function useJupiterSwap({
     loading,
     isFullyConfirmed,
     isQuoteRefreshing,
-    fetchQuote,
   ])
 
   useEffect(() => {
@@ -368,6 +366,7 @@ export function useJupiterSwap({
     ) {
       fetchQuote()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputAmount,
     inputMint,
@@ -375,9 +374,7 @@ export function useJupiterSwap({
     slippageBps,
     platformFeeBps,
     ssePrice,
-    isQuoteRefreshing,
-    loading,
-    fetchQuote,
+    // Remove fetchQuote from dependencies to prevent circular updates
   ])
 
   return {

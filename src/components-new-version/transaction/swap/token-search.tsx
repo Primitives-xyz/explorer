@@ -1,14 +1,14 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { TokenSearchHeader } from './components/token-search-header'
-import { useTokenSearch } from './hooks/use-token-search'
+import { TokenList } from '@/components-new-version/transaction/swap/components/token-list'
+import { TokenSearchHeader } from '@/components-new-version/transaction/swap/components/token-search-header'
+import { useTokenSearch } from '@/components-new-version/transaction/swap/hooks/use-token-search'
 import {
   TokenInfo,
   TokenSearchProps,
   TokenSearchResult,
-} from './types/token-types'
-import { TokenList } from './components/token-list'
+} from '@/components-new-version/transaction/swap/types/token-types'
+import { useTranslations } from 'next-intl'
 
 export function TokenSearch({ onSelect, onClose }: TokenSearchProps) {
   const {
