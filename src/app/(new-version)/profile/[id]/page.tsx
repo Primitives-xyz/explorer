@@ -1,4 +1,4 @@
-import { OverflowContentWrapper } from '@/components-new-version/common/overflow-content-wrapper'
+import { MainContentWrapper } from '@/components-new-version/common/main-content-wrapper'
 import { ProfileContent } from '@/components-new-version/profile/profile-content'
 
 export default async function Profile({
@@ -9,8 +9,8 @@ export default async function Profile({
   const { id } = await params
 
   return (
-    <OverflowContentWrapper>
+    <MainContentWrapper>
       <ProfileContent id={id} />
-    </OverflowContentWrapper>
+    </MainContentWrapper>
   )
 }
