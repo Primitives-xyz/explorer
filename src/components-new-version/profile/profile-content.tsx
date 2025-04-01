@@ -3,33 +3,38 @@
 import { usePortfolioData } from '@/components-new-version/profile/hooks/use-portfolio-data'
 import { ProfileHeader } from '@/components-new-version/profile/profile-header'
 import { useProfileInfo } from '@/components-new-version/tapestry/hooks/use-profile-info'
+
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  CardVariant,
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { formatNumber } from '@/components-new-version/utils/utils'
 
 interface Props {
-  id: string
+  username?: string
   walletAddress?: string
 }
 
-export function ProfileContent({ id, walletAddress }: Props) {
+export function ProfileContent({ username, walletAddress }: Props) {
   const { mainUsername } = useCurrentWallet()
 
   const { profileInfo } = useProfileInfo({
-    username: id,
+    username,
     mainUsername,
     walletAddress,
   })
 
-  console.log(profileInfo)
+  const targetWalletAddress =
+    walletAddress || profileInfo?.wallet?.address || ''
+
+  const displayUsername = username || profileInfo?.profile?.username || ''
 
   const { portfolioData, isLoading: isPortfolioLoading } = usePortfolioData({
-    walletAddress: profileInfo?.wallet?.address,
+    walletAddress: targetWalletAddress,
   })
 
   const { items = [], totalUsd = 0 } = portfolioData?.data || {}
@@ -45,7 +50,7 @@ export function ProfileContent({ id, walletAddress }: Props) {
       <ProfileHeader
         profileInfo={profileInfo}
         mainUsername={mainUsername}
-        username={id}
+        username={displayUsername}
       />
       <div className="flex w-full justify-between gap-4">
         <Card className="w-1/2">
@@ -77,9 +82,11 @@ export function ProfileContent({ id, walletAddress }: Props) {
 
 function SmallCard({ label, value }: { label: string; value?: string }) {
   return (
-    <div className="bg-secondary/20 rounded-md p-2 flex flex-col space-y-2 ">
-      <span className="text-secondary">{label}</span>
-      <span>{value}</span>
-    </div>
+    <Card variant={CardVariant.ACCENT_SOCIAL}>
+      <CardHeader className="!p-2 text-secondary">
+        <CardTitle>{label}</CardTitle>
+      </CardHeader>
+      <CardContent className="!p-2">{value}</CardContent>
+    </Card>
   )
 }

@@ -43,7 +43,7 @@ export function Menu() {
     {
       title: 'Profile',
       icon: User,
-      href: route('profile', { id: mainUsername }),
+      href: route('entity', { id: mainUsername }),
     },
     {
       title: 'Stake',

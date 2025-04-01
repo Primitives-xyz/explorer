@@ -1,10 +1,10 @@
 'use client'
 
 import { FollowButton } from '@/components-new-version/common/follow-button'
-import { WalletAddressButton } from '@/components-new-version/common/wallet-address-button'
 import { useGetAllProfiles } from '@/components-new-version/tapestry/hooks/use-get-all-profiles'
 import {
   Button,
+  ButtonSize,
   ButtonVariant,
   Card,
   CardContent,
@@ -15,7 +15,10 @@ import {
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
 import { route } from '@/components-new-version/utils/route'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { cn } from '@/components-new-version/utils/utils'
+import {
+  abbreviateWalletAddress,
+  cn,
+} from '@/components-new-version/utils/utils'
 
 export function RightSideDiscover() {
   const { profiles, loading } = useGetAllProfiles()
@@ -54,15 +57,21 @@ export function RightSideDiscover() {
                       {!isSame && (
                         <Button
                           variant={ButtonVariant.GHOST}
-                          href={route('address', { id: elem.profile.username })}
+                          href={route('entity', { id: elem.profile.username })}
                           className="p-0 w-fit hover:bg-transparent"
                         >
                           @{elem.profile.username}
                         </Button>
                       )}
-                      <WalletAddressButton
-                        walletAddress={elem.wallet.address}
-                      />
+                      <Button
+                        href={route('entity', { id: elem.wallet.address })}
+                        variant={ButtonVariant.BADGE}
+                        size={ButtonSize.SM}
+                      >
+                        {abbreviateWalletAddress({
+                          address: elem.wallet.address,
+                        })}
+                      </Button>
                     </div>
                   </div>
                   <FollowButton

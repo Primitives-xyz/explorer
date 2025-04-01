@@ -180,3 +180,13 @@ export interface ITokenBalanceResponse {
     uiAmountString: string
   }
 }
+
+export interface RPCResponse {
+  jsonrpc: string
+  id: string
+  error?: {
+    message: string
+    code: number
+  }
+  result?: TokenResponse['result']
+}
