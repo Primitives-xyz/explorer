@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import {
+  DEFAULT_SLIPPAGE_BPS,
+  DEFAULT_SLIPPAGE_VALUE,
+  PLATFORM_FEE_ACCOUNT,
+  PLATFORM_FEE_BPS,
+} from '@/components-new-version/utils/constants'
+import { isSolanaWallet } from '@dynamic-labs/solana'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
-import { DEFAULT_SLIPPAGE_BPS, DEFAULT_SLIPPAGE_VALUE, PLATFORM_FEE_ACCOUNT, PLATFORM_FEE_BPS } from "@/components-new-version/utils/constants"
-import { useSSEPrice } from "./use-sse-price"
-import { useToast } from "./use-toast"
-import { Connection, VersionedTransaction } from "@solana/web3.js"
-import { isSolanaWallet } from "@dynamic-labs/solana"
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useSSEPrice } from './use-sse-price'
+import { useToast } from './use-toast'
 
 interface UseJupiterSwapParams {
   inputMint: string
@@ -59,9 +64,9 @@ export function useJupiterSwap({
   platformFeeBps = PLATFORM_FEE_BPS,
   primaryWallet,
   walletAddress,
-  swapMode = "ExactIn"
+  swapMode = 'ExactIn',
 }: UseJupiterSwapParams) {
-  console.log("platformFeeBps:", platformFeeBps)
+  console.log('platformFeeBps:', platformFeeBps)
   const t = useTranslations()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
@@ -69,7 +74,9 @@ export function useJupiterSwap({
   const [isFullyConfirmed, setIsFullyConfirmed] = useState<boolean>(false)
   const [isQuoteRefreshing, setIsQuoteRefreshing] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
-  const [slippageBps, setSlippageBps] = useState<number | string>(DEFAULT_SLIPPAGE_BPS)
+  const [slippageBps, setSlippageBps] = useState<number | string>(
+    DEFAULT_SLIPPAGE_BPS
+  )
   const [priceImpact, setPriceImpact] = useState<string>('')
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const [error, setError] = useState<string | null>(null)
@@ -90,7 +97,13 @@ export function useJupiterSwap({
   }, [])
 
   const fetchQuote = useCallback(async () => {
-    if (!inputAmount || !inputMint || !outputMint || !outputDecimals || !inputDecimals) {
+    if (
+      !inputAmount ||
+      !inputMint ||
+      !outputMint ||
+      !outputDecimals ||
+      !inputDecimals
+    ) {
       resetQuoteState()
       return
     }
@@ -102,15 +115,23 @@ export function useJupiterSwap({
         setLoading(true)
       }
 
-      const inputAmountInDecimals = Math.floor(Number(inputAmount) * Math.pow(10, inputDecimals))
+      const inputAmountInDecimals = Math.floor(
+        Number(inputAmount) * Math.pow(10, inputDecimals)
+      )
       const QUOTE_URL = `
-        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1}&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
+        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${
+        platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+      }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
       `
       const response = await fetch(QUOTE_URL).then((res) => res.json())
-      if (swapMode == "ExactIn") {
-        setExpectedOutput((Number(response.outAmount) / Math.pow(10, outputDecimals)).toString())
+      if (swapMode == 'ExactIn') {
+        setExpectedOutput(
+          (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString()
+        )
       } else {
-        setExpectedOutput((Number(response.inAmount) / Math.pow(10, outputDecimals)).toString())
+        setExpectedOutput(
+          (Number(response.inAmount) / Math.pow(10, outputDecimals)).toString()
+        )
       }
       setPriceImpact(response.priceImpactPct)
       setQuoteResponse(response)
@@ -151,14 +172,25 @@ export function useJupiterSwap({
       setLoading(false)
       setIsQuoteRefreshing(false)
     }
-
-  }, [inputAmount, inputMint, inputDecimals, outputMint, outputDecimals, platformFeeBps, resetQuoteState])
+  }, [
+    inputAmount,
+    inputMint,
+    outputMint,
+    outputDecimals,
+    inputDecimals,
+    resetQuoteState,
+    quoteResponse,
+    platformFeeBps,
+    swapMode,
+    ssePrice,
+    t,
+  ])
 
   const refreshQuote = useCallback(() => {
     if (!isQuoteRefreshing && !loading) {
       fetchQuote()
     }
-  }, [isQuoteRefreshing, loading])
+  }, [fetchQuote, isQuoteRefreshing, loading])
 
   const handleSwap = async () => {
     if (platformFeeBps === 1 && !ssePrice) {
@@ -194,7 +226,9 @@ export function useJupiterSwap({
           const sseAmount = halfFeeUSDC / ssePrice
 
           // Convert to base units (6 decimals)
-          currentSseFeeAmount = Math.floor(sseAmount * Math.pow(10, 6)).toString()
+          currentSseFeeAmount = Math.floor(
+            sseAmount * Math.pow(10, 6)
+          ).toString()
           setSseFeeAmount(currentSseFeeAmount)
         } catch (err) {
           console.error(t('error.error_calculating_sse_fee'), err)
@@ -226,7 +260,9 @@ export function useJupiterSwap({
         throw new Error(response.error)
       }
 
-      const transaction = VersionedTransaction.deserialize(Buffer.from(response.transaction, 'base64'))
+      const transaction = VersionedTransaction.deserialize(
+        Buffer.from(response.transaction, 'base64')
+      )
       if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
         return
       }
@@ -291,7 +327,6 @@ export function useJupiterSwap({
     } finally {
       setLoading(false)
     }
-
   }
 
   useEffect(() => {
@@ -300,12 +335,7 @@ export function useJupiterSwap({
       refreshIntervalRef.current = null
     }
 
-    if (
-      inputAmount &&
-      inputMint &&
-      outputMint &&
-      !isFullyConfirmed
-    ) {
+    if (inputAmount && inputMint && outputMint && !isFullyConfirmed) {
       refreshIntervalRef.current = setInterval(() => {
         if (!isQuoteRefreshing && !loading) fetchQuote() // Use a flag to prevent multiple concurrent refreshes
       }, 15000)
@@ -317,7 +347,15 @@ export function useJupiterSwap({
         refreshIntervalRef.current = null
       }
     }
-  }, [inputAmount, inputMint, outputMint, loading, isFullyConfirmed, isQuoteRefreshing])
+  }, [
+    inputAmount,
+    inputMint,
+    outputMint,
+    loading,
+    isFullyConfirmed,
+    isQuoteRefreshing,
+    fetchQuote,
+  ])
 
   useEffect(() => {
     // Only fetch quote if we have the necessary inputs and not already refreshing
@@ -337,7 +375,9 @@ export function useJupiterSwap({
     slippageBps,
     platformFeeBps,
     ssePrice,
-    // Remove fetchQuote from dependencies to prevent circular updates
+    isQuoteRefreshing,
+    loading,
+    fetchQuote,
   ])
 
   return {
@@ -351,7 +391,7 @@ export function useJupiterSwap({
     handleSwap,
     isQuoteRefreshing,
     refreshQuote,
-    sseFeeAmount
+    sseFeeAmount,
   }
 }
 

@@ -86,12 +86,17 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
               {overview ? (
                 <>
                   <p>
-                    {`${formatNumber(overview.circulatingSupply)} (${(
-                      (10 / 100) *
+                    {`${formatNumber(overview.circulatingSupply)} 
+                    
+                    (${//to do the right calculation for the percentage
+                    (
+                      (overview.circulatingSupply /
+                        overview.circulatingSupply) *
                       100
-                    ).toFixed(2)}%)`}
+                    )
+                      //----------------------
+                      .toFixed(2)}%)`}
                   </p>
-                  <p>{overview.supply}</p>
                 </>
               ) : (
                 <p>...</p>
