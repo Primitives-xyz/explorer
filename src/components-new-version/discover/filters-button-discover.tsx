@@ -1,8 +1,8 @@
 'use client'
 
-import { FilterTabs } from '@/components-new-version/common/filter-tabs'
 import { TimeFrame } from '@/components-new-version/discover/hooks/use-top-traders'
 import {
+  FilterTabs,
   Select,
   SelectContent,
   SelectItem,

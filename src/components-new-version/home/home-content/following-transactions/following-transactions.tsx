@@ -1,11 +1,16 @@
 'use client'
 
-import { FilterTabs } from '@/components-new-version/common/filter-tabs'
 import { useFollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/hooks/use-following-transactions'
 import { TransactionsEntry } from '@/components-new-version/home/home-content/following-transactions/transactions-entry'
 import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get-following'
 import { useGetNamespaceProfiles } from '@/components-new-version/tapestry/hooks/use-get-namespace-profiles'
-import { Button, Card, CardContent, Spinner } from '@/components-new-version/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  FilterTabs,
+  Spinner,
+} from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 
@@ -52,22 +57,23 @@ export function FollowingTransactions() {
   }
 
   return (
-    <>
+    <div className="w-full">
       <FilterTabs
         options={options}
         selected={selectedType}
         onSelect={setSelectedType}
       />
-
-      {isLoadingTransactions && (
-        <div className="w-full flex justify-center items-center pt-24">
+      {isLoadingTransactions ? (
+        <div className="w-full flex justify-center items-center h-[400px]">
           <Spinner large />
         </div>
+      ) : (
+        <div className="space-y-4">
+          {aggregatedTransactions.map((transaction, index) => (
+            <TransactionsEntry key={index} transaction={transaction} />
+          ))}
+        </div>
       )}
-
-      {aggregatedTransactions.map((transaction, index) => (
-        <TransactionsEntry key={index} transaction={transaction} />
-      ))}
-    </>
+    </div>
   )
 }
