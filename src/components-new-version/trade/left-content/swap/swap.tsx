@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ArrowDownUp, ChevronDown, ChevronUp, CircleAlert, Loader2 } from 'lucide-react'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components-new-version/ui'
 import { Card, CardContent } from '@/components-new-version/ui/card'
@@ -18,6 +18,7 @@ import LoadingDots from '@/components-new-version/ui/loading-dots'
 import { useTranslations } from 'next-intl'
 import PlatformComparison from './platform-comparison'
 import { TokenSearch } from '@/components-new-version/transaction/swap/token-search'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 interface SwapProps {
   mint: string
@@ -53,6 +54,8 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
 
 export function Swap({ mint, setTokenMint }: SwapProps) {
   const t = useTranslations()
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setoutputTokenMint] = useState<string>(SSE_MINT)
   const [inputTokenAmount, setInputTokenAmount] = useState<string>("")
@@ -129,9 +132,26 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     setoutputTokenMint(token.address)
   }
 
+  const updateTokensInURL = useCallback((input: string, output: string) => {
+
+    const params = new URLSearchParams(searchParams.toString())
+
+    params.set('inputMint', input)
+    params.set('outputMint', output)
+    params.set('mode', 'swap')
+
+    router.push(`/new-trade?${params.toString()}`, { scroll: false })
+  }, [searchParams])
+
   useEffect(() => {
     setTokenMint(outputTokenMint)
   }, [outputTokenMint])
+
+  useEffect(() => {
+    if (inputTokenMint && outputTokenMint) {
+      updateTokensInURL(inputTokenMint, outputTokenMint)
+    }
+  }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
   return (
     <>
