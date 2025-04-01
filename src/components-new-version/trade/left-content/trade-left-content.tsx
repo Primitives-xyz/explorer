@@ -32,7 +32,6 @@ export function TradeLeftContent({ mint, setTokenMint }: TradeLeftContentProps) 
       />
 
       {selectedType === FilterType.SWAP && <Swap mint={mint} setTokenMint={setTokenMint} />}
-
       {selectedType === FilterType.PERPETUAL && <Perpetual />}
     </div>
   )
