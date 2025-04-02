@@ -122,6 +122,9 @@ importers:
       '@vercel/og':
         specifier: 0.6.5
         version: 0.6.5
+      '@vertigo-amm/vertigo-sdk':
+        specifier: 0.1.6
+        version: 0.1.6(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@types/node@22.13.1)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)
       bs58:
         specifier: 6.0.0
         version: 6.0.0
@@ -202,10 +205,10 @@ importers:
         version: 3.0.1
       tailwind-scrollbar-hide:
         specifier: 2.0.0
-        version: 2.0.0(tailwindcss@3.4.17)
+        version: 2.0.0(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3)))
       tailwindcss-animate:
         specifier: 1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3)))
       zod:
         specifier: 3.24.2
         version: 3.24.2
@@ -251,7 +254,7 @@ importers:
         version: 3.2.3(prettier@2.8.8)(typescript@5.7.3)
       tailwindcss:
         specifier: ^3.4.1
-        version: 3.4.17
+        version: 3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))
       typescript:
         specifier: ^5.7.2
         version: 5.7.3
@@ -965,6 +968,10 @@ packages:
     resolution: {integrity: sha512-t8kDRGrKXyp6+tjUh7hw2RLyclsW4TRoRvRHtSyAX9Bb5ldlFh+90YAYY6awRXrlB4G5G2izNeGySpATlFzmOg==}
     engines: {node: '>=6.9.0'}
 
+  '@coral-xyz/anchor-cli@0.30.1':
+    resolution: {integrity: sha512-DgRmrFp+qW0bclHNfsSm7XQE1eNfsE2BMtahOClNISXzT5PwbmQsC8laSEaADvU/FJ7Hy/e2buzuPtgMxHs6gw==}
+    hasBin: true
+
   '@coral-xyz/anchor-errors@0.30.1':
     resolution: {integrity: sha512-9Mkradf5yS5xiLWrl9WrpjqOrAV+/W2RQHDlbnAZBivoGpOs1ECjoDCkVk4aRG8ZdiFiB8zQEVlxf+8fKkmSfQ==}
     engines: {node: '>=10'}
@@ -988,6 +995,10 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       '@solana/web3.js': ^1.68.0
+
+  '@cspotcode/source-map-support@0.8.1':
+    resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
+    engines: {node: '>=12'}
 
   '@dialectlabs/blockchain-sdk-solana@1.2.1':
     resolution: {integrity: sha512-SlaJP5W9rhTbbBB+xgZaw3EpoVgslkVAXI1+FEfdEgTt7O0RyVHoBcMJ3JvNo82HIxnJ7D4N6vHkVtMdha6n3Q==}
@@ -1601,6 +1612,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@jridgewell/trace-mapping@0.3.9':
+    resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
   '@keystonehq/alias-sampling@0.1.2':
     resolution: {integrity: sha512-5ukLB3bcgltgaFfQfYKYwHDUbwHicekYo53fSEa7xhVkAEqsA74kxdIwoBIURmGUtXe3EVIRm4SYlgcrt2Ri0w==}
@@ -3526,6 +3540,18 @@ packages:
     peerDependencies:
       tslib: ^2.6.2
 
+  '@tsconfig/node10@1.0.11':
+    resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
+
+  '@tsconfig/node12@1.0.11':
+    resolution: {integrity: sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag==}
+
+  '@tsconfig/node14@1.0.3':
+    resolution: {integrity: sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==}
+
+  '@tsconfig/node16@1.0.4':
+    resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
   '@turnkey/api-key-stamper@0.4.3':
     resolution: {integrity: sha512-K0U87qq91z/W5H86MV3kQtdU2x+hFNoyT1BMa9z4CDbphnlvjxg6FVvAKaf7aM40IN/sQfDOb8EwxQIlwXFMjA==}
     engines: {node: '>=18.0.0'}
@@ -3741,6 +3767,9 @@ packages:
     resolution: {integrity: sha512-GFXtgid3+TcVHTd668a10vGpzAh4Ty/yBZPRxKf1UicI8Vi8EthfvSxcaLW0KvQBBe1+d7TcjecLZHRT8JzQ4g==}
     engines: {node: '>=16'}
 
+  '@vertigo-amm/vertigo-sdk@0.1.6':
+    resolution: {integrity: sha512-cv6ATzXdoeRW5BVAc5YfZfJOsd6aEjncCqB0azhM/B4rj+oMU1xDg8w0LgGO2429pqC6bzLSsIXMEyi8PhbCvw==}
+
   '@wallet-standard/app@1.0.1':
     resolution: {integrity: sha512-LnLYq2Vy2guTZ8GQKKSXQK3+FRGPil75XEdkZqE6fiLixJhZJoJa5hT7lXxwe0ykVTt9LEThdTbOpT7KadS26Q==}
     engines: {node: '>=16'}
@@ -3897,6 +3926,10 @@ packages:
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
 
+  acorn-walk@8.3.4:
+    resolution: {integrity: sha512-ueEepnujpqee2o5aIYnvHU6C0A42MNdsIDeqy5BydrkuC5R1ZuUFnm27EeFJGoEHJQgn3uleRvmTXaJgfXbt4g==}
+    engines: {node: '>=0.4.0'}
+
   acorn@8.14.0:
     resolution: {integrity: sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==}
     engines: {node: '>=0.4.0'}
@@ -3984,6 +4017,9 @@ packages:
 
   arconnect@0.4.2:
     resolution: {integrity: sha512-Jkpd4QL3TVqnd3U683gzXmZUVqBUy17DdJDuL/3D9rkysLgX6ymJ2e+sR+xyZF5Rh42CBqDXWNMmCjBXeP7Gbw==}
+
+  arg@4.1.3:
+    resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
 
   arg@5.0.2:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
@@ -4576,6 +4612,9 @@ packages:
   create-hmac@1.1.7:
     resolution: {integrity: sha512-MJG9liiZ+ogc4TzUwuvbER1JRdgvUFSB5+VR/g5h82fGaIRWMWddtKBHi7/sVhfjQZ6SehlyhvQYrcYkaUIpLg==}
 
+  create-require@1.1.1:
+    resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+
   cross-fetch@3.2.0:
     resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
 
@@ -4860,6 +4899,10 @@ packages:
   diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  diff@4.0.2:
+    resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
+    engines: {node: '>=0.3.1'}
 
   diffie-hellman@5.0.3:
     resolution: {integrity: sha512-kqag/Nl+f3GwyK25fhUMYj81BUOrZ9IuJsjIcDE5icNM9FJHAVm3VcUDxdLPoQtTuUylWm6ZIknYJwwaPxsUzg==}
@@ -6163,6 +6206,9 @@ packages:
   make-dir@2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
     engines: {node: '>=6'}
+
+  make-error@1.3.6:
+    resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
 
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
@@ -7866,6 +7912,20 @@ packages:
   ts-mixer@6.0.4:
     resolution: {integrity: sha512-ufKpbmrugz5Aou4wcr5Wc1UUFWOLhq+Fm6qa6P0w0K5Qw2yhaUoiWszhCVuNQyNwrlGiscHOmqYoAox1PtvgjA==}
 
+  ts-node@10.9.2:
+    resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+
   tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
 
@@ -8131,6 +8191,9 @@ packages:
     resolution: {integrity: sha512-AXyzMjazYB3ovL3q051VLH06Ixj//Knx7QnUSi1T//Ie3io6CpsPu9nVMOx5MoLWh6xV0B9J0hIaxungxXUbPQ==}
     deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
+  v8-compile-cache-lib@3.0.1:
+    resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
+
   varuint-bitcoin@2.0.0:
     resolution: {integrity: sha512-6QZbU/rHO2ZQYpWFDALCDSRsXbAs1VOEmXAxtbtjLtKuMJ/FQ8YbhfxlaiKv5nklci0M6lZtlZyxo9Q+qNnyog==}
 
@@ -8332,6 +8395,10 @@ packages:
   yargs@17.7.2:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
+
+  yn@3.1.1:
+    resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
+    engines: {node: '>=6'}
 
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
@@ -9262,6 +9329,8 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
+  '@coral-xyz/anchor-cli@0.30.1': {}
+
   '@coral-xyz/anchor-errors@0.30.1': {}
 
   '@coral-xyz/anchor@0.29.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
@@ -9318,6 +9387,10 @@ snapshots:
       '@solana/web3.js': 1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       bn.js: 5.2.1
       buffer-layout: 1.2.2
+
+  '@cspotcode/source-map-support@0.8.1':
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.9
 
   '@dialectlabs/blockchain-sdk-solana@1.2.1(@dialectlabs/sdk@1.9.4)(@solana/wallet-adapter-base@0.9.23(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
@@ -10478,6 +10551,11 @@ snapshots:
   '@jridgewell/sourcemap-codec@1.5.0': {}
 
   '@jridgewell/trace-mapping@0.3.25':
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.2
+      '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@jridgewell/trace-mapping@0.3.9':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -13422,6 +13500,14 @@ snapshots:
       varuint-bitcoin: 2.0.0
       wif: 5.0.0
 
+  '@tsconfig/node10@1.0.11': {}
+
+  '@tsconfig/node12@1.0.11': {}
+
+  '@tsconfig/node14@1.0.3': {}
+
+  '@tsconfig/node16@1.0.4': {}
+
   '@turnkey/api-key-stamper@0.4.3':
     dependencies:
       '@noble/curves': 1.8.1
@@ -13728,6 +13814,24 @@ snapshots:
       '@resvg/resvg-wasm': 2.4.0
       satori: 0.12.1
       yoga-wasm-web: 0.3.3
+
+  '@vertigo-amm/vertigo-sdk@0.1.6(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(@types/node@22.13.1)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@coral-xyz/anchor': 0.30.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@coral-xyz/anchor-cli': 0.30.1
+      '@solana/spl-token': 0.4.12(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)
+      ts-node: 10.9.2(@types/node@22.13.1)(typescript@5.7.3)
+      zod: 3.24.2
+    transitivePeerDependencies:
+      - '@solana/web3.js'
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bufferutil
+      - encoding
+      - fastestsmallesttextencoderdecoder
+      - typescript
+      - utf-8-validate
 
   '@wallet-standard/app@1.0.1':
     dependencies:
@@ -14065,6 +14169,10 @@ snapshots:
     dependencies:
       acorn: 8.14.0
 
+  acorn-walk@8.3.4:
+    dependencies:
+      acorn: 8.14.0
+
   acorn@8.14.0: {}
 
   aes-js@3.0.0: {}
@@ -14177,6 +14285,8 @@ snapshots:
     dependencies:
       arweave: 1.15.5
     optional: true
+
+  arg@4.1.3: {}
 
   arg@5.0.2: {}
 
@@ -14880,6 +14990,8 @@ snapshots:
       safe-buffer: 5.2.1
       sha.js: 2.4.11
 
+  create-require@1.1.1: {}
+
   cross-fetch@3.2.0:
     dependencies:
       node-fetch: 2.7.0
@@ -15119,6 +15231,8 @@ snapshots:
   didyoumean@1.2.2: {}
 
   diff-sequences@29.6.3: {}
+
+  diff@4.0.2: {}
 
   diffie-hellman@5.0.3:
     dependencies:
@@ -16680,6 +16794,8 @@ snapshots:
       pify: 4.0.1
       semver: 5.7.2
 
+  make-error@1.3.6: {}
+
   makeerror@1.0.12:
     dependencies:
       tmpl: 1.0.5
@@ -17404,12 +17520,13 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.5.1
 
-  postcss-load-config@4.0.2(postcss@8.5.1):
+  postcss-load-config@4.0.2(postcss@8.5.1)(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3)):
     dependencies:
       lilconfig: 3.1.3
       yaml: 2.7.0
     optionalDependencies:
       postcss: 8.5.1
+      ts-node: 10.9.2(@types/node@22.13.1)(typescript@5.7.3)
 
   postcss-nested@6.2.0(postcss@8.5.1):
     dependencies:
@@ -18549,15 +18666,15 @@ snapshots:
 
   tailwind-merge@3.0.1: {}
 
-  tailwind-scrollbar-hide@2.0.0(tailwindcss@3.4.17):
+  tailwind-scrollbar-hide@2.0.0(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))):
     dependencies:
-      tailwindcss: 3.4.17
+      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.17):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))):
     dependencies:
-      tailwindcss: 3.4.17
+      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))
 
-  tailwindcss@3.4.17:
+  tailwindcss@3.4.17(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -18576,7 +18693,7 @@ snapshots:
       postcss: 8.5.1
       postcss-import: 15.1.0(postcss@8.5.1)
       postcss-js: 4.0.1(postcss@8.5.1)
-      postcss-load-config: 4.0.2(postcss@8.5.1)
+      postcss-load-config: 4.0.2(postcss@8.5.1)(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))
       postcss-nested: 6.2.0(postcss@8.5.1)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.10
@@ -18684,6 +18801,24 @@ snapshots:
   ts-interface-checker@0.1.13: {}
 
   ts-mixer@6.0.4: {}
+
+  ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 22.13.1
+      acorn: 8.14.0
+      acorn-walk: 8.3.4
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.7.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
 
   tsconfig-paths@3.15.0:
     dependencies:
@@ -18893,6 +19028,8 @@ snapshots:
     dependencies:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
+
+  v8-compile-cache-lib@3.0.1: {}
 
   varuint-bitcoin@2.0.0:
     dependencies:
@@ -19140,6 +19277,8 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
+
+  yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
 
