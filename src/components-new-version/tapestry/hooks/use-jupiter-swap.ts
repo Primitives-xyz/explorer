@@ -385,10 +385,10 @@ export function useJupiterSwap({
     expectedOutput,
     priceImpact,
     isFullyConfirmed,
-    handleSwap,
     isQuoteRefreshing,
-    refreshQuote,
     sseFeeAmount,
+    handleSwap,
+    refreshQuote,
   }
 }
 

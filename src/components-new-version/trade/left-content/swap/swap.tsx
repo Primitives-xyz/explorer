@@ -4,11 +4,10 @@ import { useJupiterSwap } from '@/components-new-version/tapestry/hooks/use-jupi
 import { useTokenBalance } from '@/components-new-version/tapestry/hooks/use-token-balance'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
-import PlatformComparison from '@/components-new-version/trade/left-content/swap/platform-comparison'
+import { BottomSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/bottom-swap'
 import { CenterButtonSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/center-button-swap'
 import { TopSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/top-swap'
 import { TokenSearch } from '@/components-new-version/transaction/swap/token-search'
-import { Card, CardContent } from '@/components-new-version/ui/card'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
 import {
   formatLargeNumber,
@@ -16,7 +15,6 @@ import {
   formatUsdValue,
 } from '@/components-new-version/utils/format'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { ChevronDown, ChevronUp, CircleAlert, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -41,7 +39,6 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   const [outAmount, setOutAmount] = useState<string>('')
   const [swapMode, setSwapMode] = useState<SwapMode>(SwapMode.EXACT_IN)
   const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
-  const [isRouteInfoOpen, setIsRouteInfoOpen] = useState<boolean>(false)
   const [showInputTokenSearch, setShowInputTokenSearch] =
     useState<boolean>(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] =
@@ -301,20 +298,20 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
       <TopSwap
         walletAddress={walletAddress}
         inputTokenMint={inputTokenMint}
-        setSwapMode={setSwapMode}
-        handleInAmountChange={handleInAmountChange}
         displayInAmount={displayInAmount}
         displayInAmountInUsd={displayInAmountInUsd}
-        setShowInputTokenSearch={setShowInputTokenSearch}
         inputTokenImageUri={inputTokenImageUri}
         inputTokenSymbol={inputTokenSymbol}
-        handleInputAmountByPercentage={handleInputAmountByPercentage}
-        handleOutAmountChange={handleOutAmountChange}
         displayOutAmount={displayOutAmount}
         displayOutAmountInUsd={displayOutAmountInUsd}
-        setShowOutputTokenSearch={setShowOutputTokenSearch}
         outputTokenImageUri={outputTokenImageUri}
         outputTokenSymbol={outputTokenSymbol}
+        setSwapMode={setSwapMode}
+        handleInAmountChange={handleInAmountChange}
+        setShowInputTokenSearch={setShowInputTokenSearch}
+        handleInputAmountByPercentage={handleInputAmountByPercentage}
+        handleOutAmountChange={handleOutAmountChange}
+        setShowOutputTokenSearch={setShowOutputTokenSearch}
         handleSwapDirection={handleSwapDirection}
       />
 
@@ -326,78 +323,16 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
         handleSwap={handleSwap}
       />
 
-      <Card>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <p>Route Information $ Fees</p>
-              <CircleAlert />
-            </div>
-
-            <Card className="background-gradient-card">
-              <CardContent className="px-3 py-2">
-                <div className="flex items-center">
-                  <div
-                    className="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center cursor-pointer"
-                    onClick={() => setUseSSEForFees(!useSSEForFees)}
-                  >
-                    {useSSEForFees && (
-                      <div className="w-3 h-3 rounded-full bg-white"></div>
-                    )}
-                  </div>
-                  <div>
-                    <p>Pay fee with SSE</p>
-                    <p>Get 50% off on transaction fees</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-between items-center">
-              <p>Rate</p>
-              <p>{displaySseFeeAmount} SSE</p>
-            </div>
-
-            <div
-              className="flex justify-between items-center cursor-pointer"
-              onClick={() => setIsRouteInfoOpen(!isRouteInfoOpen)}
-            >
-              <p>SSE offers the cheapest fee across all current platforms.</p>
-              {isRouteInfoOpen ? (
-                <ChevronDown className="h-8 w-8" />
-              ) : (
-                <ChevronUp className="h-8 w-8" />
-              )}
-            </div>
-
-            {isRouteInfoOpen && (
-              <Card>
-                <CardContent className="px-3 py-2 space-y-2">
-                  <div className="flex justify-between items-center">
-                    <p className="uppercase">platforms</p>
-                    <p>You'll get</p>
-                  </div>
-
-                  <>
-                    {isQuoteRefreshing ? (
-                      <div className="h-full flex justify-center items-center">
-                        <Loader2 className="w-8 h-8 animate-spin" />
-                      </div>
-                    ) : (
-                      <PlatformComparison
-                        jupiterSwapResponse={quoteResponse}
-                        outputTokenSymbol={outputTokenSymbol}
-                        outputTokenDecimals={outputTokenDecimals}
-                        platformExpectedOutAmount={expectedOutput}
-                      />
-                    )}
-                  </>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <BottomSwap
+        useSSEForFees={useSSEForFees}
+        displaySseFeeAmount={displaySseFeeAmount}
+        quoteResponse={quoteResponse}
+        outputTokenSymbol={outputTokenSymbol}
+        outputTokenDecimals={outputTokenDecimals}
+        expectedOutput={expectedOutput}
+        isQuoteRefreshing={isQuoteRefreshing}
+        setUseSSEForFees={setUseSSEForFees}
+      />
 
       {showInputTokenSearch && (
         <TokenSearch
