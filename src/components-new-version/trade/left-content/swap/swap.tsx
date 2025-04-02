@@ -1,9 +1,9 @@
 'use client'
 
-import { useJupiterSwap } from '@/components-new-version/tapestry/hooks/use-jupiter-swap'
-import { useTokenBalance } from '@/components-new-version/tapestry/hooks/use-token-balance'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
+import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter-swap'
+import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import { BottomSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/bottom-swap'
 import { CenterButtonSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/center-button-swap'
 import { TopSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/top-swap'
@@ -87,10 +87,10 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     expectedOutput,
     priceImpact,
     isFullyConfirmed,
-    handleSwap,
     isQuoteRefreshing,
-    refreshQuote,
     sseFeeAmount,
+    handleSwap,
+    refreshQuote,
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,

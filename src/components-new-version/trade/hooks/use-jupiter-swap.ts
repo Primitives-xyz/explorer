@@ -8,8 +8,8 @@ import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useToast } from '../../ui/toast/hooks/use-toast'
 import { useSSEPrice } from './use-sse-price'
-import { useToast } from './use-toast'
 
 interface UseJupiterSwapParams {
   inputMint: string

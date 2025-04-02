@@ -1,6 +1,9 @@
 'use client'
 
-import { ToastProps, ToastActionElement } from '@/components-new-version/toast/toast'
+import {
+  ToastActionElement,
+  ToastProps,
+} from '@/components-new-version/ui/toast/toast'
 import * as React from 'react'
 import { useEffect } from 'react'
 

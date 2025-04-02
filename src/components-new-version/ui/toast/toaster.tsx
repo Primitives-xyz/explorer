@@ -1,7 +1,7 @@
 'use client'
 
-import { useToast } from "../tapestry/hooks/use-toast"
-import { Toast, ToastProvider, ToastViewport } from "./toast"
+import { useToast } from './hooks/use-toast'
+import { Toast, ToastProvider, ToastViewport } from './toast'
 
 export function Toaster() {
   const { toasts } = useToast()
