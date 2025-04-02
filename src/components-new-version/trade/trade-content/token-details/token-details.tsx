@@ -1,4 +1,4 @@
-import { useBirdeyeTokenOverview } from '@/components-new-version/hooks/use-birdeye-token-overview'
+import { useBirdeyeTokenOverview } from '@/components-new-version/trade/hooks/use-birdeye-token-overview'
 import {
   FilterTabsTokenDetails,
   FilterTokenDetails,
@@ -41,10 +41,12 @@ export function TokenDetails({ id }: TokenDetailsProps) {
       <CardContent>
         {selectedType === TabsTokenDetails.TOKEN_DETAILS && (
           <>
-            {FilterTabsTokenDetails.ABOUT === sort && <AboutTabContent id={id} overview={overview} />}
+            {FilterTabsTokenDetails.ABOUT === sort && (
+              <AboutTabContent id={id} overview={overview} />
+            )}
 
             {FilterTabsTokenDetails.TOKEN_HOLDERS === sort && (
-              <TokenHoldersTabContent id={id} overview={overview}/>
+              <TokenHoldersTabContent id={id} overview={overview} />
             )}
 
             {FilterTabsTokenDetails.MARKETS === sort && <MarketsTabContent />}

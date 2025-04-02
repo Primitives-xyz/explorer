@@ -1,9 +1,9 @@
 'use client'
 
-import { QuoteResponse } from '@/components-new-version/types/jupiter'
+import { QuoteResponse } from '@/components-new-version/models/jupiter.models'
+import { PlatformLogo } from '@/components-new-version/swap/components/platform-logo'
 import { formatLargeNumber } from '@/components-new-version/utils/format'
 import { useMemo } from 'react'
-import { PlatformLogo } from './platform-logo'
 
 interface PlatformComparisonProps {
   jupiterSwapResponse: QuoteResponse | null

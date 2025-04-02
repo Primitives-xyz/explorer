@@ -1,4 +1,4 @@
-import { TokenSearchResult } from '../types/token-types'
+import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
 
 export const DEFAULT_TOKENS: TokenSearchResult[] = [
   {

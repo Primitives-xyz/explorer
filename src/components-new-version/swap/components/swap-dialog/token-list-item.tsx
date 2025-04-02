@@ -1,9 +1,12 @@
 'use client'
 
+import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import {
+  formatMarketCap,
+  formatPrice,
+} from '@/components-new-version/swap/utils/token-utils'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { TokenSearchResult } from '../types/token-types'
-import { formatMarketCap, formatPrice } from '../utils/token-utils'
 
 interface TokenListItemProps {
   token: TokenSearchResult

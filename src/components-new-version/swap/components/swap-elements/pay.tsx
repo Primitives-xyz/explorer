@@ -1,7 +1,12 @@
 'use client'
 
 import { TokenBalance } from '@/components-new-version/common/left-side-menu/balance'
-import { SwapMode } from '@/components-new-version/trade/left-content/swap/swap'
+import { SwapMode } from '@/components-new-version/swap/components/swap'
+import {
+  DEFAULT_INPUT_TOKEN_IMAGEURI,
+  DEFAULT_INPUT_TOKEN_SYMBOL,
+} from '@/components-new-version/swap/constants'
+
 import {
   Button,
   ButtonSize,
@@ -10,10 +15,6 @@ import {
 } from '@/components-new-version/ui'
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
-import {
-  DEFAULT_INPUT_TOKEN_IMAGEURI,
-  DEFAULT_INPUT_TOKEN_SYMBOL,
-} from '../constants'
 
 interface Props {
   walletAddress: string

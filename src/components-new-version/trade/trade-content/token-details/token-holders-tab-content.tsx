@@ -1,7 +1,7 @@
 'use client'
 
-import { useTokenHolders } from '@/components-new-version/hooks/use-token-holders'
 import { BirdeyeTokenOverview } from '@/components-new-version/models/token.models'
+import { useTokenHolders } from '@/components-new-version/trade/hooks/use-token-holders'
 import {
   Button,
   ButtonSize,

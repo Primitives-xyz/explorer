@@ -1,5 +1,5 @@
-import { TokenSearchResult } from '../types/token-types'
-import { DEFAULT_TOKENS } from '../utils/token-utils'
+import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import { DEFAULT_TOKENS } from '@/components-new-version/swap/utils/token-utils'
 
 export async function searchTokensByAddress(
   address: string

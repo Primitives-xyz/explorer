@@ -1,7 +1,7 @@
 'use client'
 
-import { PlatformComparison } from '@/components-new-version/trade/left-content/swap/platform-comparison'
-import { QuoteResponse } from '@/components-new-version/types/jupiter'
+import { QuoteResponse } from '@/components-new-version/models/jupiter.models'
+import { PlatformComparison } from '@/components-new-version/swap/components/platform-comparison'
 import { Spinner } from '@/components-new-version/ui'
 import {
   Card,

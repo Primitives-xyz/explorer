@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
-import { SortOption } from '../types/token-types'
+import { SortOption } from '../../types/token-types'
 
 interface TokenSearchHeaderProps {
   searchQuery: string

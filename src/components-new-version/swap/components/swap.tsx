@@ -1,13 +1,13 @@
 'use client'
 
+import { TokenSearch } from '@/components-new-version/swap/components/swap-dialog/token-search'
+import { BottomSwap } from '@/components-new-version/swap/components/swap-elements/bottom-swap'
+import { CenterButtonSwap } from '@/components-new-version/swap/components/swap-elements/center-button-swap'
+import { TopSwap } from '@/components-new-version/swap/components/swap-elements/top-swap'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
 import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
-import { BottomSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/bottom-swap'
-import { CenterButtonSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/center-button-swap'
-import { TopSwap } from '@/components-new-version/trade/left-content/swap/swap-elements/top-swap'
-import { TokenSearch } from '@/components-new-version/transaction/swap/token-search'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
 import {
   formatLargeNumber,
@@ -334,20 +334,17 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
         setUseSSEForFees={setUseSSEForFees}
       />
 
-      {showInputTokenSearch && (
+      {(showInputTokenSearch || showOutputTokenSearch) && (
         <TokenSearch
-          onSelect={handleInputTokenSelect}
+          onSelect={
+            showInputTokenSearch
+              ? handleInputTokenSelect
+              : handleOutputTokenSelect
+          }
           onClose={() => {
-            setShowInputTokenSearch(false)
-            setInAmount('')
-          }}
-        />
-      )}
-      {showOutputTokenSearch && (
-        <TokenSearch
-          onSelect={handleOutputTokenSelect}
-          onClose={() => {
-            setShowOutputTokenSearch(false)
+            showInputTokenSearch
+              ? setShowInputTokenSearch(false)
+              : setShowOutputTokenSearch(false)
             setInAmount('')
           }}
         />

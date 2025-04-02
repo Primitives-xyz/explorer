@@ -1,17 +1,19 @@
 'use client'
 
-// import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { usePortfolioData } from '@/hooks/usePortfolioData'
-import { debounce } from 'lodash'
-import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { usePortfolioData } from '@/components-new-version/profile/hooks/use-portfolio-data'
 import {
   searchTokensByAddress,
   searchTokensByKeyword,
-} from '../services/token-search-service'
-import { SortOption, TokenSearchResult } from '../types/token-types'
-import { DEFAULT_TOKENS } from '../utils/token-utils'
+} from '@/components-new-version/swap/services/token-search-service'
+import {
+  SortOption,
+  TokenSearchResult,
+} from '@/components-new-version/swap/types/token-types'
+import { DEFAULT_TOKENS } from '@/components-new-version/swap/utils/token-utils'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { debounce } from 'lodash'
+import { useTranslations } from 'next-intl'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export function useTokenSearch() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -22,8 +24,9 @@ export function useTokenSearch() {
 
   const t = useTranslations()
   const { walletAddress } = useCurrentWallet()
-  const { items, isLoading: isPortfolioLoading } =
-    usePortfolioData(walletAddress)
+  const { items, isLoading: isPortfolioLoading } = usePortfolioData({
+    walletAddress,
+  })
 
   // Create sort options only once
   const sortOptions: SortOption[] = useMemo(

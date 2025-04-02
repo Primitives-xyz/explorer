@@ -1,6 +1,6 @@
 'use client'
 
-import { useTokenBalance } from '@/components-new-version/tapestry/hooks/use-get-balance'
+import { useGetBalance } from '@/components-new-version/tapestry/hooks/use-get-balance'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ import Image from 'next/image'
 export function ProfileInfos() {
   const { mainUsername, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
-  const { balance } = useTokenBalance({ walletAddress })
+  const { balance } = useGetBalance({ walletAddress })
 
   return (
     <div>

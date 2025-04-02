@@ -1,6 +1,11 @@
-import { FungibleTokenInfo, TokenResponse } from "../types/Token"
+import {
+  FungibleTokenInfo,
+  TokenResponse,
+} from '@/components-new-version/models/token.models'
 
-const isFungibleToken = (data: TokenResponse | null | undefined): data is TokenResponse & { result: FungibleTokenInfo } => {
+const isFungibleToken = (
+  data: TokenResponse | null | undefined
+): data is TokenResponse & { result: FungibleTokenInfo } => {
   return (
     !!data &&
     (data.result?.interface === 'FungibleToken' ||

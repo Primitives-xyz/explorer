@@ -1,10 +1,10 @@
 'use client'
 
+import { TokenListItem } from '@/components-new-version/swap/components/swap-dialog/token-list-item'
+import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import { sortTokenResults } from '@/components-new-version/swap/utils/token-utils'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { TokenSearchResult } from '../types/token-types'
-import { sortTokenResults } from '../utils/token-utils'
-import { TokenListItem } from './token-list-item'
 
 interface TokenListProps {
   isLoading: boolean
