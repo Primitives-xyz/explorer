@@ -59,20 +59,14 @@ export function AddBioForm({ walletAddress, username, setStep }: Props) {
     }
   }
 
-  // useEffect(() => {
-  //   if (suggestedUsername) {
-  //     form.setValue('username', suggestedUsername.username)
-  //   }
-  // }, [suggestedUsername, form])
-
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex-1 flex flex-col"
       >
-        <div className="grid grid-cols-5 gap-8">
-          <div className="col-span-2">
+        <div className="grid grid-cols-2 gap-8">
+          <div>
             <FormField
               control={form.control}
               name="bio"
@@ -91,7 +85,7 @@ export function AddBioForm({ walletAddress, username, setStep }: Props) {
               )}
             />
           </div>
-          <div className="col-span-3">
+          <div>
             <SuggestedBios
               walletAddress={walletAddress}
               setSuggestedBio={async (bio) => {

@@ -69,9 +69,9 @@ export function AddProfileImage({
   return (
     <>
       <div className="flex-1 flex flex-col">
-        <div className="grid grid-cols-5 gap-8 w-full">
-          <div className="col-span-2">
-            <div className="w-[160px] space-y-2">
+        <div className="grid grid-cols-[160px__1fr] gap-8 w-full">
+          <div>
+            <div className="w-full space-y-2">
               <Label>Profile Image</Label>
               {mainProfile.image && (
                 <div className="bg-muted rounded-lg w-full aspect-square overflow-hidden">
@@ -94,7 +94,7 @@ export function AddProfileImage({
               </ButtonInputFile>
             </div>
           </div>
-          <div className="col-span-3">
+          <div>
             <SuggestedImages
               walletAddress={walletAddress}
               setSuggestedImage={async (imageUrl) => {
