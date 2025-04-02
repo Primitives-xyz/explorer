@@ -19,7 +19,7 @@ import { EllipsisVerticalIcon } from 'lucide-react'
 import Image from 'next/image'
 
 export function ProfileInfos() {
-  const { mainUsername, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
+  const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useTokenBalance({ walletAddress })
 
@@ -38,7 +38,7 @@ export function ProfileInfos() {
           <div className="flex items-center justify-start">
             <p className="text-xs pr-1">hi</p>
             <p className="font-bold text-xs max-w-28 truncate pr-1">
-              {mainUsername}
+              {mainProfile?.username}
             </p>
             <p className="text-xs flex items-center gap-1">
               <span>|</span>

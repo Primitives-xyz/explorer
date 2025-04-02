@@ -28,24 +28,19 @@ export interface IProfile {
   created_at: number
   username: string
   bio: string
-  image: string
+  image?: string
   namespace: string
   blockchain: BLOCKCHAIN
   wallet: IWallet
-  isWaitListed?: boolean
+  hasSeenProfileSetupModal?: boolean
 }
 
 // POST /profiles/findOrCreate
 
 export interface IFindOrCreateProfileInput {
   username: string
-  blockchain?: BLOCKCHAIN
-  // execution: string
-  walletAddress?: string
-  id?: string
-  image?: string
-  bio?: string
-  phoneNumber?: string
+  ownerWalletAddress: string
+  profileImageUrl?: string
 }
 
 export interface IFindOrCreateProfileResponse {
@@ -127,4 +122,12 @@ export interface ISuggestedProfiles {
 
 export interface IGetFollowersStateResponse {
   isFollowing: boolean
+}
+
+export interface ISuggestedUsername {
+  username: string
+  namespace: string
+  readableName: string
+  faviconURL?: string | null
+  image?: string | null
 }

@@ -2,7 +2,6 @@
 
 import { Button, ButtonVariant } from '@/components-new-version/ui/button'
 import { route } from '@/components-new-version/utils/route'
-import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { cn } from '@/components-new-version/utils/utils'
 import {
   ArrowRightLeft,
@@ -17,7 +16,6 @@ import { usePathname } from 'next/navigation'
 
 export function Menu() {
   const pathname = usePathname()
-  const { walletAddress } = useCurrentWallet()
 
   const data = [
     {

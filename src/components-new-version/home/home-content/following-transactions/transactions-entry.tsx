@@ -15,7 +15,6 @@ interface Props {
 
 export function TransactionsEntry({ transaction }: Props) {
   const { walletAddress } = useCurrentWallet()
-
   const primaryType = useTransactionType(transaction)
 
   return (

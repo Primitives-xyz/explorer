@@ -19,7 +19,7 @@ import { cn } from '@/components-new-version/utils/utils'
 
 export function RightSideDiscover() {
   const { profiles, loading } = useGetAllProfiles()
-  const { mainUsername } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
 
   return (
     <div className="space-y-4 flex flex-col">
@@ -65,11 +65,13 @@ export function RightSideDiscover() {
                       />
                     </div>
                   </div>
-                  <FollowButton
-                    small
-                    followerUsername={mainUsername}
-                    followeeUsername={elem.profile.username}
-                  />
+                  {!!mainProfile?.username && (
+                    <FollowButton
+                      small
+                      followerUsername={mainProfile.username}
+                      followeeUsername={elem.profile.username}
+                    />
+                  )}
                 </span>
               )
             })}
