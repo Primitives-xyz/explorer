@@ -45,14 +45,16 @@ export function useCurrentWallet() {
     profiles,
     loading: getProfilesLoading,
     refetch: refetchGetProfiles,
-  } = useGetProfiles(walletAddress)
+  } = useGetProfiles({
+    walletAddress,
+  })
 
   const { mainProfile } = useMemo(() => {
     const mainProfile = profiles?.profiles.find(
       (profile) =>
         profile.namespace.name === EXPLORER_NAMESPACE &&
         profile.wallet.address === walletAddress
-    )?.profile
+    )
 
     return {
       mainProfile,
@@ -61,7 +63,8 @@ export function useCurrentWallet() {
 
   return {
     walletAddress,
-    mainProfile,
+    socialCounts: mainProfile?.socialCounts,
+    mainProfile: mainProfile?.profile,
     loading: !dynamicSdkHasLoaded || getProfilesLoading,
     isLoggedIn,
     primaryWallet,

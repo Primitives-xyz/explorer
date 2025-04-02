@@ -2,8 +2,8 @@
 
 import { DataContainer } from '@/components/common/data-container'
 import { TokenAddress } from '@/components/tokens/token-address'
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 
 import {
   INamespaceDetails,
@@ -50,13 +50,15 @@ export function NamespaceClient({
   profiles,
   totalCount,
 }: NamespaceClientProps) {
-  const router = useRouter();
-  const t = useTranslations();
+  const router = useRouter()
+  const t = useTranslations()
 
   if (!namespaceDetails) {
     return (
       <div className="min-h-screen bg-black p-8">
-        <div className="text-center font-mono">{t('common.no')} {t('profile_info.no_profile_found')}</div>
+        <div className="text-center font-mono">
+          {t('common.no')} {t('profile_info.no_profile_found')}
+        </div>
       </div>
     )
   }
@@ -66,7 +68,11 @@ export function NamespaceClient({
       <NamespaceHeader namespaceDetails={namespaceDetails} />
 
       {/* Profiles Section */}
-      <DataContainer title={t('recent_profiles.title')} count={totalCount} height="max">
+      <DataContainer
+        title={t('recent_profiles.title')}
+        count={totalCount}
+        height="max"
+      >
         <div className="divide-y divide-green-800/30">
           {(profiles ?? []).map((profile: INamespaceProfile) => (
             <div
@@ -85,8 +91,10 @@ export function NamespaceClient({
                 <div className="flex-1">
                   <button
                     className="font-mono text-base"
-                    onClick={() => 
-                      router.push(`/n/${profile.namespace.name}/${profile.profile.username}`)
+                    onClick={() =>
+                      router.push(
+                        `/n/${profile.namespace.name}/${profile.profile.username}`
+                      )
                     }
                   >
                     @{profile.profile.username}

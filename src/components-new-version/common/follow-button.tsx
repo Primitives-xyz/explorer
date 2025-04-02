@@ -10,37 +10,36 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/components-new-version/ui'
-import { revalidateServerCache } from '@/components-new-version/utils/revalidate-server-cache'
 import { UserCheck, UserPlus } from 'lucide-react'
 import { useState } from 'react'
+import { useCurrentWallet } from '../utils/use-current-wallet'
 //import { useUnfollowUser } from '../../hooks/use-unfollow-user'
 
 interface Props extends Omit<ButtonProps, 'children'> {
   followerUsername: string
   followeeUsername: string
-  small?: boolean
+  onFollowSuccess?: () => void
   children?: (isFollowing: boolean) => React.ReactNode
 }
 
 export function FollowButton({
   followerUsername,
   followeeUsername,
-  small,
+  onFollowSuccess,
   children,
   ...props
 }: Props) {
   const { followUser, loading: followUserLoading } = useFollowUser()
   //  const { unfollowUser, loading: unfollowUserLoading } = useUnfollowUser()
-
+  const { refetch: refetchCurrentUser, loading: loadingCurrentUser } =
+    useCurrentWallet()
   const { refetch: refetchGetFollowing } = useGetFollowing({
     username: followerUsername,
   })
   const { refetch: refetchGetFollowers } = useGetFollowers({
     username: followeeUsername,
   })
-
   const [refetchLoading, setRefetchLoading] = useState(false)
-
   const {
     data,
     loading: loadingFollowersState,
@@ -49,20 +48,23 @@ export function FollowButton({
     followeeUsername,
     followerUsername,
   })
-
   const [isFollowingOptimistic, setIsFollowingOptimistic] = useState(
     data?.isFollowing
   )
 
-  const loading = followUserLoading || refetchLoading // || unfollowUserLoading
+  const loading = followUserLoading || refetchLoading || loadingCurrentUser // || unfollowUserLoading
 
   const refetch = async () => {
     setRefetchLoading(true)
 
-    revalidateServerCache(`/api/profiles/${followerUsername}/following`)
-    revalidateServerCache(`/api/profiles/${followeeUsername}/followers`)
+    // revalidateServerCache(`/api/profiles/${followerUsername}/following`)
+    // revalidateServerCache(`/api/profiles/${followeeUsername}/followers`)
 
-    await Promise.all([refetchGetFollowing(), refetchGetFollowers()])
+    await Promise.all([
+      refetchCurrentUser(),
+      refetchGetFollowing(),
+      refetchGetFollowers(),
+    ])
 
     setRefetchLoading(false)
   }
@@ -76,6 +78,7 @@ export function FollowButton({
         followeeUser: { username: followeeUsername },
       })
       await refetch()
+      onFollowSuccess?.()
     } catch (error) {
       console.error('Failed to follow:', error)
       setIsFollowingOptimistic(false)
@@ -114,23 +117,26 @@ export function FollowButton({
         onClick={handleFollow}
         loading={loadingFollowersState}
         disabled={loading || isFollowing}
-        variant={ButtonVariant.SECONDARY}
-        size={small ? ButtonSize.SM : ButtonSize.DEFAULT}
+        variant={ButtonVariant.SECONDARY_SOCIAL}
       >
         {!!children ? (
           children(!!isFollowing)
         ) : (
           <>
             {isFollowing ? (
-              small ? (
-                <UserCheck size={20} />
+              props.size === ButtonSize.SM ? (
+                <UserCheck size={18} />
               ) : (
-                'Following'
+                <>
+                  <UserCheck size={18} /> Following
+                </>
               )
-            ) : small ? (
-              <UserPlus size={20} />
+            ) : props.size === ButtonSize.SM ? (
+              <UserPlus size={18} />
             ) : (
-              'Follow'
+              <>
+                <UserPlus size={18} /> Follow
+              </>
             )}
           </>
         )}

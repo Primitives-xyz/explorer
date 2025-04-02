@@ -2,9 +2,9 @@ import { FollowingTransactionsWrapper } from './following-transactions/following
 
 export function HomeContent() {
   return (
-    <>
+    <div>
       {/* <Summary /> */}
       <FollowingTransactionsWrapper />
-    </>
+    </div>
   )
 }

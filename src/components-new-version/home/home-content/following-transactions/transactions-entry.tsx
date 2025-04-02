@@ -24,7 +24,6 @@ export function TransactionsEntry({ transaction }: Props) {
           <SwapTransactionsView
             transaction={transaction}
             sourceWallet={transaction.sourceWallet || walletAddress || ''}
-            primaryType={primaryType}
           />
         )}
 

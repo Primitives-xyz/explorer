@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useCreateProfile } from '../hooks/use-create-profile'
+import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedUsernames } from './suggested-usernames'
 
 const formSchema = z.object({
@@ -32,18 +33,18 @@ const formSchema = z.object({
 
 interface Props {
   walletAddress: string
-  setStep: (step: number) => void
+  setStep: (step: EOnboardingSteps) => void
 }
 
 export function CreateUsernameForm({ walletAddress, setStep }: Props) {
   const [suggestedUsername, setSuggestedUsername] =
     useState<ISuggestedUsername>()
   const { createProfile, loading } = useCreateProfile()
-  const { refetch: refetchCurrentUser } = useCurrentWallet()
+  const { mainProfile, refetch: refetchCurrentUser } = useCurrentWallet()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: '',
+      username: mainProfile?.username ?? '',
     },
   })
 
@@ -55,7 +56,7 @@ export function CreateUsernameForm({ walletAddress, setStep }: Props) {
       })
 
       refetchCurrentUser()
-      setStep(2)
+      setStep(EOnboardingSteps.IMAGE)
 
       // form.reset()
     } catch (error: any) {

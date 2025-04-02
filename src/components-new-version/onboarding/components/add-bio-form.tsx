@@ -1,5 +1,6 @@
 'use client'
 
+import { IProfile } from '@/components-new-version/models/profiles.models'
 import {
   Button,
   ButtonVariant,
@@ -16,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useUpdateProfile } from '../hooks/use-update-profile'
+import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedBios } from './suggested-bios'
 
 const formSchema = z.object({
@@ -24,19 +26,19 @@ const formSchema = z.object({
 
 interface Props {
   walletAddress: string
-  username: string
-  setStep: (step: number) => void
+  mainProfile: IProfile
+  setStep: (step: EOnboardingSteps) => void
 }
 
-export function AddBioForm({ walletAddress, username, setStep }: Props) {
+export function AddBioForm({ walletAddress, mainProfile, setStep }: Props) {
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { updateProfile, loading } = useUpdateProfile({
-    username,
+    username: mainProfile.username,
   })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      bio: '',
+      bio: mainProfile.bio ?? '',
     },
   })
 
@@ -47,7 +49,7 @@ export function AddBioForm({ walletAddress, username, setStep }: Props) {
       })
 
       refetchCurrentUser()
-      setStep(4)
+      setStep(EOnboardingSteps.FOLLOW)
 
       // form.reset()
     } catch (error: any) {
@@ -99,7 +101,7 @@ export function AddBioForm({ walletAddress, username, setStep }: Props) {
         </div>
         <div className="flex justify-between mt-auto">
           <Button
-            onClick={() => setStep(2)}
+            onClick={() => setStep(EOnboardingSteps.IMAGE)}
             className="w-[160px]"
             disabled={loading}
             variant={ButtonVariant.OUTLINE}

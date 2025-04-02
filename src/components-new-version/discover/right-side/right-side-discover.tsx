@@ -5,6 +5,7 @@ import { WalletAddressButton } from '@/components-new-version/common/wallet-addr
 import { useGetAllProfiles } from '@/components-new-version/tapestry/hooks/use-get-all-profiles'
 import {
   Button,
+  ButtonSize,
   ButtonVariant,
   Card,
   CardContent,
@@ -67,7 +68,7 @@ export function RightSideDiscover() {
                   </div>
                   {!!mainProfile?.username && (
                     <FollowButton
-                      small
+                      size={ButtonSize.SM}
                       followerUsername={mainProfile.username}
                       followeeUsername={elem.profile.username}
                     />

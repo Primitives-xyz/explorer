@@ -13,11 +13,12 @@ import { UploadIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { useUpdateProfile } from '../hooks/use-update-profile'
+import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedImages } from './suggested-images'
 
 interface Props {
   mainProfile: IProfile
-  setStep: (step: number) => void
+  setStep: (step: EOnboardingSteps) => void
   walletAddress: string
 }
 
@@ -108,7 +109,7 @@ export function AddProfileImage({
         </div>
         <div className="flex justify-between mt-auto">
           <Button
-            onClick={() => setStep(1)}
+            onClick={() => setStep(EOnboardingSteps.USERNAME)}
             className="w-[160px]"
             disabled={uploadLoading}
             variant={ButtonVariant.OUTLINE}
@@ -117,7 +118,7 @@ export function AddProfileImage({
           </Button>
           <Button
             onClick={() => {
-              setStep(3)
+              setStep(EOnboardingSteps.BIO)
             }}
             className="w-[160px]"
             loading={uploadLoading}

@@ -1,3 +1,4 @@
+import { IUpdateContentInput } from '@/components-new-version/models/contents.models'
 import { IProfile } from '@/components-new-version/models/profiles.models'
 import { FetchMethod, useMutation } from '@/components-new-version/utils/api'
 
@@ -11,7 +12,7 @@ export const useUpdateProfile = ({ username }: Props) => {
     loading,
     error,
     data,
-  } = useMutation<null, Partial<IProfile>>({
+  } = useMutation<null, Partial<IProfile> & IUpdateContentInput>({
     endpoint: `profiles/${username}`,
     method: FetchMethod.PUT,
   })
