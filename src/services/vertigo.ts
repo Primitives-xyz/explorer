@@ -126,7 +126,7 @@ export class VertigoService {
         null, // No freeze authority
         decimals,
         mint,
-        null,
+        undefined,
         TOKEN_2022_PROGRAM_ID
       )
 
@@ -136,7 +136,7 @@ export class VertigoService {
         this.payer,
         mint.publicKey,
         tokenWalletAuthority.publicKey,
-        null,
+        undefined,
         TOKEN_2022_PROGRAM_ID
       )
 
@@ -150,7 +150,7 @@ export class VertigoService {
         mintAuthority.publicKey,
         initialTokenReserves * Math.pow(10, decimals),
         [mintAuthority],
-        null,
+        undefined,
         TOKEN_2022_PROGRAM_ID
       )
 
