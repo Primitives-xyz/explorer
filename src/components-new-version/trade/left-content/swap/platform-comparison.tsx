@@ -1,9 +1,8 @@
 'use client'
 
-import { useMemo } from 'react'
-
 import { QuoteResponse } from '@/components-new-version/types/jupiter'
 import { formatLargeNumber } from '@/components-new-version/utils/format'
+import { useMemo } from 'react'
 import { PlatformLogo } from './platform-logo'
 
 interface PlatformComparisonProps {
@@ -66,15 +65,13 @@ export function PlatformComparison({
           >
             <div className="flex items-center gap-3">
               <PlatformLogo name={platform.logo} />
-              <span className="text-white font-medium uppercase">
-                {platform.name}
-              </span>
+              <span className="font-medium uppercase">{platform.name}</span>
             </div>
             <div className="flex flex-row justify-center items-end gap-1">
-              <span className="text-white font-medium">
+              <span className="font-medium">
                 {platform.price.slice(0, platform.price.indexOf('.') + 3)}
               </span>
-              <span className="text-[#97EF83]">${outputTokenSymbol}</span>
+              <span className="text-primary">${outputTokenSymbol}</span>
             </div>
           </div>
         ))}

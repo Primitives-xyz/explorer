@@ -92,7 +92,7 @@ export function BottomSwap({
                   <CardContent className="px-3 py-2 space-y-2">
                     <div className="flex justify-between items-center">
                       <p className="uppercase">platforms</p>
-                      <p>You'll get</p>
+                      <p className="text-muted-foreground">You'll get</p>
                     </div>
 
                     <>
