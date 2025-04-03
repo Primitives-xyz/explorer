@@ -1,3 +1,4 @@
+import { SwapService } from '@/services/swap'
 import { VertigoService } from '@/services/vertigo'
 import {
   ActionGetResponse,
@@ -112,9 +113,13 @@ export async function POST(req: NextRequest) {
     // We need to look up the user's token accounts for SOL and the target token
     // For a real implementation, you'd need to fetch these or create them if they don't exist
     // Here we're simulating this part
+    const swapService = new SwapService(connection)
+    const userTaA = await swapService.verifyOrCreateATA(
+      NATIVE_MINT.toString(),
+      userAddress
+    )
 
-    const userTaA = `PLACEHOLDER_USER_TA_A_ADDRESS` // This would be the user's SOL token account
-    const userTaB = `PLACEHOLDER_USER_TA_B_ADDRESS` // This would be the user's token account for mintB
+    const userTaB = await swapService.verifyOrCreateATA(mintB, userAddress)
 
     // Execute the sell transaction
     const signature = await vertigoService.sellTokens({
@@ -122,8 +127,8 @@ export async function POST(req: NextRequest) {
       mintA: NATIVE_MINT.toString(),
       mintB,
       userAddress,
-      userTaA,
-      userTaB,
+      userTaA: userTaA.toString(),
+      userTaB: userTaB.toString(),
       amount: Number(amount),
       slippageBps,
     })

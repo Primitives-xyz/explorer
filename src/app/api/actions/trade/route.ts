@@ -236,7 +236,6 @@ export async function POST(req: NextRequest) {
       outputMint,
       userPublicKey
     )
-    console.log({ quote })
     const swapTransaction = await swapService.buildSwapTransaction(
       {
         quoteResponse: quote,
