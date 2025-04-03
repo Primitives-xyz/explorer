@@ -20,11 +20,11 @@ interface Props {
 }
 
 export function ProfileContent({ username, walletAddress }: Props) {
-  const { mainUsername } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
 
   const { profileInfo } = useProfileInfo({
     username,
-    mainUsername,
+    mainUsername: mainProfile?.username,
     walletAddress,
   })
 
@@ -49,7 +49,7 @@ export function ProfileContent({ username, walletAddress }: Props) {
     <div className="flex flex-col w-full space-y-6">
       <ProfileHeader
         profileInfo={profileInfo}
-        mainUsername={mainUsername}
+        mainUsername={mainProfile?.username}
         username={displayUsername}
       />
       <div className="flex w-full justify-between gap-4">
@@ -83,10 +83,10 @@ export function ProfileContent({ username, walletAddress }: Props) {
 function SmallCard({ label, value }: { label: string; value?: string }) {
   return (
     <Card variant={CardVariant.ACCENT_SOCIAL}>
-      <CardHeader className="!p-2 text-secondary">
+      <CardHeader className="p-2! text-secondary">
         <CardTitle>{label}</CardTitle>
       </CardHeader>
-      <CardContent className="!p-2">{value}</CardContent>
+      <CardContent className="p-2!">{value}</CardContent>
     </Card>
   )
 }

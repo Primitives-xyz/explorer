@@ -190,3 +190,33 @@ export interface RPCResponse {
   }
   result?: TokenResponse['result']
 }
+
+export interface BirdeyeTokenOverview {
+  address: string
+  decimals: number
+  symbol: string
+  name: string
+  extensions: {
+    coingeckoId: string
+    website: string
+    telegram: string | null
+    twitter: string
+    description: string
+    discord: string
+    medium: string
+  }
+  logoURI: string
+  liquidity: number
+  price: number
+  priceChange24hPercent: number
+  supply: number
+  mc: number
+  circulatingSupply: number
+  realMc: number
+  holder: number
+  v24h: number
+  v24hUSD: number
+  numberMarkets: number
+  uniqueWallet24h: number
+  trade24h: number
+}

@@ -1,5 +1,6 @@
 import { Header } from '@/components-new-version/common/header'
 import { LeftSideMenu } from '@/components-new-version/common/left-side-menu/left-side-menu'
+import { Onboarding } from '@/components-new-version/onboarding/components/onboarding'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
 import './global.css'
@@ -17,6 +18,7 @@ export default async function NewVersionLayout({
 }) {
   return (
     <div className={rethinkSans.className}>
+      <Onboarding />
       <div className="fixed inset-0 z-0 background-gradient" />
       <div className="relative min-h-screen">
         <Header />

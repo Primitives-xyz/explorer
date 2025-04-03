@@ -1,6 +1,5 @@
 'use client'
 
-import { WalletAddressButton } from '@/components-new-version/common/wallet-address-button'
 import {
   ExtendedTransaction,
   Transaction,
@@ -9,9 +8,10 @@ import {
   IGetProfilesResponse,
   IProfile,
 } from '@/components-new-version/models/profiles.models'
-import { Button, ButtonVariant } from '@/components-new-version/ui'
+import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
+import { route } from '@/components-new-version/utils/route'
 import {
   abbreviateWalletAddress,
   formatTimeAgo,
@@ -58,7 +58,15 @@ export function TransactionsHeader({
               sourceWallet={sourceWallet}
             />
 
-            <WalletAddressButton walletAddress={transaction.signature} />
+            <Button
+              href={route('entity', { id: transaction.signature })}
+              variant={ButtonVariant.BADGE}
+              size={ButtonSize.SM}
+            >
+              {abbreviateWalletAddress({
+                address: transaction.signature,
+              })}
+            </Button>
 
             <TimeAgo transaction={transaction} />
           </div>

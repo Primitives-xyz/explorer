@@ -17,6 +17,15 @@ export function isValidTransactionSignature(signature: string): boolean {
   )
 }
 
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
 export function isValidPublicKey(value: string): boolean {
   try {
     new PublicKey(value)
@@ -25,3 +34,24 @@ export function isValidPublicKey(value: string): boolean {
     return false
   }
 }
+/**
+ * Determines the type of route based on the ID format
+ */
+export function determineRouteType(id: string): RouteType {
+  const cleanId = id.startsWith('@') ? id.slice(1) : id
+
+  if (isValidTransactionSignature(cleanId)) {
+    return 'transaction'
+  }
+  if (isValidPublicKey(cleanId)) {
+    return 'token'
+  }
+  return 'profile'
+}
+
+export type RouteType = 'transaction' | 'token' | 'profile'
+
+// Types
+export type IdParams = Promise<{ id: string }>
+
+export type NamespaceParams = Promise<{ namespace: string }>

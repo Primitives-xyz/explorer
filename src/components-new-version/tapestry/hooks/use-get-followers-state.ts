@@ -14,7 +14,7 @@ export const useGetFollowersState = ({
 }: Props) => {
   const { data, error, loading, refetch } =
     useQuery<IGetFollowersStateResponse>({
-      endpoint: `followers/state`,
+      endpoint: 'followers/state',
       queryParams: {
         startId: followerUsername,
         endId: followeeUsername,

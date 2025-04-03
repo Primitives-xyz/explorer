@@ -3,7 +3,7 @@ import { USDC_MINT } from '@/components-new-version/utils/constants'
 
 interface Props {
   tokenMint?: string | null
-  decimals: number
+  decimals?: number
 }
 
 export function useTokenUSDCPrice({ tokenMint, decimals }: Props) {

@@ -69,7 +69,7 @@ export function SocialStats({ user }: Props) {
         isOpen={displayModal}
         onClose={() => setDisplayModal(false)}
         title={`View ${selectedTab}`}
-        className="!max-w-[500px] mr-1 ml-1"
+        className="max-w-[500px]! mr-1 ml-1"
       >
         {data?.length ? (
           <ul className="h-[400px] overflow-auto">

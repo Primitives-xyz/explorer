@@ -4,14 +4,7 @@ import { useFollowingTransactions } from '@/components-new-version/home/home-con
 import { TransactionsEntry } from '@/components-new-version/home/home-content/following-transactions/transactions-entry'
 import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get-following'
 import { useGetNamespaceProfiles } from '@/components-new-version/tapestry/hooks/use-get-namespace-profiles'
-import {
-  Button,
-  Card,
-  CardContent,
-  FilterTabs,
-  Spinner,
-} from '@/components-new-version/ui'
-import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { FilterTabs, Spinner } from '@/components-new-version/ui'
 import { useTranslations } from 'next-intl'
 
 export enum FilterType {
@@ -21,9 +14,14 @@ export enum FilterType {
   KOL = 'kol',
 }
 
-export function FollowingTransactions() {
-  const { mainUsername, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
-  const { following } = useGetFollowing({ username: mainUsername })
+interface Props {
+  username: string
+}
+
+export function FollowingTransactions({ username }: Props) {
+  const { following } = useGetFollowing({
+    username,
+  })
   const { data: kolData } = useGetNamespaceProfiles({
     name: 'kolscan',
   })
@@ -41,20 +39,9 @@ export function FollowingTransactions() {
   const options = [
     { label: 'All', value: FilterType.ALL },
     { label: 'Swap', value: FilterType.SWAP },
-    { label: 'CNFT Mints', value: FilterType.COMPRESSED_NFT_MINT },
+    // { label: 'CNFT Mints', value: FilterType.COMPRESSED_NFT_MINT },
     { label: 'Twitter KOL', value: FilterType.KOL },
   ]
-
-  if (!isLoggedIn) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col space-y-10 items-center justify-center">
-          <p>{t('following_transaction.create_a_profile_to_follow')}</p>
-          <Button onClick={() => setShowAuthFlow(true)}>connect wallet</Button>
-        </CardContent>
-      </Card>
-    )
-  }
 
   return (
     <div className="w-full">

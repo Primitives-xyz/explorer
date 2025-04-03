@@ -41,26 +41,26 @@ const TokenCard = memo(
       >
         <div className="flex items-start gap-3 h-full">
           {/* Token Icon */}
-          <div className="relative flex-shrink-0">
+          <div className="relative shrink-0">
             <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-md group-hover/item:blur-lg transition-all" />
             {token.logoURI ? (
               <img
                 src={token.logoURI}
                 alt={token.symbol}
-                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20 relative z-[1] group-hover/item:ring-green-500/40 transition-all"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover bg-black/40 ring-1 ring-green-500/20 relative z-1 group-hover/item:ring-green-500/40 transition-all"
                 loading="lazy"
                 onError={(e) => {
                   ;(e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
             ) : (
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-1">
                 <span className=" font-mono text-base sm:text-lg">
                   {token.symbol.slice(0, 2)}
                 </span>
               </div>
             )}
-            <div className="absolute -top-1.5 -left-1.5 w-5 h-5 sm:w-6 sm:h-6 bg-green-900/90 rounded-full flex items-center justify-center ring-2 ring-green-500 shadow-lg z-[2] group-hover/item:scale-110 transition-transform">
+            <div className="absolute -top-1.5 -left-1.5 w-5 h-5 sm:w-6 sm:h-6 bg-green-900/90 rounded-full flex items-center justify-center ring-2 ring-green-500 shadow-lg z-2 group-hover/item:scale-110 transition-transform">
               <span className=" text-[10px] sm:text-xs font-mono font-bold">
                 #{token.rank}
               </span>
@@ -82,11 +82,11 @@ const TokenCard = memo(
                   >
                     {token.name}
                   </button>
-                  <span className=" text-xs flex-shrink-0">
+                  <span className=" text-xs shrink-0">
                     ${token.symbol}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
+                <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md shrink-0">
                   <span className="/60 text-xs">price:</span>
                   <span className=" font-mono text-xs font-medium">
                     ${formatNumber(token.price)}
@@ -96,10 +96,10 @@ const TokenCard = memo(
 
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md min-w-0">
-                  <span className="/60 text-xs flex-shrink-0">address:</span>
+                  <span className="/60 text-xs shrink-0">address:</span>
                   <TokenAddress address={token.address} />
                 </div>
-                <div className="flex items-center gap-2 text-xs font-mono flex-shrink-0">
+                <div className="flex items-center gap-2 text-xs font-mono shrink-0">
                   <span>
                     {t('common.vol')}: ${formatNumber(token.volume24hUSD)}
                   </span>
@@ -122,7 +122,7 @@ const TokenCard = memo(
                 >
                   {token.name}
                 </button>
-                <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md flex-shrink-0">
+                <div className="flex items-center gap-1.5 bg-black/30 px-2 py-0.5 rounded-md shrink-0">
                   <span className=" font-mono text-xs font-medium">
                     ${formatNumber(token.price)}
                   </span>
@@ -133,7 +133,7 @@ const TokenCard = memo(
                 <div className="min-w-0 flex-1">
                   <TokenAddress address={token.address} />
                 </div>
-                <span className=" text-xs flex-shrink-0">${token.symbol}</span>
+                <span className=" text-xs shrink-0">${token.symbol}</span>
               </div>
 
               <div className="flex items-center justify-between gap-2 text-[10px] font-mono">

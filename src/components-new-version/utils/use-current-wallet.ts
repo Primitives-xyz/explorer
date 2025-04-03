@@ -1,5 +1,3 @@
-import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
-import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
 import {
   useDynamicContext,
   useIsLoggedIn,
@@ -7,6 +5,8 @@ import {
 } from '@dynamic-labs/sdk-react-core'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
+import { useGetProfiles } from '../tapestry/hooks/use-get-profiles'
+import { EXPLORER_NAMESPACE } from './constants'
 
 export function useCurrentWallet() {
   const {
@@ -18,7 +18,6 @@ export function useCurrentWallet() {
   const t = useTranslations()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
-
   const [forceSdkLoaded, setForceSdkLoaded] = useState(false)
 
   useEffect(() => {
@@ -42,33 +41,43 @@ export function useCurrentWallet() {
     [userWallets, sdkHasLoaded, isLoggedIn]
   )
 
-  const { profiles, loading: loadingProfiles } = useGetProfiles(walletAddress)
+  const {
+    profiles,
+    loading: getProfilesLoading,
+    refetch: refetchGetProfiles,
+  } = useGetProfiles({
+    walletAddress,
+  })
 
-  const { mainUsername, image } = useMemo(() => {
-    if (!profiles) return { mainUsername: '', image: null }
-
-    const mainProfile = profiles.profiles.find(
+  const { mainProfile } = useMemo(() => {
+    const mainProfile = profiles?.profiles.find(
       (profile) =>
         profile.namespace.name === EXPLORER_NAMESPACE &&
         profile.wallet.address === walletAddress
-    )?.profile
+    )
 
     return {
-      mainUsername: mainProfile?.username || '',
-      image: mainProfile?.image || null,
+      mainProfile,
     }
   }, [profiles, walletAddress])
 
+  useEffect(() => {
+    console.log('dynamicSdkHasLoaded', dynamicSdkHasLoaded)
+    console.log('getProfilesLoading', getProfilesLoading)
+    console.log('mainProfile', mainProfile)
+  }, [dynamicSdkHasLoaded, getProfilesLoading, mainProfile])
+
   return {
+    profiles,
     walletAddress,
-    mainUsername,
-    loadingProfiles,
+    socialCounts: mainProfile?.socialCounts,
+    mainProfile: mainProfile?.profile,
+    loading: !dynamicSdkHasLoaded || getProfilesLoading,
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,
-    image,
-    profiles,
     logout: handleLogOut,
     setShowAuthFlow,
+    refetch: refetchGetProfiles,
   }
 }

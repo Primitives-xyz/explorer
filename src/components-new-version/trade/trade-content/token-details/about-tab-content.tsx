@@ -1,52 +1,113 @@
+import { BirdeyeTokenOverview } from '@/components-new-version/models/token.models'
+import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
+import { Card, CardContent, CardVariant } from '@/components-new-version/ui'
+import isFungibleToken from '@/components-new-version/utils/helper'
 import { formatNumber } from '@/components-new-version/utils/utils'
-import { Globe, X } from 'lucide-react'
-import { ReactNode } from 'react'
+import { Globe } from 'lucide-react'
+import { ReactNode, useEffect, useState } from 'react'
 
-export function AboutTabContent() {
-  const circulatingSupply = 200000000
-  const totalSupply = 1000000000
-  const percentage = ((circulatingSupply / totalSupply) * 100).toFixed(2)
+interface AboutTabContentProps {
+  id: string
+  overview?: BirdeyeTokenOverview
+}
+
+interface AboutProps {
+  description: string
+  decimals: number
+  tokenProgram: string
+}
+
+const defaultAbout = {
+  description: '',
+  decimals: 6,
+  tokenProgram: '',
+}
+
+export function AboutTabContent({ id, overview }: AboutTabContentProps) {
+  const { decimals: outputTokenDecimals, data: outputTokenData } =
+    useTokenInfo(id)
+  const [about, setAbout] = useState<AboutProps>(defaultAbout)
+
+  useEffect(() => {
+    if (outputTokenDecimals && outputTokenData) {
+      setAbout({
+        description: outputTokenData.result.content.metadata.description,
+        decimals: outputTokenDecimals,
+        tokenProgram: isFungibleToken(outputTokenData)
+          ? outputTokenData.result.token_info.token_program
+          : 'NONE',
+      })
+    }
+  }, [outputTokenDecimals, outputTokenData])
 
   return (
     <div>
       <div className="pb-4 flex justify-between">
-        <div className="w-1/2">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </p>
+        <div
+          className={`${
+            overview &&
+            (overview.extensions.website || overview.extensions.twitter)
+              ? 'w-1/2'
+              : 'w-full'
+          }`}
+        >
+          <p>{about.description}</p>
         </div>
-        <div className="w-1/2 flex flex-col items-end space-y-2">
-          <Badge
-            text="https://website.com/websites"
-            icon={<Globe className="text-primary" size={16} />}
-          />
-          <Badge
-            text="TwitterHandle"
-            icon={<X className="text-primary" size={16} />}
-          />
-        </div>
+        {overview &&
+          (overview.extensions.website || overview.extensions.twitter) && (
+            <div className="w-1/2 flex flex-col items-end space-y-2">
+              <Badge
+                text={overview.extensions.website}
+                icon={<Globe className="text-primary" size={16} />}
+              />
+              <Badge
+                text={overview.extensions.twitter}
+                icon={<Globe className="text-primary" size={16} />}
+              />
+            </div>
+          )}
       </div>
       <div className="space-y-2">
         <p>Market Info</p>
-        <div className="bg-primary/10 p-4 rounded-lg flex items-center justify-between">
-          <div className="space-y-1">
-            <p>Decimals</p>
-            <p>Token Program</p>
-            <p>Markets</p>
-            <p>Circulating Supply</p>
-            <p>Total Supply</p>
-          </div>
-          <div className="space-y-1 text-right">
-            <p>6</p>
-            <p>Tokenkeg302hnskfwofeihfFHOWEIFHJV</p>
-            <p>171</p>
-            <p>{`${formatNumber(circulatingSupply)} (${percentage}%)`}</p>
-            <p>{formatNumber(totalSupply)}</p>
-          </div>
-        </div>
+        <Card variant={CardVariant.ACCENT}>
+          <CardContent className="flex justify-between">
+            <div className="space-y-1">
+              <p>Decimals</p>
+              <p>Token Program</p>
+              <p>Markets</p>
+              <p>Circulating Supply</p>
+              <p>Total Supply</p>
+            </div>
+            <div className="space-y-1 text-right">
+              <p>{about.decimals}</p>
+              <p>{about.tokenProgram}</p>
+              <p>{overview ? overview.numberMarkets : '...'}</p>
+
+              {overview ? (
+                <>
+                  <p>
+                    {`${formatNumber(overview.circulatingSupply)} 
+                    
+                    (${
+                      //to do the right calculation for the percentage
+                      (
+                        (overview.circulatingSupply /
+                          overview.circulatingSupply) *
+                        100
+                      )
+                        //----------------------
+                        .toFixed(2)
+                    }%)`}
+                  </p>
+                </>
+              ) : (
+                <p>...</p>
+              )}
+
+              <p>{overview ? overview.supply : '...'}</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

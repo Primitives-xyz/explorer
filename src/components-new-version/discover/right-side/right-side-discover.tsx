@@ -1,7 +1,7 @@
 'use client'
 
 import { FollowButton } from '@/components-new-version/common/follow-button'
-import { useGetAllProfiles } from '@/components-new-version/tapestry/hooks/use-get-all-profiles'
+import { useGetRecentProfiles } from '@/components-new-version/tapestry/hooks/use-get-recent-profiles'
 import {
   Button,
   ButtonSize,
@@ -21,16 +21,16 @@ import {
 } from '@/components-new-version/utils/utils'
 
 export function RightSideDiscover() {
-  const { profiles, loading } = useGetAllProfiles()
-  const { mainUsername } = useCurrentWallet()
+  const { profiles, loading } = useGetRecentProfiles()
+  const { mainProfile } = useCurrentWallet()
 
   return (
     <div className="space-y-4 flex flex-col">
       <Card>
-        <CardHeader className="!bg-card-accent !rounded-t-lg p-4 text-muted">
+        <CardHeader className="bg-card-accent p-4">
           <CardTitle>Recent profiles</CardTitle>
         </CardHeader>
-        <CardContent className="p-0 max-h-[calc(100vh-174px)] overflow-auto">
+        <CardContent className="max-h-[calc(100vh-220px)] overflow-auto p-0">
           <>
             {loading && (
               <span className="flex justify-center items-center h-48">
@@ -74,11 +74,13 @@ export function RightSideDiscover() {
                       </Button>
                     </div>
                   </div>
-                  <FollowButton
-                    small
-                    followerUsername={mainUsername}
-                    followeeUsername={elem.profile.username}
-                  />
+                  {!!mainProfile?.username && (
+                    <FollowButton
+                      size={ButtonSize.SM}
+                      followerUsername={mainProfile.username}
+                      followeeUsername={elem.profile.username}
+                    />
+                  )}
                 </span>
               )
             })}

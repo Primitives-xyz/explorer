@@ -75,7 +75,7 @@ export const ProfileHeader = memo(function ProfileHeader({
               {!isLoading && namespaceLink && namespaceLink !== '' && (
                 <div className="flex items-center gap-2 text-sm  mt-2">
                   <a href={namespaceLink} target="_blank">
-                    <button className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0">
+                    <button className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer shrink-0">
                       See original
                     </button>
                   </a>

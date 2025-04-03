@@ -1,19 +1,22 @@
 'use client'
 
 import { Button, ButtonVariant, TabVariant } from '@/components-new-version/ui'
+import { cn } from '@/components-new-version/utils/utils'
 
 interface FilterTabsProps<T extends string> {
   options: { label: string; value: T }[]
   selected: T
-  onSelect?: (value: T) => void
   variant?: TabVariant
+  className?: string
+  onSelect?: (value: T) => void
 }
 
 export function FilterTabs<T extends string>({
   options,
   selected,
-  onSelect,
   variant = TabVariant.DEFAULT,
+  className,
+  onSelect,
 }: FilterTabsProps<T>) {
   const getVariant = (isActive: boolean) => {
     if (isActive) {
@@ -28,7 +31,7 @@ export function FilterTabs<T extends string>({
   }
 
   return (
-    <div className="flex items-center gap-2 mb-4">
+    <div className={cn('flex items-center gap-2 mb-4', className)}>
       {options.map((option) => (
         <Button
           key={option.value}

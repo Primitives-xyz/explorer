@@ -36,24 +36,24 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
         href="https://flappy.sse.gg"
         target="_blank"
         rel="noopener noreferrer"
-        className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
+        className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors shrink-0"
       >
         {t('header.play')}
       </a>
       <button
         onClick={handleSearchClick}
-        className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0"
+        className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer shrink-0"
       >
         {t('header.search')}
       </button>
       <Link
         href={route('trade')}
-        className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
+        className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors shrink-0"
       >
         {t('header.trade')}
       </Link>
       {!walletAddress && (
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <DynamicConnectButton>
             <div className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer">
               {t('header.connect_wallet')}
@@ -64,7 +64,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
       {walletAddress && (
         <Link
           href={route('address', { id: walletAddress })}
-          className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors flex-shrink-0"
+          className="uppercase px-4 py-1.5 border border-green-500/50  hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors shrink-0"
         >
           {t('header.portfolio')}
         </Link>
@@ -74,7 +74,7 @@ export const UserActions = ({ walletAddress }: UserActionsProps) => {
 
       {/* <a
         href={route('graphVisualization')}
-        className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0"
+        className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer shrink-0"
       >
         {t('header.graph')}
       </a> */}
