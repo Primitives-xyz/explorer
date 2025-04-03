@@ -13,8 +13,7 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from '@solana/web3.js'
-// @ts-ignore
-import { VertigoSDK } from '@vertigo-amm/vertigo-sdk'
+import { VertigoSDK } from '@vertigo-amm/vertigo-sdk/dist/src/sdk'
 import bs58 from 'bs58'
 
 // Configuration
@@ -192,7 +191,7 @@ export class VertigoService {
 
       return {
         signature,
-        poolAddress,
+        poolAddress: poolAddress.toString(),
         mintB: mintB.toString(),
       }
     } catch (error: any) {
@@ -294,7 +293,7 @@ export class VertigoService {
       const pool = new PublicKey(params.poolAddress)
       const mintA = new PublicKey(params.mintA)
       const receiverTaA = new PublicKey(params.receiverTaA)
-      const claimer = new PublicKey(params.ownerAddress)
+      const claimer = Keypair.fromSecretKey(this.payer.secretKey)
 
       // Execute the claim royalties transaction
       const signature = await this.vertigo.claimRoyalties({
