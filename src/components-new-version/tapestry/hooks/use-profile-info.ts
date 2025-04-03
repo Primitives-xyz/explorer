@@ -50,7 +50,9 @@ export function useProfileInfo({
     profiles,
     loading: loadingProfiles,
     error: profilesError,
-  } = useGetProfiles(walletAddress ? walletAddress : walletAddressParsed)
+  } = useGetProfiles({
+    walletAddress: walletAddress ? walletAddress : walletAddressParsed,
+  })
 
   // Find the profile with namespace matching EXPLORER_NAMESPACE
   const explorerProfile = useMemo(() => {

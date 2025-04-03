@@ -7,7 +7,7 @@ import { abbreviateWalletAddress } from '@/components-new-version/utils/utils'
 
 interface Props {
   profileInfo: IGetProfilesResponseEntry | null
-  mainUsername: string
+  mainUsername?: string
   username: string
 }
 
@@ -33,7 +33,7 @@ export function ProfileHeader({ profileInfo, mainUsername, username }: Props) {
         </div>
       </div>
       <div className="space-y-2">
-        {profileInfo?.profile.username && (
+        {!!profileInfo?.profile.username && !!mainUsername && (
           <FollowButton
             expand
             followerUsername={mainUsername}

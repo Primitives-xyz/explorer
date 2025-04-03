@@ -20,11 +20,11 @@ interface Props {
 }
 
 export function ProfileContent({ username, walletAddress }: Props) {
-  const { mainUsername } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
 
   const { profileInfo } = useProfileInfo({
     username,
-    mainUsername,
+    mainUsername: mainProfile?.username,
     walletAddress,
   })
 
@@ -49,7 +49,7 @@ export function ProfileContent({ username, walletAddress }: Props) {
     <div className="flex flex-col w-full space-y-6">
       <ProfileHeader
         profileInfo={profileInfo}
-        mainUsername={mainUsername}
+        mainUsername={mainProfile?.username}
         username={displayUsername}
       />
       <div className="flex w-full justify-between gap-4">
