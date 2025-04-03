@@ -37,7 +37,7 @@ export function ProfileInfos() {
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start">
             <p className="text-xs pr-1">hi</p>
-            <p className="font-bold text-xs max-w-28 truncate pr-1">
+            <p className="font-bold text-xs max-w-[4rem] truncate pr-1">
               {mainProfile?.username}
             </p>
             <p className="text-xs flex items-center gap-1">

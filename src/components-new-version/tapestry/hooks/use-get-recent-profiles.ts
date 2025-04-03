@@ -5,7 +5,7 @@ interface Props {
   skip?: boolean
 }
 
-export const useGetRecentProfiles = ({ skip }: Props) => {
+export const useGetRecentProfiles = ({ skip }: Props = {}) => {
   const { data, loading, error, refetch } = useQuery<IGetProfilesResponse>({
     endpoint: 'profiles',
     skip,

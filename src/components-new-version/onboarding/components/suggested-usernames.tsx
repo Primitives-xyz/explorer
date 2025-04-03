@@ -3,8 +3,8 @@
 import { ISuggestedUsername } from '@/components-new-version/models/profiles.models'
 import { cn } from '@/components-new-version/utils/utils'
 import Image from 'next/image'
+import { useGetIdentities } from '../../tapestry/hooks/use-get-identities'
 import { Button, ButtonVariant, Label, Spinner } from '../../ui'
-import { useIdentities } from '../hooks/use-identities'
 import { useSuggestedProfileData } from '../hooks/use-suggested-profile-data'
 
 interface Props {
@@ -18,7 +18,7 @@ export function SuggestedUsernames({
   suggestedUsername,
   setSuggestedUsername,
 }: Props) {
-  const { identities, loading: getIdentitiesLoading } = useIdentities({
+  const { identities, loading: getIdentitiesLoading } = useGetIdentities({
     walletAddress,
   })
 
