@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@config "../../../tailwind.config.js";
+
 /* ========================= */
 /* 🌈 GLOBAL VARIABLES */
 /* ========================= */
@@ -10,13 +12,12 @@
   :root {
     --foreground: 0, 0%, 100%;
     --muted: 0 0% 96.1%;
-    --accent: 0 0% 96.1%; 
-    --card: 0 0% 100%; 
+    --accent: 0 0% 96.1%;
+    --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --border: 0 0% 89.8%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-   
 
     --background: 216, 12%, 19%;
     --background-80: 216, 12%, 19%, 0.8;
@@ -77,7 +78,19 @@
 }
 
 .background-image-gradient {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.567) -44.93%, rgba(0, 0, 0, 0.7) 106.67%), radial-gradient(74.83% 113.15% at 50% -13.15%, rgba(242, 255, 239, 0.52) 0%, rgba(244, 244, 235, 0.513954) 30.5%, rgba(126, 97, 100, 0.85) 64.5%, rgba(86, 54, 57, 0.91338) 79.5%, #181818 100%);
+  background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.567) -44.93%,
+      rgba(0, 0, 0, 0.7) 106.67%
+    ),
+    radial-gradient(
+      74.83% 113.15% at 50% -13.15%,
+      rgba(242, 255, 239, 0.52) 0%,
+      rgba(244, 244, 235, 0.513954) 30.5%,
+      rgba(126, 97, 100, 0.85) 64.5%,
+      rgba(86, 54, 57, 0.91338) 79.5%,
+      #181818 100%
+    );
 }
 
 /* ========================= */
@@ -113,19 +126,33 @@
 /* 🔥 ANIMATIONS */
 /* ========================= */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes slideY {
-  0% { transform: translateY(0%); }
-  50% { transform: translateY(calc(100% - 4rem)); }
-  100% { transform: translateY(0%); }
+  0% {
+    transform: translateY(0%);
+  }
+  50% {
+    transform: translateY(calc(100% - 4rem));
+  }
+  100% {
+    transform: translateY(0%);
+  }
 }
 
 .hover-scroll-indicator:hover + .scroll-indicator {
@@ -153,16 +180,14 @@
 }
 
 .dialect input {
-  --dt-text-primary: #000 !important;;
+  --dt-text-primary: #000 !important;
 }
-
 
 .dialect[data-theme='dark'] {
-  --dt-button-secondary: #000 !important;;
+  --dt-button-secondary: #000 !important;
   --dt-text-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
-  --dt-icon-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
-  --dt-input-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
-  --dt-button-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
-  --dt-icon-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;;
+  --dt-icon-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-input-secondary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-button-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
+  --dt-icon-primary: rgb(74 222 128 / var(--tw-text-opacity, 1)) !important;
 }
-
