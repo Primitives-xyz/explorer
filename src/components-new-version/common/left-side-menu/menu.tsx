@@ -17,7 +17,7 @@ import { usePathname } from 'next/navigation'
 
 export function Menu() {
   const pathname = usePathname()
-  const { mainUsername } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
 
   const data = [
     {
@@ -43,7 +43,7 @@ export function Menu() {
     {
       title: 'Profile',
       icon: User,
-      href: route('entity', { id: mainUsername }),
+      href: route('entity', { id: mainProfile?.username ?? '' }),
     },
     {
       title: 'Stake',

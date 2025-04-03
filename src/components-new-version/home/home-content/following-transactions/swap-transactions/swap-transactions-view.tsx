@@ -31,7 +31,6 @@ export type TokenDisplay = {
 interface Props {
   transaction: Transaction
   sourceWallet: string
-  primaryType: string
   fromMint?: string
   toMint?: string
 }
@@ -39,14 +38,15 @@ interface Props {
 export function SwapTransactionsView({
   transaction,
   sourceWallet,
-  primaryType,
   fromMint,
   toMint,
 }: Props) {
   const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
   const [toToken, setToToken] = useState<TokenDisplay | null>(null)
 
-  const { profiles } = useGetProfiles(sourceWallet)
+  const { profiles } = useGetProfiles({
+    walletAddress: sourceWallet,
+  })
 
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
     fromToken?.mint === SOL_MINT ? null : fromToken?.mint

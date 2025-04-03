@@ -38,10 +38,14 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
       'outline-white':
         'border border-foreground text-foreground bg-transparent hover:bg-accent',
       ghost: 'hover:bg-accent text-foreground',
+      selectable:
+        'bg-primary/10 text-foreground border border-primary/20 rounded-full',
+      'selectable-active':
+        'bg-primary text-primary-foreground border border-primary rounded-full',
       link: 'underline-offset-4 hover:opacity-80 underline h-auto! p-0! rounded-sm',
     },
     size: {
-      default: 'h-9 px-4 py-2',
+      default: 'h-9 px-4 py-2 text-sm',
       sm: 'h-6 px-3 text-xs',
       lg: 'h-16 px-12 text-xl uppercase',
       icon: 'h-10 w-10',
@@ -82,6 +86,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disableActiveFeedback = false,
       newTab = false,
       href,
+      type = 'button',
       ...props
     },
     ref
@@ -123,6 +128,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         ref={ref}
         disabled={disabled}
+        type={type}
         {...props}
       >
         {children}
