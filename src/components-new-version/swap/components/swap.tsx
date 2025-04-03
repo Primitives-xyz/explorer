@@ -15,7 +15,6 @@ import {
   formatUsdValue,
 } from '@/components-new-version/utils/format'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { useTranslations } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -30,7 +29,6 @@ interface SwapProps {
 }
 
 export function Swap({ mint, setTokenMint }: SwapProps) {
-  const t = useTranslations()
   const searchParams = useSearchParams()
   const router = useRouter()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)

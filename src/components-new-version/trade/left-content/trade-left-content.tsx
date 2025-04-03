@@ -27,7 +27,7 @@ export function TradeLeftContent({
   ]
 
   return (
-    <div className="w-1/3 relative">
+    <div className="w-1/3">
       <FilterTabs
         options={options}
         selected={selectedType}

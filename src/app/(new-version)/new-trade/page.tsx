@@ -9,7 +9,7 @@ export default function Page() {
   const [tokenMint, setTokenMint] = useState<string>('')
 
   return (
-    <MainContentWrapper className="flex gap-6 pb-10 w-full space-x-6">
+    <MainContentWrapper className="flex w-full space-x-6">
       <TradeLeftContent mint={tokenMint} setTokenMint={setTokenMint} />
       <TradeContent id={tokenMint} />
     </MainContentWrapper>

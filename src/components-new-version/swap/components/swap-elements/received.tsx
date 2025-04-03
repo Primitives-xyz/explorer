@@ -43,7 +43,7 @@ export function Receive({
         <div className="flex justify-between items-center">
           <Input
             placeholder="0.00"
-            className="text-primary text-3xl bg-transparent border-none placeholder:text-primary"
+            className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
             type="text"
             onFocus={() => setSwapMode(SwapMode.EXACT_OUT)}
             onChange={(e) => handleOutAmountChange(e)}
