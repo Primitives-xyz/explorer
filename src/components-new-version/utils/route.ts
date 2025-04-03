@@ -3,11 +3,10 @@
 const routes = {
   home: () => '/home',
   discover: () => '/discover',
-  profile: ({ id }: { id: string }) => `/profile/${id}`,
+  entity: ({ id }: { id: string }) => `/entity/${id}`,
   designSystem: () => '/design-system',
   newTrade: () => '/new-trade',
   tokens: () => '/tokens',
-  address: ({ id }: { id: string }) => `/${id}`,
 }
 
 export function route<T extends keyof typeof routes>(

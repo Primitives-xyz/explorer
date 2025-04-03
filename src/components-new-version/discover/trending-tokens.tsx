@@ -68,7 +68,7 @@ export function TrendingTokens() {
             <Button
               variant={ButtonVariant.GHOST}
               className="hover:bg-transparent"
-              href={route('address', { id: row.original.address })}
+              href={route('entity', { id: row.original.address })}
             >
               <p className="font-bold">{row.original.name}</p>
             </Button>

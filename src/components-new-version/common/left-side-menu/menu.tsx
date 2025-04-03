@@ -2,6 +2,7 @@
 
 import { Button, ButtonVariant } from '@/components-new-version/ui/button'
 import { route } from '@/components-new-version/utils/route'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { cn } from '@/components-new-version/utils/utils'
 import {
   ArrowRightLeft,
@@ -16,6 +17,7 @@ import { usePathname } from 'next/navigation'
 
 export function Menu() {
   const pathname = usePathname()
+  const { mainProfile } = useCurrentWallet()
 
   const data = [
     {
@@ -41,13 +43,11 @@ export function Menu() {
     {
       title: 'Profile',
       icon: User,
-      //href: route('profile', { id: mainUsername }),
-      href: '/profile',
+      href: route('entity', { id: mainProfile?.username ?? '' }),
     },
     {
       title: 'Stake',
       icon: Beef,
-      //href: route('profile'),
     },
     {
       title: 'Design System',

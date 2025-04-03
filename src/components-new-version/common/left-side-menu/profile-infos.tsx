@@ -45,7 +45,7 @@ export function ProfileInfos() {
               <Button
                 variant={ButtonVariant.GHOST}
                 className="p-0 hover:bg-transparent"
-                href={route('address', { id: SSE_TOKEN_MINT })}
+                href={route('entity', { id: SSE_TOKEN_MINT })}
               >
                 <span>
                   <Image

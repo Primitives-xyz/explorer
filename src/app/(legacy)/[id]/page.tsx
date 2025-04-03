@@ -79,6 +79,7 @@ function renderContent(routeType: RouteType, cleanId: string) {
 
 export default async function Page({ params }: { params: Params }) {
   const { id } = await params
+
   const cleanId = id?.startsWith('@') ? id.slice(1) : id
   const routeType = determineRouteType(id)
 
