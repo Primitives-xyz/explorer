@@ -19,15 +19,16 @@ import { SuggestedFollow } from './suggested-follow'
 
 export function Onboarding() {
   const [open, setOpen] = useState(false)
-  const { mainProfile, walletAddress, loading, isLoggedIn } = useCurrentWallet()
+  const { mainProfile, walletAddress, loading, isLoggedIn, socialCounts } =
+    useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
+  const [lockModal, setLockModal] = useState(true)
 
   useEffect(() => {
     if (
       isLoggedIn &&
       !loading &&
-      mainProfile &&
-      !mainProfile.hasSeenProfileSetupModal
+      (!mainProfile || (mainProfile && !mainProfile.hasSeenProfileSetupModal))
     ) {
       setOpen(true)
     }
@@ -41,16 +42,23 @@ export function Onboarding() {
     }
   }
 
+  useEffect(() => {
+    if (socialCounts?.following && socialCounts.following >= 3) {
+      setLockModal(false)
+    }
+  }, [socialCounts])
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
-        isStatic={step !== EOnboardingSteps.FOLLOW}
-        hideCloseButton={step !== EOnboardingSteps.FOLLOW}
+        isStatic={lockModal}
+        hideCloseButton={lockModal}
         className="max-w-3xl min-h-[600px] flex flex-col"
       >
         <DialogHeader>
           <DialogTitle>{getModalTitle()}</DialogTitle>
         </DialogHeader>
+
         {loading ? (
           <div className="flex items-center justify-center flex-1">
             <Spinner />
@@ -84,7 +92,10 @@ export function Onboarding() {
               )}
 
               {step === EOnboardingSteps.FOLLOW && mainProfile && (
-                <SuggestedFollow mainProfile={mainProfile} />
+                <SuggestedFollow
+                  mainProfile={mainProfile}
+                  closeModal={() => setOpen(false)}
+                />
               )}
             </div>
             <PoweredbyTapestry />

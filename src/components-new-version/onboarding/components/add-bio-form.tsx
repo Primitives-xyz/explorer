@@ -109,7 +109,7 @@ export function AddBioForm({ walletAddress, mainProfile, setStep }: Props) {
             Back
           </Button>
           <Button type="submit" className="w-[160px]" loading={loading}>
-            Complete
+            Next
           </Button>
         </div>
       </form>

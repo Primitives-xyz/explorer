@@ -17,9 +17,10 @@ import { FollowUserEntry } from './follow-user-entry'
 
 interface Props {
   mainProfile: IProfile
+  closeModal: () => void
 }
 
-export function SuggestedFollow({ mainProfile }: Props) {
+export function SuggestedFollow({ mainProfile, closeModal }: Props) {
   const [selectedType, setSelectedType] = useState(EFollowUsersType.TOP_TRADERS)
   const { traders, loading: loadingLeaderboard } = useLeaderboard({
     skip: selectedType !== EFollowUsersType.TOP_TRADERS,
@@ -41,6 +42,7 @@ export function SuggestedFollow({ mainProfile }: Props) {
   const loadingUsers = loadingLeaderboard || getRecentProfilesLoading
 
   const onClickDone = async () => {
+    closeModal()
     await updateProfile({
       properties: [
         {
@@ -113,7 +115,7 @@ export function SuggestedFollow({ mainProfile }: Props) {
             loading={updateProfileLoading}
             disabled={(socialCounts?.following ?? 0) < 3}
           >
-            Done
+            Complete
           </Button>
         </div>
       </div>

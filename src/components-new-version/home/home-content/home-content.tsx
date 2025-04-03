@@ -2,7 +2,7 @@ import { FollowingTransactionsWrapper } from './following-transactions/following
 
 export function HomeContent() {
   return (
-    <div>
+    <div className="w-full">
       {/* <Summary /> */}
       <FollowingTransactionsWrapper />
     </div>
