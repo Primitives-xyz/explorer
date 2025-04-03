@@ -3,6 +3,7 @@
 import { ISuggestedUsername } from '@/components-new-version/models/profiles.models'
 import {
   Button,
+  ButtonVariant,
   Form,
   FormControl,
   FormDescription,
@@ -17,7 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useCreateProfile } from '../hooks/use-create-profile'
+import { useCreateProfile } from '../../tapestry/hooks/use-create-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedUsernames } from './suggested-usernames'
 
@@ -34,13 +35,22 @@ const formSchema = z.object({
 interface Props {
   walletAddress: string
   setStep: (step: EOnboardingSteps) => void
+  closeModal: () => void
 }
 
-export function CreateUsernameForm({ walletAddress, setStep }: Props) {
+export function CreateUsernameForm({
+  walletAddress,
+  setStep,
+  closeModal,
+}: Props) {
   const [suggestedUsername, setSuggestedUsername] =
     useState<ISuggestedUsername>()
   const { createProfile, loading } = useCreateProfile()
-  const { mainProfile, refetch: refetchCurrentUser } = useCurrentWallet()
+  const {
+    mainProfile,
+    refetch: refetchCurrentUser,
+    logout,
+  } = useCurrentWallet()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -107,7 +117,18 @@ export function CreateUsernameForm({ walletAddress, setStep }: Props) {
             />
           </div>
         </div>
-        <div className="flex justify-end mt-auto">
+        <div className="flex justify-between mt-auto">
+          <Button
+            className="w-[160px]"
+            onClick={() => {
+              logout()
+              refetchCurrentUser()
+              closeModal()
+            }}
+            variant={ButtonVariant.OUTLINE}
+          >
+            Log out
+          </Button>
           <Button type="submit" className="w-[160px]" loading={loading}>
             Next
           </Button>

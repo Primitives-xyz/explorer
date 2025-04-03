@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
+import { useGetIdentities } from '../../tapestry/hooks/use-get-identities'
 import { Button, Label, Spinner } from '../../ui'
-import { useIdentities } from '../hooks/use-identities'
 import { useSuggestedProfileData } from '../hooks/use-suggested-profile-data'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function SuggestedImages({ walletAddress, setSuggestedImage }: Props) {
-  const { identities, loading: getIdentitiesLoading } = useIdentities({
+  const { identities, loading: getIdentitiesLoading } = useGetIdentities({
     walletAddress,
   })
 

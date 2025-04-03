@@ -4,25 +4,27 @@ import { IProfile } from '@/components-new-version/models/profiles.models'
 import { useGetRecentProfiles } from '@/components-new-version/tapestry/hooks/use-get-recent-profiles'
 import {
   Button,
+  ButtonVariant,
   FilterTabs,
   Paragraph,
   Spinner,
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useState } from 'react'
-import { useLeaderboard } from '../hooks/use-leaderboard'
-import { useUpdateProfile } from '../hooks/use-update-profile'
-import { EFollowUsersType } from '../onboarding.models'
+import { useGetLeaderboard } from '../../tapestry/hooks/use-get-leaderboard'
+import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
+import { EFollowUsersType, EOnboardingSteps } from '../onboarding.models'
 import { FollowUserEntry } from './follow-user-entry'
 
 interface Props {
   mainProfile: IProfile
   closeModal: () => void
+  setStep: (step: EOnboardingSteps) => void
 }
 
-export function SuggestedFollow({ mainProfile, closeModal }: Props) {
+export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
   const [selectedType, setSelectedType] = useState(EFollowUsersType.TOP_TRADERS)
-  const { traders, loading: loadingLeaderboard } = useLeaderboard({
+  const { traders, loading: loadingLeaderboard } = useGetLeaderboard({
     skip: selectedType !== EFollowUsersType.TOP_TRADERS,
   })
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
@@ -106,7 +108,14 @@ export function SuggestedFollow({ mainProfile, closeModal }: Props) {
           )}
         </div>
       </div>
-      <div className="flex justify-end mt-auto">
+      <div className="flex justify-between mt-auto">
+        <Button
+          onClick={() => setStep(EOnboardingSteps.BIO)}
+          className="w-[160px]"
+          variant={ButtonVariant.OUTLINE}
+        >
+          Back
+        </Button>
         <div className="flex items-center gap-3">
           <p className="text-primary">{socialCounts?.following ?? 0}/3</p>
           <Button
