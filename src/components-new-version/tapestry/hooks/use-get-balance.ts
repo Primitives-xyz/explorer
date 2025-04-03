@@ -7,7 +7,7 @@ interface Props {
   walletAddress: string
 }
 
-export const useTokenBalance = ({ walletAddress }: Props) => {
+export const useGetBalance = ({ walletAddress }: Props) => {
   const { data, loading, error, refetch } = useQuery<ITokenBalanceResponse>({
     endpoint: 'tokens/balance',
     queryParams: {

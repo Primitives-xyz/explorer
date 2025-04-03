@@ -6,17 +6,17 @@ import { cn } from '@/components-new-version/utils/utils'
 interface FilterTabsProps<T extends string> {
   options: { label: string; value: T }[]
   selected: T
-  onSelect?: (value: T) => void
   variant?: TabVariant
   className?: string
+  onSelect?: (value: T) => void
 }
 
 export function FilterTabs<T extends string>({
   options,
   selected,
-  onSelect,
   variant = TabVariant.DEFAULT,
   className,
+  onSelect,
 }: FilterTabsProps<T>) {
   const getVariant = (isActive: boolean) => {
     if (isActive) {
