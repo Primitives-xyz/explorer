@@ -25,6 +25,9 @@ export function Onboarding() {
   const [lockModal, setLockModal] = useState(true)
 
   useEffect(() => {
+    console.log('loading', loading)
+    console.log('mainProfile', mainProfile)
+
     if (
       isLoggedIn &&
       !loading &&

@@ -325,7 +325,7 @@ export const ImageModal = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-center justify-center">
       <div className="relative max-w-4xl flex items-center justify-center w-full p-4 bg-black/90 border border-green-800 rounded-lg h-[520px] overflow-y-auto">
         <div
           className="w-[20px] h-[20px] absolute right-[10px] top-[10px] font-bold text-center leading-[100%] text-lg border border-green-800 rounded-sm cursor-pointer"
@@ -362,7 +362,7 @@ export const ImageModal = ({
                     />
                   </Link>
                 ) : (
-                  <div className="min-h-[200px] rounded-lg bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
+                  <div className="min-h-[200px] rounded-lg bg-linear-to-br from-green-900/20 to-green-800/10 flex items-center justify-center">
                     <div className="font-mono text-sm">No image available</div>
                   </div>
                 )}
@@ -413,7 +413,7 @@ export const ImageModal = ({
                       <input
                         inputMode="decimal"
                         placeholder="0.00"
-                        className="bg-transparent text-base w-full font-medium placeholder:text-green-100/30 outline-none"
+                        className="bg-transparent text-base w-full font-medium placeholder:text-green-100/30 outline-hidden"
                         type="text"
                         onChange={(e) => {
                           const value = e.target.value

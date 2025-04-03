@@ -18,7 +18,7 @@ export const FilterBar = ({
 
   return (
     <div
-      className={`border-b ${colorClasses[accentColor]} p-2 flex-shrink-0 ${className}`}
+      className={`border-b ${colorClasses[accentColor]} p-2 shrink-0 ${className}`}
     >
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
         {children}

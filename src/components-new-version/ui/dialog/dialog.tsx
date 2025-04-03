@@ -68,7 +68,7 @@ const DialogContent = React.forwardRef<
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 grid gap-5 border border-foreground/20 bg-modal backdrop-blur-2xl text-modal-foreground p-6 shadow-lg rounded outline-none',
+          'fixed left-1/2 top-1/2 z-50 w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 grid gap-5 border border-foreground/20 bg-modal backdrop-blur-2xl text-modal-foreground p-6 shadow-lg rounded outline-hidden',
           {
             'duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95':
               animate,
@@ -93,7 +93,7 @@ const DialogContent = React.forwardRef<
         {!hideCloseButton && (
           <DialogPrimitive.Close
             onClick={onClose}
-            className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground cursor-pointer"
           >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>

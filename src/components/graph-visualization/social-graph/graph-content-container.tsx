@@ -14,7 +14,7 @@ interface Props {
 export default function GraphContentContainer({ data, username }: Props) {
   return (
     <SigmaContainer
-      className="w-full h-full !bg-transparent"
+      className="w-full h-full bg-transparent!"
       settings={{
         allowInvalidContainer: true,
         renderLabels: false,

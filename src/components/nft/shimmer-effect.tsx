@@ -16,7 +16,7 @@ export function ShimmerEffect() {
             key={i}
             className="rounded-xl overflow-hidden border border-green-800/30 bg-black/80"
           >
-            <div className="aspect-square bg-gradient-to-br from-green-900/30 to-green-800/20 flex items-center justify-center">
+            <div className="aspect-square bg-linear-to-br from-green-900/30 to-green-800/20 flex items-center justify-center">
               <svg
                 className="w-12 h-12 text-green-500/20 animate-pulse"
                 fill="none"
