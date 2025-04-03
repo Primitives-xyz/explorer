@@ -1,4 +1,5 @@
 import { PLATFORM_FEE_BPS, SSE_TOKEN_MINT } from '@/constants/jupiter'
+import { SwapService } from '@/services/swap'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
 import {
   ActionGetResponse,
@@ -6,7 +7,6 @@ import {
   ACTIONS_CORS_HEADERS,
   BLOCKCHAIN_IDS,
 } from '@solana/actions'
-import { Connection } from '@solana/web3.js'
 import { NextRequest } from 'next/server'
 
 const DEFAULT_INPUT_MINT = 'So11111111111111111111111111111111111111112' // SOL
@@ -15,11 +15,6 @@ const DEFAULT_SLIPPAGE_BPS = 50 // 0.5%
 const PLATFORM_FEE_ACCOUNT = process.env.PLATFORM_FEE_ACCOUNT || ''
 const SSE_DECIMALS = 6
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-
-// Create a connection to the Solana blockchain
-const connection = new Connection(
-  process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
-)
 
 // Set blockchain (mainnet or devnet)
 const blockchain =
@@ -224,6 +219,7 @@ export async function POST(req: NextRequest) {
           ssePrice,
           sseAmount,
           sseFeeAmount,
+          useSse,
         })
       } catch (err) {
         console.error('Error calculating SSE fee:', err)
@@ -233,28 +229,33 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const connection = await SwapService.createConnection()
     // Step 3: Build swap transaction
-    const swapTransaction = await buildSwapTransaction({
-      quoteResponse: quote,
-      userPublicKey,
-      slippageBps: DEFAULT_SLIPPAGE_BPS,
-      useSse,
-      sseFeeAmount: useSse ? sseFeeAmount : undefined,
-    })
+    const swapService = new SwapService(connection)
+    const outputAta = await swapService.verifyOrCreateATA(
+      outputMint,
+      userPublicKey
+    )
+    const swapTransaction = await swapService.buildSwapTransaction(
+      {
+        quoteResponse: quote,
+        walletAddress: userPublicKey,
+        slippageMode: 'auto',
+        slippageBps: DEFAULT_SLIPPAGE_BPS,
+        mintAddress: outputMint,
+        isCopyTrade: false,
+        priorityFee: quote.priorityFee,
+        sseTokenAccount: useSse ? sseFeeAmount : undefined,
+      },
+      outputAta
+    )
 
     // Step 4: Return transaction to client
     const response: ActionPostResponse = {
       type: 'transaction',
-      transaction: swapTransaction.transaction,
-    }
-
-    if (swapTransaction.lastValidBlockHeight) {
-      ;(response as any).lastValidBlockHeight =
-        swapTransaction.lastValidBlockHeight
-    }
-
-    if (swapTransaction.computeUnitLimit) {
-      ;(response as any).computeUnitLimit = swapTransaction.computeUnitLimit
+      transaction: Buffer.from(
+        swapTransaction.transaction.serialize()
+      ).toString('base64'),
     }
 
     return new Response(JSON.stringify(response), {
@@ -349,7 +350,7 @@ async function fetchJupiterQuote({
 }
 
 // Function to build swap transaction
-async function buildSwapTransaction({
+async function buildSwapTransactionBad({
   quoteResponse,
   userPublicKey,
   slippageBps,
@@ -402,9 +403,6 @@ async function buildSwapTransaction({
         if (PLATFORM_FEE_ACCOUNT && PLATFORM_FEE_ACCOUNT.length > 0) {
           swapData.feeAccount = PLATFORM_FEE_ACCOUNT
         }
-
-        console.log(`Trying endpoint ${endpoint}`)
-        console.log('Swap request payload:', JSON.stringify(swapData))
 
         response = await fetch(swapUrl.toString(), {
           method: 'POST',

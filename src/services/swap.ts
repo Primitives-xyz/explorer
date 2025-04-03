@@ -68,10 +68,9 @@ export class SwapService {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
-  private async verifyOrCreateATA(
+  public async verifyOrCreateATA(
     mintAddress: string,
     ownerAddress: string,
-    label: string,
     retryCount = 0
   ): Promise<PublicKey> {
     try {
@@ -88,23 +87,6 @@ export class SwapService {
           'High'
         )
 
-      console.log(
-        JSON.stringify(
-          {
-            operation: wasCreated
-              ? 'verifyOrCreateATA:created'
-              : 'verifyOrCreateATA:exists',
-            mintAddress,
-            ownerAddress,
-            label,
-            ataAddress: associatedTokenAddress.toString(),
-            wasCreated,
-          },
-          null,
-          2
-        )
-      )
-
       return associatedTokenAddress
     } catch (error: any) {
       const maxRetries = 3
@@ -116,16 +98,10 @@ export class SwapService {
           }/${maxRetries} after ${delayMs}ms delay`
         )
         await this.delay(delayMs)
-        return this.verifyOrCreateATA(
-          mintAddress,
-          ownerAddress,
-          label,
-          retryCount + 1
-        )
+        return this.verifyOrCreateATA(mintAddress, ownerAddress, retryCount + 1)
       }
 
       const errorDetails = {
-        label,
         errorCode: error.code,
         ataAddress: (
           await getAssociatedTokenAddress(
@@ -153,7 +129,14 @@ export class SwapService {
     }
   }
 
-  private async buildSwapTransaction(
+  // create connection
+  public static async createConnection(): Promise<Connection> {
+    return new Connection(
+      process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
+    )
+  }
+
+  public async buildSwapTransaction(
     request: SwapRequest,
     outputAta: PublicKey
   ): Promise<{
@@ -278,7 +261,6 @@ export class SwapService {
       const outputAta = await this.verifyOrCreateATA(
         request.mintAddress,
         JUPITER_CONFIG.FEE_WALLET,
-        'output-token',
         3
       )
 
@@ -286,8 +268,7 @@ export class SwapService {
       if (request.sseTokenAccount) {
         await this.verifyOrCreateATA(
           JUPITER_CONFIG.SSE_TOKEN_MINT,
-          request.walletAddress,
-          'sse-token'
+          request.walletAddress
         )
       }
 
