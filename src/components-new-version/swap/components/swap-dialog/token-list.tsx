@@ -3,7 +3,7 @@
 import { TokenListItem } from '@/components-new-version/swap/components/swap-dialog/token-list-item'
 import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
 import { sortTokenResults } from '@/components-new-version/swap/utils/token-utils'
-import { Loader2 } from 'lucide-react'
+import { Spinner } from '@/components-new-version/ui'
 import { useTranslations } from 'next-intl'
 
 interface TokenListProps {
@@ -30,15 +30,13 @@ export function TokenList({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin" />
+        <Spinner />
       </div>
     )
   }
 
   if (error) {
-    return (
-      <div className="p-4 text-red-400 text-center bg-red-950/20">{error}</div>
-    )
+    return <div className="p-4 text-destructive text-center">{error}</div>
   }
 
   if (searchResults.length === 0) {
@@ -56,15 +54,11 @@ export function TokenList({
   )
 
   if (filteredResults.length === 0) {
-    return (
-      <div className="p-4 text-center">
-        {t('trade.no_verified_tokens_found')}
-      </div>
-    )
+    return <div className="p-4 text-center">no verified tokens found</div>
   }
 
   return (
-    <div className="divide-y divide-green-800/50">
+    <div>
       {filteredResults.map((token) => (
         <TokenListItem key={token.address} token={token} onSelect={onSelect} />
       ))}

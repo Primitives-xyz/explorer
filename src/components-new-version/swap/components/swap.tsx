@@ -334,6 +334,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
 
       {(showInputTokenSearch || showOutputTokenSearch) && (
         <TokenSearch
+          openModal={showInputTokenSearch || showOutputTokenSearch}
           onSelect={
             showInputTokenSearch
               ? handleInputTokenSelect

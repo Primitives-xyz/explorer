@@ -49,7 +49,7 @@ export function BottomSwap({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <label htmlFor="terms2" className="block">
+        <label htmlFor="pay_fee_with_sse" className="block">
           <Card
             className={cn(
               {
@@ -60,7 +60,7 @@ export function BottomSwap({
           >
             <CardContent className="flex items-center space-x-3 py-2">
               <Checkbox
-                id="terms2"
+                id="pay_fee_with_sse"
                 checked={useSSEForFees}
                 onClick={() => setUseSSEForFees(!useSSEForFees)}
                 onChange={() => {}}

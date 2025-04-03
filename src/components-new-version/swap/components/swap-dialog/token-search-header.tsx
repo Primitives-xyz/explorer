@@ -1,27 +1,29 @@
 'use client'
 
+import { SortOptionsDetails } from '@/components-new-version/swap/hooks/use-token-search'
+import { FilterTabs, Input } from '@/components-new-version/ui'
+import { Checkbox } from '@/components-new-version/ui/checkbox/checkbox'
 import { Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'
-import { SortOption } from '../../types/token-types'
 
 interface TokenSearchHeaderProps {
   searchQuery: string
-  setSearchQuery: (query: string) => void
   verifiedOnly: boolean
+  sortOptions: { label: string; value: SortOptionsDetails }[]
+  sortBy: SortOptionsDetails
+  setSearchQuery: (query: string) => void
   setVerifiedOnly: (verified: boolean) => void
-  sortOptions: SortOption[]
-  sortBy: SortOption
-  setSortBy: (option: SortOption) => void
+  setSortBy: (option: SortOptionsDetails) => void
 }
 
 export function TokenSearchHeader({
   searchQuery,
-  setSearchQuery,
   verifiedOnly,
-  setVerifiedOnly,
   sortOptions,
   sortBy,
+  setSearchQuery,
+  setVerifiedOnly,
   setSortBy,
 }: TokenSearchHeaderProps) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -35,51 +37,38 @@ export function TokenSearchHeader({
   }, [])
 
   return (
-    <div className="p-4 border-b border-green-800 bg-green-950/50">
+    <div className="p-4 space-y-6">
       <div className="relative">
-        <input
+        <Input
           ref={inputRef}
           type="text"
           placeholder={t('trade.search_tokens')}
-          className="w-full bg-black/80 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+          className="pl-10"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
+        <Search
+          className="absolute left-3 top-1/2 -translate-y-1/2"
+          size={16}
+        />
       </div>
 
-      {/* Filter and Sort Options */}
-      <div className="flex flex-col gap-2 mt-2">
-        {/* Verified Toggle */}
-        <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input
-              type="checkbox"
-              checked={verifiedOnly}
-              onChange={(e) => setVerifiedOnly(e.target.checked)}
-              className="rounded border-green-800 focus:ring-green-600 bg-black/80"
-            />
-            {t('trade.verified_tokens_only')}
-          </label>
-        </div>
-
-        {/* Sort Options */}
-        <div className="flex gap-2">
-          {sortOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setSortBy(option)}
-              className={`text-xs px-2 py-1 rounded ${
-                sortBy.value === option.value
-                  ? 'bg-green-600'
-                  : 'bg-green-900/40'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="verified_only"
+          checked={verifiedOnly}
+          onCheckedChange={(val) => setVerifiedOnly(!!val)}
+        />
+        <label htmlFor="verified_only" className="text-sm cursor-pointer">
+          {t('trade.verified_tokens_only')}
+        </label>
       </div>
+
+      <FilterTabs
+        options={sortOptions}
+        selected={sortBy}
+        onSelect={setSortBy}
+      />
     </div>
   )
 }

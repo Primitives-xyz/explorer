@@ -8,22 +8,29 @@ import {
   TokenSearchProps,
   TokenSearchResult,
 } from '@/components-new-version/swap/types/token-types'
-import { useTranslations } from 'next-intl'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+} from '@/components-new-version/ui'
 
-export function TokenSearch({ onSelect, onClose }: TokenSearchProps) {
+export function TokenSearch({
+  openModal,
+  onSelect,
+  onClose,
+}: TokenSearchProps) {
   const {
     searchQuery,
-    setSearchQuery,
     searchResults,
     isLoading,
     error,
     verifiedOnly,
-    setVerifiedOnly,
     sortOptions,
     sortBy,
+    setSearchQuery,
+    setVerifiedOnly,
     setSortBy,
   } = useTokenSearch()
-  const t = useTranslations()
 
   const handleSelect = (token: TokenSearchResult) => {
     const selectedToken: TokenInfo = {
@@ -38,42 +45,32 @@ export function TokenSearch({ onSelect, onClose }: TokenSearchProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-black border border-green-800 rounded-lg w-full max-w-md overflow-hidden shadow-xl">
-        {/* Search Header */}
-        <TokenSearchHeader
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          verifiedOnly={verifiedOnly}
-          setVerifiedOnly={setVerifiedOnly}
-          sortOptions={sortOptions}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-        />
+    <Dialog open={openModal} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg flex flex-col">
+        <DialogHeader>
+          <TokenSearchHeader
+            searchQuery={searchQuery}
+            verifiedOnly={verifiedOnly}
+            sortOptions={sortOptions}
+            setSearchQuery={setSearchQuery}
+            setVerifiedOnly={setVerifiedOnly}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+          />
+        </DialogHeader>
 
-        {/* Results */}
-        <div className="max-h-[400px] overflow-y-auto bg-black/95">
+        <div className="max-h-[400px] overflow-y-auto">
           <TokenList
             isLoading={isLoading}
             error={error}
             searchQuery={searchQuery}
             searchResults={searchResults}
             verifiedOnly={verifiedOnly}
-            sortBy={sortBy.value}
+            sortBy={sortBy}
             onSelect={handleSelect}
           />
         </div>
-
-        {/* Close Button */}
-        <div className="p-4 border-t border-green-800 bg-green-950/50">
-          <button
-            onClick={onClose}
-            className="w-full bg-green-950 hover:bg-green-900 p-2 rounded transition-colors font-medium"
-          >
-            {t('common.close')}
-          </button>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

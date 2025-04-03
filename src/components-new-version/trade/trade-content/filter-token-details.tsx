@@ -20,8 +20,8 @@ export enum FilterTabsTokenDetails {
 
 interface Props {
   selectedType: TabsTokenDetails
-  setSelectedType: (type: TabsTokenDetails) => void
   sort: FilterTabsTokenDetails
+  setSelectedType: (type: TabsTokenDetails) => void
   setSort: (frame: FilterTabsTokenDetails) => void
 }
 
@@ -35,6 +35,7 @@ export function FilterTokenDetails({
     { label: 'Token Details', value: TabsTokenDetails.TOKEN_DETAILS },
     { label: 'Transactions', value: TabsTokenDetails.YOUR_TRANSACTIONS },
   ]
+
   return (
     <div className="flex items-center justify-between w-full">
       <FilterTabs

@@ -5,15 +5,19 @@ import {
   searchTokensByAddress,
   searchTokensByKeyword,
 } from '@/components-new-version/swap/services/token-search-service'
-import {
-  SortOption,
-  TokenSearchResult,
-} from '@/components-new-version/swap/types/token-types'
+import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
 import { DEFAULT_TOKENS } from '@/components-new-version/swap/utils/token-utils'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { debounce } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+
+export enum SortOptionsDetails {
+  MARKETCAP = 'marketcap',
+  VOLUME = 'volume',
+  NAME = 'name',
+  BALANCE = 'balance',
+}
 
 export function useTokenSearch() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -28,18 +32,14 @@ export function useTokenSearch() {
     walletAddress,
   })
 
-  // Create sort options only once
-  const sortOptions: SortOption[] = useMemo(
-    () => [
-      { value: 'marketcap', label: t('trade.marketcap') },
-      { value: 'volume', label: t('common.volume') },
-      { value: 'name', label: t('trade.name') },
-      { value: 'balance', label: t('common.balance') || 'Balance' },
-    ],
-    [t]
-  )
+  const sortOptions = [
+    { label: 'marketcap', value: SortOptionsDetails.MARKETCAP },
+    { label: 'volume', value: SortOptionsDetails.VOLUME },
+    { label: 'name', value: SortOptionsDetails.NAME },
+    { label: 'balance', value: SortOptionsDetails.BALANCE },
+  ]
 
-  const [sortBy, setSortBy] = useState(sortOptions[0])
+  const [sortBy, setSortBy] = useState(SortOptionsDetails.MARKETCAP)
 
   // Convert wallet items to token format
   const walletTokens = useMemo(() => {
@@ -151,14 +151,14 @@ export function useTokenSearch() {
 
   return {
     searchQuery,
-    setSearchQuery,
     searchResults,
     isLoading: isLoading || isPortfolioLoading,
     error,
     verifiedOnly,
-    setVerifiedOnly,
     sortOptions,
     sortBy,
+    setSearchQuery,
+    setVerifiedOnly,
     setSortBy,
   }
 }
