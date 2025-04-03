@@ -35,7 +35,7 @@ export function SuggestedBios({ walletAddress, setSuggestedBio }: Props) {
       </div>
       <div className="bg-muted rounded-lg space-y-4 h-full p-4 overflow-auto">
         {suggestedBios?.map((entry, index) => (
-          <p>{entry}</p>
+          <p key={index}>{entry}</p>
         ))}
         {!suggestedBios?.length && !loading && (
           <p className="text-sm text-muted-foreground">
