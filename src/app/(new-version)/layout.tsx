@@ -1,5 +1,6 @@
 import { Header } from '@/components-new-version/common/header'
 import { LeftSideMenu } from '@/components-new-version/common/left-side-menu/left-side-menu'
+import { WalletProvider } from '@/components-new-version/common/wallet-provider'
 import { Onboarding } from '@/components-new-version/onboarding/components/onboarding'
 import { Rethink_Sans } from 'next/font/google'
 import { ReactNode } from 'react'
@@ -17,18 +18,20 @@ export default async function NewVersionLayout({
   children: ReactNode
 }) {
   return (
-    <div className={rethinkSans.className}>
-      <Onboarding />
-      <div className="fixed inset-0 z-0 background-gradient" />
-      <div className="relative min-h-screen">
-        <Header />
-        <main className="w-full flex justify-between pt-topbar">
-          <LeftSideMenu />
-          <div className="flex-1 flex justify-between pt-[50px]">
-            {children}
-          </div>
-        </main>
+    <WalletProvider>
+      <div className={rethinkSans.className}>
+        <Onboarding />
+        <div className="fixed inset-0 z-0 background-gradient" />
+        <div className="relative min-h-screen">
+          <Header />
+          <main className="w-full flex justify-between pt-topbar">
+            <LeftSideMenu />
+            <div className="flex-1 flex justify-between pt-[50px]">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </WalletProvider>
   )
 }
