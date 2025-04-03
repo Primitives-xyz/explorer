@@ -124,7 +124,6 @@ export function useActivityTape() {
     const itemWidth = firstChild.offsetWidth
     const itemCount = contentRef.current.children.length
     const totalWidth = itemWidth * itemCount
-
     const duration = (totalWidth / SCROLL_SPEED) * 1000
 
     animationRef.current = contentRef.current.animate(
