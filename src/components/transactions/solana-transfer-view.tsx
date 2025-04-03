@@ -96,8 +96,8 @@ export const SolanaTransferView = ({
       {/* Transfer Details */}
       <div className="flex items-center gap-3">
         <div className="relative">
-          <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-          <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+          <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-xs"></div>
+          <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-1">
             <Image
               src="/images/solana-icon.svg"
               alt="solana icon"

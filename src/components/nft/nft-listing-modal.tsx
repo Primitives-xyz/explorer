@@ -115,7 +115,7 @@ export function NFTListingModal({
 
   // Loading overlay component
   const LoadingOverlay = () => (
-    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="absolute inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center z-50">
       <div className="flex flex-col items-center gap-4">
         <div className="w-12 h-12">
           <LoadingSpinner />
@@ -130,7 +130,7 @@ export function NFTListingModal({
         </div>
         {/* Progress bar */}
         <div className="w-48 h-1 bg-green-900/30 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-green-500 to-green-400 animate-progress-indeterminate"></div>
+          <div className="h-full bg-linear-to-r from-green-500 to-green-400 animate-progress-indeterminate"></div>
         </div>
       </div>
     </div>
@@ -210,7 +210,7 @@ export function NFTListingModal({
         {/* NFT Preview Row */}
         <div className="flex items-center space-x-3 bg-black/30 p-3 rounded-lg">
           {/* NFT Image - Larger size */}
-          <div className="relative w-24 h-24 rounded-md overflow-hidden border border-green-500/20 flex-shrink-0">
+          <div className="relative w-24 h-24 rounded-md overflow-hidden border border-green-500/20 shrink-0">
             {nft.imageUrl ? (
               <Image
                 src={nft.imageUrl}
@@ -435,7 +435,7 @@ export function NFTListingModal({
                   step="0.01"
                   min="0"
                   required
-                  className="w-full pl-8 pr-3 py-3 bg-black/50 border border-green-500/30 focus:border-green-500/60 focus:ring-1 focus:ring-green-500/60 rounded-md outline-none transition-colors text-lg font-bold"
+                  className="w-full pl-8 pr-3 py-3 bg-black/50 border border-green-500/30 focus:border-green-500/60 focus:ring-1 focus:ring-green-500/60 rounded-md outline-hidden transition-colors text-lg font-bold"
                   placeholder="0.00"
                   disabled={isSubmitting || showNftListLoading}
                 />
@@ -446,21 +446,21 @@ export function NFTListingModal({
                 <div className="flex items-center gap-1 text-xs">
                   {Number(listAmount) < floorPrice * 0.8 ? (
                     <>
-                      <AlertTriangleIcon className="w-3 h-3 text-yellow-500 flex-shrink-0" />
+                      <AlertTriangleIcon className="w-3 h-3 text-yellow-500 shrink-0" />
                       <span className="text-yellow-500">
                         Significantly below floor price
                       </span>
                     </>
                   ) : Number(listAmount) > floorPrice * 1.5 ? (
                     <>
-                      <AlertTriangleIcon className="w-3 h-3 text-yellow-500 flex-shrink-0" />
+                      <AlertTriangleIcon className="w-3 h-3 text-yellow-500 shrink-0" />
                       <span className="text-yellow-500">
                         Significantly above floor price
                       </span>
                     </>
                   ) : (
                     <>
-                      <CheckCircleIcon className="w-3 h-3 text-green-500 flex-shrink-0" />
+                      <CheckCircleIcon className="w-3 h-3 text-green-500 shrink-0" />
                       <span className="text-green-500">
                         Within recommended range
                       </span>
@@ -472,7 +472,7 @@ export function NFTListingModal({
               <motion.button
                 type="submit"
                 disabled={isSubmitting || !listAmount || showNftListLoading}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 px-4 rounded-md text-base relative overflow-hidden group"
+                className="w-full bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-black font-bold py-3 px-4 rounded-md text-base relative overflow-hidden group"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -488,7 +488,7 @@ export function NFTListingModal({
                     `List for ◎ ${listAmount || '0.00'}`
                   )}
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-linear-to-r from-green-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.button>
               <p className="text-xs text-center text-gray-400">
                 Your NFT will be listed on Magic Eden marketplace

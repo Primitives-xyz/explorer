@@ -72,10 +72,10 @@ export const ProfileCard = memo(({ profileAll, profile }: Props) => {
   return (
     <div className="p-3 hover:bg-green-900/10 min-h-[85px]">
       <div className="flex items-start gap-3 h-full">
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <button
             onClick={currentProfile ? handleProfileClick : undefined}
-            className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-full"
+            className="hover:opacity-80 transition-opacity focus:outline-hidden focus:ring-2 focus:ring-green-500/50 rounded-full"
             aria-label={
               currentProfile
                 ? `View ${currentProfile.username}'s profile`
@@ -135,7 +135,7 @@ export const ProfileCard = memo(({ profileAll, profile }: Props) => {
               </div>
 
               {isExplorerApp && currentProfile && (
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <FollowButton username={currentProfile.username} />
                 </div>
               )}

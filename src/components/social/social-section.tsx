@@ -46,7 +46,7 @@ const SocialCard = memo(
                 @{user.username}
               </button>
               {user.namespace === EXPLORER_NAMESPACE && ( // only give the possibility of follow for users inside explorer app
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <FollowButton username={user.username} size="sm" />
                 </div>
               )}

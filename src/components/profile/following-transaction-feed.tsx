@@ -124,7 +124,7 @@ export const FollowingTransactionFeed = ({
       <DataContainer title={t('following_activity.title')} height="large">
         <div className="relative h-full flex flex-col">
           {/* Blurred mock transactions in background */}
-          <div className="absolute inset-0 divide-y divide-green-800/30 blur-sm">
+          <div className="absolute inset-0 divide-y divide-green-800/30 blur-xs">
             {MOCK_TRANSACTIONS.map((tx, i) => (
               <TransactionCard
                 key={i}
@@ -135,7 +135,7 @@ export const FollowingTransactionFeed = ({
           </div>
 
           {/* Create Profile CTA */}
-          <div className="relative flex-1 flex flex-col items-center justify-center bg-background-80/95 backdrop-blur-sm px-4 py-8 sm:p-4 text-center z-10">
+          <div className="relative flex-1 flex flex-col items-center justify-center bg-background-80/95 backdrop-blur-xs px-4 py-8 sm:p-4 text-center z-10">
             <h3 className="font-mono text-base sm:text-lg mb-6 sm:mb-4 max-w-[280px] sm:max-w-none">
               {t('following_transaction.create_a_profile_to_follow')}
             </h3>

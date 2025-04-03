@@ -83,10 +83,10 @@ export function ProfileContent({ username, walletAddress }: Props) {
 function SmallCard({ label, value }: { label: string; value?: string }) {
   return (
     <Card variant={CardVariant.ACCENT_SOCIAL}>
-      <CardHeader className="!p-2 text-secondary">
+      <CardHeader className="p-2! text-secondary">
         <CardTitle>{label}</CardTitle>
       </CardHeader>
-      <CardContent className="!p-2">{value}</CardContent>
+      <CardContent className="p-2!">{value}</CardContent>
     </Card>
   )
 }

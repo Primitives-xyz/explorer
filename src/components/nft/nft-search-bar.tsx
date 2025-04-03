@@ -7,7 +7,7 @@ interface NFTSearchBarProps {
 
 export function NFTSearchBar({ searchTerm, setSearchTerm }: NFTSearchBarProps) {
   return (
-    <div className="relative flex-grow md:flex-grow-0 md:w-48">
+    <div className="relative grow md:grow-0 md:w-48">
       <input
         type="text"
         placeholder="Search NFTs..."

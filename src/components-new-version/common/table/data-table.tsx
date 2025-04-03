@@ -87,7 +87,7 @@ export function DataTable<TData>({
           ))}
         </TableHeader>
 
-        <TableBody className="!max-h-[400px] !overflow-y-auto">
+        <TableBody className="max-h-[400px]! overflow-y-auto!">
           {isLoading ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
