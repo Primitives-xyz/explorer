@@ -1,14 +1,18 @@
 'use client'
 
 import { DataTable } from '@/components-new-version/common/table/data-table'
-import { WalletAddressButton } from '@/components-new-version/common/wallet-address-button'
 import {
   TimeFrame,
   useTopTraders,
 } from '@/components-new-version/discover/hooks/use-top-traders'
 import { ITopTraders } from '@/components-new-version/models/token.models'
-import { Button, ButtonVariant } from '@/components-new-version/ui'
-import { cn, formatNumber } from '@/components-new-version/utils/utils'
+import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
+import { route } from '@/components-new-version/utils/route'
+import {
+  abbreviateWalletAddress,
+  cn,
+  formatNumber,
+} from '@/components-new-version/utils/utils'
 import { Column, ColumnDef } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 
@@ -61,7 +65,15 @@ export function TopTraders({ timeFrame }: Props) {
               <p className="text-xs">#{row.index + 1}</p>
             </div>
 
-            <WalletAddressButton walletAddress={traders.address} />
+            <Button
+              href={route('entity', { id: traders.address })}
+              variant={ButtonVariant.BADGE}
+              size={ButtonSize.SM}
+            >
+              {abbreviateWalletAddress({
+                address: traders.address,
+              })}
+            </Button>
           </span>
         )
       },
