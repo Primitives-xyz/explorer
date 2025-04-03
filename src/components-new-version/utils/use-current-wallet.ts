@@ -18,7 +18,6 @@ export function useCurrentWallet() {
   const t = useTranslations()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
-
   const [forceSdkLoaded, setForceSdkLoaded] = useState(false)
 
   useEffect(() => {
@@ -42,33 +41,37 @@ export function useCurrentWallet() {
     [userWallets, sdkHasLoaded, isLoggedIn]
   )
 
-  const { profiles, loading: loadingProfiles } = useGetProfiles(walletAddress)
+  const {
+    profiles,
+    loading: getProfilesLoading,
+    refetch: refetchGetProfiles,
+  } = useGetProfiles({
+    walletAddress,
+  })
 
-  const { mainUsername, image } = useMemo(() => {
-    if (!profiles) return { mainUsername: '', image: null }
-
-    const mainProfile = profiles.profiles.find(
+  const { mainProfile } = useMemo(() => {
+    const mainProfile = profiles?.profiles.find(
       (profile) =>
         profile.namespace.name === EXPLORER_NAMESPACE &&
         profile.wallet.address === walletAddress
-    )?.profile
+    )
 
     return {
-      mainUsername: mainProfile?.username || '',
-      image: mainProfile?.image || null,
+      mainProfile,
     }
   }, [profiles, walletAddress])
 
   return {
     walletAddress,
-    mainUsername,
-    loadingProfiles,
+    socialCounts: mainProfile?.socialCounts,
+    mainProfile: mainProfile?.profile,
+    loading: !dynamicSdkHasLoaded || getProfilesLoading,
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,
-    image,
     profiles,
     logout: handleLogOut,
     setShowAuthFlow,
+    refetch: refetchGetProfiles,
   }
 }

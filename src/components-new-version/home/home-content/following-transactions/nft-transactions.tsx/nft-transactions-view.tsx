@@ -53,14 +53,11 @@ const transformToExtendedTransaction = (
     })) || [],
 })
 
-export function NftTransactionsView({
-  transaction,
-  sourceWallet,
-  primaryType,
-}: Props) {
+export function NftTransactionsView({ transaction, sourceWallet }: Props) {
   const extendedTransaction = transformToExtendedTransaction(transaction)
-
-  const { profiles } = useGetProfiles(sourceWallet)
+  const { profiles } = useGetProfiles({
+    walletAddress: sourceWallet,
+  })
 
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [_detectionMethod, setDetectionMethod] = useState<string>('')

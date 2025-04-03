@@ -15,7 +15,6 @@ interface Props {
 
 export function TransactionsEntry({ transaction }: Props) {
   const { walletAddress } = useCurrentWallet()
-
   const primaryType = useTransactionType(transaction)
 
   return (
@@ -25,7 +24,6 @@ export function TransactionsEntry({ transaction }: Props) {
           <SwapTransactionsView
             transaction={transaction}
             sourceWallet={transaction.sourceWallet || walletAddress || ''}
-            primaryType={primaryType}
           />
         )}
 

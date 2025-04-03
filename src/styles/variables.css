@@ -2,7 +2,8 @@
   --background: 30deg 0% 20%;
   --foreground: 30deg 100% 100%;
 
-  --muted: 230 7% 75%;
+  /* --muted: 230 7% 75%; */
+  --muted: 0deg 0% 44%;
   --muted-foreground: 223deg 3% 75%;
 
   --accent: var(--foreground) / 0.1;
@@ -15,12 +16,15 @@
 
   --input: var(--foreground) / 0.2;
   --input-foreground: var(--foreground);
-  --input-border: 30deg 0% 90%;
+  --input-border: var(--foreground) / 0.3;
 
   --card: var(--foreground) / 0.1;
   --card-foreground: 220 50% 97%;
   --card-accent: 10, 4%, 37%;
   --card-border: 10, 2%, 40%;
+
+  --modal: var(--foreground) / 0.1;
+  --modal-foreground: 220 50% 97%;
 
   --primary: 109deg 58% 67%;
   --primary-foreground: 67deg 78% 15%;
@@ -40,7 +44,8 @@
   --switch-checked: var(--foreground);
   --switch-checked-foreground: var(--background) / 0.4;
 
-  --progress-foreground: var(--tertiary);
+  --progress: var(--foreground) / 0.2;
+  --progress-foreground: var(--foreground) / 0.6;
 
   /* Fonts */
   --text-lg: 20px;
