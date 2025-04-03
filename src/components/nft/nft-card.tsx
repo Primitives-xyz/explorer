@@ -80,7 +80,7 @@ export function NFTCard({
         onHoverEnd={() => setIsHovered(false)}
       >
         <motion.div
-          className="relative bg-gradient-to-b from-black/90 to-black/95 border border-green-800/40 rounded-xl overflow-hidden cursor-pointer shadow-lg"
+          className="relative bg-linear-to-b from-black/90 to-black/95 border border-green-800/40 rounded-xl overflow-hidden cursor-pointer shadow-lg"
           whileHover={{
             y: -5,
             boxShadow: '0 15px 30px -10px rgba(0, 255, 170, 0.3)',
@@ -90,7 +90,7 @@ export function NFTCard({
           onClick={navigateToNFTPage}
         >
           {/* Glass effect overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-0 bg-linear-to-br from-green-500/5 to-transparent pointer-events-none z-10" />
 
           {/* Image container with hover effect */}
           <div className="relative aspect-square overflow-hidden">
@@ -107,7 +107,7 @@ export function NFTCard({
 
             {/* Price tag if listed - moved to image overlay for better visibility */}
             {isListed && price && (
-              <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-medium z-20 flex items-center gap-1.5">
+              <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-xs px-2 py-1 rounded-md text-xs font-medium z-20 flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-green-500/30 flex items-center justify-center">
                   <span className="text-green-400 text-[10px]">◎</span>
                 </div>
@@ -128,7 +128,7 @@ export function NFTCard({
                 </p>
                 {nft.metadata.collection?.verified && (
                   <svg
-                    className="w-3 h-3 text-blue-500 flex-shrink-0"
+                    className="w-3 h-3 text-blue-500 shrink-0"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
@@ -147,7 +147,7 @@ export function NFTCard({
               {/* Buy button if listed and not owner */}
               {isListed && !isOwner && price && (
                 <motion.button
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black text-xs font-bold py-1.5 px-3 rounded-md"
+                  className="w-full bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black text-xs font-bold py-1.5 px-3 rounded-md"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleBuyNow}
@@ -162,7 +162,7 @@ export function NFTCard({
                 <div className="grid grid-cols-2 gap-2">
                   {/* Change Price button */}
                   <motion.button
-                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white text-xs font-bold py-1.5 px-2 rounded-md"
+                    className="bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white text-xs font-bold py-1.5 px-2 rounded-md"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleChangePrice}
@@ -172,7 +172,7 @@ export function NFTCard({
 
                   {/* Cancel Listing button */}
                   <motion.button
-                    className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white text-xs font-bold py-1.5 px-2 rounded-md"
+                    className="bg-linear-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white text-xs font-bold py-1.5 px-2 rounded-md"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleCancelListing}
@@ -186,7 +186,7 @@ export function NFTCard({
               {/* List for Sale button if owned by user and not listed */}
               {isOwner && !isListed && (
                 <motion.button
-                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white text-xs font-bold py-1.5 px-3 rounded-md"
+                  className="w-full bg-linear-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white text-xs font-bold py-1.5 px-3 rounded-md"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleListForSale}

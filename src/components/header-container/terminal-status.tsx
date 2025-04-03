@@ -41,7 +41,7 @@ export function TerminalStatus({
     <div className="w-full bg-black/20 px-3 py-1.5 border border-green-800/30 rounded-sm">
       <div className="flex items-center justify-between text-[10px] /80 whitespace-nowrap">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-          <div className="w-2 h-2 rounded-full bg-green-500/80 flex-shrink-0"></div>
+          <div className="w-2 h-2 rounded-full bg-green-500/80 shrink-0"></div>
           <span className="hidden sm:inline uppercase ">
             {t('header.terminal.title')}
           </span>
@@ -64,10 +64,10 @@ export function TerminalStatus({
         <div className="flex items-center space-x-4">
           <LanguageSwitcher />
           {mainUsername && (
-            <div className="flex items-center gap-1 relative flex-shrink-0">
+            <div className="flex items-center gap-1 relative shrink-0">
               <Link
                 href={route('address', { id: mainUsername })}
-                className="font-bold hover:opacity-80 transition-opacity flex-shrink-0"
+                className="font-bold hover:opacity-80 transition-opacity shrink-0"
               >
                 {t('header.terminal.user')}: {mainUsername}
               </Link>

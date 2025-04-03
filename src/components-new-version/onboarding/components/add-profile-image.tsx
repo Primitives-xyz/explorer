@@ -89,7 +89,7 @@ export function AddProfileImage({
                 onFileChange={onFileChange}
                 disabled={uploadLoading}
                 variant={ButtonVariant.OUTLINE}
-                containerClassName="!mt-3"
+                containerClassName="mt-3!"
               >
                 <UploadIcon size={18} /> Upload Image
               </ButtonInputFile>

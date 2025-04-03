@@ -46,24 +46,24 @@ export const DataContainer = ({
 
   return (
     <div
-      className={`border ${colors.border} bg-black/50 w-full overflow-hidden flex flex-col ${heightClass} relative group backdrop-blur-sm ${className}`}
+      className={`border ${colors.border} bg-black/50 w-full overflow-hidden flex flex-col ${heightClass} relative group backdrop-blur-xs ${className}`}
     >
       {/* Header */}
       <div
-        className={`border-b ${colors.border} p-2 sm:p-4 flex-shrink-0 bg-black/20`}
+        className={`border-b ${colors.border} p-2 sm:p-4 shrink-0 bg-black/20`}
       >
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <div
             className={`${colors.text} text-sm font-mono flex items-center gap-2 min-w-0 truncate`}
           >
             <span
-              className={`w-2 h-2 flex-shrink-0 ${colors.dot} rounded-full animate-pulse`}
+              className={`w-2 h-2 shrink-0 ${colors.dot} rounded-full animate-pulse`}
             />
             <span className="truncate">
               {'>'} {typeof title === 'string' && title.includes('.') ? t(title) : title}
             </span>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {count !== undefined && (
               <div
                 className={`text-xs ${colors.count} font-mono ${colors.countBg} px-2 py-1 rounded-full whitespace-nowrap uppercase`}
@@ -77,7 +77,7 @@ export const DataContainer = ({
       </div>
 
       {error && (
-        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 flex-shrink-0">
+        <div className="p-2 mb-4 border border-red-800 bg-red-900/20 text-red-400 shrink-0">
           <span>! ERROR: {error}</span>
         </div>
       )}

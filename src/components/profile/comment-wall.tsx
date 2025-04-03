@@ -125,7 +125,7 @@ export function CommentWall({ username, targetWalletAddress }: Props) {
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write a comment..."
-                  className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
+                  className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-hidden focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
                   disabled={postCommentLoading}
                 />
                 {postCommentLoading && (
@@ -341,7 +341,7 @@ export function CommentWall({ username, targetWalletAddress }: Props) {
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="Write a reply..."
-                            className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-none focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
+                            className="w-full h-24 bg-black/20 border border-green-800/50 rounded-lg p-3  font-mono placeholder-green-700 focus:outline-hidden focus:border-green-600 hover:border-green-700 cursor-text transition-colors resize-none ring-1 ring-green-900/30 hover:ring-green-800/50 focus:ring-green-600"
                             disabled={postCommentLoading}
                           />
                           {postCommentLoading && (

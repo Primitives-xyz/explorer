@@ -142,7 +142,7 @@ export function AmountInput({
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              className="bg-transparent text-xl sm:text-2xl w-full font-medium placeholder:text-green-100/30 outline-none"
+              className="bg-transparent text-xl sm:text-2xl w-full font-medium placeholder:text-green-100/30 outline-hidden"
               value={value}
               onFocus={(e) => {
                 e.preventDefault()
