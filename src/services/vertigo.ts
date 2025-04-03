@@ -13,6 +13,7 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from '@solana/web3.js'
+// @ts-ignore
 import { VertigoSDK } from '@vertigo-amm/vertigo-sdk'
 import bs58 from 'bs58'
 
