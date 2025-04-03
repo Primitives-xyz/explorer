@@ -1,5 +1,3 @@
-import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
-import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
 import {
   useDynamicContext,
   useIsLoggedIn,
@@ -7,6 +5,8 @@ import {
 } from '@dynamic-labs/sdk-react-core'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
+import { useGetProfiles } from '../tapestry/hooks/use-get-profiles'
+import { EXPLORER_NAMESPACE } from './constants'
 
 export function useCurrentWallet() {
   const {
@@ -61,7 +61,14 @@ export function useCurrentWallet() {
     }
   }, [profiles, walletAddress])
 
+  useEffect(() => {
+    console.log('dynamicSdkHasLoaded', dynamicSdkHasLoaded)
+    console.log('getProfilesLoading', getProfilesLoading)
+    console.log('mainProfile', mainProfile)
+  }, [dynamicSdkHasLoaded, getProfilesLoading, mainProfile])
+
   return {
+    profiles,
     walletAddress,
     socialCounts: mainProfile?.socialCounts,
     mainProfile: mainProfile?.profile,
@@ -69,7 +76,6 @@ export function useCurrentWallet() {
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,
-    profiles,
     logout: handleLogOut,
     setShowAuthFlow,
     refetch: refetchGetProfiles,

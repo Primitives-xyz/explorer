@@ -16,7 +16,7 @@ import { useCurrentWallet } from '@/components-new-version/utils/use-current-wal
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useUpdateProfile } from '../hooks/use-update-profile'
+import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedBios } from './suggested-bios'
 
@@ -88,15 +88,7 @@ export function AddBioForm({ walletAddress, mainProfile, setStep }: Props) {
             />
           </div>
           <div>
-            <SuggestedBios
-              walletAddress={walletAddress}
-              setSuggestedBio={async (bio) => {
-                await updateProfile({
-                  bio,
-                })
-                refetchCurrentUser()
-              }}
-            />
+            <SuggestedBios walletAddress={walletAddress} />
           </div>
         </div>
         <div className="flex justify-between mt-auto">

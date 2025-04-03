@@ -5,7 +5,7 @@ interface Props {
   skip?: boolean
 }
 
-export function useLeaderboard({ skip }: Props) {
+export function useGetLeaderboard({ skip }: Props) {
   const { data, loading, error, refetch } = useQuery<ILeaderboardResponse>({
     endpoint: 'leaderboard',
     skip,

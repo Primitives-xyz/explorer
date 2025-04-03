@@ -1,7 +1,7 @@
 'use client'
 
 import { FollowButton } from '@/components-new-version/common/follow-button'
-import { useGetAllProfiles } from '@/components-new-version/tapestry/hooks/use-get-all-profiles'
+import { useGetRecentProfiles } from '@/components-new-version/tapestry/hooks/use-get-recent-profiles'
 import {
   Button,
   ButtonSize,
@@ -21,7 +21,7 @@ import {
 } from '@/components-new-version/utils/utils'
 
 export function RightSideDiscover() {
-  const { profiles, loading } = useGetAllProfiles()
+  const { profiles, loading } = useGetRecentProfiles()
   const { mainProfile } = useCurrentWallet()
 
   return (

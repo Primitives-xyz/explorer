@@ -19,8 +19,14 @@ import { SuggestedFollow } from './suggested-follow'
 
 export function Onboarding() {
   const [open, setOpen] = useState(false)
-  const { mainProfile, walletAddress, loading, isLoggedIn, socialCounts } =
-    useCurrentWallet()
+  const {
+    profiles,
+    mainProfile,
+    walletAddress,
+    loading,
+    isLoggedIn,
+    socialCounts,
+  } = useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
   const [lockModal, setLockModal] = useState(true)
 
@@ -30,9 +36,10 @@ export function Onboarding() {
 
     if (
       isLoggedIn &&
-      !loading &&
+      typeof profiles !== 'undefined' &&
       (!mainProfile || (mainProfile && !mainProfile.hasSeenProfileSetupModal))
     ) {
+      console.log('------------open modal')
       setOpen(true)
     }
   }, [mainProfile, loading, isLoggedIn])
@@ -75,6 +82,7 @@ export function Onboarding() {
                 <CreateUsernameForm
                   walletAddress={walletAddress}
                   setStep={setStep}
+                  closeModal={() => setOpen(false)}
                 />
               )}
 
@@ -98,6 +106,7 @@ export function Onboarding() {
                 <SuggestedFollow
                   mainProfile={mainProfile}
                   closeModal={() => setOpen(false)}
+                  setStep={setStep}
                 />
               )}
             </div>

@@ -1,16 +1,15 @@
 'use client'
 
+import { useGetIdentities } from '../../tapestry/hooks/use-get-identities'
 import { Label, Spinner } from '../../ui'
-import { useIdentities } from '../hooks/use-identities'
 import { useSuggestedProfileData } from '../hooks/use-suggested-profile-data'
 
 interface Props {
   walletAddress: string
-  setSuggestedBio: (bio: string) => void
 }
 
-export function SuggestedBios({ walletAddress, setSuggestedBio }: Props) {
-  const { identities, loading: getIdentitiesLoading } = useIdentities({
+export function SuggestedBios({ walletAddress }: Props) {
+  const { identities, loading: getIdentitiesLoading } = useGetIdentities({
     walletAddress,
   })
 

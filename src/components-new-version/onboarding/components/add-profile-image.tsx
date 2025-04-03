@@ -12,7 +12,7 @@ import { FetchMethod } from '@/utils/api'
 import { UploadIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
-import { useUpdateProfile } from '../hooks/use-update-profile'
+import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedImages } from './suggested-images'
 
