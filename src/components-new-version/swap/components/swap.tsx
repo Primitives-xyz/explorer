@@ -316,7 +316,13 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
         loading={loading}
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
-        handleSwap={handleSwap}
+        handleSwap={async () => {
+          await handleSwap()
+          setShowInputTokenSearch(false)
+          setShowOutputTokenSearch(false)
+          setInAmount('')
+          setOutAmount('')
+        }}
       />
 
       <BottomSwap

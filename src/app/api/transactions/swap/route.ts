@@ -38,7 +38,7 @@ interface ParsedTransactionHistoryData {
   quoteTokenAmount: number
 }
 
-const TRANSACTIONS_PER_PAGE = 20
+const TRANSACTIONS_PER_PAGE = 100
 
 export async function GET(
   request: NextRequest
@@ -75,7 +75,7 @@ export async function GET(
 
   let url = `https://api.helius.xyz/v0/addresses/${walletAddress}/transactions?api-key=${apiKey}&limit=${TRANSACTIONS_PER_PAGE}`
 
-  if (type) url += `&type=${type}`
+  // if (type) url += `&type=${type}`
   if (before) url += `&before=${before}`
 
   try {
@@ -89,7 +89,6 @@ export async function GET(
     }
 
     const data = await response.json()
-    console.log("data:", JSON.stringify(data[0], null, 3))
 
     if (!Array.isArray(data) || data.length === 0) {
       return NextResponse.json([])
@@ -110,6 +109,11 @@ export async function GET(
       history: parsedData,
       status: 200
     })
+
+    // return NextResponse.json({
+    //   history: data,
+    //   status: 200
+    // })
 
   } catch (error) {
     return NextResponse.json(

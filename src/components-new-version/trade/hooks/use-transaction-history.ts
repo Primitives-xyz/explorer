@@ -35,6 +35,7 @@ export function useTransactionHistory(id: string, walletAddress: string) {
         }
 
         const history = data.history
+        console.log("history:", history)
 
         if (history.length === 0) {
           if (page > 1) {
@@ -46,6 +47,7 @@ export function useTransactionHistory(id: string, walletAddress: string) {
         }
 
         setTransactionHistory(history)
+        // setTransactionHistory([])
       } catch (error) {
         console.error("Error in fetch transaction history:", error)
       } finally {
@@ -54,7 +56,7 @@ export function useTransactionHistory(id: string, walletAddress: string) {
     }
 
     fetchTransaction()
-  }, [walletAddress, page])
+  }, [walletAddress, id, page])
 
   return {
     page,

@@ -66,11 +66,11 @@ export default function TransactionView({
 
           <div className='flex flex-col items-end space-y-2'>
             <Link href={`https://solscan.io/tx/${signature}`} target='_blank'>
-              <Button variant={"default"} className="transition-colors">
+              <div className="transition-colors">
                 <ExternalLink
                   className="w-5 h-5"
                 />
-              </Button>
+              </div>
             </Link>
             <TimeAgo timestamp={timestamp} />
           </div>

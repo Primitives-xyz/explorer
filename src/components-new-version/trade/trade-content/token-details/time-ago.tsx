@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 
 const TIME_UNITS = [
   { unit: 'year', seconds: 31536000 },
@@ -11,7 +11,6 @@ const TIME_UNITS = [
 
 const getTimeDifference = (timestamp: number): string => {
   const now = Date.now()
-  console.log("now:", now)
   const diffSeconds = Math.floor((now - timestamp * 1000) / 1000)
 
   for (const { unit, seconds } of TIME_UNITS) {

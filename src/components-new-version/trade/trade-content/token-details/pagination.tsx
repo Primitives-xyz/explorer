@@ -1,5 +1,5 @@
 "use client"
-import { Button } from "@/components-new-version/ui"
+import { Button, ButtonVariant } from "@/components-new-version/ui"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface PaginationProps {
@@ -23,25 +23,25 @@ export default function Pagination({ currentPage = 1, totalPages = 1, onPageChan
   }
 
   return (
-    <div className="flex items-center justify-center py-2">
+    <div className="flex items-center justify-center pt-2">
       <Button
-        onClick={handlePrevious}
+        variant={ButtonVariant.GHOST}
         disabled={currentPage <= 1}
-        className="p-2 focus:outline-none disabled:opacity-50"
         aria-label="Previous page"
+        onClick={handlePrevious}
       >
-        <ChevronLeft size={12} />
+        <ChevronLeft size={14} />
       </Button>
-      <div className="mx-4 text-xs">
+      <div className="mx-1 text-sm">
         {currentPage}/{totalPages}
       </div>
       <Button
-        onClick={handleNext}
+        variant={ButtonVariant.GHOST}
         disabled={currentPage >= totalPages}
-        className="p-2 focus:outline-none disabled:opacity-50"
         aria-label="Next page"
+        onClick={handleNext}
       >
-        <ChevronRight size={12} />
+        <ChevronRight size={14} />
       </Button>
     </div>
   )

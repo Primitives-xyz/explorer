@@ -23,7 +23,7 @@ interface TokenDetailsProps {
 }
 
 export function TokenDetails({ id }: TokenDetailsProps) {
-  const { walletAddress } = useCurrentWallet()
+  const { walletAddress, setShowAuthFlow } = useCurrentWallet()
   const { overview, isLoading } = useBirdeyeTokenOverview(id)
   const [selectedType, setSelectedType] = useState(
     TabsTokenDetails.TOKEN_DETAILS
@@ -69,6 +69,7 @@ export function TokenDetails({ id }: TokenDetailsProps) {
             id={id}
             walletAddress={walletAddress}
             sort={sort as FilterTabsYourTransactions}
+            setShowAuthFlow={setShowAuthFlow}
           />
         )}
       </CardContent>

@@ -1,4 +1,4 @@
-import { Spinner } from "@/components-new-version/ui"
+import { Button, ButtonSize, ButtonVariant, Spinner } from "@/components-new-version/ui"
 import { useTransactionHistory } from "../../hooks/use-transaction-history"
 import { FilterTabsYourTransactions } from "../filter-token-details"
 import TransactionView from "./transaction-view"
@@ -9,10 +9,11 @@ interface YourTransactionsProps {
   id: string
   walletAddress: string
   sort: FilterTabsYourTransactions
+  setShowAuthFlow: (show: boolean) => void
 }
-const TransactionsHistoryPerPage = 1
+const TransactionsHistoryPerPage = 20
 
-export function YourTransactions({ id, walletAddress, sort }: YourTransactionsProps) {
+export function YourTransactions({ id, walletAddress, sort, setShowAuthFlow }: YourTransactionsProps) {
   const { transactionHistory, fetchTxLoading } = useTransactionHistory(id, walletAddress)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -55,38 +56,57 @@ export function YourTransactions({ id, walletAddress, sort }: YourTransactionsPr
     <>
       <div className="h-[250px] overflow-auto">
         {
-          fetchTxLoading ? (
-            <div className="w-full h-full flex justify-center items-center">
-              <Spinner />
-            </div>
-          ) : (
+          walletAddress ? (
             <>
               {
-                pagedTransactionHistory.length ? (
-                  <div className="space-y-2">
-                    {
-                      pagedTransactionHistory.map((tx, index) => {
-                        return (
-                          <TransactionView
-                            key={index}
-                            baseTokenAmount={tx.baseTokenAmount}
-                            baseTokenMint={tx.baseTokenMint}
-                            quoteTokenAmount={tx.quoteTokenAmount}
-                            quoteTokenMint={tx.quoteTokenMint}
-                            signature={tx.signature}
-                            timestamp={tx.timestamp}
-                          />
-                        )
-                      })
-                    }
+                fetchTxLoading ? (
+                  <div className="w-full h-full flex justify-center items-center">
+                    <Spinner />
                   </div>
                 ) : (
-                  <div className="w-full h-full flex justify-center items-center">
-                    <span>No Transactions</span>
-                  </div>
+                  <>
+                    {
+                      pagedTransactionHistory.length ? (
+                        <div className="space-y-2">
+                          {
+                            pagedTransactionHistory.map((tx, index) => {
+                              return (
+                                <TransactionView
+                                  key={index}
+                                  baseTokenAmount={tx.baseTokenAmount}
+                                  baseTokenMint={tx.baseTokenMint}
+                                  quoteTokenAmount={tx.quoteTokenAmount}
+                                  quoteTokenMint={tx.quoteTokenMint}
+                                  signature={tx.signature}
+                                  timestamp={tx.timestamp}
+                                />
+                              )
+                            })
+                          }
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex justify-center items-center">
+                          <span>No Transactions</span>
+                        </div>
+                      )
+                    }
+                  </>
                 )
               }
             </>
+          ) : (
+            <div className="w-full h-full flex flex-col justify-center items-center space-y-4">
+              <span>Login or sign up to see your transaction history</span>
+              <div className="w-[200px]">
+                <Button
+                  variant={ButtonVariant.OUTLINE}
+                  expand
+                  onClick={() => setShowAuthFlow(true)}
+                >
+                  Connect wallet
+                </Button>
+              </div>
+            </div>
           )
         }
       </div>
