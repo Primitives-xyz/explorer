@@ -1,6 +1,7 @@
 import { useBirdeyeTokenOverview } from '@/components-new-version/trade/hooks/use-birdeye-token-overview'
 import {
   FilterTabsTokenDetails,
+  FilterTabsYourTransactions,
   FilterTokenDetails,
   TabsTokenDetails,
 } from '@/components-new-version/trade/trade-content/filter-token-details'
@@ -13,18 +14,29 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components-new-version/ui'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { YourTransactions } from './your-transactions'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 
 interface TokenDetailsProps {
   id: string
 }
 
 export function TokenDetails({ id }: TokenDetailsProps) {
+  const { walletAddress } = useCurrentWallet()
   const { overview, isLoading } = useBirdeyeTokenOverview(id)
   const [selectedType, setSelectedType] = useState(
     TabsTokenDetails.TOKEN_DETAILS
   )
-  const [sort, setSort] = useState(FilterTabsTokenDetails.ABOUT)
+  const [sort, setSort] = useState<FilterTabsTokenDetails | FilterTabsYourTransactions>(FilterTabsTokenDetails.ABOUT)
+
+  useEffect(() => {
+    if (selectedType === TabsTokenDetails.TOKEN_DETAILS) {
+      setSort(FilterTabsTokenDetails.ABOUT)
+    } else {
+      setSort(FilterTabsYourTransactions.ALL)
+    }
+  }, [selectedType])
 
   return (
     <Card>
@@ -53,7 +65,11 @@ export function TokenDetails({ id }: TokenDetailsProps) {
           </>
         )}
         {selectedType === TabsTokenDetails.YOUR_TRANSACTIONS && (
-          <p>transactions</p>
+          <YourTransactions
+            id={id}
+            walletAddress={walletAddress}
+            sort={sort as FilterTabsYourTransactions}
+          />
         )}
       </CardContent>
     </Card>

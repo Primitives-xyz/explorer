@@ -105,8 +105,6 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     swapMode: swapMode,
   })
 
-  console.log('sseFeeAmount:', sseFeeAmount)
-
   const displayInAmount = useMemo(() => {
     if (isQuoteRefreshing && swapMode === SwapMode.EXACT_OUT) {
       return '...'
