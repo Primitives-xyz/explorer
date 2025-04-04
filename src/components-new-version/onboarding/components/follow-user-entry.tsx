@@ -15,7 +15,7 @@ export function FollowUserEntry({
   info,
 }: Props) {
   return (
-    <div className="flex gap-3">
+    <div className="flex items-center gap-3">
       <div className="w-[64px] aspect-square rounded-full bg-muted overflow-hidden shrink-0">
         {image && (
           <Image
@@ -28,7 +28,7 @@ export function FollowUserEntry({
         )}
       </div>
       <div className="flex justify-between w-full">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col justify-center gap-1">
           <p className="text-sm font-semibold truncate max-w-[6rem]">
             {username}
           </p>

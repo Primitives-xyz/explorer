@@ -1,41 +1,21 @@
 'use client'
 
 import Image from 'next/image'
-import { useGetIdentities } from '../../tapestry/hooks/use-get-identities'
-import { Button, Label, Spinner } from '../../ui'
-import { useSuggestedProfileData } from '../hooks/use-suggested-profile-data'
+import { Button, Label } from '../../ui'
 
 interface Props {
-  walletAddress: string
+  suggestedImages: string[]
   setSuggestedImage: (imageUrl: string) => Promise<void>
 }
 
-export function SuggestedImages({ walletAddress, setSuggestedImage }: Props) {
-  const { identities, loading: getIdentitiesLoading } = useGetIdentities({
-    walletAddress,
-  })
-
-  const {
-    suggestedImages,
-    suggestedBios,
-    loading: getSuggestedImagesLoading,
-  } = useSuggestedProfileData({
-    suggestedProfiles: identities,
-    loadingSuggestions: getIdentitiesLoading,
-    walletAddress,
-  })
-
-  console.log(suggestedBios)
-
-  const loading = getIdentitiesLoading || getSuggestedImagesLoading
-
+export function SuggestedImages({ suggestedImages, setSuggestedImage }: Props) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <Label>Suggested Images</Label>
-        {!!identities?.length && (
+        {!!suggestedImages?.length && (
           <div className="text-muted-foreground">
-            ({identities.length} available)
+            ({suggestedImages.length} available)
           </div>
         )}
       </div>
@@ -57,16 +37,6 @@ export function SuggestedImages({ walletAddress, setSuggestedImage }: Props) {
           </Button>
         ))}
       </div>
-      {!suggestedImages?.length && !loading && (
-        <p className="text-sm text-muted-foreground">
-          No suggested images available.
-        </p>
-      )}
-      {loading && (
-        <div className="flex items-center justify-center h-[100px]">
-          <Spinner />
-        </div>
-      )}
     </div>
   )
 }

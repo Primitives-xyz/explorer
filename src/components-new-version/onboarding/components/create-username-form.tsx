@@ -14,6 +14,7 @@ import {
   Label,
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { cn } from '@/components-new-version/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -34,12 +35,14 @@ const formSchema = z.object({
 
 interface Props {
   walletAddress: string
+  suggestedUsernames: ISuggestedUsername[]
   setStep: (step: EOnboardingSteps) => void
   closeModal: () => void
 }
 
 export function CreateUsernameForm({
   walletAddress,
+  suggestedUsernames,
   setStep,
   closeModal,
 }: Props) {
@@ -90,8 +93,18 @@ export function CreateUsernameForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex-1 flex flex-col"
       >
-        <div className="grid grid-cols-5 gap-8">
-          <div className="col-span-2">
+        <div
+          className={cn({
+            'grid grid-cols-5 gap-8': !!suggestedUsernames?.length,
+            'flex justify-center': !suggestedUsernames?.length,
+          })}
+        >
+          <div
+            className={cn({
+              'col-span-2': !!suggestedUsernames?.length,
+              'w-[350px]': !suggestedUsernames?.length,
+            })}
+          >
             <FormField
               control={form.control}
               name="username"
@@ -109,13 +122,15 @@ export function CreateUsernameForm({
               )}
             />
           </div>
-          <div className="col-span-3">
-            <SuggestedUsernames
-              walletAddress={walletAddress}
-              suggestedUsername={suggestedUsername}
-              setSuggestedUsername={setSuggestedUsername}
-            />
-          </div>
+          {!!suggestedUsernames?.length && (
+            <div className="col-span-3">
+              <SuggestedUsernames
+                suggestedUsernames={suggestedUsernames}
+                suggestedUsername={suggestedUsername}
+                setSuggestedUsername={setSuggestedUsername}
+              />
+            </div>
+          )}
         </div>
         <div className="flex justify-between mt-auto">
           <Button
@@ -127,7 +142,7 @@ export function CreateUsernameForm({
             }}
             variant={ButtonVariant.OUTLINE}
           >
-            Log out
+            Cancel
           </Button>
           <Button type="submit" className="w-[160px]" loading={loading}>
             Next
