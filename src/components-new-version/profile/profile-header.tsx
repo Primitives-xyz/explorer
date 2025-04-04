@@ -8,7 +8,7 @@ import { abbreviateWalletAddress } from '@/components-new-version/utils/utils'
 interface Props {
   profileInfo: IGetProfilesResponseEntry | null
   mainUsername?: string
-  username: string
+  username?: string
 }
 
 export function ProfileHeader({ profileInfo, mainUsername, username }: Props) {
@@ -19,7 +19,7 @@ export function ProfileHeader({ profileInfo, mainUsername, username }: Props) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-start space-x-3">
-        <Avatar username={username} size={72} />
+        {username && <Avatar username={username} size={72} />}
         <div className="flex space-x-1 items-center">
           <p className="font-bold">@{profileInfo?.profile.username}</p>
           {profileInfo?.wallet?.address && (

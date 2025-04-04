@@ -1,4 +1,4 @@
-import { FollowingTransactionsWrapper } from './following-transactions/following-transactions-wrapper'
+import { FollowingTransactionsWrapper } from '@/components-new-version/home/home-content/following-transactions/following-transactions-wrapper'
 
 export function HomeContent() {
   return (

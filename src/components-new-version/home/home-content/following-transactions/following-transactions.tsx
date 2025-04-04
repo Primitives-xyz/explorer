@@ -1,11 +1,11 @@
 'use client'
 
-import { useFollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/hooks/use-following-transactions'
-import { TransactionsEntry } from '@/components-new-version/home/home-content/following-transactions/transactions-entry'
 import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get-following'
 import { useGetNamespaceProfiles } from '@/components-new-version/tapestry/hooks/use-get-namespace-profiles'
+import { useFollowingTransactions } from '@/components-new-version/transactions/hooks/use-following-transactions'
+import { TransactionsEntry } from '@/components-new-version/transactions/transactions-entry'
 import { FilterTabs, Spinner } from '@/components-new-version/ui'
-import { useTranslations } from 'next-intl'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 
 export enum FilterType {
   ALL = 'all',
@@ -26,7 +26,7 @@ export function FollowingTransactions({ username }: Props) {
     name: 'kolscan',
   })
 
-  const t = useTranslations()
+  const { walletAddress } = useCurrentWallet()
 
   const {
     aggregatedTransactions,
@@ -57,7 +57,11 @@ export function FollowingTransactions({ username }: Props) {
       ) : (
         <div className="space-y-4">
           {aggregatedTransactions.map((transaction, index) => (
-            <TransactionsEntry key={index} transaction={transaction} />
+            <TransactionsEntry
+              key={index}
+              transaction={transaction}
+              walletAddress={walletAddress}
+            />
           ))}
         </div>
       )}

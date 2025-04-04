@@ -61,12 +61,6 @@ export function useCurrentWallet() {
     }
   }, [profiles, walletAddress])
 
-  useEffect(() => {
-    console.log('dynamicSdkHasLoaded', dynamicSdkHasLoaded)
-    console.log('getProfilesLoading', getProfilesLoading)
-    console.log('mainProfile', mainProfile)
-  }, [dynamicSdkHasLoaded, getProfilesLoading, mainProfile])
-
   return {
     profiles,
     walletAddress,

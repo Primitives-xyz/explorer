@@ -11,11 +11,11 @@ import {
   CardVariant,
   Spinner,
 } from '@/components-new-version/ui'
-import { formatNumber } from '@/components-new-version/utils/format'
 import { route } from '@/components-new-version/utils/route'
 import {
   abbreviateWalletAddress,
   cn,
+  formatNumber,
 } from '@/components-new-version/utils/utils'
 
 interface TokenHoldersTabProps {

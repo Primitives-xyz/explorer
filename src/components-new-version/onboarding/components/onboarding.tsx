@@ -31,9 +31,6 @@ export function Onboarding() {
   const [lockModal, setLockModal] = useState(true)
 
   useEffect(() => {
-    console.log('loading', loading)
-    console.log('mainProfile', mainProfile)
-
     if (
       isLoggedIn &&
       typeof profiles !== 'undefined' &&
@@ -42,6 +39,7 @@ export function Onboarding() {
       console.log('------------open modal')
       setOpen(true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainProfile, loading, isLoggedIn])
 
   const getModalTitle = () => {

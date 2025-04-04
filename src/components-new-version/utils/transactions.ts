@@ -169,3 +169,21 @@ export const normalizeTransfers = (tx: ExtendedTransaction): Transfer[] => {
     []
   )
 }
+
+export const LAMPORTS_PER_SOL = 1000000000
+
+export const isSpamTransaction = (tx: any) => {
+  // Check if it's a multi-transfer with tiny amounts
+  if (
+    tx.type === 'TRANSFER' &&
+    tx.nativeTransfers &&
+    tx.nativeTransfers.length > 3
+  ) {
+    // Check if all transfers are tiny amounts (less than 0.001 SOL)
+    const allTinyTransfers = tx.nativeTransfers.every(
+      (transfer: any) => Math.abs(transfer.amount / LAMPORTS_PER_SOL) < 0.001
+    )
+    if (allTinyTransfers) return true
+  }
+  return false
+}

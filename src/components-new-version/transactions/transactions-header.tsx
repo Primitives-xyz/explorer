@@ -19,17 +19,21 @@ import {
 import { ArrowRightLeft } from 'lucide-react'
 import { ReactNode } from 'react'
 
+interface Props {
+  transaction: Transaction | ExtendedTransaction
+  sourceWallet: string
+  profiles?: IGetProfilesResponse
+  withCopyTradeButton?: boolean
+  children?: ReactNode
+}
+
 export function TransactionsHeader({
   transaction,
   sourceWallet,
   profiles,
+  withCopyTradeButton,
   children,
-}: {
-  transaction: Transaction | ExtendedTransaction
-  sourceWallet: string
-  profiles?: IGetProfilesResponse
-  children?: ReactNode
-}) {
+}: Props) {
   const sourceProfile = profiles?.profiles.find(
     (p) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
@@ -39,7 +43,9 @@ export function TransactionsHeader({
       <div className="w-12">
         <Button
           variant={ButtonVariant.GHOST}
-          href={`/${sourceProfile?.username || sourceWallet}`}
+          href={route('entity', {
+            id: sourceProfile?.username || sourceWallet,
+          })}
           className="p-0 hover:bg-transparent"
         >
           <Avatar
@@ -71,10 +77,12 @@ export function TransactionsHeader({
             <TimeAgo transaction={transaction} />
           </div>
 
-          <Button variant={ButtonVariant.OUTLINE} disabled>
-            <ArrowRightLeft />
-            Copy Trade
-          </Button>
+          {withCopyTradeButton && (
+            <Button variant={ButtonVariant.OUTLINE} disabled>
+              <ArrowRightLeft />
+              Copy Trade
+            </Button>
+          )}
         </div>
         {children}
       </div>

@@ -27,9 +27,9 @@ interface Props {
 
 export function FilterTokenDetails({
   selectedType,
-  setSelectedType,
   sort,
   setSort,
+  setSelectedType,
 }: Props) {
   const options = [
     { label: 'Token Details', value: TabsTokenDetails.TOKEN_DETAILS },
@@ -43,7 +43,7 @@ export function FilterTokenDetails({
         selected={selectedType}
         onSelect={setSelectedType}
       />
-      <div>
+      <div className="mb-4">
         {selectedType === TabsTokenDetails.TOKEN_DETAILS && (
           <Select
             value={sort}

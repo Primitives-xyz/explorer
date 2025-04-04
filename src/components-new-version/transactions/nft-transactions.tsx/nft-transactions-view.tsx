@@ -1,6 +1,5 @@
 'use client'
 
-import { TransactionsHeader } from '@/components-new-version/home/home-content/following-transactions/transactions-header'
 import {
   CompressedNFTMintEvent,
   ExtendedTransaction,
@@ -8,6 +7,7 @@ import {
 } from '@/components-new-version/models/helius.models'
 import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
+import { TransactionsHeader } from '@/components-new-version/transactions/transactions-header'
 import {
   Badge,
   Card,
