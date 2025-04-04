@@ -20,7 +20,7 @@ interface UseSuggestedProfileDataReturn {
   loading: boolean
 }
 
-export function useSuggestedProfileData({
+export function useGetSuggestedProfiles({
   suggestedProfiles,
   loadingSuggestions,
   walletAddress,

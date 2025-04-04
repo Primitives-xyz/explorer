@@ -3,34 +3,19 @@
 import { ISuggestedUsername } from '@/components-new-version/models/profiles.models'
 import { cn } from '@/components-new-version/utils/utils'
 import Image from 'next/image'
-import { useGetIdentities } from '../../tapestry/hooks/use-get-identities'
-import { Button, ButtonVariant, Label, Spinner } from '../../ui'
-import { useSuggestedProfileData } from '../hooks/use-suggested-profile-data'
+import { Button, ButtonVariant, Label } from '../../ui'
 
 interface Props {
-  walletAddress: string
+  suggestedUsernames: ISuggestedUsername[]
   suggestedUsername?: ISuggestedUsername
   setSuggestedUsername: (identity: ISuggestedUsername) => void
 }
 
 export function SuggestedUsernames({
-  walletAddress,
+  suggestedUsernames,
   suggestedUsername,
   setSuggestedUsername,
 }: Props) {
-  const { identities, loading: getIdentitiesLoading } = useGetIdentities({
-    walletAddress,
-  })
-
-  const { suggestedUsernames, loading: getSuggestedUsernamesLoading } =
-    useSuggestedProfileData({
-      suggestedProfiles: identities,
-      loadingSuggestions: getIdentitiesLoading,
-      walletAddress,
-    })
-
-  const loading = getIdentitiesLoading || getSuggestedUsernamesLoading
-
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -75,16 +60,6 @@ export function SuggestedUsernames({
           </Button>
         ))}
       </div>
-      {!suggestedUsernames?.length && !loading && (
-        <p className="text-sm text-muted-foreground">
-          No suggested usernames available.
-        </p>
-      )}
-      {loading && (
-        <div className="flex items-center justify-center h-[100px]">
-          <Spinner />
-        </div>
-      )}
     </div>
   )
 }

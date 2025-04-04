@@ -1,5 +1,6 @@
 'use client'
 
+import { useGetIdentities } from '@/components-new-version/tapestry/hooks/use-get-identities'
 import { useEffect, useState } from 'react'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
 import {
@@ -10,6 +11,7 @@ import {
   Spinner,
 } from '../../ui'
 import { useCurrentWallet } from '../../utils/use-current-wallet'
+import { useGetSuggestedProfiles } from '../hooks/use-get-suggested-profiles'
 import { EOnboardingSteps } from '../onboarding.models'
 import { AddBioForm } from './add-bio-form'
 import { AddProfileImage } from './add-profile-image'
@@ -23,32 +25,55 @@ export function Onboarding() {
     profiles,
     mainProfile,
     walletAddress,
-    loading,
+    loading: getCurrentUserLoading,
     isLoggedIn,
     socialCounts,
   } = useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
   const [lockModal, setLockModal] = useState(true)
 
-  useEffect(() => {
-    console.log('loading', loading)
-    console.log('mainProfile', mainProfile)
+  const { identities, loading: getIdentitiesLoading } = useGetIdentities({
+    walletAddress,
+  })
 
+  const {
+    suggestedUsernames,
+    suggestedImages,
+    suggestedBios,
+    loading: getSuggestedProfilesLoading,
+  } = useGetSuggestedProfiles({
+    suggestedProfiles: identities,
+    loadingSuggestions: getIdentitiesLoading,
+    walletAddress,
+  })
+
+  const loading =
+    getCurrentUserLoading || getIdentitiesLoading || getSuggestedProfilesLoading
+
+  useEffect(() => {
     if (
       isLoggedIn &&
       typeof profiles !== 'undefined' &&
       (!mainProfile || (mainProfile && !mainProfile.hasSeenProfileSetupModal))
     ) {
-      console.log('------------open modal')
+      if (!!mainProfile?.bio) {
+        setStep(EOnboardingSteps.FOLLOW)
+      } else if (!!mainProfile?.image) {
+        setStep(EOnboardingSteps.BIO)
+      } else if (!!mainProfile?.username) {
+        setStep(EOnboardingSteps.IMAGE)
+      } else {
+        setStep(EOnboardingSteps.USERNAME)
+      }
       setOpen(true)
     }
-  }, [mainProfile, loading, isLoggedIn])
+  }, [mainProfile, isLoggedIn, profiles])
 
   const getModalTitle = () => {
     if (step === EOnboardingSteps.FOLLOW) {
       return `Welcome @${mainProfile?.username}! Your profile has been successfully created!`
     } else {
-      return 'Create your profile'
+      return 'Create Your Profile'
     }
   }
 
@@ -81,6 +106,7 @@ export function Onboarding() {
               {step === EOnboardingSteps.USERNAME && (
                 <CreateUsernameForm
                   walletAddress={walletAddress}
+                  suggestedUsernames={suggestedUsernames}
                   setStep={setStep}
                   closeModal={() => setOpen(false)}
                 />
@@ -89,6 +115,7 @@ export function Onboarding() {
               {step === EOnboardingSteps.IMAGE && mainProfile && (
                 <AddProfileImage
                   walletAddress={walletAddress}
+                  suggestedImages={suggestedImages}
                   mainProfile={mainProfile}
                   setStep={setStep}
                 />
@@ -97,6 +124,7 @@ export function Onboarding() {
               {step === EOnboardingSteps.BIO && mainProfile && (
                 <AddBioForm
                   walletAddress={walletAddress}
+                  suggestedBios={suggestedBios}
                   mainProfile={mainProfile}
                   setStep={setStep}
                 />

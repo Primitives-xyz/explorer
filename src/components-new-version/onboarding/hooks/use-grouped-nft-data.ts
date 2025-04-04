@@ -281,7 +281,7 @@ export function useGroupedNFTData(
     })
 
     // Debug log collection sizes
-    console.log('Collection sizes:', Object.fromEntries(collectionSizes))
+    // console.log('Collection sizes:', Object.fromEntries(collectionSizes))
 
     // Then process each NFT with the collection size information
     const processed = nfts.map((nft) => {

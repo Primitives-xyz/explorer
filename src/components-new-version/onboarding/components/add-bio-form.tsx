@@ -13,6 +13,7 @@ import {
   Textarea,
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { cn } from '@/components-new-version/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -26,11 +27,17 @@ const formSchema = z.object({
 
 interface Props {
   walletAddress: string
+  suggestedBios: string[]
   mainProfile: IProfile
   setStep: (step: EOnboardingSteps) => void
 }
 
-export function AddBioForm({ walletAddress, mainProfile, setStep }: Props) {
+export function AddBioForm({
+  walletAddress,
+  suggestedBios,
+  mainProfile,
+  setStep,
+}: Props) {
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { updateProfile, loading } = useUpdateProfile({
     username: mainProfile.username,
@@ -67,8 +74,17 @@ export function AddBioForm({ walletAddress, mainProfile, setStep }: Props) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex-1 flex flex-col"
       >
-        <div className="grid grid-cols-2 gap-8">
-          <div>
+        <div
+          className={cn({
+            'grid grid-cols-2 gap-8': !!suggestedBios?.length,
+            'flex justify-center': !suggestedBios?.length,
+          })}
+        >
+          <div
+            className={cn({
+              'w-[350px]': !suggestedBios?.length,
+            })}
+          >
             <FormField
               control={form.control}
               name="bio"
@@ -78,7 +94,7 @@ export function AddBioForm({ walletAddress, mainProfile, setStep }: Props) {
                   <FormControl>
                     <Textarea
                       placeholder="Tell us about yourself"
-                      className="resize-none"
+                      className="resize-none h-[150px]"
                       {...field}
                     />
                   </FormControl>
@@ -87,9 +103,11 @@ export function AddBioForm({ walletAddress, mainProfile, setStep }: Props) {
               )}
             />
           </div>
-          <div>
-            <SuggestedBios walletAddress={walletAddress} />
-          </div>
+          {!!suggestedBios?.length && (
+            <div>
+              <SuggestedBios suggestedBios={suggestedBios} />
+            </div>
+          )}
         </div>
         <div className="flex justify-between mt-auto">
           <Button
