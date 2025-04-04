@@ -61,7 +61,7 @@ export function ProfileTableInfo({ walletAddress }: Props) {
           )}
         </div>
       </div>
-      <>
+      <div className="max-h-[400px] overflow-y-auto">
         {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (
           <ProfileTransactions
             walletAddress={walletAddress}
@@ -70,7 +70,7 @@ export function ProfileTableInfo({ walletAddress }: Props) {
           />
         )}
         {selected === FilterTabsProfileTableInfo.ASSETS && <p>assets</p>}
-      </>
+      </div>
     </div>
   )
 }
