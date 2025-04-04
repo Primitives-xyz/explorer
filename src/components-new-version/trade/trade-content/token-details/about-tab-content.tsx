@@ -1,10 +1,17 @@
 import { BirdeyeTokenOverview } from '@/components-new-version/models/token.models'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
-import { Card, CardContent, CardVariant } from '@/components-new-version/ui'
+import {
+  Button,
+  ButtonVariant,
+  Card,
+  CardContent,
+  CardVariant,
+} from '@/components-new-version/ui'
 import isFungibleToken from '@/components-new-version/utils/helper'
 import { formatNumber } from '@/components-new-version/utils/utils'
 import { Globe } from 'lucide-react'
-import { ReactNode, useEffect, useState } from 'react'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
 
 interface AboutTabContentProps {
   id: string
@@ -53,17 +60,33 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
         >
           <p>{about.description}</p>
         </div>
+
         {overview &&
           (overview.extensions.website || overview.extensions.twitter) && (
             <div className="w-1/2 flex flex-col items-end space-y-2">
-              <Badge
-                text={overview.extensions.website}
-                icon={<Globe className="text-primary" size={16} />}
-              />
-              <Badge
-                text={overview.extensions.twitter}
-                icon={<Globe className="text-primary" size={16} />}
-              />
+              <Button
+                variant={ButtonVariant.BADGE}
+                href={overview.extensions.twitter}
+              >
+                <Image
+                  src="/images/x.png"
+                  width={16}
+                  height={16}
+                  alt="x-logo"
+                  className="object-contain"
+                />
+                <p className="text-xs text-primary font-bold">|</p>
+                <p className="text-xs">{overview.extensions.twitter}</p>
+              </Button>
+
+              <Button
+                variant={ButtonVariant.BADGE}
+                href={overview.extensions.website}
+              >
+                <Globe className="text-primary" size={16} />
+                <p className="text-xs text-primary font-bold">|</p>
+                <p className="text-xs">{overview.extensions.website}</p>
+              </Button>
             </div>
           )}
       </div>
@@ -109,21 +132,6 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
           </CardContent>
         </Card>
       </div>
-    </div>
-  )
-}
-
-interface BadgeProps {
-  text?: string
-  icon: ReactNode
-}
-
-export function Badge({ text, icon }: BadgeProps) {
-  return (
-    <div className="bg-primary/10 rounded-full h-8 flex items-center justify-center px-4 gap-2">
-      {icon}
-      <p className="text-xs text-primary font-bold">|</p>
-      <p className="text-xs">{text}</p>
     </div>
   )
 }
