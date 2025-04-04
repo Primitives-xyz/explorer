@@ -87,7 +87,7 @@ export function BottomSwap({
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-muted-foreground text-left">
-                SSE offers the cheapest fee across all current platforms
+                SSE offers the lowest fees across all current platforms
               </AccordionTrigger>
               <AccordionContent>
                 <Card>
