@@ -39,7 +39,6 @@ export function FollowingTransactions({ username }: Props) {
   const options = [
     { label: 'All', value: FilterType.ALL },
     { label: 'Swap', value: FilterType.SWAP },
-    // { label: 'CNFT Mints', value: FilterType.COMPRESSED_NFT_MINT },
     { label: 'Twitter KOL', value: FilterType.KOL },
   ]
 
@@ -61,6 +60,7 @@ export function FollowingTransactions({ username }: Props) {
               key={index}
               transaction={transaction}
               walletAddress={walletAddress}
+              displaySwap
             />
           ))}
         </div>

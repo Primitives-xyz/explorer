@@ -13,21 +13,32 @@ import { SwapTransactionsView } from '@/components-new-version/transactions/swap
 interface Props {
   transaction: Transaction
   walletAddress?: string
+  displaySwap?: boolean
+  displayNft?: boolean
+  displaySolTransfer?: boolean
+  displayOther?: boolean
 }
 
-export function TransactionsEntry({ transaction, walletAddress }: Props) {
+export function TransactionsEntry({
+  transaction,
+  walletAddress,
+  displaySwap,
+  displayNft,
+  displaySolTransfer,
+  displayOther,
+}: Props) {
   const primaryType = useTransactionType(transaction)
 
   return (
     <>
-      {primaryType === TransactionType.SWAP && (
+      {primaryType === TransactionType.SWAP && displaySwap && (
         <SwapTransactionsView
           transaction={transaction}
           sourceWallet={transaction.sourceWallet || walletAddress || ''}
         />
       )}
 
-      {primaryType === TransactionType.NFT && (
+      {primaryType === TransactionType.NFT && displayNft && (
         <NftTransactionsView
           transaction={transaction}
           sourceWallet={transaction.sourceWallet || walletAddress || ''}
@@ -35,14 +46,14 @@ export function TransactionsEntry({ transaction, walletAddress }: Props) {
         />
       )}
 
-      {primaryType === TransactionType.SOL_TRANSFER && (
+      {primaryType === TransactionType.SOL_TRANSFER && displaySolTransfer && (
         <SolTransferTransactions
           transaction={transaction}
           sourceWallet={transaction.sourceWallet || walletAddress || ''}
         />
       )}
 
-      {primaryType === TransactionType.OTHER && (
+      {primaryType === TransactionType.OTHER && displayOther && (
         <OtherTransactions
           transaction={transaction}
           sourceWallet={transaction.sourceWallet || walletAddress || ''}

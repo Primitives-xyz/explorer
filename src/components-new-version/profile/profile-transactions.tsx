@@ -51,6 +51,10 @@ export function ProfileTransactions({
               key={index}
               transaction={transaction}
               walletAddress={walletAddress}
+              displaySwap
+              displayNft
+              displaySolTransfer
+              displayOther
             />
           )
         )}
