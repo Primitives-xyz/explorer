@@ -67,6 +67,7 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
               <Button
                 variant={ButtonVariant.BADGE}
                 href={overview.extensions.twitter}
+                newTab
               >
                 <Image
                   src="/images/x.png"
@@ -82,6 +83,7 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
               <Button
                 variant={ButtonVariant.BADGE}
                 href={overview.extensions.website}
+                newTab
               >
                 <Globe className="text-primary" size={16} />
                 <p className="text-xs text-primary font-bold">|</p>
