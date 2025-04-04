@@ -80,7 +80,7 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
                 key={user.profile.username}
                 username={user.profile.username}
                 image={user.profile.image}
-                info={`Trades ${user.score}`}
+                info={`${user.score} trade${user.score === 1 ? '' : 's'}`}
                 mainUsername={mainProfile.username}
               />
             ))}
@@ -94,9 +94,6 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
                   key={user.profile.username}
                   username={user.profile.username}
                   image={user.profile.image}
-                  info={`${user.socialCounts?.followers ?? 0} follower${
-                    user.socialCounts?.followers === 1 ? '' : 's'
-                  }`}
                   mainUsername={mainProfile.username}
                 />
               ))}

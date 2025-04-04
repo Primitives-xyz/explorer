@@ -17,7 +17,7 @@ export function LowFeeTrades() {
       </CardHeader>
       <CardContent className="flex flex-col space-y-4">
         <p className="text-sm  text-muted-foreground">
-          SSE offers the cheapest fee across all current platforms.
+          SSE offers the lowest fees across all current platforms.
         </p>
         <Button expand>
           <ArrowLeftRight size={16} />
