@@ -16,19 +16,19 @@ import {
 } from '@/components-new-version/ui'
 import { useEffect, useState } from 'react'
 import { YourTransactions } from './your-transactions'
-import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 
 interface TokenDetailsProps {
   id: string
 }
 
 export function TokenDetails({ id }: TokenDetailsProps) {
-  const { walletAddress, setShowAuthFlow } = useCurrentWallet()
   const { overview, isLoading } = useBirdeyeTokenOverview(id)
   const [selectedType, setSelectedType] = useState(
     TabsTokenDetails.TOKEN_DETAILS
   )
-  const [sort, setSort] = useState<FilterTabsTokenDetails | FilterTabsYourTransactions>(FilterTabsTokenDetails.ABOUT)
+  const [sort, setSort] = useState<
+    FilterTabsTokenDetails | FilterTabsYourTransactions
+  >(FilterTabsTokenDetails.ABOUT)
 
   useEffect(() => {
     if (selectedType === TabsTokenDetails.TOKEN_DETAILS) {

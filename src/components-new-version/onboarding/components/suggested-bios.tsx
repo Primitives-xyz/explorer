@@ -1,27 +1,12 @@
 'use client'
 
-import { useGetIdentities } from '../../tapestry/hooks/use-get-identities'
-import { Label, Spinner } from '../../ui'
-import { useSuggestedProfileData } from '../hooks/use-suggested-profile-data'
+import { Label } from '../../ui'
 
 interface Props {
-  walletAddress: string
+  suggestedBios: string[]
 }
 
-export function SuggestedBios({ walletAddress }: Props) {
-  const { identities, loading: getIdentitiesLoading } = useGetIdentities({
-    walletAddress,
-  })
-
-  const { suggestedBios, loading: getSuggestedBiosLoading } =
-    useSuggestedProfileData({
-      suggestedProfiles: identities,
-      loadingSuggestions: getIdentitiesLoading,
-      walletAddress,
-    })
-
-  const loading = getIdentitiesLoading || getSuggestedBiosLoading
-
+export function SuggestedBios({ suggestedBios }: Props) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -36,17 +21,7 @@ export function SuggestedBios({ walletAddress }: Props) {
         {suggestedBios?.map((entry, index) => (
           <p key={index}>{entry}</p>
         ))}
-        {!suggestedBios?.length && !loading && (
-          <p className="text-sm text-muted-foreground">
-            No suggested bios available.
-          </p>
-        )}
       </div>
-      {loading && (
-        <div className="flex items-center justify-center h-[100px]">
-          <Spinner />
-        </div>
-      )}
     </div>
   )
 }

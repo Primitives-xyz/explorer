@@ -2,7 +2,7 @@
 
 import { SortOptionsDetails } from '@/components-new-version/swap/hooks/use-token-search'
 import { FilterTabs, Input } from '@/components-new-version/ui'
-import { Checkbox } from '@/components-new-version/ui/checkbox/checkbox'
+import { Checkbox } from '@/components-new-version/ui/switch/checkbox'
 import { Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef } from 'react'

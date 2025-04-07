@@ -27,9 +27,9 @@ export enum FilterTabsYourTransactions {
 
 interface Props {
   selectedType: TabsTokenDetails
+  sort: FilterTabsTokenDetails
   setSelectedType: (type: TabsTokenDetails) => void
-  sort: FilterTabsTokenDetails | FilterTabsYourTransactions
-  setSort: (frame: FilterTabsTokenDetails | FilterTabsYourTransactions) => void
+  setSort: (frame: FilterTabsTokenDetails) => void
 }
 
 export function FilterTokenDetails({
@@ -74,7 +74,9 @@ export function FilterTokenDetails({
         )}
         {selectedType === TabsTokenDetails.YOUR_TRANSACTIONS && (
           <Select
-            onValueChange={(value) => setSort(value as FilterTabsYourTransactions)}
+            onValueChange={(value) =>
+              setSort(value as FilterTabsYourTransactions)
+            }
             value={sort}
           >
             <SelectTrigger className="border-none bg-transparent text-primary h-9">

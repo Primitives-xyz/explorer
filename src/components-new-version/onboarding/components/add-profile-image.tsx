@@ -8,6 +8,7 @@ import {
 } from '@/components-new-version/ui'
 import { createURL, fetchWrapper } from '@/components-new-version/utils/api'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { cn } from '@/components-new-version/utils/utils'
 import { FetchMethod } from '@/utils/api'
 import { UploadIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -18,12 +19,14 @@ import { SuggestedImages } from './suggested-images'
 
 interface Props {
   mainProfile: IProfile
+  suggestedImages: string[]
   setStep: (step: EOnboardingSteps) => void
   walletAddress: string
 }
 
 export function AddProfileImage({
   mainProfile,
+  suggestedImages,
   setStep,
   walletAddress,
 }: Props) {
@@ -70,10 +73,16 @@ export function AddProfileImage({
   return (
     <>
       <div className="flex-1 flex flex-col">
-        <div className="grid grid-cols-[160px__1fr] gap-8 w-full">
+        <div
+          className={cn({
+            'grid grid-cols-[160px__1fr] gap-8 w-full':
+              !!suggestedImages?.length,
+            'flex justify-center': !suggestedImages?.length,
+          })}
+        >
           <div>
-            <div className="w-full space-y-2">
-              <Label>Profile Image</Label>
+            <div className="w-[160px] space-y-2">
+              {!!suggestedImages?.length && <Label>Profile Image</Label>}
               {mainProfile.image && (
                 <div className="bg-muted rounded-lg w-full aspect-square overflow-hidden">
                   <Image
@@ -95,17 +104,19 @@ export function AddProfileImage({
               </ButtonInputFile>
             </div>
           </div>
-          <div>
-            <SuggestedImages
-              walletAddress={walletAddress}
-              setSuggestedImage={async (imageUrl) => {
-                await updateProfile({
-                  image: imageUrl,
-                })
-                refetchCurrentUser()
-              }}
-            />
-          </div>
+          {!!suggestedImages?.length && (
+            <div>
+              <SuggestedImages
+                suggestedImages={suggestedImages}
+                setSuggestedImage={async (imageUrl) => {
+                  await updateProfile({
+                    image: imageUrl,
+                  })
+                  refetchCurrentUser()
+                }}
+              />
+            </div>
+          )}
         </div>
         <div className="flex justify-between mt-auto">
           <Button

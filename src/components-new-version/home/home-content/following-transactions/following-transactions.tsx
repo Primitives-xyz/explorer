@@ -39,7 +39,7 @@ export function FollowingTransactions({ username }: Props) {
   const options = [
     { label: 'All', value: FilterType.ALL },
     { label: 'Swap', value: FilterType.SWAP },
-    { label: 'CNFT Mints', value: FilterType.COMPRESSED_NFT_MINT },
+    // { label: 'CNFT Mints', value: FilterType.COMPRESSED_NFT_MINT },
     { label: 'Twitter KOL', value: FilterType.KOL },
   ]
 

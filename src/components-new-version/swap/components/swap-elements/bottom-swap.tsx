@@ -2,14 +2,15 @@
 
 import { QuoteResponse } from '@/components-new-version/models/jupiter.models'
 import { PlatformComparison } from '@/components-new-version/swap/components/platform-comparison'
-import { Spinner } from '@/components-new-version/ui'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components-new-version/ui/card'
-import { Checkbox } from '@/components-new-version/ui/checkbox/checkbox'
+  Checkbox,
+  Spinner,
+} from '@/components-new-version/ui'
+import { CheckboxSize } from '@/components-new-version/ui/switch/checkbox.models'
 import {
   Accordion,
   AccordionContent,
@@ -58,17 +59,18 @@ export function BottomSwap({
               'cursor-pointer'
             )}
           >
-            <CardContent className="flex items-center space-x-3 py-2">
+            <CardContent className="flex items-center space-x-3 py-3 px-4">
               <Checkbox
                 id="pay_fee_with_sse"
                 checked={useSSEForFees}
                 onClick={() => setUseSSEForFees(!useSSEForFees)}
                 onChange={() => {}}
                 className="pointer-events-none"
+                size={CheckboxSize.LG}
               />
-              <div className="text-sm flex flex-col">
-                <span>Pay fee with SSE</span>
-                <span className="text-muted-foreground">
+              <div className="flex flex-col">
+                <span className="text-sm">Pay fee with SSE</span>
+                <span className="text-muted-foreground text-xs">
                   Get 50% off on transaction fees
                 </span>
               </div>
@@ -85,7 +87,7 @@ export function BottomSwap({
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-muted-foreground text-left">
-                SSE offers the cheapest fee across all current platforms
+                SSE offers the lowest fees across all current platforms
               </AccordionTrigger>
               <AccordionContent>
                 <Card>
