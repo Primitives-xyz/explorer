@@ -2,7 +2,7 @@
 
 import { QuoteResponse } from '@/components-new-version/models/jupiter.models'
 import { PlatformLogo } from '@/components-new-version/swap/components/platform-logo'
-import { formatLargeNumber } from '@/components-new-version/utils/utils'
+import { formatNumber } from '@/components-new-version/utils/utils'
 import { useMemo } from 'react'
 
 interface PlatformComparisonProps {
@@ -21,29 +21,23 @@ export function PlatformComparison({
   const platforms = useMemo(() => {
     if (!jupiterSwapResponse) return []
 
-    // Create platforms array from Jupiter response
+    // Create platforms array from Jupiter response with reduced output (98% of actual)
     const platformsFromResponse = jupiterSwapResponse.routePlan.map(
       (router) => ({
         name: router.swapInfo.label,
         logo: router.swapInfo.label,
-        price: formatLargeNumber(
-          Number.parseFloat(router.swapInfo.outAmount) /
-            Math.pow(10, outputTokenDecimals),
-          outputTokenDecimals
-        ),
+        price: ((Number.parseFloat(router.swapInfo.outAmount) * 0.98) /
+          Math.pow(10, outputTokenDecimals)).toFixed(outputTokenDecimals),
       })
     )
 
-    // Add SSE platform
+    // Add SSE platform with original amount
     const allPlatforms = [
       ...platformsFromResponse,
       {
         name: 'sse',
         logo: 'sse',
-        price: formatLargeNumber(
-          Number.parseFloat(platformExpectedOutAmount),
-          outputTokenDecimals
-        ),
+        price: Number.parseFloat(platformExpectedOutAmount).toFixed(outputTokenDecimals),
       },
     ]
 
@@ -69,7 +63,7 @@ export function PlatformComparison({
             </div>
             <div className="flex flex-row justify-center items-end gap-1">
               <span className="font-medium">
-                {platform.price.slice(0, platform.price.indexOf('.') + 3)}
+                {platform.price}
               </span>
               <span className="text-primary">${outputTokenSymbol}</span>
             </div>
