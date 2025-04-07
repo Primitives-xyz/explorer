@@ -1,7 +1,5 @@
 'use client'
 
-import { SwapTransactionsViewDetails } from '@/components-new-version/home/home-content/following-transactions/swap-transactions/swap-transactions-view-details'
-import { TransactionsHeader } from '@/components-new-version/home/home-content/following-transactions/transactions-header'
 import {
   Transaction,
   TransactionEvent,
@@ -10,6 +8,8 @@ import { TokenInfo } from '@/components-new-version/models/token.models'
 import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
+import { SwapTransactionsViewDetails } from '@/components-new-version/transactions/swap-transactions/swap-transactions-view-details'
+import { TransactionsHeader } from '@/components-new-version/transactions/transactions-header'
 import {
   Badge,
   Card,
@@ -218,12 +218,14 @@ export function SwapTransactionsView({
         prev ? { ...prev, tokenInfo: fromTokenInfo } : null
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromTokenInfo])
 
   useEffect(() => {
     if (toToken && toTokenInfo) {
       setToToken((prev) => (prev ? { ...prev, tokenInfo: toTokenInfo } : null))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toTokenInfo])
 
   if (!fromToken || !toToken) return null
@@ -235,6 +237,7 @@ export function SwapTransactionsView({
           transaction={transaction}
           sourceWallet={sourceWallet}
           profiles={profiles}
+          withCopyTradeButton
         >
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="rounded-md">

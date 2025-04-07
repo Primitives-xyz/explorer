@@ -4,7 +4,6 @@ import { useQuery } from '@/components-new-version/utils/api'
 import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
 
 import { useMemo } from 'react'
-
 interface Props {
   username?: string
   mainUsername?: string | null
@@ -81,6 +80,7 @@ export function useProfileInfo({
       walletAddressError,
       serverError,
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isLoading,
     loadingProfiles,

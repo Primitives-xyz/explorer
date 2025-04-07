@@ -66,7 +66,6 @@ export function useJupiterSwap({
   walletAddress,
   swapMode = 'ExactIn',
 }: UseJupiterSwapParams) {
-  console.log('platformFeeBps:', platformFeeBps)
   const t = useTranslations()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')

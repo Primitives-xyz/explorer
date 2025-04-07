@@ -1,6 +1,6 @@
 'use client'
 
-import { TokenDisplay } from '@/components-new-version/home/home-content/following-transactions/swap-transactions/swap-transactions-view'
+import { TokenDisplay } from '@/components-new-version/transactions/swap-transactions/swap-transactions-view'
 import { SOL_MINT } from '@/components-new-version/utils/constants'
 import {
   abbreviateWalletAddress,
@@ -66,9 +66,7 @@ export function SwapTransactionsViewDetails({
           <span className={isReceived ? 'text-primary' : 'text-destructive'}>
             {isReceived ? '+' : '-'}
           </span>
-          <span className="font-mono text-md">
-            {formatNumber(token.amount)}
-          </span>
+          <span className="text-md">{formatNumber(token.amount)}</span>
         </div>
         <span className="text-xs text-muted-foreground">
           {tokenPrice !== null && !priceLoading

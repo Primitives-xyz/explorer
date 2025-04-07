@@ -9,12 +9,13 @@ import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-toke
 import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
+
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import {
   formatLargeNumber,
   formatRawAmount,
   formatUsdValue,
-} from '@/components-new-version/utils/format'
-import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+} from '@/components-new-version/utils/utils'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -104,8 +105,6 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     walletAddress: walletAddress,
     swapMode: swapMode,
   })
-
-  console.log('sseFeeAmount:', sseFeeAmount)
 
   const displayInAmount = useMemo(() => {
     if (isQuoteRefreshing && swapMode === SwapMode.EXACT_OUT) {
@@ -318,7 +317,13 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
         loading={loading}
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
-        handleSwap={handleSwap}
+        handleSwap={async () => {
+          await handleSwap()
+          setShowInputTokenSearch(false)
+          setShowOutputTokenSearch(false)
+          setInAmount('')
+          setOutAmount('')
+        }}
       />
 
       <BottomSwap
