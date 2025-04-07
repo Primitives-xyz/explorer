@@ -7,73 +7,70 @@ import { cn } from '@/components-new-version/utils/utils'
 import {
   ArrowRightLeft,
   Beef,
-  CircleDollarSign,
   Compass,
   House,
+  LucideIcon,
   PaintbrushVertical,
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 export function Menu() {
-  const pathname = usePathname()
   const { mainProfile } = useCurrentWallet()
-
-  const data = [
-    {
-      title: 'Home',
-      icon: House,
-      href: route('home'),
-    },
-    {
-      title: 'Trade',
-      icon: ArrowRightLeft,
-      href: route('newTrade'),
-    },
-    {
-      title: 'Discover',
-      icon: Compass,
-      href: route('discover'),
-    },
-    {
-      title: 'Tokens',
-      icon: CircleDollarSign,
-      href: route('tokens'),
-    },
-    {
-      title: 'Profile',
-      icon: User,
-      href: route('entity', { id: mainProfile?.username ?? '' }),
-    },
-    {
-      title: 'Stake',
-      icon: Beef,
-    },
-    {
-      title: 'Design System',
-      icon: PaintbrushVertical,
-      href: route('designSystem'),
-    },
-  ]
 
   return (
     <div className="space-y-2">
-      {data.map((item, i) => (
-        <Button
-          key={i}
-          variant={ButtonVariant.GHOST}
-          className={cn(
-            'flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
-            {
-              'bg-primary text-background': pathname === item.href,
-            }
-          )}
-          href={item.href}
-        >
-          <item.icon size={20} />
-          {item.title}
-        </Button>
-      ))}
+      <Entry title="Home" icon={House} href={route('home')} />
+
+      <Entry title="Trade" icon={ArrowRightLeft} href={route('newTrade')} />
+
+      <Entry title="Discover" icon={Compass} href={route('discover')} />
+
+      {/* <Entry title="Tokens" icon={CircleDollarSign} href={route('tokens')} /> */}
+
+      <Entry
+        title="Profile"
+        icon={User}
+        href={route('entity', { id: mainProfile?.username || '' })}
+        disabled={!mainProfile?.username}
+      />
+
+      <Entry title="Stake" icon={Beef} href={route('stake')} />
+
+      <Entry
+        title="Design System"
+        icon={PaintbrushVertical}
+        href={route('designSystem')}
+      />
     </div>
+  )
+}
+
+interface IEntry {
+  title: string
+  icon: LucideIcon
+  href: string
+  disabled?: boolean
+}
+
+function Entry({ title, icon, href, disabled }: IEntry) {
+  const pathname = usePathname()
+  const Icon = icon
+
+  return (
+    <Button
+      disabled={disabled}
+      variant={ButtonVariant.GHOST}
+      className={cn(
+        'flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
+        {
+          'bg-primary text-background': pathname === href,
+        }
+      )}
+      href={href}
+    >
+      <Icon size={20} />
+      {title}
+    </Button>
   )
 }

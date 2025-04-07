@@ -1,6 +1,9 @@
 'use client'
 
-import { FilterTabs } from '@/components-new-version/ui'
+import { StakeData } from '@/components-new-version/stake/stake-data/stake-data'
+import { StakeDetails } from '@/components-new-version/stake/stake-details/stake-details'
+import { Card, CardContent, FilterTabs } from '@/components-new-version/ui'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 export enum StakeFilterType {
@@ -16,21 +19,29 @@ export function StakeContent() {
     { label: 'Claim Rewards', value: StakeFilterType.CLAIM_REWARDS },
   ]
 
+  const t = useTranslations()
+
   const [selectedType, setSelectedType] = useState<StakeFilterType>(
     StakeFilterType.STAKE
   )
 
   return (
-    <div className="flex flex-col w-full">
-      <FilterTabs
-        options={options}
-        selected={selectedType}
-        onSelect={setSelectedType}
-      />
-
-      {selectedType === StakeFilterType.STAKE && <p>stake</p>}
-      {selectedType === StakeFilterType.UNSTAKE && <p>unstake</p>}
-      {selectedType === StakeFilterType.CLAIM_REWARDS && <p>claim reward</p>}
+    <div className="flex w-full justify-between gap-4">
+      <div className="w-1/2">
+        <FilterTabs
+          options={options}
+          selected={selectedType}
+          onSelect={setSelectedType}
+        />
+        <Card>
+          <CardContent>
+            <StakeData selectedType={selectedType} />
+          </CardContent>
+        </Card>
+      </div>
+      <div className="w-1/2 pt-[52px]">
+        <StakeDetails />
+      </div>
     </div>
   )
 }
