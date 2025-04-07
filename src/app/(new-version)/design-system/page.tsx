@@ -154,7 +154,7 @@ export default function DesignSystem() {
           <FilterTabs
             options={[
               { label: 'All', value: 'all' },
-              { label: 'Swap', value: 'swap' },
+              { label: 'Following', value: 'swap' },
               { label: 'Compressed NFT Mint', value: 'compressed_nft_mint' },
               { label: 'Twitter KOLs', value: 'kol' },
             ]}
@@ -164,7 +164,7 @@ export default function DesignSystem() {
           <FilterTabs
             options={[
               { label: 'All', value: 'all' },
-              { label: 'Swap', value: 'swap' },
+              { label: 'Following', value: 'swap' },
               { label: 'Compressed NFT Mint', value: 'compressed_nft_mint' },
               { label: 'Twitter KOLs', value: 'kol' },
             ]}
