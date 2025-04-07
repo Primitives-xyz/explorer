@@ -40,14 +40,14 @@ export function FilterButtonDiscover({
         selected={selectedType}
         onSelect={setSelectedType}
       />
-      <div>
+      <div className="mb-4">
         {selectedType === DiscoverFilterType.TOP_TRADERS && (
           <Select
             value={timeFrame}
             onValueChange={(value) => setTimeFrame(value as TimeFrame)}
           >
             <SelectTrigger className="border-none bg-transparent text-primary h-9">
-              <SelectValue placeholder="Select timeframe" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent className="border border-primary text-primary">
               <SelectItem value={TimeFrame.TODAY}>Today</SelectItem>
