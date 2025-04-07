@@ -156,36 +156,25 @@ export function ClaimsForm() {
   return (
     <div>
       <h3 className="text-lg">{t('trade.claim_rewards')}</h3>
-
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-300">
+          <span className="text-muted-foreground">
             {t('trade.total_reward_amount')}
           </span>
           {showUserInfoLoading ? (
             <Spinner />
           ) : (
-            <span className="text-green-400 font-medium">
-              {formattedRewardsAmount} SSE
-            </span>
+            <span className="text-primary">{formattedRewardsAmount} SSE</span>
           )}
-        </div>
-        <div className="h-2 w-full bg-green-900/50 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-linear-to-r from-green-500 to-green-300 rounded-full"
-            style={{
-              width: hasRewards ? '100%' : '0%',
-            }}
-          ></div>
         </div>
       </div>
 
       {!hasRewards && (
-        <div className="mb-4 p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-lg">
-          <p className="text-yellow-400 font-medium">No Rewards Available</p>
-          <p className="text-sm text-gray-300">
-            You don&apos;t have any rewards to claim at the moment. Stake more
-            tokens or wait for rewards to accumulate.
+        <div>
+          <p className="text-md">No Rewards Available</p>
+          <p className="text-sm">
+            You don‘t have any rewards to claim at the moment. Stake more tokens
+            or wait for rewards to accumulate.
           </p>
         </div>
       )}
@@ -194,6 +183,7 @@ export function ClaimsForm() {
         <Button
           onClick={handleClaimRewards}
           disabled={isLoading || !hasRewards}
+          expand
         >
           {isLoading ? (
             <>
@@ -216,7 +206,7 @@ export function ClaimsForm() {
         </Button>
       )}
 
-      <div className="mt-4 text-sm text-gray-400">
+      <div className="mt-4 text-sm text-muted-foreground">
         <p>
           Claim your accumulated rewards from staking SSE tokens. Rewards are
           calculated based on your stake amount and platform activity.

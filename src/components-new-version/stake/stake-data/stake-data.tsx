@@ -1,7 +1,9 @@
 import { useStakeInfo } from '@/components-new-version/stake/hooks/useStakeInfo'
 import { StakeFilterType } from '@/components-new-version/stake/stake-content'
 import { ClaimsForm } from '@/components-new-version/stake/stake-data/claims-form'
-import { Card, CardContent, Spinner } from '@/components-new-version/ui'
+import { DisplayStakeData } from '@/components-new-version/stake/stake-data/display-stake-data'
+import { UnstakeForm } from '@/components-new-version/stake/stake-data/unstake-form'
+import { Card, CardContent } from '@/components-new-version/ui'
 import { formatSmartNumber } from '@/components-new-version/utils/formatting/format-number'
 import { useTranslations } from 'next-intl'
 
@@ -52,7 +54,7 @@ export function StakeData({ selectedType }: Props) {
         return (
           <>
             {!hasStaked && (
-              <div>
+              <div className="mb-4">
                 <p className="font-bold">No Staking Found</p>
                 <p className="text-xs text-muted-foreground">
                   You haven't staked any tokens yet. Please use the Stake tab to
@@ -60,7 +62,8 @@ export function StakeData({ selectedType }: Props) {
                 </p>
               </div>
             )}
-            <p>unstake form</p>
+
+            <UnstakeForm />
           </>
         )
 
@@ -75,13 +78,13 @@ export function StakeData({ selectedType }: Props) {
   return (
     <div className="flex flex-col space-y-10">
       <div className="flex justify-between items-center">
-        <DisplayData
+        <DisplayStakeData
           label={t('trade.platform_total_stake')}
           value={formattedTotalStake}
           loading={showUserInfoLoading}
         />
 
-        <DisplayData
+        <DisplayStakeData
           label={t('trade.total_reward_amount')}
           value={formattedRewardsAmount}
           loading={showUserInfoLoading}
@@ -89,7 +92,7 @@ export function StakeData({ selectedType }: Props) {
       </div>
 
       <div>
-        <DisplayData
+        <DisplayStakeData
           label={t('trade.total_staking_amount')}
           value={formattedStakeAmount}
           loading={showUserInfoLoading}
@@ -108,35 +111,6 @@ export function StakeData({ selectedType }: Props) {
           <div>{renderForm()}</div>
         </CardContent>
       </Card>
-    </div>
-  )
-}
-
-function DisplayData({
-  label,
-  value,
-  loading,
-}: {
-  label: string
-  value: string
-  loading: boolean
-}) {
-  return (
-    <div>
-      <div className="items-center flex text-lg space-x-2 mb-2">
-        <p className="font-bold text-primary">SSE</p>
-        <p>{label}</p>
-      </div>
-      {loading ? (
-        <div className="flex justify-center items-center">
-          <Spinner />
-        </div>
-      ) : (
-        <div className="flex space-x-2">
-          <span className="text-3xl text-primary font-bold">{value}</span>
-          <span className="text-primary">tokens</span>
-        </div>
-      )}
     </div>
   )
 }

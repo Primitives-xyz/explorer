@@ -8,7 +8,7 @@ export function StakeDetails() {
   const t = useTranslations()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <TopDetails />
       <BottomDetails />
     </div>
