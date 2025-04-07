@@ -16,7 +16,7 @@ import {
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
-import { YourTransactions } from './your-transactions'
+import { YourTransactions } from '../transactions/your-transactions'
 
 interface TokenDetailsProps {
   id: string

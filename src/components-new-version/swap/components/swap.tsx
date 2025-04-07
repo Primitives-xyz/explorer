@@ -105,11 +105,6 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     swapMode: swapMode,
   })
 
-<<<<<<< HEAD
-=======
-  console.log('sseFeeAmount:', sseFeeAmount)
-
->>>>>>> main
   const displayInAmount = useMemo(() => {
     if (isQuoteRefreshing && swapMode === SwapMode.EXACT_OUT) {
       return '...'
@@ -321,7 +316,6 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
         loading={loading}
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
-<<<<<<< HEAD
         handleSwap={async () => {
           await handleSwap()
           setShowInputTokenSearch(false)
@@ -329,9 +323,6 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
           setInAmount('')
           setOutAmount('')
         }}
-=======
-        handleSwap={handleSwap}
->>>>>>> main
       />
 
       <BottomSwap
