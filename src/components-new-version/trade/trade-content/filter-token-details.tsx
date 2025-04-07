@@ -27,9 +27,9 @@ export enum FilterTabsYourTransactions {
 
 interface Props {
   selectedType: TabsTokenDetails
-  sort: FilterTabsTokenDetails
+  sort: FilterTabsTokenDetails | FilterTabsYourTransactions
   setSelectedType: (type: TabsTokenDetails) => void
-  setSort: (frame: FilterTabsTokenDetails) => void
+  setSort: (frame: FilterTabsTokenDetails | FilterTabsYourTransactions) => void
 }
 
 export function FilterTokenDetails({

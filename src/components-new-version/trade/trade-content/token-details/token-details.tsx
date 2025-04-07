@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components-new-version/ui'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 import { YourTransactions } from './your-transactions'
 
@@ -22,6 +23,7 @@ interface TokenDetailsProps {
 }
 
 export function TokenDetails({ id }: TokenDetailsProps) {
+  const { walletAddress, setShowAuthFlow } = useCurrentWallet()
   const { overview, isLoading } = useBirdeyeTokenOverview(id)
   const [selectedType, setSelectedType] = useState(
     TabsTokenDetails.TOKEN_DETAILS
