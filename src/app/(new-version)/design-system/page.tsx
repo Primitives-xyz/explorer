@@ -156,7 +156,7 @@ export default function DesignSystem() {
               { label: 'All', value: 'all' },
               { label: 'Swap', value: 'swap' },
               { label: 'Compressed NFT Mint', value: 'compressed_nft_mint' },
-              { label: 'Twitter KOL', value: 'kol' },
+              { label: 'Twitter KOLs', value: 'kol' },
             ]}
             selected={'all'}
             // onSelect={() => {}}
@@ -166,7 +166,7 @@ export default function DesignSystem() {
               { label: 'All', value: 'all' },
               { label: 'Swap', value: 'swap' },
               { label: 'Compressed NFT Mint', value: 'compressed_nft_mint' },
-              { label: 'Twitter KOL', value: 'kol' },
+              { label: 'Twitter KOLs', value: 'kol' },
             ]}
             selected={'all'}
             // onSelect={() => {}}
