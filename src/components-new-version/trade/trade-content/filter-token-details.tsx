@@ -18,11 +18,18 @@ export enum FilterTabsTokenDetails {
   MARKETS = 'markets',
 }
 
+export enum FilterTabsYourTransactions {
+  ALL = 'All',
+  DAY = '24h',
+  WEEK = 'Last Week',
+  MONTH = 'Last Month',
+}
+
 interface Props {
   selectedType: TabsTokenDetails
-  sort: FilterTabsTokenDetails
+  sort: FilterTabsTokenDetails | FilterTabsYourTransactions
   setSelectedType: (type: TabsTokenDetails) => void
-  setSort: (frame: FilterTabsTokenDetails) => void
+  setSort: (frame: FilterTabsTokenDetails | FilterTabsYourTransactions) => void
 }
 
 export function FilterTokenDetails({
@@ -61,6 +68,32 @@ export function FilterTokenDetails({
               </SelectItem>
               <SelectItem value={FilterTabsTokenDetails.MARKETS}>
                 Markets
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+        {selectedType === TabsTokenDetails.YOUR_TRANSACTIONS && (
+          <Select
+            onValueChange={(value) =>
+              setSort(value as FilterTabsYourTransactions)
+            }
+            value={sort}
+          >
+            <SelectTrigger className="border-none bg-transparent text-primary h-9">
+              <SelectValue placeholder="Select timeframe" />
+            </SelectTrigger>
+            <SelectContent className="border border-primary text-primary">
+              <SelectItem value={FilterTabsYourTransactions.ALL}>
+                All
+              </SelectItem>
+              <SelectItem value={FilterTabsYourTransactions.DAY}>
+                24h
+              </SelectItem>
+              <SelectItem value={FilterTabsYourTransactions.WEEK}>
+                Last Week
+              </SelectItem>
+              <SelectItem value={FilterTabsYourTransactions.MONTH}>
+                Last Month
               </SelectItem>
             </SelectContent>
           </Select>
