@@ -1,17 +1,29 @@
-import { Connection, Keypair } from "@solana/web3.js"
-import { DriftClient, initialize, BulkAccountLoader, PerpMarkets, getMarketOrderParams, BASE_PRECISION, PositionDirection } from "@drift-labs/sdk"
-import { AnchorProvider } from "@coral-xyz/anchor"
-import { PublicKey } from "@solana/web3.js"
-import { BN } from "bn.js"
-import { TransactionMessage } from "@solana/web3.js"
-import { NextRequest, NextResponse } from "next/server"
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet"
-import { VersionedTransaction } from "@solana/web3.js"
+import { AnchorProvider } from '@coral-xyz/anchor'
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
+import {
+  BASE_PRECISION,
+  BulkAccountLoader,
+  DriftClient,
+  PerpMarkets,
+  PositionDirection,
+  getMarketOrderParams,
+  initialize,
+} from '@drift-labs/sdk'
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  TransactionMessage,
+  VersionedTransaction,
+} from '@solana/web3.js'
+import { BN } from 'bn.js'
+import { NextRequest, NextResponse } from 'next/server'
 
 const env = 'mainnet-beta'
 
 export async function initializeDriftClient() {
-  const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
+  const rpcUrl =
+    process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
   const connection = new Connection(rpcUrl, 'confirmed')
   const wallet = new NodeWallet(Keypair.generate())
 
@@ -48,7 +60,7 @@ export async function initializeDriftClient() {
   return {
     driftClient,
     connection,
-    publicKey: provider.wallet.publicKey
+    publicKey: provider.wallet.publicKey,
   }
 }
 
@@ -64,8 +76,8 @@ export async function POST(req: NextRequest) {
 
     if (!marketInfo) {
       return NextResponse.json({
-        error: "No Market Info for selected deposite tokens",
-        status: 400
+        error: 'No Market Info for selected deposite tokens',
+        status: 400,
       })
     }
 
@@ -79,7 +91,8 @@ export async function POST(req: NextRequest) {
       })
     )
 
-    const blockHash = (await connection.getLatestBlockhash('finalized')).blockhash
+    const blockHash = (await connection.getLatestBlockhash('finalized'))
+      .blockhash
 
     const messageV0 = new TransactionMessage({
       payerKey: new PublicKey(walletAddy),

@@ -1,23 +1,45 @@
 'use client'
 
-import { Info, ExternalLink, Settings, ChevronDown, CircleAlert, Loader2, ArrowRight } from "lucide-react"
-import ToggleSwitch from "./toggle-switch";
-import LeverageSelector from "./leverage-selector";
-import { Toggle } from "@/components-new-version/ui/switch/toggle";
-import { useCurrentWallet } from "@/components/auth/hooks/use-current-wallet";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { SSE_MINT } from "@/components/trading/constants";
-import DynamicConnectButton from "@/components-new-version/common/dynamic-button";
+import DynamicConnectButton from '@/components-new-version/common/dynamic-button'
+import { Switch } from '@/components-new-version/ui/switch/switch'
+import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
+import { SSE_MINT } from '@/components/trading/constants'
+import { PositionDirection } from '@drift-labs/sdk'
+import {
+  ArrowRight,
+  ChevronDown,
+  CircleAlert,
+  ExternalLink,
+  Info,
+  Loader2,
+  Settings,
+} from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { useState } from 'react'
+import { useDriftPerpetual } from '../hooks/use-drift-perpetual'
+import LeverageSelector from './leverage-selector'
+import ToggleSwitch from './toggle-switch'
 
 const Perpetual = () => {
   const t = useTranslations()
   const { isLoggedIn, sdkHasLoaded } = useCurrentWallet()
-  const [loading, setLoading] = useState<boolean>(false)
+  const [amount, setAmount] = useState('1')
+  const [leverage, setLeverage] = useState(1)
+  const [showConfirmation, setShowConfirmation] = useState(true)
+
+  const { loading, error, handleTrade } = useDriftPerpetual({
+    amount,
+    marketIndex: 0, // SOL market index
+    direction: PositionDirection.LONG,
+  })
+
+  const handleLeverageChange = (value: number) => {
+    setLeverage(value)
+  }
 
   return (
     <div>
-      <div className='flex flex-row gap-4 justify-between'>
+      <div className="flex flex-row gap-4 justify-between">
         <div className="w-[600px] flex flex-col gap-4">
           <div className="flex items-center justify-between bg-white/5 border border-white/20 rounded-[12px] px-4 py-2 text-white text-[16px]">
             <div className="flex flex-col items-center">
@@ -46,7 +68,9 @@ const Perpetual = () => {
           </div>
 
           <div className="flex items-center justify-center">
-            <ToggleSwitch onChange={(value) => console.log(`Selected: ${value}`)} />
+            <ToggleSwitch
+              onChange={(value) => console.log(`Selected: ${value}`)}
+            />
           </div>
 
           <div className="bg-white/5 border border-white/20 p-4 rounded-[20px] flex flex-col gap-4">
@@ -68,18 +92,25 @@ const Perpetual = () => {
                 <Settings />
               </div>
               <div className="flex items-center justify-center">
-                <LeverageSelector onChange={(value) => console.log(`Selected leverage: ${value}x`)} />
+                <LeverageSelector onChange={handleLeverageChange} />
               </div>
             </div>
 
             <div className="flex flex-row items-center text-[18px] gap-2">
-              <span className="cursor-pointer">Slippage Tolerance (Dynamic)</span>
+              <span className="cursor-pointer">
+                Slippage Tolerance (Dynamic)
+              </span>
               <ChevronDown />
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="uppercase text-[18px] font-bold leading-[150%]">SWIFT</span>
-              <Toggle />
+              <span className="uppercase text-[18px] font-bold leading-[150%]">
+                SWIFT
+              </span>
+              <Switch
+                checked={showConfirmation}
+                onCheckedChange={setShowConfirmation}
+              />
             </div>
           </div>
 
@@ -90,8 +121,8 @@ const Perpetual = () => {
                 <Loader2 className="h-3 w-3 animate-spin" />
               </div>
             ) : !isLoggedIn ? (
-              <div className='w-full'>
-                <DynamicConnectButton buttonClassName='w-full'>
+              <div className="w-full">
+                <DynamicConnectButton buttonClassName="w-full">
                   <div className="p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer text-center">
                     {t('trade.connect_wallet_to_swap')}
                   </div>
@@ -99,7 +130,7 @@ const Perpetual = () => {
               </div>
             ) : (
               <button
-                // onClick={handleSwap}
+                onClick={handleTrade}
                 disabled={loading}
                 className="w-full p-3 bg-[#97EF83] rounded-[6px] text-[#292C31] font-bold leading-[150%] cursor-pointer"
               >
@@ -108,7 +139,7 @@ const Perpetual = () => {
                     <Loader2 className="h-3 w-3 animate-spin" />
                   </div>
                 ) : (
-                  'Long ~3.88 TRUMP-Perp'
+                  `Long ${amount} SOL-Perp`
                 )}
               </button>
             )}
@@ -122,17 +153,23 @@ const Perpetual = () => {
 
             <div className="flex justify-between items-center">
               <span>Est.Liquidation Price</span>
-              <span className="flex gap-1 items-center text-[14px]">None <ArrowRight className="text-[14px]" /> $128.0688 </span>
+              <span className="flex gap-1 items-center text-[14px]">
+                None <ArrowRight className="text-[14px]" /> $128.0688{' '}
+              </span>
             </div>
 
             <div className="flex justify-between items-center">
               <span>Acct. Leverage</span>
-              <span className="flex gap-1 items-center text-[14px]">0x <ArrowRight className="text-[14px]" /> 19.4x </span>
+              <span className="flex gap-1 items-center text-[14px]">
+                0x <ArrowRight className="text-[14px]" /> {leverage}x{' '}
+              </span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span>Acct. Leverage</span>
-              <span className="flex gap-1 items-center text-[14px]">0 <ArrowRight className="text-[14px]" /> 3.88 LONG </span>
+              <span>Position Size</span>
+              <span className="flex gap-1 items-center text-[14px]">
+                0 <ArrowRight className="text-[14px]" /> {amount} LONG{' '}
+              </span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -142,12 +179,15 @@ const Perpetual = () => {
 
             <div className="flex justify-between items-center">
               <span>Show Confirmation</span>
-              <Toggle />
+              <Switch
+                checked={showConfirmation}
+                onCheckedChange={setShowConfirmation}
+              />
             </div>
           </div>
         </div>
-        <div className='w-full'>
-          <div className='bg-white/10 rounded-[20px] w-full h-[400px] p-4'>
+        <div className="w-full">
+          <div className="bg-white/10 rounded-[20px] w-full h-[400px] p-4">
             <iframe
               width="100%"
               height="100%"
@@ -160,8 +200,7 @@ const Perpetual = () => {
       </div>
       <div className="h-[20px]"></div>
     </div>
-
   )
 }
 
-export default Perpetual;
+export default Perpetual
