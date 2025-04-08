@@ -1,5 +1,4 @@
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { AnchorProvider } from '@coral-xyz/anchor'
 import { BulkAccountLoader, DriftClient, initialize } from '@drift-labs/sdk'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, PublicKey } from '@solana/web3.js'
@@ -32,16 +31,6 @@ export function useInitializeDriftClient(): DriftClientState {
 
         const signer = await primaryWallet.getSigner()
 
-        const provider = new AnchorProvider(
-          connection,
-          {
-            publicKey: new PublicKey(walletAddress),
-            signTransaction: signer.signTransaction,
-            signAllTransactions: signer.signAllTransactions,
-          },
-          AnchorProvider.defaultOptions()
-        )
-
         const sdkConfig = initialize({ env })
         const driftPublicKey = new PublicKey(sdkConfig.DRIFT_PROGRAM_ID)
         const bulkAccountLoader = new BulkAccountLoader(
@@ -52,7 +41,11 @@ export function useInitializeDriftClient(): DriftClientState {
 
         const driftClient = new DriftClient({
           connection,
-          wallet: provider.wallet,
+          wallet: {
+            publicKey: new PublicKey(walletAddress),
+            signTransaction: signer.signTransaction,
+            signAllTransactions: signer.signAllTransactions,
+          },
           programID: driftPublicKey,
           env,
           accountSubscription: {
