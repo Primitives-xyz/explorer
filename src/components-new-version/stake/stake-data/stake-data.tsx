@@ -1,4 +1,4 @@
-import { useStakeInfo } from '@/components-new-version/stake/hooks/useStakeInfo'
+import { useStakeInfo } from '@/components-new-version/stake/hooks/use-stake-info'
 import { StakeFilterType } from '@/components-new-version/stake/stake-content'
 import { ClaimsForm } from '@/components-new-version/stake/stake-data/claims-form'
 import { DisplayStakeData } from '@/components-new-version/stake/stake-data/display-stake-data'

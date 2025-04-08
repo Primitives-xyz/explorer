@@ -1,4 +1,4 @@
-import { useStakeInfo } from '@/components-new-version/stake/hooks/useStakeInfo'
+import { useStake } from '@/components-new-version/stake/hooks/use-stake'
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import {
   Button,
@@ -7,34 +7,23 @@ import {
   Input,
   Spinner,
 } from '@/components-new-version/ui'
-import { useToast } from '@/components-new-version/ui/toast/hooks/use-toast'
 import {
   SSE_MINT,
   SSE_TOKEN_DECIMAL,
 } from '@/components-new-version/utils/constants'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 export function StakeForm({ initialAmount = '' }: { initialAmount?: string }) {
   const t = useTranslations()
-  const { toast } = useToast()
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
-  const [showStakeLoading, setShowStakeLoading] = useState<boolean>(false)
   const [inputError, setInputError] = useState<string | null>(null)
   const [debouncedUpdate, setDebouncedUpdate] = useState<NodeJS.Timeout | null>(
     null
   )
-  const {
-    isLoggedIn,
-    sdkHasLoaded,
-    primaryWallet,
-    walletAddress,
-    setShowAuthFlow,
-  } = useCurrentWallet()
-  const { refreshUserInfo } = useStakeInfo({})
+  const { isLoggedIn, sdkHasLoaded, walletAddress, setShowAuthFlow } =
+    useCurrentWallet()
 
   // Add token balance hooks for SSE token
   const {
@@ -43,9 +32,7 @@ export function StakeForm({ initialAmount = '' }: { initialAmount?: string }) {
     loading: inputBalanceLoading,
   } = useTokenBalance(walletAddress, SSE_MINT)
 
-  if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-    throw new Error('Wallet not connected')
-  }
+  const { stake, isLoading: showStakeLoading } = useStake()
 
   const validateAmount = (value: string): boolean => {
     if (value === '') return true
@@ -181,79 +168,6 @@ export function StakeForm({ initialAmount = '' }: { initialAmount?: string }) {
     }
   }
 
-  // Add handler for stake
-  const handleStake = async () => {
-    try {
-      setShowStakeLoading(true)
-      const response = await fetch(`/api/stake`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: displayAmount,
-          walletAddy: walletAddress,
-        }),
-      })
-      const data = await response.json()
-      const stakeTx = data.stakeTx
-      const serializedBuffer: Buffer = Buffer.from(stakeTx, 'base64')
-      const vtx: VersionedTransaction = VersionedTransaction.deserialize(
-        Uint8Array.from(serializedBuffer)
-      )
-      const signer = await primaryWallet.getSigner()
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-      const simulateTx = await connection.simulateTransaction(vtx)
-      console.log('sim:', simulateTx)
-      const txid = await signer.signAndSendTransaction(vtx)
-      const confirmToast = toast({
-        title: t('trade.confirming_transaction'),
-        description: t('trade.waiting_for_confirmation'),
-        variant: 'pending',
-        duration: 1000000000,
-      })
-
-      const tx = await connection.confirmTransaction({
-        signature: txid.signature,
-        ...(await connection.getLatestBlockhash()),
-      })
-
-      confirmToast.dismiss()
-
-      if (tx.value.err) {
-        toast({
-          title: t('trade.transaction_failed'),
-          description: t('trade.the_stake_transaction_failed_please_try_again'),
-          variant: 'error',
-          duration: 5000,
-        })
-      } else {
-        toast({
-          title: t('trade.transaction_successful'),
-          description: t(
-            'trade.the_stake_transaction_was_successful_creating_shareable_link'
-          ),
-          variant: 'success',
-          duration: 5000,
-        })
-
-        // Refresh user info after successful stake
-        refreshUserInfo()
-      }
-
-      setShowStakeLoading(false)
-    } catch (error) {
-      console.log('Error in making stake tx:', error)
-      setShowStakeLoading(false)
-      toast({
-        title: t('trade.transaction_failed'),
-        description: t('trade.the_stake_transaction_failed_please_try_again'),
-        variant: 'error',
-        duration: 5000,
-      })
-    }
-  }
-
   if (!sdkHasLoaded) {
     return (
       <div className="flex items-center justify-center gap-2">
@@ -346,7 +260,12 @@ export function StakeForm({ initialAmount = '' }: { initialAmount?: string }) {
         {inputError && <p className="text-destructive">{inputError}</p>}
       </div>
 
-      <Button expand onClick={handleStake} disabled={showStakeLoading}>
+      <Button
+        expand
+        className="mt-4"
+        onClick={() => stake(displayAmount)}
+        disabled={showStakeLoading}
+      >
         {showStakeLoading ? <Spinner /> : t('trade.stake')}
       </Button>
     </div>

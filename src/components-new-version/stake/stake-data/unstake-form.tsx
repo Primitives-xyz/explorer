@@ -1,4 +1,4 @@
-import { useStakeInfo } from '@/components-new-version/stake/hooks/useStakeInfo'
+import { useStakeInfo } from '@/components-new-version/stake/hooks/use-stake-info'
 import { Button, ButtonVariant, Spinner } from '@/components-new-version/ui'
 import { useToast } from '@/components-new-version/ui/toast/hooks/use-toast'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
