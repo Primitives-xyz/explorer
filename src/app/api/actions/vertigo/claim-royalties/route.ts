@@ -1,4 +1,4 @@
-import { VertigoService } from '@/services/vertigo'
+import { claimRoyalties, createConnection } from '@/lib/vertigo'
 import {
   ActionGetResponse,
   ActionPostResponse,
@@ -83,16 +83,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Initialize Vertigo service
-    const connection = await VertigoService.createConnection()
-    const vertigoService = new VertigoService(connection)
-
+    // Set up the Vertigo service
+    const connection = await createConnection()
     // We need the SOL token account for the receiver
     // For a real implementation, you'd need to fetch this or create it if it doesn't exist
     // Here we're simulating this part
     const receiverTaA = `PLACEHOLDER_RECEIVER_TA_A_ADDRESS` // This would be the owner's SOL token account
 
     // Execute the claim royalties transaction
-    const signature = await vertigoService.claimRoyalties({
+    const signature = await claimRoyalties(connection, {
       poolAddress,
       mintA: NATIVE_MINT.toString(),
       receiverTaA,
