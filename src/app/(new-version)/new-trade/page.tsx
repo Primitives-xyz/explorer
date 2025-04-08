@@ -10,7 +10,7 @@ export default function Page() {
 
   return (
     <MainContentWrapper className="flex w-full space-x-6 pb-10">
-      <TradeLeftContent mint={tokenMint} setTokenMint={setTokenMint} />
+      <TradeLeftContent setTokenMint={setTokenMint} />
       <TradeContent id={tokenMint} />
     </MainContentWrapper>
   )

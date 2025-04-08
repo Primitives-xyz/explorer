@@ -42,7 +42,7 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
         'bg-primary/10 text-foreground border border-primary/20 rounded-full',
       'selectable-active':
         'bg-primary text-primary-foreground border border-primary rounded-full',
-      link: 'underline-offset-4 hover:opacity-80 underline h-auto! p-0! rounded-sm',
+      link: 'underline-offset-4 hover:opacity-80 h-auto! p-0! rounded-sm',
     },
     size: {
       default: 'h-9 px-4 py-2 text-sm',

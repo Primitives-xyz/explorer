@@ -9,6 +9,7 @@ import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-toke
 import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
+import { route } from '@/components-new-version/utils/route'
 
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import {
@@ -16,7 +17,7 @@ import {
   formatRawAmount,
   formatUsdValue,
 } from '@/components-new-version/utils/utils'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export enum SwapMode {
@@ -25,15 +26,14 @@ export enum SwapMode {
 }
 
 interface SwapProps {
-  mint: string
-  setTokenMint: (value: string) => void
+  setTokenMint?: (value: string) => void
 }
 
-export function Swap({ mint, setTokenMint }: SwapProps) {
+export function Swap({ setTokenMint }: SwapProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
-  const [outputTokenMint, setoutputTokenMint] = useState<string>(SSE_MINT)
+  const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
   const [inAmount, setInAmount] = useState<string>('')
   const [outAmount, setOutAmount] = useState<string>('')
   const [swapMode, setSwapMode] = useState<SwapMode>(SwapMode.EXACT_IN)
@@ -42,6 +42,9 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     useState<boolean>(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] =
     useState<boolean>(false)
+
+  const pathname = usePathname()
+
   const {
     symbol: inputTokenSymbol,
     decimals: inputTokenDecimals,
@@ -202,21 +205,23 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     name: string
     decimals: number
   }) => {
-    setoutputTokenMint(token.address)
+    setOutputTokenMint(token.address)
   }
 
   const updateTokensInURL = useCallback(
     (input: string, output: string) => {
+      if (pathname !== '/new-trade') return
+
       const params = new URLSearchParams(searchParams.toString())
 
       params.set('inputMint', input)
       params.set('outputMint', output)
       params.set('mode', 'swap')
 
-      router.push(`/new-trade?${params.toString()}`, { scroll: false })
+      router.push(route('newTrade', params.toString() as string))
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [searchParams]
+
+    [router, searchParams, pathname]
   )
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -260,7 +265,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     const tempTokenMint = inputTokenMint
 
     setInputTokenMint(outputTokenMint)
-    setoutputTokenMint(tempTokenMint)
+    setOutputTokenMint(tempTokenMint)
   }
 
   useEffect(() => {
@@ -281,7 +286,9 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   }, [expectedOutput])
 
   useEffect(() => {
-    setTokenMint(outputTokenMint)
+    if (setTokenMint) {
+      setTokenMint(outputTokenMint)
+    }
   }, [outputTokenMint, setTokenMint])
 
   useEffect(() => {
