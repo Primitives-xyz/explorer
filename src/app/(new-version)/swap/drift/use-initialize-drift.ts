@@ -1,9 +1,8 @@
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { AnchorProvider } from '@coral-xyz/anchor'
-import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { BulkAccountLoader, DriftClient, initialize } from '@drift-labs/sdk'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, Keypair, PublicKey } from '@solana/web3.js'
+import { Connection, PublicKey } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 
 const env = 'mainnet-beta'
@@ -11,14 +10,12 @@ const env = 'mainnet-beta'
 interface DriftClientState {
   driftClient: DriftClient | undefined
   connection: Connection | undefined
-  publicKey: PublicKey | undefined
 }
 
 export function useInitializeDriftClient(): DriftClientState {
-  const { primaryWallet } = useCurrentWallet()
+  const { primaryWallet, walletAddress } = useCurrentWallet()
   const [driftClient, setDriftClient] = useState<DriftClient>()
   const [connection, setConnection] = useState<Connection>()
-  const [publicKey, setPublicKey] = useState<PublicKey>()
 
   useEffect(() => {
     async function initializeClient() {
@@ -34,15 +31,13 @@ export function useInitializeDriftClient(): DriftClientState {
         setConnection(connection)
 
         const signer = await primaryWallet.getSigner()
-        const wallet = new NodeWallet(signer as unknown as Keypair)
-        setPublicKey(wallet.publicKey)
 
         const provider = new AnchorProvider(
           connection,
           {
-            publicKey: wallet.publicKey,
-            signTransaction: wallet.signTransaction,
-            signAllTransactions: wallet.signAllTransactions,
+            publicKey: new PublicKey(walletAddress),
+            signTransaction: signer.signTransaction,
+            signAllTransactions: signer.signAllTransactions,
           },
           AnchorProvider.defaultOptions()
         )
@@ -74,11 +69,10 @@ export function useInitializeDriftClient(): DriftClientState {
     }
 
     initializeClient()
-  }, [primaryWallet])
+  }, [primaryWallet, walletAddress])
 
   return {
     driftClient,
     connection,
-    publicKey,
   }
 }
