@@ -5,13 +5,13 @@ import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
-export function useStake(primaryWallet: any, walletAddress: string) {
+export function useUnstake(primaryWallet: any, walletAddress: string) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
 
-  const stake = async (amount: string) => {
+  const unstake = async () => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
       return
     }
@@ -19,15 +19,20 @@ export function useStake(primaryWallet: any, walletAddress: string) {
     try {
       setIsLoading(true)
 
-      const response = await fetch('/api/stake', {
+      const response = await fetch(`/api/unstake`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, walletAddy: walletAddress }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          walletAddy: walletAddress,
+        }),
       })
 
       const data = await response.json()
-      const serializedBuffer = Buffer.from(data.stakeTx, 'base64')
-      const vtx = VersionedTransaction.deserialize(
+      const unStakeTx = data.unStakeTx
+      const serializedBuffer: Buffer = Buffer.from(unStakeTx, 'base64')
+      const vtx: VersionedTransaction = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
 
@@ -56,7 +61,9 @@ export function useStake(primaryWallet: any, walletAddress: string) {
       if (confirmation.value.err) {
         toast({
           title: t('trade.transaction_failed'),
-          description: t('trade.the_stake_transaction_failed_please_try_again'),
+          description: t(
+            'error.the_unstake_transaction_failed_please_try_again'
+          ),
           variant: 'error',
           duration: 5000,
         })
@@ -64,18 +71,20 @@ export function useStake(primaryWallet: any, walletAddress: string) {
         toast({
           title: t('trade.transaction_successful'),
           description: t(
-            'trade.the_stake_transaction_was_successful_creating_shareable_link'
+            'trade.the_unstake_transaction_was_successful_creating_shareable_link'
           ),
           variant: 'success',
           duration: 5000,
         })
+
+        // Refresh user info after successful unstake
         refreshUserInfo()
       }
     } catch (err) {
-      console.error('Stake error:', err)
+      console.log('Error in making stake tx:', err)
       toast({
         title: t('trade.transaction_failed'),
-        description: t('trade.the_stake_transaction_failed_please_try_again'),
+        description: t('error.the_unstake_transaction_failed_please_try_again'),
         variant: 'error',
         duration: 5000,
       })
@@ -85,7 +94,7 @@ export function useStake(primaryWallet: any, walletAddress: string) {
   }
 
   return {
-    stake,
+    unstake,
     isLoading,
   }
 }
