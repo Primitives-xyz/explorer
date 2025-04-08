@@ -19,7 +19,7 @@ export function ProfileHeader({ profileInfo, mainUsername, username }: Props) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-start space-x-3">
-        {username && <Avatar username={username} size={72} />}
+        {username && <Avatar username={username} size={72} className="w-18" />}
         <div className="flex space-x-1 items-center">
           <p className="font-bold">@{profileInfo?.profile.username}</p>
           {profileInfo?.wallet?.address && (

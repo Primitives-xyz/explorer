@@ -31,7 +31,6 @@ export function FollowingTransactions({ username }: Props) {
   const {
     aggregatedTransactions,
     isLoadingTransactions,
-    totalWallets,
     selectedType,
     setSelectedType,
   } = useFollowingTransactions({ following, kolData })

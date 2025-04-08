@@ -2,7 +2,6 @@
 
 import { IGetFollowersStateResponse } from '@/components-new-version/models/profiles.models'
 import { fetchTapestry } from '@/components-new-version/tapestry/api/fetch-tapestry'
-import { FetchMethod } from '@/components-new-version/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -20,7 +19,6 @@ export async function GET(req: NextRequest) {
   try {
     const response = await fetchTapestry<IGetFollowersStateResponse>({
       endpoint: `followers/state`,
-      method: FetchMethod.GET,
       queryParams: {
         startId,
         endId,
