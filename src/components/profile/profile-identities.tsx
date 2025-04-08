@@ -19,7 +19,7 @@ const IdentityCardSkeleton = ({ index }: { index: number }) => (
     transition={{ duration: 0.3, delay: index * 0.05 }}
     className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-700 min-w-[180px]"
   >
-    <div className="relative flex-shrink-0 w-6 h-6">
+    <div className="relative shrink-0 w-6 h-6">
       <div className="w-6 h-6 rounded-full bg-gray-800 animate-pulse" />
     </div>
     <div className="flex-1 min-w-0 space-y-1">
@@ -130,7 +130,7 @@ export function ProfileIdentities({ walletAddress }: ProfileIdentitiesProps) {
                         transition-colors px-3 py-2 rounded-lg border border-gray-700
                         hover:border-green-500/30 group min-w-[180px]"
             >
-              <div className="relative flex-shrink-0 w-6 h-6">
+              <div className="relative shrink-0 w-6 h-6">
                 {identity.namespace.faviconURL ? (
                   <Image
                     src={identity.namespace.faviconURL}

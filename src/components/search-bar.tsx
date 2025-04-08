@@ -365,7 +365,7 @@ export default function SearchBar({
             ref={dropdownRef}
           >
             {/* Tabs */}
-            <div className="flex border-b border-green-800/30 bg-black/95 backdrop-blur-sm">
+            <div className="flex border-b border-green-800/30 bg-black/95 backdrop-blur-xs">
               <button
                 onClick={() => setActiveTab('all')}
                 className={`flex-1 p-2 text-xs font-mono transition-colors uppercase
@@ -418,7 +418,7 @@ export default function SearchBar({
             </div>
 
             {/* Results Area */}
-            <div className="max-h-[60vh] overflow-y-auto bg-black/95 backdrop-blur-sm divide-y divide-green-800/30">
+            <div className="max-h-[60vh] overflow-y-auto bg-black/95 backdrop-blur-xs divide-y divide-green-800/30">
               {isLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="h-6 w-6 animate-spin " />
@@ -459,7 +459,7 @@ export default function SearchBar({
                             onClick={() =>
                               handleProfileNavigation(profile, router)
                             }
-                            className={`p-2 hover:bg-green-900/20 cursor-pointer backdrop-blur-sm bg-black/95 
+                            className={`p-2 hover:bg-green-900/20 cursor-pointer backdrop-blur-xs bg-black/95 
                                      flex items-center gap-3 ${
                                        selectedIndex === index
                                          ? 'bg-green-900/40'
@@ -543,7 +543,7 @@ export default function SearchBar({
                                 (activeTab === 'all' ? searchResults.length : 0)
                             )}
                             onClick={() => handleTokenClick(token)}
-                            className={`p-2 hover:bg-green-900/20 cursor-pointer backdrop-blur-sm 
+                            className={`p-2 hover:bg-green-900/20 cursor-pointer backdrop-blur-xs 
                                      bg-black/95 flex items-center gap-3 ${
                                        selectedIndex ===
                                        (activeTab === 'all'
@@ -646,7 +646,7 @@ export default function SearchBar({
                             onClick={() =>
                               handleRecentSearchClick(search.walletAddress)
                             }
-                            className={`p-2 hover:bg-green-900/20 cursor-pointer backdrop-blur-sm 
+                            className={`p-2 hover:bg-green-900/20 cursor-pointer backdrop-blur-xs 
                                      bg-black/95 flex items-center gap-3 ${
                                        selectedIndex ===
                                        (activeTab === 'all'
@@ -704,7 +704,7 @@ export default function SearchBar({
               onFocus={() => setShowDropdown(true)}
               disabled={isNavigating}
               className="flex-1 bg-transparent font-mono  placeholder-green-800 
-                       focus:outline-none focus:ring-0 border-none text-xs sm:text-sm min-w-0
+                       focus:outline-hidden focus:ring-0 border-none text-xs sm:text-sm min-w-0
                        disabled:opacity-50"
             />
 

@@ -35,7 +35,7 @@ export function GlobalSearch() {
       <div className="min-h-screen px-4 text-center">
         {/* Overlay */}
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/80 backdrop-blur-xs transition-opacity"
           onClick={() => setIsOpen(false)}
         />
 

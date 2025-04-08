@@ -91,7 +91,7 @@ export function UserHeader({ user, isOwnProfile = false, username }: Props) {
           <div className="flex items-start gap-4 mb-4">
             {/* Avatar */}
             {user.avatarUrl && (
-              <Avatar className="w-20 h-20 border-2 border-green-500 shadow-lg shadow-green-500/20 flex-shrink-0">
+              <Avatar className="w-20 h-20 border-2 border-green-500 shadow-lg shadow-green-500/20 shrink-0">
                 <AvatarImage src={user.avatarUrl ?? ''} alt={username ?? ''} />
                 <AvatarFallback className="text-green-500">
                   {username?.slice(0, 2).toUpperCase()}
@@ -108,7 +108,7 @@ export function UserHeader({ user, isOwnProfile = false, username }: Props) {
                 {user.userProfileURL &&
                   user.namespace != EXPLORER_NAMESPACE && (
                     <a href={`${processedProfileURL}`} target="_blank">
-                      <button className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer flex-shrink-0">
+                      <button className="uppercase px-4 py-1.5 border border-green-500/50 hover:bg-green-900/30 hover:border-green-400 font-mono text-sm transition-colors cursor-pointer shrink-0">
                         See original
                       </button>
                     </a>

@@ -76,7 +76,10 @@ export async function fetchTokenInfo(
       result: data.result,
     }
   } catch (error) {
-    console.error('Error fetching token info:', error instanceof Error ? error.message : 'Unknown error')
+    console.error(
+      'Error fetching token info:',
+      error instanceof Error ? error.message : 'Unknown error'
+    )
     return null
   }
 }

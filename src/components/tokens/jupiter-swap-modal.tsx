@@ -21,7 +21,7 @@ export function JupiterSwapModal({
         <Tab.List className="flex space-x-1 border-b border-green-800/40">
           <Tab
             className={({ selected }) =>
-              `flex-1 px-6 py-4 text-lg font-mono outline-none ${
+              `flex-1 px-6 py-4 text-lg font-mono outline-hidden ${
                 selected
                   ? ' bg-green-900/20'
                   : '/60 hover:/80 hover:bg-green-900/10'
@@ -32,7 +32,7 @@ export function JupiterSwapModal({
           </Tab>
           <Tab
             className={({ selected }) =>
-              `flex-1 px-6 py-4 text-lg font-mono outline-none ${
+              `flex-1 px-6 py-4 text-lg font-mono outline-hidden ${
                 selected
                   ? ' bg-green-900/20'
                   : '/60 hover:/80 hover:bg-green-900/10'

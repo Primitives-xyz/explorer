@@ -41,7 +41,7 @@ export function TokenSearchHeader({
           ref={inputRef}
           type="text"
           placeholder={t('trade.search_tokens')}
-          className="w-full bg-black/80 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+          className="w-full bg-black/80 p-2 pl-10 rounded border border-green-800/50 focus:border-green-600 focus:outline-hidden focus:ring-1 focus:ring-green-600"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

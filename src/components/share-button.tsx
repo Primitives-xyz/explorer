@@ -105,7 +105,7 @@ export default function ShareButton({
           <div className="p-3 border-b border-green-800/40">
             <div className="text-xs  mb-1">Share URL</div>
             <div className="flex items-center gap-2 bg-black/50 p-2 rounded-md">
-              <Link2 size={14} className=" flex-shrink-0" />
+              <Link2 size={14} className=" shrink-0" />
               <div className="flex-1 truncate text-sm ">{shareUrl}</div>
             </div>
           </div>

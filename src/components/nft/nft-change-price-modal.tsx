@@ -42,7 +42,7 @@ export function NFTChangePriceModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-xs" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -100,7 +100,7 @@ export function NFTChangePriceModal({
                 <div className="mt-6 flex gap-3">
                   <motion.button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
                     onClick={onClose}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -109,7 +109,7 @@ export function NFTChangePriceModal({
                   </motion.button>
                   <motion.button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-400 hover:to-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex justify-center rounded-md border border-transparent bg-linear-to-r from-blue-500 to-indigo-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-400 hover:to-indigo-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleNftChangePrice}
                     disabled={showNftChangePriceLoading || !newPrice}
                     whileHover={{ scale: 1.02 }}

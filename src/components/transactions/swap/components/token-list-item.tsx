@@ -32,7 +32,7 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
       className="w-full p-3 flex items-center gap-3 hover:bg-green-950/50 transition-colors text-left"
       onClick={() => onSelect(token)}
     >
-      <div className="relative w-8 h-8 flex-shrink-0">
+      <div className="relative w-8 h-8 shrink-0">
         {token.logoURI ? (
           <div className="w-8 h-8 rounded-full bg-black/40 ring-1 ring-green-800/50 overflow-hidden">
             <Image

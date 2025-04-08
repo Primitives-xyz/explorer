@@ -188,7 +188,7 @@ export function UsernameStep({
 
         <SubmitButton
           disabled={!username}
-          className="w-full py-4 text-lg font-medium bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:opacity-50 text-black transition-all duration-200 rounded-lg shadow-lg shadow-green-500/10"
+          className="w-full py-4 text-lg font-medium bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:opacity-50 text-black transition-all duration-200 rounded-lg shadow-lg shadow-green-500/10"
         >
           <span className="relative flex items-center justify-center gap-2">
             Continue

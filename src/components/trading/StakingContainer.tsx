@@ -60,12 +60,12 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
       {/* Top Stats Row - Side by Side */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {/* SSE Total Platform Stake */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-green-900/40 to-green-800/40 rounded-xl border border-green-500/30">
+        <div className="relative overflow-hidden bg-linear-to-r from-green-900/40 to-green-800/40 rounded-xl border border-green-500/30">
           <div className="absolute -top-12 -left-12 w-40 h-40 bg-green-500/10 rounded-full blur-xl"></div>
 
           <div className="relative z-10 p-5">
             <div className="flex items-center mb-2">
-              <div className="bg-gradient-to-r from-green-500 to-green-400 text-black font-bold text-xl px-2 py-0.5 rounded mr-2">
+              <div className="bg-linear-to-r from-green-500 to-green-400 text-black font-bold text-xl px-2 py-0.5 rounded mr-2">
                 SSE
               </div>
               <h2 className="text-lg font-semibold text-green-300">
@@ -80,26 +80,26 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
             ) : (
               <div className="flex flex-col">
                 <div className="flex items-baseline">
-                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300 break-all">
+                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-green-400 to-green-300 break-all">
                     {formattedTotalStake}
                   </span>
                   <span className="ml-2 text-green-500 font-medium text-xs md:text-sm">
                     tokens
                   </span>
                 </div>
-                <div className="h-1 w-full bg-gradient-to-r from-green-500 to-green-300 rounded-full mt-2"></div>
+                <div className="h-1 w-full bg-linear-to-r from-green-500 to-green-300 rounded-full mt-2"></div>
               </div>
             )}
           </div>
         </div>
 
         {/* Total Reward Amount */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-green-900/40 to-green-800/40 rounded-xl border border-green-500/30">
+        <div className="relative overflow-hidden bg-linear-to-r from-green-900/40 to-green-800/40 rounded-xl border border-green-500/30">
           <div className="absolute -bottom-16 -right-16 w-60 h-60 bg-green-400/10 rounded-full blur-xl"></div>
 
           <div className="relative z-10 p-5">
             <div className="flex items-center mb-2">
-              <div className="bg-gradient-to-r from-green-500 to-green-400 text-black font-bold text-xl px-2 py-0.5 rounded mr-2">
+              <div className="bg-linear-to-r from-green-500 to-green-400 text-black font-bold text-xl px-2 py-0.5 rounded mr-2">
                 SSE
               </div>
               <h2 className="text-lg font-semibold text-green-300">
@@ -114,14 +114,14 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
             ) : (
               <div className="flex flex-col">
                 <div className="flex items-baseline">
-                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300 break-all">
+                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-green-400 to-green-300 break-all">
                     {formattedRewardsAmount}
                   </span>
                   <span className="ml-2 text-green-500 font-medium text-xs md:text-sm">
                     tokens
                   </span>
                 </div>
-                <div className="h-1 w-full bg-gradient-to-r from-green-500 to-green-300 rounded-full mt-2"></div>
+                <div className="h-1 w-full bg-linear-to-r from-green-500 to-green-300 rounded-full mt-2"></div>
               </div>
             )}
           </div>
@@ -130,13 +130,13 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
 
       {/* Your Stake Amount - Enhanced */}
       <div className="mb-8">
-        <div className="relative overflow-hidden bg-gradient-to-r from-green-900/40 to-green-800/40 rounded-xl border border-green-500/30">
+        <div className="relative overflow-hidden bg-linear-to-r from-green-900/40 to-green-800/40 rounded-xl border border-green-500/30">
           <div className="absolute top-0 right-0 w-40 h-40 bg-green-500/10 rounded-full blur-xl"></div>
           <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-green-400/10 rounded-full blur-xl"></div>
 
           <div className="relative z-10 p-5">
             <div className="flex items-center mb-2">
-              <div className="bg-gradient-to-r from-green-500 to-green-400 text-black font-bold text-xl px-2 py-0.5 rounded mr-2">
+              <div className="bg-linear-to-r from-green-500 to-green-400 text-black font-bold text-xl px-2 py-0.5 rounded mr-2">
                 SSE
               </div>
               <h2 className="text-lg font-semibold text-green-300">
@@ -151,14 +151,14 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
             ) : (
               <div className="flex flex-col">
                 <div className="flex items-baseline">
-                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-300 break-all">
+                  <span className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-green-400 to-green-300 break-all">
                     {formattedStakeAmount}
                   </span>
                   <span className="ml-2 text-green-500 font-medium text-xs md:text-sm">
                     tokens
                   </span>
                 </div>
-                <div className="h-1 w-full bg-gradient-to-r from-green-500 to-green-300 rounded-full mt-2"></div>
+                <div className="h-1 w-full bg-linear-to-r from-green-500 to-green-300 rounded-full mt-2"></div>
 
                 {!hasStaked && (mode === 'unstake' || mode === 'claim') && (
                   <p className="text-sm text-yellow-500 mt-3 font-medium">
@@ -317,8 +317,8 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Bronze Tier */}
-              <div className="relative bg-gradient-to-b from-green-800/30 to-green-900/30 rounded-lg p-4 border border-green-500/30 hover:border-green-400/50 transition-all group">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-700/50 to-yellow-600/50 rounded-t-lg"></div>
+              <div className="relative bg-linear-to-b from-green-800/30 to-green-900/30 rounded-lg p-4 border border-green-500/30 hover:border-green-400/50 transition-all group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-yellow-700/50 to-yellow-600/50 rounded-t-lg"></div>
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between mb-3 flex-col">
                     <h4 className="font-medium text-yellow-600">
@@ -367,8 +367,8 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
               </div>
 
               {/* Silver Tier */}
-              <div className="relative bg-gradient-to-b from-green-800/30 to-green-900/30 rounded-lg p-4 border border-green-500/30 hover:border-green-400/50 transition-all group">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-400/70 to-gray-300/70 rounded-t-lg"></div>
+              <div className="relative bg-linear-to-b from-green-800/30 to-green-900/30 rounded-lg p-4 border border-green-500/30 hover:border-green-400/50 transition-all group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-gray-400/70 to-gray-300/70 rounded-t-lg"></div>
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between mb-3 flex-col">
                     <h4 className="font-medium text-gray-300">
@@ -417,8 +417,8 @@ export const StakingContainer = ({ mode }: StakingContainerProps) => {
               </div>
 
               {/* Gold Tier */}
-              <div className="relative bg-gradient-to-b from-green-800/30 to-green-900/30 rounded-lg p-4 border border-green-500/30 hover:border-green-400/50 transition-all group">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400/70 to-yellow-300/70 rounded-t-lg"></div>
+              <div className="relative bg-linear-to-b from-green-800/30 to-green-900/30 rounded-lg p-4 border border-green-500/30 hover:border-green-400/50 transition-all group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-yellow-400/70 to-yellow-300/70 rounded-t-lg"></div>
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between mb-3 flex-col">
                     <h4 className="font-medium text-yellow-400">

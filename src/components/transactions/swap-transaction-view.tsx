@@ -325,8 +325,8 @@ export function SwapTransactionView({
         {/* From Token */}
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-xs"></div>
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-1">
               {swapDetails.from.mint === SOL_MINT ? (
                 <Image
                   src="/images/solana-icon.svg"
@@ -381,8 +381,8 @@ export function SwapTransactionView({
         {/* To Token */}
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm"></div>
-            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-[1]">
+            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-xs"></div>
+            <div className="w-10 h-10 rounded-lg bg-black/40 ring-1 ring-green-500/20 flex items-center justify-center relative z-1">
               {swapDetails.to.mint === SOL_MINT ? (
                 <Image
                   src="/images/solana-icon.svg"

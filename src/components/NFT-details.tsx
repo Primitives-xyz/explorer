@@ -178,7 +178,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-950/40 via-black/90 to-black/95 py-8 px-4 md:px-8">
+    <div className="min-h-screen bg-linear-to-b from-green-950/40 via-black/90 to-black/95 py-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - NFT Image and Actions */}
@@ -201,13 +201,13 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
 
               {/* NFT Image with enhanced styling */}
               <motion.div
-                className="rounded-2xl overflow-hidden bg-gradient-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl relative group"
+                className="rounded-2xl overflow-hidden bg-linear-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl relative group"
                 whileHover={{
                   boxShadow: '0 25px 50px -12px rgba(0, 255, 170, 0.25)',
                   borderColor: 'rgba(0, 255, 170, 0.5)',
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-linear-to-br from-green-500/5 to-transparent pointer-events-none z-10" />
                 {tokenInfo.content.links?.image ? (
                   <Link
                     href={tokenInfo.content.links.image}
@@ -245,7 +245,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
 
                 {/* Price tag if listed */}
                 {magicEdenNFT?.price && (
-                  <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm font-medium z-20 flex items-center gap-2">
+                  <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-xs px-3 py-1.5 rounded-lg text-sm font-medium z-20 flex items-center gap-2">
                     <div className="w-4 h-4 rounded-full bg-green-500/30 flex items-center justify-center">
                       <span className="text-green-400 text-xs">◎</span>
                     </div>
@@ -266,7 +266,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 {/* Buy button if listed and not owner */}
                 {isListed && !isOwner && price && (
                   <motion.button
-                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 transition-all duration-200"
+                    className="w-full bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 transition-all duration-200"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     disabled={showNftBuyLoading}
@@ -287,7 +287,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 {isOwner && isListed && (
                   <div className="grid grid-cols-2 gap-4">
                     <motion.button
-                      className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                      className="bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleChangePrice}
@@ -296,7 +296,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                     </motion.button>
 
                     <motion.button
-                      className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2"
+                      className="bg-linear-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={handleCancelListing}
@@ -314,7 +314,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 {/* List for Sale button if owned by user and not listed */}
                 {isOwner && !isListed && (
                   <motion.button
-                    className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3"
+                    className="w-full bg-linear-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleListForSale}
@@ -328,7 +328,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="mt-6 p-6 rounded-2xl bg-gradient-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl"
+                    className="mt-6 p-6 rounded-2xl bg-linear-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl"
                   >
                     <h3 className="text-lg font-semibold text-green-400 mb-3">
                       Description
@@ -372,7 +372,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="p-6 rounded-2xl bg-gradient-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl"
+                className="p-6 rounded-2xl bg-linear-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl"
                 whileHover={{
                   boxShadow: '0 15px 30px -10px rgba(0, 255, 170, 0.1)',
                   borderColor: 'rgba(0, 255, 170, 0.3)',
@@ -416,7 +416,7 @@ export default function NFTDetails({ tokenInfo }: { tokenInfo: NFTTokenInfo }) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="mt-6 p-6 rounded-2xl bg-gradient-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl"
+                  className="mt-6 p-6 rounded-2xl bg-linear-to-b from-black/90 to-black/95 border border-green-800/40 shadow-xl"
                   whileHover={{
                     boxShadow: '0 15px 30px -10px rgba(0, 255, 170, 0.1)',
                     borderColor: 'rgba(0, 255, 170, 0.3)',

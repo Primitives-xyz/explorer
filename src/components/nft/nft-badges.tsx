@@ -36,7 +36,7 @@ export function NFTBadges({ nft, viewMode }: NFTBadgesProps) {
           transition={{ duration: 0.2 }}
         >
           <Badge
-            className="bg-gradient-to-r from-purple-500/90 to-indigo-500/90 text-white backdrop-blur-sm 
+            className="bg-linear-to-r from-purple-500/90 to-indigo-500/90 text-white backdrop-blur-xs 
             text-xs font-medium shadow-sm shadow-purple-500/20 border border-purple-400/20 px-1.5"
           >
             <span className="mr-1">{badgeCount}</span>
@@ -67,7 +67,7 @@ export function NFTBadges({ nft, viewMode }: NFTBadgesProps) {
               transition={{ duration: 0.2 }}
             >
               <Badge
-                className={`bg-gradient-to-r from-green-500/90 to-emerald-500/90 text-black backdrop-blur-sm ${
+                className={`bg-linear-to-r from-green-500/90 to-emerald-500/90 text-black backdrop-blur-xs ${
                   viewMode === 'list' ? 'text-xs' : 'text-xs'
                 } font-medium shadow-sm shadow-green-500/20 border border-green-400/20 ${
                   viewMode === 'grid' ? 'px-1.5 py-0' : ''
@@ -122,7 +122,7 @@ export function NFTBadges({ nft, viewMode }: NFTBadgesProps) {
               transition={{ duration: 0.2, delay: 0.1 }}
             >
               <Badge
-                className={`bg-gradient-to-r from-amber-400/90 to-yellow-500/90 text-black backdrop-blur-sm ${
+                className={`bg-linear-to-r from-amber-400/90 to-yellow-500/90 text-black backdrop-blur-xs ${
                   viewMode === 'list' ? 'text-xs' : 'text-xs'
                 } font-medium shadow-sm shadow-yellow-500/20 border border-yellow-400/20 ${
                   viewMode === 'grid' ? 'px-1.5 py-0' : ''
@@ -156,7 +156,7 @@ export function NFTBadges({ nft, viewMode }: NFTBadgesProps) {
               transition={{ duration: 0.2, delay: 0.2 }}
             >
               <Badge
-                className={`bg-gradient-to-r from-blue-500/90 to-indigo-500/90 text-white backdrop-blur-sm ${
+                className={`bg-linear-to-r from-blue-500/90 to-indigo-500/90 text-white backdrop-blur-xs ${
                   viewMode === 'list' ? 'text-xs' : 'text-xs'
                 } font-medium shadow-sm shadow-blue-500/20 border border-blue-400/20 ${
                   viewMode === 'grid' ? 'px-1.5 py-0' : ''

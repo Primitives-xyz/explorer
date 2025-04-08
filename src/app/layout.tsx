@@ -1,5 +1,3 @@
-import { AuthWrapper } from '@/components/auth/auth-wrapper'
-import WalletProvider from '@/components/auth/wallet-provider'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -73,16 +71,13 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const locale = await getLocale()
-
   const messages = await getMessages()
 
   return (
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <WalletProvider>
-            <AuthWrapper>{children}</AuthWrapper>
-          </WalletProvider>
+          {children}
         </NextIntlClientProvider>
       </body>
     </html>

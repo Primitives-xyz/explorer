@@ -1,5 +1,6 @@
 'use client'
 
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import useSWR, { SWRConfiguration } from 'swr'
 import { FetchMethod, IError } from './api.models'
 import {
@@ -16,7 +17,6 @@ interface UseQueryProps {
   config?: SWRConfiguration
   toBackend?: boolean
   bypassCache?: boolean
-  getJwt?: () => Promise<string | undefined>
 }
 
 export function useQuery<ResponseType = unknown, Error = IError>({
@@ -27,8 +27,8 @@ export function useQuery<ResponseType = unknown, Error = IError>({
   config,
   toBackend = true,
   bypassCache,
-  getJwt,
 }: UseQueryProps) {
+  const authToken = getAuthToken()
   const shouldFetch = !!_endpoint && !skip
 
   let endpoint = _endpoint
@@ -50,7 +50,7 @@ export function useQuery<ResponseType = unknown, Error = IError>({
         endpoint,
         toBackend,
         bypassCache,
-        jwt: getJwt ? await getJwt() : undefined,
+        jwt: authToken,
       }),
     config
   )

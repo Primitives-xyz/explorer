@@ -38,7 +38,7 @@ export const TokenListItem = ({
               }
             }}
           >
-            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-sm group-hover:bg-green-500/20 transition-all duration-300"></div>
+            <div className="absolute inset-0 bg-green-500/10 rounded-lg filter blur-xs group-hover:bg-green-500/20 transition-all duration-300"></div>
 
             {/* Image container */}
             {token.imageUrl && (

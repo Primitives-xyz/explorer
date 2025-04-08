@@ -115,7 +115,7 @@ export const Swap = () => {
                 {t('trade.claim_rewards')}
               </div>
             </div>
-            <div className="bg-black/50 backdrop-blur-sm rounded-xl shadow-xl border border-green-500/20">
+            <div className="bg-black/50 backdrop-blur-xs rounded-xl shadow-xl border border-green-500/20">
               <div className="p-6">
                 {mode === 'swap' ? (
                   <JupiterSwapForm
@@ -135,7 +135,7 @@ export const Swap = () => {
             <h2 className="text-2xl font-bold mb-4 text-violet-100">
               {t('top_traders.title')}
             </h2>
-            <div className="bg-black/50 backdrop-blur-sm rounded-xl shadow-xl border border-violet-500/20 overflow-auto ">
+            <div className="bg-black/50 backdrop-blur-xs rounded-xl shadow-xl border border-violet-500/20 overflow-auto ">
               <LeaderboardTable />
             </div>
           </div>

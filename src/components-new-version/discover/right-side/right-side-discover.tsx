@@ -1,10 +1,10 @@
 'use client'
 
 import { FollowButton } from '@/components-new-version/common/follow-button'
-import { WalletAddressButton } from '@/components-new-version/common/wallet-address-button'
-import { useGetAllProfiles } from '@/components-new-version/tapestry/hooks/use-get-all-profiles'
+import { useGetRecentProfiles } from '@/components-new-version/tapestry/hooks/use-get-recent-profiles'
 import {
   Button,
+  ButtonSize,
   ButtonVariant,
   Card,
   CardContent,
@@ -15,19 +15,22 @@ import {
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
 import { route } from '@/components-new-version/utils/route'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { cn } from '@/components-new-version/utils/utils'
+import {
+  abbreviateWalletAddress,
+  cn,
+} from '@/components-new-version/utils/utils'
 
 export function RightSideDiscover() {
-  const { profiles, loading } = useGetAllProfiles()
-  const { mainUsername } = useCurrentWallet()
+  const { profiles, loading } = useGetRecentProfiles()
+  const { mainProfile } = useCurrentWallet()
 
   return (
-    <div className="pt-[100px] space-y-4 flex flex-col">
+    <div className="space-y-4 flex flex-col">
       <Card>
-        <CardHeader className="!bg-card-accent !rounded-t-lg p-4 text-muted">
+        <CardHeader className="bg-card-accent p-4">
           <CardTitle>Recent profiles</CardTitle>
         </CardHeader>
-        <CardContent className="p-0 max-h-[calc(100vh-200px)] overflow-auto">
+        <CardContent className="max-h-[calc(100vh-220px)] overflow-auto p-0">
           <>
             {loading && (
               <span className="flex justify-center items-center h-48">
@@ -54,22 +57,30 @@ export function RightSideDiscover() {
                       {!isSame && (
                         <Button
                           variant={ButtonVariant.GHOST}
-                          href={route('address', { id: elem.profile.username })}
+                          href={route('entity', { id: elem.profile.username })}
                           className="p-0 w-fit hover:bg-transparent"
                         >
                           @{elem.profile.username}
                         </Button>
                       )}
-                      <WalletAddressButton
-                        walletAddress={elem.wallet.address}
-                      />
+                      <Button
+                        href={route('entity', { id: elem.wallet.address })}
+                        variant={ButtonVariant.BADGE}
+                        size={ButtonSize.SM}
+                      >
+                        {abbreviateWalletAddress({
+                          address: elem.wallet.address,
+                        })}
+                      </Button>
                     </div>
                   </div>
-                  <FollowButton
-                    small
-                    followerUsername={mainUsername}
-                    followeeUsername={elem.profile.username}
-                  />
+                  {!!mainProfile?.username && (
+                    <FollowButton
+                      size={ButtonSize.SM}
+                      followerUsername={mainProfile.username}
+                      followeeUsername={elem.profile.username}
+                    />
+                  )}
                 </span>
               )
             })}

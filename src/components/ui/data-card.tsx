@@ -34,7 +34,7 @@ export function DataCard({
   return (
     <div
       className={cn(
-        'border bg-black/50 w-full overflow-hidden flex flex-col backdrop-blur-sm',
+        'border bg-black/50 w-full overflow-hidden flex flex-col backdrop-blur-xs',
         borderColorClass,
         className
       )}
@@ -42,7 +42,7 @@ export function DataCard({
       {(title || titleRight) && (
         <div
           className={cn(
-            'border-b p-3 flex-shrink-0',
+            'border-b p-3 shrink-0',
             borderColorClass,
             bgColorClass
           )}

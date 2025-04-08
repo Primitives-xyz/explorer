@@ -36,7 +36,7 @@ export const ScrollableContent = ({
 
   return (
     <div
-      className={`divide-y ${colors.divide} overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 ${colors.scrollThumb}`}
+      className={`divide-y ${colors.divide} overflow-y-auto grow scrollbar-thin scrollbar-track-black/20 ${colors.scrollThumb}`}
     >
       {isLoading ? (
         <div className="p-8 flex flex-col items-center gap-4">

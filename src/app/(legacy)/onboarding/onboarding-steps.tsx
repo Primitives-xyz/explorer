@@ -112,7 +112,7 @@ export function OnboardingSteps({
   }
 
   return (
-    <div className="border border-violet-500/30 rounded-lg backdrop-blur-sm bg-black/30 overflow-hidden">
+    <div className="border border-violet-500/30 rounded-lg backdrop-blur-xs bg-black/30 overflow-hidden">
       {/* Progress indicators */}
       <div className="bg-violet-950/30 border-b border-violet-500/30 p-4">
         <div className="flex flex-col gap-4">

@@ -1,10 +1,10 @@
 import { FetchMethod, IError } from './api.models'
 
 export const getUrlWithQueryParameters = <
-  InputType = Record<string, string | number>,
+  InputType = Record<string, string | number>
 >(
   endpoint: string | null,
-  data?: InputType,
+  data?: InputType
 ) => {
   const parsedData = data as Record<string, string>
   const queryParameters = new URLSearchParams(parsedData).toString()
@@ -65,7 +65,7 @@ interface FetchParams<InputType> {
 
 export const fetchWrapper = async <
   ResponseType = unknown,
-  InputType = Record<string, unknown>,
+  InputType = Record<string, unknown>
 >({
   method = FetchMethod.GET,
   endpoint,
@@ -81,7 +81,7 @@ export const fetchWrapper = async <
   if (queryParams) {
     endpoint = getUrlWithQueryParameters<Record<string, string | number>>(
       endpoint,
-      queryParams,
+      queryParams
     )
   }
 
@@ -97,8 +97,6 @@ export const fetchWrapper = async <
     domain: toBackend ? baseBeUrl : '',
     endpoint,
   })
-
-  // console.log('---> finalUrl ', url)
 
   const response = await fetch(url, {
     method,

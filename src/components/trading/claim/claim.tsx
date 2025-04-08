@@ -167,7 +167,7 @@ export const ClaimForm = () => {
         </div>
         <div className="h-2 w-full bg-green-900/50 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-green-500 to-green-300 rounded-full"
+            className="h-full bg-linear-to-r from-green-500 to-green-300 rounded-full"
             style={{
               width: hasRewards ? '100%' : '0%',
             }}
@@ -189,7 +189,7 @@ export const ClaimForm = () => {
         <Button
           onClick={handleClaimRewards}
           disabled={isLoading || !hasRewards}
-          className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center h-12"
+          className="w-full bg-linear-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center h-12"
         >
           {isLoading ? (
             <>

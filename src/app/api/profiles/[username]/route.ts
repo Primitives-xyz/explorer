@@ -90,6 +90,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     }
 
     const { username, bio, image, properties } = await request.json()
+
     const params = await context.params
     const { username: profileUsername } = params
 
@@ -102,7 +103,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
         bio,
         image,
         execution: 'FAST_UNCONFIRMED',
-        properties: properties,
+        properties,
       },
     })
 

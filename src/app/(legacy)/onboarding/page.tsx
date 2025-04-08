@@ -43,7 +43,7 @@ export default function OnboardingPage() {
             />
           </div>
         </div>
-        <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">
+        <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-linear-to-r from-violet-400 to-indigo-400">
           Welcome to the Solana Social Explorer
         </h1>
         <p className="text-violet-300/70 max-w-md text-center">

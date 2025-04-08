@@ -8,7 +8,10 @@ const requestTimestamps: number[] = []
 function isRateLimited(): boolean {
   const now = Date.now()
   // Remove timestamps older than the window
-  while (requestTimestamps.length > 0 && requestTimestamps[0] < now - RATE_LIMIT_WINDOW) {
+  while (
+    requestTimestamps.length > 0 &&
+    requestTimestamps[0] < now - RATE_LIMIT_WINDOW
+  ) {
     requestTimestamps.shift()
   }
   return requestTimestamps.length >= MAX_REQUESTS_PER_WINDOW
@@ -56,7 +59,10 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(cached.data)
       }
       return NextResponse.json(
-        { error: 'Too many requests', details: 'Please try again in a few seconds' },
+        {
+          error: 'Too many requests',
+          details: 'Please try again in a few seconds',
+        },
         { status: 429 }
       )
     }
@@ -64,19 +70,21 @@ export async function GET(request: NextRequest) {
     // Add timestamp for rate limiting
     requestTimestamps.push(now)
 
-    const url = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${slippageBps || 50}`
+    const url = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${
+      slippageBps || 50
+    }`
     console.log('Fetching Jupiter quote:', url)
-    
+
     const response = await fetch(url)
     const data = await response.json()
-    
-    console.log('Jupiter API response:', {
-      status: response.status,
-      data,
-      inputMint,
-      outputMint,
-      amount
-    })
+
+    // console.log('Jupiter API response:', {
+    //   status: response.status,
+    //   data,
+    //   inputMint,
+    //   outputMint,
+    //   amount
+    // })
 
     if (!response.ok) {
       return NextResponse.json(
@@ -88,15 +96,18 @@ export async function GET(request: NextRequest) {
     // Cache successful response
     quoteCache[cacheKey] = {
       data,
-      timestamp: now
+      timestamp: now,
     }
 
     return NextResponse.json(data)
   } catch (error) {
     console.error('Error fetching Jupiter quote:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch quote', details: error instanceof Error ? error.message : String(error) },
+      {
+        error: 'Failed to fetch quote',
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     )
   }
-} 
+}

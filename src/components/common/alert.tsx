@@ -36,7 +36,7 @@ export const Alert = ({
 
   return (
     <div
-      className={`fixed bottom-4 left-4 ${backgroundColor} border px-4 py-3 rounded-lg shadow-lg z-[9999]`}
+      className={`fixed bottom-4 left-4 ${backgroundColor} border px-4 py-3 rounded-lg shadow-lg z-9999`}
       role="alert"
     >
       <div className="flex items-center justify-center">

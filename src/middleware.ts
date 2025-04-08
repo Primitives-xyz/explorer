@@ -27,8 +27,10 @@ export async function middleware(request: NextRequest) {
   }
 
   const DYNAMIC_KEY = process.env.DYNAMIC_KEY || productionPublicKeys
+
   try {
     const publicKey = await importSPKI(DYNAMIC_KEY, 'RS256')
+
     const { payload } = await jwtVerify(jwt as string, publicKey, {
       algorithms: ['RS256'],
     })

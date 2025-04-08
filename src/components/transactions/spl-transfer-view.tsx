@@ -164,8 +164,8 @@ export const SPLTransferView = ({ tx, sourceWallet }: SPLTransferViewProps) => {
         return (
           <div key={index} className="flex items-center gap-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-green-500/5 rounded-xl filter blur-sm"></div>
-              <div className="w-12 h-12 rounded-xl bg-black/20 ring-1 ring-green-500/10 flex items-center justify-center relative z-[1]">
+              <div className="absolute inset-0 bg-green-500/5 rounded-xl filter blur-xs"></div>
+              <div className="w-12 h-12 rounded-xl bg-black/20 ring-1 ring-green-500/10 flex items-center justify-center relative z-1">
                 {loading ? (
                   <div className="animate-pulse w-8 h-8 bg-green-500/20 rounded-lg" />
                 ) : tokenInfo?.result.content.links?.image ? (

@@ -19,21 +19,35 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
   variants: {
     variant: {
       default: 'bg-primary text-primary-foreground hover:bg-primary/80',
-      destructive:
-        'bg-destructive text-destructive-foreground hover:bg-destructive/80',
+      secondary:
+        'bg-primary/10 text-foreground/90 border border-primary hover:bg-primary/20',
       outline:
         'border border-primary text-primary bg-transparent hover:bg-accent',
+      badge:
+        'bg-primary/10 text-primary/80 border border-primary/20 hover:bg-primary/20',
+
+      'default-social':
+        'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+      'secondary-social':
+        'bg-secondary/10 text-foreground/90 border border-secondary hover:bg-secondary/20',
+      'outline-social':
+        'border border-secondary text-secondary bg-transparent hover:bg-accent',
+      'badge-social':
+        'bg-secondary/10 text-secondary/80 border border-secondary/20 hover:bg-secondary/20',
+
       'outline-white':
         'border border-foreground text-foreground bg-transparent hover:bg-accent',
-      secondary:
-        'bg-secondary/10 text-secondary-foreground border border-secondary hover:bg-secondary/20',
       ghost: 'hover:bg-accent text-foreground',
+      selectable:
+        'bg-primary/10 text-foreground border border-primary/20 rounded-full',
+      'selectable-active':
+        'bg-primary text-primary-foreground border border-primary rounded-full',
       link: 'underline-offset-4 hover:opacity-80 underline h-auto! p-0! rounded-sm',
     },
     size: {
-      default: 'h-9 px-4 py-2',
-      sm: 'h-7 px-3.5 text-xs',
-      lg: 'h-16 px-12 text-xl uppercase',
+      default: 'h-9 px-4 py-2 text-sm',
+      sm: 'h-6 px-3 text-xs',
+      lg: 'h-14 px-12 text-xl uppercase',
       icon: 'h-10 w-10',
       icon_sm: 'h-6 w-6',
       icon_lg: 'h-11 w-11',
@@ -72,6 +86,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disableActiveFeedback = false,
       newTab = false,
       href,
+      type = 'button',
       ...props
     },
     ref
@@ -113,6 +128,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         ref={ref}
         disabled={disabled}
+        type={type}
         {...props}
       >
         {children}

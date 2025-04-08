@@ -370,7 +370,7 @@ export const MostFollowedFeed = () => {
       {/* Content */}
       <div
         ref={scrollContainerRef}
-        className="overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-indigo-900/50 p-3"
+        className="overflow-y-auto grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-indigo-900/50 p-3"
       >
         {swapActivities.length === 0 && !isLoading && (
           <div className="text-center py-8 text-indigo-400">

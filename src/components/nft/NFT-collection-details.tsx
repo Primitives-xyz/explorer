@@ -60,7 +60,7 @@ const StatCardSkeleton = () => (
     variants={statCardVariants}
     className="bg-black/50 rounded-xl border border-green-800/40 overflow-hidden"
   >
-    <div className="px-4 py-3 bg-gradient-to-r from-green-900/30 to-transparent border-b border-green-800/30">
+    <div className="px-4 py-3 bg-linear-to-r from-green-900/30 to-transparent border-b border-green-800/30">
       <div className="flex items-center gap-2">
         <Skeleton className="w-4 h-4" />
         <Skeleton className="w-20 h-4" />
@@ -107,7 +107,7 @@ export default function NFTCollectionDetail({
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     transition={{ duration: 0.3 }}
-                    className="relative group overflow-hidden rounded-xl border border-green-800/40 bg-gradient-to-br from-black/40 to-black/20"
+                    className="relative group overflow-hidden rounded-xl border border-green-800/40 bg-linear-to-br from-black/40 to-black/20"
                   >
                     <Link href={tokenInfo.content.links.image} target="_blank">
                       <div className="relative aspect-square ">
@@ -127,7 +127,7 @@ export default function NFTCollectionDetail({
                               'flex',
                               'items-center',
                               'justify-center',
-                              'bg-gradient-to-br',
+                              'bg-linear-to-br',
                               'from-green-900/20',
                               'to-green-800/10'
                             )
@@ -138,7 +138,7 @@ export default function NFTCollectionDetail({
                           }}
                         />
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4">
+                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4">
                         <span className="text-white text-sm flex items-center gap-1">
                           <ExternalLink size={14} /> View Original
                         </span>
@@ -148,7 +148,7 @@ export default function NFTCollectionDetail({
                 ) : (
                   <motion.div
                     variants={itemVariants}
-                    className="aspect-square rounded-xl bg-gradient-to-br from-green-900/20 to-green-800/10 flex items-center justify-center border border-green-800/40"
+                    className="aspect-square rounded-xl bg-linear-to-br from-green-900/20 to-green-800/10 flex items-center justify-center border border-green-800/40"
                   >
                     <div className="font-mono text-sm">No image available</div>
                   </motion.div>
@@ -157,16 +157,16 @@ export default function NFTCollectionDetail({
                 {/* Collection Info Card */}
                 <motion.div
                   variants={itemVariants}
-                  className="mt-4 bg-black/30 backdrop-blur-sm border border-green-800/40 rounded-xl overflow-hidden"
+                  className="mt-4 bg-black/30 backdrop-blur-xs border border-green-800/40 rounded-xl overflow-hidden"
                 >
-                  <div className="px-4 py-3 bg-gradient-to-r from-green-900/30 to-transparent border-b border-green-800/30">
+                  <div className="px-4 py-3 bg-linear-to-r from-green-900/30 to-transparent border-b border-green-800/30">
                     <h3 className="text-sm font-bold text-green-400 uppercase">
                       Collection Info
                     </h3>
                   </div>
                   <div className="p-4 space-y-3">
                     <div>
-                      <h2 className="text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+                      <h2 className="text-xl font-bold bg-linear-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
                         {tokenInfo.content.metadata.name}
                       </h2>
                       <div className="flex items-center gap-1 mt-1">
@@ -217,7 +217,7 @@ export default function NFTCollectionDetail({
                       whileHover="hover"
                       className="bg-black/50 rounded-xl border border-green-800/40 overflow-hidden"
                     >
-                      <div className="px-4 py-3 bg-gradient-to-r from-green-900/30 to-transparent border-b border-green-800/30">
+                      <div className="px-4 py-3 bg-linear-to-r from-green-900/30 to-transparent border-b border-green-800/30">
                         <div className="flex items-center gap-2">
                           <DollarSign size={16} className="text-green-400" />
                           <span className="text-xs font-medium text-green-400">
@@ -240,7 +240,7 @@ export default function NFTCollectionDetail({
                       whileHover="hover"
                       className="bg-black/50 rounded-xl border border-green-800/40 overflow-hidden"
                     >
-                      <div className="px-4 py-3 bg-gradient-to-r from-green-900/30 to-transparent border-b border-green-800/30">
+                      <div className="px-4 py-3 bg-linear-to-r from-green-900/30 to-transparent border-b border-green-800/30">
                         <div className="flex items-center gap-2">
                           <BarChart3 size={16} className="text-green-400" />
                           <span className="text-xs font-medium text-green-400">
@@ -266,7 +266,7 @@ export default function NFTCollectionDetail({
                       whileHover="hover"
                       className="bg-black/50 rounded-xl border border-green-800/40 overflow-hidden"
                     >
-                      <div className="px-4 py-3 bg-gradient-to-r from-green-900/30 to-transparent border-b border-green-800/30">
+                      <div className="px-4 py-3 bg-linear-to-r from-green-900/30 to-transparent border-b border-green-800/30">
                         <div className="flex items-center gap-2">
                           <Activity size={16} className="text-green-400" />
                           <span className="text-xs font-medium text-green-400">
@@ -297,7 +297,7 @@ export default function NFTCollectionDetail({
                       whileHover="hover"
                       className="bg-black/50 rounded-xl border border-green-800/40 overflow-hidden"
                     >
-                      <div className="px-4 py-3 bg-gradient-to-r from-green-900/30 to-transparent border-b border-green-800/30">
+                      <div className="px-4 py-3 bg-linear-to-r from-green-900/30 to-transparent border-b border-green-800/30">
                         <div className="flex items-center gap-2">
                           <Users size={16} className="text-green-400" />
                           <span className="text-xs font-medium text-green-400">
@@ -373,10 +373,10 @@ export default function NFTCollectionDetail({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="bg-black/30 backdrop-blur-sm border border-green-800/40 rounded-xl overflow-hidden"
+                      className="bg-black/30 backdrop-blur-xs border border-green-800/40 rounded-xl overflow-hidden"
                     >
                       {nfts.length ? (
-                        <div className="overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
+                        <div className="overflow-y-auto grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-green-900/50">
                           <NFTShowcase
                             nfts={nfts}
                             isLoading={isLoading}
@@ -399,7 +399,7 @@ export default function NFTCollectionDetail({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="bg-black/30 backdrop-blur-sm border border-green-800/40 rounded-xl overflow-hidden p-6 min-h-[400px] flex items-center justify-center"
+                      className="bg-black/30 backdrop-blur-xs border border-green-800/40 rounded-xl overflow-hidden p-6 min-h-[400px] flex items-center justify-center"
                     >
                       <p className="text-gray-400">Activity data coming soon</p>
                     </motion.div>

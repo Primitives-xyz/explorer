@@ -92,7 +92,7 @@ const TraderCard = memo(
         <div className="flex flex-col gap-2">
           <div className="flex items-start gap-3">
             {/* Rank Badge */}
-            <div className="relative flex-shrink-0">
+            <div className="relative shrink-0">
               <div
                 className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center ${
                   index === 0
@@ -378,7 +378,7 @@ export const TopTraders = () => {
       {/* Content */}
       <div
         ref={scrollContainerRef}
-        className="overflow-y-auto flex-grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-indigo-900/50"
+        className="overflow-y-auto grow scrollbar-thin scrollbar-track-black/20 scrollbar-thumb-indigo-900/50"
       >
         <div className="divide-y divide-indigo-800/30">
           <div

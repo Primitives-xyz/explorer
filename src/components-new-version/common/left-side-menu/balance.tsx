@@ -1,10 +1,12 @@
 'use client'
 
-import { SSE_TOKEN_MINT } from '@/constants/jupiter'
+import { SOL_MINT, SOLANA_RPC_URL } from '@/components-new-version/utils/constants'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 
 interface TokenBalanceProps {
   walletAddress?: string
+  tokenMint: string
 }
 
 const formatNumber = (value: string) => {
@@ -22,7 +24,7 @@ const formatNumber = (value: string) => {
   return num.toFixed(Math.min(2, value.split('.')[1]?.length || 0))
 }
 
-export const TokenBalance = ({ walletAddress }: TokenBalanceProps) => {
+export const TokenBalance = ({ walletAddress, tokenMint }: TokenBalanceProps) => {
   const [balance, setBalance] = useState<string>('0')
   const [loading, setLoading] = useState(false)
 
@@ -32,11 +34,33 @@ export const TokenBalance = ({ walletAddress }: TokenBalanceProps) => {
 
       setLoading(true)
       try {
-        const response = await fetch(
-          `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=${SSE_TOKEN_MINT}`
-        )
-        const data = await response.json()
-        setBalance(formatNumber(data.balance.uiAmountString))
+        if (tokenMint === SOL_MINT) {
+          const response = await fetch(SOLANA_RPC_URL,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'getBalance',
+                params: [walletAddress, { commitment: 'confirmed' }],
+              }),
+            }
+          )
+          const data = await response.json()
+          if (!data.error) {
+            const solBalance = (data.result?.value || 0) / LAMPORTS_PER_SOL
+            setBalance(formatNumber(solBalance.toString()))
+          }
+        } else {
+          const response = await fetch(
+            `/api/tokens/balance?walletAddress=${walletAddress}&mintAddress=${tokenMint}`
+          )
+          const data = await response.json()
+          setBalance(formatNumber(data.balance.uiAmountString))
+        }
       } catch (error) {
         console.error('Error fetching token balance:', error)
       } finally {
@@ -49,7 +73,7 @@ export const TokenBalance = ({ walletAddress }: TokenBalanceProps) => {
     const interval = setInterval(fetchBalance, 60000)
 
     return () => clearInterval(interval)
-  }, [walletAddress])
+  }, [walletAddress, tokenMint])
 
   if (!walletAddress) return null
 

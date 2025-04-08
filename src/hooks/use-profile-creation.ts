@@ -28,6 +28,7 @@ export function useProfileCreation({
   const [error, setError] = useState<string | null>(null)
   const [response, setResponse] = useState<any | null>(null)
   const authToken = getAuthToken()
+
   const createProfile = async (
     username: string,
     bio: string,

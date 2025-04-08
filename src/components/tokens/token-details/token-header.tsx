@@ -35,7 +35,7 @@ export function TokenHeader({
   return (
     <div className="flex items-start gap-3">
       {/* Token Image */}
-      <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-green-800/40 shadow-lg flex-shrink-0">
+      <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-green-800/40 shadow-lg shrink-0">
         <Image
           src={imageUrl || '/fallback-token.png'}
           alt={name}

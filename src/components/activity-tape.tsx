@@ -279,10 +279,10 @@ const ActivityTapeComponent = () => {
                       )}
                     </span>
                   )}
-                  <span className="flex-shrink-0">
+                  <span className="shrink-0">
                     {formatTimeAgo(activity.timestamp)}
                   </span>
-                  <span className="flex-shrink-0">•</span>
+                  <span className="shrink-0">•</span>
                 </div>
               </Link>
             ))}

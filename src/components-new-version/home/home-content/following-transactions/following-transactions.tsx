@@ -1,18 +1,32 @@
 'use client'
 
-import { FilterButton } from '@/components-new-version/home/home-content/following-transactions/filters-button'
-import { useFollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/hooks/use-following-transactions'
-import { TransactionsEntry } from '@/components-new-version/home/home-content/following-transactions/transactions-entry'
 import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get-following'
-import { Button, Card, CardContent, Spinner } from '@/components-new-version/ui'
+import { useGetNamespaceProfiles } from '@/components-new-version/tapestry/hooks/use-get-namespace-profiles'
+import { useFollowingTransactions } from '@/components-new-version/transactions/hooks/use-following-transactions'
+import { TransactionsEntry } from '@/components-new-version/transactions/transactions-entry'
+import { FilterTabs, Spinner } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { useTranslations } from 'next-intl'
 
-export function FollowingTransactions() {
-  const { mainUsername, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
-  const { following } = useGetFollowing({ username: mainUsername })
+export enum FilterType {
+  ALL = 'all',
+  SWAP = 'swap',
+  COMPRESSED_NFT_MINT = 'compressed_nft_mint',
+  KOL = 'kol',
+}
 
-  const t = useTranslations()
+interface Props {
+  username: string
+}
+
+export function FollowingTransactions({ username }: Props) {
+  const { following } = useGetFollowing({
+    username,
+  })
+  const { data: kolData } = useGetNamespaceProfiles({
+    name: 'kolscan',
+  })
+
+  const { walletAddress } = useCurrentWallet()
 
   const {
     aggregatedTransactions,
@@ -20,35 +34,37 @@ export function FollowingTransactions() {
     totalWallets,
     selectedType,
     setSelectedType,
-  } = useFollowingTransactions({ following })
+  } = useFollowingTransactions({ following, kolData })
 
-  if (!isLoggedIn) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col space-y-10 items-center justify-center">
-          <p>{t('following_transaction.create_a_profile_to_follow')}</p>
-          <Button onClick={() => setShowAuthFlow(true)}>connect wallet</Button>
-        </CardContent>
-      </Card>
-    )
-  }
+  const options = [
+    { label: 'All', value: FilterType.ALL },
+    { label: 'Swap', value: FilterType.SWAP },
+    { label: 'Twitter KOL', value: FilterType.KOL },
+  ]
 
   return (
-    <>
-      <FilterButton
-        selectedType={selectedType}
-        setSelectedType={setSelectedType}
+    <div className="w-full">
+      <FilterTabs
+        options={options}
+        selected={selectedType}
+        onSelect={setSelectedType}
       />
-
-      {isLoadingTransactions && (
-        <div className="w-full flex justify-center items-center pt-24">
+      {isLoadingTransactions ? (
+        <div className="w-full flex justify-center items-center h-[400px]">
           <Spinner large />
         </div>
+      ) : (
+        <div className="space-y-4">
+          {aggregatedTransactions.map((transaction, index) => (
+            <TransactionsEntry
+              key={index}
+              transaction={transaction}
+              walletAddress={walletAddress}
+              displaySwap
+            />
+          ))}
+        </div>
       )}
-
-      {aggregatedTransactions.map((transaction, index) => (
-        <TransactionsEntry key={index} transaction={transaction} />
-      ))}
-    </>
+    </div>
   )
 }

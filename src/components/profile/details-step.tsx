@@ -248,7 +248,7 @@ export function DetailsStep({
                   }}
                   name="bio"
                   placeholder="Tell us about yourself"
-                  className={`w-full text-base py-2 sm:py-3 px-3 sm:px-4 bg-black/50 border border-green-500/30 focus:border-green-400 rounded-lg transition-all duration-200 min-h-[80px] sm:min-h-[120px] resize-none focus:ring-1 focus:ring-green-400/30 outline-none ${
+                  className={`w-full text-base py-2 sm:py-3 px-3 sm:px-4 bg-black/50 border border-green-500/30 focus:border-green-400 rounded-lg transition-all duration-200 min-h-[80px] sm:min-h-[120px] resize-none focus:ring-1 focus:ring-green-400/30 outline-hidden ${
                     !bio
                       ? 'placeholder:text-gray-400'
                       : 'placeholder:text-gray-500'
@@ -670,7 +670,7 @@ export function DetailsStep({
             onClick={onBack}
             className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium text-white bg-black/50 
               hover:bg-green-900/30 rounded-lg transition-all duration-200 border border-green-500/20
-              hover:border-green-500/40 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+              hover:border-green-500/40 focus:outline-hidden focus:ring-2 focus:ring-green-500/20"
             aria-label="Go back to previous step"
           >
             <span className="flex items-center gap-2">
@@ -691,7 +691,7 @@ export function DetailsStep({
           </button>
           <SubmitButton
             disabled={loading || isUploadingImage}
-            className="flex-1 py-3 sm:py-4 text-base sm:text-lg font-medium bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:opacity-50 text-black transition-all duration-200 rounded-lg shadow-lg shadow-green-500/10 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+            className="flex-1 py-3 sm:py-4 text-base sm:text-lg font-medium bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:opacity-50 text-black transition-all duration-200 rounded-lg shadow-lg shadow-green-500/10 focus:outline-hidden focus:ring-2 focus:ring-green-500/50"
           >
             <span className="relative flex items-center justify-center gap-2">
               {loading ? (

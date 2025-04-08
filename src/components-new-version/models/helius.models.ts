@@ -158,6 +158,17 @@ export interface Transaction {
   }
 }
 
+export interface TransactionHistory {
+  description: string
+  source: string
+  signature: string
+  timestamp: number
+  baseTokenMint: string
+  baseTokenAmount: number
+  quoteTokenMint: string
+  quoteTokenAmount: number
+}
+
 export interface FungibleTokenDetailsProps {
   id: string
   tokenInfo: {

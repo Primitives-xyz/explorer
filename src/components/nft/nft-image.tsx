@@ -66,7 +66,7 @@ export function NFTImage({ nft, onClick, viewMode }: NFTImageProps) {
 
   if (hasError || !imageUrl) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-black/80 to-green-950/30 p-4">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-linear-to-br from-black/80 to-green-950/30 p-4">
         <svg
           className="w-12 h-12 text-green-500/40 mb-2"
           fill="none"
@@ -90,7 +90,7 @@ export function NFTImage({ nft, onClick, viewMode }: NFTImageProps) {
   return (
     <div className="relative w-full h-full overflow-hidden" onClick={onClick}>
       {/* Overlay gradient - reduced opacity from black/80 to black/30 */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent z-10 pointer-events-none" />
 
       {/* Loading placeholder */}
       {!isImageLoaded && (
