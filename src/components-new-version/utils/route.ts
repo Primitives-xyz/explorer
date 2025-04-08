@@ -1,5 +1,3 @@
-'use client'
-
 const routes = {
   home: () => '/home',
   discover: () => '/discover',
@@ -7,6 +5,7 @@ const routes = {
   designSystem: () => '/design-system',
   newTrade: () => '/new-trade',
   tokens: () => '/tokens',
+  stake: () => '/stake',
 }
 
 export function route<T extends keyof typeof routes>(
