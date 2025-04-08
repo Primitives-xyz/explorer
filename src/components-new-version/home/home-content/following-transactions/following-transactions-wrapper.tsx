@@ -1,5 +1,6 @@
 'use client'
 
+import { FollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/following-transactions'
 import {
   Button,
   Card,
@@ -8,9 +9,12 @@ import {
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
-import { FollowingTransactions } from './following-transactions'
 
-export function FollowingTransactionsWrapper() {
+interface Props {
+  setOpenSwap?: (open: boolean) => void
+}
+
+export function FollowingTransactionsWrapper({ setOpenSwap }: Props) {
   const { mainProfile, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
   const t = useTranslations()
 
@@ -27,5 +31,10 @@ export function FollowingTransactionsWrapper() {
     )
   }
 
-  return <FollowingTransactions username={mainProfile.username} />
+  return (
+    <FollowingTransactions
+      username={mainProfile.username}
+      setOpenSwap={setOpenSwap}
+    />
+  )
 }

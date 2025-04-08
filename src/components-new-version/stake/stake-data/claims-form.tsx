@@ -1,18 +1,18 @@
-import { useCurrentWallet } from '@/components/auth/hooks/use-current-wallet'
-import { Button } from '@/components/ui/button'
-import { useStakeInfo } from '@/hooks/use-stake-info'
-import { useToast } from '@/hooks/use-toast'
+import { useStakeInfo } from '@/components-new-version/stake/hooks/use-stake-info'
+import { Button, Spinner } from '@/components-new-version/ui'
+import { useToast } from '@/components-new-version/ui/toast/hooks/use-toast'
+import { formatSmartNumber } from '@/components-new-version/utils/formatting/format-number'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
-import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export const ClaimForm = () => {
+export function ClaimsForm() {
   const t = useTranslations()
   const { toast } = useToast()
-  const { isLoggedIn, sdkHasLoaded, primaryWallet, walletAddress } =
-    useCurrentWallet()
+  const { primaryWallet, walletAddress } = useCurrentWallet()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState<string | null>(null)
@@ -20,10 +20,17 @@ export const ClaimForm = () => {
     {}
   )
 
-  // Format the token amounts with proper decimal places (dividing by 10^6)
-  const formattedRewardsAmount = rewardsAmount
-    ? parseFloat((Number(rewardsAmount) / 10 ** 6).toFixed(6))
-    : '0.000000'
+  if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+    throw new Error('Wallet not connected')
+  }
+
+  const formattedRewardsAmount = formatSmartNumber(rewardsAmount, {
+    micro: true,
+    compact: false,
+    withComma: false,
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
+  })
 
   const hasRewards = rewardsAmount && parseFloat(rewardsAmount) > 0
 
@@ -82,8 +89,6 @@ export const ClaimForm = () => {
 
       // Get signer and sign+send transaction
       const signer = await primaryWallet.getSigner()
-
-      console.log('signer', { signer })
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
       // Simulate transaction first (optional but good for debugging)
@@ -149,40 +154,27 @@ export const ClaimForm = () => {
   }
 
   return (
-    <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-6">
-      <h3 className="text-xl font-semibold text-green-400 mb-4">
-        {t('trade.claim_rewards')}
-      </h3>
-
+    <div>
+      <h3 className="text-lg">{t('trade.claim_rewards')}</h3>
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-300">
+          <span className="text-muted-foreground">
             {t('trade.total_reward_amount')}
           </span>
           {showUserInfoLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-green-400" />
+            <Spinner />
           ) : (
-            <span className="text-green-400 font-medium">
-              {formattedRewardsAmount} SSE
-            </span>
+            <span className="text-primary">{formattedRewardsAmount} SSE</span>
           )}
-        </div>
-        <div className="h-2 w-full bg-green-900/50 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-linear-to-r from-green-500 to-green-300 rounded-full"
-            style={{
-              width: hasRewards ? '100%' : '0%',
-            }}
-          ></div>
         </div>
       </div>
 
       {!hasRewards && (
-        <div className="mb-4 p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-lg">
-          <p className="text-yellow-400 font-medium">No Rewards Available</p>
-          <p className="text-sm text-gray-300">
-            You don&apos;t have any rewards to claim at the moment. Stake more
-            tokens or wait for rewards to accumulate.
+        <div>
+          <p className="text-md">No Rewards Available</p>
+          <p className="text-sm">
+            You don‘t have any rewards to claim at the moment. Stake more tokens
+            or wait for rewards to accumulate.
           </p>
         </div>
       )}
@@ -191,11 +183,11 @@ export const ClaimForm = () => {
         <Button
           onClick={handleClaimRewards}
           disabled={isLoading || !hasRewards}
-          className="w-full bg-linear-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center h-12"
+          expand
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Spinner />
               {currentStep === 'building_transaction' &&
                 t('trade.building_transaction')}
               {currentStep === 'sending_transaction' &&
@@ -214,7 +206,7 @@ export const ClaimForm = () => {
         </Button>
       )}
 
-      <div className="mt-4 text-sm text-gray-400">
+      <div className="mt-4 text-sm text-muted-foreground">
         <p>
           Claim your accumulated rewards from staking SSE tokens. Rewards are
           calculated based on your stake amount and platform activity.

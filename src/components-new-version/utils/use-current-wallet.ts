@@ -15,6 +15,7 @@ export function useCurrentWallet() {
     handleLogOut,
     setShowAuthFlow,
   } = useDynamicContext()
+
   const t = useTranslations()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
