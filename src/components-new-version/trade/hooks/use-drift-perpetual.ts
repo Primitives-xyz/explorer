@@ -42,6 +42,11 @@ export function useDriftPerpetual({
       return
     }
 
+    if (!driftClient || !connection) {
+      setError('Drift client not initialized')
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)

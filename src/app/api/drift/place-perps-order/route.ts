@@ -30,7 +30,6 @@ export async function initializeDriftClient() {
   // Set up the Provider
   const provider = new AnchorProvider(
     connection,
-    // @ts-ignore
     wallet,
     AnchorProvider.defaultOptions()
   )

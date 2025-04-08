@@ -1,53 +1,84 @@
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { AnchorProvider } from '@coral-xyz/anchor'
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { BulkAccountLoader, DriftClient, initialize } from '@drift-labs/sdk'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, PublicKey } from '@solana/web3.js'
+import { Connection, Keypair, PublicKey } from '@solana/web3.js'
+import { useEffect, useState } from 'react'
 
 const env = 'mainnet-beta'
-export function useInitializeDriftClient() {
+
+interface DriftClientState {
+  driftClient: DriftClient | undefined
+  connection: Connection | undefined
+  publicKey: PublicKey | undefined
+}
+
+export function useInitializeDriftClient(): DriftClientState {
   const { primaryWallet } = useCurrentWallet()
-  if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-    throw new Error('Wallet not connected')
-  }
+  const [driftClient, setDriftClient] = useState<DriftClient>()
+  const [connection, setConnection] = useState<Connection>()
+  const [publicKey, setPublicKey] = useState<PublicKey>()
 
-  const rpcUrl =
-    process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
-  const connection = new Connection(rpcUrl, 'confirmed')
+  useEffect(() => {
+    async function initializeClient() {
+      if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+        return
+      }
 
-  // Set up the Provider
-  const provider = new AnchorProvider(
-    connection,
-    // @ts-ignore
-    primaryWallet,
-    AnchorProvider.defaultOptions()
-  )
+      try {
+        const rpcUrl =
+          process.env.NEXT_PUBLIC_RPC_URL ||
+          'https://api.mainnet-beta.solana.com'
+        const connection = new Connection(rpcUrl, 'confirmed')
+        setConnection(connection)
 
-  const sdkConfig = initialize({ env })
+        const signer = await primaryWallet.getSigner()
+        const wallet = new NodeWallet(signer as unknown as Keypair)
+        setPublicKey(wallet.publicKey)
 
-  const driftPublicKey = new PublicKey(sdkConfig.DRIFT_PROGRAM_ID)
-  const bulkAccountLoader = new BulkAccountLoader(
-    provider.connection,
-    'confirmed',
-    1000
-  )
+        const provider = new AnchorProvider(
+          connection,
+          {
+            publicKey: wallet.publicKey,
+            signTransaction: wallet.signTransaction,
+            signAllTransactions: wallet.signAllTransactions,
+          },
+          AnchorProvider.defaultOptions()
+        )
 
-  const driftClient = new DriftClient({
-    connection: connection,
-    wallet: provider.wallet,
-    programID: driftPublicKey,
-    env,
-    accountSubscription: {
-      type: 'polling',
-      accountLoader: bulkAccountLoader,
-    },
-  })
+        const sdkConfig = initialize({ env })
+        const driftPublicKey = new PublicKey(sdkConfig.DRIFT_PROGRAM_ID)
+        const bulkAccountLoader = new BulkAccountLoader(
+          connection,
+          'confirmed',
+          1000
+        )
 
-  driftClient.subscribe()
+        const driftClient = new DriftClient({
+          connection,
+          wallet: provider.wallet,
+          programID: driftPublicKey,
+          env,
+          accountSubscription: {
+            type: 'polling',
+            accountLoader: bulkAccountLoader,
+          },
+        })
+
+        await driftClient.subscribe()
+        setDriftClient(driftClient)
+      } catch (error) {
+        console.error('Failed to initialize Drift client:', error)
+      }
+    }
+
+    initializeClient()
+  }, [primaryWallet])
 
   return {
     driftClient,
     connection,
-    publicKey: provider.wallet.publicKey,
+    publicKey,
   }
 }
