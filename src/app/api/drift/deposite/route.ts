@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { initializeDriftClient } from "../place-perps-order/route";
-import { BulkAccountLoader, PerpMarkets, User } from "@drift-labs/sdk";
-import { BN } from "bn.js";
-import { getAssociatedTokenAddress } from "@solana/spl-token";
-import { PublicKey } from "@solana/web3.js";
-import { TransactionMessage } from "@solana/web3.js";
-import { VersionedTransaction } from "@solana/web3.js";
+import { BulkAccountLoader, User } from '@drift-labs/sdk'
+import { getAssociatedTokenAddress } from '@solana/spl-token'
+import {
+  PublicKey,
+  TransactionMessage,
+  VersionedTransaction,
+} from '@solana/web3.js'
+import { BN } from 'bn.js'
+import { NextRequest, NextResponse } from 'next/server'
+import { initializeDriftClient } from '../place-perps-order/route'
 
 export const getTokenAddress = (
   mintAddress: string,
@@ -14,8 +16,8 @@ export const getTokenAddress = (
   return getAssociatedTokenAddress(
     new PublicKey(mintAddress),
     new PublicKey(userPubKey)
-  );
-};
+  )
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,28 +37,25 @@ export async function POST(req: NextRequest) {
         type: 'polling',
         accountLoader: bulkAccountLoader,
       },
-    });
+    })
 
-    const userAccountExists = await user.exists();
+    const userAccountExists = await user.exists()
 
     if (!userAccountExists) {
-      const depositAmount = new BN(40000000);
+      const depositAmount = new BN(40000000)
 
       const env = 'mainnet-beta'
 
-      const marketInfo = PerpMarkets[env].find(
-        (market) => market.baseAssetSymbol === "SOL"
-      )
+      driftClient.getInitializeUserAccountIxs()
 
-      const ixs = await driftClient.createInitializeUserAccountAndDepositCollateralIxs(
-        depositAmount,
-        await getTokenAddress(
-          depositeTokenMint,
-          walletAddy
-        ),
-      );
+      const ixs =
+        await driftClient.createInitializeUserAccountAndDepositCollateralIxs(
+          depositAmount,
+          await getTokenAddress(depositeTokenMint, walletAddy)
+        )
 
-      const blockHash = (await connection.getLatestBlockhash('finalized')).blockhash
+      const blockHash = (await connection.getLatestBlockhash('finalized'))
+        .blockhash
 
       const messageV0 = new TransactionMessage({
         payerKey: new PublicKey(walletAddy),
@@ -72,7 +71,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ initOrderAndDepositeCollateralTx: buffer })
     } else {
       return NextResponse.json({
-        error: "User Account Already exist"
+        error: 'User Account Already exist',
       })
     }
   } catch (err) {
