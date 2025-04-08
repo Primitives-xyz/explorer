@@ -98,38 +98,30 @@ export function UnstakeForm() {
     }
   }
 
-  const renderUnstakeButton = () => {
-    if (!sdkHasLoaded) {
-      return (
-        <div className="flex items-center justify-center gap-2">
-          <Spinner />
-          <p>{t('trade.checking_wallet_status')}</p>
-        </div>
-      )
-    }
-
-    if (!isLoggedIn) {
-      return (
-        <Button
-          variant={ButtonVariant.OUTLINE}
-          expand
-          onClick={() => setShowAuthFlow(true)}
-        >
-          {t('common.connect_wallet')}
-        </Button>
-      )
-    }
-
+  if (!sdkHasLoaded) {
     return (
-      <Button expand onClick={handleUnstake} disabled={showUnstakeLoading}>
-        {showUnstakeLoading ? (
-          <Spinner />
-        ) : (
-          t('trade.unstake_and_claim_rewards')
-        )}
+      <div className="flex items-center justify-center gap-2">
+        <Spinner />
+        <p>{t('trade.checking_wallet_status')}</p>
+      </div>
+    )
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <Button
+        variant={ButtonVariant.OUTLINE}
+        expand
+        onClick={() => setShowAuthFlow(true)}
+      >
+        {t('common.connect_wallet')}
       </Button>
     )
   }
 
-  return <div>{renderUnstakeButton()}</div>
+  return (
+    <Button expand onClick={handleUnstake} disabled={showUnstakeLoading}>
+      {showUnstakeLoading ? <Spinner /> : t('trade.unstake_and_claim_rewards')}
+    </Button>
+  )
 }

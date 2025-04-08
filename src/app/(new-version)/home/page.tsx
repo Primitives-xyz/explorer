@@ -14,7 +14,7 @@ export default function Home() {
       <MainContentWrapper className="min-w-main-content max-w-main-content mx-auto flex justify-center">
         <HomeContent setOpenSwap={setOpenSwap} />
       </MainContentWrapper>
-      <RightSidebarWrapper className="pt-[50px]">
+      <RightSidebarWrapper className="pt-[52px]">
         <RightSideHome showSwap={showSwap} setOpenSwap={setOpenSwap} />
       </RightSidebarWrapper>
     </>

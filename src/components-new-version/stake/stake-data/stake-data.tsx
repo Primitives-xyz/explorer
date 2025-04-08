@@ -2,6 +2,7 @@ import { useStakeInfo } from '@/components-new-version/stake/hooks/useStakeInfo'
 import { StakeFilterType } from '@/components-new-version/stake/stake-content'
 import { ClaimsForm } from '@/components-new-version/stake/stake-data/claims-form'
 import { DisplayStakeData } from '@/components-new-version/stake/stake-data/display-stake-data'
+import { StakeForm } from '@/components-new-version/stake/stake-data/stake-form'
 import { UnstakeForm } from '@/components-new-version/stake/stake-data/unstake-form'
 import { Card, CardContent } from '@/components-new-version/ui'
 import { formatSmartNumber } from '@/components-new-version/utils/formatting/format-number'
@@ -48,7 +49,7 @@ export function StakeData({ selectedType }: Props) {
   const renderForm = () => {
     switch (selectedType) {
       case StakeFilterType.STAKE:
-        return <p>stake form</p>
+        return <StakeForm />
 
       case StakeFilterType.UNSTAKE:
         return (
