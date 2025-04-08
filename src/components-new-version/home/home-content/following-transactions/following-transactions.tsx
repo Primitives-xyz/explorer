@@ -16,9 +16,10 @@ export enum FilterType {
 
 interface Props {
   username: string
+  setOpenSwap?: (open: boolean) => void
 }
 
-export function FollowingTransactions({ username }: Props) {
+export function FollowingTransactions({ username, setOpenSwap }: Props) {
   const { following } = useGetFollowing({
     username,
   })
@@ -61,6 +62,7 @@ export function FollowingTransactions({ username }: Props) {
               transaction={transaction}
               walletAddress={walletAddress}
               displaySwap
+              setOpenSwap={setOpenSwap}
             />
           ))}
         </div>

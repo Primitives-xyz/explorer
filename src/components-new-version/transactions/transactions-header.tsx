@@ -23,16 +23,16 @@ interface Props {
   transaction: Transaction | ExtendedTransaction
   sourceWallet: string
   profiles?: IGetProfilesResponse
-  withCopyTradeButton?: boolean
   children?: ReactNode
+  setOpenSwap?: (open: boolean) => void
 }
 
 export function TransactionsHeader({
   transaction,
   sourceWallet,
   profiles,
-  withCopyTradeButton,
   children,
+  setOpenSwap,
 }: Props) {
   const sourceProfile = profiles?.profiles.find(
     (p) => p.namespace.name === EXPLORER_NAMESPACE
@@ -77,10 +77,13 @@ export function TransactionsHeader({
             <TimeAgo transaction={transaction} />
           </div>
 
-          {withCopyTradeButton && (
-            <Button variant={ButtonVariant.OUTLINE} disabled>
-              <ArrowRightLeft />
-              Copy Trade
+          {setOpenSwap && (
+            <Button
+              variant={ButtonVariant.OUTLINE}
+              onClick={() => setOpenSwap(true)}
+            >
+              <ArrowRightLeft size={16} />
+              Trade
             </Button>
           )}
         </div>
