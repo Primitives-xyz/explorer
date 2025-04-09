@@ -1,5 +1,7 @@
 # Tapestry Protocol Explorer
 
+preview-env
+
 A social graph explorer for the Solana blockchain, built with [Tapestry Protocol](https://usetapestry.dev). Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.
 
 ## Features
