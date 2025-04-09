@@ -116,7 +116,7 @@ export interface ISuggestedProfile {
   wallet: { address: string }
 }
 
-export interface ISuggestedProfiles {
+export interface IGetSuggestedProfilesResponse {
   [key: string]: ISuggestedProfile
 }
 

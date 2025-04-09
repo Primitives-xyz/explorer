@@ -11,7 +11,7 @@ import {
   Spinner,
 } from '../../ui'
 import { useCurrentWallet } from '../../utils/use-current-wallet'
-import { useGetSuggestedProfiles } from '../hooks/use-get-suggested-profiles'
+import { useGetSuggestions } from '../hooks/use-get-suggestions'
 import { EOnboardingSteps } from '../onboarding.models'
 import { AddBioForm } from './add-bio-form'
 import { AddProfileImage } from './add-profile-image'
@@ -41,7 +41,7 @@ export function Onboarding() {
     suggestedImages,
     suggestedBios,
     loading: getSuggestedProfilesLoading,
-  } = useGetSuggestedProfiles({
+  } = useGetSuggestions({
     suggestedProfiles: identities,
     loadingSuggestions: getIdentitiesLoading,
     walletAddress,
@@ -56,15 +56,15 @@ export function Onboarding() {
       typeof profiles !== 'undefined' &&
       (!mainProfile || (mainProfile && !mainProfile.hasSeenProfileSetupModal))
     ) {
-      if (!!mainProfile?.bio) {
-        setStep(EOnboardingSteps.FOLLOW)
-      } else if (!!mainProfile?.image) {
-        setStep(EOnboardingSteps.BIO)
-      } else if (!!mainProfile?.username) {
-        setStep(EOnboardingSteps.IMAGE)
-      } else {
-        setStep(EOnboardingSteps.USERNAME)
-      }
+      // if (!!mainProfile?.bio) {
+      //   setStep(EOnboardingSteps.FOLLOW)
+      // } else if (!!mainProfile?.image) {
+      //   setStep(EOnboardingSteps.BIO)
+      // } else if (!!mainProfile?.username) {
+      //   setStep(EOnboardingSteps.IMAGE)
+      // } else {
+      //   setStep(EOnboardingSteps.USERNAME)
+      // }
       setOpen(true)
     }
   }, [mainProfile, isLoggedIn, profiles])
