@@ -14,10 +14,6 @@ export function useStake() {
 
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
-  if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-    throw new Error('Wallet not connected')
-  }
-
   const stake = async (amount: string) => {
     try {
       setIsLoading(true)
@@ -33,6 +29,10 @@ export function useStake() {
       const vtx = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
+
+      if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+        throw new Error('Wallet not connected')
+      }
 
       const signer = await primaryWallet.getSigner()
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')

@@ -75,7 +75,10 @@ export function StakingTierCard({
         <ul className="text-sm space-y-2">
           {benefits.map((benefit, idx) => (
             <li key={idx} className="flex gap-2 items-center">
-              <CheckCircle size={16} className="text-primary" />
+              <div>
+                <CheckCircle size={12} className="text-primary" />
+              </div>
+
               <span>{benefit}</span>
             </li>
           ))}

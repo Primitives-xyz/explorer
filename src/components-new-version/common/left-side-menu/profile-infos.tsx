@@ -31,7 +31,7 @@ export function ProfileInfos() {
           variant={ButtonVariant.OUTLINE_WHITE}
           onClick={() => setShowAuthFlow(true)}
         >
-          Connect wallet
+          Connect Wallet
         </Button>
       ) : (
         <div className="flex items-center justify-between">

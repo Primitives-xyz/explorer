@@ -53,27 +53,32 @@ export function RightSideDiscover() {
                 >
                   <div className="flex items-center gap-4 w-full">
                     <Avatar size={32} username={elem.profile.username} />
-                    <div className="flex flex-col items-start w-3/4">
+                    <div className="flex flex-col items-start w-2/3">
+                      <Button
+                        variant={ButtonVariant.LINK}
+                        href={route('entity', { id: elem.profile.username })}
+                        className="px-0 !py-2 w-full flex items-start justify-start"
+                      >
+                        <p className="truncate text-foreground">
+                          {isSame
+                            ? `@${abbreviateWalletAddress({
+                                address: elem.profile.username,
+                              })}`
+                            : `@${elem.profile.username}`}
+                        </p>
+                      </Button>
+
                       {!isSame && (
                         <Button
-                          variant={ButtonVariant.LINK}
-                          href={route('entity', { id: elem.profile.username })}
-                          className="px-0 !py-2 w-full flex items-start justify-start"
+                          href={route('entity', { id: elem.wallet.address })}
+                          variant={ButtonVariant.BADGE}
+                          size={ButtonSize.SM}
                         >
-                          <p className="truncate text-foreground">
-                            @{elem.profile.username}
-                          </p>
+                          {abbreviateWalletAddress({
+                            address: elem.wallet.address,
+                          })}
                         </Button>
                       )}
-                      <Button
-                        href={route('entity', { id: elem.wallet.address })}
-                        variant={ButtonVariant.BADGE}
-                        size={ButtonSize.SM}
-                      >
-                        {abbreviateWalletAddress({
-                          address: elem.wallet.address,
-                        })}
-                      </Button>
                     </div>
                   </div>
                   <div className="w-[50px]">
