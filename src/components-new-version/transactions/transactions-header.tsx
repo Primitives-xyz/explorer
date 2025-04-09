@@ -21,7 +21,7 @@ import { ArrowRightLeft } from 'lucide-react'
 import { ReactNode } from 'react'
 
 interface Props {
-  transaction: ITransactionWithProfile
+  transaction: ITransactionWithProfile | ExtendedTransaction
   sourceWallet: string
   profiles?: IGetProfilesResponse
   children?: ReactNode
@@ -37,7 +37,7 @@ export function TransactionsHeader({
 }: Props) {
   let profile = null
 
-  if (transaction.profile) {
+  if ('profile' in transaction && transaction.profile) {
     profile = transaction.profile
   } else {
     profile = profiles?.profiles.find(
@@ -59,7 +59,7 @@ export function TransactionsHeader({
             username={profile?.username || sourceWallet}
             size={40}
             className="w-10"
-            imageUrl={transaction?.profile?.image}
+            imageUrl={profile?.image}
           />
         </Button>
       </div>
