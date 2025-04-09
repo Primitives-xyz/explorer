@@ -3,15 +3,17 @@ import { isSpamTransaction } from '@/components-new-version/utils/transactions'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 
+interface Props {
+  walletAddress: string
+  hasSearched: boolean
+  itemsPerPage?: number
+}
+
 export const useProfileTransactions = ({
   walletAddress,
   hasSearched,
   itemsPerPage = 20,
-}: {
-  walletAddress: string
-  hasSearched: boolean
-  itemsPerPage?: number
-}) => {
+}: Props) => {
   const [transactionMap, setTransactionMap] = useState<
     Map<string, Transaction>
   >(new Map())

@@ -4,8 +4,16 @@ import { useGetFollowing } from '@/components-new-version/tapestry/hooks/use-get
 import { useGetNamespaceProfiles } from '@/components-new-version/tapestry/hooks/use-get-namespace-profiles'
 import { useFollowingTransactions } from '@/components-new-version/transactions/hooks/use-following-transactions'
 import { TransactionsEntry } from '@/components-new-version/transactions/transactions-entry'
-import { FilterTabs, Spinner } from '@/components-new-version/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  FilterTabs,
+  Paragraph,
+  Spinner,
+} from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { useTranslations } from 'next-intl'
 
 export enum FilterType {
   ALL = 'all',
@@ -15,19 +23,27 @@ export enum FilterType {
 }
 
 interface Props {
-  username: string
   setOpenSwap?: (open: boolean) => void
 }
 
-export function FollowingTransactions({ username, setOpenSwap }: Props) {
+export function FollowingTransactions({ setOpenSwap }: Props) {
+  const t = useTranslations()
+  const { mainProfile, isLoggedIn, loading, walletAddress, setShowAuthFlow } =
+    useCurrentWallet()
+
+  const options = [
+    { label: 'All', value: FilterType.ALL },
+    { label: 'Swap', value: FilterType.SWAP },
+    { label: 'Twitter KOL', value: FilterType.KOL },
+  ]
+
   const { following } = useGetFollowing({
-    username,
+    username: mainProfile?.username,
   })
+
   const { data: kolData } = useGetNamespaceProfiles({
     name: 'kolscan',
   })
-
-  const { walletAddress } = useCurrentWallet()
 
   const {
     aggregatedTransactions,
@@ -36,12 +52,6 @@ export function FollowingTransactions({ username, setOpenSwap }: Props) {
     setSelectedType,
   } = useFollowingTransactions({ following, kolData })
 
-  const options = [
-    { label: 'All', value: FilterType.ALL },
-    { label: 'Swap', value: FilterType.SWAP },
-    { label: 'Twitter KOL', value: FilterType.KOL },
-  ]
-
   return (
     <div className="w-full">
       <FilterTabs
@@ -49,23 +59,36 @@ export function FollowingTransactions({ username, setOpenSwap }: Props) {
         selected={selectedType}
         onSelect={setSelectedType}
       />
-      {isLoadingTransactions ? (
-        <div className="w-full flex justify-center items-center h-[400px]">
-          <Spinner large />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {aggregatedTransactions.map((transaction, index) => (
-            <TransactionsEntry
-              key={index}
-              transaction={transaction}
-              walletAddress={walletAddress}
-              displaySwap
-              setOpenSwap={setOpenSwap}
-            />
-          ))}
-        </div>
-      )}
+      <div className="space-y-4">
+        {isLoadingTransactions || loading ? (
+          <div className="w-full flex justify-center items-center h-[400px]">
+            <Spinner large />
+          </div>
+        ) : !isLoggedIn || !mainProfile ? (
+          <Card>
+            <CardContent className="flex flex-col space-y-10 items-center justify-center">
+              <Paragraph>
+                {t('following_transaction.create_a_profile_to_follow')}
+              </Paragraph>
+              <Button onClick={() => setShowAuthFlow(true)}>
+                Connect Wallet
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {aggregatedTransactions.map((transaction, index) => (
+              <TransactionsEntry
+                key={index}
+                transaction={transaction}
+                walletAddress={walletAddress}
+                displaySwap
+                setOpenSwap={setOpenSwap}
+              />
+            ))}
+          </>
+        )}
+      </div>
     </div>
   )
 }

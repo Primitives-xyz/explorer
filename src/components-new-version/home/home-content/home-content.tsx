@@ -1,4 +1,4 @@
-import { FollowingTransactionsWrapper } from '@/components-new-version/home/home-content/following-transactions/following-transactions-wrapper'
+import { FollowingTransactions } from '@/components-new-version/home/home-content/following-transactions/following-transactions'
 
 interface Props {
   setOpenSwap?: (open: boolean) => void
@@ -7,8 +7,7 @@ interface Props {
 export function HomeContent({ setOpenSwap }: Props) {
   return (
     <div className="w-full">
-      {/* <Summary /> */}
-      <FollowingTransactionsWrapper setOpenSwap={setOpenSwap} />
+      <FollowingTransactions setOpenSwap={setOpenSwap} />
     </div>
   )
 }

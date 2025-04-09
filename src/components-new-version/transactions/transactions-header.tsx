@@ -8,6 +8,7 @@ import {
   IGetProfilesResponse,
   IProfile,
 } from '@/components-new-version/models/profiles.models'
+import { ITransactionWithProfile } from '@/components-new-version/transactions/hooks/use-following-transactions'
 import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
@@ -20,7 +21,7 @@ import { ArrowRightLeft } from 'lucide-react'
 import { ReactNode } from 'react'
 
 interface Props {
-  transaction: Transaction | ExtendedTransaction
+  transaction: ITransactionWithProfile
   sourceWallet: string
   profiles?: IGetProfilesResponse
   children?: ReactNode
@@ -34,9 +35,15 @@ export function TransactionsHeader({
   children,
   setOpenSwap,
 }: Props) {
-  const sourceProfile = profiles?.profiles.find(
-    (p) => p.namespace.name === EXPLORER_NAMESPACE
-  )?.profile
+  let profile = null
+
+  if (transaction.profile) {
+    profile = transaction.profile
+  } else {
+    profile = profiles?.profiles.find(
+      (p) => p.namespace.name === EXPLORER_NAMESPACE
+    )?.profile
+  }
 
   return (
     <div className="flex flex-row gap-2 items-start">
@@ -44,15 +51,15 @@ export function TransactionsHeader({
         <Button
           variant={ButtonVariant.GHOST}
           href={route('entity', {
-            id: sourceProfile?.username || sourceWallet,
+            id: profile?.username || sourceWallet,
           })}
           className="p-0 hover:bg-transparent"
         >
           <Avatar
-            username={sourceProfile?.username || sourceWallet}
+            username={profile?.username || sourceWallet}
             size={40}
             className="w-10"
-            imageUrl={sourceProfile?.image}
+            imageUrl={transaction?.profile?.image}
           />
         </Button>
       </div>
@@ -60,10 +67,7 @@ export function TransactionsHeader({
       <div className="flex flex-col space-y-2 w-full">
         <div className="flex items-center gap-2 justify-between w-full">
           <div className="flex items-center gap-2">
-            <Username
-              sourceProfile={sourceProfile}
-              sourceWallet={sourceWallet}
-            />
+            <Username sourceProfile={profile} sourceWallet={sourceWallet} />
 
             <Button
               href={route('entity', { id: transaction.signature })}
