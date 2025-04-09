@@ -3,7 +3,6 @@
 import { StakeData } from '@/components-new-version/stake/stake-data/stake-data'
 import { StakeDetails } from '@/components-new-version/stake/stake-details/stake-details'
 import { Card, CardContent, FilterTabs } from '@/components-new-version/ui'
-import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 export enum StakeFilterType {
@@ -18,8 +17,6 @@ export function StakeContent() {
     { label: 'UnStake', value: StakeFilterType.UNSTAKE },
     { label: 'Claim Rewards', value: StakeFilterType.CLAIM_REWARDS },
   ]
-
-  const t = useTranslations()
 
   const [selectedType, setSelectedType] = useState<StakeFilterType>(
     StakeFilterType.STAKE
