@@ -16,20 +16,11 @@ export function ProfileTransactions({
   transactionTypeSelected,
   setTransactionTypes,
 }: Props) {
-  const {
-    transactions,
-    newTransactions,
-    transactionTypes,
-    isLoading,
-    error,
-    page,
-    filteredTransactions,
-    setPage,
-    handleLoadNewTransactions,
-  } = useProfileTransactions({
-    walletAddress: walletAddress || '',
-    hasSearched: true,
-  })
+  const { transactionTypes, isLoading, page, filteredTransactions } =
+    useProfileTransactions({
+      walletAddress: walletAddress || '',
+      hasSearched: true,
+    })
 
   useEffect(() => {
     setTransactionTypes(transactionTypes)
