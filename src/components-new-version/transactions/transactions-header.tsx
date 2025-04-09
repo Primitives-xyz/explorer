@@ -51,6 +51,7 @@ export function TransactionsHeader({
           <Avatar
             username={sourceProfile?.username || sourceWallet}
             size={40}
+            className="w-10"
             imageUrl={sourceProfile?.image}
           />
         </Button>

@@ -9,8 +9,8 @@
   --accent: var(--foreground) / 0.1;
   --accent-foreground: var(--foreground);
 
-  --popover: var(--background);
-  --popover-foreground: var(--foreground);
+  --popover: var(--foreground) / 0.1;
+  --popover-foreground: 220 50% 97%;
 
   --border: 360deg 1% 39%;
 

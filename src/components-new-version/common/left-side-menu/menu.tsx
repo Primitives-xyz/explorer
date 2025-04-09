@@ -14,6 +14,7 @@ import {
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { SearchButton } from '../../search/components/search-button'
 
 export function Menu() {
   const { mainProfile } = useCurrentWallet()
@@ -21,6 +22,8 @@ export function Menu() {
   return (
     <div className="space-y-2">
       <Entry title="Home" icon={House} href={route('home')} />
+
+      <SearchButton />
 
       <Entry title="Trade" icon={ArrowRightLeft} href={route('newTrade')} />
 

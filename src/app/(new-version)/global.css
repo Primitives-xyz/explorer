@@ -1,4 +1,5 @@
 @import '../../styles/variables.css' layer(base);
+@import '../../styles/loading-dots.css' layer(base);
 
 @import 'tailwindcss';
 

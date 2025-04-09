@@ -1,5 +1,3 @@
-'use client'
-
 const routes = {
   home: () => '/home',
   discover: () => '/discover',
