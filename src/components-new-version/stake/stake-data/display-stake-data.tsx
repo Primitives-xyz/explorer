@@ -1,14 +1,12 @@
 import { Spinner } from '@/components-new-version/ui'
 
-export function DisplayStakeData({
-  label,
-  value,
-  loading,
-}: {
+interface Props {
   label: string
   value: string
   loading: boolean
-}) {
+}
+
+export function DisplayStakeData({ label, value, loading }: Props) {
   return (
     <div>
       <div className="items-center flex text-lg space-x-2 mb-2">

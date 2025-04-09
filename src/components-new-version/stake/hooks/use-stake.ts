@@ -1,15 +1,18 @@
 import { useStakeInfo } from '@/components-new-version/stake/hooks/use-stake-info'
 import { useToast } from '@/components-new-version/ui/toast/hooks/use-toast'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
-export function useStake(primaryWallet: any, walletAddress: string) {
+export function useStake() {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
+
+  const { primaryWallet, walletAddress } = useCurrentWallet()
 
   const stake = async (amount: string) => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -30,6 +33,10 @@ export function useStake(primaryWallet: any, walletAddress: string) {
       const vtx = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
+
+      if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+        throw new Error('Wallet not connected')
+      }
 
       const signer = await primaryWallet.getSigner()
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')

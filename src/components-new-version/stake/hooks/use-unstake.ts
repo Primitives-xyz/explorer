@@ -1,15 +1,17 @@
 import { useStakeInfo } from '@/components-new-version/stake/hooks/use-stake-info'
 import { useToast } from '@/components-new-version/ui/toast/hooks/use-toast'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
-export function useUnstake(primaryWallet: any, walletAddress: string) {
+export function useUnstake() {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
+  const { primaryWallet, walletAddress } = useCurrentWallet()
 
   const unstake = async () => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {

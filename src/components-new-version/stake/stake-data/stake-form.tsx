@@ -15,14 +15,18 @@ import { useCurrentWallet } from '@/components-new-version/utils/use-current-wal
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
-export function StakeForm({ initialAmount = '' }: { initialAmount?: string }) {
+interface Props {
+  initialAmount?: string
+}
+
+export function StakeForm({ initialAmount = '' }: Props) {
   const t = useTranslations()
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
   const [inputError, setInputError] = useState<string | null>(null)
   const [debouncedUpdate, setDebouncedUpdate] = useState<NodeJS.Timeout | null>(
     null
   )
-  const { isLoggedIn, sdkHasLoaded, walletAddress, primaryWallet, setShowAuthFlow } =
+  const { isLoggedIn, sdkHasLoaded, walletAddress, setShowAuthFlow } =
     useCurrentWallet()
 
   // Add token balance hooks for SSE token
@@ -32,7 +36,7 @@ export function StakeForm({ initialAmount = '' }: { initialAmount?: string }) {
     loading: inputBalanceLoading,
   } = useTokenBalance(walletAddress, SSE_MINT)
 
-  const { stake, isLoading: showStakeLoading } = useStake(primaryWallet, walletAddress)
+  const { stake, isLoading: showStakeLoading } = useStake()
 
   const validateAmount = (value: string): boolean => {
     if (value === '') return true
@@ -239,38 +243,30 @@ export function StakeForm({ initialAmount = '' }: { initialAmount?: string }) {
         {inputError && <p className="text-destructive">{inputError}</p>}
       </div>
 
-      {
-        !sdkHasLoaded ? (
-          <Button
-            variant={ButtonVariant.OUTLINE}
-            expand
-            className="mt-4"
-          >
-            <Spinner />
-            <p>{t('trade.checking_wallet_status')}</p>
-          </Button>
-        ) : (
-          !isLoggedIn ? (
-            <Button
-              variant={ButtonVariant.OUTLINE}
-              expand
-              className="mt-4"
-              onClick={() => setShowAuthFlow(true)}
-            >
-              {t('common.connect_wallet')}
-            </Button>
-          ) : (
-            <Button
-              expand
-              className="mt-4"
-              onClick={() => stake(displayAmount)}
-              disabled={showStakeLoading}
-            >
-              {showStakeLoading ? <Spinner /> : t('trade.stake')}
-            </Button>
-          )
-        )
-      }
-    </div >
+      {!sdkHasLoaded ? (
+        <Button variant={ButtonVariant.OUTLINE} expand className="mt-4">
+          <Spinner />
+          <p>{t('trade.checking_wallet_status')}</p>
+        </Button>
+      ) : !isLoggedIn ? (
+        <Button
+          variant={ButtonVariant.OUTLINE}
+          expand
+          className="mt-4"
+          onClick={() => setShowAuthFlow(true)}
+        >
+          {t('common.connect_wallet')}
+        </Button>
+      ) : (
+        <Button
+          expand
+          className="mt-4"
+          onClick={() => stake(displayAmount)}
+          disabled={showStakeLoading}
+        >
+          {showStakeLoading ? <Spinner /> : t('trade.stake')}
+        </Button>
+      )}
+    </div>
   )
 }

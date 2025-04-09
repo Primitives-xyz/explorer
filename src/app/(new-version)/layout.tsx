@@ -26,9 +26,7 @@ export default async function NewVersionLayout({
           <Header />
           <main className="w-full flex justify-between pt-topbar">
             <LeftSideMenu />
-            <div className="flex-1 flex justify-between pt-[50px]">
-              {children}
-            </div>
+            <div className="flex-1 flex justify-between pt-5">{children}</div>
           </main>
         </div>
       </div>

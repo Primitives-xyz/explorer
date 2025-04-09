@@ -7,7 +7,7 @@ import { useClaimRewards } from '../hooks/use-claim'
 
 export function ClaimsForm() {
   const t = useTranslations()
-  const { isLoggedIn, sdkHasLoaded, walletAddress, primaryWallet, setShowAuthFlow } =
+  const { isLoggedIn, sdkHasLoaded, walletAddress, setShowAuthFlow } =
     useCurrentWallet()
   const { rewardsAmount, showUserInfoLoading } = useStakeInfo({})
 
@@ -19,7 +19,9 @@ export function ClaimsForm() {
     maximumFractionDigits: 6,
   })
 
-  const { claimRewards, hasRewards, currentStep, isLoading } = useClaimRewards(primaryWallet, walletAddress, rewardsAmount)
+  const { claimRewards, hasRewards, currentStep, isLoading } = useClaimRewards({
+    rewardsAmount,
+  })
 
   return (
     <div>
@@ -37,68 +39,60 @@ export function ClaimsForm() {
         </div>
       </div>
 
-      {
-        !sdkHasLoaded ? (
-          <Button
-            variant={ButtonVariant.OUTLINE}
-            expand
-            className="mt-4"
-          >
-            <Spinner />
-            <p>{t('trade.checking_wallet_status')}</p>
-          </Button>
-        ) : (
-          !isLoggedIn ? (
-            <Button
-              variant={ButtonVariant.OUTLINE}
-              expand
-              className="mt-4"
-              onClick={() => setShowAuthFlow(true)}
-            >
-              {t('common.connect_wallet')}
-            </Button>
-          ) : (
-            <>
-              {!hasRewards && (
-                <div>
-                  <p className="text-md">No Rewards Available</p>
-                  <p className="text-sm">
-                    You don‘t have any rewards to claim at the moment. Stake more tokens
-                    or wait for rewards to accumulate.
-                  </p>
-                </div>
-              )}
+      {!sdkHasLoaded ? (
+        <Button variant={ButtonVariant.OUTLINE} expand className="mt-4">
+          <Spinner />
+          <p>{t('trade.checking_wallet_status')}</p>
+        </Button>
+      ) : !isLoggedIn ? (
+        <Button
+          variant={ButtonVariant.OUTLINE}
+          expand
+          className="mt-4"
+          onClick={() => setShowAuthFlow(true)}
+        >
+          {t('common.connect_wallet')}
+        </Button>
+      ) : (
+        <>
+          {!hasRewards && (
+            <div>
+              <p className="text-md">No Rewards Available</p>
+              <p className="text-sm">
+                You don‘t have any rewards to claim at the moment. Stake more
+                tokens or wait for rewards to accumulate.
+              </p>
+            </div>
+          )}
 
-              {hasRewards && (
-                <Button
-                  onClick={claimRewards}
-                  disabled={isLoading || !hasRewards}
-                  expand
-                >
-                  {isLoading ? (
-                    <>
-                      <Spinner />
-                      {currentStep === 'building_transaction' &&
-                        t('trade.building_transaction')}
-                      {currentStep === 'sending_transaction' &&
-                        t('trade.sending_transaction')}
-                      {currentStep === 'waiting_for_confirmation' &&
-                        t('trade.waiting_for_confirmation')}
-                      {currentStep === 'transaction_successful' &&
-                        t('trade.transaction_successful')}
-                      {!currentStep && t('common.loading')}
-                    </>
-                  ) : !!walletAddress ? (
-                    t('trade.claim_available_rewards')
-                  ) : (
-                    t('common.connect_wallet')
-                  )}
-                </Button>
+          {hasRewards && (
+            <Button
+              onClick={claimRewards}
+              disabled={isLoading || !hasRewards}
+              expand
+            >
+              {isLoading ? (
+                <>
+                  <Spinner />
+                  {currentStep === 'building_transaction' &&
+                    t('trade.building_transaction')}
+                  {currentStep === 'sending_transaction' &&
+                    t('trade.sending_transaction')}
+                  {currentStep === 'waiting_for_confirmation' &&
+                    t('trade.waiting_for_confirmation')}
+                  {currentStep === 'transaction_successful' &&
+                    t('trade.transaction_successful')}
+                  {!currentStep && t('common.loading')}
+                </>
+              ) : !!walletAddress ? (
+                t('trade.claim_available_rewards')
+              ) : (
+                t('common.connect_wallet')
               )}
-            </>
-          )
-        )
-      }
+            </Button>
+          )}
+        </>
+      )}
 
       <div className="mt-4 text-sm text-muted-foreground">
         <p>

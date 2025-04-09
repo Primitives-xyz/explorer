@@ -25,7 +25,7 @@ export function FollowingTransactionsWrapper({ setOpenSwap }: Props) {
           <Paragraph>
             {t('following_transaction.create_a_profile_to_follow')}
           </Paragraph>
-          <Button onClick={() => setShowAuthFlow(true)}>Connect wallet</Button>
+          <Button onClick={() => setShowAuthFlow(true)}>Connect Wallet</Button>
         </CardContent>
       </Card>
     )

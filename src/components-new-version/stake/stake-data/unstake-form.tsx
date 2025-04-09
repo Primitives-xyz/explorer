@@ -5,15 +5,9 @@ import { useUnstake } from '../hooks/use-unstake'
 
 export function UnstakeForm() {
   const t = useTranslations()
-  const {
-    isLoggedIn,
-    sdkHasLoaded,
-    walletAddress,
-    primaryWallet,
-    setShowAuthFlow,
-  } = useCurrentWallet()
+  const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
 
-  const { unstake, isLoading: showUnstakeLoading } = useUnstake(primaryWallet, walletAddress)
+  const { unstake, isLoading: showUnstakeLoading } = useUnstake()
 
   if (!sdkHasLoaded) {
     return (
@@ -38,37 +32,29 @@ export function UnstakeForm() {
 
   return (
     <>
-      {
-        !sdkHasLoaded ? (
-          <Button
-            variant={ButtonVariant.OUTLINE}
-            expand
-            className="mt-4"
-          >
+      {!sdkHasLoaded ? (
+        <Button variant={ButtonVariant.OUTLINE} expand className="mt-4">
+          <Spinner />
+          <p>{t('trade.checking_wallet_status')}</p>
+        </Button>
+      ) : !isLoggedIn ? (
+        <Button
+          variant={ButtonVariant.OUTLINE}
+          expand
+          className="mt-4"
+          onClick={() => setShowAuthFlow(true)}
+        >
+          {t('common.connect_wallet')}
+        </Button>
+      ) : (
+        <Button expand disabled={showUnstakeLoading} onClick={unstake}>
+          {showUnstakeLoading ? (
             <Spinner />
-            <p>{t('trade.checking_wallet_status')}</p>
-          </Button>
-        ) : (
-          !isLoggedIn ? (
-            <Button
-              variant={ButtonVariant.OUTLINE}
-              expand
-              className="mt-4"
-              onClick={() => setShowAuthFlow(true)}
-            >
-              {t('common.connect_wallet')}
-            </Button>
           ) : (
-            <Button
-              expand
-              disabled={showUnstakeLoading}
-              onClick={unstake}
-            >
-              {showUnstakeLoading ? <Spinner /> : t('trade.unstake_and_claim_rewards')}
-            </Button >
-          )
-        )
-      }
+            t('trade.unstake_and_claim_rewards')
+          )}
+        </Button>
+      )}
     </>
   )
 }

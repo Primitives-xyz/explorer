@@ -34,21 +34,27 @@ export function TopDetails() {
           <p className="text-primary font-bold">How It Works</p>
           <ul className="text-sm space-y-2">
             <li className="flex gap-2 items-center">
-              <CheckCircle size={16} className="text-primary" />
+              <div>
+                <CheckCircle size={14} className="text-primary" />
+              </div>
               <span>
                 Stake once every 24 hours to increase your position and boost
                 your eligibility for rewards
               </span>
             </li>
             <li className="flex gap-2 items-center">
-              <CheckCircle size={16} className="text-primary" />
+              <div>
+                <CheckCircle size={14} className="text-primary" />
+              </div>
               <span>
                 Rewards adjust based on your participation level and overall
                 network activity
               </span>
             </li>
             <li className="flex gap-2 items-center">
-              <CheckCircle size={16} className="text-primary" />
+              <div>
+                <CheckCircle size={14} className="text-primary" />
+              </div>
               <span>
                 No fixed APY - incentives grow with ecosystem usage and your
                 stake amount

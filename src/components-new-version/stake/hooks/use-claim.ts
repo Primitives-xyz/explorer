@@ -1,18 +1,24 @@
 import { useStakeInfo } from '@/components-new-version/stake/hooks/use-stake-info'
 import { useToast } from '@/components-new-version/ui/toast/hooks/use-toast'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function useClaimRewards(primaryWallet: any, walletAddress: string, rewardsAmount: string) {
+interface Props {
+  rewardsAmount: string
+}
+
+export function useClaimRewards({ rewardsAmount }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<string | null>(null)
   const { toast } = useToast()
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
+  const { primaryWallet, walletAddress } = useCurrentWallet()
 
   const hasRewards = rewardsAmount && parseFloat(rewardsAmount) > 0
 
