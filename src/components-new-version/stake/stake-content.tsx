@@ -26,7 +26,7 @@ export function StakeContent() {
   )
 
   return (
-    <div className="flex w-full justify-between gap-4">
+    <div className="flex w-full justify-between gap-4 pb-10">
       <div className="w-1/2">
         <FilterTabs
           options={options}
