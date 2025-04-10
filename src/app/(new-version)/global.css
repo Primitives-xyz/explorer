@@ -74,6 +74,16 @@ input[type='number'] {
   );
 }
 
+.fade-out-text-small {
+  mask-image: linear-gradient(
+    to left,
+    transparent 0%,
+    white 5%,
+    white 95%,
+    transparent 100%
+  );
+}
+
 kbd {
   @apply bg-muted text-muted-foreground rounded-sm px-1 py-0.5;
 }

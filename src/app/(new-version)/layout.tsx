@@ -1,4 +1,4 @@
-import { Header } from '@/components-new-version/common/header'
+import { ActivityTape } from '@/components-new-version/activity-tape/components/activity-tape'
 import { LeftSideMenu } from '@/components-new-version/common/left-side-menu/left-side-menu'
 import { WalletProvider } from '@/components-new-version/common/wallet-provider'
 import { Onboarding } from '@/components-new-version/onboarding/components/onboarding'
@@ -23,7 +23,7 @@ export default async function NewVersionLayout({
         <Onboarding />
         <div className="fixed inset-0 z-0 background-gradient" />
         <div className="relative min-h-screen">
-          <Header />
+          <ActivityTape />
           <main className="w-full flex justify-between pt-topbar">
             <LeftSideMenu />
             <div className="flex-1 flex justify-between pt-5">{children}</div>
