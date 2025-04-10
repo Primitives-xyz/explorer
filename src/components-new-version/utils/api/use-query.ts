@@ -17,6 +17,7 @@ interface UseQueryProps {
   config?: SWRConfiguration
   toBackend?: boolean
   bypassCache?: boolean
+  headers?: Record<string, string>
 }
 
 export function useQuery<ResponseType = unknown, Error = IError>({
@@ -27,6 +28,7 @@ export function useQuery<ResponseType = unknown, Error = IError>({
   config,
   toBackend = true,
   bypassCache,
+  headers,
 }: UseQueryProps) {
   const authToken = getAuthToken()
   const shouldFetch = !!_endpoint && !skip
@@ -51,6 +53,7 @@ export function useQuery<ResponseType = unknown, Error = IError>({
         toBackend,
         bypassCache,
         jwt: authToken,
+        headers,
       }),
     config
   )

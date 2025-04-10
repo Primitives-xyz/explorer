@@ -237,7 +237,7 @@ export function SwapTransactionsView({
           transaction={transaction}
           sourceWallet={sourceWallet}
           profiles={profiles}
-          withCopyTradeButton
+          displayTradeButton
         >
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="rounded-md">

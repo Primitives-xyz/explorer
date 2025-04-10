@@ -6,7 +6,6 @@ import { FilterTabs } from '@/components-new-version/ui'
 import { useState } from 'react'
 
 interface TradeLeftContentProps {
-  mint: string
   setTokenMint: (value: string) => void
 }
 
@@ -15,10 +14,7 @@ export enum FilterType {
   PERPETUAL = 'perpetual',
 }
 
-export function TradeLeftContent({
-  mint,
-  setTokenMint,
-}: TradeLeftContentProps) {
+export function TradeLeftContent({ setTokenMint }: TradeLeftContentProps) {
   const [selectedType, setSelectedType] = useState<FilterType>(FilterType.SWAP)
 
   const options = [
@@ -34,9 +30,7 @@ export function TradeLeftContent({
         onSelect={setSelectedType}
       />
 
-      {selectedType === FilterType.SWAP && (
-        <Swap mint={mint} setTokenMint={setTokenMint} />
-      )}
+      {selectedType === FilterType.SWAP && <Swap setTokenMint={setTokenMint} />}
       {selectedType === FilterType.PERPETUAL && <Perpetual />}
     </div>
   )

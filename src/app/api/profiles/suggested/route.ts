@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
       endpoint: `profiles/suggested/${walletAddress}`,
       method: FetchMethod.GET,
     })
-    console.log('response', response)
+
     if (response.error) {
       return NextResponse.json({ error: response.error }, { status: 500 })
     }

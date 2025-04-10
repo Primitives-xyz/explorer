@@ -2,7 +2,7 @@ import { IGetSocialResponse } from '@/components-new-version/models/profiles.mod
 import { useQuery } from '@/components-new-version/utils/api'
 
 interface Props {
-  username: string
+  username?: string
 }
 
 export function useGetFollowing({ username }: Props) {

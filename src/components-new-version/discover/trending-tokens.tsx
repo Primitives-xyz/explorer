@@ -1,14 +1,14 @@
 'use client'
 
 import { DataTable } from '@/components-new-version/common/table/data-table'
-import { useTrendingTokens } from '@/components-new-version/discover/hooks/use-trending-tokens'
-import { ITrendingToken } from '@/components-new-version/models/token.models'
 import { Button, ButtonVariant } from '@/components-new-version/ui'
 import { route } from '@/components-new-version/utils/route'
 import { cn, formatNumber } from '@/components-new-version/utils/utils'
 import { Column, ColumnDef } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import Image from 'next/image'
+import { ITrendingToken } from '../birdeye/birdeye-tokens-trending.models'
+import { useGetTrendingTokens } from '../birdeye/hooks/use-get-trending-tokens'
 
 interface SortableHeaderProps {
   label: string
@@ -31,7 +31,7 @@ function SortableHeader({ label, column }: SortableHeaderProps) {
 }
 
 export function TrendingTokens() {
-  const { tokens, loading } = useTrendingTokens()
+  const { tokens, loading } = useGetTrendingTokens()
 
   const columns: ColumnDef<ITrendingToken>[] = [
     {

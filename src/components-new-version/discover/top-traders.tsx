@@ -1,11 +1,6 @@
 'use client'
 
 import { DataTable } from '@/components-new-version/common/table/data-table'
-import {
-  TimeFrame,
-  useTopTraders,
-} from '@/components-new-version/discover/hooks/use-top-traders'
-import { ITopTraders } from '@/components-new-version/models/token.models'
 import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
 import { route } from '@/components-new-version/utils/route'
 import {
@@ -15,6 +10,8 @@ import {
 } from '@/components-new-version/utils/utils'
 import { Column, ColumnDef } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp } from 'lucide-react'
+import { ITopTrader, TimeFrame } from '../birdeye/birdeye-top-traders.models'
+import { useGetTopTraders } from '../birdeye/hooks/use-get-top-traders'
 
 interface SortableHeaderProps {
   label: string
@@ -41,9 +38,11 @@ interface Props {
 }
 
 export function TopTraders({ timeFrame }: Props) {
-  const { traders, loading } = useTopTraders({ timeFrame })
+  const { traders, loading } = useGetTopTraders({
+    timeFrame,
+  })
 
-  const columns: ColumnDef<ITopTraders>[] = [
+  const columns: ColumnDef<ITopTrader>[] = [
     {
       id: 'trade_count',
       header: 'Trader',

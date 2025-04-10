@@ -7,6 +7,6 @@ export enum EOnboardingSteps {
 
 export enum EFollowUsersType {
   TOP_TRADERS = 'TOP_TRADERS',
-  // FRIENDS = 'FRIENDS',
+  FRIENDS = 'FRIENDS',
   RECENT = 'RECENT',
 }

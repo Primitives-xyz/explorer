@@ -51,36 +51,45 @@ export function RightSideDiscover() {
                       'border-b border-card-border'
                   )}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 w-full">
                     <Avatar size={32} username={elem.profile.username} />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col items-start w-2/3">
+                      <Button
+                        variant={ButtonVariant.LINK}
+                        href={route('entity', { id: elem.profile.username })}
+                        className="px-0 !py-2 w-full flex items-start justify-start"
+                      >
+                        <p className="truncate text-foreground">
+                          {isSame
+                            ? `@${abbreviateWalletAddress({
+                                address: elem.profile.username,
+                              })}`
+                            : `@${elem.profile.username}`}
+                        </p>
+                      </Button>
+
                       {!isSame && (
                         <Button
-                          variant={ButtonVariant.GHOST}
-                          href={route('entity', { id: elem.profile.username })}
-                          className="p-0 w-fit hover:bg-transparent"
+                          href={route('entity', { id: elem.wallet.address })}
+                          variant={ButtonVariant.BADGE}
+                          size={ButtonSize.SM}
                         >
-                          @{elem.profile.username}
+                          {abbreviateWalletAddress({
+                            address: elem.wallet.address,
+                          })}
                         </Button>
                       )}
-                      <Button
-                        href={route('entity', { id: elem.wallet.address })}
-                        variant={ButtonVariant.BADGE}
-                        size={ButtonSize.SM}
-                      >
-                        {abbreviateWalletAddress({
-                          address: elem.wallet.address,
-                        })}
-                      </Button>
                     </div>
                   </div>
-                  {!!mainProfile?.username && (
-                    <FollowButton
-                      size={ButtonSize.SM}
-                      followerUsername={mainProfile.username}
-                      followeeUsername={elem.profile.username}
-                    />
-                  )}
+                  <div className="w-[50px]">
+                    {!!mainProfile?.username && (
+                      <FollowButton
+                        size={ButtonSize.SM}
+                        followerUsername={mainProfile.username}
+                        followeeUsername={elem.profile.username}
+                      />
+                    )}
+                  </div>
                 </span>
               )
             })}

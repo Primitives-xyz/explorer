@@ -1,6 +1,5 @@
 'use client'
 
-import { TimeFrame } from '@/components-new-version/discover/hooks/use-top-traders'
 import {
   FilterTabs,
   Select,
@@ -9,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components-new-version/ui'
+import { TimeFrame } from '../birdeye/birdeye-top-traders.models'
 
 export enum DiscoverFilterType {
   TRENDING_TOKENS = 'trending-tokens',

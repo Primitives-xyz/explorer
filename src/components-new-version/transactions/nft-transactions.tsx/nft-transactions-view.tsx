@@ -6,7 +6,6 @@ import {
   Transaction,
 } from '@/components-new-version/models/helius.models'
 import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
-import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { TransactionsHeader } from '@/components-new-version/transactions/transactions-header'
 import {
   Badge,
@@ -61,10 +60,6 @@ export function NftTransactionsView({ transaction, sourceWallet }: Props) {
 
   const [nftMint, setNftMint] = useState<string | null>(null)
   const [_detectionMethod, setDetectionMethod] = useState<string>('')
-  const { data: nftInfo, error } = useTokenInfo(nftMint)
-
-  console.log('nftInfo', nftInfo)
-  console.log('error', nftMint)
 
   const { instructions, transfers, compressedNFTMintEvent } = useMemo(() => {
     return {

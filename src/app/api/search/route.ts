@@ -1,10 +1,10 @@
+import { fetchTapestry } from '@/components-new-version/tapestry/api/fetch-tapestry'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('query')
-  const apiKey = process.env.TAPESTRY_API_KEY
-  const baseUrl = process.env.TAPESTRY_URL
+  const pageSize = searchParams.get('pageSize')
 
   if (!query) {
     return NextResponse.json(
@@ -14,21 +14,19 @@ export async function GET(request: Request) {
   }
 
   try {
-    const url = `${baseUrl}/search/profiles?query=${query}&apiKey=${apiKey}&includeExternalProfiles=true`
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetchTapestry({
+      endpoint: 'search/profiles',
+      queryParams: {
+        query,
+        includeExternalProfiles: 'true',
+        pageSize: pageSize || 10,
       },
     })
 
-    if (!response.ok) {
-      throw new Error(`API responded with status: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return NextResponse.json(data)
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Profile search error:', error)
+
     return NextResponse.json(
       { error: 'Failed to search profiles' },
       { status: 500 }

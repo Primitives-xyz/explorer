@@ -82,6 +82,8 @@ export const ClaimForm = () => {
 
       // Get signer and sign+send transaction
       const signer = await primaryWallet.getSigner()
+
+      console.log('signer', { signer })
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
       // Simulate transaction first (optional but good for debugging)

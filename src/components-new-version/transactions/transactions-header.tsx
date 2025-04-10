@@ -8,6 +8,7 @@ import {
   IGetProfilesResponse,
   IProfile,
 } from '@/components-new-version/models/profiles.models'
+import { ITransactionWithProfile } from '@/components-new-version/transactions/hooks/use-following-transactions'
 import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
@@ -18,25 +19,34 @@ import {
 } from '@/components-new-version/utils/utils'
 import { ArrowRightLeft } from 'lucide-react'
 import { ReactNode } from 'react'
+import { useSwapStore } from '../swap/stores/use-swap-store'
 
 interface Props {
-  transaction: Transaction | ExtendedTransaction
+  transaction: ITransactionWithProfile | ExtendedTransaction
   sourceWallet: string
   profiles?: IGetProfilesResponse
-  withCopyTradeButton?: boolean
   children?: ReactNode
+  displayTradeButton?: boolean
 }
 
 export function TransactionsHeader({
   transaction,
   sourceWallet,
   profiles,
-  withCopyTradeButton,
   children,
+  displayTradeButton,
 }: Props) {
-  const sourceProfile = profiles?.profiles.find(
-    (p) => p.namespace.name === EXPLORER_NAMESPACE
-  )?.profile
+  const { setOpen } = useSwapStore()
+
+  let profile = null
+
+  if ('profile' in transaction && transaction.profile) {
+    profile = transaction.profile
+  } else {
+    profile = profiles?.profiles.find(
+      (p) => p.namespace.name === EXPLORER_NAMESPACE
+    )?.profile
+  }
 
   return (
     <div className="flex flex-row gap-2 items-start">
@@ -44,14 +54,15 @@ export function TransactionsHeader({
         <Button
           variant={ButtonVariant.GHOST}
           href={route('entity', {
-            id: sourceProfile?.username || sourceWallet,
+            id: profile?.username || sourceWallet,
           })}
           className="p-0 hover:bg-transparent"
         >
           <Avatar
-            username={sourceProfile?.username || sourceWallet}
+            username={profile?.username || sourceWallet}
             size={40}
-            imageUrl={sourceProfile?.image}
+            className="w-10"
+            imageUrl={profile?.image}
           />
         </Button>
       </div>
@@ -59,10 +70,7 @@ export function TransactionsHeader({
       <div className="flex flex-col space-y-2 w-full">
         <div className="flex items-center gap-2 justify-between w-full">
           <div className="flex items-center gap-2">
-            <Username
-              sourceProfile={sourceProfile}
-              sourceWallet={sourceWallet}
-            />
+            <Username sourceProfile={profile} sourceWallet={sourceWallet} />
 
             <Button
               href={route('entity', { id: transaction.signature })}
@@ -77,10 +85,13 @@ export function TransactionsHeader({
             <TimeAgo transaction={transaction} />
           </div>
 
-          {withCopyTradeButton && (
-            <Button variant={ButtonVariant.OUTLINE} disabled>
-              <ArrowRightLeft />
-              Copy Trade
+          {displayTradeButton && (
+            <Button
+              variant={ButtonVariant.OUTLINE}
+              onClick={() => setOpen(true)}
+            >
+              <ArrowRightLeft size={16} />
+              Trade
             </Button>
           )}
         </div>

@@ -155,26 +155,6 @@ export interface TokenPortfolioResponse {
   }
 }
 
-export interface ITrendingToken {
-  address: string
-  symbol: string
-  name: string
-  price: number
-  volume24hUSD: number
-  liquidity: number
-  logoURI?: string
-  decimals: number
-  rank: number
-}
-
-export interface ITopTraders {
-  network: string
-  address: string
-  pnl: number
-  trade_count: number
-  volume: number
-}
-
 export interface ITokenBalanceResponse {
   balance: {
     uiAmountString: string

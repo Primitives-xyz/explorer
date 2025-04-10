@@ -8,6 +8,10 @@ import {
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 
+export type ITransactionWithProfile = Transaction & {
+  profile?: IProfile
+}
+
 async function fetchWalletTransactions(
   walletId: string,
   type?: FilterType
@@ -40,15 +44,14 @@ async function fetchWalletTransactions(
   }
 }
 
-export const useFollowingTransactions = ({
-  following,
-  kolData,
-}: {
+interface Props {
   following?: IGetSocialResponse
   kolData?: IGetProfilesResponse
-}) => {
+}
+
+export const useFollowingTransactions = ({ following, kolData }: Props) => {
   const [aggregatedTransactions, setAggregatedTransactions] = useState<
-    Transaction[]
+    ITransactionWithProfile[]
   >([])
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
   const [loadedWallets, setLoadedWallets] = useState<Set<string>>(new Set())
@@ -57,46 +60,59 @@ export const useFollowingTransactions = ({
   const { walletAddress } = useCurrentWallet()
 
   useEffect(() => {
-    setLoadedWallets(new Set())
+    let isCancelled = false
 
-    const fetchAllTransactions = async (data: IGetSocialResponse) => {
+    const fetchAllTransactions = async (data: { profiles: IProfile[] }) => {
       setIsLoadingTransactions(true)
-      setAggregatedTransactions([]) // Clear current transactions while loading
+      setAggregatedTransactions([])
+      setLoadedWallets(new Set())
 
       try {
-        const walletIds = data.profiles
-          .map((profile) => profile.wallet?.id)
-          .filter((id): id is string => !!id)
+        const walletIdToProfileMap = new Map<string, IProfile>()
 
-        const transactionsByWallet: { [key: string]: Transaction[] } = {}
+        data.profiles.forEach((profile) => {
+          if (profile.wallet?.id) {
+            walletIdToProfileMap.set(profile.wallet.id, profile)
+          }
+        })
 
-        // Fetch transactions for all wallets concurrently
-        await Promise.all(
+        const walletIds = Array.from(walletIdToProfileMap.keys())
+
+        const results = await Promise.all(
           walletIds.map(async (walletId) => {
+            const profile = walletIdToProfileMap.get(walletId)
             const transactions = await fetchWalletTransactions(
               walletId,
               selectedType
             )
 
-            transactionsByWallet[walletId] = transactions
-            setLoadedWallets((prev) => new Set([...Array.from(prev), walletId]))
+            if (isCancelled) return []
 
-            // Update UI with current progress
-            const currentTransactions = Object.values(transactionsByWallet)
-              .flat()
-              .sort(
-                (a, b) =>
-                  new Date(b.timestamp).getTime() -
-                  new Date(a.timestamp).getTime()
-              )
+            setLoadedWallets((prev) => new Set([...prev, walletId]))
 
-            setAggregatedTransactions(currentTransactions)
+            return transactions.map((tx) => ({
+              ...tx,
+              profile,
+            }))
           })
         )
+
+        if (isCancelled) return
+
+        const allTransactions = results
+          .flat()
+          .sort(
+            (a, b) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          )
+
+        setAggregatedTransactions(allTransactions)
       } catch (error) {
         console.error('Error aggregating transactions:', error)
       } finally {
-        setIsLoadingTransactions(false)
+        if (!isCancelled) {
+          setIsLoadingTransactions(false)
+        }
       }
     }
 
@@ -131,6 +147,10 @@ export const useFollowingTransactions = ({
       }
 
       fetchAllTransactions(kolTransactionInput)
+    }
+
+    return () => {
+      isCancelled = true
     }
   }, [following, kolData, walletAddress, selectedType])
 

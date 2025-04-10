@@ -61,6 +61,7 @@ interface FetchParams<InputType> {
   revalidate?: number
   tags?: string[]
   credentials?: RequestCredentials
+  headers?: Record<string, string>
 }
 
 export const fetchWrapper = async <
@@ -77,6 +78,7 @@ export const fetchWrapper = async <
   revalidate,
   tags,
   credentials,
+  headers: _headers,
 }: FetchParams<InputType>): Promise<ResponseType> => {
   if (queryParams) {
     endpoint = getUrlWithQueryParameters<Record<string, string | number>>(
@@ -90,6 +92,7 @@ export const fetchWrapper = async <
       'Content-Type': 'application/json',
     },
     ...(jwt && { Authorization: `Bearer ${jwt}` }),
+    ..._headers,
   }
 
   const baseBeUrl = process.env.NEXT_PUBLIC_SERVER_URL || '/api'

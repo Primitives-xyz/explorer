@@ -1,4 +1,4 @@
-import { VertigoService } from '@/services/vertigo'
+import { createConnection, launchPool } from '@/lib/vertigo'
 import {
   ActionGetResponse,
   ActionPostResponse,
@@ -128,11 +128,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Set up the Vertigo service
-    const connection = await VertigoService.createConnection()
-    const vertigoService = new VertigoService(connection)
+    const connection = await createConnection()
 
     // Launch the pool
-    const result = await vertigoService.launchPool({
+    const result = await launchPool(connection, {
       tokenName,
       tokenSymbol,
       poolParams: {

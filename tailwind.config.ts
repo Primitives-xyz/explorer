@@ -168,6 +168,14 @@ module.exports = {
             transform: 'translateY(-25%)',
           },
         },
+        'infinite-scroll-content': {
+          '0%': {
+            transform: 'translate3d(0, 0, 0)',
+          },
+          '100%': {
+            transform: 'translate3d(-100%, 0, 0)',
+          },
+        },
       },
       animation: {
         'slide-left': 'slide-left 0.5s ease-out',
@@ -176,6 +184,7 @@ module.exports = {
         scan: 'scan 1.5s ease-in-out infinite',
         blink: 'blink 1s ease-in-out infinite',
         bounce: 'bounce 0.8s ease-in-out infinite',
+        'infinite-scroll-content': 'infinite-scroll-content 7s linear infinite',
       },
     },
   },

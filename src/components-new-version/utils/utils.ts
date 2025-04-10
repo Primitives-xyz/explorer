@@ -101,6 +101,8 @@ export const abbreviateWalletAddress = ({
 }
 
 export function formatTimeAgo(date: Date): string {
+  console.log('formatTimeAgo', date)
+
   const now = new Date()
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 

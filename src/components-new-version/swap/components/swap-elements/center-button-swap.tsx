@@ -38,7 +38,7 @@ export function CenterButtonSwap({
           size={ButtonSize.LG}
           onClick={() => setShowAuthFlow(true)}
         >
-          Connect wallet
+          Connect Wallet
         </Button>
       ) : (
         <Button
