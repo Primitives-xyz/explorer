@@ -1,26 +1,18 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { ChevronDown, CircleAlert, Loader2, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn, formatRawAmount } from "@/components-new-version/utils/utils"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useTokenBalance } from "@/hooks/use-token-balance"
+import { cn, formatRawAmount } from '@/components-new-version/utils/utils'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useTokenBalance } from '@/hooks/use-token-balance'
+import { CircleAlert, Loader2, X } from 'lucide-react'
+import { useState } from 'react'
 // import { useCurrentWallet } from "@/components/auth/hooks/use-current-wallet"
-import { SSE_MINT } from "@/components/trading/constants"
-import { useTokenInfo } from "@/hooks/use-token-info"
+import { useTokenInfo } from '@/hooks/use-token-info'
 // import { formatRawAmount } from "@/utils/format"
 // import { useWallet } from "@/components/auth/wallet-context"
-import { Connection } from "@solana/web3.js"
-import { VersionedTransaction } from "@solana/web3.js"
-import { BulkAccountLoader, DriftClient, initialize, User } from "@drift-labs/sdk"
-import { PublicKey } from "@solana/web3.js"
-import { BN } from "bn.js"
-import { getAssociatedTokenAddress } from "@solana/spl-token"
-import { useCurrentWallet } from "@/components-new-version/utils/use-current-wallet"
-import { isSolanaWallet } from '@dynamic-labs/solana'
-import { useInitializeDrift } from "@/components-new-version/trade/hooks/use-initialize-drift"
-// import { AnchorProvider } from "@coral-xyz/anchor"
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { getAssociatedTokenAddress } from '@solana/spl-token'
+import { PublicKey } from '@solana/web3.js'
 
 interface AddFundsModalProps {
   isOpen: boolean
@@ -39,19 +31,27 @@ export const getTokenAddress = (
   return getAssociatedTokenAddress(
     new PublicKey(mintAddress),
     new PublicKey(userPubKey)
-  );
-};
+  )
+}
 
-export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps) {
+export default function AddFundsModal({
+  isOpen,
+  setIsOpen,
+}: AddFundsModalProps) {
   const { primaryWallet, walletAddress } = useCurrentWallet()
-  const [collateralSource, setCollateralSource] = useState<string>("wallet")
-  const [selectedTab, setSelectedTab] = useState<string>("wallet")
-  const [selectedDepositToken, setSelectedDepositeToken] = useState<string>("So11111111111111111111111111111111111111112")
+  const [collateralSource, setCollateralSource] = useState<string>('wallet')
+  const [selectedTab, setSelectedTab] = useState<string>('wallet')
+  const [selectedDepositToken, setSelectedDepositeToken] = useState<string>(
+    'So11111111111111111111111111111111111111112'
+  )
   const { symbol, decimals, image } = useTokenInfo(selectedDepositToken)
-  const [selectedAccount, setSelectedAccount] = useState<string>("")
+  const [selectedAccount, setSelectedAccount] = useState<string>('')
   const [isChecked, setIsChecked] = useState(false)
-  const { balance, rawBalance, loading } = useTokenBalance(walletAddress, selectedDepositToken)
-  const [depositeAmount, setDepositeAmount] = useState<string>("")
+  const { balance, rawBalance, loading } = useTokenBalance(
+    walletAddress,
+    selectedDepositToken
+  )
+  const [depositeAmount, setDepositeAmount] = useState<string>('')
   const [inputError, setInputError] = useState<InputError | null>(null)
 
   const validateAmount = (value: string): boolean => {
@@ -111,21 +111,21 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
   const initAndDeposite = async () => {
     try {
       const res = await fetch('api/drift/initialize-drift', {
-        method: "POST",
+        method: 'POST',
         headers: {
           Accept: 'application/json',
         },
         body: JSON.stringify({
           walletAddy: walletAddress,
-          depositeTokenMint: selectedDepositToken
-        })
+          depositeTokenMint: selectedDepositToken,
+        }),
       })
 
       const data = await res.json()
 
       console.log('data:', data.initOrderAndDepositeCollateralTx)
     } catch (error) {
-      console.log("Error in fetching init and deposite collateral tx:", error)
+      console.log('Error in fetching init and deposite collateral tx:', error)
     }
   }
 
@@ -133,8 +133,8 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
     <div>
       <div
         className={cn(
-          "fixed inset-0 z-50 flex justify-start bg-black/50 transition-opacity duration-300",
-          isOpen ? "opacity-100" : "pointer-events-none opacity-0",
+          'fixed inset-0 z-50 flex justify-start bg-black/50 transition-opacity duration-300',
+          isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         )}
         onClick={(e) => {
           if (e.target === e.currentTarget) setIsOpen(false)
@@ -142,13 +142,18 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
       >
         <div
           className={cn(
-            "w-full max-w-md bg-gray-950 text-gray-300 shadow-xl transition-transform duration-300 ease-in-out",
-            isOpen ? "translate-x-0" : "-translate-x-full",
+            'w-full max-w-md bg-gray-950 text-gray-300 shadow-xl transition-transform duration-300 ease-in-out',
+            isOpen ? 'translate-x-0' : '-translate-x-full'
           )}
         >
           <div className="flex items-center justify-between border-b border-gray-800 p-4">
             <h2 className="text-2xl font-bold text-white">Add funds</h2>
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              className="text-gray-400 hover:text-white"
+            >
               <X className="h-6 w-6" />
             </Button>
           </div>
@@ -162,13 +167,21 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
                   <TabsList className="bg-[#1a1f2a]">
                     <TabsTrigger
                       value="wallet"
-                      className={`px-4 py-1.5 ${selectedTab === "wallet" ? "bg-[#3a4252] text-white" : "text-gray-400"}`}
+                      className={`px-4 py-1.5 ${
+                        selectedTab === 'wallet'
+                          ? 'bg-[#3a4252] text-white'
+                          : 'text-gray-400'
+                      }`}
                     >
                       Wallet
                     </TabsTrigger>
                     <TabsTrigger
                       value="account"
-                      className={`px-4 py-1.5 ${selectedTab === "account" ? "bg-[#3a4252] text-white" : "text-gray-400"}`}
+                      className={`px-4 py-1.5 ${
+                        selectedTab === 'account'
+                          ? 'bg-[#3a4252] text-white'
+                          : 'text-gray-400'
+                      }`}
                     >
                       Account
                     </TabsTrigger>
@@ -198,7 +211,12 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
                           viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </div>
                     </div>
@@ -207,12 +225,7 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
               </Tabs>
             </div>
 
-            {
-              collateralSource == "account" && (
-                <div>
-                </div>
-              )
-            }
+            {collateralSource == 'account' && <div></div>}
 
             {/* Transfer type and Amount */}
             <div className="space-y-2">
@@ -245,8 +258,9 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
                       setDepositeAmount(val)
                       if (Number.parseFloat(balance) < Number.parseFloat(val)) {
                         setInputError({
-                          title: "Invalid deposit amount",
-                          content: "You can't deposit more than your available account balance"
+                          title: 'Invalid deposit amount',
+                          content:
+                            "You can't deposit more than your available account balance",
                         })
                       } else {
                         setInputError(null)
@@ -268,17 +282,25 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
             <div className="flex items-center justify-between">
               <p className="text-gray-400">Available balance</p>
               <div className="flex items-center gap-4">
-                {
-                  loading ? (
-                    <Loader2 className="animate-spin h-6 w-6" />
-                  ) : (
-                    <span>{balance}</span>
-                  )
-                }
-                <Button variant="outline" size="sm" className="h-8 rounded-md bg-gray-800 hover:bg-gray-700" onClick={handleHalfAmount}>
+                {loading ? (
+                  <Loader2 className="animate-spin h-6 w-6" />
+                ) : (
+                  <span>{balance}</span>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 rounded-md bg-gray-800 hover:bg-gray-700"
+                  onClick={handleHalfAmount}
+                >
                   50%
                 </Button>
-                <Button variant="outline" size="sm" className="h-8 rounded-md bg-gray-800 hover:bg-gray-700" onClick={handleMaxAmount}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 rounded-md bg-gray-800 hover:bg-gray-700"
+                  onClick={handleMaxAmount}
+                >
                   Max
                 </Button>
               </div>
@@ -301,7 +323,9 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
                   <CircleAlert className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-yellow-500">Creating an account costs 0.0314 SOL</p>
+                  <p className="text-yellow-500">
+                    Creating an account costs 0.0314 SOL
+                  </p>
                 </div>
                 <div className="ml-auto">
                   <CircleAlert className="h-5 w-5 text-gray-600" />
@@ -317,8 +341,9 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
                   className="mt-1 border-gray-600"
                 />
                 <label htmlFor="terms" className="text-sm text-gray-400">
-                  I understand that dynamic fees are in place as a safe guard and that rent can be reclaimed upon
-                  account deletion, other than the 0.0001 SOL New Account Fee.
+                  I understand that dynamic fees are in place as a safe guard
+                  and that rent can be reclaimed upon account deletion, other
+                  than the 0.0001 SOL New Account Fee.
                 </label>
               </div>
             </div>
@@ -326,18 +351,32 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
             {/* Asset Balance */}
             <div className="flex items-center justify-between">
               <p className="text-gray-400">Asset Balance</p>
-              <span>{(decimals && depositeAmount.length) ? formatRawAmount(BigInt(Math.ceil((Number.parseFloat(balance) - Number.parseFloat(depositeAmount)) * Math.pow(10, decimals))), BigInt(decimals)) : "0"}</span>
+              <span>
+                {decimals && depositeAmount.length
+                  ? formatRawAmount(
+                      BigInt(
+                        Math.ceil(
+                          (Number.parseFloat(balance) -
+                            Number.parseFloat(depositeAmount)) *
+                            Math.pow(10, decimals)
+                        )
+                      ),
+                      BigInt(decimals)
+                    )
+                  : '0'}
+              </span>
             </div>
 
             {/* Add button */}
             <button
               className={cn(
-                "w-full py-2 text-[16px] rounded-[20px] font-bold",
-                !isChecked && "bg-gray-700 cursor-not-allowed",
-                isChecked && "bg-[#97EF83] hover:bg-[#64e947] text-[#292C31]  cursor-pointer"
+                'w-full py-2 text-[16px] rounded-[20px] font-bold',
+                !isChecked && 'bg-gray-700 cursor-not-allowed',
+                isChecked &&
+                  'bg-[#97EF83] hover:bg-[#64e947] text-[#292C31]  cursor-pointer'
               )}
               onClick={initAndDeposite}
-            // disabled={!isChecked || !depositeAmount || !(inputError === null)}
+              // disabled={!isChecked || !depositeAmount || !(inputError === null)}
             >
               ADD
             </button>
@@ -347,4 +386,3 @@ export default function AddFundsModal({ isOpen, setIsOpen }: AddFundsModalProps)
     </div>
   )
 }
-

@@ -21,6 +21,12 @@ const nextConfig = {
   },
   experimental: {
     webpackMemoryOptimizations: true,
+    turbo: {
+      resolveAlias: {
+        '@drift/common': '../drift-common/common-ts/lib',
+        '@drift-labs/react': '../drift-common/react/lib',
+      },
+    },
   },
 }
 

@@ -26,7 +26,10 @@
       "@components/*": ["src/components/*"],
       "@app/*": ["app/*"],
       "@locales/*": ["locales/*"],
-      "@coral-xyz/anchor": ["./node_modules/@coral-xyz/anchor"]
+      "@coral-xyz/anchor": ["./node_modules/@coral-xyz/anchor"],
+      "@drift/common": ["./drift-common/common-ts/lib"],
+      "@drift-labs/sdk": ["./drift-common/protocol/sdk"],
+      "@drift-labs/react": ["./drift-common/react/lib"]
     },
     "types": ["jest", "node"]
   },

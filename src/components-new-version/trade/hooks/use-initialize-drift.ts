@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { useCurrentWallet } from "@/components-new-version/utils/use-current-wallet";
-import { isSolanaWallet } from "@dynamic-labs/solana";
-import { DriftClient, initialize } from '@drift-labs/sdk'
-import { Connection } from '@solana/web3.js'
-import { PublicKey } from "@solana/web3.js";
+import { useCommonDriftStore } from '@drift-labs/react'
+import { DriftClient } from '@drift-labs/sdk'
+import { isSolanaWallet } from '@dynamic-labs/solana'
+import { Connection, PublicKey } from '@solana/web3.js'
+import { useEffect, useState } from 'react'
 
 export function useInitializeDrift(primaryWallet: any, walletAddress: string) {
-  const [driftClient, setDriftClient] = useState<DriftClient>()
+  const { driftClient } = useCommonDriftStore()
   const [connection, setConnection] = useState<Connection>()
 
   useEffect(() => {
@@ -43,14 +42,13 @@ export function useInitializeDrift(primaryWallet: any, walletAddress: string) {
           signAllTransactions: signer.signAllTransactions,
         },
         env: 'mainnet-beta',
-      });
-      setDriftClient(driftClient)
+      })
     }
 
     initializeClient()
   }, [primaryWallet])
 
   return {
-    driftClient
+    driftClient,
   }
 }
