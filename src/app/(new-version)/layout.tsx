@@ -20,7 +20,7 @@ export default async function NewVersionLayout({
   return (
     <WalletProvider>
       <div className={rethinkSans.className}>
-        <Onboarding />
+        {/* <Onboarding /> */}
         <div className="fixed inset-0 z-0 background-gradient" />
         <div className="relative min-h-screen">
           <Header />
