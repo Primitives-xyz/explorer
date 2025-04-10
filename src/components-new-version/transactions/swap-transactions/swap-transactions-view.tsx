@@ -33,7 +33,6 @@ interface Props {
   sourceWallet: string
   fromMint?: string
   toMint?: string
-  setOpenSwap?: (open: boolean) => void
 }
 
 export function SwapTransactionsView({
@@ -41,7 +40,6 @@ export function SwapTransactionsView({
   sourceWallet,
   fromMint,
   toMint,
-  setOpenSwap,
 }: Props) {
   const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
   const [toToken, setToToken] = useState<TokenDisplay | null>(null)
@@ -239,7 +237,7 @@ export function SwapTransactionsView({
           transaction={transaction}
           sourceWallet={sourceWallet}
           profiles={profiles}
-          setOpenSwap={setOpenSwap}
+          displayTradeButton
         >
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="rounded-md">
