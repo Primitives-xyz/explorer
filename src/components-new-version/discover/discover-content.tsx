@@ -4,16 +4,15 @@ import {
   DiscoverFilterType,
   FilterButtonDiscover,
 } from '@/components-new-version/discover/filters-button-discover'
-import { TimeFrame } from '@/components-new-version/discover/hooks/use-top-traders'
 import { TopTraders } from '@/components-new-version/discover/top-traders'
 import { TrendingTokens } from '@/components-new-version/discover/trending-tokens'
 import { useState } from 'react'
+import { TimeFrame } from '../birdeye/birdeye-top-traders.models'
 
 export function DiscoverContent() {
   const [selectedType, setSelectedType] = useState<DiscoverFilterType>(
     DiscoverFilterType.TRENDING_TOKENS
   )
-
   const [timeFrame, setTimeFrame] = useState<TimeFrame>(TimeFrame.TODAY)
 
   return (

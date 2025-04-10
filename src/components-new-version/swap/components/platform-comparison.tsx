@@ -2,7 +2,7 @@
 
 import { QuoteResponse } from '@/components-new-version/models/jupiter.models'
 import { PlatformLogo } from '@/components-new-version/swap/components/platform-logo'
-import { formatLargeNumber } from '@/components-new-version/utils/format'
+import { formatLargeNumber } from '@/components-new-version/utils/utils'
 import { useMemo } from 'react'
 
 interface PlatformComparisonProps {

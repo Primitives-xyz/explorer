@@ -9,13 +9,14 @@ import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-toke
 import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
+import { route } from '@/components-new-version/utils/route'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import {
   formatLargeNumber,
   formatRawAmount,
   formatUsdValue,
-} from '@/components-new-version/utils/format'
-import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { useRouter, useSearchParams } from 'next/navigation'
+} from '@/components-new-version/utils/utils'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export enum SwapMode {
@@ -23,16 +24,42 @@ export enum SwapMode {
   EXACT_OUT = 'ExactOut',
 }
 
-interface SwapProps {
-  mint: string
-  setTokenMint: (value: string) => void
+const validateAmount = (value: string, decimals: number = 6): boolean => {
+  if (value === '') return true
+
+  // Check if the value is a valid number
+  const numericValue = Number(value)
+  if (isNaN(numericValue)) {
+    return false
+  }
+
+  // Check if the value is positive
+  if (numericValue <= 0) {
+    return false
+  }
+
+  // Check if the value has too many decimal places
+  const decimalParts = value.split('.')
+  if (
+    decimalParts.length > 1 &&
+    decimalParts[1]?.length &&
+    decimalParts[1]?.length > decimals
+  ) {
+    return false
+  }
+
+  return true
 }
 
-export function Swap({ mint, setTokenMint }: SwapProps) {
+interface SwapProps {
+  setTokenMint?: (value: string) => void
+}
+
+export function Swap({ setTokenMint }: SwapProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
-  const [outputTokenMint, setoutputTokenMint] = useState<string>(SSE_MINT)
+  const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
   const [inAmount, setInAmount] = useState<string>('')
   const [outAmount, setOutAmount] = useState<string>('')
   const [swapMode, setSwapMode] = useState<SwapMode>(SwapMode.EXACT_IN)
@@ -41,6 +68,9 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     useState<boolean>(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] =
     useState<boolean>(false)
+
+  const pathname = usePathname()
+
   const {
     symbol: inputTokenSymbol,
     decimals: inputTokenDecimals,
@@ -79,16 +109,11 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
 
   const {
     loading,
-    error,
-    txSignature,
     quoteResponse,
     expectedOutput,
-    priceImpact,
-    isFullyConfirmed,
     isQuoteRefreshing,
     sseFeeAmount,
     handleSwap,
-    refreshQuote,
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
@@ -201,21 +226,23 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     name: string
     decimals: number
   }) => {
-    setoutputTokenMint(token.address)
+    setOutputTokenMint(token.address)
   }
 
   const updateTokensInURL = useCallback(
     (input: string, output: string) => {
+      if (pathname !== '/new-trade') return
+
       const params = new URLSearchParams(searchParams.toString())
 
       params.set('inputMint', input)
       params.set('outputMint', output)
       params.set('mode', 'swap')
 
-      router.push(`/new-trade?${params.toString()}`, { scroll: false })
+      router.push(route('newTrade', params.toString() as string))
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [searchParams]
+
+    [router, searchParams, pathname]
   )
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,7 +286,7 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
     const tempTokenMint = inputTokenMint
 
     setInputTokenMint(outputTokenMint)
-    setoutputTokenMint(tempTokenMint)
+    setOutputTokenMint(tempTokenMint)
   }
 
   useEffect(() => {
@@ -280,7 +307,9 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
   }, [expectedOutput])
 
   useEffect(() => {
-    setTokenMint(outputTokenMint)
+    if (setTokenMint) {
+      setTokenMint(outputTokenMint)
+    }
   }, [outputTokenMint, setTokenMint])
 
   useEffect(() => {
@@ -354,31 +383,4 @@ export function Swap({ mint, setTokenMint }: SwapProps) {
       )}
     </div>
   )
-}
-
-const validateAmount = (value: string, decimals: number = 6): boolean => {
-  if (value === '') return true
-
-  // Check if the value is a valid number
-  const numericValue = Number(value)
-  if (isNaN(numericValue)) {
-    return false
-  }
-
-  // Check if the value is positive
-  if (numericValue <= 0) {
-    return false
-  }
-
-  // Check if the value has too many decimal places
-  const decimalParts = value.split('.')
-  if (
-    decimalParts.length > 1 &&
-    decimalParts[1]?.length &&
-    decimalParts[1]?.length > decimals
-  ) {
-    return false
-  }
-
-  return true
 }

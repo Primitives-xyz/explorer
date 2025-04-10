@@ -1,12 +1,11 @@
-'use client'
-
 const routes = {
   home: () => '/home',
   discover: () => '/discover',
   entity: ({ id }: { id: string }) => `/entity/${id}`,
   designSystem: () => '/design-system',
-  newTrade: () => '/new-trade',
+  newTrade: (query?: string) => `/new-trade${query ? `?${query}` : ''}`,
   tokens: () => '/tokens',
+  stake: () => '/stake',
 }
 
 export function route<T extends keyof typeof routes>(

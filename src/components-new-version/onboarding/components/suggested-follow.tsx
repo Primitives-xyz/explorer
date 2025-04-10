@@ -1,6 +1,9 @@
 'use client'
 
-import { IProfile } from '@/components-new-version/models/profiles.models'
+import {
+  IProfile,
+  ISuggestedProfile,
+} from '@/components-new-version/models/profiles.models'
 import { useGetRecentProfiles } from '@/components-new-version/tapestry/hooks/use-get-recent-profiles'
 import {
   Button,
@@ -10,11 +13,18 @@ import {
   Spinner,
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGetLeaderboard } from '../../tapestry/hooks/use-get-leaderboard'
 import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
+import { useGetSuggestedProfiles } from '../hooks/use-get-suggested-profiles'
 import { EFollowUsersType, EOnboardingSteps } from '../onboarding.models'
 import { FollowUserEntry } from './follow-user-entry'
+
+const options = [
+  { label: 'Top Traders', value: EFollowUsersType.TOP_TRADERS },
+  { label: 'Recently Created', value: EFollowUsersType.RECENT },
+  // { label: 'Your Friends', value: EFollowUsersType.FRIENDS },
+]
 
 interface Props {
   mainProfile: IProfile
@@ -30,18 +40,31 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
     username: mainProfile.username,
   })
-  const { refetch: refetchCurrentUser, socialCounts } = useCurrentWallet()
-  const { profiles, loading: getRecentProfilesLoading } = useGetRecentProfiles({
-    skip: selectedType !== EFollowUsersType.RECENT,
-  })
+  const {
+    refetch: refetchCurrentUser,
+    socialCounts,
+    walletAddress,
+  } = useCurrentWallet()
+  const { profiles: recentProfiles, loading: getRecentProfilesLoading } =
+    useGetRecentProfiles({
+      skip: selectedType !== EFollowUsersType.RECENT,
+    })
+  const { profiles: suggestedProfiles, loading: getSuggestedProfilesLoading } =
+    useGetSuggestedProfiles({
+      walletAddress,
+      skip: selectedType !== EFollowUsersType.FRIENDS,
+    })
 
-  const options = [
-    { label: 'Top Traders', value: EFollowUsersType.TOP_TRADERS },
-    // { label: 'Your Friends', value: EFollowUsersType.FRIENDS },
-    { label: 'Recently Created', value: EFollowUsersType.RECENT },
-  ]
+  const loadingUsers =
+    loadingLeaderboard ||
+    getRecentProfilesLoading ||
+    getSuggestedProfilesLoading
 
-  const loadingUsers = loadingLeaderboard || getRecentProfilesLoading
+  useEffect(() => {
+    if (!!suggestedProfiles) {
+      options.push({ label: 'Your Friends', value: EFollowUsersType.FRIENDS })
+    }
+  }, [suggestedProfiles])
 
   const onClickDone = async () => {
     closeModal()
@@ -84,7 +107,7 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
                 mainUsername={mainProfile.username}
               />
             ))}
-            {profiles?.profiles
+            {recentProfiles?.profiles
               ?.filter(
                 (profile) => profile.profile.username !== mainProfile.username
               )
@@ -97,6 +120,19 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
                   mainUsername={mainProfile.username}
                 />
               ))}
+            {!!suggestedProfiles &&
+              Object.entries(suggestedProfiles).map(
+                ([key, item]: [string, ISuggestedProfile]) => {
+                  return (
+                    <FollowUserEntry
+                      key={key}
+                      username={item.profile.username}
+                      image={item.profile.image}
+                      mainUsername={mainProfile.username}
+                    />
+                  )
+                }
+              )}
           </div>
           {loadingUsers && (
             <div className="flex items-center justify-center w-full h-40">

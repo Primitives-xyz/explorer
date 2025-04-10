@@ -46,21 +46,19 @@ export function Avatar({
   return (
     <div
       className={cn(
-        'relative inline-block overflow-hidden rounded-full bg-card',
+        'w-8 aspect-square bg-muted shrink-0 rounded-full relative',
         className
       )}
     >
-      <div className="h-full w-full">
-        <Image
-          src={finalImageUrl}
-          alt={`Avatar for ${username}`}
-          width={size}
-          height={size}
-          className="rounded-full object-cover aspect-square"
-          onError={() => setImageError(true)}
-          unoptimized={finalImageUrl === dicebearUrl}
-        />
-      </div>
+      <Image
+        src={finalImageUrl}
+        alt={`Avatar for ${username}`}
+        width={size}
+        height={size}
+        className="rounded-full object-cover w-full h-full"
+        onError={() => setImageError(true)}
+        unoptimized={finalImageUrl === dicebearUrl}
+      />
     </div>
   )
 }
