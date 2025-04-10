@@ -6,7 +6,7 @@ import { Spinner } from '@/components-new-version/ui'
 import { useEffect } from 'react'
 
 interface Props {
-  walletAddress?: string
+  walletAddress: string
   transactionTypeSelected: string
   setTransactionTypes: (value: string[]) => void
 }
@@ -16,9 +16,9 @@ export function ProfileTransactions({
   transactionTypeSelected,
   setTransactionTypes,
 }: Props) {
-  const { transactionTypes, isLoading, page, filteredTransactions } =
+  const { transactionTypes, loading, page, filteredTransactions } =
     useProfileTransactions({
-      walletAddress: walletAddress || '',
+      walletAddress,
       hasSearched: true,
     })
 
@@ -29,7 +29,7 @@ export function ProfileTransactions({
 
   return (
     <div>
-      {isLoading && page > 1 && (
+      {loading && page > 1 && (
         <div className="my-4 w-full flex items-center justify-center">
           <Spinner />
         </div>

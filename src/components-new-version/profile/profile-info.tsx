@@ -39,11 +39,11 @@ export function ProfileInfo({ walletAddress }: Props) {
 
 function SmallCard({ label, value }: { label: string; value?: string }) {
   return (
-    <Card variant={CardVariant.ACCENT_SOCIAL}>
-      <CardHeader className="p-2! text-secondary">
-        <CardTitle>{label}</CardTitle>
+    <Card variant={CardVariant.ACCENT_SOCIAL} className="rounded-md">
+      <CardHeader className="p-2 text-secondary">
+        <CardTitle className="text-xs">{label}</CardTitle>
       </CardHeader>
-      <CardContent className="p-2!">{value}</CardContent>
+      <CardContent className="p-2 pt-0 text-xs">{value}</CardContent>
     </Card>
   )
 }

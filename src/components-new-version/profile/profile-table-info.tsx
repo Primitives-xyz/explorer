@@ -6,6 +6,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectVariant,
+  TabVariant,
 } from '@/components-new-version/ui'
 import { useState } from 'react'
 
@@ -15,7 +17,7 @@ export enum FilterTabsProfileTableInfo {
 }
 
 interface Props {
-  walletAddress?: string
+  walletAddress: string
 }
 
 export function ProfileTableInfo({ walletAddress }: Props) {
@@ -34,12 +36,13 @@ export function ProfileTableInfo({ walletAddress }: Props) {
   ]
 
   return (
-    <div className="mt-6">
+    <div>
       <div className="w-full flex items-center justify-between">
         <FilterTabs
           options={options}
           selected={selected}
           onSelect={setSelected}
+          variant={TabVariant.SOCIAL}
         />
         <div className="mb-4">
           {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (
@@ -47,10 +50,13 @@ export function ProfileTableInfo({ walletAddress }: Props) {
               value={transactionTypeSelected}
               onValueChange={(value) => setTransactionTypeSelected(value)}
             >
-              <SelectTrigger className="border-none bg-transparent text-primary h-9 capitalize">
+              <SelectTrigger
+                className="border-none bg-transparent capitalize"
+                variant={SelectVariant.SOCIAL}
+              >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border border-primary text-primary">
+              <SelectContent>
                 {transactionTypes.map((type, index) => (
                   <SelectItem key={index} value={type} className="capitalize">
                     {type}
@@ -61,7 +67,7 @@ export function ProfileTableInfo({ walletAddress }: Props) {
           )}
         </div>
       </div>
-      <div className="max-h-[400px] overflow-y-auto">
+      <div className="h-[400px] overflow-y-auto pb-6">
         {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (
           <ProfileTransactions
             walletAddress={walletAddress}

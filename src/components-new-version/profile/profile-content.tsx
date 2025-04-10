@@ -4,14 +4,20 @@ import { ProfileHeader } from '@/components-new-version/profile/profile-header'
 import { ProfileInfo } from '@/components-new-version/profile/profile-info'
 import { ProfileTableInfo } from '@/components-new-version/profile/profile-table-info'
 import { useProfileInfo } from '@/components-new-version/tapestry/hooks/use-profile-info'
-
 import {
+  ButtonSize,
+  ButtonVariant,
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
+  CopyToClipboardButton,
+  Separator,
 } from '@/components-new-version/ui'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
+import { abbreviateWalletAddress } from '@/components/common/tools'
+import { CopyIcon } from 'lucide-react'
 
 interface Props {
   username?: string
@@ -20,42 +26,56 @@ interface Props {
 
 export function ProfileContent({ username, walletAddress }: Props) {
   const { mainProfile } = useCurrentWallet()
-
   const { profileInfo } = useProfileInfo({
     username,
     mainUsername: mainProfile?.username,
     walletAddress,
   })
 
-  const targetWalletAddress =
-    walletAddress || profileInfo?.wallet?.address || ''
+  if (!profileInfo) {
+    return null
+  }
 
-  const displayUsername = username || profileInfo?.profile?.username || ''
+  const targetWalletAddress = walletAddress || profileInfo.wallet.address
+  const displayUsername = username || profileInfo.profile.username
 
   return (
     <div className="flex flex-col w-full space-y-6">
       <ProfileHeader
         profileInfo={profileInfo}
+        displayUsername={displayUsername}
         mainUsername={mainProfile?.username}
-        username={displayUsername}
       />
-      <div className="flex w-full justify-between gap-4">
-        <Card className="w-1/2">
+      <div className="grid grid-cols-2 gap-4">
+        <Card>
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
-            <CardContent>
-              <ProfileInfo walletAddress={targetWalletAddress} />
-              {targetWalletAddress && (
-                <ProfileTableInfo walletAddress={targetWalletAddress} />
+            <CardTitle>Connected Wallet</CardTitle>
+            <CardDescription>
+              {profileInfo?.wallet?.address && (
+                <CopyToClipboardButton
+                  textToCopy={profileInfo.wallet.address}
+                  variant={ButtonVariant.BADGE_SOCIAL}
+                  size={ButtonSize.SM}
+                >
+                  <CopyIcon size={12} />
+                  {abbreviateWalletAddress({
+                    address: profileInfo.wallet.address,
+                  })}
+                </CopyToClipboardButton>
               )}
-            </CardContent>
+            </CardDescription>
           </CardHeader>
+          <CardContent className="space-y-6 pb-0">
+            <ProfileInfo walletAddress={targetWalletAddress} />
+            <Separator />
+            <ProfileTableInfo walletAddress={targetWalletAddress} />
+          </CardContent>
         </Card>
-        <Card className="w-1/2">
+        <Card>
           <CardHeader>
             <CardTitle>Social</CardTitle>
-            <CardContent></CardContent>
           </CardHeader>
+          <CardContent></CardContent>
         </Card>
       </div>
     </div>

@@ -9,6 +9,7 @@ export enum ButtonVariant {
   OUTLINE_SOCIAL = 'outline-social',
   BADGE_SOCIAL = 'badge-social',
 
+  BADGE_WHITE = 'badge-white',
   OUTLINE_WHITE = 'outline-white',
   SELECTABLE = 'selectable',
   SELECTABLE_ACTIVE = 'selectable-active',

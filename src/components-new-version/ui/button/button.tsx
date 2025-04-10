@@ -35,6 +35,8 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
       'badge-social':
         'bg-secondary/10 text-secondary/80 border border-secondary/20 hover:bg-secondary/20',
 
+      'badge-white':
+        'bg-foreground/10 text-foreground/80 border border-foreground/20 hover:bg-foreground/20',
       'outline-white':
         'border border-foreground text-foreground bg-transparent hover:bg-accent',
       ghost: 'hover:bg-accent text-foreground',
@@ -46,7 +48,7 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
     },
     size: {
       default: 'h-9 px-4 py-2 text-sm',
-      sm: 'h-6 px-3 text-xs',
+      sm: 'h-6 px-2 text-xs',
       lg: 'h-14 px-12 text-xl uppercase',
       icon: 'h-10 w-10',
       icon_sm: 'h-6 w-6',
