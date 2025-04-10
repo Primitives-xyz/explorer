@@ -17,7 +17,6 @@ interface Props {
   displayNft?: boolean
   displaySolTransfer?: boolean
   displayOther?: boolean
-  setOpenSwap?: (open: boolean) => void
 }
 
 export function TransactionsEntry({
@@ -27,7 +26,6 @@ export function TransactionsEntry({
   displayNft,
   displaySolTransfer,
   displayOther,
-  setOpenSwap,
 }: Props) {
   const primaryType = useTransactionType(transaction)
 
@@ -37,7 +35,6 @@ export function TransactionsEntry({
         <SwapTransactionsView
           transaction={transaction}
           sourceWallet={transaction.sourceWallet || walletAddress || ''}
-          setOpenSwap={setOpenSwap}
         />
       )}
 

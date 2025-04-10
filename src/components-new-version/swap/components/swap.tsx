@@ -10,7 +10,6 @@ import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
 import { route } from '@/components-new-version/utils/route'
-
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import {
   formatLargeNumber,
@@ -23,6 +22,33 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 export enum SwapMode {
   EXACT_IN = 'ExactIn',
   EXACT_OUT = 'ExactOut',
+}
+
+const validateAmount = (value: string, decimals: number = 6): boolean => {
+  if (value === '') return true
+
+  // Check if the value is a valid number
+  const numericValue = Number(value)
+  if (isNaN(numericValue)) {
+    return false
+  }
+
+  // Check if the value is positive
+  if (numericValue <= 0) {
+    return false
+  }
+
+  // Check if the value has too many decimal places
+  const decimalParts = value.split('.')
+  if (
+    decimalParts.length > 1 &&
+    decimalParts[1]?.length &&
+    decimalParts[1]?.length > decimals
+  ) {
+    return false
+  }
+
+  return true
 }
 
 interface SwapProps {
@@ -83,16 +109,11 @@ export function Swap({ setTokenMint }: SwapProps) {
 
   const {
     loading,
-    error,
-    txSignature,
     quoteResponse,
     expectedOutput,
-    priceImpact,
-    isFullyConfirmed,
     isQuoteRefreshing,
     sseFeeAmount,
     handleSwap,
-    refreshQuote,
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
@@ -362,31 +383,4 @@ export function Swap({ setTokenMint }: SwapProps) {
       )}
     </div>
   )
-}
-
-const validateAmount = (value: string, decimals: number = 6): boolean => {
-  if (value === '') return true
-
-  // Check if the value is a valid number
-  const numericValue = Number(value)
-  if (isNaN(numericValue)) {
-    return false
-  }
-
-  // Check if the value is positive
-  if (numericValue <= 0) {
-    return false
-  }
-
-  // Check if the value has too many decimal places
-  const decimalParts = value.split('.')
-  if (
-    decimalParts.length > 1 &&
-    decimalParts[1]?.length &&
-    decimalParts[1]?.length > decimals
-  ) {
-    return false
-  }
-
-  return true
 }

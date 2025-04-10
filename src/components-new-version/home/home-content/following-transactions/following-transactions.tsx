@@ -22,11 +22,7 @@ export enum FilterType {
   KOL = 'kol',
 }
 
-interface Props {
-  setOpenSwap?: (open: boolean) => void
-}
-
-export function FollowingTransactions({ setOpenSwap }: Props) {
+export function FollowingTransactions() {
   const t = useTranslations()
   const { mainProfile, isLoggedIn, loading, walletAddress, setShowAuthFlow } =
     useCurrentWallet()
@@ -83,7 +79,6 @@ export function FollowingTransactions({ setOpenSwap }: Props) {
                 transaction={transaction}
                 walletAddress={walletAddress}
                 displaySwap
-                setOpenSwap={setOpenSwap}
               />
             ))}
           </>
