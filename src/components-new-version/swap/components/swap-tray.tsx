@@ -34,17 +34,21 @@ export function SwapTray() {
         duration: 0.5,
         ease: [0.4, 0, 0.2, 1],
       }}
-      className="fixed top-0 right-0 bottom-0 z-50 h-screen pt-topbar pr-6"
+      className="fixed top-0 right-0 bottom-0 z-50 h-screen"
     >
-      <div className="pt-5 w-[300px] relative">
+      <div className="pt-topbar relative h-full">
         <Button
-          className="w-[100px] absolute top-[0px] left-0 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"
+          className="w-[100px] absolute top-20 left-0 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"
           variant={open ? ButtonVariant.OUTLINE : ButtonVariant.DEFAULT}
           onClick={() => setOpen(!open)}
         >
           {open ? 'Close Swap' : 'Swap'}
         </Button>
-        {displaySwap && <Swap />}
+        {displaySwap && (
+          <div className="h-full pr-6 py-5 w-[300px] overflow-y-auto">
+            <Swap />
+          </div>
+        )}
       </div>
     </motion.div>
   )
