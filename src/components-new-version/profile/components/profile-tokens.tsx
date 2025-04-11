@@ -5,8 +5,8 @@ import { formatNumber } from '@/components-new-version/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
 import { SortableHeader } from '../../ui/table/sortable-header'
+import { IFungibleToken } from '../fungible-tokens.models'
 import { useGetWalletTokens } from '../hooks/use-get-wallet-tokens'
-import { IFungibleToken } from '../profile.models'
 
 interface Props {
   walletAddress: string
@@ -26,10 +26,10 @@ export function ProfileTokens({ walletAddress }: Props) {
         return (
           <div className="flex items-center gap-2">
             <div className="w-6 aspect-square rounded-full bg-muted overflow-hidden">
-              {row.original.image &&
-                !row.original.image.includes('ipfs://') && (
+              {row.original.imageUrl &&
+                !row.original.imageUrl.includes('ipfs://') && (
                   <Image
-                    src={row.original.image}
+                    src={row.original.imageUrl}
                     alt={row.original.symbol}
                     width={24}
                     height={24}

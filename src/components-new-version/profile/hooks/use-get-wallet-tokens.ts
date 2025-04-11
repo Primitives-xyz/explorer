@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
-import { IFungibleToken } from '../profile.models'
+import { IFungibleToken } from '../fungible-tokens.models'
 
 interface TokenData {
   items: IFungibleToken[]
