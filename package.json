@@ -29,6 +29,7 @@
     "@coral-xyz/anchor": "0.30.1",
     "@dialectlabs/react-sdk-blockchain-solana": "^2.1.1",
     "@dialectlabs/react-ui": "^2.2.0",
+    "@drift-labs/sdk-browser": "2.118.0-beta.7",
     "@dynamic-labs/sdk-react-core": "^4.9.4",
     "@dynamic-labs/solana": "^4.9.4",
     "@emotion/react": "^11.13.3",
