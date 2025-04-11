@@ -6,7 +6,6 @@ import {
 } from '@/components-new-version/models/helius.models'
 import { TokenInfo } from '@/components-new-version/models/token.models'
 import { useSwapStore } from '@/components-new-version/swap/stores/use-swap-store'
-import { ESwapMode } from '@/components-new-version/swap/swap.models'
 import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
@@ -239,8 +238,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
               inputMint: fromToken.mint,
               outputMint: toToken.mint,
               inputAmount: fromToken.amount,
-              outputAmount: toToken.amount,
-              mode: ESwapMode.EXACT_IN,
             })
           }}
         >

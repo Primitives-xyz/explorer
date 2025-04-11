@@ -40,6 +40,4 @@ export interface ISwapInputs {
   inputMint: string
   outputMint: string
   inputAmount: number
-  outputAmount: number
-  mode: ESwapMode
 }

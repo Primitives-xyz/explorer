@@ -45,15 +45,6 @@ export function TransactionsHeader({
     )?.profile
   }
 
-  // const onClickTradeButton = () => {
-  //   setOpen(true)
-  //   // setInputs({
-  //   //   inputMint: transaction.mint,
-  //   //   outputMint: transaction.mint,
-  //   //   mode: ESwapMode.EXACT_IN,
-  //   // })
-  // }
-
   return (
     <div className="flex flex-row gap-2 items-start">
       <div className="w-12">
@@ -97,7 +88,7 @@ export function TransactionsHeader({
               onClick={onClickTradeButton}
             >
               <ArrowRightLeft size={16} />
-              Trade
+              Copy Trade
             </Button>
           )}
         </div>

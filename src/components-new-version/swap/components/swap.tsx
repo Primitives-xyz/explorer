@@ -308,9 +308,7 @@ export function Swap({ setTokenMint }: Props) {
     if (inputs) {
       setInputTokenMint(inputs.inputMint)
       setOutputTokenMint(inputs.outputMint)
-      setSwapMode(inputs.mode)
       setInAmount(inputs.inputAmount.toString())
-      setOutAmount(inputs.outputAmount.toString())
     }
   }, [inputs])
 
