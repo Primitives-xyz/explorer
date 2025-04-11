@@ -1,10 +1,12 @@
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { DriftClient } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 
-export function useInitializeDrift(primaryWallet: any, walletAddress: string) {
+export function useInitializeDrift() {
   const [driftClient, setDriftClient] = useState<DriftClient>()
+  const { primaryWallet, walletAddress } = useCurrentWallet()
 
   useEffect(() => {
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
