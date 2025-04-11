@@ -91,18 +91,18 @@ export function TrendingTokens() {
         return <div>${formatNumber(value)}</div>
       },
     },
-    {
-      accessorKey: 'holders',
-      header: '',
-      enableSorting: false,
-      cell: ({ getValue }) => {
-        return (
-          <div>
-            <Button disabled>BUY</Button>
-          </div>
-        )
-      },
-    },
+    // {
+    //   accessorKey: 'holders',
+    //   header: '',
+    //   enableSorting: false,
+    //   cell: ({ getValue }) => {
+    //     return (
+    //       <div>
+    //         <Button disabled>BUY</Button>
+    //       </div>
+    //     )
+    //   },
+    // },
   ]
 
   return (

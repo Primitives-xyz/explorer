@@ -15,7 +15,8 @@ import {
   formatRawAmount,
   formatUsdValue,
 } from '@/components-new-version/utils/utils'
-import { useEffect, useMemo, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
 
@@ -51,9 +52,9 @@ interface Props {
 }
 
 export function Swap({ setTokenMint }: Props) {
-  // const searchParams = useSearchParams()
-  // const router = useRouter()
-  // const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const { replace } = useRouter()
+  const pathname = usePathname()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
   const [inAmount, setInAmount] = useState('')
@@ -62,7 +63,7 @@ export function Swap({ setTokenMint }: Props) {
   const [useSSEForFees, setUseSSEForFees] = useState(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
-  const { inputs } = useSwapStore()
+  const { inputs, setOpen } = useSwapStore()
 
   const {
     symbol: inputTokenSymbol,
@@ -221,21 +222,19 @@ export function Swap({ setTokenMint }: Props) {
     setOutputTokenMint(token.address)
   }
 
-  // const updateTokensInURL = useCallback(
-  //   (input: string, output: string) => {
-  //     if (pathname !== '/new-trade') return
+  const updateTokensInURL = useCallback(
+    (input: string, output: string) => {
+      const params = new URLSearchParams(searchParams.toString())
 
-  //     const params = new URLSearchParams(searchParams.toString())
+      params.set('inputMint', input)
+      params.set('outputMint', output)
+      params.set('mode', 'swap')
 
-  //     params.set('inputMint', input)
-  //     params.set('outputMint', output)
-  //     params.set('mode', 'swap')
+      replace(`${pathname}?${params.toString()}`)
+    },
 
-  //     router.push(route('newTrade', params.toString() as string))
-  //   },
-
-  //   [router, searchParams, pathname]
-  // )
+    [searchParams, pathname, replace]
+  )
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -309,14 +308,15 @@ export function Swap({ setTokenMint }: Props) {
       setInputTokenMint(inputs.inputMint)
       setOutputTokenMint(inputs.outputMint)
       setInAmount(inputs.inputAmount.toString())
+      updateTokensInURL(inputs.inputMint, inputs.outputMint)
     }
-  }, [inputs])
+  }, [inputs, updateTokensInURL])
 
-  // useEffect(() => {
-  //   if (inputTokenMint && outputTokenMint) {
-  //     updateTokensInURL(inputTokenMint, outputTokenMint)
-  //   }
-  // }, [inputTokenMint, outputTokenMint, updateTokensInURL])
+  useEffect(() => {
+    if (inputTokenMint && outputTokenMint) {
+      updateTokensInURL(inputTokenMint, outputTokenMint)
+    }
+  }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
   return (
     <div className="space-y-4">
