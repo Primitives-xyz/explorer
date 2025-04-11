@@ -8,7 +8,7 @@ export interface INamespaceDetails {
 
 export interface INamespaceProfile {
   profile: {
-    id: number
+    id: string
     username: string
     bio: string
     image: string

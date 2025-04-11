@@ -44,7 +44,10 @@ export function NamespaceProfiles({ profiles }: Props) {
                 <div className="flex flex-col items-start w-2/3">
                   <Button
                     variant={ButtonVariant.LINK}
-                    href={route('entity', { id: elem.profile.username })}
+                    href={route('namespaceProfile', {
+                      id: elem.namespace.name,
+                      profile: elem.profile.id,
+                    })}
                     className="px-0 !py-2 w-full flex items-start justify-start"
                   >
                     <p className="truncate text-foreground">

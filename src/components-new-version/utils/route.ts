@@ -6,6 +6,9 @@ const routes = {
   newTrade: (query?: string) => `/new-trade${query ? `?${query}` : ''}`,
   tokens: () => '/tokens',
   stake: () => '/stake',
+  namespace: ({ id }: { id: string }) => `/namespace/${id}`,
+  namespaceProfile: ({ id, profile }: { id: string; profile: string }) =>
+    `/namespace/${id}/${profile}`,
 }
 
 export function route<T extends keyof typeof routes>(
