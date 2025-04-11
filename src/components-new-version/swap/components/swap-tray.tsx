@@ -2,6 +2,7 @@
 
 import { Button, ButtonVariant } from '@/components-new-version/ui'
 import { motion } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { Swap } from './swap'
@@ -9,6 +10,7 @@ import { Swap } from './swap'
 export function SwapTray() {
   const { open, setOpen } = useSwapStore()
   const [displaySwap, setDisplaySwap] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     if (open) {
@@ -21,6 +23,10 @@ export function SwapTray() {
       return () => clearTimeout(timeout)
     }
   }, [open])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname, setOpen])
 
   return (
     <motion.div

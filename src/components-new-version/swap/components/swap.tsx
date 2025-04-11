@@ -318,6 +318,27 @@ export function Swap({ setTokenMint }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
+  // useEffect(() => {
+  //   const inputMintParam = searchParams.get('inputMint')
+  //   const outputMintParam = searchParams.get('outputMint')
+  //   const inputAmountParam = searchParams.get('inputAmount')
+
+  //   if (inputMintParam) {
+  //     setInputTokenMint(inputMintParam)
+  //   }
+
+  //   if (outputMintParam) {
+  //     setOutputTokenMint(outputMintParam)
+  //   }
+
+  //   if (
+  //     inputAmountParam &&
+  //     validateAmount(inputAmountParam, inputTokenDecimals)
+  //   ) {
+  //     setInAmount(inputAmountParam)
+  //   }
+  // }, [searchParams, inputTokenDecimals])
+
   return (
     <div className="space-y-4">
       <TopSwap
