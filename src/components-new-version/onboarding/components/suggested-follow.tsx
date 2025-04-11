@@ -15,7 +15,6 @@ import {
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 import { useGetLeaderboard } from '../../tapestry/hooks/use-get-leaderboard'
-import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
 import { useGetSuggestedProfiles } from '../hooks/use-get-suggested-profiles'
 import { EFollowUsersType, EOnboardingSteps } from '../onboarding.models'
 import { FollowUserEntry } from './follow-user-entry'
@@ -23,7 +22,6 @@ import { FollowUserEntry } from './follow-user-entry'
 const options = [
   { label: 'Top Traders', value: EFollowUsersType.TOP_TRADERS },
   { label: 'Recently Created', value: EFollowUsersType.RECENT },
-  // { label: 'Your Friends', value: EFollowUsersType.FRIENDS },
 ]
 
 interface Props {
@@ -36,9 +34,6 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
   const [selectedType, setSelectedType] = useState(EFollowUsersType.TOP_TRADERS)
   const { traders, loading: loadingLeaderboard } = useGetLeaderboard({
     skip: selectedType !== EFollowUsersType.TOP_TRADERS,
-  })
-  const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
-    username: mainProfile.username,
   })
   const {
     refetch: refetchCurrentUser,
@@ -65,19 +60,6 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
       options.push({ label: 'Your Friends', value: EFollowUsersType.FRIENDS })
     }
   }, [suggestedProfiles])
-
-  const onClickDone = async () => {
-    closeModal()
-    await updateProfile({
-      properties: [
-        {
-          key: 'hasSeenProfileSetupModal',
-          value: true,
-        },
-      ],
-    })
-    refetchCurrentUser()
-  }
 
   if (!mainProfile?.username) {
     return null
@@ -152,9 +134,8 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
         <div className="flex items-center gap-3">
           <p className="text-primary">{socialCounts?.following ?? 0}/3</p>
           <Button
-            onClick={onClickDone}
+            onClick={closeModal}
             className="w-[160px]"
-            loading={updateProfileLoading}
             disabled={(socialCounts?.following ?? 0) < 3}
           >
             Complete
