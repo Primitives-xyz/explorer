@@ -1,4 +1,5 @@
 import { MainContentWrapper } from '@/components-new-version/common/main-content-wrapper'
+import { NamespaceContent } from '@/components-new-version/namespace/hooks/namespace-content'
 
 export default async function Namespace({
   params,
@@ -8,8 +9,8 @@ export default async function Namespace({
   const { id } = await params
 
   return (
-    <MainContentWrapper>
-      <p>namespace{id}</p>
+    <MainContentWrapper className="min-w-main-content max-w-main-content mx-auto flex justify-center">
+      <NamespaceContent id={id} />
     </MainContentWrapper>
   )
 }

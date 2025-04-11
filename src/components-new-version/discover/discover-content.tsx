@@ -1,5 +1,6 @@
 'use client'
 
+import { TimeFrame } from '@/components-new-version/birdeye/birdeye-top-traders.models'
 import {
   DiscoverFilterType,
   FilterButtonDiscover,
@@ -7,7 +8,6 @@ import {
 import { TopTraders } from '@/components-new-version/discover/top-traders'
 import { TrendingTokens } from '@/components-new-version/discover/trending-tokens'
 import { useState } from 'react'
-import { TimeFrame } from '../birdeye/birdeye-top-traders.models'
 
 export function DiscoverContent() {
   const [selectedType, setSelectedType] = useState<DiscoverFilterType>(

@@ -42,7 +42,7 @@ export function RightSideDiscover() {
               const isSame = elem.wallet.address === elem.profile.username
 
               return (
-                <span
+                <div
                   key={elem.profile.username}
                   className={cn(
                     'flex items-center justify-between p-4',
@@ -90,7 +90,7 @@ export function RightSideDiscover() {
                       />
                     )}
                   </div>
-                </span>
+                </div>
               )
             })}
           </>
