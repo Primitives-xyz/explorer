@@ -19,7 +19,7 @@ import {
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-export enum SwapMode {
+export enum ESwapMode {
   EXACT_IN = 'ExactIn',
   EXACT_OUT = 'ExactOut',
 }
@@ -51,18 +51,18 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
   return true
 }
 
-interface SwapProps {
+interface Props {
   setTokenMint?: (value: string) => void
 }
 
-export function Swap({ setTokenMint }: SwapProps) {
+export function Swap({ setTokenMint }: Props) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
   const [inAmount, setInAmount] = useState<string>('')
   const [outAmount, setOutAmount] = useState<string>('')
-  const [swapMode, setSwapMode] = useState<SwapMode>(SwapMode.EXACT_IN)
+  const [swapMode, setSwapMode] = useState<ESwapMode>(ESwapMode.EXACT_IN)
   const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
   const [showInputTokenSearch, setShowInputTokenSearch] =
     useState<boolean>(false)
@@ -101,11 +101,8 @@ export function Swap({ setTokenMint }: SwapProps) {
     primaryWallet,
     setShowAuthFlow,
   } = useCurrentWallet()
-  const {
-    balance: inputBalance,
-    rawBalance: inputRawBalance,
-    loading: inputBalanceLoading,
-  } = useTokenBalance(walletAddress, inputTokenMint)
+  const { balance: inputBalance, rawBalance: inputRawBalance } =
+    useTokenBalance(walletAddress, inputTokenMint)
 
   const {
     loading,
@@ -117,11 +114,13 @@ export function Swap({ setTokenMint }: SwapProps) {
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
-    inputAmount: swapMode === SwapMode.EXACT_IN ? inAmount : outAmount,
+    inputAmount: swapMode === ESwapMode.EXACT_IN ? inAmount : outAmount,
     inputDecimals:
-      swapMode === SwapMode.EXACT_IN ? inputTokenDecimals : outputTokenDecimals,
+      swapMode === ESwapMode.EXACT_IN
+        ? inputTokenDecimals
+        : outputTokenDecimals,
     outputDecimals:
-      swapMode === SwapMode.EXACT_OUT
+      swapMode === ESwapMode.EXACT_OUT
         ? inputTokenDecimals
         : outputTokenDecimals,
     platformFeeBps: useSSEForFees ? 1 : undefined,
@@ -131,13 +130,13 @@ export function Swap({ setTokenMint }: SwapProps) {
   })
 
   const displayInAmount = useMemo(() => {
-    if (isQuoteRefreshing && swapMode === SwapMode.EXACT_OUT) {
+    if (isQuoteRefreshing && swapMode === ESwapMode.EXACT_OUT) {
       return '...'
     }
     if (inAmount == '') {
       return ''
     } else {
-      if (swapMode === SwapMode.EXACT_IN) {
+      if (swapMode === ESwapMode.EXACT_IN) {
         return inAmount
       } else {
         return formatLargeNumber(parseFloat(inAmount), inputTokenDecimals)
@@ -146,13 +145,13 @@ export function Swap({ setTokenMint }: SwapProps) {
   }, [inAmount, inputTokenDecimals, isQuoteRefreshing, swapMode])
 
   const displayOutAmount = useMemo(() => {
-    if (isQuoteRefreshing && swapMode === SwapMode.EXACT_IN) {
+    if (isQuoteRefreshing && swapMode === ESwapMode.EXACT_IN) {
       return '...'
     }
     if (outAmount == '') {
       return ''
     } else {
-      if (swapMode === SwapMode.EXACT_OUT) {
+      if (swapMode === ESwapMode.EXACT_OUT) {
         return outAmount
       } else {
         return formatLargeNumber(parseFloat(outAmount), outputTokenDecimals)
@@ -290,7 +289,7 @@ export function Swap({ setTokenMint }: SwapProps) {
   }
 
   useEffect(() => {
-    if (swapMode === SwapMode.EXACT_IN) {
+    if (swapMode === ESwapMode.EXACT_IN) {
       if (inAmount == '' || isNaN(parseFloat(expectedOutput))) {
         setOutAmount('')
       } else {

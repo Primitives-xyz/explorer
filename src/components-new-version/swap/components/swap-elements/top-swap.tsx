@@ -1,6 +1,6 @@
 'use client'
 
-import { SwapMode } from '@/components-new-version/swap/components/swap'
+import { ESwapMode } from '@/components-new-version/swap/components/swap'
 import { Pay } from '@/components-new-version/swap/components/swap-elements/pay'
 import { Receive } from '@/components-new-version/swap/components/swap-elements/received'
 import { Card, CardContent } from '@/components-new-version/ui/card'
@@ -17,7 +17,7 @@ interface Props {
   displayOutAmountInUsd: string
   outputTokenImageUri?: string
   outputTokenSymbol?: string
-  setSwapMode: (mode: SwapMode) => void
+  setSwapMode: (mode: ESwapMode) => void
   handleInAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void

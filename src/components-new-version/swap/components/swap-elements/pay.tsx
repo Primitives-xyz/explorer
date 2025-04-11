@@ -1,7 +1,7 @@
 'use client'
 
 import { TokenBalance } from '@/components-new-version/common/left-side-menu/balance'
-import { SwapMode } from '@/components-new-version/swap/components/swap'
+import { ESwapMode } from '@/components-new-version/swap/components/swap'
 import {
   DEFAULT_INPUT_TOKEN_IMAGEURI,
   DEFAULT_INPUT_TOKEN_SYMBOL,
@@ -23,7 +23,7 @@ interface Props {
   displayInAmountInUsd: string
   inputTokenImageUri?: string
   inputTokenSymbol?: string
-  setSwapMode: (mode: SwapMode) => void
+  setSwapMode: (mode: ESwapMode) => void
   handleInAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
@@ -65,7 +65,7 @@ export function Pay({
           placeholder="0.00"
           className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
           type="text"
-          onFocus={() => setSwapMode(SwapMode.EXACT_IN)}
+          onFocus={() => setSwapMode(ESwapMode.EXACT_IN)}
           onChange={(e) => handleInAmountChange(e)}
           value={displayInAmount}
         />

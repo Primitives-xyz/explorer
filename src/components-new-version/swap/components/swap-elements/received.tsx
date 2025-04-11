@@ -1,6 +1,6 @@
 'use client'
 
-import { SwapMode } from '@/components-new-version/swap/components/swap'
+import { ESwapMode } from '@/components-new-version/swap/components/swap'
 import {
   DEFAULT_OUTPUT_TOKEN_IMAGEURI,
   DEFAULT_OUTPUT_TOKEN_SYMBOL,
@@ -19,7 +19,7 @@ interface Props {
   displayOutAmountInUsd: string
   outputTokenImageUri?: string
   outputTokenSymbol?: string
-  setSwapMode: (mode: SwapMode) => void
+  setSwapMode: (mode: ESwapMode) => void
   handleOutAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setShowOutputTokenSearch: (show: boolean) => void
 }
@@ -45,7 +45,7 @@ export function Receive({
             placeholder="0.00"
             className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
             type="text"
-            onFocus={() => setSwapMode(SwapMode.EXACT_OUT)}
+            onFocus={() => setSwapMode(ESwapMode.EXACT_OUT)}
             onChange={(e) => handleOutAmountChange(e)}
             value={displayOutAmount}
           />
