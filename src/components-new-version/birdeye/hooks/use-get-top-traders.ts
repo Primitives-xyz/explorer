@@ -3,12 +3,12 @@ import { formatNumber } from '@/components-new-version/utils/utils'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import {
+  ETimeFrame,
   IGetTopTradersResponse,
-  TimeFrame,
 } from '../birdeye-top-traders.models'
 
 interface Props {
-  timeFrame: TimeFrame
+  timeFrame: ETimeFrame
   limit?: number // 1 - 10
 }
 

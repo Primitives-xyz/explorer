@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components-new-version/ui'
-import { TimeFrame } from '../birdeye/birdeye-top-traders.models'
+import { ETimeFrame } from '../birdeye/birdeye-top-traders.models'
 
 export enum DiscoverFilterType {
   TRENDING_TOKENS = 'trending-tokens',
@@ -18,8 +18,8 @@ export enum DiscoverFilterType {
 interface Props {
   selectedType: DiscoverFilterType
   setSelectedType: (type: DiscoverFilterType) => void
-  timeFrame: TimeFrame
-  setTimeFrame: (frame: TimeFrame) => void
+  timeFrame: ETimeFrame
+  setTimeFrame: (frame: ETimeFrame) => void
 }
 
 export function FilterButtonDiscover({
@@ -44,15 +44,15 @@ export function FilterButtonDiscover({
         {selectedType === DiscoverFilterType.TOP_TRADERS && (
           <Select
             value={timeFrame}
-            onValueChange={(value) => setTimeFrame(value as TimeFrame)}
+            onValueChange={(value) => setTimeFrame(value as ETimeFrame)}
           >
             <SelectTrigger className="border-none bg-transparent text-primary h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="border border-primary text-primary">
-              <SelectItem value={TimeFrame.TODAY}>Today</SelectItem>
-              <SelectItem value={TimeFrame.YESTERDAY}>Yesterday</SelectItem>
-              <SelectItem value={TimeFrame.ONE_WEEK}>1W</SelectItem>
+              <SelectItem value={ETimeFrame.TODAY}>Today</SelectItem>
+              <SelectItem value={ETimeFrame.YESTERDAY}>Yesterday</SelectItem>
+              <SelectItem value={ETimeFrame.ONE_WEEK}>1W</SelectItem>
             </SelectContent>
           </Select>
         )}

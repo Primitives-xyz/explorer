@@ -1,4 +1,3 @@
-import { ProfileTransactions } from '@/components-new-version/profile/profile-transactions'
 import {
   FilterTabs,
   Select,
@@ -6,8 +5,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectVariant,
+  TabVariant,
 } from '@/components-new-version/ui'
 import { useState } from 'react'
+import { ProfileAssets } from './profile-assets'
+import { ProfileTransactions } from './profile-transactions'
 
 export enum FilterTabsProfileTableInfo {
   TRANSACTIONS = 'transactions',
@@ -15,31 +18,28 @@ export enum FilterTabsProfileTableInfo {
 }
 
 interface Props {
-  walletAddress?: string
+  walletAddress: string
 }
 
 export function ProfileTableInfo({ walletAddress }: Props) {
-  const [selected, setSelected] = useState(
-    FilterTabsProfileTableInfo.TRANSACTIONS
-  )
-
+  const [selected, setSelected] = useState(FilterTabsProfileTableInfo.ASSETS)
   const [transactionTypes, setTransactionTypes] = useState<string[]>([])
-
   const [transactionTypeSelected, setTransactionTypeSelected] =
     useState<string>(transactionTypes[0] || 'all')
 
   const options = [
-    { label: 'Transactions', value: FilterTabsProfileTableInfo.TRANSACTIONS },
     { label: 'Assets', value: FilterTabsProfileTableInfo.ASSETS },
+    { label: 'Transactions', value: FilterTabsProfileTableInfo.TRANSACTIONS },
   ]
 
   return (
-    <div className="mt-6">
+    <div>
       <div className="w-full flex items-center justify-between">
         <FilterTabs
           options={options}
           selected={selected}
           onSelect={setSelected}
+          variant={TabVariant.SOCIAL}
         />
         <div className="mb-4">
           {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (
@@ -47,10 +47,13 @@ export function ProfileTableInfo({ walletAddress }: Props) {
               value={transactionTypeSelected}
               onValueChange={(value) => setTransactionTypeSelected(value)}
             >
-              <SelectTrigger className="border-none bg-transparent text-primary h-9 capitalize">
+              <SelectTrigger
+                className="border-none bg-transparent capitalize"
+                variant={SelectVariant.SOCIAL}
+              >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border border-primary text-primary">
+              <SelectContent>
                 {transactionTypes.map((type, index) => (
                   <SelectItem key={index} value={type} className="capitalize">
                     {type}
@@ -61,7 +64,7 @@ export function ProfileTableInfo({ walletAddress }: Props) {
           )}
         </div>
       </div>
-      <div className="max-h-[400px] overflow-y-auto">
+      <div className="pb-6">
         {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (
           <ProfileTransactions
             walletAddress={walletAddress}
@@ -69,7 +72,9 @@ export function ProfileTableInfo({ walletAddress }: Props) {
             transactionTypeSelected={transactionTypeSelected}
           />
         )}
-        {selected === FilterTabsProfileTableInfo.ASSETS && <p>assets</p>}
+        {selected === FilterTabsProfileTableInfo.ASSETS && (
+          <ProfileAssets walletAddress={walletAddress} />
+        )}
       </div>
     </div>
   )
