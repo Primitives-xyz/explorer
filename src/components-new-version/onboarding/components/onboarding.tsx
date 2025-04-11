@@ -1,6 +1,7 @@
 'use client'
 
 import { useGetIdentities } from '@/components-new-version/tapestry/hooks/use-get-identities'
+import { useUpdateProfile } from '@/components-new-version/tapestry/hooks/use-update-profile'
 import { useEffect, useState } from 'react'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
 import {
@@ -22,15 +23,19 @@ import { SuggestedFollow } from './suggested-follow'
 export function Onboarding() {
   const [open, setOpen] = useState(false)
   const {
+    isLoggedIn,
     profiles,
     mainProfile,
     walletAddress,
     loading: getCurrentUserLoading,
-    isLoggedIn,
     socialCounts,
+    refetch: refetchCurrentUser,
   } = useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
   const [lockModal, setLockModal] = useState(true)
+  const { updateProfile } = useUpdateProfile({
+    username: mainProfile?.username ?? '',
+  })
 
   const { identities, loading: getIdentitiesLoading } = useGetIdentities({
     walletAddress,
@@ -56,18 +61,9 @@ export function Onboarding() {
       typeof profiles !== 'undefined' &&
       (!mainProfile || (mainProfile && !mainProfile.hasSeenProfileSetupModal))
     ) {
-      // if (!!mainProfile?.bio) {
-      //   setStep(EOnboardingSteps.FOLLOW)
-      // } else if (!!mainProfile?.image) {
-      //   setStep(EOnboardingSteps.BIO)
-      // } else if (!!mainProfile?.username) {
-      //   setStep(EOnboardingSteps.IMAGE)
-      // } else {
-      //   setStep(EOnboardingSteps.USERNAME)
-      // }
       setOpen(true)
     }
-  }, [mainProfile, isLoggedIn, profiles])
+  }, [mainProfile, profiles, isLoggedIn])
 
   const getModalTitle = () => {
     if (step === EOnboardingSteps.FOLLOW) {
@@ -78,10 +74,23 @@ export function Onboarding() {
   }
 
   useEffect(() => {
-    if (socialCounts?.following && socialCounts.following >= 3) {
+    const finishOnboarding = async () => {
       setLockModal(false)
+      await updateProfile({
+        properties: [
+          {
+            key: 'hasSeenProfileSetupModal',
+            value: true,
+          },
+        ],
+      })
+      refetchCurrentUser()
     }
-  }, [socialCounts])
+
+    if (socialCounts?.following && socialCounts.following >= 3) {
+      finishOnboarding()
+    }
+  }, [socialCounts, mainProfile, updateProfile, refetchCurrentUser])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
