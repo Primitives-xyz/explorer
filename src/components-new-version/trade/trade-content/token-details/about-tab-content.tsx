@@ -40,10 +40,8 @@ function calculatePercentage(part: number | undefined, total: number | undefined
 }
 
 export function AboutTabContent({ id, overview }: AboutTabContentProps) {
-  console.log('overview:', overview)
   const { decimals: outputTokenDecimals, data: outputTokenData } =
     useTokenInfo(id)
-  console.log('outputTokenData:', outputTokenData)
   const [about, setAbout] = useState<AboutProps>(defaultAbout)
 
   useEffect(() => {
