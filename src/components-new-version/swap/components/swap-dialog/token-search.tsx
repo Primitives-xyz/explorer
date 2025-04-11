@@ -4,10 +4,10 @@ import { TokenList } from '@/components-new-version/swap/components/swap-dialog/
 import { TokenSearchHeader } from '@/components-new-version/swap/components/swap-dialog/token-search-header'
 import { useTokenSearch } from '@/components-new-version/swap/hooks/use-token-search'
 import {
-  TokenInfo,
-  TokenSearchProps,
-  TokenSearchResult,
-} from '@/components-new-version/swap/types/token-types'
+  ITokenInfo,
+  ITokenSearchProps,
+  ITokenSearchResult,
+} from '@/components-new-version/swap/swap.models'
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ export function TokenSearch({
   openModal,
   onSelect,
   onClose,
-}: TokenSearchProps) {
+}: ITokenSearchProps) {
   const {
     searchQuery,
     searchResults,
@@ -32,8 +32,8 @@ export function TokenSearch({
     setSortBy,
   } = useTokenSearch()
 
-  const handleSelect = (token: TokenSearchResult) => {
-    const selectedToken: TokenInfo = {
+  const handleSelect = (token: ITokenSearchResult) => {
+    const selectedToken: ITokenInfo = {
       address: token.address,
       symbol: token.symbol,
       name: token.name,

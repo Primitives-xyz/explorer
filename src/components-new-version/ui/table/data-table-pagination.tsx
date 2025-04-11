@@ -29,7 +29,7 @@ export function DataTablePagination<TData>({ table, isSmall }: Props<TData>) {
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
         <p
-          className={cn('text-sm font-medium whitespace-nowrap', {
+          className={cn('text-sm whitespace-nowrap', {
             'text-xs': isSmall,
           })}
         >
@@ -57,12 +57,9 @@ export function DataTablePagination<TData>({ table, isSmall }: Props<TData>) {
         </Select>
       </div>
       <div
-        className={cn(
-          'flex w-[100px] items-center justify-center text-sm font-medium',
-          {
-            'text-xs': isSmall,
-          }
-        )}
+        className={cn('flex w-[100px] items-center justify-center text-sm', {
+          'text-xs': isSmall,
+        })}
       >
         Page {table.getState().pagination.pageIndex + 1} of{' '}
         {table.getPageCount()}

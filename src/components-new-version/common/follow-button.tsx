@@ -109,6 +109,12 @@ export function FollowButton({
   }
 
   const isFollowing = isFollowingOptimistic ?? data?.isFollowing
+  const isIcon =
+    props.size === ButtonSize.ICON || props.size === ButtonSize.ICON_SM
+  const iconSize =
+    props.size === ButtonSize.ICON || props.size === ButtonSize.DEFAULT
+      ? 18
+      : 14
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -124,18 +130,18 @@ export function FollowButton({
         ) : (
           <>
             {isFollowing ? (
-              props.size === ButtonSize.SM ? (
-                <UserCheck size={18} />
+              isIcon ? (
+                <UserCheck size={iconSize} />
               ) : (
                 <>
-                  <UserCheck size={18} /> Following
+                  <UserCheck size={iconSize} /> Following
                 </>
               )
-            ) : props.size === ButtonSize.SM ? (
-              <UserPlus size={18} />
+            ) : isIcon ? (
+              <UserPlus size={iconSize} />
             ) : (
               <>
-                <UserPlus size={18} /> Follow
+                <UserPlus size={iconSize} /> Follow
               </>
             )}
           </>

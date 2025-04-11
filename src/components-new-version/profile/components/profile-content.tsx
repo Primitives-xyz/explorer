@@ -40,7 +40,7 @@ export function ProfileContent({ username, walletAddress }: Props) {
   const displayUsername = username || profileInfo.profile.username
 
   return (
-    <div className="flex flex-col w-full space-y-6">
+    <div className="flex flex-col w-full space-y-6 pb-6">
       <ProfileHeader
         profileInfo={profileInfo}
         displayUsername={displayUsername}

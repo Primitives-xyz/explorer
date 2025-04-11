@@ -6,7 +6,7 @@ export function Graph({ id }: GraphProps) {
   const src = `https://birdeye.so/tv-widget/${id}?chain=solana&viewMode=pair&chartInterval=15&chartType=CANDLE&theme=dark&defaultMetric=mcap`
 
   return (
-    <div className="h-[430px] w-full overflow-hidden rounded-card">
+    <div className="h-[430px] w-full overflow-hidden rounded-card bg-card">
       <iframe
         src={src}
         title="Token Graph"

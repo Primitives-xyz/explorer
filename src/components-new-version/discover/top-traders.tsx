@@ -129,20 +129,20 @@ export function TopTraders({ timeFrame }: Props) {
         )
       },
     },
-    {
-      accessorKey: 'trade_count',
-      header: '',
-      enableSorting: false,
-      cell: ({ getValue }) => {
-        return (
-          <div>
-            <Button disabled variant={ButtonVariant.SECONDARY}>
-              Follow
-            </Button>
-          </div>
-        )
-      },
-    },
+    // {
+    //   accessorKey: 'trade_count',
+    //   header: '',
+    //   enableSorting: false,
+    //   cell: ({ getValue }) => {
+    //     return (
+    //       <div>
+    //         <FollowButton  variant={ButtonVariant.SECONDARY}>
+    //           Follow
+    //         </FollowButton>
+    //       </div>
+    //     )
+    //   },
+    // },
   ]
 
   return (

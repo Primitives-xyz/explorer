@@ -1,4 +1,4 @@
-export interface TokenInfo {
+export interface ITokenInfo {
   address: string
   symbol: string
   name: string
@@ -8,7 +8,7 @@ export interface TokenInfo {
   chainId?: string
 }
 
-export interface TokenSearchResult extends TokenInfo {
+export interface ITokenSearchResult extends ITokenInfo {
   price: number | null
   volume_24h_usd: number
   verified: boolean
@@ -20,13 +20,24 @@ export interface TokenSearchResult extends TokenInfo {
   prioritized?: boolean
 }
 
-export interface SortOption {
+export interface ISortOption {
   value: 'marketcap' | 'volume' | 'name' | 'balance'
   label: string
 }
 
-export interface TokenSearchProps {
-  onSelect: (token: TokenInfo) => void
+export interface ITokenSearchProps {
+  onSelect: (token: ITokenInfo) => void
   onClose: () => void
   openModal: boolean
+}
+
+export enum ESwapMode {
+  EXACT_IN = 'ExactIn',
+  EXACT_OUT = 'ExactOut',
+}
+
+export interface ISwapInputs {
+  inputMint: string
+  outputMint: string
+  inputAmount: number
 }
