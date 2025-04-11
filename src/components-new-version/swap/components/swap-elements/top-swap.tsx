@@ -1,10 +1,10 @@
 'use client'
 
-import { ESwapMode } from '@/components-new-version/swap/components/swap'
 import { Pay } from '@/components-new-version/swap/components/swap-elements/pay'
 import { Receive } from '@/components-new-version/swap/components/swap-elements/received'
 import { Card, CardContent } from '@/components-new-version/ui/card'
 import { ArrowDownUp } from 'lucide-react'
+import { ESwapMode } from '../../swap.models'
 
 interface Props {
   walletAddress: string

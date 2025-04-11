@@ -1,6 +1,6 @@
 'use client'
 
-import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import { ITokenSearchResult } from '@/components-new-version/swap/swap.models'
 import {
   formatMarketCap,
   formatPrice,
@@ -11,8 +11,8 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 interface TokenListItemProps {
-  token: TokenSearchResult
-  onSelect: (token: TokenSearchResult) => void
+  token: ITokenSearchResult
+  onSelect: (token: ITokenSearchResult) => void
 }
 
 export function TokenListItem({ token, onSelect }: TokenListItemProps) {

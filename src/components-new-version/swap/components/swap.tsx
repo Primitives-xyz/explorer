@@ -9,20 +9,15 @@ import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-toke
 import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
-import { route } from '@/components-new-version/utils/route'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import {
   formatLargeNumber,
   formatRawAmount,
   formatUsdValue,
 } from '@/components-new-version/utils/utils'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-
-export enum ESwapMode {
-  EXACT_IN = 'ExactIn',
-  EXACT_OUT = 'ExactOut',
-}
+import { useEffect, useMemo, useState } from 'react'
+import { useSwapStore } from '../stores/use-swap-store'
+import { ESwapMode } from '../swap.models'
 
 const validateAmount = (value: string, decimals: number = 6): boolean => {
   if (value === '') return true
@@ -56,20 +51,18 @@ interface Props {
 }
 
 export function Swap({ setTokenMint }: Props) {
-  const searchParams = useSearchParams()
-  const router = useRouter()
+  // const searchParams = useSearchParams()
+  // const router = useRouter()
+  // const pathname = usePathname()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
-  const [inAmount, setInAmount] = useState<string>('')
-  const [outAmount, setOutAmount] = useState<string>('')
-  const [swapMode, setSwapMode] = useState<ESwapMode>(ESwapMode.EXACT_IN)
-  const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
-  const [showInputTokenSearch, setShowInputTokenSearch] =
-    useState<boolean>(false)
-  const [showOutputTokenSearch, setShowOutputTokenSearch] =
-    useState<boolean>(false)
-
-  const pathname = usePathname()
+  const [inAmount, setInAmount] = useState('')
+  const [outAmount, setOutAmount] = useState('')
+  const [swapMode, setSwapMode] = useState(ESwapMode.EXACT_IN)
+  const [useSSEForFees, setUseSSEForFees] = useState(false)
+  const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
+  const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
+  const { inputs } = useSwapStore()
 
   const {
     symbol: inputTokenSymbol,
@@ -228,21 +221,21 @@ export function Swap({ setTokenMint }: Props) {
     setOutputTokenMint(token.address)
   }
 
-  const updateTokensInURL = useCallback(
-    (input: string, output: string) => {
-      if (pathname !== '/new-trade') return
+  // const updateTokensInURL = useCallback(
+  //   (input: string, output: string) => {
+  //     if (pathname !== '/new-trade') return
 
-      const params = new URLSearchParams(searchParams.toString())
+  //     const params = new URLSearchParams(searchParams.toString())
 
-      params.set('inputMint', input)
-      params.set('outputMint', output)
-      params.set('mode', 'swap')
+  //     params.set('inputMint', input)
+  //     params.set('outputMint', output)
+  //     params.set('mode', 'swap')
 
-      router.push(route('newTrade', params.toString() as string))
-    },
+  //     router.push(route('newTrade', params.toString() as string))
+  //   },
 
-    [router, searchParams, pathname]
-  )
+  //   [router, searchParams, pathname]
+  // )
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -312,10 +305,20 @@ export function Swap({ setTokenMint }: Props) {
   }, [outputTokenMint, setTokenMint])
 
   useEffect(() => {
-    if (inputTokenMint && outputTokenMint) {
-      updateTokensInURL(inputTokenMint, outputTokenMint)
+    if (inputs) {
+      setInputTokenMint(inputs.inputMint)
+      setOutputTokenMint(inputs.outputMint)
+      setSwapMode(inputs.mode)
+      setInAmount(inputs.inputAmount.toString())
+      setOutAmount(inputs.outputAmount.toString())
     }
-  }, [inputTokenMint, outputTokenMint, updateTokensInURL])
+  }, [inputs])
+
+  // useEffect(() => {
+  //   if (inputTokenMint && outputTokenMint) {
+  //     updateTokensInURL(inputTokenMint, outputTokenMint)
+  //   }
+  // }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
   return (
     <div className="space-y-4">

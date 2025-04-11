@@ -1,6 +1,6 @@
-import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import { ITokenSearchResult } from '@/components-new-version/swap/swap.models'
 
-export const DEFAULT_TOKENS: TokenSearchResult[] = [
+export const DEFAULT_TOKENS: ITokenSearchResult[] = [
   {
     name: 'Solana Social Explorer',
     symbol: 'SSE',
@@ -114,7 +114,7 @@ export const formatPrice = (price: number | null) => {
 }
 
 export const sortTokenResults = (
-  results: TokenSearchResult[],
+  results: ITokenSearchResult[],
   sortBy: string
 ) => {
   return [...results].sort((a, b) => {

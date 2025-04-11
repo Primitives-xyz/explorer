@@ -45,7 +45,7 @@ export function SwapTray() {
           {open ? 'Close Swap' : 'Swap'}
         </Button>
         {displaySwap && (
-          <div className="h-full pr-6 py-5 w-[300px] overflow-y-auto">
+          <div className="h-full pr-6 py-5 w-[330px] overflow-y-auto">
             <Swap />
           </div>
         )}

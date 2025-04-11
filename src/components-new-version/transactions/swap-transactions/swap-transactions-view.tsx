@@ -5,6 +5,8 @@ import {
   TransactionEvent,
 } from '@/components-new-version/models/helius.models'
 import { TokenInfo } from '@/components-new-version/models/token.models'
+import { useSwapStore } from '@/components-new-version/swap/stores/use-swap-store'
+import { ESwapMode } from '@/components-new-version/swap/swap.models'
 import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
 import { useTokenInfo } from '@/components-new-version/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-token-usdc-price'
@@ -31,18 +33,12 @@ export type TokenDisplay = {
 interface Props {
   transaction: Transaction
   sourceWallet: string
-  fromMint?: string
-  toMint?: string
 }
 
-export function SwapTransactionsView({
-  transaction,
-  sourceWallet,
-  fromMint,
-  toMint,
-}: Props) {
+export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
   const [toToken, setToToken] = useState<TokenDisplay | null>(null)
+  const { setOpen, setInputs } = useSwapStore()
 
   const { profiles } = useGetProfiles({
     walletAddress: sourceWallet,
@@ -90,13 +86,12 @@ export function SwapTransactionsView({
     })
 
   const fromTokenPrice = shouldFetchFromPrice ? fromTokenPriceRaw : null
-  const fromPriceLoading = shouldFetchFromPrice ? fromPriceLoadingRaw : false
   const toTokenPrice = shouldFetchToPrice ? toTokenPriceRaw : null
-  const toPriceLoading = shouldFetchToPrice ? toPriceLoadingRaw : false
 
   useEffect(() => {
     async function loadTokenInfo() {
       if (!transaction.events) return
+
       // Handle swap event format
       const swapEvent = Array.isArray(transaction.events)
         ? transaction.events.find(
@@ -104,6 +99,7 @@ export function SwapTransactionsView({
               event.type === 'SWAP'
           )
         : undefined
+
       if (swapEvent) {
         // For token -> token swaps
         if (
@@ -157,8 +153,8 @@ export function SwapTransactionsView({
       const descParts = transaction.description?.split(' ') || []
       const fromAmount = parseFloat(descParts[2] || '0')
       const toAmount = parseFloat(descParts[5] || '0')
-      const fromTokenMint = fromMint || descParts[3] || ''
-      const toTokenMint = toMint || descParts[6] || ''
+      const fromTokenMint = descParts[3] || ''
+      const toTokenMint = descParts[6] || ''
 
       // Check if this is a SOL -> Token swap or Token -> SOL swap
       const isFromSol = fromTokenMint.toLowerCase() === 'sol'
@@ -210,7 +206,7 @@ export function SwapTransactionsView({
     }
 
     loadTokenInfo()
-  }, [transaction, sourceWallet, fromMint, toMint])
+  }, [transaction, sourceWallet])
 
   useEffect(() => {
     if (fromToken && fromTokenInfo) {
@@ -237,7 +233,16 @@ export function SwapTransactionsView({
           transaction={transaction}
           sourceWallet={sourceWallet}
           profiles={profiles}
-          displayTradeButton
+          onClickTradeButton={() => {
+            setOpen(true)
+            setInputs({
+              inputMint: fromToken.mint,
+              outputMint: toToken.mint,
+              inputAmount: fromToken.amount,
+              outputAmount: toToken.amount,
+              mode: ESwapMode.EXACT_IN,
+            })
+          }}
         >
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="rounded-md">

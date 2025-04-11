@@ -2,7 +2,7 @@ import { FollowingTransactions } from '@/components-new-version/home/home-conten
 
 export function HomeContent() {
   return (
-    <div className="w-full">
+    <div className="w-full pb-6">
       <FollowingTransactions />
     </div>
   )

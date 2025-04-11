@@ -1,11 +1,10 @@
 'use client'
 
 import { TokenBalance } from '@/components-new-version/common/left-side-menu/balance'
-import { ESwapMode } from '@/components-new-version/swap/components/swap'
 import {
   DEFAULT_INPUT_TOKEN_IMAGEURI,
   DEFAULT_INPUT_TOKEN_SYMBOL,
-} from '@/components-new-version/swap/constants'
+} from '@/components-new-version/swap/swap.constants'
 
 import {
   Button,
@@ -15,6 +14,7 @@ import {
 } from '@/components-new-version/ui'
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
+import { ESwapMode } from '../../swap.models'
 
 interface Props {
   walletAddress: string

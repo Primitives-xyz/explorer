@@ -1,10 +1,9 @@
 'use client'
 
-import { ESwapMode } from '@/components-new-version/swap/components/swap'
 import {
   DEFAULT_OUTPUT_TOKEN_IMAGEURI,
   DEFAULT_OUTPUT_TOKEN_SYMBOL,
-} from '@/components-new-version/swap/constants'
+} from '@/components-new-version/swap/swap.constants'
 import {
   Button,
   ButtonSize,
@@ -13,6 +12,7 @@ import {
 } from '@/components-new-version/ui'
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
+import { ESwapMode } from '../../swap.models'
 
 interface Props {
   displayOutAmount: string
