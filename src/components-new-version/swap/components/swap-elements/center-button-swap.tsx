@@ -24,32 +24,37 @@ export function CenterButtonSwap({
 }: Props) {
   return (
     <div>
-      {!sdkHasLoaded && (
-        <div className="flex items-center justify-center">
-          <Spinner />
-        </div>
-      )}
-
-      {!isLoggedIn ? (
+      {!sdkHasLoaded ? (
         <Button
           expand
           variant={ButtonVariant.OUTLINE_WHITE}
           className="text-lg capitalize font-bold"
           size={ButtonSize.LG}
-          onClick={() => setShowAuthFlow(true)}
         >
-          Connect Wallet
+          <Spinner />
         </Button>
       ) : (
-        <Button
-          expand
-          onClick={handleSwap}
-          className="text-lg capitalize font-bold"
-          size={ButtonSize.LG}
-          disabled={loading}
-        >
-          {loading ? <Spinner /> : <p>Execute Swap</p>}
-        </Button>
+        !isLoggedIn ? (
+          <Button
+            expand
+            variant={ButtonVariant.OUTLINE_WHITE}
+            className="text-lg capitalize font-bold"
+            size={ButtonSize.LG}
+            onClick={() => setShowAuthFlow(true)}
+          >
+            Connect Wallet
+          </Button>
+        ) : (
+          <Button
+            expand
+            onClick={handleSwap}
+            className="text-lg capitalize font-bold"
+            size={ButtonSize.LG}
+            disabled={loading}
+          >
+            {loading ? <Spinner /> : <p>Execute Swap</p>}
+          </Button>
+        )
       )}
     </div>
   )

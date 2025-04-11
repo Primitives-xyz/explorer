@@ -30,6 +30,15 @@ const defaultAbout = {
   tokenProgram: '',
 }
 
+function calculatePercentage(part: number | undefined, total: number | undefined): string {
+  if (part === undefined || total === undefined || isNaN(part) || isNaN(total) || total === 0) {
+    return '0%';
+  }
+
+  const result = (part / total) * 100;
+  return `${result.toFixed(2)}%`;
+}
+
 export function AboutTabContent({ id, overview }: AboutTabContentProps) {
   const { decimals: outputTokenDecimals, data: outputTokenData } =
     useTokenInfo(id)
@@ -51,17 +60,19 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
     <div>
       <div className="pb-4 flex justify-between">
         <div
-          className={`${
-            overview &&
+          className={`${overview &&
+            overview.extensions &&
             (overview.extensions.website || overview.extensions.twitter)
-              ? 'w-1/2'
-              : 'w-full'
-          }`}
+            ? 'w-1/2'
+            : 'w-full'
+            }`}
         >
           <p>{about.description}</p>
         </div>
 
-        {overview &&
+        {
+          overview &&
+          overview.extensions &&
           (overview.extensions.website || overview.extensions.twitter) && (
             <div className="w-1/2 flex flex-col items-end space-y-2">
               <Button
@@ -90,7 +101,8 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
                 <p className="text-xs">{overview.extensions.website}</p>
               </Button>
             </div>
-          )}
+          )
+        }
       </div>
       <div className="space-y-2">
         <p>Market Info</p>
@@ -107,28 +119,17 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
               <p>{about.decimals}</p>
               <p>{about.tokenProgram}</p>
               <p>{overview ? overview.numberMarkets : '...'}</p>
-
               {overview ? (
                 <>
                   <p>
                     {`${formatNumber(overview.circulatingSupply)} 
                     
-                    (${
-                      //to do the right calculation for the percentage
-                      (
-                        (overview.circulatingSupply /
-                          overview.circulatingSupply) *
-                        100
-                      )
-                        //----------------------
-                        .toFixed(2)
-                    }%)`}
+                    (${calculatePercentage(overview.circulatingSupply, overview.supply)})`}
                   </p>
                 </>
               ) : (
                 <p>...</p>
               )}
-
               <p>{overview ? overview.supply : '...'}</p>
             </div>
           </CardContent>
