@@ -7,13 +7,13 @@ import {
 import { TopTraders } from '@/components-new-version/discover/top-traders'
 import { TrendingTokens } from '@/components-new-version/discover/trending-tokens'
 import { useState } from 'react'
-import { TimeFrame } from '../birdeye/birdeye-top-traders.models'
+import { ETimeFrame } from '../birdeye/birdeye-top-traders.models'
 
 export function DiscoverContent() {
   const [selectedType, setSelectedType] = useState<DiscoverFilterType>(
     DiscoverFilterType.TRENDING_TOKENS
   )
-  const [timeFrame, setTimeFrame] = useState<TimeFrame>(TimeFrame.TODAY)
+  const [timeFrame, setTimeFrame] = useState<ETimeFrame>(ETimeFrame.TODAY)
 
   return (
     <div className="flex flex-col w-full">

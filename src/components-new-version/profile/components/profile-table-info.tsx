@@ -1,4 +1,3 @@
-import { ProfileTransactions } from '@/components-new-version/profile/profile-transactions'
 import {
   FilterTabs,
   Select,
@@ -10,6 +9,8 @@ import {
   TabVariant,
 } from '@/components-new-version/ui'
 import { useState } from 'react'
+import { ProfileAssets } from './profile-assets'
+import { ProfileTransactions } from './profile-transactions'
 
 export enum FilterTabsProfileTableInfo {
   TRANSACTIONS = 'transactions',
@@ -21,18 +22,14 @@ interface Props {
 }
 
 export function ProfileTableInfo({ walletAddress }: Props) {
-  const [selected, setSelected] = useState(
-    FilterTabsProfileTableInfo.TRANSACTIONS
-  )
-
+  const [selected, setSelected] = useState(FilterTabsProfileTableInfo.ASSETS)
   const [transactionTypes, setTransactionTypes] = useState<string[]>([])
-
   const [transactionTypeSelected, setTransactionTypeSelected] =
     useState<string>(transactionTypes[0] || 'all')
 
   const options = [
-    { label: 'Transactions', value: FilterTabsProfileTableInfo.TRANSACTIONS },
     { label: 'Assets', value: FilterTabsProfileTableInfo.ASSETS },
+    { label: 'Transactions', value: FilterTabsProfileTableInfo.TRANSACTIONS },
   ]
 
   return (
@@ -67,7 +64,7 @@ export function ProfileTableInfo({ walletAddress }: Props) {
           )}
         </div>
       </div>
-      <div className="h-[400px] overflow-y-auto pb-6">
+      <div className="pb-6">
         {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (
           <ProfileTransactions
             walletAddress={walletAddress}
@@ -75,7 +72,9 @@ export function ProfileTableInfo({ walletAddress }: Props) {
             transactionTypeSelected={transactionTypeSelected}
           />
         )}
-        {selected === FilterTabsProfileTableInfo.ASSETS && <p>assets</p>}
+        {selected === FilterTabsProfileTableInfo.ASSETS && (
+          <ProfileAssets walletAddress={walletAddress} />
+        )}
       </div>
     </div>
   )

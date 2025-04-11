@@ -1,5 +1,5 @@
 import { MainContentWrapper } from '@/components-new-version/common/main-content-wrapper'
-import { ProfileContent } from '@/components-new-version/profile/profile-content'
+import { ProfileContent } from '@/components-new-version/profile/components/profile-content'
 import { TokenContent } from '@/components-new-version/token/token-content'
 import {
   determineRouteType,

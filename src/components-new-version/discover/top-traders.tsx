@@ -1,40 +1,20 @@
 'use client'
 
-import { DataTable } from '@/components-new-version/common/table/data-table'
 import { Button, ButtonSize, ButtonVariant } from '@/components-new-version/ui'
+import { DataTable } from '@/components-new-version/ui/table/data-table'
 import { route } from '@/components-new-version/utils/route'
 import {
   abbreviateWalletAddress,
   cn,
   formatNumber,
 } from '@/components-new-version/utils/utils'
-import { Column, ColumnDef } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp } from 'lucide-react'
-import { ITopTrader, TimeFrame } from '../birdeye/birdeye-top-traders.models'
+import { ColumnDef } from '@tanstack/react-table'
+import { ETimeFrame, ITopTrader } from '../birdeye/birdeye-top-traders.models'
 import { useGetTopTraders } from '../birdeye/hooks/use-get-top-traders'
-
-interface SortableHeaderProps {
-  label: string
-  column: Column<any, unknown>
-}
-
-function SortableHeader({ label, column }: SortableHeaderProps) {
-  const isSorted = column.getIsSorted()
-
-  return (
-    <div
-      className="flex items-center gap-1 cursor-pointer select-none"
-      onClick={column.getToggleSortingHandler()}
-    >
-      {label}
-      {isSorted === 'asc' && <ArrowUp size={14} />}
-      {isSorted === 'desc' && <ArrowDown size={14} />}
-    </div>
-  )
-}
+import { SortableHeader } from '../ui/table/sortable-header'
 
 interface Props {
-  timeFrame: TimeFrame
+  timeFrame: ETimeFrame
 }
 
 export function TopTraders({ timeFrame }: Props) {
@@ -51,10 +31,10 @@ export function TopTraders({ timeFrame }: Props) {
         const traders = row.original
 
         return (
-          <span className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <div
               className={cn(
-                'relative mr-2 w-8 h-8 rounded-full flex items-center justify-center  font-bold border border-secondary',
+                'relative mr-2 w-8 h-8 rounded-full flex items-center justify-center font-bold border border-secondary',
                 {
                   'bg-secondary text-background': row.index <= 2,
                   'bg-transparent text-secondary': row.index > 2,
@@ -63,7 +43,6 @@ export function TopTraders({ timeFrame }: Props) {
             >
               <p className="text-xs">#{row.index + 1}</p>
             </div>
-
             <Button
               href={route('entity', { id: traders.address })}
               variant={ButtonVariant.BADGE}
@@ -73,7 +52,7 @@ export function TopTraders({ timeFrame }: Props) {
                 address: traders.address,
               })}
             </Button>
-          </span>
+          </div>
         )
       },
     },
@@ -82,11 +61,12 @@ export function TopTraders({ timeFrame }: Props) {
       enableSorting: true,
       header: ({ column }) => <SortableHeader label="PNL" column={column} />,
       cell: ({ getValue }) => {
+        const value = getValue<number>()
+
         return (
-          <span>
-            {(getValue() as number) >= 0 ? '▲' : '▼'} $
-            {formatNumber(Math.abs(getValue() as number))}
-          </span>
+          <div>
+            {value >= 0 ? '▲' : '▼'} ${formatNumber(Math.abs(value))}
+          </div>
         )
       },
     },
@@ -103,13 +83,13 @@ export function TopTraders({ timeFrame }: Props) {
           trader.trade_count > 0 ? trader.pnl / trader.trade_count : trader.pnl
 
         return (
-          <span>
+          <div>
             {trader.trade_count > 0
               ? `$${formatNumber(Math.abs(pnlPerTrade))}`
               : trader.pnl !== 0
               ? 'Unrealized'
               : 'No trades'}
-          </span>
+          </div>
         )
       },
     },
@@ -118,14 +98,16 @@ export function TopTraders({ timeFrame }: Props) {
       enableSorting: true,
       header: ({ column }) => <SortableHeader label="Volume" column={column} />,
       cell: ({ getValue, row }) => {
+        const value = getValue<number>()
+
         return (
-          <span>
-            {(getValue() as number) > 0
-              ? `$${formatNumber(getValue() as number)}`
+          <div>
+            {value > 0
+              ? `$${formatNumber(value)}`
               : row.original.pnl !== 0
               ? 'Holding'
               : 'No volume'}
-          </span>
+          </div>
         )
       },
     },
@@ -134,14 +116,16 @@ export function TopTraders({ timeFrame }: Props) {
       enableSorting: true,
       header: ({ column }) => <SortableHeader label="Trades" column={column} />,
       cell: ({ getValue, row }) => {
+        const value = getValue<number>()
+
         return (
-          <span>
-            {(getValue() as number) > 0
-              ? formatNumber(getValue() as number)
+          <div>
+            {value > 0
+              ? formatNumber(value)
               : row.original.pnl !== 0
               ? 'Holding'
               : '0'}
-          </span>
+          </div>
         )
       },
     },
@@ -151,11 +135,11 @@ export function TopTraders({ timeFrame }: Props) {
       enableSorting: false,
       cell: ({ getValue }) => {
         return (
-          <span>
+          <div>
             <Button disabled variant={ButtonVariant.SECONDARY}>
               Follow
             </Button>
-          </span>
+          </div>
         )
       },
     },

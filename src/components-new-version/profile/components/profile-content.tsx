@@ -1,8 +1,5 @@
 'use client'
 
-import { ProfileHeader } from '@/components-new-version/profile/profile-header'
-import { ProfileInfo } from '@/components-new-version/profile/profile-info'
-import { ProfileTableInfo } from '@/components-new-version/profile/profile-table-info'
 import { useProfileInfo } from '@/components-new-version/tapestry/hooks/use-profile-info'
 import {
   ButtonSize,
@@ -18,6 +15,9 @@ import {
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/components/common/tools'
 import { CopyIcon } from 'lucide-react'
+import { ProfileHeader } from './profile-header'
+import { ProfileInfo } from './profile-info'
+import { ProfileTableInfo } from './profile-table-info'
 
 interface Props {
   username?: string

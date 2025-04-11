@@ -1,6 +1,5 @@
 'use client'
 
-import { DataTablePagination } from '@/components-new-version/common/table/data-table-pagination'
 import { Spinner } from '@/components-new-version/ui'
 import {
   Table,
@@ -10,6 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components-new-version/ui/table'
+import { DataTablePagination } from '@/components-new-version/ui/table/data-table-pagination'
+import { cn } from '@/components-new-version/utils/utils'
 import {
   ColumnDef,
   flexRender,
@@ -27,6 +28,7 @@ interface DataTableProps<TData> {
   emptyText?: string
   withPagination?: boolean
   isLoading?: boolean
+  isSmall?: boolean
 }
 
 export function DataTable<TData>({
@@ -35,6 +37,7 @@ export function DataTable<TData>({
   emptyText = 'No results.',
   withPagination,
   isLoading,
+  isSmall,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
@@ -68,13 +71,18 @@ export function DataTable<TData>({
   )
 
   return (
-    <>
-      <Table>
-        <TableHeader>
+    <div className="space-y-2">
+      <Table className="h-[400px] overflow-y-auto">
+        <TableHeader className="sticky top-0">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className={cn({
+                    'h-8 text-xs px-2': isSmall,
+                  })}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -86,8 +94,7 @@ export function DataTable<TData>({
             </TableRow>
           ))}
         </TableHeader>
-
-        <TableBody className="max-h-[400px]! overflow-y-auto!">
+        <TableBody>
           {isLoading ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -100,7 +107,12 @@ export function DataTable<TData>({
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cn({
+                      'p-2 text-xs': isSmall,
+                    })}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -115,7 +127,9 @@ export function DataTable<TData>({
           )}
         </TableBody>
       </Table>
-      {withPagination && <DataTablePagination table={table} />}
-    </>
+      {withPagination && (
+        <DataTablePagination table={table} isSmall={isSmall} />
+      )}
+    </div>
   )
 }
