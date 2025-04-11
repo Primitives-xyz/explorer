@@ -110,7 +110,7 @@ export function TrendingTokens() {
                 })
               }}
             >
-              Copy Trade
+              Buy
             </Button>
           </div>
         )
