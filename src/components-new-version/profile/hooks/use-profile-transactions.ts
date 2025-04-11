@@ -18,7 +18,7 @@ export const useProfileTransactions = ({
     Map<string, Transaction>
   >(new Map())
   const [newTransactions, setNewTransactions] = useState<Transaction[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const t = useTranslations()
@@ -163,7 +163,7 @@ export const useProfileTransactions = ({
     transactions,
     newTransactions,
     transactionTypes,
-    isLoading,
+    loading,
     error,
     page,
     filteredTransactions: (type: string) =>

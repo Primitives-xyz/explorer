@@ -6,8 +6,8 @@ import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
 import { useMemo } from 'react'
 interface Props {
   username?: string
-  mainUsername?: string | null
-  namespace?: string | null
+  mainUsername?: string
+  namespace?: string
   walletAddress?: string
 }
 
@@ -17,18 +17,16 @@ export function useProfileInfo({
   namespace,
   walletAddress,
 }: Props) {
-  // Determine if we have a namespace
-  const hasNamespace =
-    namespace !== undefined && namespace !== null && namespace !== ''
+  const hasNamespace = !!namespace
 
   // Create API URL based on parameters
   const url = !hasNamespace
-    ? `/profiles/${username}?fromUsername=${mainUsername}`
-    : `/profiles/${username}?namespace=${namespace}`
+    ? `profiles/${username}?fromUsername=${mainUsername}`
+    : `profiles/${username}?namespace=${namespace}`
 
   const {
     data,
-    loading: isLoading,
+    loading: getProfileLoading,
     error,
   } = useQuery<IGetProfileResponse>({
     endpoint: url,
@@ -66,7 +64,7 @@ export function useProfileInfo({
 
   // Combine all data into a single return object
   return useMemo(() => {
-    const isLoadingData = isLoading || loadingProfiles
+    const isLoadingData = getProfileLoading || loadingProfiles
     const serverError =
       error?.message === 'Server error' ||
       profilesError?.message?.includes('Server error')
@@ -74,7 +72,7 @@ export function useProfileInfo({
       profilesError?.message === 'Invalid Solana wallet address'
 
     return {
-      profiles: profiles,
+      profiles,
       profileInfo: explorerProfile,
       isLoading: isLoadingData,
       walletAddressError,
@@ -82,7 +80,7 @@ export function useProfileInfo({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    isLoading,
+    getProfileLoading,
     loadingProfiles,
     profiles,
     explorerProfile,

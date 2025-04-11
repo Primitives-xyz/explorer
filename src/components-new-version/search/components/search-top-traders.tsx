@@ -1,6 +1,6 @@
 'use client'
 
-import { TimeFrame } from '@/components-new-version/birdeye/birdeye-top-traders.models'
+import { ETimeFrame } from '@/components-new-version/birdeye/birdeye-top-traders.models'
 import { useGetTopTraders } from '@/components-new-version/birdeye/hooks/use-get-top-traders'
 import { route } from '@/components-new-version/utils/route'
 import { abbreviateWalletAddress } from '@/components-new-version/utils/utils'
@@ -13,7 +13,7 @@ interface Props {
 
 export function SearchTopTraders({ closePopover }: Props) {
   const { traders } = useGetTopTraders({
-    timeFrame: TimeFrame.TODAY,
+    timeFrame: ETimeFrame.TODAY,
     limit: SEARCH_RESULTS_LIMIT,
   })
 

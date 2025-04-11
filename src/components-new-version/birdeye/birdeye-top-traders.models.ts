@@ -1,4 +1,4 @@
-export enum TimeFrame {
+export enum ETimeFrame {
   TODAY = 'today',
   YESTERDAY = 'yesterday',
   ONE_WEEK = '1W',

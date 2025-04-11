@@ -1,34 +1,14 @@
 'use client'
 
-import { DataTable } from '@/components-new-version/common/table/data-table'
 import { Button, ButtonVariant } from '@/components-new-version/ui'
+import { DataTable } from '@/components-new-version/ui/table/data-table'
 import { route } from '@/components-new-version/utils/route'
 import { cn, formatNumber } from '@/components-new-version/utils/utils'
-import { Column, ColumnDef } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp } from 'lucide-react'
+import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
 import { ITrendingToken } from '../birdeye/birdeye-tokens-trending.models'
 import { useGetTrendingTokens } from '../birdeye/hooks/use-get-trending-tokens'
-
-interface SortableHeaderProps {
-  label: string
-  column: Column<any, unknown>
-}
-
-function SortableHeader({ label, column }: SortableHeaderProps) {
-  const isSorted = column.getIsSorted()
-
-  return (
-    <div
-      className="flex items-center gap-1 cursor-pointer select-none"
-      onClick={column.getToggleSortingHandler()}
-    >
-      {label}
-      {isSorted === 'asc' && <ArrowUp size={14} />}
-      {isSorted === 'desc' && <ArrowDown size={14} />}
-    </div>
-  )
-}
+import { SortableHeader } from '../ui/table/sortable-header'
 
 export function TrendingTokens() {
   const { tokens, loading } = useGetTrendingTokens()
@@ -41,17 +21,19 @@ export function TrendingTokens() {
       accessorFn: (row) => row.name,
       cell: ({ row }) => {
         return (
-          <span className="flex items-center gap-2">
-            <div className="relative mr-2">
-              {row.original.logoURI && (
-                <Image
-                  src={row.original.logoURI}
-                  alt={row.original.symbol}
-                  width={32}
-                  height={32}
-                  className="rounded-full object-cover aspect-square"
-                />
-              )}
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <div className="w-8 aspect-square rounded-full bg-muted overflow-hidden">
+                {row.original.logoURI && (
+                  <Image
+                    src={row.original.logoURI}
+                    alt={row.original.symbol}
+                    width={32}
+                    height={32}
+                    className="object-cover w-full h-full"
+                  />
+                )}
+              </div>
               <div
                 className={cn(
                   '-top-2 -right-2 bg-secondary rounded-full aspect-square absolute w-5 h-5 flex items-center justify-center text-[8px] font-bold border border-secondary',
@@ -73,7 +55,7 @@ export function TrendingTokens() {
               <p className="font-bold">{row.original.name}</p>
             </Button>
             <p className="font-thin">${row.original.symbol}</p>
-          </span>
+          </div>
         )
       },
     },
@@ -81,17 +63,21 @@ export function TrendingTokens() {
       accessorKey: 'price',
       enableSorting: true,
       header: ({ column }) => <SortableHeader label="Price" column={column} />,
-      cell: ({ getValue }) => (
-        <span>${formatNumber(getValue() as number)}</span>
-      ),
+      cell: ({ getValue }) => {
+        const value = getValue<number>()
+
+        return <div>${formatNumber(value)}</div>
+      },
     },
     {
       accessorKey: 'volume24hUSD',
       enableSorting: true,
       header: ({ column }) => <SortableHeader label="Vol" column={column} />,
-      cell: ({ getValue }) => (
-        <span>${formatNumber(getValue() as number)}</span>
-      ),
+      cell: ({ getValue }) => {
+        const value = getValue<number>()
+
+        return <div>${formatNumber(value)}</div>
+      },
     },
     {
       accessorKey: 'liquidity',
@@ -99,9 +85,11 @@ export function TrendingTokens() {
       header: ({ column }) => (
         <SortableHeader label="Liquidity" column={column} />
       ),
-      cell: ({ getValue }) => (
-        <span>${formatNumber(getValue() as number)}</span>
-      ),
+      cell: ({ getValue }) => {
+        const value = getValue<number>()
+
+        return <div>${formatNumber(value)}</div>
+      },
     },
     {
       accessorKey: 'holders',
@@ -109,9 +97,9 @@ export function TrendingTokens() {
       enableSorting: false,
       cell: ({ getValue }) => {
         return (
-          <span>
+          <div>
             <Button disabled>BUY</Button>
-          </span>
+          </div>
         )
       },
     },
@@ -122,7 +110,7 @@ export function TrendingTokens() {
       data={tokens}
       columns={columns}
       withPagination
-      isLoading={loading}
+      loading={loading}
     />
   )
 }

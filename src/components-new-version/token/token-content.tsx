@@ -1,5 +1,5 @@
-import { ProfileContent } from '@/components-new-version/profile/profile-content'
 import { fetchTokenInfo } from '@/components-new-version/utils/helius/das-api'
+import { ProfileContent } from '../profile/components/profile-content'
 
 export async function TokenContent({ id }: { id: string }) {
   let tokenInfo = null
