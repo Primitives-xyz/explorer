@@ -27,8 +27,9 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData>[]
   emptyText?: string
   withPagination?: boolean
-  isLoading?: boolean
+  loading?: boolean
   isSmall?: boolean
+  tableClassName?: string
 }
 
 export function DataTable<TData>({
@@ -36,8 +37,9 @@ export function DataTable<TData>({
   columns,
   emptyText = 'No results.',
   withPagination,
-  isLoading,
+  loading,
   isSmall,
+  tableClassName,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
@@ -72,7 +74,7 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-2">
-      <Table className="h-[400px] overflow-y-auto">
+      <Table className={tableClassName}>
         <TableHeader className="sticky top-0">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -95,7 +97,7 @@ export function DataTable<TData>({
           ))}
         </TableHeader>
         <TableBody>
-          {isLoading ? (
+          {loading ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
                 <span className="flex justify-center items-center">

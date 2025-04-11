@@ -26,10 +26,10 @@ export function ProfileTokens({ walletAddress }: Props) {
         return (
           <div className="flex items-center gap-2">
             <div className="w-6 aspect-square rounded-full bg-muted overflow-hidden">
-              {row.original.imageUrl &&
-                !row.original.imageUrl.includes('ipfs://') && (
+              {row.original.image &&
+                !row.original.image.includes('ipfs://') && (
                   <Image
-                    src={row.original.imageUrl}
+                    src={row.original.image}
                     alt={row.original.symbol}
                     width={24}
                     height={24}
@@ -72,12 +72,20 @@ export function ProfileTokens({ walletAddress }: Props) {
   ]
 
   return (
-    <DataTable
-      data={fungibleTokens}
-      columns={columns}
-      isLoading={isLoading}
-      // withPagination
-      isSmall
-    />
+    <div className="space-y-1">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm">Tokens</h3>
+        <span className="text-muted-foreground text-xs">
+          ({fungibleTokens?.length ?? 0})
+        </span>
+      </div>
+      <DataTable
+        data={fungibleTokens}
+        columns={columns}
+        loading={isLoading}
+        tableClassName="h-[300px]"
+        isSmall
+      />
+    </div>
   )
 }

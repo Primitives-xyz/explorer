@@ -150,7 +150,7 @@ export function TopTraders({ timeFrame }: Props) {
       data={traders}
       columns={columns}
       withPagination
-      isLoading={loading}
+      loading={loading}
     />
   )
 }

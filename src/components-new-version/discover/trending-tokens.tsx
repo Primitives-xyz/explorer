@@ -110,7 +110,7 @@ export function TrendingTokens() {
       data={tokens}
       columns={columns}
       withPagination
-      isLoading={loading}
+      loading={loading}
     />
   )
 }
