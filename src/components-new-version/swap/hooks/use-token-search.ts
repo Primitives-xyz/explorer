@@ -5,7 +5,7 @@ import {
   searchTokensByAddress,
   searchTokensByKeyword,
 } from '@/components-new-version/swap/services/token-search-service'
-import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import { ITokenSearchResult } from '@/components-new-version/swap/swap.models'
 import { DEFAULT_TOKENS } from '@/components-new-version/swap/utils/token-utils'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { debounce } from 'lodash'
@@ -21,7 +21,7 @@ export enum SortOptionsDetails {
 
 export function useTokenSearch() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<TokenSearchResult[]>([])
+  const [searchResults, setSearchResults] = useState<ITokenSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [verifiedOnly, setVerifiedOnly] = useState(true)
@@ -80,7 +80,7 @@ export function useTokenSearch() {
 
   // Function to prioritize wallet tokens in search results
   const prioritizeWalletTokens = useCallback(
-    (results: TokenSearchResult[], query: string): TokenSearchResult[] => {
+    (results: ITokenSearchResult[], query: string): ITokenSearchResult[] => {
       if (!walletTokens.length) return results
 
       // Get wallet tokens that match the search query

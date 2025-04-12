@@ -8,10 +8,13 @@ import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
 import { ITrendingToken } from '../birdeye/birdeye-tokens-trending.models'
 import { useGetTrendingTokens } from '../birdeye/hooks/use-get-trending-tokens'
+import { useSwapStore } from '../swap/stores/use-swap-store'
 import { SortableHeader } from '../ui/table/sortable-header'
+import { SOL_MINT } from '../utils/constants'
 
 export function TrendingTokens() {
   const { tokens, loading } = useGetTrendingTokens()
+  const { setOpen, setInputs } = useSwapStore()
 
   const columns: ColumnDef<ITrendingToken>[] = [
     {
@@ -92,13 +95,23 @@ export function TrendingTokens() {
       },
     },
     {
-      accessorKey: 'holders',
       header: '',
       enableSorting: false,
-      cell: ({ getValue }) => {
+      cell: ({ row }) => {
         return (
           <div>
-            <Button disabled>BUY</Button>
+            <Button
+              onClick={() => {
+                setOpen(true)
+                setInputs({
+                  inputMint: SOL_MINT,
+                  outputMint: row.original.address,
+                  inputAmount: 0.1,
+                })
+              }}
+            >
+              Buy
+            </Button>
           </div>
         )
       },
