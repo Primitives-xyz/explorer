@@ -17,7 +17,7 @@ import {
 } from '@/utils/utils'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-// import { useSwapStore } from '../stores/use-swap-store'
+import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
 
 const validateAmount = (value: string, decimals: number = 6): boolean => {
@@ -63,7 +63,7 @@ export function Swap({ setTokenMint }: Props) {
   const [useSSEForFees, setUseSSEForFees] = useState(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
-  // const { inputs, setOpen } = useSwapStore()
+  const { inputs, setOpen, setInputs } = useSwapStore()
 
   const {
     symbol: inputTokenSymbol,
@@ -211,6 +211,11 @@ export function Swap({ setTokenMint }: Props) {
     decimals: number
   }) => {
     setInputTokenMint(token.address)
+    setInputs({
+      inputMint: token.address,
+      outputMint: outputTokenMint,
+      inputAmount: parseFloat(inAmount),
+    })
   }
 
   const handleOutputTokenSelect = (token: {
@@ -220,6 +225,11 @@ export function Swap({ setTokenMint }: Props) {
     decimals: number
   }) => {
     setOutputTokenMint(token.address)
+    setInputs({
+      inputMint: inputTokenMint,
+      outputMint: token.address,
+      inputAmount: parseFloat(inAmount),
+    })
   }
 
   const updateTokensInURL = useCallback(
@@ -270,12 +280,11 @@ export function Swap({ setTokenMint }: Props) {
   }
 
   const handleSwapDirection = () => {
-    const tempTokenMint = inputTokenMint
-    setInputTokenMint(outputTokenMint)
-    setOutputTokenMint(tempTokenMint)
-
-    setInAmount('')
-    setOutAmount('')
+    setInputs({
+      inputMint: outputTokenMint,
+      outputMint: inputTokenMint,
+      inputAmount: parseFloat(outAmount),
+    })
   }
 
   useEffect(() => {
@@ -301,14 +310,14 @@ export function Swap({ setTokenMint }: Props) {
     }
   }, [outputTokenMint, setTokenMint])
 
-  // useEffect(() => {
-  //   if (inputs) {
-  //     setInputTokenMint(inputs.inputMint)
-  //     setOutputTokenMint(inputs.outputMint)
-  //     setInAmount(inputs.inputAmount.toString())
-  //     updateTokensInURL(inputs.inputMint, inputs.outputMint)
-  //   }
-  // }, [inputs, updateTokensInURL])
+  useEffect(() => {
+    if (inputs) {
+      setInputTokenMint(inputs.inputMint)
+      setOutputTokenMint(inputs.outputMint)
+      setInAmount(inputs.inputAmount.toString())
+      updateTokensInURL(inputs.inputMint, inputs.outputMint)
+    }
+  }, [inputs, updateTokensInURL])
 
   useEffect(() => {
     if (inputTokenMint && outputTokenMint) {
