@@ -1,24 +1,8 @@
+import { INamespaceProfileInfos } from '@/components-new-version/models/namespace.models'
 import { IGetProfilesResponse } from '@/components-new-version/models/profiles.models'
 import { useGetProfiles } from '@/components-new-version/tapestry/hooks/use-get-profiles'
 import { useQuery } from '@/components-new-version/utils/api'
 import { useEffect, useRef, useState } from 'react'
-
-export interface ProfileData {
-  walletAddress: string
-  socialCounts?: {
-    followers: number
-    following: number
-  }
-  profile: {
-    created_at: string
-    image: string | null
-    bio?: string
-  }
-  namespace?: {
-    name?: string
-    userProfileURL?: string
-  }
-}
 
 interface LoadingState {
   type: 'loading'
@@ -26,7 +10,7 @@ interface LoadingState {
 
 interface LoadedState {
   type: 'loaded'
-  data: ProfileData
+  data: INamespaceProfileInfos
   profiles?: IGetProfilesResponse
   walletAddressError: boolean
 }
@@ -60,7 +44,7 @@ export function useNamespaceProfile({
     ? `/profiles/${username}?fromUsername=${mainUsername}`
     : `/profiles/${username}?namespace=${namespace}`
 
-  const { data, loading } = useQuery<ProfileData>({
+  const { data, loading } = useQuery<INamespaceProfileInfos>({
     endpoint: url,
   })
 
@@ -77,19 +61,17 @@ export function useNamespaceProfile({
     }
   }, [loading])
 
-  function isEqual(objA: any, objB: any): boolean {
-    if (objA === objB) return true
-    if (!objA || !objB) return false
-
-    const keysToCompare = ['walletAddress', 'profile', 'namespace']
-
-    for (const key of keysToCompare) {
-      if (JSON.stringify(objA[key]) !== JSON.stringify(objB[key])) {
-        return false
-      }
-    }
-
-    return true
+  function isEqualProfileData(
+    a: INamespaceProfileInfos,
+    b: INamespaceProfileInfos
+  ): boolean {
+    return (
+      a.walletAddress === b.walletAddress &&
+      a.profile.image === b.profile.image &&
+      a.profile.bio === b.profile.bio &&
+      a.namespace?.name === b.namespace?.name &&
+      a.namespace?.userProfileURL === b.namespace?.userProfileURL
+    )
   }
 
   useEffect(() => {
@@ -116,7 +98,7 @@ export function useNamespaceProfile({
 
     if (
       !prevDataRef.current ||
-      !isEqual(prevDataRef.current.data, newState.data)
+      !isEqualProfileData(prevDataRef.current.data, newState.data)
     ) {
       prevDataRef.current = newState
       setState(newState)

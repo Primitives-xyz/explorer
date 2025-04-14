@@ -26,3 +26,22 @@ export interface INamespaceProfile {
     following: number
   }
 }
+
+export interface INamespaceProfileInfos {
+  socialCounts?: {
+    followers: number
+    following: number
+  }
+  profile: {
+    created_at: string
+    image: string | null
+    bio?: string
+  }
+  namespace?: {
+    name?: string
+    userProfileURL?: string
+    readableName?: string
+    faviconURL?: string
+  }
+  walletAddress: string
+}

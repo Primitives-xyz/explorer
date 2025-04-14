@@ -12,8 +12,8 @@ export default async function NamespaceProfile({
   const { id, profile } = await params
 
   return (
-    <MainContentWrapper className="min-w-main-content max-w-main-content mx-auto flex justify-center">
-      <div className="w-full flex flex-col items-start">
+    <MainContentWrapper className="w-full mx-auto flex justify-center">
+      <div className="w-full flex flex-col items-start space-y-6">
         <Button href={route('namespace', { id })} variant={ButtonVariant.LINK}>
           <ChevronLeft size={14} />
           go back
