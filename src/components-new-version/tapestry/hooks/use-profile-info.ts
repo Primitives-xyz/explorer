@@ -62,30 +62,13 @@ export function useProfileInfo({
     ) // Default to first profile if no match found
   }, [profiles])
 
-  // Combine all data into a single return object
-  return useMemo(() => {
-    const isLoadingData = getProfileLoading || loadingProfiles
-    const serverError =
+  return {
+    profileInfo: explorerProfile,
+    isLoading: getProfileLoading || loadingProfiles,
+    walletAddressError:
+      profilesError?.message === 'Invalid Solana wallet address',
+    serverError:
       error?.message === 'Server error' ||
-      profilesError?.message?.includes('Server error')
-    const walletAddressError =
-      profilesError?.message === 'Invalid Solana wallet address'
-
-    return {
-      profiles,
-      profileInfo: explorerProfile,
-      isLoading: isLoadingData,
-      walletAddressError,
-      serverError,
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    getProfileLoading,
-    loadingProfiles,
-    profiles,
-    explorerProfile,
-    error,
-    profilesError,
-    data,
-  ])
+      profilesError?.message?.includes('Server error'),
+  }
 }

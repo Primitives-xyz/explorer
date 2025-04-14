@@ -23,7 +23,12 @@ export function ProfileHeader({
   return (
     <div className="flex items-center justify-between">
       <div className="flex gap-2">
-        <Avatar username={displayUsername} size={72} className="w-18" />
+        <Avatar
+          username={displayUsername}
+          size={72}
+          className="w-18"
+          imageUrl={profileInfo.profile.image}
+        />
         <div className="space-y-2">
           <div className="flex gap-1 items-center">
             <p className="font-bold">@{profileInfo.profile.username}</p>

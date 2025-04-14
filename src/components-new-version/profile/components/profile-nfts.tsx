@@ -14,8 +14,6 @@ export function ProfileNfts({ walletAddress }: Props) {
     walletAddress,
   })
 
-  console.log('nfts', nfts)
-
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
