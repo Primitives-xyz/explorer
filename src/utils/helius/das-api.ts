@@ -1,16 +1,4 @@
-import type { TokenResponse } from '@/types/Token'
-
-const RPC_URL = process.env.RPC_URL || ''
-
-interface RPCResponse {
-  jsonrpc: string
-  id: string
-  error?: {
-    message: string
-    code: number
-  }
-  result?: TokenResponse['result']
-}
+import { RPCResponse, TokenResponse } from '@/components/models/token.models'
 
 interface SearchAssetsResponse {
   jsonrpc: string
@@ -31,12 +19,12 @@ export async function fetchTokenInfo(
   id: string
 ): Promise<TokenResponse | null> {
   try {
-    if (!RPC_URL) {
+    if (!process.env.RPC_URL) {
       console.error('RPC_URL is not configured')
       return null
     }
 
-    const response = await fetch(RPC_URL, {
+    const response = await fetch(process.env.RPC_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -84,13 +72,15 @@ export async function fetchTokenInfo(
   }
 }
 
+const whiteListedHolders = ['3AFBKkJs7TPGq8wLR3BFSZPZDkV9eg3PfyPMz1NecwiZ']
+
 export async function checkSolanaBusinessFrogHolder({
   walletAddress,
 }: {
   walletAddress: string
 }): Promise<boolean> {
   try {
-    if (!RPC_URL) {
+    if (!process.env.RPC_URL) {
       throw new Error('RPC_URL is not configured')
     }
 
@@ -98,7 +88,7 @@ export async function checkSolanaBusinessFrogHolder({
       return true
     }
 
-    const response = await fetch(RPC_URL, {
+    const response = await fetch(process.env.RPC_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -138,5 +128,3 @@ export async function checkSolanaBusinessFrogHolder({
     return false
   }
 }
-
-const whiteListedHolders = ['3AFBKkJs7TPGq8wLR3BFSZPZDkV9eg3PfyPMz1NecwiZ']

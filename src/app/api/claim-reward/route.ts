@@ -1,12 +1,10 @@
-import { SSE_MINT } from '@/components/trading/constants'
 import { SseStake } from '@/sse_stake'
 import stakingProgramIdl from '@/sse_stake.json'
+import { SSE_MINT } from '@/utils/constants'
 import { getAssociatedTokenAccount } from '@/utils/token'
 import * as anchor from '@coral-xyz/anchor'
-import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import {
   Connection,
-  Keypair,
   PublicKey,
   TransactionMessage,
   VersionedTransaction,
@@ -20,10 +18,6 @@ export async function POST(req: NextRequest) {
   try {
     const { walletAddy } = await req.json()
     const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-    const wallet = new NodeWallet(Keypair.generate())
-    const provider = new anchor.AnchorProvider(connection, wallet, {
-      preflightCommitment: 'confirmed',
-    })
     const program = new anchor.Program(stakingProgramIdl as SseStake, {
       connection,
     })

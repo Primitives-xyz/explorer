@@ -1,4 +1,3 @@
-import { createErrorResponse } from '@/utils/api'
 import { parseQueryParams, parsers } from '@/utils/api-params'
 import { initHeliusClient } from '@/utils/helius/client'
 import {
@@ -114,4 +113,25 @@ export async function GET(request: Request, context: RouteContext) {
   } catch (error) {
     return createErrorResponse(error, 'Failed to fetch assets')
   }
+}
+
+const createErrorResponse = (
+  error: unknown,
+  customMessage?: string,
+  statusCode = 500
+) => {
+  console.error('API Error:', error)
+
+  const errorMessage =
+    customMessage || 'An error occurred processing your request'
+  const detailedMessage = error instanceof Error ? error.message : String(error)
+
+  return Response.json(
+    {
+      error: errorMessage,
+      message: detailedMessage,
+      timestamp: new Date().toISOString(),
+    },
+    { status: statusCode }
+  )
 }

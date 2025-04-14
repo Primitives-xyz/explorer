@@ -1,5 +1,5 @@
 import { FetchMethod } from '@/utils/api'
-import { fetchTapestryServer } from './tapestry-server'
+import { fetchTapestryServer } from './api/tapestry-server'
 
 export interface ContentProperties {
   key: string

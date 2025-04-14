@@ -1,6 +1,6 @@
 // app/api/profiles/suggested/route.ts
 import { FetchMethod } from '@/utils/api'
-import { fetchTapestryServer } from '@/utils/tapestry-server'
+import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface SuggestedProfile {

@@ -43,8 +43,7 @@ export const TAPESTRY_ASSETS_URL =
 export const EXPLORER_NAMESPACE =
   process.env.NEXT_PUBLIC_EXPLORER_NAMESPACE || 'nemoapp'
 
-export const X_NAMESPACE =
-  process.env.X_NAMESPACE || 'x'
+export const X_NAMESPACE = process.env.X_NAMESPACE || 'x'
 
 // Solana Configuration
 export const SOLANA_RPC_URL =
@@ -75,3 +74,16 @@ export const getDicebearUrl = (seed: string) =>
   `${DICEBEAR_API_BASE}/shapes/svg?seed=${seed}`
 
 export const SOL_MINT = 'So11111111111111111111111111111111111111112'
+export const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+export const SSE_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
+export const SSE_TOKEN_DECIMAL = 6
+
+// Platform fee configuration
+export const PLATFORM_FEE_BPS = 80 // 0.8% = 80 basis points
+export const PLATFORM_FEE_ACCOUNT =
+  '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
+export const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
+
+export const DEFAULT_SLIPPAGE_BPS = 'auto' // Default to auto slippage
+export const DEFAULT_SLIPPAGE_VALUE = 50 // 0.5% as base value when needed
+export const DEFAULT_PRIORITY_LEVEL = 'Medium'

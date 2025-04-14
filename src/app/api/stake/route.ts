@@ -1,6 +1,6 @@
-import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/components/trading/constants'
 import { SseStake } from '@/sse-staking'
 import stakingProgramIdl from '@/sse_stake.json'
+import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
 import { getAssociatedTokenAccount } from '@/utils/token'
 import * as anchor from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       provider
     ) as anchor.Program<SseStake>
 
-    const userTokenAccount = await getAssociatedTokenAccount(
+    const userTokenAccount = getAssociatedTokenAccount(
       new PublicKey(walletAddy),
       new PublicKey(SSE_MINT)
     )
