@@ -3,6 +3,10 @@
 import { QuoteResponse } from '@/components-new-version/models/jupiter.models'
 import { PlatformComparison } from '@/components-new-version/swap/components/platform-comparison'
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Card,
   CardContent,
   CardHeader,
@@ -11,12 +15,7 @@ import {
   Spinner,
 } from '@/components-new-version/ui'
 import { CheckboxSize } from '@/components-new-version/ui/switch/checkbox.models'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components-new-version/utils/api/accordion'
+
 import { cn } from '@/components-new-version/utils/utils'
 import { CircleAlertIcon } from 'lucide-react'
 
