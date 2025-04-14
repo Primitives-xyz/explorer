@@ -3,6 +3,7 @@
 import { useGetIdentities } from '@/components-new-version/tapestry/hooks/use-get-identities'
 import { useUpdateProfile } from '@/components-new-version/tapestry/hooks/use-update-profile'
 import { useEffect, useState } from 'react'
+import { mutate } from 'swr'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
 import {
   Dialog,
@@ -29,7 +30,6 @@ export function Onboarding() {
     walletAddress,
     loading: getCurrentUserLoading,
     socialCounts,
-    refetch: refetchCurrentUser,
   } = useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
   const [lockModal, setLockModal] = useState(true)
@@ -84,13 +84,14 @@ export function Onboarding() {
           },
         ],
       })
-      refetchCurrentUser()
+      // Refetch profiles api (current user and profile page)
+      mutate((key) => typeof key === 'string' && key.includes('profiles'))
     }
 
     if (socialCounts?.following && socialCounts.following >= 3) {
       finishOnboarding()
     }
-  }, [socialCounts, mainProfile, updateProfile, refetchCurrentUser])
+  }, [socialCounts, mainProfile, updateProfile])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

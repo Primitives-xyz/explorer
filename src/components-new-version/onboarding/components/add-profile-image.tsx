@@ -13,7 +13,6 @@ import { FetchMethod } from '@/utils/api'
 import { UploadIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
-import { mutate } from 'swr'
 import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedImages } from './suggested-images'
@@ -59,7 +58,6 @@ export function AddProfileImage({
       })
 
       refetchCurrentUser()
-      mutate((key) => typeof key === 'string' && key.includes('profiles'))
 
       setUploadLoading(false)
     },
