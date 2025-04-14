@@ -1,5 +1,6 @@
 import { MainContentWrapper } from '@/components-new-version/common/main-content-wrapper'
-import { ProfileContent } from '@/components-new-version/profile/components/profile-content'
+import { ProfileWithUsername } from '@/components-new-version/profile/components/profile-with-username'
+import { SwapTray } from '@/components-new-version/swap/components/swap-tray'
 import { TokenContent } from '@/components-new-version/token/token-content'
 import {
   determineRouteType,
@@ -23,13 +24,18 @@ export default async function Entity({
       case RouteType.TOKEN:
         return <TokenContent id={cleanId} />
       case RouteType.PROFILE:
-        return <ProfileContent username={cleanId} />
+        return <ProfileWithUsername username={cleanId} />
       default:
         return <p>Unknown route type</p>
     }
   }
 
   return (
-    <MainContentWrapper>{renderContent(routeType, cleanId)}</MainContentWrapper>
+    <>
+      <MainContentWrapper>
+        <div className="pr-[36px]">{renderContent(routeType, cleanId)}</div>
+      </MainContentWrapper>
+      <SwapTray />
+    </>
   )
 }

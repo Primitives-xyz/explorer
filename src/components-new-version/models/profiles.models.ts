@@ -57,7 +57,7 @@ export interface IGetProfilesResponse extends IPaginatedResponse {
 export interface IGetProfilesResponseEntry {
   namespace: INameSpace
   profile: IProfile
-  socialCounts?: {
+  socialCounts: {
     followers: number
     following: number
   }
