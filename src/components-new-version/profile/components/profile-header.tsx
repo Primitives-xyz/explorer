@@ -1,21 +1,17 @@
 'use client'
 
 import { FollowButton } from '@/components-new-version/common/follow-button'
-import { IGetProfilesResponseEntry } from '@/components-new-version/models/profiles.models'
+import { IGetProfileResponse } from '@/components-new-version/models/profiles.models'
 import { Avatar } from '@/components-new-version/ui/avatar/avatar'
+import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/components-new-version/utils/utils'
 
 interface Props {
-  profileInfo: IGetProfilesResponseEntry
-  displayUsername: string
-  mainUsername?: string
+  profileInfo: IGetProfileResponse
 }
 
-export function ProfileHeader({
-  profileInfo,
-  displayUsername,
-  mainUsername,
-}: Props) {
+export function ProfileHeader({ profileInfo }: Props) {
+  const { mainProfile } = useCurrentWallet()
   const creationYear = profileInfo?.profile.created_at
     ? new Date(profileInfo.profile.created_at).getFullYear()
     : new Date().getFullYear()
@@ -23,14 +19,19 @@ export function ProfileHeader({
   return (
     <div className="flex items-center justify-between">
       <div className="flex gap-2">
-        <Avatar username={displayUsername} size={72} className="w-18" />
+        <Avatar
+          username={profileInfo.profile.username}
+          imageUrl={profileInfo.profile.image}
+          className="w-18"
+          size={72}
+        />
         <div className="space-y-2">
           <div className="flex gap-1 items-center">
             <p className="font-bold">@{profileInfo.profile.username}</p>
-            {profileInfo?.wallet?.address && (
+            {profileInfo.walletAddress && (
               <p className="text-muted-foreground">
                 {abbreviateWalletAddress({
-                  address: profileInfo.wallet.address,
+                  address: profileInfo.walletAddress,
                 })}
               </p>
             )}
@@ -42,10 +43,10 @@ export function ProfileHeader({
         </div>
       </div>
       <div className="space-y-2">
-        {!!profileInfo?.profile.username && !!mainUsername && (
+        {!!profileInfo?.profile.username && !!mainProfile?.username && (
           <FollowButton
             expand
-            followerUsername={mainUsername}
+            followerUsername={mainProfile.username}
             followeeUsername={profileInfo?.profile.username}
           />
         )}

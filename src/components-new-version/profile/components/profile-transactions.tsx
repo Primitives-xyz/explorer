@@ -24,12 +24,13 @@ export function ProfileTransactions({
 
   useEffect(() => {
     setTransactionTypes(transactionTypes)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionTypes])
 
   return (
     <div>
-      {loading && page > 1 && (
+      {loading && (
         <div className="my-4 w-full flex items-center justify-center">
           <Spinner />
         </div>
