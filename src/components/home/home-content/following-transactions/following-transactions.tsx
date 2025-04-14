@@ -29,7 +29,7 @@ export function FollowingTransactions() {
 
   const options = [
     { label: 'All', value: FilterType.ALL },
-    { label: 'Swap', value: FilterType.SWAP },
+    { label: 'Following', value: FilterType.SWAP },
     { label: 'Twitter KOL', value: FilterType.KOL },
   ]
 
