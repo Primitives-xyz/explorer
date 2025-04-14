@@ -1,7 +1,7 @@
 'use client'
 
 import { DataTable } from '@/components/ui/table/data-table'
-import { formatNumber } from '@/components/utils/utils'
+import { formatNumber } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
 import { SortableHeader } from '../../ui/table/sortable-header'

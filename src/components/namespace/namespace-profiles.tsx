@@ -10,8 +10,8 @@ import {
   CardHeader,
 } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { route } from '@/components/utils/route'
-import { abbreviateWalletAddress, cn } from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { abbreviateWalletAddress, cn } from '@/utils/utils'
 
 interface Props {
   profiles: INamespaceProfile[] | null

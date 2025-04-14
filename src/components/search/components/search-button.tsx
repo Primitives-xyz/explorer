@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
   Separator,
 } from '@/components/ui'
-import { cn } from '@/components/utils/utils'
+import { cn } from '@/utils/utils'
 import { SearchIcon, XIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { SearchResultsProfiles } from './search-results-profiles'

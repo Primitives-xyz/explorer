@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/utils'
+import { cn } from '@/utils/utils'
 import { ChangeEvent, useRef, useState } from 'react'
 import { Input } from '../form/input'
 import { Button, ButtonProps } from './button'

@@ -1,7 +1,7 @@
 'use client'
 
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { route } from '@/components/utils/route'
+import { route } from '@/utils/route'
 import { useGetSearchProfiles } from '../hooks/use-get-search-profiles'
 import { SearchResultsEntry } from './search-results-entry'
 

@@ -1,5 +1,5 @@
-import { useQuery } from '@/components/utils/api'
-import { formatNumber } from '@/components/utils/utils'
+import { useQuery } from '@/utils/api'
+import { formatNumber } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import {

@@ -1,4 +1,5 @@
-import { tapestryServer } from '@/utils/tapestry-server'
+import { FetchMethod } from '@/utils/api'
+import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -13,11 +14,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const response = await tapestryServer.createComment({
-      profileId,
-      targetProfileId: targetProfileId,
-      text,
-      commentId,
+    const response = await fetchTapestryServer({
+      endpoint: 'comments',
+      method: FetchMethod.POST,
+      data: {
+        profileId,
+        targetProfileId,
+        text,
+        ...(commentId && { commentId }),
+      },
     })
 
     return NextResponse.json(response)

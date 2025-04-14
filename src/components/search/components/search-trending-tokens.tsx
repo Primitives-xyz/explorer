@@ -1,8 +1,8 @@
 'use client'
 
 import { useGetTrendingTokens } from '@/components/birdeye/hooks/use-get-trending-tokens'
-import { route } from '@/components/utils/route'
-import { abbreviateWalletAddress, formatNumber } from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { abbreviateWalletAddress, formatNumber } from '@/utils/utils'
 import Image from 'next/image'
 import { SEARCH_RESULTS_LIMIT } from './search-button'
 import { SearchResultsEntry } from './search-results-entry'

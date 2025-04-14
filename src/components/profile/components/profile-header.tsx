@@ -3,8 +3,8 @@
 import { FollowButton } from '@/components/common/follow-button'
 import { IGetProfileResponse } from '@/components/models/profiles.models'
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
-import { abbreviateWalletAddress } from '@/components/utils/utils'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { abbreviateWalletAddress } from '@/utils/utils'
 
 interface Props {
   profileInfo: IGetProfileResponse

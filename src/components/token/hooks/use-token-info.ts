@@ -2,7 +2,7 @@ import {
   FungibleTokenInfo,
   TokenResponse,
 } from '@/components/models/token.models'
-import { useQuery } from '@/components/utils/api'
+import { useQuery } from '@/utils/api'
 
 const isFungibleToken = (
   data?: TokenResponse | null

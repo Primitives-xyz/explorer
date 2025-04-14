@@ -1,4 +1,4 @@
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useState } from 'react'
 import useSWR, { mutate } from 'swr'
 

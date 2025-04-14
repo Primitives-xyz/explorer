@@ -1,8 +1,8 @@
 'use client'
 
 import { useGetSearchTokens } from '@/components/birdeye/hooks/use-get-search-tokens'
-import { route } from '@/components/utils/route'
-import { formatNumber } from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { formatNumber } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { SearchResultsEntry } from './search-results-entry'

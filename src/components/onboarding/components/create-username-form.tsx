@@ -13,8 +13,8 @@ import {
   Input,
   Label,
 } from '@/components/ui'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
-import { cn } from '@/components/utils/utils'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { cn } from '@/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'

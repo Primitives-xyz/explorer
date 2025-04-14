@@ -1,7 +1,7 @@
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
 import { NamespaceProfileContent } from '@/components/namespace/profile/namespace-profile-content'
 import { Button, ButtonVariant } from '@/components/ui'
-import { route } from '@/components/utils/route'
+import { route } from '@/utils/route'
 import { ChevronLeft } from 'lucide-react'
 
 export default async function NamespaceProfile({

@@ -9,7 +9,7 @@ import { AboutTabContent } from '@/components/trade/trade-content/token-details/
 import { MarketsTabContent } from '@/components/trade/trade-content/token-details/markets-tab-content'
 import { TokenHoldersTabContent } from '@/components/trade/trade-content/token-details/token-holders-tab-content'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 import { YourTransactions } from '../transactions/your-transactions'
 

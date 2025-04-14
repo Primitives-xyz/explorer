@@ -1,6 +1,6 @@
 'use client'
 
-import { useMutation } from '@/components/utils/api'
+import { useMutation } from '@/utils/api'
 
 export const useFollowUser = () => {
   const {

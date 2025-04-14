@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui'
-import { cn } from '@/components/utils/utils'
+import { cn } from '@/utils/utils'
 import type { Table } from '@tanstack/react-table'
 
 import {

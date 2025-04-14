@@ -12,8 +12,8 @@ import {
   Label,
   Textarea,
 } from '@/components/ui'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
-import { cn } from '@/components/utils/utils'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { cn } from '@/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'

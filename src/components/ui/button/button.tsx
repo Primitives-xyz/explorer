@@ -1,10 +1,10 @@
 'use client'
 
+import { cn } from '@/utils/utils'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
 import * as React from 'react'
-import { cn } from '../../utils/utils'
 import { Spinner } from '../spinner'
 
 const focus =

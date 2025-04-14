@@ -8,13 +8,13 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
-import { SOL_MINT, SSE_MINT } from '@/components/utils/constants'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { SOL_MINT, SSE_MINT } from '@/utils/constants'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   formatLargeNumber,
   formatRawAmount,
   formatUsdValue,
-} from '@/components/utils/utils'
+} from '@/utils/utils'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'

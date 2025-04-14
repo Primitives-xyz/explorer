@@ -1,6 +1,6 @@
 import { IUpdateContentInput } from '@/components/models/contents.models'
 import { IProfile } from '@/components/models/profiles.models'
-import { FetchMethod, useMutation } from '@/components/utils/api'
+import { FetchMethod, useMutation } from '@/utils/api'
 
 interface Props {
   username: string

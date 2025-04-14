@@ -1,7 +1,7 @@
 import { IGetProfileResponse } from '@/types/profile.types'
 import { FetchMethod } from '@/utils/api'
+import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { verifyAuthToken } from '@/utils/auth'
-import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RouteContext = {

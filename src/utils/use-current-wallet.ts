@@ -1,3 +1,4 @@
+import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import {
   useDynamicContext,
   useIsLoggedIn,
@@ -5,7 +6,6 @@ import {
 } from '@dynamic-labs/sdk-react-core'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
-import { useGetProfiles } from '../tapestry/hooks/use-get-profiles'
 import { EXPLORER_NAMESPACE } from './constants'
 
 export function useCurrentWallet() {

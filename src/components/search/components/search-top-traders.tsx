@@ -2,8 +2,8 @@
 
 import { ETimeFrame } from '@/components/birdeye/birdeye-top-traders.models'
 import { useGetTopTraders } from '@/components/birdeye/hooks/use-get-top-traders'
-import { route } from '@/components/utils/route'
-import { abbreviateWalletAddress } from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { abbreviateWalletAddress } from '@/utils/utils'
 import { SEARCH_RESULTS_LIMIT } from './search-button'
 import { SearchResultsEntry } from './search-results-entry'
 

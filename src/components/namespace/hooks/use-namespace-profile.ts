@@ -1,6 +1,6 @@
 import { IGetProfilesResponse } from '@/components/models/profiles.models'
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
-import { useQuery } from '@/components/utils/api'
+import { useQuery } from '@/utils/api'
 import { useEffect, useRef, useState } from 'react'
 
 export interface ProfileData {

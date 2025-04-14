@@ -1,4 +1,4 @@
-import { useQuery } from '@/components/utils/api'
+import { useQuery } from '@/utils/api'
 import { useMemo } from 'react'
 import { IActivityTapeEntry, IGetFeedResponse } from '../activity-tape.models'
 

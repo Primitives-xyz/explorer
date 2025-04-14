@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui'
-import { cn, formatTimeAgo } from '@/components/utils/utils'
+import { cn, formatTimeAgo } from '@/utils/utils'
 import Image from 'next/image'
 import { IActivityTapeEntry } from '../activity-tape.models'
 

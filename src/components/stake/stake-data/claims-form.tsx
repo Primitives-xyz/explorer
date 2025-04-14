@@ -1,7 +1,7 @@
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
 import { Button, ButtonVariant, Spinner } from '@/components/ui'
-import { formatSmartNumber } from '@/components/utils/formatting/format-number'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { formatSmartNumber } from '@/utils/formatting/format-number'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 import { useClaimRewards } from '../hooks/use-claim'
 

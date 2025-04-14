@@ -1,5 +1,5 @@
 import { ILeaderboardResponse } from '@/components/models/leaderboard.models'
-import { useQuery } from '@/components/utils/api'
+import { useQuery } from '@/utils/api'
 
 interface Props {
   skip?: boolean

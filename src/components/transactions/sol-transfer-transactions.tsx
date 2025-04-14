@@ -2,8 +2,8 @@ import { Transaction } from '@/components/models/helius.models'
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
-import { getSourceIcon } from '@/components/utils/transactions'
-import { formatSmallNumber } from '@/components/utils/utils'
+import { getSourceIcon } from '@/utils/transactions'
+import { formatSmallNumber } from '@/utils/utils'
 import Image from 'next/image'
 
 interface Props {

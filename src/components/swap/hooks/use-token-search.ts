@@ -7,7 +7,7 @@ import {
 } from '@/components/swap/services/token-search-service'
 import { ITokenSearchResult } from '@/components/swap/swap.models'
 import { DEFAULT_TOKENS } from '@/components/swap/utils/token-utils'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { debounce } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'

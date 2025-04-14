@@ -8,7 +8,7 @@ import {
   CardTitle,
   CardVariant,
 } from '@/components/ui'
-import { formatNumber } from '@/components/utils/utils'
+import { formatNumber } from '@/utils/utils'
 
 interface Props {
   walletAddress?: string

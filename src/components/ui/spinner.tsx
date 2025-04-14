@@ -1,5 +1,5 @@
+import { cn } from '@/utils/utils'
 import { LoaderCircle } from 'lucide-react'
-import { cn } from '../utils/utils'
 
 export function Spinner({
   size = 24,

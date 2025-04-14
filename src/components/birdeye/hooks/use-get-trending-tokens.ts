@@ -1,5 +1,5 @@
 import { IGetTrendingTokensResponse } from '@/components/birdeye/birdeye-tokens-trending.models'
-import { useQuery } from '@/components/utils/api'
+import { useQuery } from '@/utils/api'
 
 interface Props {
   limit?: number

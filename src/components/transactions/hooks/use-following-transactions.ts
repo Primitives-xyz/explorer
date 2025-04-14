@@ -5,7 +5,7 @@ import {
   IGetSocialResponse,
   IProfile,
 } from '@/components/models/profiles.models'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 
 export type ITransactionWithProfile = Transaction & {

@@ -5,7 +5,7 @@ import {
   useTransactionType,
 } from '@/components/home/home-content/following-transactions/hooks/use-transaction-type'
 import { Transaction } from '@/components/models/helius.models'
-import { NftTransactionsView } from '@/components/transactions/nft-transactions.tsx/nft-transactions-view'
+import { NftTransactionsView } from '@/components/transactions/nft-transactions-view'
 import { OtherTransactions } from '@/components/transactions/other-transactions'
 import { SolTransferTransactions } from '@/components/transactions/sol-transfer-transactions'
 import { SwapTransactionsView } from '@/components/transactions/swap-transactions/swap-transactions-view'

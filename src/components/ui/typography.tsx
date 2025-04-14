@@ -1,4 +1,4 @@
-import { cn } from '@/utils'
+import { cn } from '@/utils/utils'
 
 export function Heading1({
   className,

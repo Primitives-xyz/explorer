@@ -1,7 +1,7 @@
 import { ITokenBalanceResponse } from '@/components/models/token.models'
-import { useQuery } from '@/components/utils/api'
-import { SSE_TOKEN_MINT } from '@/components/utils/constants'
-import { formatNumber } from '@/components/utils/utils'
+import { useQuery } from '@/utils/api'
+import { SSE_TOKEN_MINT } from '@/utils/constants'
+import { formatNumber } from '@/utils/utils'
 
 interface Props {
   walletAddress: string

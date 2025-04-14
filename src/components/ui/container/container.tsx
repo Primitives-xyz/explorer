@@ -1,5 +1,5 @@
+import { cn } from '@/utils/utils'
 import { ReactNode } from 'react'
-import { cn } from '../../utils/utils'
 import { ContainerSize } from './container.models'
 
 interface Props {
@@ -22,7 +22,7 @@ export function Container({
           'max-w-5xl': size === ContainerSize.REGULAR,
           'max-w-2xl': size === ContainerSize.SMALL,
         },
-        className,
+        className
       )}
     >
       {children}

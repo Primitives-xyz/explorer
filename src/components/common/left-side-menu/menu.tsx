@@ -1,9 +1,9 @@
 'use client'
 
 import { Button, ButtonVariant } from '@/components/ui/button'
-import { route } from '@/components/utils/route'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
-import { cn } from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { cn } from '@/utils/utils'
 import {
   ArrowRightLeft,
   Beef,

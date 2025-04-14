@@ -8,9 +8,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
-import { SSE_TOKEN_MINT } from '@/components/utils/constants'
-import { route } from '@/components/utils/route'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { SSE_TOKEN_MINT } from '@/utils/constants'
+import { route } from '@/utils/route'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { EllipsisVerticalIcon } from 'lucide-react'
 import Image from 'next/image'
 

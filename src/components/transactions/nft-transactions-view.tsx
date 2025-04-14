@@ -15,8 +15,8 @@ import {
   getSaleAmount,
   isNFTBuyTransaction,
   normalizeTransfers,
-} from '@/components/utils/transactions'
-import { abbreviateWalletAddress } from '@/components/utils/utils'
+} from '@/utils/transactions'
+import { abbreviateWalletAddress } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
 
 interface Props {

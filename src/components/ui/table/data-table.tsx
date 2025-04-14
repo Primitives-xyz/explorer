@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination'
-import { cn } from '@/components/utils/utils'
+import { cn } from '@/utils/utils'
 import {
   ColumnDef,
   flexRender,

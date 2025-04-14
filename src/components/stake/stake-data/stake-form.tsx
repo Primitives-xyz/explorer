@@ -7,8 +7,8 @@ import {
   Input,
   Spinner,
 } from '@/components/ui'
-import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/components/utils/constants'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 

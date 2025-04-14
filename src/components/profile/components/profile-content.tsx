@@ -12,7 +12,7 @@ import {
   CopyToClipboardButton,
   Separator,
 } from '@/components/ui'
-import { abbreviateWalletAddress } from '@/components/utils/utils'
+import { abbreviateWalletAddress } from '@/utils/utils'
 import { CopyIcon } from 'lucide-react'
 import { ProfileHeader } from './profile-header'
 import { ProfileInfo } from './profile-info'

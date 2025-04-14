@@ -1,9 +1,9 @@
 'use client'
 
 import { TokenDisplay } from '@/components/transactions/swap-transactions/swap-transactions-view'
-import { SOL_MINT } from '@/components/utils/constants'
-import { abbreviateWalletAddress, formatNumber } from '@/components/utils/utils'
-import { route } from '@/utils/routes'
+import { SOL_MINT } from '@/utils/constants'
+import { route } from '@/utils/route'
+import { abbreviateWalletAddress, formatNumber } from '@/utils/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -48,7 +48,11 @@ export function SwapTransactionsViewDetails({
             <span className="font-mono text-xs">{token.mint.slice(0, 2)}</span>
           )}
         </div>
-        <Link href={route('address', { id: token.mint })}>
+        <Link
+          href={route('entity', {
+            id: token.mint,
+          })}
+        >
           <p className="hover:opacity-80">
             {token.mint === SOL_MINT
               ? 'SOL'

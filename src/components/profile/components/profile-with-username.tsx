@@ -1,7 +1,7 @@
 'use client'
 
 import { FullPageSpinner } from '@/components/ui'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useGetProfileInfo } from '../hooks/use-get-profile-info'
 import { ProfileContent } from './profile-content'
 

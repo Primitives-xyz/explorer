@@ -1,5 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/components/utils/utils'
+import { cn } from '@/utils/utils'
 import { ButtonProps, buttonVariants } from './button'
 
 export function ButtonSkeleton(props: ButtonProps) {

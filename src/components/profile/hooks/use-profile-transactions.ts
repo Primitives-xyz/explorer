@@ -1,5 +1,5 @@
 import { Transaction } from '@/components/models/helius.models'
-import { isSpamTransaction } from '@/components/utils/transactions'
+import { isSpamTransaction } from '@/utils/transactions'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 

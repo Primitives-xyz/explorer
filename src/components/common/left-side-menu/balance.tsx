@@ -1,6 +1,6 @@
 'use client'
 
-import { SOL_MINT, SOLANA_RPC_URL } from '@/components/utils/constants'
+import { SOL_MINT, SOLANA_RPC_URL } from '@/utils/constants'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 

@@ -1,5 +1,5 @@
-import { useQuery } from '@/components/utils/api'
-import { USDC_MINT } from '@/components/utils/constants'
+import { useQuery } from '@/utils/api'
+import { USDC_MINT } from '@/utils/constants'
 
 interface Props {
   tokenMint?: string | null

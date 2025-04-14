@@ -11,12 +11,8 @@ import {
   CardVariant,
   Spinner,
 } from '@/components/ui'
-import { route } from '@/components/utils/route'
-import {
-  abbreviateWalletAddress,
-  cn,
-  formatNumber,
-} from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { abbreviateWalletAddress, cn, formatNumber } from '@/utils/utils'
 
 interface TokenHoldersTabProps {
   id: string

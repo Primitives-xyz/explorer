@@ -6,10 +6,9 @@ import {
   Label,
   useUploadFiles,
 } from '@/components/ui'
-import { createURL, fetchWrapper } from '@/components/utils/api'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
-import { cn } from '@/components/utils/utils'
-import { FetchMethod } from '@/utils/api'
+import { createURL, FetchMethod, fetchWrapper } from '@/utils/api'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { cn } from '@/utils/utils'
 import { UploadIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'

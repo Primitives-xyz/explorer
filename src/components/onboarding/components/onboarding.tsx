@@ -2,6 +2,7 @@
 
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 import { mutate } from 'swr'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
@@ -12,7 +13,6 @@ import {
   DialogTitle,
   Spinner,
 } from '../../ui'
-import { useCurrentWallet } from '../../utils/use-current-wallet'
 import { useGetSuggestions } from '../hooks/use-get-suggestions'
 import { EOnboardingSteps } from '../onboarding.models'
 import { AddBioForm } from './add-bio-form'

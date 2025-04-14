@@ -1,4 +1,4 @@
-import { cn, randomIntInRange } from '../utils/utils'
+import { cn, randomIntInRange } from '@/utils/utils'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   randomWidthRange?: {

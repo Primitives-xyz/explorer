@@ -12,8 +12,8 @@ import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
-import { SOL_MINT, USDC_MINT } from '@/components/utils/constants'
-import { getSourceIcon } from '@/components/utils/transactions'
+import { SOL_MINT, USDC_MINT } from '@/utils/constants'
+import { getSourceIcon } from '@/utils/transactions'
 import { useEffect, useState } from 'react'
 
 export type TokenDisplay = {

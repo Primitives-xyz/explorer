@@ -1,4 +1,4 @@
-import { createURL, FetchParams, fetchWrapper } from '@/components/utils/api'
+import { createURL, FetchParams, fetchWrapper } from '@/utils/api'
 
 export const fetchTapestry = async <
   ResponseType = unknown,

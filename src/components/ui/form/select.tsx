@@ -1,10 +1,10 @@
 'use client'
 
+import { cn } from '@/utils/utils'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Check, ChevronDown, ChevronUp } from 'lucide-react'
 import * as React from 'react'
-import { cn } from '../../utils/utils'
 
 export enum SelectVariant {
   DEFAULT = 'default',

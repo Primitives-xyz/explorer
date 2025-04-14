@@ -13,9 +13,9 @@ import {
   Spinner,
 } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { route } from '@/components/utils/route'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
-import { abbreviateWalletAddress, cn } from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { abbreviateWalletAddress, cn } from '@/utils/utils'
 
 export function RightSideDiscover() {
   const { profiles, loading } = useGetRecentProfiles()

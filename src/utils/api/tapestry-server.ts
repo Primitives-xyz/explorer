@@ -1,4 +1,4 @@
-import { FetchMethod } from '@/components/utils/api/api.models'
+import { FetchMethod } from '@/utils/api/api.models'
 
 export async function fetchTapestryServer<T = any>({
   endpoint,

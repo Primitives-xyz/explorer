@@ -12,7 +12,7 @@ import {
   Paragraph,
   Spinner,
 } from '@/components/ui'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 
 export enum FilterType {

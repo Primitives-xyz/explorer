@@ -1,4 +1,4 @@
-import { fetchTokenInfo } from '@/components/utils/helius/das-api'
+import { fetchTokenInfo } from '@/utils/helius/das-api'
 import { ProfileWithWallet } from '../profile/components/profile-with-wallet'
 
 export async function TokenContent({ id }: { id: string }) {

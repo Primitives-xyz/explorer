@@ -1,4 +1,4 @@
-import { useQuery } from '@/components/utils/api'
+import { useQuery } from '@/utils/api'
 import { INft } from '../magic-eden-nfts.models'
 
 export interface Props {

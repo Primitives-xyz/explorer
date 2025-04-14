@@ -1,7 +1,7 @@
 import {
   isValidPublicKey,
   isValidTransactionSignature,
-} from '@/components/utils/validation'
+} from '@/utils/validation'
 
 export enum RouteType {
   TRANSACTION = 'transaction',

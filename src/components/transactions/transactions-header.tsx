@@ -11,12 +11,9 @@ import {
 import { ITransactionWithProfile } from '@/components/transactions/hooks/use-following-transactions'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { EXPLORER_NAMESPACE } from '@/components/utils/constants'
-import { route } from '@/components/utils/route'
-import {
-  abbreviateWalletAddress,
-  formatTimeAgo,
-} from '@/components/utils/utils'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
+import { route } from '@/utils/route'
+import { abbreviateWalletAddress, formatTimeAgo } from '@/utils/utils'
 import { ArrowRightLeft } from 'lucide-react'
 import { ReactNode } from 'react'
 

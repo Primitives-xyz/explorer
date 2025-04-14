@@ -3,7 +3,7 @@
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { Button, ButtonVariant, Spinner } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { EXPLORER_NAMESPACE } from '@/components/utils/constants'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { ExternalLinkIcon } from 'lucide-react'
 
 interface Props {

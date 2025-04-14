@@ -5,10 +5,9 @@ import { useGetFollowers } from '@/components/tapestry/hooks/use-get-followers'
 import { useGetFollowersState } from '@/components/tapestry/hooks/use-get-followers-state'
 import { useGetFollowing } from '@/components/tapestry/hooks/use-get-following'
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { UserCheck, UserPlus } from 'lucide-react'
 import { useState } from 'react'
-import { useCurrentWallet } from '../utils/use-current-wallet'
-//import { useUnfollowUser } from '../../hooks/use-unfollow-user'
 
 interface Props extends Omit<ButtonProps, 'children'> {
   followerUsername: string

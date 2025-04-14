@@ -7,8 +7,8 @@ import {
   CardContent,
   CardVariant,
 } from '@/components/ui'
-import isFungibleToken from '@/components/utils/helper'
-import { formatNumber } from '@/components/utils/utils'
+import isFungibleToken from '@/utils/helper'
+import { formatNumber } from '@/utils/utils'
 import { Globe } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'

@@ -1,6 +1,6 @@
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
 import { useToast } from '@/components/ui/toast/hooks/use-toast'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'

@@ -1,4 +1,4 @@
-import { useQuery } from '@/components/utils/api'
+import { useQuery } from '@/utils/api'
 import { useMemo } from 'react'
 import { SEARCH_RESULTS_LIMIT } from '../../search/components/search-button'
 import { ISearchTokensResponse } from '../birdeye-tokens-search.models'

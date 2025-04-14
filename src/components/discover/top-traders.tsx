@@ -2,12 +2,8 @@
 
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
 import { DataTable } from '@/components/ui/table/data-table'
-import { route } from '@/components/utils/route'
-import {
-  abbreviateWalletAddress,
-  cn,
-  formatNumber,
-} from '@/components/utils/utils'
+import { route } from '@/utils/route'
+import { abbreviateWalletAddress, cn, formatNumber } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import { ETimeFrame, ITopTrader } from '../birdeye/birdeye-top-traders.models'
 import { useGetTopTraders } from '../birdeye/hooks/use-get-top-traders'

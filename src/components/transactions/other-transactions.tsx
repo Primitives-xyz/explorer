@@ -2,7 +2,7 @@ import { Transaction } from '@/components/models/helius.models'
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
-import { getSourceIcon } from '@/components/utils/transactions'
+import { getSourceIcon } from '@/utils/transactions'
 
 interface Props {
   transaction: Transaction

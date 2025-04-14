@@ -1,5 +1,5 @@
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
-import { abbreviateWalletAddress, handleCopy } from '@/components/utils/utils'
+import { abbreviateWalletAddress, handleCopy } from '@/utils/utils'
 import { ClipboardIcon } from 'lucide-react'
 
 interface Props {

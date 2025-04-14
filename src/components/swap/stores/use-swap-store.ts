@@ -1,4 +1,4 @@
-import { SOL_MINT, SSE_MINT } from '@/components/utils/constants'
+import { SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { create } from 'zustand'
 import { ISwapInputs } from '../swap.models'
 

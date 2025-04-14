@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/utils'
+import { cn } from '@/utils/utils'
 import { useState } from 'react'
 import { Button } from '../button'
 import { Switch } from './switch'

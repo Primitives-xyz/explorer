@@ -16,7 +16,7 @@ import {
 } from '@/components/ui'
 import { CheckboxSize } from '@/components/ui/switch/checkbox.models'
 
-import { cn } from '@/components/utils/utils'
+import { cn } from '@/utils/utils'
 import { CircleAlertIcon } from 'lucide-react'
 
 interface Props {

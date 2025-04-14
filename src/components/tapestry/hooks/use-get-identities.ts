@@ -1,7 +1,7 @@
 import { IGetProfilesResponse } from '@/components/models/profiles.models'
-import { useQuery } from '@/components/utils/api'
-import { X_NAMESPACE } from '@/components/utils/constants'
-import { useValidateWallet } from '@/components/utils/use-validate-wallet'
+import { useQuery } from '@/utils/api'
+import { X_NAMESPACE } from '@/utils/constants'
+import { useValidateWallet } from '@/utils/use-validate-wallet'
 
 interface Props {
   walletAddress: string

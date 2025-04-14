@@ -1,4 +1,4 @@
-import { SSE_TOKEN_MINT } from '@/components/utils/constants'
+import { SSE_TOKEN_MINT } from '@/utils/constants'
 import { useEffect, useState } from 'react'
 
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'

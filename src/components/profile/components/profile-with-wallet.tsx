@@ -2,7 +2,7 @@
 
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import { FullPageSpinner } from '@/components/ui'
-import { EXPLORER_NAMESPACE } from '@/components/utils/constants'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { useMemo } from 'react'
 import { ProfileContent } from './profile-content'
 

@@ -1,5 +1,5 @@
+import { cn, mapEmpty } from '@/utils/utils'
 import { ReactNode } from 'react'
-import { cn, mapEmpty } from '../../utils/utils'
 import { ScrollingTextItem } from './scrolling-text-item'
 
 export interface Props {

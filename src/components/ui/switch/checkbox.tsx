@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/components/utils/utils'
+import { cn } from '@/utils/utils'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Check } from 'lucide-react'

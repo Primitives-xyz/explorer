@@ -5,7 +5,7 @@ import {
   DEFAULT_SLIPPAGE_VALUE,
   PLATFORM_FEE_ACCOUNT,
   PLATFORM_FEE_BPS,
-} from '@/components/utils/constants'
+} from '@/utils/constants'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'

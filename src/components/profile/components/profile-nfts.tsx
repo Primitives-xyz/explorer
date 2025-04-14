@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, Card, CardContent, Spinner } from '@/components/ui'
-import { route } from '@/components/utils/route'
+import { route } from '@/utils/route'
 import Image from 'next/image'
 import { useMagicEdenNFTs } from '../hooks/use-get-magic-eden-nfts'
 

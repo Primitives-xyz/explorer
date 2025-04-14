@@ -12,7 +12,7 @@ import {
   Paragraph,
   Spinner,
 } from '@/components/ui'
-import { useCurrentWallet } from '@/components/utils/use-current-wallet'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 import { useGetLeaderboard } from '../../tapestry/hooks/use-get-leaderboard'
 import { useGetSuggestedProfiles } from '../hooks/use-get-suggested-profiles'

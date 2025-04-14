@@ -5,7 +5,7 @@ import { DisplayStakeData } from '@/components/stake/stake-data/display-stake-da
 import { StakeForm } from '@/components/stake/stake-data/stake-form'
 import { UnstakeForm } from '@/components/stake/stake-data/unstake-form'
 import { Card, CardContent } from '@/components/ui'
-import { formatSmartNumber } from '@/components/utils/formatting/format-number'
+import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useTranslations } from 'next-intl'
 
 interface Props {

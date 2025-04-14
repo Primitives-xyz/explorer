@@ -1,10 +1,10 @@
 'use client'
 
+import { cn } from '@/utils/utils'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { Check, ChevronRight, Circle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
-import { cn } from '../../utils/utils'
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 

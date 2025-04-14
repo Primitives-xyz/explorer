@@ -2,7 +2,7 @@ import { MainContentWrapper } from '@/components/common/main-content-wrapper'
 import { ProfileWithUsername } from '@/components/profile/components/profile-with-username'
 import { SwapTray } from '@/components/swap/components/swap-tray'
 import { TokenContent } from '@/components/token/token-content'
-import { determineRouteType, RouteType } from '@/components/utils/entity'
+import { determineRouteType, RouteType } from '@/utils/entity'
 
 export default async function Entity({
   params,

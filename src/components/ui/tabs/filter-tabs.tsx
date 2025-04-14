@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, ButtonVariant, TabVariant } from '@/components/ui'
-import { cn } from '@/components/utils/utils'
+import { cn } from '@/utils/utils'
 
 interface FilterTabsProps<T extends string> {
   options: { label: string; value: T }[]

@@ -2,7 +2,7 @@ import {
   TokenPortfolioItem,
   TokenPortfolioResponse,
 } from '@/components/models/token.models'
-import { isValidSolanaAddress } from '@/components/utils/validation'
+import { isValidSolanaAddress } from '@/utils/validation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
