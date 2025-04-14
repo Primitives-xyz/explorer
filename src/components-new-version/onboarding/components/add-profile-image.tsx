@@ -13,6 +13,7 @@ import { FetchMethod } from '@/utils/api'
 import { UploadIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
+import { mutate } from 'swr'
 import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedImages } from './suggested-images'
@@ -21,14 +22,12 @@ interface Props {
   mainProfile: IProfile
   suggestedImages: string[]
   setStep: (step: EOnboardingSteps) => void
-  walletAddress: string
 }
 
 export function AddProfileImage({
   mainProfile,
   suggestedImages,
   setStep,
-  walletAddress,
 }: Props) {
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const [uploadLoading, setUploadLoading] = useState(false)
@@ -60,6 +59,7 @@ export function AddProfileImage({
       })
 
       refetchCurrentUser()
+      mutate((key) => typeof key === 'string' && key.includes('profiles'))
 
       setUploadLoading(false)
     },

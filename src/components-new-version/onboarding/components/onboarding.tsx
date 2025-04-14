@@ -123,7 +123,6 @@ export function Onboarding() {
 
               {step === EOnboardingSteps.IMAGE && mainProfile && (
                 <AddProfileImage
-                  walletAddress={walletAddress}
                   suggestedImages={suggestedImages}
                   mainProfile={mainProfile}
                   setStep={setStep}
