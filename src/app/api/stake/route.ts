@@ -1,4 +1,4 @@
-import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/components/trading/constants'
+import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/components/utils/constants'
 import { SseStake } from '@/sse-staking'
 import stakingProgramIdl from '@/sse_stake.json'
 import { getAssociatedTokenAccount } from '@/utils/token'
