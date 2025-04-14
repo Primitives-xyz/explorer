@@ -21,14 +21,12 @@ interface Props {
   mainProfile: IProfile
   suggestedImages: string[]
   setStep: (step: EOnboardingSteps) => void
-  walletAddress: string
 }
 
 export function AddProfileImage({
   mainProfile,
   suggestedImages,
   setStep,
-  walletAddress,
 }: Props) {
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const [uploadLoading, setUploadLoading] = useState(false)
