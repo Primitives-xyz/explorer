@@ -78,7 +78,6 @@ export function useNamespaceProfile({
   }, [loading])
 
   function isEqual(objA: any, objB: any): boolean {
-    console.log('mdr', objA, objB)
     if (objA === objB) return true
     if (!objA || !objB) return false
 

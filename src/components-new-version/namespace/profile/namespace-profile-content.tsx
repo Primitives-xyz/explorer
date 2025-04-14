@@ -20,7 +20,5 @@ export function NamespaceProfileContent({
     namespace,
   })
 
-  console.log(profileData)
-
   return <div>Namespace Profile Content</div>
 }

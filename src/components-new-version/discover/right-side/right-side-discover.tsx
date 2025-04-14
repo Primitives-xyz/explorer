@@ -51,7 +51,7 @@ export function RightSideDiscover() {
                       'border-b border-card-border'
                   )}
                 >
-                  <div className="flex items-center gap-4 w-full">
+                  <div className="flex items-center gap-4 w-2/3">
                     <Avatar size={32} username={elem.profile.username} />
                     <div className="flex flex-col items-start w-2/3">
                       <Button
@@ -81,7 +81,7 @@ export function RightSideDiscover() {
                       )}
                     </div>
                   </div>
-                  <div className="w-[50px]">
+                  <div>
                     {!!mainProfile?.username && (
                       <FollowButton
                         size={ButtonSize.ICON}
