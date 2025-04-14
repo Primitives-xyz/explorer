@@ -17,7 +17,7 @@ import {
 import { CheckboxSize } from '@/components-new-version/ui/switch/checkbox.models'
 
 import { cn } from '@/components-new-version/utils/utils'
-import { CircleAlert } from 'lucide-react'
+import { CircleAlertIcon } from 'lucide-react'
 
 interface Props {
   useSSEForFees: boolean
@@ -45,7 +45,7 @@ export function BottomSwap({
       <CardHeader>
         <CardTitle className="flex items-center justify-between text-primary font-bold">
           <p>Route Information $ Fees</p>
-          <CircleAlert size={20} />
+          <CircleAlertIcon size={20} />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

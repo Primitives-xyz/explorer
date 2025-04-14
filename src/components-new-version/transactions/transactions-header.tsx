@@ -19,14 +19,13 @@ import {
 } from '@/components-new-version/utils/utils'
 import { ArrowRightLeft } from 'lucide-react'
 import { ReactNode } from 'react'
-import { useSwapStore } from '../swap/stores/use-swap-store'
 
 interface Props {
   transaction: ITransactionWithProfile | ExtendedTransaction
   sourceWallet: string
   profiles?: IGetProfilesResponse
   children?: ReactNode
-  displayTradeButton?: boolean
+  onClickTradeButton?: () => void
 }
 
 export function TransactionsHeader({
@@ -34,10 +33,8 @@ export function TransactionsHeader({
   sourceWallet,
   profiles,
   children,
-  displayTradeButton,
+  onClickTradeButton,
 }: Props) {
-  const { setOpen } = useSwapStore()
-
   let profile = null
 
   if ('profile' in transaction && transaction.profile) {
@@ -85,13 +82,13 @@ export function TransactionsHeader({
             <TimeAgo transaction={transaction} />
           </div>
 
-          {displayTradeButton && (
+          {!!onClickTradeButton && (
             <Button
               variant={ButtonVariant.OUTLINE}
-              onClick={() => setOpen(true)}
+              onClick={onClickTradeButton}
             >
               <ArrowRightLeft size={16} />
-              Trade
+              Copy Trade
             </Button>
           )}
         </div>

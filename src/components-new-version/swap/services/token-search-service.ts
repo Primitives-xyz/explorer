@@ -1,9 +1,9 @@
-import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import { ITokenSearchResult } from '@/components-new-version/swap/swap.models'
 import { DEFAULT_TOKENS } from '@/components-new-version/swap/utils/token-utils'
 
 export async function searchTokensByAddress(
   address: string
-): Promise<TokenSearchResult | null> {
+): Promise<ITokenSearchResult | null> {
   try {
     const response = await fetch(
       `https://api.jup.ag/tokens/v1/token/${address}`,
@@ -44,7 +44,7 @@ export async function searchTokensByAddress(
 export async function searchTokensByKeyword(
   query: string,
   verifiedOnly: boolean
-): Promise<TokenSearchResult[]> {
+): Promise<ITokenSearchResult[]> {
   if (!query.trim()) {
     return DEFAULT_TOKENS
   }

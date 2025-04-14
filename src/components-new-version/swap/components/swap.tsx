@@ -9,7 +9,6 @@ import { useTokenUSDCPrice } from '@/components-new-version/token/hooks/use-toke
 import { useJupiterSwap } from '@/components-new-version/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components-new-version/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/components-new-version/utils/constants'
-import { route } from '@/components-new-version/utils/route'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import {
   formatLargeNumber,
@@ -18,11 +17,8 @@ import {
 } from '@/components-new-version/utils/utils'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-
-export enum SwapMode {
-  EXACT_IN = 'ExactIn',
-  EXACT_OUT = 'ExactOut',
-}
+import { useSwapStore } from '../stores/use-swap-store'
+import { ESwapMode } from '../swap.models'
 
 const validateAmount = (value: string, decimals: number = 6): boolean => {
   if (value === '') return true
@@ -51,25 +47,23 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
   return true
 }
 
-interface SwapProps {
+interface Props {
   setTokenMint?: (value: string) => void
 }
 
-export function Swap({ setTokenMint }: SwapProps) {
+export function Swap({ setTokenMint }: Props) {
   const searchParams = useSearchParams()
-  const router = useRouter()
+  const { replace } = useRouter()
+  const pathname = usePathname()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
-  const [inAmount, setInAmount] = useState<string>('')
-  const [outAmount, setOutAmount] = useState<string>('')
-  const [swapMode, setSwapMode] = useState<SwapMode>(SwapMode.EXACT_IN)
-  const [useSSEForFees, setUseSSEForFees] = useState<boolean>(false)
-  const [showInputTokenSearch, setShowInputTokenSearch] =
-    useState<boolean>(false)
-  const [showOutputTokenSearch, setShowOutputTokenSearch] =
-    useState<boolean>(false)
-
-  const pathname = usePathname()
+  const [inAmount, setInAmount] = useState('')
+  const [outAmount, setOutAmount] = useState('')
+  const [swapMode, setSwapMode] = useState(ESwapMode.EXACT_IN)
+  const [useSSEForFees, setUseSSEForFees] = useState(false)
+  const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
+  const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
+  const { inputs, setOpen } = useSwapStore()
 
   const {
     symbol: inputTokenSymbol,
@@ -101,11 +95,8 @@ export function Swap({ setTokenMint }: SwapProps) {
     primaryWallet,
     setShowAuthFlow,
   } = useCurrentWallet()
-  const {
-    balance: inputBalance,
-    rawBalance: inputRawBalance,
-    loading: inputBalanceLoading,
-  } = useTokenBalance(walletAddress, inputTokenMint)
+  const { balance: inputBalance, rawBalance: inputRawBalance } =
+    useTokenBalance(walletAddress, inputTokenMint)
 
   const {
     loading,
@@ -117,11 +108,13 @@ export function Swap({ setTokenMint }: SwapProps) {
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
-    inputAmount: swapMode === SwapMode.EXACT_IN ? inAmount : outAmount,
+    inputAmount: swapMode === ESwapMode.EXACT_IN ? inAmount : outAmount,
     inputDecimals:
-      swapMode === SwapMode.EXACT_IN ? inputTokenDecimals : outputTokenDecimals,
+      swapMode === ESwapMode.EXACT_IN
+        ? inputTokenDecimals
+        : outputTokenDecimals,
     outputDecimals:
-      swapMode === SwapMode.EXACT_OUT
+      swapMode === ESwapMode.EXACT_OUT
         ? inputTokenDecimals
         : outputTokenDecimals,
     platformFeeBps: useSSEForFees ? 1 : undefined,
@@ -131,13 +124,13 @@ export function Swap({ setTokenMint }: SwapProps) {
   })
 
   const displayInAmount = useMemo(() => {
-    if (isQuoteRefreshing && swapMode === SwapMode.EXACT_OUT) {
+    if (isQuoteRefreshing && swapMode === ESwapMode.EXACT_OUT) {
       return '...'
     }
     if (inAmount == '') {
       return ''
     } else {
-      if (swapMode === SwapMode.EXACT_IN) {
+      if (swapMode === ESwapMode.EXACT_IN) {
         return inAmount
       } else {
         return formatLargeNumber(parseFloat(inAmount), inputTokenDecimals)
@@ -146,13 +139,13 @@ export function Swap({ setTokenMint }: SwapProps) {
   }, [inAmount, inputTokenDecimals, isQuoteRefreshing, swapMode])
 
   const displayOutAmount = useMemo(() => {
-    if (isQuoteRefreshing && swapMode === SwapMode.EXACT_IN) {
+    if (isQuoteRefreshing && swapMode === ESwapMode.EXACT_IN) {
       return '...'
     }
     if (outAmount == '') {
       return ''
     } else {
-      if (swapMode === SwapMode.EXACT_OUT) {
+      if (swapMode === ESwapMode.EXACT_OUT) {
         return outAmount
       } else {
         return formatLargeNumber(parseFloat(outAmount), outputTokenDecimals)
@@ -231,18 +224,16 @@ export function Swap({ setTokenMint }: SwapProps) {
 
   const updateTokensInURL = useCallback(
     (input: string, output: string) => {
-      if (pathname !== '/new-trade') return
-
       const params = new URLSearchParams(searchParams.toString())
 
       params.set('inputMint', input)
       params.set('outputMint', output)
       params.set('mode', 'swap')
 
-      router.push(route('newTrade', params.toString() as string))
+      replace(`${pathname}?${params.toString()}`)
     },
 
-    [router, searchParams, pathname]
+    [searchParams, pathname, replace]
   )
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -290,7 +281,7 @@ export function Swap({ setTokenMint }: SwapProps) {
   }
 
   useEffect(() => {
-    if (swapMode === SwapMode.EXACT_IN) {
+    if (swapMode === ESwapMode.EXACT_IN) {
       if (inAmount == '' || isNaN(parseFloat(expectedOutput))) {
         setOutAmount('')
       } else {
@@ -313,10 +304,40 @@ export function Swap({ setTokenMint }: SwapProps) {
   }, [outputTokenMint, setTokenMint])
 
   useEffect(() => {
+    if (inputs) {
+      setInputTokenMint(inputs.inputMint)
+      setOutputTokenMint(inputs.outputMint)
+      setInAmount(inputs.inputAmount.toString())
+      updateTokensInURL(inputs.inputMint, inputs.outputMint)
+    }
+  }, [inputs, updateTokensInURL])
+
+  useEffect(() => {
     if (inputTokenMint && outputTokenMint) {
       updateTokensInURL(inputTokenMint, outputTokenMint)
     }
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
+
+  // useEffect(() => {
+  //   const inputMintParam = searchParams.get('inputMint')
+  //   const outputMintParam = searchParams.get('outputMint')
+  //   const inputAmountParam = searchParams.get('inputAmount')
+
+  //   if (inputMintParam) {
+  //     setInputTokenMint(inputMintParam)
+  //   }
+
+  //   if (outputMintParam) {
+  //     setOutputTokenMint(outputMintParam)
+  //   }
+
+  //   if (
+  //     inputAmountParam &&
+  //     validateAmount(inputAmountParam, inputTokenDecimals)
+  //   ) {
+  //     setInAmount(inputAmountParam)
+  //   }
+  // }, [searchParams, inputTokenDecimals])
 
   return (
     <div className="space-y-4">

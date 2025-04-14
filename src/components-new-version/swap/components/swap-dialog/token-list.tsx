@@ -1,7 +1,7 @@
 'use client'
 
 import { TokenListItem } from '@/components-new-version/swap/components/swap-dialog/token-list-item'
-import { TokenSearchResult } from '@/components-new-version/swap/types/token-types'
+import { ITokenSearchResult } from '@/components-new-version/swap/swap.models'
 import { sortTokenResults } from '@/components-new-version/swap/utils/token-utils'
 import { Spinner } from '@/components-new-version/ui'
 import { useTranslations } from 'next-intl'
@@ -10,10 +10,10 @@ interface TokenListProps {
   isLoading: boolean
   error: string | null
   searchQuery: string
-  searchResults: TokenSearchResult[]
+  searchResults: ITokenSearchResult[]
   verifiedOnly: boolean
   sortBy: string
-  onSelect: (token: TokenSearchResult) => void
+  onSelect: (token: ITokenSearchResult) => void
 }
 
 export function TokenList({

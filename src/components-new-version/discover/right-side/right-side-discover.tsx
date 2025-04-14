@@ -84,7 +84,7 @@ export function RightSideDiscover() {
                   <div className="w-[50px]">
                     {!!mainProfile?.username && (
                       <FollowButton
-                        size={ButtonSize.SM}
+                        size={ButtonSize.ICON}
                         followerUsername={mainProfile.username}
                         followeeUsername={elem.profile.username}
                       />
