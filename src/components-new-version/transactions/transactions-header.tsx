@@ -108,7 +108,9 @@ function Username({
   return (
     <Button
       variant={ButtonVariant.GHOST}
-      href={`/${sourceProfile?.username || sourceWallet}`}
+      href={route('entity', {
+        id: sourceProfile?.username || sourceWallet,
+      })}
       className="p-0 hover:bg-transparent"
     >
       {sourceProfile?.username && sourceProfile.username !== sourceWallet ? (

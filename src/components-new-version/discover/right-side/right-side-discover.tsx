@@ -42,7 +42,7 @@ export function RightSideDiscover() {
               const isSame = elem.wallet.address === elem.profile.username
 
               return (
-                <span
+                <div
                   key={elem.profile.username}
                   className={cn(
                     'flex items-center justify-between p-4',
@@ -51,7 +51,7 @@ export function RightSideDiscover() {
                       'border-b border-card-border'
                   )}
                 >
-                  <div className="flex items-center gap-4 w-full">
+                  <div className="flex items-center gap-4 w-2/3">
                     <Avatar size={32} username={elem.profile.username} />
                     <div className="flex flex-col items-start w-2/3">
                       <Button
@@ -81,7 +81,7 @@ export function RightSideDiscover() {
                       )}
                     </div>
                   </div>
-                  <div className="w-[50px]">
+                  <div>
                     {!!mainProfile?.username && (
                       <FollowButton
                         size={ButtonSize.ICON}
@@ -90,7 +90,7 @@ export function RightSideDiscover() {
                       />
                     )}
                   </div>
-                </span>
+                </div>
               )
             })}
           </>

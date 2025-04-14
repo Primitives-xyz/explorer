@@ -1,16 +1,16 @@
 'use client'
 
+import { ITrendingToken } from '@/components-new-version/birdeye/birdeye-tokens-trending.models'
+import { useGetTrendingTokens } from '@/components-new-version/birdeye/hooks/use-get-trending-tokens'
+import { useSwapStore } from '@/components-new-version/swap/stores/use-swap-store'
 import { Button, ButtonVariant } from '@/components-new-version/ui'
 import { DataTable } from '@/components-new-version/ui/table/data-table'
+import { SortableHeader } from '@/components-new-version/ui/table/sortable-header'
+import { SOL_MINT } from '@/components-new-version/utils/constants'
 import { route } from '@/components-new-version/utils/route'
 import { cn, formatNumber } from '@/components-new-version/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
-import { ITrendingToken } from '../birdeye/birdeye-tokens-trending.models'
-import { useGetTrendingTokens } from '../birdeye/hooks/use-get-trending-tokens'
-import { useSwapStore } from '../swap/stores/use-swap-store'
-import { SortableHeader } from '../ui/table/sortable-header'
-import { SOL_MINT } from '../utils/constants'
 
 export function TrendingTokens() {
   const { tokens, loading } = useGetTrendingTokens()
@@ -95,7 +95,7 @@ export function TrendingTokens() {
       },
     },
     {
-      header: '',
+      header: 'Buy',
       enableSorting: false,
       cell: ({ row }) => {
         return (
