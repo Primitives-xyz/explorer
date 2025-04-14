@@ -228,7 +228,6 @@ export function Swap({ setTokenMint }: Props) {
 
       params.set('inputMint', input)
       params.set('outputMint', output)
-      params.set('mode', 'swap')
 
       replace(`${pathname}?${params.toString()}`)
     },
@@ -317,6 +316,15 @@ export function Swap({ setTokenMint }: Props) {
       updateTokensInURL(inputTokenMint, outputTokenMint)
     }
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
+
+  useEffect(() => {
+    return () => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('inputMint')
+      params.delete('outputMint')
+      replace(`${pathname}?${params.toString()}`)
+    }
+  }, [pathname, replace, searchParams])
 
   // useEffect(() => {
   //   const inputMintParam = searchParams.get('inputMint')

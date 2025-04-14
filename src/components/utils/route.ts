@@ -1,5 +1,5 @@
 const routes = {
-  home: () => '/home',
+  home: () => '/',
   discover: () => '/discover',
   entity: ({ id }: { id: string }) => `/entity/${id}`,
   designSystem: () => '/design-system',

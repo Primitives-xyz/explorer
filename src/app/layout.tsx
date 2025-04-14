@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Rethink_Sans } from 'next/font/google'
+import './globals.css'
 
 const rethinkSans = Rethink_Sans({
   subsets: ['latin'],
@@ -101,7 +102,6 @@ export default async function RootLayout({
               </main>
             </div>
           </WalletProvider>
-          {children}
         </NextIntlClientProvider>
       </body>
     </html>
