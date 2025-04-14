@@ -33,7 +33,7 @@ export function ProfileSocial({ walletAddress }: Props) {
               className="flex-1"
               variant={TabVariant.SOCIAL}
             >
-              External Profiles
+              Onchain Profiles
             </TabsTrigger>
             <TabsTrigger
               value="comment-wall"
