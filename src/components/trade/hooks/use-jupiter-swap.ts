@@ -97,6 +97,7 @@ export function useJupiterSwap({
 
   const fetchQuote = useCallback(async () => {
     if (
+      Number(inputAmount) === 0 ||
       !inputAmount ||
       !inputMint ||
       !outputMint ||
@@ -118,9 +119,8 @@ export function useJupiterSwap({
         Number(inputAmount) * Math.pow(10, inputDecimals)
       )
       const QUOTE_URL = `
-        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${
-        platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-      }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
+        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+        }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
       `
       const response = await fetch(QUOTE_URL).then((res) => res.json())
       if (swapMode == 'ExactIn') {
@@ -332,7 +332,7 @@ export function useJupiterSwap({
       refreshIntervalRef.current = null
     }
 
-    if (inputAmount && inputMint && outputMint && !isFullyConfirmed) {
+    if (Number(inputAmount) !== 0 && inputAmount && inputMint && outputMint && !isFullyConfirmed) {
       refreshIntervalRef.current = setInterval(() => {
         if (!isQuoteRefreshing && !loading) fetchQuote() // Use a flag to prevent multiple concurrent refreshes
       }, 15000)
@@ -357,6 +357,7 @@ export function useJupiterSwap({
   useEffect(() => {
     // Only fetch quote if we have the necessary inputs and not already refreshing
     if (
+      Number(inputAmount) !== 0 &&
       inputAmount &&
       inputMint &&
       outputMint &&
