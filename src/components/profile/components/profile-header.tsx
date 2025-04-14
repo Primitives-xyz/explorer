@@ -45,7 +45,7 @@ export function ProfileHeader({ profileInfo }: Props) {
       <div className="space-y-2">
         {!!profileInfo?.profile.username && !!mainProfile?.username && (
           <FollowButton
-            expand
+            className="w-full"
             followerUsername={mainProfile.username}
             followeeUsername={profileInfo?.profile.username}
           />

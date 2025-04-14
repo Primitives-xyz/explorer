@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { Button } from '@/components/ui/button'
+import { route } from '@/utils/route'
 import { ArrowLeftRight } from 'lucide-react'
 
 export function LowFeeTrades() {
@@ -14,7 +15,7 @@ export function LowFeeTrades() {
         <p className="text-sm  text-muted-foreground">
           SSE offers the lowest fees across all current platforms.
         </p>
-        <Button expand>
+        <Button className="w-full" href={route('trade')}>
           <ArrowLeftRight size={16} />
           Trade
         </Button>

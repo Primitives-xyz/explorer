@@ -21,18 +21,16 @@ export function CenterButtonSwap({
     <div>
       {!sdkHasLoaded ? (
         <Button
-          expand
           variant={ButtonVariant.OUTLINE_WHITE}
-          className="text-lg capitalize font-bold"
+          className="text-lg capitalize font-bold w-full"
           size={ButtonSize.LG}
         >
           <Spinner />
         </Button>
       ) : !isLoggedIn ? (
         <Button
-          expand
           variant={ButtonVariant.OUTLINE_WHITE}
-          className="text-lg capitalize font-bold"
+          className="text-lg capitalize font-bold w-full"
           size={ButtonSize.LG}
           onClick={() => setShowAuthFlow(true)}
         >
@@ -40,9 +38,8 @@ export function CenterButtonSwap({
         </Button>
       ) : (
         <Button
-          expand
           onClick={handleSwap}
-          className="text-lg capitalize font-bold"
+          className="text-lg capitalize font-bold w-full"
           size={ButtonSize.LG}
           disabled={loading}
         >

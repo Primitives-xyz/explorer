@@ -51,9 +51,8 @@ export function Receive({
         <Button
           variant={ButtonVariant.OUTLINE_WHITE}
           onClick={() => setShowOutputTokenSearch(true)}
-          expand
           size={ButtonSize.LG}
-          className="flex justify-between px-4"
+          className="flex justify-between px-4 w-full"
         >
           <div className="flex items-center gap-3">
             <div>

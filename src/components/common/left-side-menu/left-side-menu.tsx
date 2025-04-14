@@ -2,7 +2,7 @@ import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
 import { Button, ButtonVariant } from '@/components/ui/button'
-import { Lock, MessageCircle } from 'lucide-react'
+import { MessageCircle } from 'lucide-react'
 import { ProfileInfos } from './profile-infos'
 
 export function LeftSideMenu() {
@@ -20,14 +20,14 @@ export function LeftSideMenu() {
           <LowFeeTrades />
         </div>
         <div className="flex flex-col items-center gap-4">
-          <Button variant={ButtonVariant.OUTLINE} expand newTab>
+          {/* <Button variant={ButtonVariant.OUTLINE} expand newTab>
             <Lock size={16} />
             Unlock Perpetuals
-          </Button>
+          </Button> */}
           <LanguageSwitcher />
           <Button
             variant={ButtonVariant.OUTLINE_WHITE}
-            expand
+            className="w-full"
             href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
             newTab
           >

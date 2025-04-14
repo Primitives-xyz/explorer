@@ -5,7 +5,7 @@ import { TradeLeftContent } from '@/components/trade/left-content/trade-left-con
 import { TradeContent } from '@/components/trade/trade-content/trade-content'
 import { useState } from 'react'
 
-export default function Page() {
+export default function TradePage() {
   const [tokenMint, setTokenMint] = useState<string>('')
 
   return (

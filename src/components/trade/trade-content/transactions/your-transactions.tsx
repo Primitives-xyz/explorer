@@ -104,7 +104,7 @@ export function YourTransactions({
             <div className="w-[200px]">
               <Button
                 variant={ButtonVariant.OUTLINE}
-                expand
+                className="w-full"
                 onClick={() => setShowAuthFlow(true)}
               >
                 Connect wallet

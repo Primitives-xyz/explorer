@@ -23,7 +23,7 @@ export function ProfileInfos() {
     <div>
       {!isLoggedIn ? (
         <Button
-          expand
+          className="w-full"
           variant={ButtonVariant.OUTLINE_WHITE}
           onClick={() => setShowAuthFlow(true)}
         >

@@ -69,10 +69,9 @@ export function Pay({
 
       <Button
         variant={ButtonVariant.OUTLINE_WHITE}
-        expand
         onClick={() => setShowInputTokenSearch(true)}
         size={ButtonSize.LG}
-        className="flex justify-between px-4"
+        className="flex justify-between px-4 w-full"
       >
         <div className="flex items-center gap-3">
           <div>

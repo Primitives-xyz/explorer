@@ -65,7 +65,6 @@ interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
-  expand?: boolean
   loading?: boolean
   isInvisible?: boolean
   disableHoverFeedback?: boolean
@@ -81,7 +80,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant,
       size,
       asChild = false,
-      expand = false,
       loading = false,
       isInvisible = false,
       disableHoverFeedback = false,
@@ -122,7 +120,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               )
             : buttonVariants({ variant, size, className }),
           {
-            'w-full': expand,
             'active:opacity-80 active:scale-95': !disableActiveFeedback,
             'pointer-events-none opacity-50':
               !disableActiveFeedback && disabled,

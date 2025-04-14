@@ -317,14 +317,14 @@ export function Swap({ setTokenMint }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
-  useEffect(() => {
-    return () => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.delete('inputMint')
-      params.delete('outputMint')
-      replace(`${pathname}?${params.toString()}`)
-    }
-  }, [pathname, replace, searchParams])
+  // useEffect(() => {
+  //   return () => {
+  //     const params = new URLSearchParams(searchParams.toString())
+  //     params.delete('inputMint')
+  //     params.delete('outputMint')
+  //     replace(`${pathname}?${params.toString()}`)
+  //   }
+  // }, [pathname, replace, searchParams])
 
   // useEffect(() => {
   //   const inputMintParam = searchParams.get('inputMint')

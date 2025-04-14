@@ -241,23 +241,21 @@ export function StakeForm({ initialAmount = '' }: Props) {
       </div>
 
       {!sdkHasLoaded ? (
-        <Button variant={ButtonVariant.OUTLINE} expand className="mt-4">
+        <Button variant={ButtonVariant.OUTLINE} className="mt-4 w-full">
           <Spinner />
           <p>{t('trade.checking_wallet_status')}</p>
         </Button>
       ) : !isLoggedIn ? (
         <Button
           variant={ButtonVariant.OUTLINE}
-          expand
-          className="mt-4"
+          className="mt-4 w-full"
           onClick={() => setShowAuthFlow(true)}
         >
           {t('common.connect_wallet')}
         </Button>
       ) : (
         <Button
-          expand
-          className="mt-4"
+          className="mt-4 w-full"
           onClick={() => stake(displayAmount)}
           disabled={showStakeLoading}
         >

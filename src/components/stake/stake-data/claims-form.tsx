@@ -40,15 +40,14 @@ export function ClaimsForm() {
       </div>
 
       {!sdkHasLoaded ? (
-        <Button variant={ButtonVariant.OUTLINE} expand className="mt-4">
+        <Button variant={ButtonVariant.OUTLINE} className="mt-4 w-full">
           <Spinner />
           <p>{t('trade.checking_wallet_status')}</p>
         </Button>
       ) : !isLoggedIn ? (
         <Button
           variant={ButtonVariant.OUTLINE}
-          expand
-          className="mt-4"
+          className="mt-4 w-full"
           onClick={() => setShowAuthFlow(true)}
         >
           {t('common.connect_wallet')}
@@ -69,7 +68,7 @@ export function ClaimsForm() {
             <Button
               onClick={claimRewards}
               disabled={isLoading || !hasRewards}
-              expand
+              className="w-full"
             >
               {isLoading ? (
                 <>

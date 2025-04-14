@@ -10,7 +10,6 @@ import {
   Compass,
   House,
   LucideIcon,
-  PaintbrushVertical,
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
@@ -25,7 +24,7 @@ export function Menu() {
 
       <SearchButton />
 
-      <Entry title="Trade" icon={ArrowRightLeft} href={route('newTrade')} />
+      <Entry title="Trade" icon={ArrowRightLeft} href={route('trade')} />
 
       <Entry title="Discover" icon={Compass} href={route('discover')} />
 
@@ -40,11 +39,11 @@ export function Menu() {
 
       <Entry title="Stake" icon={Beef} href={route('stake')} />
 
-      <Entry
+      {/* <Entry
         title="Design System"
         icon={PaintbrushVertical}
         href={route('designSystem')}
-      />
+      /> */}
     </div>
   )
 }

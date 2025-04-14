@@ -22,7 +22,7 @@ export function UnstakeForm() {
     return (
       <Button
         variant={ButtonVariant.OUTLINE}
-        expand
+        className="w-full"
         onClick={() => setShowAuthFlow(true)}
       >
         {t('common.connect_wallet')}
@@ -33,21 +33,24 @@ export function UnstakeForm() {
   return (
     <>
       {!sdkHasLoaded ? (
-        <Button variant={ButtonVariant.OUTLINE} expand className="mt-4">
+        <Button variant={ButtonVariant.OUTLINE} className="mt-4 w-full">
           <Spinner />
           <p>{t('trade.checking_wallet_status')}</p>
         </Button>
       ) : !isLoggedIn ? (
         <Button
           variant={ButtonVariant.OUTLINE}
-          expand
-          className="mt-4"
+          className="mt-4 w-full"
           onClick={() => setShowAuthFlow(true)}
         >
           {t('common.connect_wallet')}
         </Button>
       ) : (
-        <Button expand disabled={showUnstakeLoading} onClick={unstake}>
+        <Button
+          className="w-full"
+          disabled={showUnstakeLoading}
+          onClick={unstake}
+        >
           {showUnstakeLoading ? (
             <Spinner />
           ) : (
