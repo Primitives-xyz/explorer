@@ -1,6 +1,6 @@
 'use client'
 
-import { usePortfolioData } from '@/components/profile/hooks/use-portfolio-data'
+import { useGetProfilePortfolio } from '@/components/birdeye/hooks/use-get-profile-portfolio'
 import {
   searchTokensByAddress,
   searchTokensByKeyword,
@@ -25,10 +25,9 @@ export function useTokenSearch() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [verifiedOnly, setVerifiedOnly] = useState(true)
-
   const t = useTranslations()
   const { walletAddress } = useCurrentWallet()
-  const { items, isLoading: isPortfolioLoading } = usePortfolioData({
+  const { data, loading: getProfilePortfolioLoading } = useGetProfilePortfolio({
     walletAddress,
   })
 
@@ -43,9 +42,9 @@ export function useTokenSearch() {
 
   // Convert wallet items to token format
   const walletTokens = useMemo(() => {
-    if (!items.length) return []
+    if (!data?.data?.items?.length) return []
 
-    return items.map((item) => ({
+    return data.data.items.map((item) => ({
       name: item.name,
       symbol: item.symbol,
       address: item.address,
@@ -62,7 +61,7 @@ export function useTokenSearch() {
       verified: true,
       market_cap: 0,
     }))
-  }, [items]).filter((token) => token.name)
+  }, [data]).filter((token) => token.name)
 
   // Process wallet tokens when they're available
   useEffect(() => {
@@ -152,7 +151,7 @@ export function useTokenSearch() {
   return {
     searchQuery,
     searchResults,
-    isLoading: isLoading || isPortfolioLoading,
+    isLoading: isLoading || getProfilePortfolioLoading,
     error,
     verifiedOnly,
     sortOptions,

@@ -10,7 +10,7 @@ export default function Discover() {
       <MainContentWrapper>
         <DiscoverContent />
       </MainContentWrapper>
-      <RightSidebarWrapper className="pt-[52px]">
+      <RightSidebarWrapper className="pt-[52px] relative z-20">
         <div className="pr-[36px]">
           <RightSideDiscover />
           <SwapTray />

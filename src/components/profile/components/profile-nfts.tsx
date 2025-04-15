@@ -15,11 +15,11 @@ export function ProfileNfts({ walletAddress }: Props) {
   })
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm">NFTs</h3>
         <span className="text-muted-foreground text-xs">
-          ({nfts?.length ?? 0})
+          ( {nfts?.length ?? 0} )
         </span>
       </div>
       <Card>

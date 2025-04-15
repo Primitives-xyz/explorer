@@ -130,10 +130,10 @@ export const useFollowingTransactions = ({ following, kolData }: Props) => {
         page: kolData?.page || 1,
         pageSize: kolData?.pageSize || 10,
         profiles: kolData
-          ? (kolData.profiles.flatMap((p) => ({
-              ...p.profile,
+          ? (kolData.profiles.flatMap((entry) => ({
+              ...entry.profile,
               wallet: {
-                id: p.wallet.address,
+                id: entry?.wallet?.address,
               },
             })) as IProfile[])
           : [],

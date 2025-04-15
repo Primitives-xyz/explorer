@@ -14,6 +14,7 @@ export interface INameSpace {
   updatedAt: string
   isDefault: boolean
   team_id: number
+  userProfileURL?: string
 }
 
 export interface IWallet {
@@ -61,7 +62,7 @@ export interface IGetProfilesResponseEntry {
     followers: number
     following: number
   }
-  wallet: {
+  wallet?: {
     address: string
   }
 }

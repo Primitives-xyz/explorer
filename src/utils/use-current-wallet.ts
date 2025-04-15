@@ -54,7 +54,7 @@ export function useCurrentWallet() {
     const mainProfile = profiles?.profiles.find(
       (profile) =>
         profile.namespace.name === EXPLORER_NAMESPACE &&
-        profile.wallet.address === walletAddress
+        profile.wallet?.address === walletAddress
     )
 
     return {
