@@ -43,6 +43,7 @@ export function ProfileExternalProfiles({ walletAddress }: Props) {
                   })
                 : `${identity.namespace.userProfileURL}${identity.profile.username}`
             }
+            newTab={identity.namespace.name !== EXPLORER_NAMESPACE}
             variant={ButtonVariant.GHOST}
             className="w-full h-auto gap-2 px-2.5 items-start justify-start"
           >
