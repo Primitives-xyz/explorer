@@ -11,7 +11,6 @@ import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
 import { ExternalLinkIcon } from 'lucide-react'
-import { IdentityContentNodes } from './identity-content-nodes'
 
 interface Props {
   identity: IGetProfilesResponseEntry
@@ -69,7 +68,7 @@ export function ProfileExternalProfile({ identity }: Props) {
         </CardContent>
       </Card>
       <Separator />
-      <IdentityContentNodes identity={identity} />
+      {/* <IdentityContentNodes identity={identity} /> */}
     </>
   )
 }

@@ -41,7 +41,7 @@ export function ProfileSocial({ walletAddress }: Props) {
                     value={identity.namespace.name}
                     className="flex-1 shrink-0"
                   >
-                    {identity.namespace.name}
+                    {identity.namespace.readableName}
                   </TabsTrigger>
                 ))}
               </TabsList>
