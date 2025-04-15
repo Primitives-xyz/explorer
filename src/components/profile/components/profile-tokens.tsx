@@ -1,6 +1,9 @@
 'use client'
 
+import { useSwapStore } from '@/components/swap/stores/use-swap-store'
+import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
 import { DataTable } from '@/components/ui/table/data-table'
+import { SOL_MINT } from '@/utils/constants'
 import { formatNumber } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
@@ -16,6 +19,7 @@ export function ProfileTokens({ walletAddress }: Props) {
   const { fungibleTokens, isLoading } = useGetWalletTokens({
     walletAddress,
   })
+  const { setOpen, setInputs } = useSwapStore()
 
   const columns: ColumnDef<IFungibleToken>[] = [
     {
@@ -67,6 +71,30 @@ export function ProfileTokens({ walletAddress }: Props) {
         const value = getValue<number>()
 
         return <div>${formatNumber(value)}</div>
+      },
+    },
+    {
+      header: 'Buy',
+      enableSorting: false,
+      cell: ({ row }) => {
+        return (
+          <div>
+            <Button
+              size={ButtonSize.SM}
+              variant={ButtonVariant.OUTLINE}
+              onClick={() => {
+                setOpen(true)
+                setInputs({
+                  inputMint: SOL_MINT,
+                  outputMint: row.original.mint,
+                  inputAmount: 0.1,
+                })
+              }}
+            >
+              Buy
+            </Button>
+          </div>
+        )
       },
     },
   ]

@@ -75,7 +75,7 @@ export function DataTable<TData>({
   return (
     <div className="space-y-2">
       <Table className={tableClassName}>
-        <TableHeader className="sticky top-0">
+        <TableHeader className="sticky top-0 z-20">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (

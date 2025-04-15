@@ -101,6 +101,7 @@ export function TrendingTokens() {
         return (
           <div>
             <Button
+              variant={ButtonVariant.OUTLINE}
               onClick={() => {
                 setOpen(true)
                 setInputs({
