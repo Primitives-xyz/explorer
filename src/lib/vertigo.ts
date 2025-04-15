@@ -1,6 +1,7 @@
 'use server'
 
-import { BN, Wallet } from '@coral-xyz/anchor'
+import { BN } from '@coral-xyz/anchor'
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import {
   createAssociatedTokenAccount,
   createMint,
@@ -85,7 +86,8 @@ function getPayerKeypair(): Keypair {
 // Helper function to create Vertigo SDK instance
 function createVertigoSDK(connection: Connection): VertigoSDK {
   const payer = getPayerKeypair()
-  const wallet = new Wallet(payer)
+  const wallet = new NodeWallet(payer)
+
   return new VertigoSDK(connection, wallet)
 }
 
@@ -173,9 +175,19 @@ export async function launchPool(
     }
 
     // Launch the pool
-    const { signature, poolAddress } = await vertigo.launchPool({
+    const { deploySignature, poolAddress } = await vertigo.launchPool({
       // Pool configuration
-      poolParams,
+      params: {
+        shift: poolParams.shift,
+        initialTokenBReserves: poolParams.initialTokenBReserves,
+        feeParams: {
+          normalizationPeriod: poolParams.feeParams.normalizationPeriod,
+          decay: poolParams.feeParams.decay,
+          royaltiesBps: poolParams.feeParams.royaltiesBps,
+          privilegedSwapper: null,
+          reference: new BN(0),
+        },
+      },
 
       // Authority configuration
       payer: owner,
@@ -191,7 +203,7 @@ export async function launchPool(
     })
 
     return {
-      signature,
+      signature: deploySignature,
       poolAddress: poolAddress.toString(),
       mintB: mintB.toString(),
     }
@@ -235,8 +247,10 @@ export async function buyTokens(
       userTaB,
       tokenProgramA: TOKEN_PROGRAM_ID,
       tokenProgramB: TOKEN_2022_PROGRAM_ID,
-      amount,
-      limit: new BN(0),
+      params: {
+        amount,
+        limit: new BN(0),
+      },
     })
 
     return signature
@@ -284,8 +298,10 @@ export async function sellTokens(
       userTaB,
       tokenProgramA: TOKEN_PROGRAM_ID,
       tokenProgramB: TOKEN_2022_PROGRAM_ID,
-      amount,
-      limit: new BN(0),
+      params: {
+        amount,
+        limit: new BN(0),
+      },
     })
 
     return signature
