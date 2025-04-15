@@ -1,6 +1,7 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
+import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { MessageCircle } from 'lucide-react'
 import { ProfileInfos } from './profile-infos'
@@ -24,6 +25,7 @@ export function LeftSideMenu() {
             <Lock size={16} />
             Unlock Perpetuals
           </Button> */}
+          <DialectNotificationsComponent />
           <LanguageSwitcher />
           <Button
             variant={ButtonVariant.OUTLINE_WHITE}
