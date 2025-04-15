@@ -1,4 +1,5 @@
-import { tapestryServer } from '@/utils/tapestry-server'
+import { FetchMethod } from '@/utils/api'
+import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { NextRequest } from 'next/server'
 
 type RouteContext = {
@@ -15,7 +16,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return Response.json({ error: 'Profile ID is required' }, { status: 400 })
     }
 
-    const result = await tapestryServer.likeComment(id, profileId)
+    const result = await fetchTapestryServer({
+      endpoint: `likes/${id}`,
+      method: FetchMethod.POST,
+      data: {
+        startId: profileId,
+      },
+    })
+
     return Response.json(result)
   } catch (error) {
     console.error('Error liking comment:', error)

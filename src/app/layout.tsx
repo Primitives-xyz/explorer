@@ -1,6 +1,18 @@
+import { ActivityTape } from '@/components/activity-tape/components/activity-tape'
+import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
+import { WalletProvider } from '@/components/common/wallet-provider'
+import { Onboarding } from '@/components/onboarding/components/onboarding'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
+import { Rethink_Sans } from 'next/font/google'
+import './globals.css'
+
+const rethinkSans = Rethink_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
 
 export async function generateMetadata(): Promise<Metadata> {
   const name = 'Solana Social Explorer | Tapestry Protocol'
@@ -75,9 +87,21 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body>
+      <body className={rethinkSans.className}>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <WalletProvider>
+            <Onboarding />
+            <div className="fixed inset-0 z-0 background-gradient" />
+            <div className="relative min-h-screen">
+              <ActivityTape />
+              <main className="w-full flex justify-between pt-topbar">
+                <LeftSideMenu />
+                <div className="flex-1 flex justify-between pt-5">
+                  {children}
+                </div>
+              </main>
+            </div>
+          </WalletProvider>
         </NextIntlClientProvider>
       </body>
     </html>

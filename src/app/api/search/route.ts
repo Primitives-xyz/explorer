@@ -1,4 +1,4 @@
-import { fetchTapestry } from '@/components-new-version/tapestry/api/fetch-tapestry'
+import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {

@@ -1,7 +1,7 @@
 // app/api/profiles/create/route.ts
 import { FetchMethod } from '@/utils/api'
+import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { DICEBEAR_API_BASE } from '@/utils/constants'
-import { fetchTapestryServer } from '@/utils/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Blocklist of reserved usernames

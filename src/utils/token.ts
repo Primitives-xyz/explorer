@@ -12,9 +12,9 @@ import {
   PublicKey,
   Transaction,
 } from '@solana/web3.js'
+import { addPriorityFee } from '../utils/priority-fee'
 import { fetchTokenInfo } from './helius/das-api'
-import { addPriorityFee } from './priority-fee'
-import { confirmTransactionFast } from './transaction'
+import { confirmTransactionFast } from './transactions'
 
 async function createATA(
   connection: Connection,
