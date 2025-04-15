@@ -51,12 +51,13 @@ export function ProfileSection({
     null
   )
 
+  console.log({ profileData })
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const t = useTranslations()
 
-  console.log({ profiles, walletAddress })
   // Memoize filtered profiles
   const filteredProfiles = useMemo(() => {
     if (!profiles || !Array.isArray(profiles)) return []
@@ -65,6 +66,8 @@ export function ProfileSection({
       (profile) => profile?.namespace?.name === selectedNamespace
     )
   }, [profiles, selectedNamespace])
+
+  console.log(filteredProfiles)
 
   // Memoize unique namespaces
   const namespaces = useMemo(() => {

@@ -1,14 +1,11 @@
 'use client'
 
-import { FollowButton } from '@/components-new-version/common/follow-button'
 import { INamespaceProfileInfos } from '@/components-new-version/models/namespace.models'
 import {
   Button,
   ButtonSize,
   ButtonVariant,
 } from '@/components-new-version/ui/button'
-import { EXPLORER_NAMESPACE } from '@/components-new-version/utils/constants'
-import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 import Image from 'next/image'
 
 interface Props {
@@ -22,8 +19,6 @@ export function NamespaceProfileHeader({
   username,
   namespace,
 }: Props) {
-  const { mainProfile } = useCurrentWallet()
-
   let namespaceLink = profileData?.namespace?.userProfileURL
     ? profileData?.namespace?.userProfileURL
     : null
@@ -66,15 +61,6 @@ export function NamespaceProfileHeader({
       </div>
 
       <div className="flex flex-col space-y-2">
-        {!!username &&
-          !!mainProfile &&
-          profileData?.namespace?.name === EXPLORER_NAMESPACE && (
-            <FollowButton
-              expand
-              followerUsername={mainProfile?.username}
-              followeeUsername={username}
-            />
-          )}
         <p className="flex items-center space-x-2 text-xs text-muted-foreground">
           <span>{profileData?.socialCounts?.followers} Followers</span>
           <span>|</span>

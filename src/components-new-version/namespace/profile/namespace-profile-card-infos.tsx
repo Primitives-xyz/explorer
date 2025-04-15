@@ -52,16 +52,6 @@ export function NamespaceProfileCardInfos({ profileData, username }: Props) {
           <p>Created</p>
           <p>{new Date(profileData.profile?.created_at).getFullYear()}</p>
         </div>
-
-        <div className="w-full flex justify-between items-center">
-          <p>Network</p>
-          <p>...</p>
-        </div>
-
-        <div className="w-full flex justify-between items-center">
-          <p>Status</p>
-          <p>...</p>
-        </div>
       </CardContent>
     </Card>
   )

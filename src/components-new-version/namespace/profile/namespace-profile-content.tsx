@@ -3,7 +3,6 @@
 import { useNamespaceProfile } from '@/components-new-version/namespace/hooks/use-namespace-profile'
 import { NamespaceProfileCardInfos } from '@/components-new-version/namespace/profile/namespace-profile-card-infos'
 import { NamespaceProfileHeader } from '@/components-new-version/namespace/profile/namespace-profile-header'
-import { RelatedProfileTable } from '@/components-new-version/namespace/profile/related-profile-table'
 import { useCurrentWallet } from '@/components-new-version/utils/use-current-wallet'
 
 interface Props {
@@ -23,7 +22,7 @@ export function NamespaceProfileContent({
     namespace,
   })
 
-  if (!profileData) {
+  if (!profileData || !profileData.profile || !profileData.namespace) {
     return null
   }
 
@@ -34,12 +33,12 @@ export function NamespaceProfileContent({
         username={username}
         namespace={namespace}
       />
-      <NamespaceProfileCardInfos
-        profileData={profileData}
-        username={username}
-      />
-
-      <RelatedProfileTable />
+      <div className="flex w-full justify-between gap-6">
+        <NamespaceProfileCardInfos
+          profileData={profileData}
+          username={username}
+        />
+      </div>
     </div>
   )
 }
