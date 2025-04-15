@@ -35,44 +35,44 @@ export function RightSideDiscover() {
               </span>
             )}
 
-            {profiles?.profiles.map((elem) => {
-              const isSame = elem.wallet.address === elem.profile.username
+            {profiles?.profiles.map((entry) => {
+              const isSame = entry?.wallet?.address === entry.profile.username
 
               return (
                 <div
-                  key={elem.profile.username}
+                  key={entry.profile.username}
                   className={cn(
                     'flex items-center justify-between p-4',
-                    profiles?.profiles.indexOf(elem) !==
+                    profiles?.profiles.indexOf(entry) !==
                       profiles?.profiles.length - 1 &&
                       'border-b border-card-border'
                   )}
                 >
                   <div className="flex items-center gap-4 w-2/3">
-                    <Avatar size={32} username={elem.profile.username} />
+                    <Avatar size={32} username={entry.profile.username} />
                     <div className="flex flex-col items-start w-2/3">
                       <Button
                         variant={ButtonVariant.LINK}
-                        href={route('entity', { id: elem.profile.username })}
+                        href={route('entity', { id: entry.profile.username })}
                         className="px-0 !py-2 w-full flex items-start justify-start"
                       >
                         <p className="truncate text-foreground">
                           {isSame
                             ? `@${abbreviateWalletAddress({
-                                address: elem.profile.username,
+                                address: entry.profile.username,
                               })}`
-                            : `@${elem.profile.username}`}
+                            : `@${entry.profile.username}`}
                         </p>
                       </Button>
 
-                      {!isSame && (
+                      {!isSame && entry?.wallet?.address && (
                         <Button
-                          href={route('entity', { id: elem.wallet.address })}
+                          href={route('entity', { id: entry.wallet.address })}
                           variant={ButtonVariant.BADGE}
                           size={ButtonSize.SM}
                         >
                           {abbreviateWalletAddress({
-                            address: elem.wallet.address,
+                            address: entry.wallet.address,
                           })}
                         </Button>
                       )}
@@ -83,7 +83,7 @@ export function RightSideDiscover() {
                       <FollowButton
                         size={ButtonSize.ICON}
                         followerUsername={mainProfile.username}
-                        followeeUsername={elem.profile.username}
+                        followeeUsername={entry.profile.username}
                       />
                     )}
                   </div>

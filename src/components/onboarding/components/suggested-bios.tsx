@@ -1,6 +1,6 @@
 'use client'
 
-import { Label } from '../../ui'
+import { Label } from '@/components/ui'
 
 interface Props {
   suggestedBios: string[]
