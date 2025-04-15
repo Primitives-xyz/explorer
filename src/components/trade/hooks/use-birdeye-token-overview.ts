@@ -1,4 +1,4 @@
-import { BirdeyeTokenOverview } from '@/components/models/token.models'
+import { BirdeyeTokenOverview } from '@/components/tapestry/models/token.models'
 import useSWR from 'swr'
 
 interface BirdeyeResponse {

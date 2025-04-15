@@ -1,7 +1,7 @@
 import {
   FungibleTokenInfo,
   TokenResponse,
-} from '@/components/models/token.models'
+} from '@/components/tapestry/models/token.models'
 import { useQuery } from '@/utils/api'
 
 const isFungibleToken = (

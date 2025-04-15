@@ -1,11 +1,11 @@
 'use client'
 
+import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import {
   CompressedNFTMintEvent,
   ExtendedTransaction,
   Transaction,
-} from '@/components/models/helius.models'
-import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
+} from '@/components/tapestry/models/helius.models'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
 import {

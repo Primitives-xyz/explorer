@@ -1,6 +1,6 @@
 'use client'
 
-import { BirdeyeTokenOverview } from '@/components/models/token.models'
+import { BirdeyeTokenOverview } from '@/components/tapestry/models/token.models'
 import { useTokenHolders } from '@/components/trade/hooks/use-token-holders'
 import {
   Button,

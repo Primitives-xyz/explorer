@@ -1,7 +1,7 @@
 'use client'
 
-import { QuoteResponse } from '@/components/models/jupiter.models'
 import { PlatformComparison } from '@/components/swap/components/platform-comparison'
+import { QuoteResponse } from '@/components/tapestry/models/jupiter.models'
 import {
   Accordion,
   AccordionContent,

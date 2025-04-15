@@ -1,7 +1,7 @@
 'use client'
 
-import { QuoteResponse } from '@/components/models/jupiter.models'
 import { PlatformLogo } from '@/components/swap/components/platform-logo'
+import { QuoteResponse } from '@/components/tapestry/models/jupiter.models'
 import { formatLargeNumber } from '@/utils/utils'
 import { useMemo } from 'react'
 

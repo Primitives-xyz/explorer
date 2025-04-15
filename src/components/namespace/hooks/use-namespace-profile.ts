@@ -1,5 +1,5 @@
-import { INamespaceProfileInfos } from '@/components/models/namespace.models'
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
+import { INamespaceProfileInfos } from '@/components/tapestry/models/namespace.models'
 import { useQuery } from '@/utils/api'
 
 interface Props {

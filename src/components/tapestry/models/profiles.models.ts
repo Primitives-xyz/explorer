@@ -1,4 +1,4 @@
-import { IPaginatedResponse } from '@/components/models/common.models'
+import { IPaginatedResponse } from './common.models'
 
 export enum BLOCKCHAIN {
   SOLANA = 'SOLANA',
@@ -6,14 +6,9 @@ export enum BLOCKCHAIN {
 }
 
 export interface INameSpace {
-  id: number
   name: string
   readableName: string
   faviconURL: string
-  createdAt: string
-  updatedAt: string
-  isDefault: boolean
-  team_id: number
   userProfileURL?: string
 }
 

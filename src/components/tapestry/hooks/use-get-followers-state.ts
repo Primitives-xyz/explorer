@@ -1,6 +1,6 @@
 'use client'
 
-import { IGetFollowersStateResponse } from '@/components/models/profiles.models'
+import { IGetFollowersStateResponse } from '@/components/tapestry/models/profiles.models'
 import { useQuery } from '@/utils/api'
 
 interface Props {

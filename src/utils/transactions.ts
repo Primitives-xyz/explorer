@@ -2,7 +2,7 @@ import {
   ExtendedTransaction,
   Instruction,
   Transfer,
-} from '@/components/models/helius.models'
+} from '@/components/tapestry/models/helius.models'
 import {
   Connection,
   SignatureStatus,

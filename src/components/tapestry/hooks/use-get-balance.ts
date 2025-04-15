@@ -1,4 +1,4 @@
-import { ITokenBalanceResponse } from '@/components/models/token.models'
+import { ITokenBalanceResponse } from '@/components/tapestry/models/token.models'
 import { useQuery } from '@/utils/api'
 import { SSE_TOKEN_MINT } from '@/utils/constants'
 import { formatNumber } from '@/utils/utils'
