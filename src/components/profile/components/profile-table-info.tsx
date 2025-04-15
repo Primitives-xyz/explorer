@@ -40,6 +40,7 @@ export function ProfileTableInfo({ walletAddress }: Props) {
           selected={selected}
           onSelect={setSelected}
           variant={TabVariant.SOCIAL}
+          // size={ButtonSize.SM}
         />
         <div className="mb-4">
           {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (

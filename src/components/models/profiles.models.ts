@@ -62,7 +62,7 @@ export interface IGetProfilesResponseEntry {
     followers: number
     following: number
   }
-  wallet: {
+  wallet?: {
     address: string
   }
 }

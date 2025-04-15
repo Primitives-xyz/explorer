@@ -29,7 +29,7 @@ export function ProfileTokens({ walletAddress }: Props) {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <div className="w-6 aspect-square rounded-full bg-muted overflow-hidden">
+            <div className="w-6 aspect-square rounded-full bg-muted overflow-hidden shrink-0">
               {row.original.imageUrl &&
                 !row.original.imageUrl.includes('ipfs://') && (
                   <Image
@@ -100,11 +100,11 @@ export function ProfileTokens({ walletAddress }: Props) {
   ]
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h3 className="text-sm">Tokens</h3>
         <span className="text-muted-foreground text-xs">
-          ({fungibleTokens?.length ?? 0})
+          ( {fungibleTokens?.length ?? 0} )
         </span>
       </div>
       <DataTable
