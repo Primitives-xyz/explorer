@@ -41,7 +41,7 @@ export function ProfileExternalProfiles({ walletAddress }: Props) {
                 ? route('entity', {
                     id: identity.profile.username,
                   })
-                : `${identity.namespace.userProfileURL}/${identity.profile.username}`
+                : `${identity.namespace.userProfileURL.replace(/\/$/, '')}/${identity.profile.username}`
             }
             variant={ButtonVariant.GHOST}
             className="w-full h-auto gap-2 px-2.5 items-start justify-start"
