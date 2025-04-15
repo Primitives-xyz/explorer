@@ -34,13 +34,16 @@ export function ProfileExternalProfiles({ walletAddress }: Props) {
           <Button
             disabled={
               identity.namespace.name !== EXPLORER_NAMESPACE &&
-              !identity.namespace.userProfileURL
+              (!identity.namespace.userProfileURL ||
+                (identity.namespace.name === 'tribe.run' && !identity.wallet?.address))
             }
             href={
               identity.namespace.name === EXPLORER_NAMESPACE
                 ? route('entity', {
                     id: identity.profile.username,
                   })
+                : identity.namespace.name === 'tribe.run' && identity.wallet?.address
+                ? `${identity.namespace.userProfileURL}${identity.wallet.address}`
                 : `${identity.namespace.userProfileURL}${identity.profile.username}`
             }
             newTab={identity.namespace.name !== EXPLORER_NAMESPACE}
