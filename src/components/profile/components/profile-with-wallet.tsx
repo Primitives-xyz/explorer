@@ -27,7 +27,7 @@ export function ProfileWithWallet({ walletAddress }: Props) {
     return <FullPageSpinner />
   }
 
-  if (!profileInfo) {
+  if (!profileInfo?.wallet?.address) {
     return null
   }
 

@@ -68,6 +68,13 @@ export function AddBioForm({
     }
   }
 
+  const onClickSuggestedBio = (bio: string) => {
+    form.setValue('bio', bio)
+    form.trigger('bio')
+    form.clearErrors('bio')
+    form.setFocus('bio')
+  }
+
   return (
     <Form {...form}>
       <form
@@ -105,7 +112,10 @@ export function AddBioForm({
           </div>
           {!!suggestedBios?.length && (
             <div>
-              <SuggestedBios suggestedBios={suggestedBios} />
+              <SuggestedBios
+                suggestedBios={suggestedBios}
+                onClickSuggestedBio={onClickSuggestedBio}
+              />
             </div>
           )}
         </div>

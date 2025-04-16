@@ -1,6 +1,7 @@
 'use server'
 
-import * as anchor from '@coral-xyz/anchor'
+import { BN } from '@coral-xyz/anchor'
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import {
   createAssociatedTokenAccount,
   createMint,
@@ -85,7 +86,8 @@ function getPayerKeypair(): Keypair {
 // Helper function to create Vertigo SDK instance
 function createVertigoSDK(connection: Connection): VertigoSDK {
   const payer = getPayerKeypair()
-  const wallet = new anchor.Wallet(payer)
+  const wallet = new NodeWallet(payer)
+
   return new VertigoSDK(connection, wallet)
 }
 
@@ -157,25 +159,35 @@ export async function launchPool(
 
     // Prepare pool parameters in the format Vertigo SDK expects
     const poolParams = {
-      shift: new anchor.BN(LAMPORTS_PER_SOL).muln(params.poolParams.shift),
-      initialTokenBReserves: new anchor.BN(
+      shift: new BN(LAMPORTS_PER_SOL).muln(params.poolParams.shift),
+      initialTokenBReserves: new BN(
         params.poolParams.initialTokenReserves
       ).muln(Math.pow(10, decimals)),
       feeParams: {
-        normalizationPeriod: new anchor.BN(
+        normalizationPeriod: new BN(
           params.poolParams.feeParams.normalizationPeriod
         ),
         decay: params.poolParams.feeParams.decay,
         royaltiesBps: params.poolParams.feeParams.royaltiesBps,
         feeExemptBuys: params.poolParams.feeParams.feeExemptBuys,
-        reference: new anchor.BN(0),
+        reference: new BN(0),
       },
     }
 
     // Launch the pool
-    const { signature, poolAddress } = await vertigo.launchPool({
+    const { deploySignature, poolAddress } = await vertigo.launchPool({
       // Pool configuration
-      poolParams,
+      params: {
+        shift: poolParams.shift,
+        initialTokenBReserves: poolParams.initialTokenBReserves,
+        feeParams: {
+          normalizationPeriod: poolParams.feeParams.normalizationPeriod,
+          decay: poolParams.feeParams.decay,
+          royaltiesBps: poolParams.feeParams.royaltiesBps,
+          privilegedSwapper: null,
+          reference: new BN(0),
+        },
+      },
 
       // Authority configuration
       payer: owner,
@@ -191,7 +203,7 @@ export async function launchPool(
     })
 
     return {
-      signature,
+      signature: deploySignature,
       poolAddress: poolAddress.toString(),
       mintB: mintB.toString(),
     }
@@ -223,7 +235,7 @@ export async function buyTokens(
     const user = Keypair.generate()
 
     // Convert amount to lamports
-    const amount = new anchor.BN(params.amount * LAMPORTS_PER_SOL)
+    const amount = new BN(params.amount * LAMPORTS_PER_SOL)
 
     // Execute the buy transaction
     const signature = await vertigo.buy({
@@ -235,8 +247,10 @@ export async function buyTokens(
       userTaB,
       tokenProgramA: TOKEN_PROGRAM_ID,
       tokenProgramB: TOKEN_2022_PROGRAM_ID,
-      amount,
-      limit: new anchor.BN(0),
+      params: {
+        amount,
+        limit: new BN(0),
+      },
     })
 
     return signature
@@ -272,7 +286,7 @@ export async function sellTokens(
     const decimals = tokenInfo.value.decimals
 
     // Convert amount with the correct decimals
-    const amount = new anchor.BN(params.amount * Math.pow(10, decimals))
+    const amount = new BN(params.amount * Math.pow(10, decimals))
 
     // Execute the sell transaction
     const signature = await vertigo.sell({
@@ -284,8 +298,10 @@ export async function sellTokens(
       userTaB,
       tokenProgramA: TOKEN_PROGRAM_ID,
       tokenProgramB: TOKEN_2022_PROGRAM_ID,
-      amount,
-      limit: new anchor.BN(0),
+      params: {
+        amount,
+        limit: new BN(0),
+      },
     })
 
     return signature

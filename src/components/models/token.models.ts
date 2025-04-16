@@ -146,15 +146,6 @@ export interface TokenPortfolioItem {
   valueUsd: number
 }
 
-export interface TokenPortfolioResponse {
-  success: boolean
-  data: {
-    wallet: string
-    totalUsd: number
-    items: TokenPortfolioItem[]
-  }
-}
-
 export interface ITokenBalanceResponse {
   balance: {
     uiAmountString: string

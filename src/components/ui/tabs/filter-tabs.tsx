@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, ButtonVariant, TabVariant } from '@/components/ui'
+import { Button, ButtonSize, ButtonVariant, TabVariant } from '@/components/ui'
 import { cn } from '@/utils/utils'
 
 interface FilterTabsProps<T extends string> {
@@ -9,6 +9,7 @@ interface FilterTabsProps<T extends string> {
   variant?: TabVariant
   className?: string
   onSelect?: (value: T) => void
+  size?: ButtonSize
 }
 
 export function FilterTabs<T extends string>({
@@ -17,6 +18,7 @@ export function FilterTabs<T extends string>({
   variant = TabVariant.DEFAULT,
   className,
   onSelect,
+  size,
 }: FilterTabsProps<T>) {
   const getVariant = (isActive: boolean) => {
     if (isActive) {
@@ -38,6 +40,7 @@ export function FilterTabs<T extends string>({
           className="rounded-full"
           variant={getVariant(selected === option.value)}
           onClick={() => onSelect?.(option.value)}
+          size={size}
         >
           {option.label}
         </Button>

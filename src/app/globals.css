@@ -74,6 +74,16 @@ input[type='number'] {
   );
 }
 
+.fade-out-text--left {
+  mask-image: linear-gradient(
+    to left,
+    transparent 0%,
+    white 0%,
+    white 90%,
+    transparent 100%
+  );
+}
+
 .fade-out-text-small {
   mask-image: linear-gradient(
     to left,
