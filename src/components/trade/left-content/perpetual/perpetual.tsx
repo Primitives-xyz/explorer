@@ -10,6 +10,7 @@ import { useCurrentWallet } from "@/utils/use-current-wallet"
 import { cn } from "@/utils/utils"
 import { usePlacePerpsOrder } from "../../hooks/drift/use-place-perps-order"
 import { PositionDirection } from "@drift-labs/sdk-browser"
+import { useDriftUsers } from "../../hooks/drift/use-drift-users"
 
 enum Direction {
   LONG = "long",
@@ -45,7 +46,8 @@ const slippageOptions = [
 ]
 
 export function Perpetual() {
-  const t = useTranslations()
+  const { accountIds } = useDriftUsers()
+  console.log('accountIds', accountIds)
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
   const [proOrderType, setProOrderType] = useState<ProOrderType>(ProOrderType.STOP_MARKET)
@@ -94,7 +96,7 @@ export function Perpetual() {
       /^[0-9]*\.?[0-9]*$/.test(val)
     ) {
       const cursorPosition = e.target.selectionStart
-      if (Number(val) < 100)   {
+      if (Number(val) < 100) {
         setSlippageOption(e.target.value)
       } else {
         setSlippageOption("99")
@@ -386,7 +388,7 @@ export function Perpetual() {
             >
               Connect Wallet
             </Button>
-          ) : (
+          ) : accountIds.length ? (
             <Button
               onClick={() => placePerpsOrder()}
               className="text-lg capitalize font-bold w-full"
@@ -394,6 +396,14 @@ export function Perpetual() {
               disabled={loading || Number(amount) <= 0}
             >
               {loading ? <Spinner /> : Number(amount) > 0 ? <p>{selectedDirection} ~{amount} {symbol}-Perp</p> : <p>Enter an amount</p>}
+            </Button>
+          ) : (
+            <Button
+              variant={ButtonVariant.OUTLINE_WHITE}
+              className="text-lg capitalize font-bold w-full"
+              size={ButtonSize.LG}
+            >
+              No Drift Account
             </Button>
           )}
         </div>
