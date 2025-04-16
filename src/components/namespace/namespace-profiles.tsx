@@ -1,6 +1,6 @@
 'use client'
 
-import { INamespaceProfile } from '@/components/models/namespace.models'
+import { INamespaceProfile } from '@/components/tapestry/models/namespace.models'
 import {
   Button,
   ButtonVariant,

@@ -1,7 +1,7 @@
 'use client'
 
 import { FollowButton } from '@/components/common/follow-button'
-import { IGetProfileResponse } from '@/components/models/profiles.models'
+import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/utils/utils'

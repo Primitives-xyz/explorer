@@ -8,8 +8,8 @@ const cardVariants = cva(
     variants: {
       variant: {
         default: 'bg-card border-foreground/20',
-        accent: 'bg-primary/10 border-primary/10',
-        'accent-social': 'bg-secondary/10 border-secondary/10',
+        accent: 'bg-primary/10 border-foreground/20',
+        'accent-social': 'bg-secondary/10 border-foreground/20',
       },
     },
     defaultVariants: {

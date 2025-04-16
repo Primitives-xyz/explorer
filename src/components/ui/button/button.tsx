@@ -76,7 +76,7 @@ interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      className,
+      className: _className,
       variant,
       size,
       asChild = false,
@@ -107,6 +107,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       content
     )
 
+    const className = cn(
+      {
+        'active:opacity-80 active:scale-95': !disableActiveFeedback,
+        'pointer-events-none opacity-50': !disableActiveFeedback && disabled,
+      },
+      _className
+    )
+
     return (
       <Comp
         className={cn(
@@ -118,12 +126,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 },
                 className
               )
-            : buttonVariants({ variant, size, className }),
-          {
-            'active:opacity-80 active:scale-95': !disableActiveFeedback,
-            'pointer-events-none opacity-50':
-              !disableActiveFeedback && disabled,
-          }
+            : buttonVariants({ variant, size, className })
         )}
         ref={ref}
         disabled={disabled}

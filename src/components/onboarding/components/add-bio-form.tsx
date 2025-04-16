@@ -1,6 +1,6 @@
 'use client'
 
-import { IProfile } from '@/components/models/profiles.models'
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import {
   Button,
   ButtonVariant,
@@ -26,18 +26,12 @@ const formSchema = z.object({
 })
 
 interface Props {
-  walletAddress: string
   suggestedBios: string[]
   mainProfile: IProfile
   setStep: (step: EOnboardingSteps) => void
 }
 
-export function AddBioForm({
-  walletAddress,
-  suggestedBios,
-  mainProfile,
-  setStep,
-}: Props) {
+export function AddBioForm({ suggestedBios, mainProfile, setStep }: Props) {
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { updateProfile, loading } = useUpdateProfile({
     username: mainProfile.username,

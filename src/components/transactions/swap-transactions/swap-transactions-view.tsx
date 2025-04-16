@@ -1,12 +1,12 @@
 'use client'
 
+import { useSwapStore } from '@/components/swap/stores/use-swap-store'
+import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import {
   Transaction,
   TransactionEvent,
-} from '@/components/models/helius.models'
-import { TokenInfo } from '@/components/models/token.models'
-import { useSwapStore } from '@/components/swap/stores/use-swap-store'
-import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
+} from '@/components/tapestry/models/helius.models'
+import { TokenInfo } from '@/components/tapestry/models/token.models'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'

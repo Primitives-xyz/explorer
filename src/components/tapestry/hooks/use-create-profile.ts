@@ -1,4 +1,4 @@
-import { IFindOrCreateProfileInput } from '@/components/models/profiles.models'
+import { IFindOrCreateProfileInput } from '@/components/tapestry/models/profiles.models'
 import { useMutation } from '@/utils/api'
 
 export const useCreateProfile = <T = IFindOrCreateProfileInput>() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { IGetProfileResponse } from '@/components/models/profiles.models'
+import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
 import { useQuery } from '@/utils/api'
 
 interface Props {
@@ -10,7 +10,8 @@ interface Props {
 
 export const useGetProfileInfo = ({ username, mainUsername }: Props) => {
   const { data, error, loading, refetch } = useQuery<IGetProfileResponse>({
-    endpoint: `profiles/${username}?fromUsername=${mainUsername}`,
+    endpoint: `profiles/${username}`,
+    queryParams: mainUsername ? { fromUsername: mainUsername } : undefined,
   })
 
   return {
