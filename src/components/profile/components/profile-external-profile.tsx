@@ -13,7 +13,8 @@ interface Props {
 export function ProfileExternalProfile({ identity }: Props) {
   const disabled =
     identity.namespace.name !== EXPLORER_NAMESPACE &&
-    !identity.namespace.userProfileURL
+    (!identity.namespace.userProfileURL ||
+      (identity.namespace.name === 'tribe.run' && !identity.wallet?.address))
 
   return (
     <>
@@ -30,8 +31,12 @@ export function ProfileExternalProfile({ identity }: Props) {
                 ? route('entity', {
                     id: identity.profile.username,
                   })
-                : `${identity.namespace.userProfileURL}/${identity.profile.username}`
+                : identity.namespace.name === 'tribe.run' &&
+                  identity.wallet?.address
+                ? `${identity.namespace.userProfileURL}${identity.wallet.address}`
+                : `${identity.namespace.userProfileURL}${identity.profile.username}`
             }
+            newTab={identity.namespace.name !== EXPLORER_NAMESPACE}
           >
             <div>
               <Avatar
