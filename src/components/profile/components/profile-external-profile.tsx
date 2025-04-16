@@ -1,11 +1,5 @@
 import { IGetProfilesResponseEntry } from '@/components/tapestry/models/profiles.models'
-import {
-  Button,
-  Card,
-  CardContent,
-  CardVariant,
-  Separator,
-} from '@/components/ui'
+import { Button, Card, CardContent, CardVariant } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/route'
@@ -67,7 +61,7 @@ export function ProfileExternalProfile({ identity }: Props) {
           </Button>
         </CardContent>
       </Card>
-      <Separator />
+      {/* <Separator /> */}
       {/* <IdentityContentNodes identity={identity} /> */}
     </>
   )
