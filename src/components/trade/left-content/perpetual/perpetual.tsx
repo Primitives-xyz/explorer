@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { Info, ExternalLink, Settings, ChevronDown, CircleAlert, ArrowRight, Zap, Infinity, ChevronUp } from "lucide-react"
@@ -8,8 +8,10 @@ import { Button, ButtonSize, ButtonVariant, Input, Select, SelectContent, Select
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from "@/utils/use-current-wallet"
 import { cn } from "@/utils/utils"
+import { usePlacePerpsOrder } from "../../hooks/drift/use-place-perps-order"
+import { PositionDirection } from "@drift-labs/sdk-browser"
 
-enum PositionDirection {
+enum Direction {
   LONG = "long",
   SHORT = "short"
 }
@@ -40,24 +42,68 @@ const slippageOptions = [
   { value: "1", label: "1%" },
   { value: "zap", icon: <Zap size={16} /> },
   { value: "infinity", icon: <Infinity size={16} /> },
-  { value: "dynamic", label: "Dynamic" },
 ]
 
 export function Perpetual() {
   const t = useTranslations()
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
-  const [loading, setLoading] = useState<boolean>(false)
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
   const [proOrderType, setProOrderType] = useState<ProOrderType>(ProOrderType.STOP_MARKET)
   const [perpsMarketType, setPerpsMarketType] = useState<PerpsMarketType>(PerpsMarketType.SOL)
-  const [selectedDirection, setSelectedDirection] = useState<PositionDirection>(PositionDirection.LONG)
+  const [selectedDirection, setSelectedDirection] = useState<Direction>(Direction.LONG)
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
   const [slippageOption, setSlippageOption] = useState<string>("0.1")
   const [swift, setSwift] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
+  const [amount, setAmount] = useState<string>("")
+  const [symbol, setSymbol] = useState<string>("SOL")
+  const { placePerpsOrder, loading, error, setError } = usePlacePerpsOrder({
+    amount,
+    symbol,
+    direction: selectedDirection === Direction.LONG ? PositionDirection.LONG : PositionDirection.SHORT
+  })
 
-  const handleToggle = (value: PositionDirection) => {
+  const handleToggle = (value: Direction) => {
     setSelectedDirection(value)
+  }
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null)
+    const val = e.target.value
+    if (
+      val === '' ||
+      val === '.' ||
+      /^[0]?\.[0-9]*$/.test(val) ||
+      /^[0-9]*\.?[0-9]*$/.test(val)
+    ) {
+      const cursorPosition = e.target.selectionStart
+      setAmount(val)
+      window.setTimeout(() => {
+        e.target.focus()
+        e.target.setSelectionRange(cursorPosition, cursorPosition)
+      }, 0)
+    }
+  }
+
+  const handleDynamicSlippage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    if (
+      val === '' ||
+      val === '.' ||
+      /^[0]?\.[0-9]*$/.test(val) ||
+      /^[0-9]*\.?[0-9]*$/.test(val)
+    ) {
+      const cursorPosition = e.target.selectionStart
+      if (Number(val) < 100)   {
+        setSlippageOption(e.target.value)
+      } else {
+        setSlippageOption("99")
+      }
+      window.setTimeout(() => {
+        e.target.focus()
+        e.target.setSelectionRange(cursorPosition, cursorPosition)
+      }, 0)
+    }
   }
 
   return (
@@ -93,16 +139,16 @@ export function Perpetual() {
 
         <Card>
           <Button
-            variant={selectedDirection === PositionDirection.LONG ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
+            variant={selectedDirection === Direction.LONG ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
             className="w-1/2"
-            onClick={() => handleToggle(PositionDirection.LONG)}
+            onClick={() => handleToggle(Direction.LONG)}
           >
             Long
           </Button>
           <Button
-            variant={selectedDirection === PositionDirection.SHORT ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
+            variant={selectedDirection === Direction.SHORT ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
             className="w-1/2"
-            onClick={() => handleToggle(PositionDirection.SHORT)}
+            onClick={() => handleToggle(Direction.SHORT)}
           >
             Short
           </Button>
@@ -183,11 +229,20 @@ export function Perpetual() {
                     <Card className="flex items-center">
                       <Input
                         placeholder="0.00"
-                        className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
+                        className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
                         type="text"
+                        onChange={(e) => handleAmountChange(e)}
+                        value={amount}
+                      />
+                      <Image
+                        src={"https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"}
+                        alt="USDC"
+                        width={30}
+                        height={30}
+                        className="rounded-full mx-1"
                       />
 
-                      <Select
+                      {/* <Select
                         value={perpsMarketType}
                         onValueChange={(value) => {
                           setPerpsMarketType(value as PerpsMarketType)
@@ -197,7 +252,7 @@ export function Perpetual() {
                           className="bg-transparent border-none text-normal text-white"
                         >
                           <Image
-                            src={"https://ipfs.io/ipfs/QmT4fG3jhXv3dcvEVdkvAqi8RjXEmEcLS48PsUA5zSb1RY"}
+                            src={"https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"}
                             alt="USDC"
                             width={30}
                             height={30}
@@ -212,16 +267,17 @@ export function Perpetual() {
                             TRUMP
                           </SelectItem>
                         </SelectContent>
-                      </Select>
+                      </Select> */}
                     </Card>
                     <Card className="flex items-center">
                       <Input
                         placeholder="0.00"
                         className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
                         type="text"
+                        disabled={true}
                       />
                       <Image
-                        src={"https://ipfs.io/ipfs/QmT4fG3jhXv3dcvEVdkvAqi8RjXEmEcLS48PsUA5zSb1RY"}
+                        src={"https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"}
                         alt="USDC"
                         width={30}
                         height={30}
@@ -247,16 +303,29 @@ export function Perpetual() {
                     </div>
 
                     {slippageExpanded && (
-                      <div className="grid grid-cols-6 gap-2">
-                        {slippageOptions.map((option) => (
-                          <Button
-                            variant={slippageOption === option.value ? ButtonVariant.DEFAULT : ButtonVariant.BADGE}
-                            key={option.value}
-                            onClick={() => setSlippageOption(option.value)}
-                          >
-                            {option.icon || option.label}
-                          </Button>
-                        ))}
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-5 gap-2">
+                          {slippageOptions.map((option) => (
+                            <Button
+                              variant={slippageOption === option.value ? ButtonVariant.DEFAULT : ButtonVariant.BADGE}
+                              key={option.value}
+                              className="px-0"
+                              onClick={() => setSlippageOption(option.value)}
+                            >
+                              {option.icon || option.label}
+                            </Button>
+                          ))}
+                        </div>
+                        <Card className="flex justify-between items-center px-2">
+                          <Input
+                            type="text"
+                            placeholder="Custom"
+                            className="h-[36px] w-full bg-transparent border-none text-primary/80"
+                            onChange={(e) => handleDynamicSlippage(e)}
+                            value={isNaN(Number(slippageOption)) ? "" : `${slippageOption}`}
+                          />
+                          <span className="text-primary/80">%</span>
+                        </Card>
                       </div>
                     )}
                   </div>
@@ -284,6 +353,15 @@ export function Perpetual() {
                       </Button>
                     </div>
                   </div>
+
+                  {
+                    error && (
+                      <p className="w-full flex justify-start items-center space-x-2 text-red-500">
+                        <CircleAlert />
+                        <span>{error}</span>
+                      </p>
+                    )
+                  }
                 </div>
               )
             }
@@ -310,12 +388,12 @@ export function Perpetual() {
             </Button>
           ) : (
             <Button
-              onClick={() => { }}
+              onClick={() => placePerpsOrder()}
               className="text-lg capitalize font-bold w-full"
               size={ButtonSize.LG}
-              disabled={loading}
+              disabled={loading || Number(amount) <= 0}
             >
-              {loading ? <Spinner /> : <p>Long ~3.88 SOL-Perp</p>}
+              {loading ? <Spinner /> : Number(amount) > 0 ? <p>{selectedDirection} ~{amount} {symbol}-Perp</p> : <p>Enter an amount</p>}
             </Button>
           )}
         </div>
