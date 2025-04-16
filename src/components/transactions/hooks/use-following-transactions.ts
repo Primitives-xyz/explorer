@@ -1,10 +1,10 @@
 import { FilterType } from '@/components/home/home-content/following-transactions/following-transactions'
-import { Transaction } from '@/components/models/helius.models'
+import { Transaction } from '@/components/tapestry/models/helius.models'
 import {
   IGetProfilesResponse,
   IGetSocialResponse,
   IProfile,
-} from '@/components/models/profiles.models'
+} from '@/components/tapestry/models/profiles.models'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 

@@ -1,4 +1,4 @@
-import { IGetProfilesResponse } from '@/components/models/profiles.models'
+import { IGetProfilesResponse } from '@/components/tapestry/models/profiles.models'
 import { useQuery } from '@/utils/api'
 import { SEARCH_RESULTS_LIMIT } from '../components/search-button'
 

@@ -1,7 +1,7 @@
 'use client'
 
-import { IGetProfilesResponseEntry } from '@/components/models/profiles.models'
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
+import { IGetProfilesResponseEntry } from '@/components/tapestry/models/profiles.models'
 import {
   Card,
   CardContent,
@@ -26,9 +26,7 @@ export function ProfileWallets({ walletAddress }: Props) {
     walletAddress,
   })
 
-  console.log('ProfileContent identities', identities)
-
-  const displayedIdentities = identities
+  const displayedWallets = identities
     ?.filter((identity) => !!identity?.wallet?.address)
     .filter(
       (identity, index, self) =>
@@ -52,10 +50,10 @@ export function ProfileWallets({ walletAddress }: Props) {
         <CardTitle>Connected Wallets</CardTitle>
       </CardHeader>
       <CardContent>
-        {!!displayedIdentities?.length && (
-          <Tabs defaultValue={displayedIdentities?.[0]?.wallet?.address}>
+        {!!displayedWallets?.length && (
+          <Tabs defaultValue={displayedWallets?.[0]?.wallet?.address}>
             <TabsList className="w-full">
-              {displayedIdentities?.map((identity) => (
+              {displayedWallets?.map((identity) => (
                 <TabsTrigger
                   key={identity.wallet.address}
                   variant={TabVariant.SOCIAL}
@@ -68,7 +66,7 @@ export function ProfileWallets({ walletAddress }: Props) {
                 </TabsTrigger>
               ))}
             </TabsList>
-            {displayedIdentities?.map((identity) => (
+            {displayedWallets?.map((identity) => (
               <TabsContent
                 key={identity.wallet.address}
                 value={identity.wallet.address}

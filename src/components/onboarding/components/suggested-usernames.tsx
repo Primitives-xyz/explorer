@@ -1,6 +1,6 @@
 'use client'
 
-import { ISuggestedUsername } from '@/components/models/profiles.models'
+import { ISuggestedUsername } from '@/components/tapestry/models/profiles.models'
 import { cn } from '@/utils/utils'
 import Image from 'next/image'
 import { Button, ButtonVariant, Label } from '../../ui'

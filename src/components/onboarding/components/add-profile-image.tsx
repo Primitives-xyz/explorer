@@ -1,4 +1,4 @@
-import { IProfile } from '@/components/models/profiles.models'
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import {
   Button,
   ButtonInputFile,

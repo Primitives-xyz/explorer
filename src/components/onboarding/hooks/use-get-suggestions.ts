@@ -1,7 +1,7 @@
 import {
   IGetProfilesResponseEntry,
   ISuggestedUsername,
-} from '@/components/models/profiles.models'
+} from '@/components/tapestry/models/profiles.models'
 import { useMemo } from 'react'
 import { useGroupedNFTData } from './use-grouped-nft-data'
 

@@ -1,4 +1,7 @@
-import { RPCResponse, TokenResponse } from '@/components/models/token.models'
+import {
+  RPCResponse,
+  TokenResponse,
+} from '@/components/tapestry/models/token.models'
 
 interface SearchAssetsResponse {
   jsonrpc: string

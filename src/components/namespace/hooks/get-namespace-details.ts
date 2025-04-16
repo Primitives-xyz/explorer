@@ -1,4 +1,4 @@
-import { INamespaceDetails } from '@/components/models/namespace.models'
+import { INamespaceDetails } from '@/components/tapestry/models/namespace.models'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 
 interface Props {

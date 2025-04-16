@@ -1,4 +1,4 @@
-import { IGetSocialResponse } from '@/components/models/profiles.models'
+import { IGetSocialResponse } from '@/components/tapestry/models/profiles.models'
 import { useQuery } from '@/utils/api'
 
 interface Props {

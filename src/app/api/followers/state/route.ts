@@ -1,7 +1,7 @@
 // app/api/followers/state/route.ts
 
-import { IGetFollowersStateResponse } from '@/components/models/profiles.models'
 import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
+import { IGetFollowersStateResponse } from '@/components/tapestry/models/profiles.models'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
