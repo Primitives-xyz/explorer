@@ -61,37 +61,24 @@ export function useDeposit({
         return
       }
 
-      const bulkAccountLoader = new BulkAccountLoader(
-        driftClient.connection,
-        'confirmed',
-        1000
-      );
+      let signature;
 
-      const user = new User({
-        driftClient: driftClient,
-        userAccountPublicKey: await driftClient.getUserAccountPublicKey(),
-        accountSubscription: {
-          type: 'polling',
-          accountLoader: bulkAccountLoader,
-        },
-      })
-      const userAccountExists = await user.exists()
-
-      let signature: string | null = null
-
-      if (!userAccountExists) {
-        const [sig, pubKey] = await driftClient.initializeUserAccountAndDepositCollateral(
-          new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
-          userTokenAccount,
-          marketInfo.marketIndex
-        )
-        signature = sig
-      } else {
+      try {
+        driftClient.getUser()
         const sig = await driftClient.deposit(
           new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
           marketInfo.marketIndex,
           userTokenAccount,
         )
+        signature = sig
+      } catch (error) {
+        const [sig, pubKey] = await driftClient.initializeUserAccountAndDepositCollateral(
+          new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
+          userTokenAccount,
+          marketInfo.marketIndex
+        )
+        console.log("sig", sig)
+        console.log("pubKey", pubKey.toBase58())
         signature = sig
       }
 
