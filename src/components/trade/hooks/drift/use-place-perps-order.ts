@@ -19,7 +19,6 @@ export function usePlacePerpsOrder({
   symbol,
   direction,
 }: UsePlacePerpsOrderParams) {
-  console.log(amount, symbol, JSON.stringify(direction, null, 2))
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const { driftClient } = useInitializeDrift()
@@ -93,10 +92,6 @@ export function usePlacePerpsOrder({
           direction: direction,
           marketIndex: solMarketAccount.marketIndex,
         })
-      );
-
-      console.log(
-        `Placed a 1 SOL-PERP LONG order. Tranaction signature: ${txSig}`
       );
 
     } catch (error) {

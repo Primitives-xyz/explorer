@@ -1,8 +1,8 @@
-import { BN, DriftClient, PerpMarkets, SpotMarkets, SpotMarketConfig, BulkAccountLoader, User } from '@drift-labs/sdk-browser'
+import { BN, SpotMarkets } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
-import { Connection, PublicKey } from '@solana/web3.js'
-import { useEffect, useState } from 'react'
+import { PublicKey } from '@solana/web3.js'
+import { useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 
@@ -11,6 +11,7 @@ interface UseInitAccountAndDepositParams {
   depositToken: string
   depositTokenSymbol: string
   depositTokenDecimals: number
+  subAccountId: number | null
 }
 
 const env = 'mainnet-beta'
@@ -29,7 +30,8 @@ export function useDeposit({
   amount,
   depositToken,
   depositTokenSymbol,
-  depositTokenDecimals
+  depositTokenDecimals,
+  subAccountId
 }: UseInitAccountAndDepositParams) {
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -65,20 +67,28 @@ export function useDeposit({
 
       try {
         driftClient.getUser()
-        const sig = await driftClient.deposit(
-          new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
-          marketInfo.marketIndex,
-          userTokenAccount,
-        )
-        signature = sig
+        if (subAccountId !== null) {
+          const sig = await driftClient.deposit(
+            new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
+            marketInfo.marketIndex,
+            userTokenAccount,
+            subAccountId
+          )
+          signature = sig
+        } else {
+          const sig = await driftClient.deposit(
+            new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
+            marketInfo.marketIndex,
+            userTokenAccount,
+          )
+          signature = sig
+        }
       } catch (error) {
         const [sig, pubKey] = await driftClient.initializeUserAccountAndDepositCollateral(
           new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
           userTokenAccount,
-          marketInfo.marketIndex
+          marketInfo.marketIndex,
         )
-        console.log("sig", sig)
-        console.log("pubKey", pubKey.toBase58())
         signature = sig
       }
 
