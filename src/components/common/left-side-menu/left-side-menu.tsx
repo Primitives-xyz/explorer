@@ -14,6 +14,7 @@ export function LeftSideMenu() {
           <h1 className="font-bold text-primary leading-none">
             solana_social_explorer
           </h1>
+
           <ProfileInfos />
           <Menu />
         </div>
@@ -25,17 +26,19 @@ export function LeftSideMenu() {
             <Lock size={16} />
             Unlock Perpetuals
           </Button> */}
-          <DialectNotificationsComponent />
+
           <LanguageSwitcher />
-          <Button
-            variant={ButtonVariant.OUTLINE_WHITE}
-            className="w-full"
-            href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
-            newTab
-          >
-            <MessageCircle size={16} />
-            Give Feedback
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={ButtonVariant.OUTLINE_WHITE}
+              href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
+              newTab
+            >
+              <MessageCircle size={16} />
+              Give Feedback
+            </Button>
+            <DialectNotificationsComponent />
+          </div>
         </div>
       </div>
     </div>

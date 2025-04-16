@@ -1,5 +1,6 @@
 'use client'
 
+import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { Button, ButtonVariant } from '@/components/ui'
 import { motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
@@ -43,6 +44,7 @@ export function SwapTray() {
       className="fixed top-0 right-0 bottom-0 z-50 h-screen"
     >
       <div className="pt-topbar relative h-full">
+        <DialectNotificationsComponent />
         <Button
           className="w-[100px] absolute top-20 left-0 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"
           variant={open ? ButtonVariant.OUTLINE : ButtonVariant.DEFAULT}
