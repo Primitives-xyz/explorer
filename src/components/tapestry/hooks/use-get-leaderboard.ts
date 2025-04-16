@@ -1,4 +1,4 @@
-import { ILeaderboardResponse } from '@/components/models/leaderboard.models'
+import { ILeaderboardResponse } from '@/components/tapestry/models/leaderboard.models'
 import { useQuery } from '@/utils/api'
 
 interface Props {

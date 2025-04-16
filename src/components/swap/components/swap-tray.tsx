@@ -42,7 +42,9 @@ export function SwapTray() {
       }}
       className="fixed top-0 right-0 bottom-0 z-50 h-screen"
     >
-      <div className="absolute top-0 right-0 inset-y-0 w-[calc(100%+36px)] fade-out-text--left backdrop-blur-xl" />
+      {displaySwap && (
+        <div className="absolute top-topbar right-0 inset-y-0 w-[calc(100%+70px)] fade-out-text--left backdrop-blur-xl" />
+      )}
       <div className="pt-topbar relative h-full z-50">
         <Button
           className="w-[100px] absolute top-20 left-0 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"

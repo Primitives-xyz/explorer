@@ -1,4 +1,4 @@
-import { INamespaceDetails } from '@/components/models/namespace.models'
+import { INamespaceDetails } from '@/components/tapestry/models/namespace.models'
 import { User } from 'lucide-react'
 import Image from 'next/image'
 

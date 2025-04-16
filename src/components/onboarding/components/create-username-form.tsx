@@ -1,6 +1,6 @@
 'use client'
 
-import { ISuggestedUsername } from '@/components/models/profiles.models'
+import { ISuggestedUsername } from '@/components/tapestry/models/profiles.models'
 import {
   Button,
   ButtonVariant,

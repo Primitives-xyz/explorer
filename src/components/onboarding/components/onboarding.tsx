@@ -132,7 +132,6 @@ export function Onboarding() {
 
               {step === EOnboardingSteps.BIO && mainProfile && (
                 <AddBioForm
-                  walletAddress={walletAddress}
                   suggestedBios={suggestedBios}
                   mainProfile={mainProfile}
                   setStep={setStep}

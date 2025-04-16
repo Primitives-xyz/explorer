@@ -1,4 +1,4 @@
-import { TransactionHistory } from '@/components/models/helius.models'
+import { TransactionHistory } from '@/components/tapestry/models/helius.models'
 import { useEffect, useState } from 'react'
 
 export function useTransactionHistory(id: string, walletAddress: string) {

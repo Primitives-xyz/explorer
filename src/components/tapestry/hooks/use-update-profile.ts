@@ -1,5 +1,5 @@
-import { IUpdateContentInput } from '@/components/models/contents.models'
-import { IProfile } from '@/components/models/profiles.models'
+import { IUpdateContentInput } from '@/components/tapestry/models/contents.models'
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import { FetchMethod, useMutation } from '@/utils/api'
 
 interface Props {

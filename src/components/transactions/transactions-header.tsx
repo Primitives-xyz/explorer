@@ -3,11 +3,11 @@
 import {
   ExtendedTransaction,
   Transaction,
-} from '@/components/models/helius.models'
+} from '@/components/tapestry/models/helius.models'
 import {
   IGetProfilesResponse,
   IProfile,
-} from '@/components/models/profiles.models'
+} from '@/components/tapestry/models/profiles.models'
 import { ITransactionWithProfile } from '@/components/transactions/hooks/use-following-transactions'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'

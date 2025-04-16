@@ -1,10 +1,10 @@
 'use client'
 
+import { useGetRecentProfiles } from '@/components/tapestry/hooks/use-get-recent-profiles'
 import {
   IProfile,
   ISuggestedProfile,
-} from '@/components/models/profiles.models'
-import { useGetRecentProfiles } from '@/components/tapestry/hooks/use-get-recent-profiles'
+} from '@/components/tapestry/models/profiles.models'
 import {
   Button,
   ButtonVariant,
