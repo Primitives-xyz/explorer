@@ -29,6 +29,7 @@
     "@coral-xyz/anchor": "0.31.0",
     "@dialectlabs/react-sdk-blockchain-solana": "^2.1.1",
     "@dialectlabs/react-ui": "^2.2.0",
+    "@drift-labs/sdk-browser": "2.119.0-beta.1",
     "@dynamic-labs/sdk-react-core": "^4.9.4",
     "@dynamic-labs/solana": "^4.9.4",
     "@emotion/react": "^11.13.3",
@@ -124,5 +125,10 @@
     "web3",
     "nextjs",
     "react"
-  ]
+  ],
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  }
 }
