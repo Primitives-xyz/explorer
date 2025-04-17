@@ -61,7 +61,7 @@ export default function MarketOrder({
       <div className="flex justify-between items-center">
         <span>Size</span>
         <Button className="flex space-x-2 items-center">
-          <span>Max: {getMaxTradeAmount()} SOL</span>
+          <span>Max: {getMaxTradeAmount()} USDC</span>
           {priceLoading && <Spinner size={12} />}
         </Button>
       </div>

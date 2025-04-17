@@ -150,10 +150,7 @@ export function Perpetual() {
   const getMaxTradeAmount = () => {
     if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
 
-    const estimatedSolPrice = 100
-    const maxAmount =
-      Math.floor((userStats.maxTradeSize / estimatedSolPrice) * 100) / 100
-    return maxAmount.toFixed(2)
+    return userStats.maxTradeSize.toFixed(2)
   }
 
   const formatLeverage = (leverage: number) => {
