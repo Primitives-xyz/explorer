@@ -10,6 +10,10 @@ export const GET = async () => {
       },
       // map all root level routes to an action
       {
+        pathPattern: '/follow/*',
+        apiPath: '/api/actions/follow/*',
+      },
+      {
         pathPattern: '/*',
         apiPath: '/api/actions/*',
       },
