@@ -3,13 +3,13 @@
 import { INamespaceProfile } from '@/components/tapestry/models/namespace.models'
 import {
   Button,
-  ButtonSize,
   ButtonVariant,
   Card,
   CardContent,
   CardHeader,
 } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { abbreviateWalletAddress, cn } from '@/utils/utils'
 
@@ -40,26 +40,27 @@ export function NamespaceProfiles({ profiles }: Props) {
                 <Avatar size={32} username={elem.profile.username} />
                 <div className="flex flex-col items-start w-2/3">
                   <Button
-                    variant={ButtonVariant.LINK}
-                    href={route('namespaceProfile', {
-                      id: elem.namespace.name,
-                      profile: elem.profile.id,
-                    })}
-                    className="px-0 !py-2 w-full flex items-start justify-start"
+                    variant={ButtonVariant.GHOST}
+                    href={
+                      elem.namespace.name === EXPLORER_NAMESPACE
+                        ? route('entity', {
+                            id: elem.profile.username,
+                          })
+                        : route('namespaceProfile', {
+                            id: elem.namespace.name,
+                            profile: elem.profile.id,
+                          })
+                    }
+                    className="flex flex-col h-auto items-start"
                   >
                     <p className="truncate text-foreground">
                       @{elem.profile.username}
                     </p>
-                  </Button>
-
-                  <Button
-                    href={route('entity', { id: elem.wallet.address })}
-                    variant={ButtonVariant.BADGE}
-                    size={ButtonSize.SM}
-                  >
-                    {abbreviateWalletAddress({
-                      address: elem.wallet.address,
-                    })}
+                    <p>
+                      {abbreviateWalletAddress({
+                        address: elem.wallet.address,
+                      })}
+                    </p>
                   </Button>
                 </div>
               </div>
