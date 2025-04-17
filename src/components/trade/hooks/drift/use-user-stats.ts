@@ -1,33 +1,9 @@
+import { IUserStats } from '@/components/tapestry/models/drift.model'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import {
-  convertToNumber,
-  PerpPosition,
-  QUOTE_PRECISION,
-  SpotPosition,
-} from '@drift-labs/sdk-browser'
+import { convertToNumber, QUOTE_PRECISION } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
-
-export interface IUserStats {
-  // User health
-  health: number
-  healthRatio: number | null
-
-  // Net USD Value
-  netUsdValue: number
-
-  // Leverage
-  leverage: number
-
-  // Positions
-  perpPositions: PerpPosition[]
-  spotPositions: SpotPosition[]
-
-  // Trading limits
-  maxLeverage: number
-  maxTradeSize: number
-}
 
 export function useUserStats(subAccountId = 0) {
   const [loading, setLoading] = useState<boolean>(true)

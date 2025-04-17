@@ -10,6 +10,7 @@ import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCreateTradeContentNode } from './use-create-trade-content'
 
 interface UseJupiterSwapParams {
   inputMint: string
@@ -76,6 +77,7 @@ export function useJupiterSwap({
   const [slippageBps, setSlippageBps] = useState<number | string>(
     DEFAULT_SLIPPAGE_BPS
   )
+  const { createContentNode } = useCreateTradeContentNode()
   const [priceImpact, setPriceImpact] = useState<string>('')
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const [error, setError] = useState<string | null>(null)
@@ -119,8 +121,9 @@ export function useJupiterSwap({
         Number(inputAmount) * Math.pow(10, inputDecimals)
       )
       const QUOTE_URL = `
-        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-        }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
+        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${
+        platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+      }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
       `
       const response = await fetch(QUOTE_URL).then((res) => res.json())
       if (swapMode == 'ExactIn') {
@@ -293,6 +296,30 @@ export function useJupiterSwap({
 
       confirmToast.dismiss()
 
+      await createContentNode({
+        signature: txid.signature,
+        inputMint,
+        outputMint,
+        inputAmount,
+        expectedOutput,
+        priceImpact,
+        slippageBps:
+          slippageBps === 'auto'
+            ? calculateAutoSlippage(priceImpact)
+            : Number(slippageBps),
+        priorityLevel: 'low',
+        inputDecimals: inputDecimals || 6,
+        walletAddress,
+        usdcFeeAmount: quoteResponse.swapUsdValue
+          ? (
+              Number(quoteResponse.swapUsdValue) *
+              (platformFeeBps === 1
+                ? PLATFORM_FEE_BPS / 20000
+                : PLATFORM_FEE_BPS / 10000)
+            ).toString()
+          : '0',
+      })
+
       if (tx.value.err) {
         toast({
           title: t('trade.transaction_failed'),
@@ -332,7 +359,13 @@ export function useJupiterSwap({
       refreshIntervalRef.current = null
     }
 
-    if (Number(inputAmount) !== 0 && inputAmount && inputMint && outputMint && !isFullyConfirmed) {
+    if (
+      Number(inputAmount) !== 0 &&
+      inputAmount &&
+      inputMint &&
+      outputMint &&
+      !isFullyConfirmed
+    ) {
       refreshIntervalRef.current = setInterval(() => {
         if (!isQuoteRefreshing && !loading) fetchQuote() // Use a flag to prevent multiple concurrent refreshes
       }, 15000)

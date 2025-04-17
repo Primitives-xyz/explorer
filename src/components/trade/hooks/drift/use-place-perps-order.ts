@@ -126,13 +126,13 @@ export function usePlacePerpsOrder({
           const maxPrice = ask
             .mul(new BN(Math.floor((1 + slippageDecimal) * 1e6)))
             .div(new BN(1e6))
-          orderParams.oraclePriceOffset = maxPrice.sub(ask).toNumber()
+          orderParams.oraclePriceOffset = convertToNumber(maxPrice.sub(ask), PRICE_PRECISION)
         } else {
           // When going SHORT, we're willing to receive up to X% less
           const minPrice = bid
             .mul(new BN(Math.floor((1 - slippageDecimal) * 1e6)))
             .div(new BN(1e6))
-          orderParams.oraclePriceOffset = minPrice.sub(bid).toNumber()
+          orderParams.oraclePriceOffset = convertToNumber(minPrice.sub(bid), PRICE_PRECISION)
         }
       }
 

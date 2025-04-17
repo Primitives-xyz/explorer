@@ -8,13 +8,6 @@ import {
   Button,
   ButtonSize,
   ButtonVariant,
-  FilterTabs,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Separator,
   Spinner,
   Switch,
@@ -23,15 +16,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn, formatUsdValue } from '@/utils/utils'
 import { PositionDirection } from '@drift-labs/sdk-browser'
-import {
-  ArrowRight,
-  ChevronDown,
-  ChevronUp,
-  CircleAlert,
-  Infinity,
-  Zap,
-} from 'lucide-react'
-import Image from 'next/image'
+import { ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useDriftUsers } from '../../hooks/drift/use-drift-users'
 import { useLeverageSize } from '../../hooks/drift/use-leverage-size'
@@ -39,6 +24,8 @@ import { useLiquidationPrice } from '../../hooks/drift/use-liquidation-price'
 import { useMarketPrice } from '../../hooks/drift/use-market-price'
 import { usePlacePerpsOrder } from '../../hooks/drift/use-place-perps-order'
 import { useUserStats } from '../../hooks/drift/use-user-stats'
+import LimitOrder from './limit-order'
+import MarketOrder from './market-order'
 
 enum OrderType {
   MARKET = 'market',
@@ -60,19 +47,12 @@ enum PerpsMarketType {
   USDC = 'USDC',
 }
 
-const slippageOptions = [
-  { value: '0.1', label: '0.1%' },
-  { value: '0.5', label: '0.5%' },
-  { value: '1', label: '1%' },
-  { value: 'zap', icon: <Zap size={16} /> },
-  { value: 'infinity', icon: <Infinity size={16} /> },
-]
-
 export function Perpetual() {
   const { accountIds } = useDriftUsers()
   const { userStats, loading: statsLoading } = useUserStats(accountIds[0] || 0)
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
+  const [limitPrice, setLimitPrice] = useState<number>(0)
   const [proOrderType, setProOrderType] = useState<ProOrderType>(
     ProOrderType.STOP_MARKET
   )
@@ -170,21 +150,24 @@ export function Perpetual() {
     return leverage.toFixed(2) + 'x'
   }
 
-  useEffect(() => {
-    if (selectedLeverageSizeToken && Number(selectedLeverageSizeToken) > 0) {
-      setAmount(selectedLeverageSizeToken)
-    }
-  }, [selectedLeverageSizeToken])
+  const formatHealth = (health: number) => {
+    return Math.min(100, Math.max(0, health)).toFixed(0) + '%'
+  }
 
   const handleLeverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLeverage = parseFloat(e.target.value)
     setLeverageValue(newLeverage)
   }
 
-  const options = [
-    { label: 'Market', value: OrderType.MARKET },
-    { label: 'Limit', value: OrderType.LIMIT },
-  ]
+  const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLimitPrice(parseFloat(e.target.value))
+  }
+
+  useEffect(() => {
+    if (selectedLeverageSizeToken && Number(selectedLeverageSizeToken) > 0) {
+      setAmount(selectedLeverageSizeToken)
+    }
+  }, [selectedLeverageSizeToken])
 
   return (
     <div className="w-full">
@@ -201,203 +184,95 @@ export function Perpetual() {
             {/* Order Type */}
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-3">
-                <FilterTabs
-                  options={options}
-                  selected={orderType}
-                  onSelect={setOrderType}
-                />
-
-                <div className="mb-4">
-                  <Select
-                    value={proOrderType}
-                    onValueChange={(value) => {
-                      setProOrderType(value as ProOrderType)
-                      setOrderType(OrderType.PRO)
-                    }}
+                <Button
+                  variant={ButtonVariant.GHOST}
+                  className={cn(
+                    'cursor-pointer',
+                    orderType === OrderType.MARKET && 'text-primary'
+                  )}
+                  onClick={() => setOrderType(OrderType.MARKET)}
+                >
+                  Market
+                </Button>
+                <Button
+                  variant={ButtonVariant.GHOST}
+                  className={cn(
+                    'cursor-pointer',
+                    orderType === OrderType.LIMIT && 'text-primary'
+                  )}
+                  onClick={() => setOrderType(OrderType.LIMIT)}
+                >
+                  Limit
+                </Button>
+                {/* <Select
+                  value={proOrderType}
+                  defaultValue="Pro Orders"
+                  onValueChange={(value) => {
+                    setProOrderType(value as ProOrderType)
+                    setOrderType(OrderType.PRO)
+                  }}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      'bg-transparent h-12 border-none text-normal text-white',
+                      orderType === OrderType.PRO && 'text-primary'
+                    )}
                   >
-                    <SelectTrigger className="border-none bg-transparent text-primary h-9 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="border border-primary text-primary">
-                      {Object.values(ProOrderType).map((type, index) => (
-                        <SelectItem value={type} key={index}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <SelectValue defaultValue="Pro Orders" />
+                  </SelectTrigger>
+                  <SelectContent className="border border-primary text-primary">
+                    {Object.values(ProOrderType).map((type, index) => (
+                      <SelectItem value={type} key={index}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select> */}
               </div>
             </div>
 
-            <Separator className="mt-0 mb-2" />
+            <Separator className="mt-0" />
 
             {orderType === OrderType.MARKET && (
-              <div className="space-y-4">
-                {/* Size */}
-                <div className="flex justify-between items-center">
-                  <p>Size</p>
+              <MarketOrder
+                getMaxTradeAmount={getMaxTradeAmount}
+                priceLoading={priceLoading}
+                handleAmountChange={handleAmountChange}
+                amount={amount}
+                marketPrice={marketPrice}
+                leverageValue={leverageValue}
+                handleLeverageChange={handleLeverageChange}
+                setLeverageValue={setLeverageValue}
+                slippageExpanded={slippageExpanded}
+                setSlippageExpanded={setSlippageExpanded}
+                slippageOption={slippageOption}
+                setSlippageOption={setSlippageOption}
+                handleDynamicSlippage={handleDynamicSlippage}
+                swift={swift}
+                setSwift={setSwift}
+                userStats={userStats}
+                setAmount={setAmount}
+                getSizeByLeveragePercent={getSizeByLeveragePercent}
+                error={error}
+              />
+            )}
 
-                  <div className="flex items-center gap-2">
-                    <p>max: {getMaxTradeAmount()} SOL</p>
-                    {priceLoading && <Spinner size={12} />}
-                  </div>
-                </div>
-
-                {/* Market */}
-                <Card className="flex items-center">
-                  <Input
-                    placeholder="0.00"
-                    className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
-                    type="text"
-                    onChange={(e) => handleAmountChange(e)}
-                    value={amount}
-                  />
-                  <Image
-                    src={
-                      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
-                    }
-                    alt="USDC"
-                    width={30}
-                    height={30}
-                    className="rounded-full mx-1"
-                  />
-                </Card>
-
-                <Card className="flex items-center">
-                  <Input
-                    placeholder="0.00"
-                    value={
-                      marketPrice && amount
-                        ? (Number(amount) * marketPrice).toFixed(2)
-                        : ''
-                    }
-                    className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
-                    disabled={true}
-                  />
-                  <Image
-                    src={
-                      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
-                    }
-                    alt="USDC"
-                    width={30}
-                    height={30}
-                    className="rounded-full mx-1"
-                  />
-                </Card>
-
-                {/* Leverage */}
-                <div className="flex justify-between items-center">
-                  <p>Leverage</p>
-                  <p className="font-semibold">{leverageValue.toFixed(2)}x</p>
-                </div>
-
-                {/* Leverage Slider */}
-                <div className="space-y-2">
-                  <Input
-                    type="range"
-                    min="1"
-                    max={`${Math.min(userStats.maxLeverage, 20)}`}
-                    step="0.1"
-                    value={leverageValue}
-                    onChange={handleLeverageChange}
-                    className="bg-primary text-primary fill-accent"
-                  />
-
-                  <div className="flex items-center justify-between gap-2">
-                    {[25, 50, 75, 100].map((percent) => (
-                      <Button
-                        key={percent}
-                        variant={ButtonVariant.BADGE}
-                        onClick={() =>
-                          setAmount(getSizeByLeveragePercent(percent))
-                        }
-                      >
-                        {percent}%
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Slippage Tolerance */}
-                <div className="space-y-2">
-                  <div
-                    className="flex items-center justify-between w-full cursor-pointer"
-                    onClick={() => setSlippageExpanded(!slippageExpanded)}
-                  >
-                    <span>Slippage Tolerance (Dynamic)</span>
-                    {slippageExpanded ? (
-                      <ChevronUp size={16} />
-                    ) : (
-                      <ChevronDown size={16} />
-                    )}
-                  </div>
-
-                  {slippageExpanded && (
-                    <div className="space-y-2">
-                      <div className="grid grid-cols-5 gap-2">
-                        {slippageOptions.map((option) => (
-                          <Button
-                            variant={
-                              slippageOption === option.value
-                                ? ButtonVariant.DEFAULT
-                                : ButtonVariant.BADGE
-                            }
-                            key={option.value}
-                            className="px-0"
-                            onClick={() => setSlippageOption(option.value)}
-                          >
-                            {option.icon || option.label}
-                          </Button>
-                        ))}
-                      </div>
-                      <Card className="flex justify-between items-center px-2">
-                        <Input
-                          type="text"
-                          placeholder="Custom"
-                          className="h-[36px] w-full bg-transparent border-none text-primary/80"
-                          onChange={(e) => handleDynamicSlippage(e)}
-                          value={
-                            isNaN(Number(slippageOption))
-                              ? ''
-                              : `${slippageOption}`
-                          }
-                        />
-                        <span className="text-primary/80">%</span>
-                      </Card>
-                    </div>
-                  )}
-                </div>
-
-                {/* Swift */}
-                <div className="flex items-center space-x-2">
-                  <span>SWIFT</span>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => setSwift(false)}
-                      className={cn('text-sm', {
-                        'text-muted-foreground': swift,
-                      })}
-                      isInvisible
-                    ></Button>
-                    <Switch checked={swift} onCheckedChange={setSwift} />
-                    <Button
-                      onClick={() => setSwift(true)}
-                      className={cn('text-sm', {
-                        'text-muted-foreground': !swift,
-                      })}
-                      isInvisible
-                    ></Button>
-                  </div>
-                </div>
-
-                {error && (
-                  <p className="w-full flex justify-start items-center space-x-2 text-red-500">
-                    <CircleAlert />
-                    <span>{error}</span>
-                  </p>
-                )}
-              </div>
+            {orderType === OrderType.LIMIT && (
+              <LimitOrder
+                limitPrice={limitPrice}
+                handleLimitPriceChange={handleLimitPriceChange}
+                amount={amount}
+                marketPrice={marketPrice}
+                leverageValue={leverageValue}
+                setLeverageValue={setLeverageValue}
+                handleLeverageChange={handleLeverageChange}
+                getSizeByLeveragePercent={getSizeByLeveragePercent}
+                handleAmountChange={handleAmountChange}
+                setAmount={setAmount}
+                userStats={userStats}
+                swift={swift}
+                setSwift={setSwift}
+              />
             )}
           </CardContent>
         </Card>
