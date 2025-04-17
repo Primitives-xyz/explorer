@@ -24,8 +24,8 @@ interface Props {
 
 export function FilterButtonDiscover({
   selectedType,
-  setSelectedType,
   timeFrame,
+  setSelectedType,
   setTimeFrame,
 }: Props) {
   const options = [

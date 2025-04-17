@@ -9,7 +9,7 @@ import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 
-interface UserStats {
+export interface IUserStats {
   // User health
   health: number
   healthRatio: number | null
@@ -32,7 +32,7 @@ interface UserStats {
 export function useUserStats(subAccountId = 0) {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [userStats, setUserStats] = useState<UserStats>({
+  const [userStats, setUserStats] = useState<IUserStats>({
     health: 0,
     healthRatio: null,
     netUsdValue: 0,
