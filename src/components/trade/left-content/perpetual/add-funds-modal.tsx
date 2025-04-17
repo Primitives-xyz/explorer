@@ -12,6 +12,7 @@ import { useTokenInfo } from "@/components/token/hooks/use-token-info"
 import { CheckboxSize } from "@/components/ui/switch/checkbox.models"
 import { Button, ButtonSize, ButtonVariant, Card, CardContent, Checkbox, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Spinner } from "@/components/ui"
 import { useDeposit } from "../../hooks/drift/use-deposit"
+import { useDriftUsers } from "../../hooks/drift/use-drift-users"
 
 interface AddFundsModalProps {
   isOpen: boolean
@@ -45,13 +46,13 @@ export default function AddFundsModal({
   setIsOpen,
 }: AddFundsModalProps) {
   const { walletAddress } = useCurrentWallet()
-  const [collateralSource, setCollateralSource] = useState<string>('wallet')
   const [selectedAccount, setSelectedAccount] = useState<string>('')
   const [isChecked, setIsChecked] = useState<boolean>(false)
   const [depositAmount, setDepositAmount] = useState<string>('')
   const [inputError, setInputError] = useState<InputError | null>(null)
   const [depositTokenSymbol, setDepositTokenSymbol] = useState<string>('SOL')
   const [sportMarketInfo, setSportMarketInfo] = useState<SpotMarketConfig[]>(SpotMarkets[env])
+  const { accountIds } = useDriftUsers()
 
   const depositTokenSpotMarketInfo = useMemo(() => {
     const depositTokenSportMarketInfo = sportMarketInfo?.find((market) => market.symbol === depositTokenSymbol)
@@ -75,7 +76,8 @@ export default function AddFundsModal({
     amount: depositAmount,
     depositToken: depositTokenSpotMarketInfo.mint ?? '',
     depositTokenSymbol: depositTokenSymbol,
-    depositTokenDecimals: depositTokenSpotMarketInfo.decimals
+    depositTokenDecimals: depositTokenSpotMarketInfo.decimals,
+    subAccountId: selectedAccount === "" ? null : Number(selectedAccount)
   })
 
   const validateAmount = (value: string, decimals: number = 6): boolean => {
@@ -145,7 +147,6 @@ export default function AddFundsModal({
           setIsChecked(false)
           setDepositAmount('')
           setSelectedAccount('')
-          setCollateralSource('wallet')
           setDepositTokenSymbol('SOL')
         }
       }}
@@ -156,7 +157,7 @@ export default function AddFundsModal({
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="flex items-center justify-between border-b border-gray-800 p-4">
+        <div className="flex items-center justify-between border-b border-gray-800 p-4 mt-topbar">
           <h2 className="text-2xl font-bold text-white">Add funds</h2>
           <Button
             variant="ghost"
@@ -166,7 +167,6 @@ export default function AddFundsModal({
               setIsChecked(false)
               setDepositAmount('')
               setSelectedAccount('')
-              setCollateralSource('wallet')
               setDepositTokenSymbol('SOL')
             }}
             className="text-gray-400 hover:text-white"
@@ -176,44 +176,43 @@ export default function AddFundsModal({
         </div>
 
         <div className="p-4 space-y-6">
-          <div className="flex justify-between items-center space-x-2">
-            <p className="text-gray-400">Deposit Collateral From</p>
-            <div className="bg-[#1a1f2a] rounded-button">
-              <Button
-                variant={ButtonVariant.GHOST}
-                size={ButtonSize.DEFAULT}
-                className={`cursor-pointer ${collateralSource === 'wallet' ? 'bg-[#3a4252] text-white' : 'text-gray-400'}`}
-                onClick={() => setCollateralSource('wallet')}
-              >
-                Wallet
-              </Button>
-              <Button
-                variant={ButtonVariant.GHOST}
-                size={ButtonSize.DEFAULT}
-                className={`cursor-pointer ${collateralSource === 'account' ? 'bg-[#3a4252] text-white' : 'text-gray-400'}`}
-                onClick={() => setCollateralSource('account')}
-              >
-                Account
-              </Button>
-            </div>
-          </div>
+          {
+            !accountIds.length ? (
+              <div className="flex justify-between items-center space-x-2">
+                <p className="text-gray-400">Deposit Collateral From</p>
+                <div className="bg-[#1a1f2a] rounded-button">
+                  <Button
+                    variant={ButtonVariant.GHOST}
+                    size={ButtonSize.DEFAULT}
+                    className="cursor-pointer bg-[#3a4252] text-white"
+                  >
+                    Wallet
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm text-gray-400">Deposit to</p>
+                <Select
+                  value={selectedAccount}
+                  onValueChange={(value) => setSelectedAccount(value)}
+                >
+                  <SelectTrigger className="bg-transparent text-primary h-12 rounded-input">
+                    <SelectValue placeholder="Select Account" />
+                  </SelectTrigger>
+                  <SelectContent className="border border-primary text-primary">
+                    {
+                      accountIds.map((id) => (
+                        <SelectItem value={id.toString()} key={id}>{id === 0 ? 'Main Account' : `SubAccount ${id}`}</SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+              </div>
+            )
+          }
 
           <div className="space-y-2">
-            {
-              collateralSource === 'account' && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-sm text-gray-400">Funding Account</p>
-                  <Select
-                    value={selectedAccount}
-                    onValueChange={(value) => setSelectedAccount(value)}
-                  >
-                    <SelectTrigger className="bg-transparent text-primary h-12 rounded-input">
-                      <SelectValue placeholder="Select Account" />
-                    </SelectTrigger>
-                  </Select>
-                </div>
-              )
-            }
             <div className="flex items-center space-x-2">
               <div className="w-[100px]">
                 <Select
