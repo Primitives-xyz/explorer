@@ -3,20 +3,26 @@
 /* ========================= */
 
 .dialect > * > button {
-    height: 36px !important;
+    border-radius: 0% !important;
+    background-color: transparent !important;
+    width: fit-content !important;
+    height: fit-content !important;
   }
   
   .dt-modal {
     position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
   }
   
-  @media only screen and (min-width: 640px) {
+  /* @media only screen and (min-width: 640px) {
     .dt-modal {
       top: 40% !important;
       left: 50% !important;
       transform: translate(-50%, -50%) !important;
     }
-  }
+  } */
   
   .dialect input {
     --dt-text-primary: hsl(var(--primary)) !important;

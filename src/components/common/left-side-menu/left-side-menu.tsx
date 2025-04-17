@@ -17,9 +17,12 @@ export function LeftSideMenu() {
     <div className="sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar">
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
-          <h1 className="font-bold text-primary leading-none">
-            solana_social_explorer
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-bold text-primary leading-none">
+              solana_social_explorer
+            </h1>
+            <DialectNotificationsComponent />
+          </div>
 
           <ProfileInfos />
           <Menu />
@@ -37,17 +40,14 @@ export function LeftSideMenu() {
             Unlock Perpetuals
           </Button>
           <LanguageSwitcher />
-          <div className="flex items-center gap-2">
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
-              newTab
-            >
-              <MessageCircle size={16} />
-              Give Feedback
-            </Button>
-            <DialectNotificationsComponent />
-          </div>
+          <Button
+            variant={ButtonVariant.OUTLINE_WHITE}
+            href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
+            newTab
+          >
+            <MessageCircle size={16} />
+            Give Feedback
+          </Button>
         </div>
         <AddFundsModal
           isOpen={isFundsModalOpen}
