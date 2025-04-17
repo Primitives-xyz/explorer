@@ -43,6 +43,11 @@ export interface LaunchPoolParams {
   tokenImage?: string
   poolParams: PoolParams
   ownerAddress: string
+  existingToken?: {
+    mintB: PublicKey
+    tokenWallet: PublicKey
+    walletAuthority?: Keypair
+  }
 }
 
 export interface BuyTokensParams {
@@ -99,70 +104,92 @@ export async function launchPool(
   params: LaunchPoolParams
 ): Promise<{ signature: string; poolAddress: string; mintB: string }> {
   try {
+    console.log('Initializing Vertigo SDK...')
     const vertigo = createVertigoSDK(connection)
+    console.log('Vertigo SDK initialized')
     const payer = getPayerKeypair()
 
     // Generate keypairs for the pool
     const owner = Keypair.fromSecretKey(payer.secretKey)
-    const tokenWalletAuthority = Keypair.generate()
-    const mintAuthority = Keypair.generate()
-    const mint = Keypair.generate()
+    
+    let mintB: PublicKey
+    let tokenWallet: PublicKey
+    let tokenWalletAuthority: Keypair
+    
+    // Check if we're using an existing token
+    if (params.existingToken) {
+      console.log('Using existing token for pool creation')
+      mintB = params.existingToken.mintB
+      tokenWallet = params.existingToken.tokenWallet
+      // Use provided wallet authority or generate a new one
+      tokenWalletAuthority = params.existingToken.walletAuthority || Keypair.generate()
+    } else {
+      // Proceed with the normal token creation flow
+      tokenWalletAuthority = Keypair.generate()
+      const mintAuthority = Keypair.generate()
+      const mint = Keypair.generate()
 
-    // Fund the token wallet authority account
-    await connection.requestAirdrop(
-      tokenWalletAuthority.publicKey,
-      LAMPORTS_PER_SOL * 0.1
-    )
+      // Fund the token wallet authority account
+      await connection.requestAirdrop(
+        tokenWalletAuthority.publicKey,
+        LAMPORTS_PER_SOL * 0.1
+      )
 
-    // Fund the mint authority account
-    await connection.requestAirdrop(
-      mintAuthority.publicKey,
-      LAMPORTS_PER_SOL * 0.1
-    )
+      // Fund the mint authority account
+      await connection.requestAirdrop(
+        mintAuthority.publicKey,
+        LAMPORTS_PER_SOL * 0.1
+      )
 
-    // Create the custom token (mintB)
-    const decimals = params.poolParams.decimals
-    const mintB = await createMint(
-      connection,
-      payer,
-      mintAuthority.publicKey,
-      null, // No freeze authority
-      decimals,
-      mint,
-      undefined,
-      TOKEN_2022_PROGRAM_ID
-    )
+      // Create the custom token (mintB)
+      const decimals = params.poolParams.decimals
+      mintB = await createMint(
+        connection,
+        payer,
+        mintAuthority.publicKey,
+        null, // No freeze authority
+        decimals,
+        mint,
+        undefined,
+        TOKEN_2022_PROGRAM_ID
+      )
 
-    // Create the token wallet for the mint
-    const tokenWallet = await createAssociatedTokenAccount(
-      connection,
-      payer,
-      mint.publicKey,
-      tokenWalletAuthority.publicKey,
-      undefined,
-      TOKEN_2022_PROGRAM_ID
-    )
+      // Create the token wallet for the mint
+      tokenWallet = await createAssociatedTokenAccount(
+        connection,
+        payer,
+        mint.publicKey,
+        tokenWalletAuthority.publicKey,
+        undefined,
+        TOKEN_2022_PROGRAM_ID
+      )
 
-    // Mint tokens to the wallet
-    const initialTokenReserves = params.poolParams.initialTokenReserves
-    await mintTo(
-      connection,
-      payer,
-      mint.publicKey,
-      tokenWallet,
-      mintAuthority.publicKey,
-      initialTokenReserves * Math.pow(10, decimals),
-      [mintAuthority],
-      undefined,
-      TOKEN_2022_PROGRAM_ID
-    )
+      // Mint tokens to the wallet
+      const initialTokenReserves = params.poolParams.initialTokenReserves
+      await mintTo(
+        connection,
+        payer,
+        mint.publicKey,
+        tokenWallet,
+        mintAuthority.publicKey,
+        initialTokenReserves * Math.pow(10, decimals),
+        [mintAuthority],
+        undefined,
+        TOKEN_2022_PROGRAM_ID
+      )
+    }
+
+    // Get token decimals from the blockchain if using an existing token
+    const decimals = params.existingToken 
+      ? (await connection.getTokenSupply(mintB)).value.decimals
+      : params.poolParams.decimals
 
     // Prepare pool parameters in the format Vertigo SDK expects
     const poolParams = {
       shift: new BN(LAMPORTS_PER_SOL).muln(params.poolParams.shift),
-      initialTokenBReserves: new BN(
-        params.poolParams.initialTokenReserves
-      ).muln(Math.pow(10, decimals)),
+      initialTokenBReserves: params.existingToken
+        ? await getTokenWalletBalance(connection, tokenWallet, decimals)
+        : new BN(params.poolParams.initialTokenReserves).muln(Math.pow(10, decimals)),
       feeParams: {
         normalizationPeriod: new BN(
           params.poolParams.feeParams.normalizationPeriod
@@ -210,6 +237,18 @@ export async function launchPool(
   } catch (error: any) {
     console.error('Error launching Vertigo pool:', error)
     throw new Error(`Failed to launch pool: ${error.message}`)
+  }
+}
+
+// Helper function to get token wallet balance in the correct format for Vertigo SDK
+async function getTokenWalletBalance(connection: Connection, tokenWallet: PublicKey, decimals: number): Promise<BN> {
+  try {
+    const tokenAmount = await connection.getTokenAccountBalance(tokenWallet)
+    return new BN(tokenAmount.value.amount)
+  } catch (error) {
+    console.error('Error getting token balance:', error)
+    // Return a default value if we can't get the balance
+    return new BN(1_000_000_000).muln(Math.pow(10, decimals))
   }
 }
 
@@ -347,6 +386,9 @@ export async function claimRoyalties(
 // Helper function to create a connection
 export async function createConnection(): Promise<Connection> {
   return new Connection(
-    process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
+    'https://api.devnet.solana.com', "confirmed"
   )
+  // return new Connection(
+  //   process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
+  // )
 }
