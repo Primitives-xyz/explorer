@@ -3,30 +3,33 @@
 import { Button, ButtonVariant } from "@/components/ui"
 import type React from "react"
 import Slider from "@/components/ui/slider/slider"
+import { useCallback, useEffect, useState } from "react"
 
 interface LeverageSelectorProps {
   min: number
   max: number
   setAmount: (amount: string) => void
-  getSizeByLeveragePercent: (leverage: number) => string
   leverageValue: number
   setLeverageValue: (value: number) => void
+  setIsSizeByLeverage: (value: boolean) => void
 }
 
 export default function LeverageSelector({
   min,
   max,
   setAmount,
-  getSizeByLeveragePercent,
   leverageValue,
-  setLeverageValue
+  setLeverageValue,
+  setIsSizeByLeverage
 }: LeverageSelectorProps) {
+  const [percentage, setPercentage] = useState<number>(0)
 
-  const handlePercentageClick = (percentage: number) => {
-    setAmount(getSizeByLeveragePercent(percentage))
-    const newLeverage = (max - min) * (percentage / 100) + min
+  const handlePercentageChange = useCallback((percentage: number) => {
+    setPercentage(percentage)
+    const newLeverage = max * percentage / 100
+    setIsSizeByLeverage(true)
     setLeverageValue(newLeverage)
-  }
+  }, [max])
 
   return (
     <div className="w-full space-y-4">
@@ -35,7 +38,10 @@ export default function LeverageSelector({
         max={max}
         step={0.1}
         value={[leverageValue]}
-        onValueChange={(value) => setLeverageValue(value[0])}
+        onValueChange={(value) => {
+          setIsSizeByLeverage(true)
+          setLeverageValue(value[0])
+        }}
       />
 
       <div className="grid grid-cols-4 gap-2">
@@ -45,7 +51,7 @@ export default function LeverageSelector({
               key={index}
               variant={ButtonVariant.BADGE}
               className="text-center"
-              onClick={() => handlePercentageClick(percent)}
+              onClick={() => handlePercentageChange(percent)}
             >
               {percent}%
             </Button>
