@@ -16,7 +16,7 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from '@solana/web3.js'
-import { VertigoSDK } from '@vertigo-amm/vertigo-sdk/dist/src/sdk'
+import { VertigoSDK } from '@vertigo-amm/vertigo-sdk'
 import bs58 from 'bs58'
 
 // Configuration
@@ -93,7 +93,19 @@ function createVertigoSDK(connection: Connection): VertigoSDK {
   const payer = getPayerKeypair()
   const wallet = new NodeWallet(payer)
 
-  return new VertigoSDK(connection, wallet)
+  try {
+    // Add a try-catch and more debugging
+    console.log('Creating VertigoSDK with:', {
+      connectionEndpoint: connection.rpcEndpoint,
+      wallet: wallet.constructor.name
+    })
+    
+    // Create with optional empty config to avoid any defaults causing issues
+    return new VertigoSDK(connection, wallet)
+  } catch (error) {
+    console.error('Error creating VertigoSDK:', error)
+    throw error
+  }
 }
 
 /**

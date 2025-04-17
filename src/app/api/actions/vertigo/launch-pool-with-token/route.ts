@@ -1,4 +1,4 @@
-import { createConnection } from '@/lib/vertigo'
+import { createConnection, launchPool } from '@/lib/vertigo'
 import {
   ActionGetResponse,
   ActionPostResponse,
@@ -10,7 +10,6 @@ import { NextRequest } from 'next/server'
 import bs58 from 'bs58'
 import os from 'os'
 import fs from 'fs'
-import { launchVertigoPool } from '@/hooks/use-vertigo-launch'
 
 // Set blockchain (mainnet or devnet)
 const blockchain =
@@ -174,17 +173,29 @@ export async function POST(req: NextRequest) {
     
 
     console.log("About to launch pool...")
-    const result = await launchVertigoPool({
-      connection,
-      walletKeypair,
-      mintB,
-      tokenWallet,
+    const result = await launchPool(connection, {
       tokenName,
       tokenSymbol,
-      shift,
-      royaltiesBps,
-      walletAuthority
-    })
+      tokenImage: tokenImage,
+      poolParams: {
+        shift,
+        // These parameters need to be set but will be fetched from the blockchain for existing tokens
+        initialTokenReserves: 0,
+        decimals: 0,
+        feeParams: {
+          normalizationPeriod: 20,
+          decay: 10,
+          royaltiesBps,
+          feeExemptBuys: 1
+        }
+      },
+      ownerAddress,
+      existingToken: {
+        mintB: new PublicKey(mintB),
+        tokenWallet: new PublicKey(tokenWallet),
+        walletAuthority: walletAuthority ? Keypair.fromSecretKey(bs58.decode(walletAuthority)) : undefined
+      }
+    });
 
     console.log('Pool launched successfully!')
     console.log(`Pool address: ${result.poolAddress}`)
