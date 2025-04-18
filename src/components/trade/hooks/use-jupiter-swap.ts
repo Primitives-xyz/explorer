@@ -1,5 +1,4 @@
 import { useSSEPrice } from '@/components/trade/hooks/use-sse-price'
-import { useToast } from '@/components/ui/toast/hooks/use-toast'
 import {
   DEFAULT_SLIPPAGE_BPS,
   DEFAULT_SLIPPAGE_VALUE,
@@ -10,6 +9,7 @@ import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useCreateTradeContentNode } from './use-create-trade-content'
 
 interface UseJupiterSwapParams {
@@ -82,7 +82,6 @@ export function useJupiterSwap({
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const [error, setError] = useState<string | null>(null)
   const { ssePrice } = useSSEPrice()
-  const { toast } = useToast()
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const resetQuoteState = useCallback(() => {
@@ -200,10 +199,8 @@ export function useJupiterSwap({
     setLoading(true)
     setIsFullyConfirmed(false)
     try {
-      toast({
-        title: t('trade.preparing_swap'),
+      toast.loading(t('trade.preparing_swap'), {
         description: t('trade.preparing_your_swap_transaction'),
-        variant: 'pending',
         duration: 2000,
       })
 
@@ -267,21 +264,16 @@ export function useJupiterSwap({
         return
       }
 
-      toast({
-        title: t('trade.sending_transaction'),
+      toast.loading(t('trade.sending_transaction'), {
         description: t('trade.please_approve_the_transaction_in_your_wallet'),
-        variant: 'pending',
-        duration: 5000,
       })
 
       const signer = await primaryWallet.getSigner()
       const txid = await signer.signAndSendTransaction(transaction)
       setTxSignature(txid.signature)
 
-      const confirmToast = toast({
-        title: t('trade.confirming_transaction'),
+      const confirmToastId = toast.loading(t('trade.confirming_transaction'), {
         description: t('trade.waiting_for_confirmation'),
-        variant: 'pending',
         duration: 1000000000,
       })
 
@@ -294,7 +286,7 @@ export function useJupiterSwap({
         'confirmed'
       )
 
-      confirmToast.dismiss()
+      toast.dismiss(confirmToastId)
 
       await createContentNode({
         signature: txid.signature,
@@ -321,31 +313,22 @@ export function useJupiterSwap({
       })
 
       if (tx.value.err) {
-        toast({
-          title: t('trade.transaction_failed'),
+        toast.error(t('trade.transaction_failed'), {
           description: t('trade.the_swap_transaction_failed_please_try_again'),
-          variant: 'error',
-          duration: 5000,
         })
         setError(t('error.transaction_failed_please_try_again'))
       } else {
-        toast({
-          title: t('trade.transaction_successful'),
+        toast.success(t('trade.transaction_successful'), {
           description: t(
             'trade.the_swap_transaction_was_successful_creating_shareable_link'
           ),
-          variant: 'success',
-          duration: 5000,
         })
         setIsFullyConfirmed(true)
       }
     } catch (error) {
       console.error(t('error.swap_failed'), error)
-      toast({
-        title: t('error.swap_failed'),
+      toast.error(t('error.swap_failed'), {
         description: t('error.the_swap_transaction_failed_please_try_again'),
-        variant: 'error',
-        duration: 5000,
       })
       setError(t('error.the_swap_transaction_failed_please_try_again'))
     } finally {

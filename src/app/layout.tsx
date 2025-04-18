@@ -2,6 +2,7 @@ import { ActivityTape } from '@/components/activity-tape/components/activity-tap
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { WalletProvider } from '@/components/common/wallet-provider'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
+import { Toaster } from '@/components/ui/sonner'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -97,6 +98,7 @@ export default async function RootLayout({
               <main className="w-full flex justify-between pt-topbar">
                 <LeftSideMenu />
                 <div className="flex-1 flex justify-between pt-5">
+                  <Toaster />
                   {children}
                 </div>
               </main>
