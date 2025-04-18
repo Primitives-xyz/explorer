@@ -45,7 +45,7 @@ export function Pay({
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <p>Pay</p>
+        <p>Selling</p>
         <p className="text-xs text-muted">
           Balance:{' '}
           <TokenBalance

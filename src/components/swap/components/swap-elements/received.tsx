@@ -32,7 +32,7 @@ export function Receive({
     <>
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <p>Receive</p>
+          <p>Buying</p>
         </div>
 
         <div className="flex justify-between items-center">
