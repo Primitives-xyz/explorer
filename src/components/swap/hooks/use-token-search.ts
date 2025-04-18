@@ -19,6 +19,9 @@ export enum SortOptionsDetails {
   BALANCE = 'balance',
 }
 
+export const BAD_SOL_MINT = 'So11111111111111111111111111111111111111111'
+export const GOOD_INPUT_SOL = 'So11111111111111111111111111111111111111112'
+
 export function useTokenSearch() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<ITokenSearchResult[]>([])
@@ -44,23 +47,30 @@ export function useTokenSearch() {
   const walletTokens = useMemo(() => {
     if (!data?.data?.items?.length) return []
 
-    return data.data.items.map((item) => ({
-      name: item.name,
-      symbol: item.symbol,
-      address: item.address,
-      decimals: item.decimals,
-      logoURI: item.logoURI || item.icon,
-      icon: item.icon,
-      chainId: item.chainId,
-      price: item.priceUsd,
-      priceUsd: item.priceUsd,
-      balance: item.balance,
-      uiAmount: item.uiAmount,
-      valueUsd: item.valueUsd,
-      volume_24h_usd: 0,
-      verified: true,
-      market_cap: 0,
-    }))
+    return data.data.items.map((item) => {
+      let address = item.address
+      if (address === BAD_SOL_MINT) {
+        address = GOOD_INPUT_SOL
+      }
+
+      return {
+        name: item.name,
+        symbol: item.symbol,
+        address: address,
+        decimals: item.decimals,
+        logoURI: item.logoURI || item.icon,
+        icon: item.icon,
+        chainId: item.chainId,
+        price: item.priceUsd,
+        priceUsd: item.priceUsd,
+        balance: item.balance,
+        uiAmount: item.uiAmount,
+        valueUsd: item.valueUsd,
+        volume_24h_usd: 0,
+        verified: true,
+        market_cap: 0,
+      }
+    })
   }, [data]).filter((token) => token.name)
 
   // Process wallet tokens when they're available
