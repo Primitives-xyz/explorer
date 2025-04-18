@@ -73,6 +73,7 @@ export function Perpetual() {
   const [swift, setSwift] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
   const [amount, setAmount] = useState<string>('')
+  const [orderAmount, setOrderAmount] = useState<string>('')
   const [symbol, setSymbol] = useState<string>('SOL')
   const [leverageValue, setLeverageValue] = useState<number>(1)
   const [isSizeByLeverage, setIsSizeByLeverage] = useState<boolean>(false)
@@ -96,7 +97,7 @@ export function Perpetual() {
   })
 
   const { placePerpsOrder, loading, error, setError } = usePlacePerpsOrder({
-    amount,
+    amount: orderAmount,
     symbol,
     direction:
       selectedDirection === Direction.LONG
@@ -183,6 +184,14 @@ export function Perpetual() {
       setLeverageValue(newLeverageSize)
     }
   }, [amount, userStats, marketPrice])
+
+  useEffect(() => {
+    if (isSizeByLeverage) {
+      setOrderAmount(selectedLeverageSizeToken)
+    } else {
+      setOrderAmount(amount)
+    }
+  }, [amount, selectedLeverageSizeToken])
 
   return (
     <div className="w-full">
@@ -374,13 +383,13 @@ export function Perpetual() {
               onClick={() => placePerpsOrder()}
               className="text-lg capitalize font-bold w-full"
               size={ButtonSize.LG}
-              disabled={loading || Number(amount) <= 0}
+              disabled={loading || Number(orderAmount) <= 0}
             >
               {loading ? (
                 <Spinner />
-              ) : Number(amount) > 0 ? (
+              ) : Number(orderAmount) > 0 ? (
                 <p>
-                  {selectedDirection} ~{amount} {symbol}-Perp
+                  {selectedDirection} ~{orderAmount} {symbol}-Perp
                 </p>
               ) : (
                 <p>Enter an amount</p>
