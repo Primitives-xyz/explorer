@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   BN,
@@ -11,6 +12,7 @@ import {
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
+import { useToastContent } from './use-toast-content'
 
 interface UsePlacePerpsOrderParams {
   amount: string
@@ -28,26 +30,26 @@ export function usePlacePerpsOrder({
   slippage = '0.1',
 }: UsePlacePerpsOrderParams) {
   const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
   const { driftClient } = useInitializeDrift()
   const { primaryWallet, walletAddress } = useCurrentWallet()
+  const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
 
   const placePerpsOrder = async () => {
-    setError(null)
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
-      setError('Wallet not connected')
+      toast.error(ERRORS.WALLET_CONNETION_ERR.title, ERRORS.WALLET_CONNETION_ERR.content)
       return
     }
 
     if (Number(amount) <= 0.01) {
-      setError('Order size must be at least 0.01 SOL')
+      toast.error(ERRORS.PERPS_ORDER_SIZE_ERR.title, ERRORS.PERPS_ORDER_SIZE_ERR.content)
       return
     }
 
     setLoading(true)
+
     try {
       if (!driftClient) {
-        setError('Drift client not initialized')
+        toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
         return
       }
 
@@ -65,14 +67,14 @@ export function usePlacePerpsOrder({
       )
 
       if (!marketInfo) {
-        setError('Market not found')
+        toast.error(ERRORS.PERPS_MARKET_ERR.title, ERRORS.PERPS_MARKET_ERR.content)
         return
       }
 
       const marketIndex = marketInfo.marketIndex
       const perpMarketAccount = driftClient.getPerpMarketAccount(marketIndex)
       if (!perpMarketAccount) {
-        setError('Perp market account not found')
+        toast.error(ERRORS.PERPS_MARKET_ACCOUNT_ERR.title, ERRORS.PERPS_MARKET_ACCOUNT_ERR.content)
         return
       }
       // Get vAMM bid and ask price
@@ -89,24 +91,14 @@ export function usePlacePerpsOrder({
         slippage === 'infinity'
           ? 0.1 // Maximum slippage
           : slippage === 'zap'
-          ? 0.01 // Swift-like dynamic slippage
-          : parseFloat(slippage) / 100 // Regular percentage slippage
+            ? 0.01 // Swift-like dynamic slippage
+            : parseFloat(slippage) / 100 // Regular percentage slippage
 
       console.log(
         env,
-        `vAMM bid: $${formattedBidPrice} and ask: $${formattedAskPrice}, slippage: ${
-          slippageDecimal * 100
+        `vAMM bid: $${formattedBidPrice} and ask: $${formattedAskPrice}, slippage: ${slippageDecimal * 100
         }%`
       )
-
-      const solMarketAccount = driftClient.getPerpMarketAccount(
-        marketInfo.marketIndex
-      )
-
-      if (!solMarketAccount) {
-        setError('Sol market account not found')
-        return
-      }
 
       // Convert the human‑readable `amount` (string) into Drift's perp precision (10^9).
       // e.g. "0.5" SOL => 0.5 * 1_000_000_000 = 500_000_000 (BN)
@@ -115,7 +107,7 @@ export function usePlacePerpsOrder({
       const orderParams = getMarketOrderParams({
         baseAssetAmount,
         direction,
-        marketIndex: solMarketAccount.marketIndex,
+        marketIndex: perpMarketAccount.marketIndex,
       })
 
       // Apply slippage to the order
@@ -136,12 +128,15 @@ export function usePlacePerpsOrder({
         }
       }
 
+      toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
       const txSig = await driftClient.placePerpOrder(orderParams)
 
+      toast.dismiss()
+      toast.success(SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.title, SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.content)
       console.log('Perp order sent – tx:', txSig)
     } catch (error) {
-      setError(`Failed to Place Perps Order.\nPlease try again later.`)
-      console.log(error)
+      toast.dismiss()
+      toast.error(ERRORS.TX_PERPS_ORDER_ERR.title, ERRORS.TX_PERPS_ORDER_ERR.content)
       return
     } finally {
       setLoading(false)
@@ -151,7 +146,5 @@ export function usePlacePerpsOrder({
   return {
     placePerpsOrder,
     loading,
-    error,
-    setError,
   }
 }

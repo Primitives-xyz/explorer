@@ -20,7 +20,6 @@ interface Props {
   slippageOption: string
   swift: boolean
   userStats: IUserStats
-  error: string | null
   selectedLeverageSizeUsd: string
   selectedLeverageSizeToken: string
   isSizeByLeverage: boolean
@@ -56,7 +55,6 @@ export default function MarketOrder({
   selectedLeverageSizeUsd,
   selectedLeverageSizeToken,
   isSizeByLeverage,
-  error,
   handleAmountChange,
   setLeverageValue,
   setSlippageExpanded,
@@ -190,13 +188,6 @@ export default function MarketOrder({
         <p>SWIFT</p>
         <Switch checked={swift} onCheckedChange={setSwift} />
       </div>
-
-      {error && (
-        <p className="w-full flex justify-start items-center space-x-2 text-destructive">
-          <CircleAlert />
-          <span>{error}</span>
-        </p>
-      )}
     </div>
   )
 }

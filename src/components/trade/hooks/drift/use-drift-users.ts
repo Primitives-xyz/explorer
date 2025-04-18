@@ -9,6 +9,7 @@ export function useDriftUsers() {
   const { driftClient } = useInitializeDrift()
   const { primaryWallet, walletAddress } = useCurrentWallet()
   const [accountIds, setAccountIds] = useState<number[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -22,12 +23,15 @@ export function useDriftUsers() {
     }
 
     const getUserAccountIds = async () => {
+      setLoading(true)
       try {
         const userAccounts = await driftClient.getUserAccountsForAuthority(new PublicKey(walletAddress))
         const userAccountIds = userAccounts.map((userAccount) => userAccount.subAccountId)
         setAccountIds(userAccountIds)
       } catch (error) {
         setAccountIds([])
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -38,5 +42,6 @@ export function useDriftUsers() {
   return {
     accountIds,
     error,
+    loading
   }
 }

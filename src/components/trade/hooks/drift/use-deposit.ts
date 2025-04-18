@@ -1,10 +1,12 @@
+import { useState } from 'react'
 import { BN, SpotMarkets } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
 import { PublicKey } from '@solana/web3.js'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { useToastContent } from './use-toast-content'
 
 interface UseInitAccountAndDepositParams {
   amount: string
@@ -37,17 +39,19 @@ export function useDeposit({
   const [error, setError] = useState<string | null>(null)
   const { driftClient } = useInitializeDrift()
   const { primaryWallet, walletAddress } = useCurrentWallet()
+  const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
 
   const depositCollateral = async () => {
+    let isDriftAccountExist = false
+    setLoading(true)
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
-      setError('Wallet not connected')
+      toast.error(ERRORS.WALLET_CONNETION_ERR.title, ERRORS.WALLET_CONNETION_ERR.content)
       return
     }
 
-    setLoading(true)
     try {
       if (!driftClient) {
-        setError('Drift client not initialized')
+        toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
         return
       }
       await driftClient.subscribe()
@@ -59,14 +63,22 @@ export function useDeposit({
       )
 
       if (!marketInfo) {
-        setError('Market not found')
+        toast.error(ERRORS.PERPS_MARKET_ERR.title, ERRORS.PERPS_MARKET_ERR.content)
         return
       }
 
       let signature;
 
+      toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
+
       try {
-        driftClient.getUser()
+        const user = driftClient.getUser()
+        isDriftAccountExist = true
+      } catch (error) {
+        isDriftAccountExist = false
+      }
+
+      if (isDriftAccountExist) {
         if (subAccountId !== null) {
           const sig = await driftClient.deposit(
             new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
@@ -83,7 +95,7 @@ export function useDeposit({
           )
           signature = sig
         }
-      } catch (error) {
+      } else {
         const [sig, pubKey] = await driftClient.initializeUserAccountAndDepositCollateral(
           new BN(Math.floor(Number(amount) * Math.pow(10, depositTokenDecimals))),
           userTokenAccount,
@@ -92,12 +104,15 @@ export function useDeposit({
         signature = sig
       }
 
+      toast.dismiss()
+      toast.success(SUCCESS.DEPOSIT_COLLATERAL_TX_SUCCESS.title, SUCCESS.DEPOSIT_COLLATERAL_TX_SUCCESS.content)
+
       return {
         signature,
       }
     } catch (error) {
-      console.error(error)
-      setError('Failed to initialize user account and deposit collateral')
+      toast.dismiss()
+      toast.error(ERRORS.TX_DEPOSIT_COLLATERAL_ERR.title, ERRORS.TX_DEPOSIT_COLLATERAL_ERR.content)
       return {
         signature: null,
       }

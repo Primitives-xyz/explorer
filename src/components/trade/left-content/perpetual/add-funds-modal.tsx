@@ -52,7 +52,7 @@ export default function AddFundsModal({
   const [inputError, setInputError] = useState<InputError | null>(null)
   const [depositTokenSymbol, setDepositTokenSymbol] = useState<string>('SOL')
   const [sportMarketInfo, setSportMarketInfo] = useState<SpotMarketConfig[]>(SpotMarkets[env])
-  const { accountIds } = useDriftUsers()
+  const { accountIds, loading: userAccountsLoading } = useDriftUsers()
 
   const depositTokenSpotMarketInfo = useMemo(() => {
     const depositTokenSportMarketInfo = sportMarketInfo?.find((market) => market.symbol === depositTokenSymbol)
@@ -130,8 +130,7 @@ export default function AddFundsModal({
     }
   }
 
-  const initAndDeposit = async () => {
-    console.log('initAnddeposit')
+  const initAndDeposit = () => {
     depositCollateral()
   }
 
@@ -174,6 +173,10 @@ export default function AddFundsModal({
             <X className="h-6 w-6" />
           </Button>
         </div>
+
+        {
+          userAccountsLoading && <div className="flex justify-start items-center px-4 pt-4">Loading the drift accounts...</div>
+        }
 
         <div className="p-4 space-y-6">
           {
