@@ -1,9 +1,12 @@
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
+  BN,
   convertToNumber,
   PerpPosition,
+  PositionDirection,
   QUOTE_PRECISION,
   SpotPosition,
+  TEN_THOUSAND,
 } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useEffect, useState } from 'react'
@@ -54,10 +57,8 @@ export function useUserStats(subAccountId = 0) {
           setLoading(false)
           return
         }
-
         // Subscribe to user account updates
         await user.subscribe()
-
         // Get user health and positions
         const health = user.getHealth()
         // The healthRatio is health/maintenance requirement (user.getHealthRatioEntry() is in SDK >= 2.20)
@@ -71,6 +72,7 @@ export function useUserStats(subAccountId = 0) {
           QUOTE_PRECISION
         )
 
+
         // Estimate leverage from positions and collateral
         const totalPositionNotionalValue = perpPositions.reduce(
           (total, position) => {
@@ -83,11 +85,14 @@ export function useUserStats(subAccountId = 0) {
             ? totalPositionNotionalValue / totalAccountValue
             : 0
 
-        // User doesn't have getMaxTradeSize in this SDK version
-        // We'll estimate based on available margin and max leverage
-        // Using a simple estimate - 20x the total collateral minus existing positions
-        const maxTradeSize = totalAccountValue * 20 - totalPositionNotionalValue
+        const maxTradeSizeUSDCForPerp = user.getMaxTradeSizeUSDCForPerp(
+          0,
+          PositionDirection.LONG,
+        )
+        const maxTradeSize = convertToNumber(maxTradeSizeUSDCForPerp.tradeSize, QUOTE_PRECISION)
 
+        const maxLeverageForPerp = user.getMaxLeverageForPerp(0)
+        const maxLeverage = convertToNumber(maxLeverageForPerp, TEN_THOUSAND)
         // Update state with fetched data
         setUserStats({
           health,
@@ -96,7 +101,7 @@ export function useUserStats(subAccountId = 0) {
           leverage: leverage || 0,
           perpPositions,
           spotPositions,
-          maxLeverage: 20, // Drift max leverage is usually 20x
+          maxLeverage: maxLeverage, // Drift max leverage is usually 20x
           maxTradeSize: maxTradeSize,
         })
 

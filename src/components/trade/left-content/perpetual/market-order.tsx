@@ -6,7 +6,7 @@ import { UserStats } from "@/components/tapestry/models/drift.model";
 import LeverageSelector from "./leverage-selector";
 
 interface MarketOrderProps {
-  getMaxTradeAmount: () => string
+  getMaxTradeAmount: string
   priceLoading: boolean
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   amount: string
@@ -23,8 +23,11 @@ interface MarketOrderProps {
   setSwift: (value: boolean) => void
   userStats: UserStats
   setAmount: (value: string) => void
-  getSizeByLeveragePercent: (leverage: number) => string
+  selectedLeverageSizeUsd: string
+  selectedLeverageSizeToken: string
   error: string | null
+  isSizeByLeverage: boolean
+  setIsSizeByLeverage: (value: boolean) => void
 }
 
 const slippageOptions = [
@@ -52,7 +55,10 @@ export default function MarketOrder({
   setSwift,
   userStats,
   setAmount,
-  getSizeByLeveragePercent,
+  selectedLeverageSizeUsd,
+  selectedLeverageSizeToken,
+  isSizeByLeverage,
+  setIsSizeByLeverage,
   error
 }: MarketOrderProps) {
   return (
@@ -61,7 +67,7 @@ export default function MarketOrder({
       <div className="flex justify-between items-center">
         <span>Size</span>
         <Button className="flex space-x-2 items-center">
-          <span>Max: {getMaxTradeAmount()} SOL</span>
+          <span>Max: {getMaxTradeAmount} USDC</span>
           {priceLoading && <Spinner size={12} />}
         </Button>
       </div>
@@ -74,7 +80,7 @@ export default function MarketOrder({
             className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
             type="text"
             onChange={(e) => handleAmountChange(e)}
-            value={amount}
+            value={isSizeByLeverage ? selectedLeverageSizeToken : amount}
           />
           <Image
             src={
@@ -89,11 +95,7 @@ export default function MarketOrder({
         <Card className="flex items-center">
           <Input
             placeholder="0.00"
-            value={
-              marketPrice && amount
-                ? (Number(amount) * marketPrice).toFixed(2)
-                : ''
-            }
+            value={isSizeByLeverage ? selectedLeverageSizeUsd : (Number(amount) * marketPrice).toFixed(2)}
             className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
             disabled={true}
           />
@@ -119,12 +121,12 @@ export default function MarketOrder({
         </div>
 
         <LeverageSelector
-          min={1}
+          min={0}
           max={Math.min(userStats.maxLeverage, 20)}
           setAmount={setAmount}
-          getSizeByLeveragePercent={getSizeByLeveragePercent}
           leverageValue={leverageValue}
           setLeverageValue={setLeverageValue}
+          setIsSizeByLeverage={setIsSizeByLeverage}
         />
       </div>
 
