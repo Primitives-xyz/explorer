@@ -1,7 +1,7 @@
 const routes = {
   home: () => '/',
   discover: () => '/discover',
-  entity: ({ id }: { id: string }) => `/entity/${id}`,
+  entity: ({ id }: { id: string }) => `/${id}`,
   designSystem: () => '/design-system',
   trade: (query?: string) => `/trade${query ? `?${query}` : ''}`,
   tokens: () => '/tokens',

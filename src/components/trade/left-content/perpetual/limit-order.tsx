@@ -11,13 +11,16 @@ interface LimitOrderProps {
   marketPrice: number
   leverageValue: number
   handleLeverageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  getSizeByLeveragePercent: (leverage: number) => string
+  selectedLeverageSizeUsd: string
+  selectedLeverageSizeToken: string
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setAmount: (amount: string) => void
   userStats: UserStats
   swift: boolean
   setSwift: (swift: boolean) => void
-  setLeverageValue: (leverage: number) => void
+  setLeverageValue: (leverage: number) => void  
+  setIsSizeByLeverage: (value: boolean) => void
+  isSizeByLeverage: boolean
 }
 
 export default function LimitOrder({
@@ -26,13 +29,16 @@ export default function LimitOrder({
   amount,
   marketPrice,
   leverageValue,
-  getSizeByLeveragePercent,
+  selectedLeverageSizeUsd,
+  selectedLeverageSizeToken,
   handleAmountChange,
   setAmount,
   userStats,
   swift,
   setSwift,
-  setLeverageValue
+  setLeverageValue,
+  setIsSizeByLeverage,
+  isSizeByLeverage
 }: LimitOrderProps) {
   return (
     <div className="space-y-6">
@@ -57,7 +63,7 @@ export default function LimitOrder({
             className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
             type="text"
             onChange={(e) => handleAmountChange(e)}
-            value={amount}
+            value={isSizeByLeverage ? selectedLeverageSizeToken : amount}
           />
           <Image
             src={
@@ -72,11 +78,7 @@ export default function LimitOrder({
         <Card className="flex items-center">
           <Input
             placeholder="0.00"
-            value={
-              marketPrice && amount
-                ? (Number(amount) * marketPrice).toFixed(2)
-                : ''
-            }
+            value={isSizeByLeverage ? selectedLeverageSizeUsd : (Number(amount) * marketPrice).toFixed(2)}
             className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
             disabled={true}
           />
@@ -102,12 +104,12 @@ export default function LimitOrder({
         </div>
 
         <LeverageSelector
-          min={1}
+          min={0}
           max={Math.min(userStats.maxLeverage, 20)}
           setAmount={setAmount}
-          getSizeByLeveragePercent={getSizeByLeveragePercent}
           leverageValue={leverageValue}
           setLeverageValue={setLeverageValue}
+          setIsSizeByLeverage={setIsSizeByLeverage}
         />
       </div>
 

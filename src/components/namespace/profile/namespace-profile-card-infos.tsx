@@ -1,15 +1,8 @@
 'use client'
 
 import { INamespaceProfileInfos } from '@/components/tapestry/models/namespace.models'
-import {
-  Button,
-  ButtonSize,
-  ButtonVariant,
-  Card,
-  CardContent,
-} from '@/components/ui'
+import { Card, CardContent } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { route } from '@/utils/route'
 import { abbreviateWalletAddress } from '@/utils/utils'
 
 interface Props {
@@ -36,17 +29,10 @@ export function NamespaceProfileCardInfos({ profileData, username }: Props) {
 
         <div className="w-full flex justify-between items-center">
           <p>owned by</p>
-          <Button
-            href={route('entity', {
-              id: profileData?.walletAddress,
-            })}
-            variant={ButtonVariant.BADGE}
-            size={ButtonSize.SM}
-          >
-            {abbreviateWalletAddress({
-              address: profileData?.walletAddress,
-            })}
-          </Button>
+
+          {abbreviateWalletAddress({
+            address: profileData?.walletAddress,
+          })}
         </div>
 
         <div className="w-full flex justify-between items-center">

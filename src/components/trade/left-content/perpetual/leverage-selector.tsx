@@ -1,32 +1,38 @@
-"use client"
+'use client'
 
-import { Button, ButtonVariant } from "@/components/ui"
-import type React from "react"
-import Slider from "@/components/ui/slider/slider"
+import { Button, ButtonVariant } from '@/components/ui'
+import Slider from '@/components/ui/slider/slider'
+import { useCallback, useState } from 'react'
 
-interface LeverageSelectorProps {
+interface Props {
   min: number
   max: number
-  setAmount: (amount: string) => void
-  getSizeByLeveragePercent: (leverage: number) => string
   leverageValue: number
+  setAmount: (value: string) => void
   setLeverageValue: (value: number) => void
+  setIsSizeByLeverage: (value: boolean) => void
 }
 
 export default function LeverageSelector({
   min,
   max,
-  setAmount,
-  getSizeByLeveragePercent,
   leverageValue,
-  setLeverageValue
-}: LeverageSelectorProps) {
+  setAmount,
+  setLeverageValue,
+  setIsSizeByLeverage,
+}: Props) {
+  const [percentage, setPercentage] = useState<number>(0)
 
-  const handlePercentageClick = (percentage: number) => {
-    setAmount(getSizeByLeveragePercent(percentage))
-    const newLeverage = (max - min) * (percentage / 100) + min
-    setLeverageValue(newLeverage)
-  }
+  const handlePercentageChange = useCallback(
+    (percentage: number) => {
+      setPercentage(percentage)
+      const newLeverage = (max * percentage) / 100
+      setIsSizeByLeverage(true)
+      setLeverageValue(newLeverage)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [max]
+  )
 
   return (
     <div className="w-full space-y-4">
@@ -35,24 +41,23 @@ export default function LeverageSelector({
         max={max}
         step={0.1}
         value={[leverageValue]}
-        onValueChange={(value) => setLeverageValue(value[0])}
+        onValueChange={(value) => {
+          setIsSizeByLeverage(true)
+          setLeverageValue(value[0])
+        }}
       />
 
       <div className="grid grid-cols-4 gap-2">
-        {
-          [25, 50, 75, 100].map((percent, index) => (
-            <Button
-              key={index}
-              variant={ButtonVariant.BADGE}
-              className="text-center"
-              onClick={() => handlePercentageClick(percent)}
-            >
-              {percent}%
-            </Button>
-          ))
-        }
+        {[25, 50, 75, 100].map((percent, index) => (
+          <Button
+            key={index}
+            variant={ButtonVariant.BADGE}
+            onClick={() => handlePercentageChange(percent)}
+          >
+            {percent}%
+          </Button>
+        ))}
       </div>
     </div>
   )
 }
-

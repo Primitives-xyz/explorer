@@ -18,7 +18,7 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn, formatUsdValue } from '@/utils/utils'
 import { PositionDirection } from '@drift-labs/sdk-browser'
 import { ArrowRight } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDriftUsers } from '../../hooks/drift/use-drift-users'
 import { useLeverageSize } from '../../hooks/drift/use-leverage-size'
 import { useLiquidationPrice } from '../../hooks/drift/use-liquidation-price'
@@ -69,6 +69,7 @@ export function Perpetual() {
   const [amount, setAmount] = useState<string>('')
   const [symbol, setSymbol] = useState<string>('SOL')
   const [leverageValue, setLeverageValue] = useState<number>(1)
+  const [isSizeByLeverage, setIsSizeByLeverage] = useState<boolean>(false)
   const { price: marketPrice, loading: priceLoading } = useMarketPrice({
     symbol,
   })
@@ -79,15 +80,13 @@ export function Perpetual() {
       selectedDirection === DirectionFilterType.LONG ? 'long' : 'short',
   })
 
-  const {
-    maxSizeForToken,
-    selectedLeverageSizeToken,
-    getSizeByLeveragePercent,
-  } = useLeverageSize({
-    symbol,
-    leverageValue,
-    marketPrice: marketPrice || 100,
-  })
+  const { selectedLeverageSizeUsd, selectedLeverageSizeToken } =
+    useLeverageSize({
+      userStats,
+      symbol,
+      leverageValue,
+      marketPrice: marketPrice,
+    })
 
   const { placePerpsOrder, loading, error, setError } = usePlacePerpsOrder({
     amount,
@@ -99,23 +98,37 @@ export function Perpetual() {
     slippage: slippageOption,
   })
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null)
-    const val = e.target.value
-    if (
-      val === '' ||
-      val === '.' ||
-      /^[0]?\.[0-9]*$/.test(val) ||
-      /^[0-9]*\.?[0-9]*$/.test(val)
-    ) {
-      const cursorPosition = e.target.selectionStart
-      setAmount(val)
-      window.setTimeout(() => {
-        e.target.focus()
-        e.target.setSelectionRange(cursorPosition, cursorPosition)
-      }, 0)
-    }
-  }
+  const getMaxTradeAmount = useMemo(() => {
+    if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
+
+    return userStats.maxTradeSize.toFixed(2)
+  }, [userStats])
+
+  const handleAmountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setError(null)
+      setIsSizeByLeverage(false)
+      const val = e.target.value
+      if (
+        val === '' ||
+        val === '.' ||
+        /^[0]?\.[0-9]*$/.test(val) ||
+        /^[0-9]*\.?[0-9]*$/.test(val)
+      ) {
+        const cursorPosition = e.target.selectionStart
+        if (Number(val) * marketPrice > userStats.maxTradeSize) {
+          setAmount((userStats.maxTradeSize / marketPrice).toFixed(2))
+        } else {
+          setAmount(val)
+        }
+        window.setTimeout(() => {
+          e.target.focus()
+          e.target.setSelectionRange(cursorPosition, cursorPosition)
+        }, 0)
+      }
+    },
+    [userStats, marketPrice]
+  )
 
   const handleDynamicSlippage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -138,19 +151,6 @@ export function Perpetual() {
     }
   }
 
-  const getMaxTradeAmount = () => {
-    if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
-
-    const estimatedSolPrice = 100
-    const maxAmount =
-      Math.floor((userStats.maxTradeSize / estimatedSolPrice) * 100) / 100
-    return maxAmount.toFixed(2)
-  }
-
-  const formatLeverage = (leverage: number) => {
-    return leverage.toFixed(2) + 'x'
-  }
-
   const handleLeverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLeverage = parseFloat(e.target.value)
     setLeverageValue(newLeverage)
@@ -160,11 +160,18 @@ export function Perpetual() {
     setLimitPrice(parseFloat(e.target.value))
   }
 
+  const formatLeverage = (leverage: number) => {
+    return leverage.toFixed(2) + 'x'
+  }
+
   useEffect(() => {
-    if (selectedLeverageSizeToken && Number(selectedLeverageSizeToken) > 0) {
-      setAmount(selectedLeverageSizeToken)
+    if (!isSizeByLeverage) {
+      const newLeverageSize =
+        ((Number(amount) * marketPrice) / userStats.maxTradeSize) *
+        userStats.maxLeverage
+      setLeverageValue(newLeverageSize)
     }
-  }, [selectedLeverageSizeToken])
+  }, [amount, userStats, marketPrice])
 
   const options = [
     { label: 'Market', value: OrderType.MARKET },
@@ -238,7 +245,10 @@ export function Perpetual() {
                 setSwift={setSwift}
                 userStats={userStats}
                 setAmount={setAmount}
-                getSizeByLeveragePercent={getSizeByLeveragePercent}
+                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
+                selectedLeverageSizeToken={selectedLeverageSizeToken}
+                isSizeByLeverage={isSizeByLeverage}
+                setIsSizeByLeverage={setIsSizeByLeverage}
                 error={error}
               />
             )}
@@ -252,12 +262,15 @@ export function Perpetual() {
                 leverageValue={leverageValue}
                 setLeverageValue={setLeverageValue}
                 handleLeverageChange={handleLeverageChange}
-                getSizeByLeveragePercent={getSizeByLeveragePercent}
+                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
+                selectedLeverageSizeToken={selectedLeverageSizeToken}
                 handleAmountChange={handleAmountChange}
                 setAmount={setAmount}
                 userStats={userStats}
                 swift={swift}
                 setSwift={setSwift}
+                isSizeByLeverage={isSizeByLeverage}
+                setIsSizeByLeverage={setIsSizeByLeverage}
               />
             )}
           </CardContent>

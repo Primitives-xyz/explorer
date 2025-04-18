@@ -1,4 +1,4 @@
-import { UserStats } from '@/components/tapestry/models/drift.model'
+import { IUserStats } from '@/components/tapestry/models/drift.model'
 import {
   Button,
   ButtonVariant,
@@ -19,6 +19,7 @@ import Image from 'next/image'
 import LeverageSelector from './leverage-selector'
 
 interface Props {
+  getMaxTradeAmount: string
   priceLoading: boolean
   amount: string
   marketPrice: number
@@ -26,9 +27,11 @@ interface Props {
   slippageExpanded: boolean
   slippageOption: string
   swift: boolean
-  userStats: UserStats
+  userStats: IUserStats
   error: string | null
-  getMaxTradeAmount: () => string
+  selectedLeverageSizeUsd: string
+  selectedLeverageSizeToken: string
+  isSizeByLeverage: boolean
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleLeverageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setLeverageValue: (value: number) => void
@@ -37,7 +40,7 @@ interface Props {
   handleDynamicSlippage: (e: React.ChangeEvent<HTMLInputElement>) => void
   setSwift: (value: boolean) => void
   setAmount: (value: string) => void
-  getSizeByLeveragePercent: (leverage: number) => string
+  setIsSizeByLeverage: (value: boolean) => void
 }
 
 const slippageOptions = [
@@ -57,8 +60,11 @@ export default function MarketOrder({
   slippageOption,
   swift,
   userStats,
-  error,
   getMaxTradeAmount,
+  selectedLeverageSizeUsd,
+  selectedLeverageSizeToken,
+  isSizeByLeverage,
+  error,
   handleAmountChange,
   setLeverageValue,
   setSlippageExpanded,
@@ -66,76 +72,75 @@ export default function MarketOrder({
   handleDynamicSlippage,
   setSwift,
   setAmount,
-  getSizeByLeveragePercent,
+  setIsSizeByLeverage,
 }: Props) {
   return (
     <div className="space-y-6">
       {/* Size */}
       <div className="flex justify-between items-center">
-        <span>Size</span>
-        <div className="flex space-x-2 items-center">
-          <p>Max: {getMaxTradeAmount()} SOL</p>
+        <p>Size</p>
+        <div className="flex items-center gap-2">
+          <p>Max: {getMaxTradeAmount} USDC</p>
           {priceLoading && <Spinner size={12} />}
         </div>
       </div>
 
       {/* Market */}
       <div className="flex flex-col gap-2">
-        <Card className="flex items-center">
-          <Input
-            placeholder="0.00"
-            className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
-            type="text"
-            onChange={(e) => handleAmountChange(e)}
-            value={amount}
-          />
+        <div className="relative w-full">
           <Image
-            src={
-              'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
-            }
+            src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
             alt="USDC"
-            width={30}
-            height={30}
-            className="rounded-full mx-1"
+            width={25}
+            height={25}
+            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full"
           />
-        </Card>
-        <Card className="flex items-center">
           <Input
             placeholder="0.00"
-            value={
-              marketPrice && amount
-                ? (Number(amount) * marketPrice).toFixed(2)
-                : ''
-            }
-            className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
-            disabled={true}
+            type="text"
+            className="pl-12 text-primary text-xl"
+            onChange={(e) => handleAmountChange(e)}
+            value={isSizeByLeverage ? selectedLeverageSizeToken : amount}
           />
+        </div>
+
+        <div className="relative w-full">
           <Image
             src={
               'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
             }
             alt="USDC"
-            width={30}
-            height={30}
-            className="rounded-full mx-1"
+            width={25}
+            height={25}
+            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full"
           />
-        </Card>
+          <Input
+            placeholder="0.00"
+            value={
+              isSizeByLeverage
+                ? selectedLeverageSizeUsd
+                : (Number(amount) * marketPrice).toFixed(2)
+            }
+            className="pl-12 text-primary text-xl"
+            disabled={true}
+          />
+        </div>
       </div>
 
       {/* Leverage */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <span>Leverage</span>
-          <span className="font-semibold">{leverageValue.toFixed(2)}x</span>
+          <p>Leverage</p>
+          <p>{leverageValue.toFixed(2)}x</p>
         </div>
 
         <LeverageSelector
-          min={1}
+          min={0}
           max={Math.min(userStats.maxLeverage, 20)}
           setAmount={setAmount}
-          getSizeByLeveragePercent={getSizeByLeveragePercent}
           leverageValue={leverageValue}
           setLeverageValue={setLeverageValue}
+          setIsSizeByLeverage={setIsSizeByLeverage}
         />
       </div>
 
