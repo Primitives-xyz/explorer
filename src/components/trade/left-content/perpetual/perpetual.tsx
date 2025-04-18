@@ -81,7 +81,7 @@ export function Perpetual() {
       marketPrice: marketPrice,
     })
 
-  const { placePerpsOrder, loading, error, setError } = usePlacePerpsOrder({
+  const { placePerpsOrder, loading } = usePlacePerpsOrder({
     amount: orderAmount,
     symbol,
     direction:
@@ -99,7 +99,6 @@ export function Perpetual() {
 
   const handleAmountChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setError(null)
       setIsSizeByLeverage(false)
       const val = e.target.value
       if (
@@ -253,7 +252,6 @@ export function Perpetual() {
                 selectedLeverageSizeToken={selectedLeverageSizeToken}
                 isSizeByLeverage={isSizeByLeverage}
                 setIsSizeByLeverage={setIsSizeByLeverage}
-                error={error}
               />
             )}
 

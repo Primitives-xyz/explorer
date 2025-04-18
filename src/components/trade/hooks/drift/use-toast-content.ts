@@ -38,6 +38,48 @@ export function useToastContent() {
         description: t('trade.the_swap_transaction_failed_please_try_again'),
         duration: 2000,
       }
+    },
+    TX_PERPS_ORDER_ERR: {
+      title: t('trade.transaction_failed'),
+      content: {
+        description: 'Failed to Place Perps Order. Please try again later.',
+        duration: 2000,
+      }
+    },
+    TX_DEPOSIT_COLLATERAL_ERR: {
+      title: t('trade.transaction_failed'),
+      content: {
+        description: 'Failed to deposit collateral',
+        duration: 2000,
+      }
+    },
+    PERPS_ORDER_SIZE_ERR: {
+      title: 'Order Size Error',
+      content: {
+        description: 'Order size must be at least 0.01 SOL',
+        duration: 2000,
+      }
+    },
+    DRIFT_CLIENT_INIT_ERR: {
+      title: 'Drift Client Error',
+      content: {
+        description: 'Drift client not initialized',
+        duration: 2000,
+      }
+    },
+    PERPS_MARKET_ERR: {
+      title: 'Perpetual Market Error',
+      content: {
+        description: 'Perpetual Market Not Found',
+        duration: 2000,
+      }
+    },
+    PERPS_MARKET_ACCOUNT_ERR: {
+      title: 'Perpetual Market Account Error',
+      content: {
+        description: 'Perpetual Market Account Not Found',
+        duration: 2000,
+      }
     }
   }
 
@@ -73,6 +115,20 @@ export function useToastContent() {
         duration: 2000,
       }
     },
+    PLACE_PERPS_ORDER_TX_SUCCESS: {
+      title: t('trade.transaction_successful'),
+      content: {
+        description: 'Place Perps Order Transaction Success',
+        duration: 2000,
+      }
+    },
+    DEPOSIT_COLLATERAL_TX_SUCCESS: {
+      title: t('trade.transaction_successful'),
+      content: {
+        description: 'Deposite Collateral Success',
+        duration: 2000,
+      }
+    }
   }
 
   return {
