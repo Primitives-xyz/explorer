@@ -1,6 +1,6 @@
 'use client'
 
-import { IUserStats } from '@/components/trade/hooks/drift/use-user-stats'
+import { IUserStats } from '@/components/tapestry/models/drift.model'
 import { FilterTabs } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatUsdValue } from '@/utils/utils'

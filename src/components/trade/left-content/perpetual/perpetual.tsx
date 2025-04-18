@@ -8,6 +8,7 @@ import {
   Button,
   ButtonSize,
   ButtonVariant,
+  FilterTabs,
   Separator,
   Spinner,
   Switch,
@@ -150,10 +151,6 @@ export function Perpetual() {
     return leverage.toFixed(2) + 'x'
   }
 
-  const formatHealth = (health: number) => {
-    return Math.min(100, Math.max(0, health)).toFixed(0) + '%'
-  }
-
   const handleLeverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLeverage = parseFloat(e.target.value)
     setLeverageValue(newLeverage)
@@ -169,6 +166,11 @@ export function Perpetual() {
     }
   }, [selectedLeverageSizeToken])
 
+  const options = [
+    { label: 'Market', value: OrderType.MARKET },
+    { label: 'Limit', value: OrderType.LIMIT },
+  ]
+
   return (
     <div className="w-full">
       <div className="space-y-4">
@@ -183,28 +185,13 @@ export function Perpetual() {
           <CardContent>
             {/* Order Type */}
             <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant={ButtonVariant.GHOST}
-                  className={cn(
-                    'cursor-pointer',
-                    orderType === OrderType.MARKET && 'text-primary'
-                  )}
-                  onClick={() => setOrderType(OrderType.MARKET)}
-                >
-                  Market
-                </Button>
-                <Button
-                  variant={ButtonVariant.GHOST}
-                  className={cn(
-                    'cursor-pointer',
-                    orderType === OrderType.LIMIT && 'text-primary'
-                  )}
-                  onClick={() => setOrderType(OrderType.LIMIT)}
-                >
-                  Limit
-                </Button>
-                {/* <Select
+              <FilterTabs
+                options={options}
+                selected={orderType}
+                onSelect={setOrderType}
+              />
+
+              {/* <Select
                   value={proOrderType}
                   defaultValue="Pro Orders"
                   onValueChange={(value) => {
@@ -228,7 +215,6 @@ export function Perpetual() {
                     ))}
                   </SelectContent>
                 </Select> */}
-              </div>
             </div>
 
             <Separator className="mt-0" />

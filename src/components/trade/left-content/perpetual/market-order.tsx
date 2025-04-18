@@ -1,30 +1,43 @@
-import Image from "next/image";
-import { ChevronDown, ChevronUp, CircleAlert, Infinity, Zap } from "lucide-react";
-import { cn } from "@/utils/utils";
-import { Button, ButtonVariant, Card, Input, Spinner, Switch } from "@/components/ui";
-import { UserStats } from "@/components/tapestry/models/drift.model";
-import LeverageSelector from "./leverage-selector";
+import { UserStats } from '@/components/tapestry/models/drift.model'
+import {
+  Button,
+  ButtonVariant,
+  Card,
+  Input,
+  Spinner,
+  Switch,
+} from '@/components/ui'
+import { cn } from '@/utils/utils'
+import {
+  ChevronDown,
+  ChevronUp,
+  CircleAlert,
+  Infinity,
+  Zap,
+} from 'lucide-react'
+import Image from 'next/image'
+import LeverageSelector from './leverage-selector'
 
-interface MarketOrderProps {
-  getMaxTradeAmount: () => string
+interface Props {
   priceLoading: boolean
-  handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   amount: string
   marketPrice: number
   leverageValue: number
+  slippageExpanded: boolean
+  slippageOption: string
+  swift: boolean
+  userStats: UserStats
+  error: string | null
+  getMaxTradeAmount: () => string
+  handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleLeverageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setLeverageValue: (value: number) => void
-  slippageExpanded: boolean
   setSlippageExpanded: (value: boolean) => void
-  slippageOption: string
   setSlippageOption: (value: string) => void
   handleDynamicSlippage: (e: React.ChangeEvent<HTMLInputElement>) => void
-  swift: boolean
   setSwift: (value: boolean) => void
-  userStats: UserStats
   setAmount: (value: string) => void
   getSizeByLeveragePercent: (leverage: number) => string
-  error: string | null
 }
 
 const slippageOptions = [
@@ -36,38 +49,38 @@ const slippageOptions = [
 ]
 
 export default function MarketOrder({
-  getMaxTradeAmount,
   priceLoading,
-  handleAmountChange,
   amount,
   marketPrice,
   leverageValue,
-  setLeverageValue,
   slippageExpanded,
-  setSlippageExpanded,
   slippageOption,
+  swift,
+  userStats,
+  error,
+  getMaxTradeAmount,
+  handleAmountChange,
+  setLeverageValue,
+  setSlippageExpanded,
   setSlippageOption,
   handleDynamicSlippage,
-  swift,
   setSwift,
-  userStats,
   setAmount,
   getSizeByLeveragePercent,
-  error
-}: MarketOrderProps) {
+}: Props) {
   return (
     <div className="space-y-6">
       {/* Size */}
       <div className="flex justify-between items-center">
         <span>Size</span>
-        <Button className="flex space-x-2 items-center">
-          <span>Max: {getMaxTradeAmount()} SOL</span>
+        <div className="flex space-x-2 items-center">
+          <p>Max: {getMaxTradeAmount()} SOL</p>
           {priceLoading && <Spinner size={12} />}
-        </Button>
+        </div>
       </div>
 
       {/* Market */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex flex-col gap-2">
         <Card className="flex items-center">
           <Input
             placeholder="0.00"
@@ -113,9 +126,7 @@ export default function MarketOrder({
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <span>Leverage</span>
-          <span className="font-semibold">
-            {leverageValue.toFixed(2)}x
-          </span>
+          <span className="font-semibold">{leverageValue.toFixed(2)}x</span>
         </div>
 
         <LeverageSelector
@@ -166,11 +177,7 @@ export default function MarketOrder({
                 placeholder="Custom"
                 className="h-[36px] w-full bg-transparent border-none text-primary/80"
                 onChange={(e) => handleDynamicSlippage(e)}
-                value={
-                  isNaN(Number(slippageOption))
-                    ? ''
-                    : `${slippageOption}`
-                }
+                value={isNaN(Number(slippageOption)) ? '' : `${slippageOption}`}
               />
               <span className="text-primary/80">%</span>
             </Card>
