@@ -16,7 +16,7 @@
     "url": "https://github.com/tapestry-protocol/explorer/issues"
   },
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

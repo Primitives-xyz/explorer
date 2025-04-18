@@ -1,8 +1,8 @@
 'use client'
 
 import { useLaunch } from '@/components/launch/hooks/use-launch'
-import { LaunchForm } from '@/components/launch/launch-data/LaunchForm'
-import { LaunchSuccess } from '@/components/launch/launch-data/LaunchSuccess'
+import { LaunchForm } from '@/components/launch/launch-data/launch-form'
+import { LaunchSuccess } from '@/components/launch/launch-data/launch-success'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'
 
 export function LaunchData() {

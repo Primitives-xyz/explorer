@@ -5,11 +5,12 @@ import {
   ACTIONS_CORS_HEADERS,
   BLOCKCHAIN_IDS,
 } from '@solana/actions'
-import { Keypair, PublicKey } from '@solana/web3.js'
+import { Keypair, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { NextRequest } from 'next/server'
 import bs58 from 'bs58'
 import os from 'os'
 import fs from 'fs'
+import * as anchor from '@coral-xyz/anchor'
 
 // Set blockchain (mainnet or devnet)
 const blockchain =
@@ -27,6 +28,7 @@ const headers = {
 // Default pool settings
 const DEFAULT_SHIFT = 100 // 100 virtual SOL
 const DEFAULT_ROYALTIES_BPS = 100 // 1%
+const DECIMALS = 9 // Standard Solana token decimals
 
 // OPTIONS endpoint for CORS
 export const OPTIONS = async () => {
@@ -106,6 +108,7 @@ export async function POST(req: NextRequest) {
     const tokenWallet = url.searchParams.get('tokenWallet')
     const tokenName = url.searchParams.get('tokenName')
     const tokenSymbol = url.searchParams.get('tokenSymbol')
+    const initialTokenBReserves = new anchor.BN("1000000000000000000")
 
     // Get optional parameters or use defaults
     const shift = Number(url.searchParams.get('shift')) || DEFAULT_SHIFT
@@ -113,12 +116,10 @@ export async function POST(req: NextRequest) {
       Number(url.searchParams.get('royaltiesBps')) || DEFAULT_ROYALTIES_BPS
     const tokenImage = url.searchParams.get('tokenImage') || undefined
 
-    // Get wallet authority parameters
-    const walletAuthority = url.searchParams.get('walletAuthority') || undefined
-
     // Get user public key from request body
     const requestBody = await req.json()
     const ownerAddress = requestBody.account
+    console.log('Owner address: ', ownerAddress)
 
     // Validate required parameters
     if (!mintB || !tokenWallet || !tokenName || !tokenSymbol || !ownerAddress) {
@@ -141,7 +142,6 @@ export async function POST(req: NextRequest) {
           { status: 400, headers }
         )
       }
-      console.log('Mint exists')
 
       // Check that the token wallet exists
       const walletInfo = await connection.getAccountInfo(new PublicKey(tokenWallet))
@@ -151,7 +151,6 @@ export async function POST(req: NextRequest) {
           { status: 400, headers }
         )
       }
-      console.log('Token wallet exists')
     } catch (error) {
       return new Response(
         JSON.stringify({ error: 'Failed to verify token addresses' }),
@@ -160,39 +159,72 @@ export async function POST(req: NextRequest) {
     }
 
     // Load wallet keypair from local file
-    const pathToWallet = `${os.homedir()}/.config/solana/id.json`;
     const walletKeypair = Keypair.fromSecretKey(
-      Buffer.from(JSON.parse(fs.readFileSync(pathToWallet, "utf-8")))
+      bs58.decode(process.env.PAYER_PRIVATE_KEY!)
     );
 
     // Launch the pool using our extracted hook
     console.log(`Launching pool for token ${tokenName} (${tokenSymbol})...`)
     console.log(`Using mint: ${mintB}`)
     console.log(`Using wallet: ${tokenWallet}`)
+    console.log(`Using owner address: ${ownerAddress}`)
     
-
+    // For existing token pools, we need to use the wallet keypair as the wallet authority
+    // since the error shows "owner does not match"
     console.log("About to launch pool...")
-    const result = await launchPool(connection, walletKeypair)
+    const POOL_PARAMS = {
+      shift: new anchor.BN(LAMPORTS_PER_SOL).muln(100), // 100 virtual SOL
+      initialTokenBReserves: initialTokenBReserves || new anchor.BN("1000000000000000000"), // 1 billion tokens
+      feeParams: {
+        normalizationPeriod: new anchor.BN(20), // 20 slots
+        decay: 10,
+        royaltiesBps: royaltiesBps || 100, // 1%
+        feeExemptBuys: 1,
+        reference: new anchor.BN(0),
+      },
+    };
+    const result = await launchPool(connection, {
+      tokenName,
+      tokenSymbol,
+      tokenImage: tokenImage,
+      poolParams: {
+        shift,
+        // These parameters need to be set but will be fetched from the blockchain for existing tokens
+        initialTokenReserves: 0,
+        decimals: 0,
+        feeParams: {
+          normalizationPeriod: 20,
+          decay: 10,
+          royaltiesBps,
+          feeExemptBuys: 1
+        }
+      },
+      ownerAddress,
+      existingToken: {
+        mintB: new PublicKey(mintB),
+        tokenWallet: new PublicKey(tokenWallet),
+        // Use the loaded wallet keypair as the authority since it likely owns the token account
+        walletAuthority: walletKeypair
+      }
+    });
 
-    // console.log('Pool launched successfully!')
-    // console.log(`Pool address: ${result.poolAddress}`)
-    // console.log(`Transaction: ${result.signature}`)
+    console.log('Pool launched successfully!')
+    console.log(`Pool address: ${result.poolAddress}`)
+    console.log(`Transaction: ${result.signature}`)
 
     // Return transaction response
-    // const response: ActionPostResponse = {
-    //   type: 'transaction',
-    //   transaction: result.signature,
-    // }
-
-    // // Include additional data in the response
-    // const responseObj = {
-    //   ...response,
-    //   mintB,
-    //   poolAddress: result.poolAddress
-    // }
-    const responseObj = {
-      ...result
+    const response: ActionPostResponse = {
+      type: 'transaction',
+      transaction: result.signature,
     }
+
+    // Include additional data in the response
+    const responseObj = {
+      ...response,
+      mintB,
+      poolAddress: result.poolAddress
+    }
+
     return new Response(JSON.stringify(responseObj), {
       status: 200,
       headers,

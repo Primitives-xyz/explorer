@@ -73,7 +73,6 @@ export function useLaunch() {
       const feeWalletAddress = process.env.FEE_WALLET || '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz' // Fallback if env var not set
       
       // Step 1: Pay launching fee - 0.01 SOL to FEE_WALLET
-      console.log('Step 1: Paying launch fee...')
       setPayingFee(true)
       
       const paymentResult = await payForService({
@@ -209,6 +208,7 @@ export function useLaunch() {
       poolParams.append('tokenWallet', mintData.tokenWallet)
       poolParams.append('tokenName', values.tokenName)
       poolParams.append('tokenSymbol', values.tokenSymbol)
+      poolParams.append('initialTokenBReserves', values.initialTokenReserves.toString())
       poolParams.append('shift', values.shift.toString())
       poolParams.append('royaltiesBps', values.royaltiesBps.toString())
       
@@ -222,7 +222,7 @@ export function useLaunch() {
         poolParams.append('walletAuthority', mintData.tokenWalletAuthority)
       }
       
-      console.log('Launching pool with minted token...')
+      console.log('Launching pool with minted token... and params: ', poolParams.toString())
       const poolResponse = await fetch(`/api/actions/vertigo/launch-pool-with-token?${poolParams.toString()}`, {
         method: 'POST',
         headers: {

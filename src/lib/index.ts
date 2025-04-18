@@ -2,7 +2,6 @@ import { Connection, Keypair } from "@solana/web3.js";
 import { NATIVE_MINT } from "@solana/spl-token";
 import { Wallet, BN } from "@coral-xyz/anchor";
 
-
 import { VertigoSDK } from "@vertigo-amm/vertigo-sdk";
 import fs from "node:fs";
 
