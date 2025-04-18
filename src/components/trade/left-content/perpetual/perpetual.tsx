@@ -1,32 +1,24 @@
 'use client'
 
+import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
+import { useLeverageSize } from '@/components/trade/hooks/drift/use-leverage-size'
+import { useLiquidationPrice } from '@/components/trade/hooks/drift/use-liquidation-price'
+import { useMarketPrice } from '@/components/trade/hooks/drift/use-market-price'
+import { usePlacePerpsOrder } from '@/components/trade/hooks/drift/use-place-perps-order'
+import { useUserStats } from '@/components/trade/hooks/drift/use-user-stats'
+import { BottomPerpetual } from '@/components/trade/left-content/perpetual/bottom-perpetual'
+import { ButtonMiddlePerpetual } from '@/components/trade/left-content/perpetual/button-middle-perpetual'
 import {
   DirectionFilterType,
   HeroPerpetual,
 } from '@/components/trade/left-content/perpetual/hero-perpetual'
-import {
-  Button,
-  ButtonSize,
-  ButtonVariant,
-  FilterTabs,
-  Separator,
-  Spinner,
-  Switch,
-} from '@/components/ui'
+import LimitOrder from '@/components/trade/left-content/perpetual/limit-order'
+import MarketOrder from '@/components/trade/left-content/perpetual/market-order'
+import { FilterTabs, Separator } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { cn, formatUsdValue } from '@/utils/utils'
 import { PositionDirection } from '@drift-labs/sdk-browser'
-import { ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useDriftUsers } from '../../hooks/drift/use-drift-users'
-import { useLeverageSize } from '../../hooks/drift/use-leverage-size'
-import { useLiquidationPrice } from '../../hooks/drift/use-liquidation-price'
-import { useMarketPrice } from '../../hooks/drift/use-market-price'
-import { usePlacePerpsOrder } from '../../hooks/drift/use-place-perps-order'
-import { useUserStats } from '../../hooks/drift/use-user-stats'
-import LimitOrder from './limit-order'
-import MarketOrder from './market-order'
 
 enum OrderType {
   MARKET = 'market',
@@ -127,6 +119,7 @@ export function Perpetual() {
         }, 0)
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [userStats, marketPrice]
   )
 
@@ -171,6 +164,7 @@ export function Perpetual() {
         userStats.maxLeverage
       setLeverageValue(newLeverageSize)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, userStats, marketPrice])
 
   const options = [
@@ -276,115 +270,28 @@ export function Perpetual() {
           </CardContent>
         </Card>
 
-        <div>
-          {!sdkHasLoaded ? (
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-            >
-              <Spinner />
-            </Button>
-          ) : !isLoggedIn ? (
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-              onClick={() => setShowAuthFlow(true)}
-            >
-              Connect Wallet
-            </Button>
-          ) : accountIds.length ? (
-            <Button
-              onClick={() => placePerpsOrder()}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-              disabled={loading || Number(amount) <= 0}
-            >
-              {loading ? (
-                <Spinner />
-              ) : Number(amount) > 0 ? (
-                <p>
-                  {selectedDirection} ~{amount} {symbol}-Perp
-                </p>
-              ) : (
-                <p>Enter an amount</p>
-              )}
-            </Button>
-          ) : (
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-            >
-              No Drift Account
-            </Button>
-          )}
-        </div>
+        <ButtonMiddlePerpetual
+          sdkHasLoaded={sdkHasLoaded}
+          isLoggedIn={isLoggedIn}
+          setShowAuthFlow={setShowAuthFlow}
+          accountIds={accountIds}
+          placePerpsOrder={placePerpsOrder}
+          loading={loading}
+          selectedDirection={selectedDirection}
+          amount={amount}
+          symbol={symbol}
+        />
 
-        <Card>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center text-primary">
-              <span>Dynamic Slippage</span>
-              <span>Fee 0.00%</span>
-            </div>
-
-            <Separator />
-
-            <div className="flex justify-between items-center">
-              <span>Est.Liquidation Price</span>
-              <span className="flex items-center space-x-1">
-                {liqPriceLoading ? (
-                  <Spinner size={16} />
-                ) : liquidationPrice ? (
-                  formatUsdValue(liquidationPrice)
-                ) : (
-                  'None'
-                )}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span>Acct. Leverage</span>
-              <span className="flex items-center space-x-1">
-                {formatLeverage(userStats.leverage)}{' '}
-                <ArrowRight className="text-[14px]" />
-                {formatLeverage(
-                  userStats.leverage + (Number(amount) > 0 ? leverageValue : 0)
-                )}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span>Fees</span>
-              <span className="text-[14px]">$0.25</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span>Show Confirmation</span>
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setShowConfirmation(false)}
-                  className={cn('text-sm', {
-                    'text-muted-foreground': showConfirmation,
-                  })}
-                  isInvisible
-                ></Button>
-                <Switch
-                  checked={showConfirmation}
-                  onCheckedChange={setShowConfirmation}
-                />
-                <Button
-                  onClick={() => setShowConfirmation(true)}
-                  className={cn('text-sm', {
-                    'text-muted-foreground': !showConfirmation,
-                  })}
-                  isInvisible
-                ></Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <BottomPerpetual
+          liqPriceLoading={liqPriceLoading}
+          liquidationPrice={liquidationPrice}
+          userStats={userStats}
+          amount={amount}
+          leverageValue={leverageValue}
+          showConfirmation={showConfirmation}
+          formatLeverage={formatLeverage}
+          setShowConfirmation={setShowConfirmation}
+        />
       </div>
     </div>
   )
