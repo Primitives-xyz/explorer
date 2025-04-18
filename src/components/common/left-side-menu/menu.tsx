@@ -13,10 +13,12 @@ import {
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { useRef } from 'react'
 import { SearchButton } from '../../search/components/search-button'
 
 export function Menu() {
   const { mainProfile } = useCurrentWallet()
+  const dialectButtonRef = useRef<HTMLButtonElement | null>(null)
 
   return (
     <div className="space-y-2">
