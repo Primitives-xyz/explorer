@@ -98,7 +98,6 @@ export const OPTIONS = async () => {
 // }
 
 export async function POST(req: NextRequest) {
-  console.log("Lwtf")
   try {
     console.log('Launching pool with existing token...')
     // Parse request parameters
@@ -173,47 +172,27 @@ export async function POST(req: NextRequest) {
     
 
     console.log("About to launch pool...")
-    const result = await launchPool(connection, {
-      tokenName,
-      tokenSymbol,
-      tokenImage: tokenImage,
-      poolParams: {
-        shift,
-        // These parameters need to be set but will be fetched from the blockchain for existing tokens
-        initialTokenReserves: 0,
-        decimals: 0,
-        feeParams: {
-          normalizationPeriod: 20,
-          decay: 10,
-          royaltiesBps,
-          feeExemptBuys: 1
-        }
-      },
-      ownerAddress,
-      existingToken: {
-        mintB: new PublicKey(mintB),
-        tokenWallet: new PublicKey(tokenWallet),
-        walletAuthority: walletAuthority ? Keypair.fromSecretKey(bs58.decode(walletAuthority)) : undefined
-      }
-    });
+    const result = await launchPool(connection, walletKeypair)
 
-    console.log('Pool launched successfully!')
-    console.log(`Pool address: ${result.poolAddress}`)
-    console.log(`Transaction: ${result.signature}`)
+    // console.log('Pool launched successfully!')
+    // console.log(`Pool address: ${result.poolAddress}`)
+    // console.log(`Transaction: ${result.signature}`)
 
     // Return transaction response
-    const response: ActionPostResponse = {
-      type: 'transaction',
-      transaction: result.signature,
-    }
+    // const response: ActionPostResponse = {
+    //   type: 'transaction',
+    //   transaction: result.signature,
+    // }
 
-    // Include additional data in the response
+    // // Include additional data in the response
+    // const responseObj = {
+    //   ...response,
+    //   mintB,
+    //   poolAddress: result.poolAddress
+    // }
     const responseObj = {
-      ...response,
-      mintB,
-      poolAddress: result.poolAddress
+      ...result
     }
-
     return new Response(JSON.stringify(responseObj), {
       status: 200,
       headers,
