@@ -288,7 +288,7 @@ export function Perpetual() {
           placePerpsOrder={placePerpsOrder}
           loading={loading}
           selectedDirection={selectedDirection}
-          amount={amount}
+          amount={orderAmount}
           symbol={symbol}
         />
 
@@ -296,7 +296,7 @@ export function Perpetual() {
           liqPriceLoading={liqPriceLoading}
           liquidationPrice={liquidationPrice}
           userStats={userStats}
-          amount={amount}
+          amount={orderAmount}
           leverageValue={leverageValue}
           showConfirmation={showConfirmation}
           formatLeverage={formatLeverage}
