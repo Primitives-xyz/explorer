@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
+import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { Lock, MessageCircle } from 'lucide-react'
+import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
-import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 
 export function LeftSideMenu() {
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
@@ -29,7 +29,8 @@ export function LeftSideMenu() {
           <Button
             variant={ButtonVariant.OUTLINE}
             className="w-full"
-            onClick={() => setIsFundsModalOpen(true)}>
+            onClick={() => setIsFundsModalOpen(true)}
+          >
             <Lock size={16} />
             Unlock Perpetuals
           </Button>
@@ -44,7 +45,10 @@ export function LeftSideMenu() {
             Give Feedback
           </Button>
         </div>
-        <AddFundsModal isOpen={isFundsModalOpen} setIsOpen={setIsFundsModalOpen} />
+        <AddFundsModal
+          isOpen={isFundsModalOpen}
+          setIsOpen={setIsFundsModalOpen}
+        />
       </div>
     </div>
   )

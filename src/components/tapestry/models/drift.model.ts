@@ -1,6 +1,6 @@
-import { PerpPosition, SpotPosition } from "@drift-labs/sdk-browser"
+import { PerpPosition, SpotPosition } from '@drift-labs/sdk-browser'
 
-export interface UserStats {
+export interface IUserStats {
   // User health
   health: number
   healthRatio: number | null

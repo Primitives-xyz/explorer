@@ -1,22 +1,19 @@
+import { IUserStats } from '@/components/tapestry/models/drift.model'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
-  BN,
   convertToNumber,
-  PerpPosition,
   PositionDirection,
   QUOTE_PRECISION,
-  SpotPosition,
   TEN_THOUSAND,
 } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
-import { UserStats } from '@/components/tapestry/models/drift.model'
 
 export function useUserStats(subAccountId = 0) {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [userStats, setUserStats] = useState<UserStats>({
+  const [userStats, setUserStats] = useState<IUserStats>({
     health: 0,
     healthRatio: null,
     netUsdValue: 0,
@@ -72,7 +69,6 @@ export function useUserStats(subAccountId = 0) {
           QUOTE_PRECISION
         )
 
-
         // Estimate leverage from positions and collateral
         const totalPositionNotionalValue = perpPositions.reduce(
           (total, position) => {
@@ -87,9 +83,12 @@ export function useUserStats(subAccountId = 0) {
 
         const maxTradeSizeUSDCForPerp = user.getMaxTradeSizeUSDCForPerp(
           0,
-          PositionDirection.LONG,
+          PositionDirection.LONG
         )
-        const maxTradeSize = convertToNumber(maxTradeSizeUSDCForPerp.tradeSize, QUOTE_PRECISION)
+        const maxTradeSize = convertToNumber(
+          maxTradeSizeUSDCForPerp.tradeSize,
+          QUOTE_PRECISION
+        )
 
         const maxLeverageForPerp = user.getMaxLeverageForPerp(0)
         const maxLeverage = convertToNumber(maxLeverageForPerp, TEN_THOUSAND)

@@ -1,5 +1,7 @@
 'use client'
 
+import { Spinner } from '@/components/ui/spinner'
+import { CheckIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Toaster as Sonner } from 'sonner'
 
@@ -10,7 +12,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
+      duration={5000}
       theme={theme as ToasterProps['theme']}
+      icons={{
+        success: <CheckIcon size={20} />,
+        loading: <Spinner size={20} />,
+      }}
       className="toaster group"
       toastOptions={{
         classNames: {

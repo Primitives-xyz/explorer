@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, ButtonSize, ButtonVariant, Spinner } from '@/components/ui'
+import { Button, ButtonVariant, Spinner } from '@/components/ui'
 
 interface Props {
   sdkHasLoaded: boolean
@@ -23,7 +23,6 @@ export function CenterButtonSwap({
         <Button
           variant={ButtonVariant.OUTLINE_WHITE}
           className="text-lg capitalize font-bold w-full"
-          size={ButtonSize.LG}
         >
           <Spinner />
         </Button>
@@ -31,7 +30,6 @@ export function CenterButtonSwap({
         <Button
           variant={ButtonVariant.OUTLINE_WHITE}
           className="text-lg capitalize font-bold w-full"
-          size={ButtonSize.LG}
           onClick={() => setShowAuthFlow(true)}
         >
           Connect Wallet
@@ -40,7 +38,6 @@ export function CenterButtonSwap({
         <Button
           onClick={handleSwap}
           className="text-lg capitalize font-bold w-full"
-          size={ButtonSize.LG}
           disabled={loading}
         >
           {loading ? <Spinner /> : <p>Execute Swap</p>}
