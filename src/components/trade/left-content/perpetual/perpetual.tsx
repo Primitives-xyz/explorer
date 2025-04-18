@@ -59,6 +59,7 @@ export function Perpetual() {
   const [swift, setSwift] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
   const [amount, setAmount] = useState<string>('')
+  const [orderAmount, setOrderAmount] = useState<string>('')
   const [symbol, setSymbol] = useState<string>('SOL')
   const [leverageValue, setLeverageValue] = useState<number>(1)
   const [isSizeByLeverage, setIsSizeByLeverage] = useState<boolean>(false)
@@ -81,7 +82,7 @@ export function Perpetual() {
     })
 
   const { placePerpsOrder, loading, error, setError } = usePlacePerpsOrder({
-    amount,
+    amount: orderAmount,
     symbol,
     direction:
       selectedDirection === DirectionFilterType.LONG
@@ -166,6 +167,15 @@ export function Perpetual() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, userStats, marketPrice])
+
+  useEffect(() => {
+    if (isSizeByLeverage) {
+      setOrderAmount(selectedLeverageSizeToken)
+    } else {
+      setOrderAmount(amount)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, selectedLeverageSizeToken])
 
   const options = [
     { label: 'Market', value: OrderType.MARKET },
