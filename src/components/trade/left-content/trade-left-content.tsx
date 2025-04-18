@@ -29,7 +29,6 @@ export function TradeLeftContent({ setTokenMint }: TradeLeftContentProps) {
         selected={selectedType}
         onSelect={setSelectedType}
       />
-
       {selectedType === FilterType.SWAP && <Swap setTokenMint={setTokenMint} />}
       {selectedType === FilterType.PERPETUAL && <Perpetual />}
     </div>

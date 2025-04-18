@@ -1,37 +1,24 @@
 'use client'
 
+import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
+import { useLeverageSize } from '@/components/trade/hooks/drift/use-leverage-size'
+import { useLiquidationPrice } from '@/components/trade/hooks/drift/use-liquidation-price'
+import { useMarketPrice } from '@/components/trade/hooks/drift/use-market-price'
+import { usePlacePerpsOrder } from '@/components/trade/hooks/drift/use-place-perps-order'
+import { useUserStats } from '@/components/trade/hooks/drift/use-user-stats'
+import { BottomPerpetual } from '@/components/trade/left-content/perpetual/bottom-perpetual'
+import { ButtonMiddlePerpetual } from '@/components/trade/left-content/perpetual/button-middle-perpetual'
 import {
-  Button,
-  ButtonSize,
-  ButtonVariant,
-  Separator,
-  Spinner,
-  Switch,
-} from '@/components/ui'
+  DirectionFilterType,
+  HeroPerpetual,
+} from '@/components/trade/left-content/perpetual/hero-perpetual'
+import LimitOrder from '@/components/trade/left-content/perpetual/limit-order'
+import MarketOrder from '@/components/trade/left-content/perpetual/market-order'
+import { FilterTabs, Separator } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { cn, formatUsdValue } from '@/utils/utils'
 import { PositionDirection } from '@drift-labs/sdk-browser'
-import {
-  ArrowRight,
-  CircleAlert,
-  ExternalLink,
-  Info,
-} from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useDriftUsers } from '../../hooks/drift/use-drift-users'
-import { useLeverageSize } from '../../hooks/drift/use-leverage-size'
-import { useLiquidationPrice } from '../../hooks/drift/use-liquidation-price'
-import { useMarketPrice } from '../../hooks/drift/use-market-price'
-import { usePlacePerpsOrder } from '../../hooks/drift/use-place-perps-order'
-import { useUserStats } from '../../hooks/drift/use-user-stats'
-import MarketOrder from './market-order'
-import LimitOrder from './limit-order'
-
-enum Direction {
-  LONG = 'long',
-  SHORT = 'short',
-}
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 enum OrderType {
   MARKET = 'market',
@@ -65,66 +52,77 @@ export function Perpetual() {
   const [perpsMarketType, setPerpsMarketType] = useState<PerpsMarketType>(
     PerpsMarketType.SOL
   )
-  const [selectedDirection, setSelectedDirection] = useState<Direction>(
-    Direction.LONG
-  )
+  const [selectedDirection, setSelectedDirection] =
+    useState<DirectionFilterType>(DirectionFilterType.LONG)
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
   const [slippageOption, setSlippageOption] = useState<string>('0.1')
   const [swift, setSwift] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
   const [amount, setAmount] = useState<string>('')
+  const [orderAmount, setOrderAmount] = useState<string>('')
   const [symbol, setSymbol] = useState<string>('SOL')
   const [leverageValue, setLeverageValue] = useState<number>(1)
+  const [isSizeByLeverage, setIsSizeByLeverage] = useState<boolean>(false)
   const { price: marketPrice, loading: priceLoading } = useMarketPrice({
     symbol,
   })
   const { liquidationPrice, loading: liqPriceLoading } = useLiquidationPrice({
     symbol,
     amount,
-    direction: selectedDirection === Direction.LONG ? 'long' : 'short',
+    direction:
+      selectedDirection === DirectionFilterType.LONG ? 'long' : 'short',
   })
 
-  const {
-    maxSizeForToken,
-    selectedLeverageSizeToken,
-    getSizeByLeveragePercent,
-  } = useLeverageSize({
-    symbol,
-    leverageValue,
-    marketPrice: marketPrice || 100,
-  })
+  const { selectedLeverageSizeUsd, selectedLeverageSizeToken } =
+    useLeverageSize({
+      userStats,
+      symbol,
+      leverageValue,
+      marketPrice: marketPrice,
+    })
 
   const { placePerpsOrder, loading, error, setError } = usePlacePerpsOrder({
-    amount,
+    amount: orderAmount,
     symbol,
     direction:
-      selectedDirection === Direction.LONG
+      selectedDirection === DirectionFilterType.LONG
         ? PositionDirection.LONG
         : PositionDirection.SHORT,
     slippage: slippageOption,
   })
 
-  const handleToggle = (value: Direction) => {
-    setSelectedDirection(value)
-  }
+  const getMaxTradeAmount = useMemo(() => {
+    if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setError(null)
-    const val = e.target.value
-    if (
-      val === '' ||
-      val === '.' ||
-      /^[0]?\.[0-9]*$/.test(val) ||
-      /^[0-9]*\.?[0-9]*$/.test(val)
-    ) {
-      const cursorPosition = e.target.selectionStart
-      setAmount(val)
-      window.setTimeout(() => {
-        e.target.focus()
-        e.target.setSelectionRange(cursorPosition, cursorPosition)
-      }, 0)
-    }
-  }
+    return userStats.maxTradeSize.toFixed(2)
+  }, [userStats])
+
+  const handleAmountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setError(null)
+      setIsSizeByLeverage(false)
+      const val = e.target.value
+      if (
+        val === '' ||
+        val === '.' ||
+        /^[0]?\.[0-9]*$/.test(val) ||
+        /^[0-9]*\.?[0-9]*$/.test(val)
+      ) {
+        const cursorPosition = e.target.selectionStart
+        if (Number(val) * marketPrice > userStats.maxTradeSize) {
+          setAmount((userStats.maxTradeSize / marketPrice).toFixed(2))
+        } else {
+          setAmount(val)
+        }
+        window.setTimeout(() => {
+          e.target.focus()
+          e.target.setSelectionRange(cursorPosition, cursorPosition)
+        }, 0)
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [userStats, marketPrice]
+  )
 
   const handleDynamicSlippage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -147,23 +145,6 @@ export function Perpetual() {
     }
   }
 
-  const getMaxTradeAmount = () => {
-    if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
-
-    const estimatedSolPrice = 100
-    const maxAmount =
-      Math.floor((userStats.maxTradeSize / estimatedSolPrice) * 100) / 100
-    return maxAmount.toFixed(2)
-  }
-
-  const formatLeverage = (leverage: number) => {
-    return leverage.toFixed(2) + 'x'
-  }
-
-  const formatHealth = (health: number) => {
-    return Math.min(100, Math.max(0, health)).toFixed(0) + '%'
-  }
-
   const handleLeverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLeverage = parseFloat(e.target.value)
     setLeverageValue(newLeverage)
@@ -173,100 +154,55 @@ export function Perpetual() {
     setLimitPrice(parseFloat(e.target.value))
   }
 
+  const formatLeverage = (leverage: number) => {
+    return leverage.toFixed(2) + 'x'
+  }
+
   useEffect(() => {
-    if (selectedLeverageSizeToken && Number(selectedLeverageSizeToken) > 0) {
-      setAmount(selectedLeverageSizeToken)
+    if (!isSizeByLeverage) {
+      const newLeverageSize =
+        ((Number(amount) * marketPrice) / userStats.maxTradeSize) *
+        userStats.maxLeverage
+      setLeverageValue(newLeverageSize)
     }
-  }, [selectedLeverageSizeToken])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, userStats, marketPrice])
+
+  useEffect(() => {
+    if (isSizeByLeverage) {
+      setOrderAmount(selectedLeverageSizeToken)
+    } else {
+      setOrderAmount(amount)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, selectedLeverageSizeToken])
+
+  const options = [
+    { label: 'Market', value: OrderType.MARKET },
+    { label: 'Limit', value: OrderType.LIMIT },
+  ]
 
   return (
     <div className="w-full">
       <div className="space-y-4">
-        <Card>
-          <CardContent className="grid grid-cols-3 px-4 py-2 gap-4">
-            <div className="flex flex-col items-center">
-              <span className="w-full">Net USD Value</span>
-              <div className="w-full flex items-center space-x-3">
-                <span className="font-semibold text-white">
-                  {formatUsdValue(userStats.netUsdValue)}
-                </span>
-                <Info size={16} />
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <span className="w-full">Acct. Leverage</span>
-              <div className="w-full flex items-center space-x-3">
-                <span className="font-semibold text-white">
-                  {formatLeverage(userStats.leverage)}
-                </span>
-                <Info size={16} />
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <span className="w-full">Health</span>
-              <div className="w-full flex items-center space-x-3">
-                <span className="font-semibold text-primary">
-                  {formatHealth(userStats.health)}
-                </span>
-                <ExternalLink size={16} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <Button
-            variant={
-              selectedDirection === Direction.LONG
-                ? ButtonVariant.DEFAULT
-                : ButtonVariant.GHOST
-            }
-            className="w-1/2"
-            onClick={() => handleToggle(Direction.LONG)}
-          >
-            Long
-          </Button>
-          <Button
-            variant={
-              selectedDirection === Direction.SHORT
-                ? ButtonVariant.DEFAULT
-                : ButtonVariant.GHOST
-            }
-            className="w-1/2"
-            onClick={() => handleToggle(Direction.SHORT)}
-          >
-            Short
-          </Button>
-        </Card>
+        <HeroPerpetual
+          selectedDirection={selectedDirection}
+          userStats={userStats}
+          setSelectedDirection={setSelectedDirection}
+          formatLeverage={formatLeverage}
+        />
 
         <Card>
           <CardContent>
             {/* Order Type */}
             <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant={ButtonVariant.GHOST}
-                  className={cn(
-                    'cursor-pointer',
-                    orderType === OrderType.MARKET && 'text-primary'
-                  )}
-                  onClick={() => setOrderType(OrderType.MARKET)}
-                >
-                  Market
-                </Button>
-                <Button
-                  variant={ButtonVariant.GHOST}
-                  className={cn(
-                    'cursor-pointer',
-                    orderType === OrderType.LIMIT && 'text-primary'
-                  )}
-                  onClick={() => setOrderType(OrderType.LIMIT)}
-                >
-                  Limit
-                </Button>
-                {/* <Select
+              <FilterTabs
+                options={options}
+                selected={orderType}
+                onSelect={setOrderType}
+              />
+
+              {/* <Select
                   value={proOrderType}
                   defaultValue="Pro Orders"
                   onValueChange={(value) => {
@@ -290,8 +226,6 @@ export function Perpetual() {
                     ))}
                   </SelectContent>
                 </Select> */}
-              </div>
-              <CircleAlert className="text-primary" />
             </div>
 
             <Separator className="mt-0" />
@@ -315,7 +249,10 @@ export function Perpetual() {
                 setSwift={setSwift}
                 userStats={userStats}
                 setAmount={setAmount}
-                getSizeByLeveragePercent={getSizeByLeveragePercent}
+                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
+                selectedLeverageSizeToken={selectedLeverageSizeToken}
+                isSizeByLeverage={isSizeByLeverage}
+                setIsSizeByLeverage={setIsSizeByLeverage}
                 error={error}
               />
             )}
@@ -329,126 +266,42 @@ export function Perpetual() {
                 leverageValue={leverageValue}
                 setLeverageValue={setLeverageValue}
                 handleLeverageChange={handleLeverageChange}
-                getSizeByLeveragePercent={getSizeByLeveragePercent}
+                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
+                selectedLeverageSizeToken={selectedLeverageSizeToken}
                 handleAmountChange={handleAmountChange}
                 setAmount={setAmount}
                 userStats={userStats}
                 swift={swift}
                 setSwift={setSwift}
+                isSizeByLeverage={isSizeByLeverage}
+                setIsSizeByLeverage={setIsSizeByLeverage}
               />
             )}
           </CardContent>
         </Card>
 
-        <div>
-          {!sdkHasLoaded ? (
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-            >
-              <Spinner />
-            </Button>
-          ) : !isLoggedIn ? (
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-              onClick={() => setShowAuthFlow(true)}
-            >
-              Connect Wallet
-            </Button>
-          ) : accountIds.length ? (
-            <Button
-              onClick={() => placePerpsOrder()}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-              disabled={loading || Number(amount) <= 0}
-            >
-              {loading ? (
-                <Spinner />
-              ) : Number(amount) > 0 ? (
-                <p>
-                  {selectedDirection} ~{amount} {symbol}-Perp
-                </p>
-              ) : (
-                <p>Enter an amount</p>
-              )}
-            </Button>
-          ) : (
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              className="text-lg capitalize font-bold w-full"
-              size={ButtonSize.LG}
-            >
-              No Drift Account
-            </Button>
-          )}
-        </div>
+        <ButtonMiddlePerpetual
+          sdkHasLoaded={sdkHasLoaded}
+          isLoggedIn={isLoggedIn}
+          setShowAuthFlow={setShowAuthFlow}
+          accountIds={accountIds}
+          placePerpsOrder={placePerpsOrder}
+          loading={loading}
+          selectedDirection={selectedDirection}
+          amount={amount}
+          symbol={symbol}
+        />
 
-        <Card>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center text-primary">
-              <span>Dynamic Slippage</span>
-              <span>Fee 0.00%</span>
-            </div>
-
-            <Separator />
-
-            <div className="flex justify-between items-center">
-              <span>Est.Liquidation Price</span>
-              <span className="flex items-center space-x-1">
-                {liqPriceLoading ? (
-                  <Spinner size={16} />
-                ) : liquidationPrice ? (
-                  formatUsdValue(liquidationPrice)
-                ) : (
-                  'None'
-                )}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span>Acct. Leverage</span>
-              <span className="flex items-center space-x-1">
-                {formatLeverage(userStats.leverage)}{' '}
-                <ArrowRight className="text-[14px]" />
-                {formatLeverage(
-                  userStats.leverage + (Number(amount) > 0 ? leverageValue : 0)
-                )}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span>Fees</span>
-              <span className="text-[14px]">$0.25</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span>Show Confirmation</span>
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setShowConfirmation(false)}
-                  className={cn('text-sm', {
-                    'text-muted-foreground': showConfirmation,
-                  })}
-                  isInvisible
-                ></Button>
-                <Switch
-                  checked={showConfirmation}
-                  onCheckedChange={setShowConfirmation}
-                />
-                <Button
-                  onClick={() => setShowConfirmation(true)}
-                  className={cn('text-sm', {
-                    'text-muted-foreground': !showConfirmation,
-                  })}
-                  isInvisible
-                ></Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <BottomPerpetual
+          liqPriceLoading={liqPriceLoading}
+          liquidationPrice={liquidationPrice}
+          userStats={userStats}
+          amount={amount}
+          leverageValue={leverageValue}
+          showConfirmation={showConfirmation}
+          formatLeverage={formatLeverage}
+          setShowConfirmation={setShowConfirmation}
+        />
       </div>
     </div>
   )

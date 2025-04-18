@@ -1,3 +1,4 @@
+import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTranslations } from 'next-intl'
 import useSWR from 'swr'
 
@@ -42,15 +43,17 @@ const fetchSolBalance = async (walletAddress: string) => {
 
 export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
   const t = useTranslations()
+  const { decimals } = useTokenInfo(mintAddress)
 
   const formatBalance = (value: string, isSol = false) => {
     const num = parseFloat(value)
     if (isNaN(num)) return { formatted: '0', raw: 0n }
+    if (!decimals) return { formatted: '0', raw: 0n }
 
     // Calculate raw value in base units
     const raw = isSol
       ? BigInt(Math.round(num * LAMPORTS_PER_SOL))
-      : BigInt(Math.round(num * Math.pow(10, 6))) // Assuming non-SOL tokens use 6 decimals
+      : BigInt(Math.round(num * Math.pow(10, decimals))) // Assuming non-SOL tokens use 6 decimals
 
     // Format numbers greater than 1 million
     if (num >= 1_000_000) {
@@ -131,7 +134,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
   let error = null
   let loading = false
   let isRefreshing = false
-  let mutate = () => {}
+  let mutate = () => { }
 
   if (mintAddress === SOL_MINT) {
     if (solData !== undefined) {
@@ -144,6 +147,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     mutate = mutateSolBalance
   } else {
     if (tokenData) {
+      console.log("tokenData:", tokenData.balance.uiAmountString)
       balance = formatBalance(tokenData.balance.uiAmountString)
     }
     error = tokenError ? t('error.failed_to_fetch_balance') : null

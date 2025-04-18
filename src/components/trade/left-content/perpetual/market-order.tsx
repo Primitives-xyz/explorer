@@ -1,30 +1,38 @@
-import Image from "next/image";
-import { ChevronDown, ChevronUp, CircleAlert, Infinity, Zap } from "lucide-react";
-import { cn } from "@/utils/utils";
-import { Button, ButtonVariant, Card, Input, Spinner, Switch } from "@/components/ui";
-import { UserStats } from "@/components/tapestry/models/drift.model";
-import LeverageSelector from "./leverage-selector";
+import { IUserStats } from '@/components/tapestry/models/drift.model'
+import { Button, ButtonVariant, Input, Spinner, Switch } from '@/components/ui'
+import {
+  ChevronDown,
+  ChevronUp,
+  CircleAlert,
+  Infinity,
+  Zap,
+} from 'lucide-react'
+import Image from 'next/image'
+import LeverageSelector from './leverage-selector'
 
-interface MarketOrderProps {
-  getMaxTradeAmount: () => string
+interface Props {
+  getMaxTradeAmount: string
   priceLoading: boolean
-  handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   amount: string
   marketPrice: number
   leverageValue: number
+  slippageExpanded: boolean
+  slippageOption: string
+  swift: boolean
+  userStats: IUserStats
+  error: string | null
+  selectedLeverageSizeUsd: string
+  selectedLeverageSizeToken: string
+  isSizeByLeverage: boolean
+  handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleLeverageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setLeverageValue: (value: number) => void
-  slippageExpanded: boolean
   setSlippageExpanded: (value: boolean) => void
-  slippageOption: string
   setSlippageOption: (value: string) => void
   handleDynamicSlippage: (e: React.ChangeEvent<HTMLInputElement>) => void
-  swift: boolean
   setSwift: (value: boolean) => void
-  userStats: UserStats
   setAmount: (value: string) => void
-  getSizeByLeveragePercent: (leverage: number) => string
-  error: string | null
+  setIsSizeByLeverage: (value: boolean) => void
 }
 
 const slippageOptions = [
@@ -36,65 +44,67 @@ const slippageOptions = [
 ]
 
 export default function MarketOrder({
-  getMaxTradeAmount,
   priceLoading,
-  handleAmountChange,
   amount,
   marketPrice,
   leverageValue,
-  setLeverageValue,
   slippageExpanded,
-  setSlippageExpanded,
   slippageOption,
+  swift,
+  userStats,
+  getMaxTradeAmount,
+  selectedLeverageSizeUsd,
+  selectedLeverageSizeToken,
+  isSizeByLeverage,
+  error,
+  handleAmountChange,
+  setLeverageValue,
+  setSlippageExpanded,
   setSlippageOption,
   handleDynamicSlippage,
-  swift,
   setSwift,
-  userStats,
   setAmount,
-  getSizeByLeveragePercent,
-  error
-}: MarketOrderProps) {
+  setIsSizeByLeverage,
+}: Props) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Size */}
       <div className="flex justify-between items-center">
-        <span>Size</span>
-        <Button className="flex space-x-2 items-center">
-          <span>Max: {getMaxTradeAmount()} SOL</span>
+        <p>Size</p>
+        <div className="flex items-center gap-2">
+          <p>Max: {getMaxTradeAmount} USDC</p>
           {priceLoading && <Spinner size={12} />}
-        </Button>
+        </div>
       </div>
 
       {/* Market */}
-      <div className="grid grid-cols-2 gap-2">
-        <Card className="flex items-center">
+      <div className="flex gap-1">
+        <div className="relative w-full">
           <Input
             placeholder="0.00"
-            className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
             type="text"
+            className="pr-12 text-primary text-xl"
             onChange={(e) => handleAmountChange(e)}
-            value={amount}
+            value={isSizeByLeverage ? selectedLeverageSizeToken : amount}
           />
           <Image
-            src={
-              'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
-            }
+            src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
             alt="USDC"
-            width={30}
-            height={30}
-            className="rounded-full mx-1"
+            width={25}
+            height={25}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
           />
-        </Card>
-        <Card className="flex items-center">
+        </div>
+
+        <div className="relative w-full">
           <Input
             placeholder="0.00"
             value={
-              marketPrice && amount
-                ? (Number(amount) * marketPrice).toFixed(2)
-                : ''
+              isSizeByLeverage
+                ? selectedLeverageSizeUsd
+                : (Number(amount) * marketPrice).toFixed(2)
             }
-            className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
+            className="pr-10 text-primary text-xl"
             disabled={true}
           />
           <Image
@@ -102,37 +112,36 @@ export default function MarketOrder({
               'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
             }
             alt="USDC"
-            width={30}
-            height={30}
-            className="rounded-full mx-1"
+            width={25}
+            height={25}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
           />
-        </Card>
+        </div>
       </div>
 
       {/* Leverage */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <span>Leverage</span>
-          <span className="font-semibold">
-            {leverageValue.toFixed(2)}x
-          </span>
+          <p>Leverage</p>
+          <p>{leverageValue.toFixed(2)}x</p>
         </div>
 
         <LeverageSelector
-          min={1}
+          min={0}
           max={Math.min(userStats.maxLeverage, 20)}
           setAmount={setAmount}
-          getSizeByLeveragePercent={getSizeByLeveragePercent}
           leverageValue={leverageValue}
           setLeverageValue={setLeverageValue}
+          setIsSizeByLeverage={setIsSizeByLeverage}
         />
       </div>
 
       {/* Slippage Tolerance */}
-      <div className="space-y-2">
-        <div
-          className="flex items-center justify-between w-full cursor-pointer"
+      <div className="space-y-6">
+        <Button
+          variant={ButtonVariant.OUTLINE_WHITE}
           onClick={() => setSlippageExpanded(!slippageExpanded)}
+          className="w-full justify-between"
         >
           <span>Slippage Tolerance (Dynamic)</span>
           {slippageExpanded ? (
@@ -140,10 +149,10 @@ export default function MarketOrder({
           ) : (
             <ChevronDown size={16} />
           )}
-        </div>
+        </Button>
 
         {slippageExpanded && (
-          <div className="space-y-2">
+          <div className="space-y-4">
             <div className="grid grid-cols-5 gap-2">
               {slippageOptions.map((option) => (
                 <Button
@@ -160,48 +169,30 @@ export default function MarketOrder({
                 </Button>
               ))}
             </div>
-            <Card className="flex justify-between items-center px-2">
+            <div className="relative w-full">
               <Input
                 type="text"
                 placeholder="Custom"
-                className="h-[36px] w-full bg-transparent border-none text-primary/80"
+                className="text-primary"
                 onChange={(e) => handleDynamicSlippage(e)}
-                value={
-                  isNaN(Number(slippageOption))
-                    ? ''
-                    : `${slippageOption}`
-                }
+                value={isNaN(Number(slippageOption)) ? '' : `${slippageOption}`}
               />
-              <span className="text-primary/80">%</span>
-            </Card>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary">
+                %
+              </span>
+            </div>
           </div>
         )}
       </div>
 
       {/* Swift */}
       <div className="flex items-center space-x-2">
-        <span>SWIFT</span>
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setSwift(false)}
-            className={cn('text-sm', {
-              'text-muted-foreground': swift,
-            })}
-            isInvisible
-          ></Button>
-          <Switch checked={swift} onCheckedChange={setSwift} />
-          <Button
-            onClick={() => setSwift(true)}
-            className={cn('text-sm', {
-              'text-muted-foreground': !swift,
-            })}
-            isInvisible
-          ></Button>
-        </div>
+        <p>SWIFT</p>
+        <Switch checked={swift} onCheckedChange={setSwift} />
       </div>
 
       {error && (
-        <p className="w-full flex justify-start items-center space-x-2 text-red-500">
+        <p className="w-full flex justify-start items-center space-x-2 text-destructive">
           <CircleAlert />
           <span>{error}</span>
         </p>

@@ -1,63 +1,70 @@
-import { UserStats } from "@/components/tapestry/models/drift.model";
-import { Button, Card, Input, Switch } from "@/components/ui";
-import { cn } from "@/utils/utils";
-import Image from "next/image";
-import LeverageSelector from "./leverage-selector";
+import { IUserStats } from '@/components/tapestry/models/drift.model'
+import { Input, Switch } from '@/components/ui'
+import Image from 'next/image'
+import LeverageSelector from './leverage-selector'
 
 interface LimitOrderProps {
   limitPrice: number
-  handleLimitPriceChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   amount: string
   marketPrice: number
   leverageValue: number
+  selectedLeverageSizeUsd: string
+  selectedLeverageSizeToken: string
+  userStats: IUserStats
+  swift: boolean
+  isSizeByLeverage: boolean
+  handleLimitPriceChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   handleLeverageChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  getSizeByLeveragePercent: (leverage: number) => string
   handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setAmount: (amount: string) => void
-  userStats: UserStats
-  swift: boolean
-  setSwift: (swift: boolean) => void
   setLeverageValue: (leverage: number) => void
+  setSwift: (swift: boolean) => void
+  setIsSizeByLeverage: (value: boolean) => void
 }
 
 export default function LimitOrder({
   limitPrice,
-  handleLimitPriceChange,
   amount,
   marketPrice,
   leverageValue,
-  getSizeByLeveragePercent,
-  handleAmountChange,
-  setAmount,
+  selectedLeverageSizeUsd,
+  selectedLeverageSizeToken,
   userStats,
   swift,
+  isSizeByLeverage,
+  handleLimitPriceChange,
+  handleAmountChange,
+  setAmount,
   setSwift,
-  setLeverageValue
+  setLeverageValue,
+  setIsSizeByLeverage,
 }: LimitOrderProps) {
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <span>Limit Price</span>
-        <Card className="flex items-center">
+    <div className="space-y-4">
+      <p>Limit Price</p>
+      <div>
+        <div className="relative w-full">
           <Input
             placeholder="0.00"
-            className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
+            className="pr-12 text-primary text-xl"
             value={limitPrice}
-            type='number'
+            type="number"
             onChange={(e) => handleLimitPriceChange(e)}
           />
-          <span className="px-2">USD</span>
-        </Card>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full">
+            USD
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <Card className="flex items-center">
+      <div className="flex gap-1">
+        <div className="relative w-full">
           <Input
             placeholder="0.00"
-            className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
+            className="pr-12 text-primary text-xl"
             type="text"
             onChange={(e) => handleAmountChange(e)}
-            value={amount}
+            value={isSizeByLeverage ? selectedLeverageSizeToken : amount}
           />
           <Image
             src={
@@ -66,18 +73,19 @@ export default function LimitOrder({
             alt="USDC"
             width={30}
             height={30}
-            className="rounded-full mx-1"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
           />
-        </Card>
-        <Card className="flex items-center">
+        </div>
+
+        <div className="relative w-full">
           <Input
             placeholder="0.00"
             value={
-              marketPrice && amount
-                ? (Number(amount) * marketPrice).toFixed(2)
-                : ''
+              isSizeByLeverage
+                ? selectedLeverageSizeUsd
+                : (Number(amount) * marketPrice).toFixed(2)
             }
-            className="text-primary text-xl bg-transparent placeholder:text-primary border-none"
+            className="pr-12 text-primary text-xl"
             disabled={true}
           />
           <Image
@@ -87,49 +95,31 @@ export default function LimitOrder({
             alt="USDC"
             width={30}
             height={30}
-            className="rounded-full mx-1"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
           />
-        </Card>
+        </div>
       </div>
 
       {/* Leverage */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <span>Leverage</span>
-          <span className="font-semibold">
-            {leverageValue.toFixed(2)}x
-          </span>
+          <p>Leverage</p>
+          <span>{leverageValue.toFixed(2)}x</span>
         </div>
 
         <LeverageSelector
-          min={1}
+          min={0}
           max={Math.min(userStats.maxLeverage, 20)}
           setAmount={setAmount}
-          getSizeByLeveragePercent={getSizeByLeveragePercent}
           leverageValue={leverageValue}
           setLeverageValue={setLeverageValue}
+          setIsSizeByLeverage={setIsSizeByLeverage}
         />
       </div>
 
       <div className="flex items-center space-x-2">
-        <span>SWIFT</span>
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setSwift(false)}
-            className={cn('text-sm', {
-              'text-muted-foreground': swift,
-            })}
-            isInvisible
-          ></Button>
-          <Switch checked={swift} onCheckedChange={setSwift} />
-          <Button
-            onClick={() => setSwift(true)}
-            className={cn('text-sm', {
-              'text-muted-foreground': !swift,
-            })}
-            isInvisible
-          ></Button>
-        </div>
+        <p>SWIFT</p>
+        <Switch checked={swift} onCheckedChange={setSwift} />
       </div>
     </div>
   )
