@@ -83,7 +83,7 @@ export function Swap({ setTokenMint }: Props) {
   const pathname = usePathname()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
-  const [inAmount, setInAmount] = useState('')
+  const [inAmount, setInAmount] = useState('1')
   const [outAmount, setOutAmount] = useState('')
   const [swapMode, setSwapMode] = useState(ESwapMode.EXACT_IN)
   const [useSSEForFees, setUseSSEForFees] = useState(false)
@@ -353,35 +353,14 @@ export function Swap({ setTokenMint }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
-  // useEffect(() => {
-  //   return () => {
-  //     const params = new URLSearchParams(searchParams.toString())
-  //     params.delete('inputMint')
-  //     params.delete('outputMint')
-  //     replace(`${pathname}?${params.toString()}`)
-  //   }
-  // }, [pathname, replace, searchParams])
-
-  // useEffect(() => {
-  //   const inputMintParam = searchParams.get('inputMint')
-  //   const outputMintParam = searchParams.get('outputMint')
-  //   const inputAmountParam = searchParams.get('inputAmount')
-
-  //   if (inputMintParam) {
-  //     setInputTokenMint(inputMintParam)
-  //   }
-
-  //   if (outputMintParam) {
-  //     setOutputTokenMint(outputMintParam)
-  //   }
-
-  //   if (
-  //     inputAmountParam &&
-  //     validateAmount(inputAmountParam, inputTokenDecimals)
-  //   ) {
-  //     setInAmount(inputAmountParam)
-  //   }
-  // }, [searchParams, inputTokenDecimals])
+  // Set initial inputs when component mounts
+  useEffect(() => {
+    setInputs({
+      inputMint: SOL_MINT,
+      outputMint: SSE_MINT,
+      inputAmount: 1,
+    })
+  }, []) // Empty dependency array means this runs once on mount
 
   return (
     <div className="space-y-4">

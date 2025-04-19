@@ -79,39 +79,37 @@ export function BottomSwap({
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <p>RATE</p>
+            <p>Fee</p>
             <p>{displaySseFeeAmount} SSE</p>
           </div>
 
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-muted-foreground text-left">
-                SSE offers the lowest fees across all current platforms
+                SSE offers the lowest fees across all trading platforms
               </AccordionTrigger>
               <AccordionContent>
-                <Card>
-                  <CardContent className="px-3 py-2 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <p className="uppercase">platforms</p>
-                      <p className="text-muted-foreground">You'll get</p>
-                    </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <p className="uppercase">platform</p>
+                    <p className="text-muted-foreground">You'll get</p>
+                  </div>
 
-                    <>
-                      {isQuoteRefreshing ? (
-                        <div className="h-full flex justify-center items-center">
-                          <Spinner />
-                        </div>
-                      ) : (
-                        <PlatformComparison
-                          jupiterSwapResponse={quoteResponse}
-                          outputTokenSymbol={outputTokenSymbol}
-                          outputTokenDecimals={outputTokenDecimals}
-                          platformExpectedOutAmount={expectedOutput}
-                        />
-                      )}
-                    </>
-                  </CardContent>
-                </Card>
+                  <>
+                    {isQuoteRefreshing ? (
+                      <div className="h-full flex justify-center items-center">
+                        <Spinner />
+                      </div>
+                    ) : (
+                      <PlatformComparison
+                        jupiterSwapResponse={quoteResponse}
+                        outputTokenSymbol={outputTokenSymbol}
+                        outputTokenDecimals={outputTokenDecimals}
+                        platformExpectedOutAmount={expectedOutput}
+                      />
+                    )}
+                  </>
+                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
