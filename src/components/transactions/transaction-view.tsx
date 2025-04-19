@@ -1,5 +1,6 @@
 'use client'
 
+import { Button, ButtonVariant, Heading1, Paragraph } from '@/components/ui'
 import { useTranslations } from 'next-intl'
 
 interface TransactionDetailsProps {
@@ -14,32 +15,30 @@ export default function TransactionDetails({
   return (
     <div className="py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-mono mb-2">
+        <Heading1>
           {t('transaction_log.transaction_details')}
-        </h1>
-        <div className="font-mono text-sm text-gray-400">
+        </Heading1>
+        <Paragraph className="text-muted-foreground font-mono">
           {signature}
-        </div>
+        </Paragraph>
       </div>
 
-      <div className="text-center py-12">
-        <div className="flex gap-4 justify-center">
-          <a
+      <div className="py-12">
+        <div className="flex gap-4">
+          <Button
+            variant={ButtonVariant.SECONDARY}
             href={`https://solscan.io/tx/${signature}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-6 py-3 bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 rounded-lg font-mono text-sm transition-colors"
+            newTab
           >
             View Transaction on Solscan
-          </a>
-          <a
+          </Button>
+          <Button
+            variant={ButtonVariant.SECONDARY_SOCIAL}
             href={`http://solana.fm/tx/${signature}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-6 py-3 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 rounded-lg font-mono text-sm transition-colors"
+            newTab
           >
             View Transaction on Solana.FM
-          </a>
+          </Button>
         </div>
       </div>
     </div>
