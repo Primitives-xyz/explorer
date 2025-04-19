@@ -10,6 +10,7 @@ import {
   Compass,
   House,
   LucideIcon,
+  Rocket,
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
@@ -38,6 +39,8 @@ export function Menu() {
       />
 
       <Entry title="Stake" icon={Beef} href={route('stake')} />
+
+      <Entry title="Launch" icon={Rocket} href={route('launch')} />
 
       {/* <Entry
         title="Design System"

@@ -94,6 +94,11 @@ function createVertigoSDK(connection: Connection): VertigoSDK {
   const wallet = new anchor.Wallet(payer)
 
   try {
+    // Add a try-catch and more debugging
+    console.log('Creating VertigoSDK with:', {
+      connectionEndpoint: connection.rpcEndpoint,
+      wallet: wallet.constructor.name
+    })
     
     // Create with optional empty config to avoid any defaults causing issues
     return new VertigoSDK(connection, wallet)
@@ -111,7 +116,9 @@ export async function launchPool(
   params: LaunchPoolParams
 ): Promise<{ signature: string; poolAddress: string; mintB: string }> {
   try {
+    console.log('Initializing Vertigo SDK...')
     const vertigo = createVertigoSDK(connection)
+    console.log('Vertigo SDK initialized')
     const payer = getPayerKeypair()
 
     // Generate keypairs for the pool
