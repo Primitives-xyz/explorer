@@ -12,6 +12,7 @@ interface Props {
   symbol: string
   setShowAuthFlow: (show: boolean) => void
   placePerpsOrder: () => void
+  setIsFundsModalOpen: (val: boolean) => void
 }
 
 export function ButtonMiddlePerpetual({
@@ -24,6 +25,7 @@ export function ButtonMiddlePerpetual({
   symbol,
   setShowAuthFlow,
   placePerpsOrder,
+  setIsFundsModalOpen
 }: Props) {
   return (
     <div>
@@ -56,8 +58,9 @@ export function ButtonMiddlePerpetual({
             <Button
               variant={ButtonVariant.OUTLINE_WHITE}
               className="capitalize font-bold w-full text-lg"
+              onClick={() => setIsFundsModalOpen(true)}
             >
-              No Drift Account
+              Unlock Perpetuals
             </Button>
           )
         }
