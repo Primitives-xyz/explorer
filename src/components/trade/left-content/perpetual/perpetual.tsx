@@ -19,6 +19,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { PositionDirection } from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import AddFundsModal from './add-funds-modal'
 
 enum OrderType {
   MARKET = 'market',
@@ -42,6 +43,7 @@ enum PerpsMarketType {
 
 export function Perpetual() {
   const { accountIds } = useDriftUsers()
+  const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { userStats, loading: statsLoading } = useUserStats(accountIds[0] || 0)
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
@@ -189,9 +191,10 @@ export function Perpetual() {
           userStats={userStats}
           setSelectedDirection={setSelectedDirection}
           formatLeverage={formatLeverage}
+          blur={!accountIds.length}
         />
 
-        <Card>
+        <Card className={`${!accountIds.length ? "blur-xs" : ""}`}>
           <CardContent>
             {/* Order Type */}
             <div className="flex justify-between items-center">
@@ -288,18 +291,26 @@ export function Perpetual() {
           selectedDirection={selectedDirection}
           amount={orderAmount}
           symbol={symbol}
+          setIsFundsModalOpen={setIsFundsModalOpen}
         />
 
-        <BottomPerpetual
-          liqPriceLoading={liqPriceLoading}
-          liquidationPrice={liquidationPrice}
-          userStats={userStats}
-          amount={orderAmount}
-          leverageValue={leverageValue}
-          showConfirmation={showConfirmation}
-          formatLeverage={formatLeverage}
-          setShowConfirmation={setShowConfirmation}
+        <div className={`${!accountIds.length ? "blur-xs" : ""}`}>
+          <BottomPerpetual
+            liqPriceLoading={liqPriceLoading}
+            liquidationPrice={liquidationPrice}
+            userStats={userStats}
+            amount={orderAmount}
+            leverageValue={leverageValue}
+            showConfirmation={showConfirmation}
+            formatLeverage={formatLeverage}
+            setShowConfirmation={setShowConfirmation}
+          />
+        </div>
+        <AddFundsModal
+          isOpen={isFundsModalOpen}
+          setIsOpen={setIsFundsModalOpen}
         />
+
       </div>
     </div>
   )

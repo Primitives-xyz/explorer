@@ -3,7 +3,7 @@
 import { IUserStats } from '@/components/tapestry/models/drift.model'
 import { FilterTabs } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
-import { formatUsdValue } from '@/utils/utils'
+import { cn, formatUsdValue } from '@/utils/utils'
 
 export enum DirectionFilterType {
   LONG = 'long',
@@ -13,6 +13,7 @@ export enum DirectionFilterType {
 interface Props {
   selectedDirection: DirectionFilterType
   userStats: IUserStats
+  blur: boolean
   setSelectedDirection: (type: DirectionFilterType) => void
   formatLeverage: (leverage: number) => string
 }
@@ -20,6 +21,7 @@ interface Props {
 export function HeroPerpetual({
   selectedDirection,
   userStats,
+  blur,
   setSelectedDirection,
   formatLeverage,
 }: Props) {
@@ -34,7 +36,7 @@ export function HeroPerpetual({
 
   return (
     <>
-      <Card>
+      <Card className={`${blur ? "blur-xs" : ""}`}>
         <CardContent className="flex justify-between items-center">
           <div className="flex flex-col">
             <p className="text-xs">Net USD Value</p>
@@ -54,7 +56,10 @@ export function HeroPerpetual({
       </Card>
 
       <FilterTabs
-        className="flex items-center justify-between"
+        className={cn(
+          "flex items-center justify-between",
+          blur && "blur-xs"
+          )}
         buttonClassName="w-1/2"
         options={options}
         selected={selectedDirection}

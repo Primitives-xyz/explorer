@@ -106,7 +106,6 @@ export function useUserStats(subAccountId = 0) {
 
         setError(null)
       } catch (error) {
-        console.error('Error fetching user stats:', error)
         setError('Failed to fetch user stats')
       } finally {
         setLoading(false)
