@@ -60,7 +60,7 @@ export default function TwitterCallback() {
         }
         
         // 5. Redirect to Dynamic Auth - so user can login with twitter in the future.
-       router.push(`https://app.dynamicauth.com/api/v0/sdk/ab6ac670-0b93-4483-86a5-d0eff1dfca10/providers/twitter/redirect?code={code}&state={state}`)
+       router.push(`https://app.dynamicauth.com/api/v0/sdk/ab6ac670-0b93-4483-86a5-d0eff1dfca10/providers/twitter/redirect?code=${code}&state=${state}`)
         
       } catch (error) {
         console.error('Twitter callback error:', error)
