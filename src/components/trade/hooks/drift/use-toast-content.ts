@@ -94,6 +94,34 @@ export function useToastContent() {
         description: 'The limit price is below the current ask price',
         duration: 5000,
       }
+    },
+    CLOSE_POS_ERR: {
+      title: 'Close Position Error',
+      content: {
+        description: 'Failed close position. Please try again later',
+        duration: 5000,
+      }
+    },
+    PERPS_USER_ERR: {
+      title: 'Drift User Account Error',
+      content: {
+        description: 'Drift User Not Found',
+        duration: 5000,
+      }
+    },
+    FETCH_PERPS_POSITION_ERR: {
+      title: 'Fetch Open Positions Error',
+      content: {
+        description: 'Failed Fetching Open Positions. Please try again later',
+        duration: 5000,
+      }
+    },
+    CANCEL_ORDER_TX_ERR: {
+      title: t('trade.transaction_failed'),
+      content: {
+        description: "Failed Cancel Order, Please try again later",
+        duration: 5000,
+      }
     }
   }
 
@@ -140,6 +168,20 @@ export function useToastContent() {
       title: t('trade.transaction_successful'),
       content: {
         description: 'Deposite Collateral Success',
+        duration: 2000,
+      }
+    },
+    CLOSE_POSITION_TX_SUCCESS: {
+      title: t('trade.transaction_successful'),
+      content: {
+        description: 'Close Postion Success',
+        duration: 2000,
+      }
+    },
+    CANCEL_ORDER_TX_SUCCESS: {
+      title: t('trade.transaction_successful'),
+      content: {
+        description: 'Cancel Order Success',
         duration: 2000,
       }
     }

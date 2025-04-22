@@ -3,10 +3,12 @@
 import { Swap } from '@/components/swap/components/swap'
 import { Perpetual } from '@/components/trade/left-content/perpetual/perpetual'
 import { FilterTabs } from '@/components/ui'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface TradeLeftContentProps {
+  selectedType: FilterType
   setTokenMint: (value: string) => void
+  setSelectedType: (value: FilterType) => void
 }
 
 export enum FilterType {
@@ -14,8 +16,7 @@ export enum FilterType {
   PERPETUAL = 'perpetual',
 }
 
-export function TradeLeftContent({ setTokenMint }: TradeLeftContentProps) {
-  const [selectedType, setSelectedType] = useState<FilterType>(FilterType.SWAP)
+export function TradeLeftContent({ selectedType, setTokenMint, setSelectedType }: TradeLeftContentProps) {
 
   const options = [
     { label: 'Swap', value: FilterType.SWAP },

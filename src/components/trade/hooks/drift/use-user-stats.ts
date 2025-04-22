@@ -74,6 +74,9 @@ export function useUserStats({
         const perpPositions = user.getActivePerpPositions()
         const orders = user.getOpenOrders()
 
+        // console.log("orders:", convertToNumber(orders[0].baseAssetAmount))
+        // console.log("orders:", convertToNumber(orders[0].price))
+
         // Get net USD value (total account value)
         const netUsdValue = convertToNumber(
           user.getNetUsdValue(),
