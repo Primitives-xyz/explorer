@@ -8,8 +8,9 @@ interface FilterTabsProps<T extends string> {
   selected: T
   variant?: TabVariant
   className?: string
-  onSelect?: (value: T) => void
+  buttonClassName?: string
   size?: ButtonSize
+  onSelect?: (value: T) => void
 }
 
 export function FilterTabs<T extends string>({
@@ -17,8 +18,9 @@ export function FilterTabs<T extends string>({
   selected,
   variant = TabVariant.DEFAULT,
   className,
-  onSelect,
+  buttonClassName,
   size,
+  onSelect,
 }: FilterTabsProps<T>) {
   const getVariant = (isActive: boolean) => {
     if (isActive) {
@@ -37,7 +39,7 @@ export function FilterTabs<T extends string>({
       {options.map((option) => (
         <Button
           key={option.value}
-          className="rounded-full"
+          className={cn('rounded-full', buttonClassName)}
           variant={getVariant(selected === option.value)}
           onClick={() => onSelect?.(option.value)}
           size={size}

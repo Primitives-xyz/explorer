@@ -1,8 +1,8 @@
+import { IUserStats } from '@/components/tapestry/models/drift.model'
 import { useEffect, useState } from 'react'
-import { UserStats } from '@/components/tapestry/models/drift.model'
 
 interface UseLeverageSizeProps {
-  userStats: UserStats
+  userStats: IUserStats
   symbol: string
   leverageValue: number
   marketPrice: number
@@ -12,7 +12,7 @@ export function useLeverageSize({
   userStats,
   symbol,
   leverageValue,
-  marketPrice
+  marketPrice,
 }: UseLeverageSizeProps) {
   const [selectedLeverageSizeUsd, setSelectedLeverageSizeUsd] =
     useState<number>(0)
@@ -26,7 +26,8 @@ export function useLeverageSize({
     }
 
     // Calculate size based on the selected leverage value
-    const selectedSizeUsd = userStats.maxTradeSize * leverageValue / userStats.maxLeverage
+    const selectedSizeUsd =
+      (userStats.maxTradeSize * leverageValue) / userStats.maxLeverage
     setSelectedLeverageSizeUsd(selectedSizeUsd)
 
     // Convert USD to token amount
