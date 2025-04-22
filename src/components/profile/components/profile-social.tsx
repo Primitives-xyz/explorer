@@ -187,7 +187,7 @@ return (
           >
             {hasXIdentity 
               ? <ProfileExternalProfile identity={identities[0]} />
-              : ( mainProfile?.username !== explorerProfile?.profile.username &&
+              : ( mainProfile?.username === explorerProfile?.profile.username &&
               <div style={{"padding": "40px"}} className="rounded-card border text-card-foreground shadow-card overflow-hidden backdrop-blur-xl bg-secondary/10 border-foreground/20">
                 <h3>Oops! No linked X</h3>
                 <br/>
