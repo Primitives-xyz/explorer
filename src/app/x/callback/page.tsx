@@ -58,10 +58,8 @@ export default function TwitterCallback() {
           const errorData = await userResponse.json()
           throw new Error(errorData.message || 'Failed to fetch user data')
         }
-        redirect(`/${localStorage.getItem('profileId')}`)
-      //   // 5. Redirect to Dynamic Auth - so user can login with twitter in the future.
-      //  router.push(`https://app.dynamicauth.com/api/v0/sdk/ab6ac670-0b93-4483-86a5-d0eff1dfca10/providers/twitter/redirect?code=${code}&state=${state}`)
-        
+
+        router.push(`/${localStorage.getItem('profileId')}`)
       } catch (error) {
         console.error('Twitter callback error:', error)
         setError(error instanceof Error ? error.message : 'Unknown error occurred')

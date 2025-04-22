@@ -4,6 +4,7 @@ import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { TWITTER_REDIRECT_URL } from '@/utils/constants'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 import {
   Card,
@@ -26,6 +27,8 @@ interface Props {
 }
 
 export function ProfileSocial({ walletAddress }: Props) {
+  const { mainProfile } = useCurrentWallet()
+  
   const router = useRouter();
 
   const { identities: originalIdentities, loading } = useGetIdentities({
@@ -182,7 +185,7 @@ return (
               ? identities[0].namespace.name + identities[0].profile.id
               : "x-default-tab"}
           >
-            {hasXIdentity 
+            {hasXIdentity && mainProfile?.username != '' && mainProfile?.username === explorerProfile?.profile.username
               ? <ProfileExternalProfile identity={identities[0]} />
               : <div style={{"padding": "40px"}} className="rounded-card border text-card-foreground shadow-card overflow-hidden backdrop-blur-xl bg-secondary/10 border-foreground/20">
                 <h3>Oops! No linked X</h3>
