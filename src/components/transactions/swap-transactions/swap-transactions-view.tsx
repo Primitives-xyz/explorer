@@ -39,10 +39,10 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   })
 
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
-    fromToken?.mint === SOL_MINT ? null : fromToken?.mint
+    fromToken?.mint
   )
   const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
-    toToken?.mint === SOL_MINT ? null : toToken?.mint
+    toToken?.mint
   )
 
   const shouldFetchFromPrice =
