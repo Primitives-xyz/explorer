@@ -24,7 +24,7 @@ export function SuggestedImages({ suggestedImages, setSuggestedImage }: Props) {
           <Button
             key={index}
             onClick={() => setSuggestedImage(entry)}
-            className="bg-muted rounded-lg overflow-hidden aspect-square relative"
+            className="bg-muted rounded-full overflow-hidden aspect-square relative"
             isInvisible
           >
             <Image

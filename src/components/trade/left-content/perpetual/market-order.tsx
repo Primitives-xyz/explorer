@@ -1,14 +1,11 @@
 import { IUserStats } from '@/components/tapestry/models/drift.model'
-import { Button, ButtonVariant, Input, Spinner, Switch } from '@/components/ui'
-import {
-  ChevronDown,
-  ChevronUp,
-  CircleAlert,
-  Infinity,
-  Zap,
-} from 'lucide-react'
+import { Input, Spinner, Switch } from '@/components/ui'
 import Image from 'next/image'
 import LeverageSelector from './leverage-selector'
+import { Slippage } from './slippage'
+
+const SOL_IMG_URI = "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+const USDC_IMG_URI = "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
 
 interface Props {
   getMaxTradeAmount: string
@@ -20,7 +17,6 @@ interface Props {
   slippageOption: string
   swift: boolean
   userStats: IUserStats
-  error: string | null
   selectedLeverageSizeUsd: string
   selectedLeverageSizeToken: string
   isSizeByLeverage: boolean
@@ -35,14 +31,6 @@ interface Props {
   setIsSizeByLeverage: (value: boolean) => void
 }
 
-const slippageOptions = [
-  { value: '0.1', label: '0.1%' },
-  { value: '0.5', label: '0.5%' },
-  { value: '1', label: '1%' },
-  { value: 'zap', icon: <Zap size={16} /> },
-  { value: 'infinity', icon: <Infinity size={16} /> },
-]
-
 export default function MarketOrder({
   priceLoading,
   amount,
@@ -56,7 +44,6 @@ export default function MarketOrder({
   selectedLeverageSizeUsd,
   selectedLeverageSizeToken,
   isSizeByLeverage,
-  error,
   handleAmountChange,
   setLeverageValue,
   setSlippageExpanded,
@@ -88,7 +75,7 @@ export default function MarketOrder({
             value={isSizeByLeverage ? selectedLeverageSizeToken : amount}
           />
           <Image
-            src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+            src={SOL_IMG_URI}
             alt="USDC"
             width={25}
             height={25}
@@ -108,9 +95,7 @@ export default function MarketOrder({
             disabled={true}
           />
           <Image
-            src={
-              'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
-            }
+            src={USDC_IMG_URI}
             alt="USDC"
             width={25}
             height={25}
@@ -120,83 +105,29 @@ export default function MarketOrder({
       </div>
 
       {/* Leverage */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <p>Leverage</p>
-          <p>{leverageValue.toFixed(2)}x</p>
-        </div>
 
-        <LeverageSelector
-          min={0}
-          max={Math.min(userStats.maxLeverage, 20)}
-          setAmount={setAmount}
-          leverageValue={leverageValue}
-          setLeverageValue={setLeverageValue}
-          setIsSizeByLeverage={setIsSizeByLeverage}
-        />
-      </div>
+      <LeverageSelector
+        min={0}
+        max={Math.min(userStats.maxLeverage, 20)}
+        setAmount={setAmount}
+        leverageValue={leverageValue}
+        setLeverageValue={setLeverageValue}
+        setIsSizeByLeverage={setIsSizeByLeverage}
+      />
 
-      {/* Slippage Tolerance */}
-      <div className="space-y-6">
-        <Button
-          variant={ButtonVariant.OUTLINE_WHITE}
-          onClick={() => setSlippageExpanded(!slippageExpanded)}
-          className="w-full justify-between"
-        >
-          <span>Slippage Tolerance (Dynamic)</span>
-          {slippageExpanded ? (
-            <ChevronUp size={16} />
-          ) : (
-            <ChevronDown size={16} />
-          )}
-        </Button>
-
-        {slippageExpanded && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-5 gap-2">
-              {slippageOptions.map((option) => (
-                <Button
-                  variant={
-                    slippageOption === option.value
-                      ? ButtonVariant.DEFAULT
-                      : ButtonVariant.BADGE
-                  }
-                  key={option.value}
-                  className="px-0"
-                  onClick={() => setSlippageOption(option.value)}
-                >
-                  {option.icon || option.label}
-                </Button>
-              ))}
-            </div>
-            <div className="relative w-full">
-              <Input
-                type="text"
-                placeholder="Custom"
-                className="text-primary"
-                onChange={(e) => handleDynamicSlippage(e)}
-                value={isNaN(Number(slippageOption)) ? '' : `${slippageOption}`}
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary">
-                %
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+      <Slippage
+        handleDynamicSlippage={handleDynamicSlippage}
+        setSlippageExpanded={setSlippageExpanded}
+        setSlippageOption={setSlippageOption}
+        slippageExpanded={slippageExpanded}
+        slippageOption={slippageOption}
+      />
 
       {/* Swift */}
       <div className="flex items-center space-x-2">
         <p>SWIFT</p>
         <Switch checked={swift} onCheckedChange={setSwift} />
       </div>
-
-      {error && (
-        <p className="w-full flex justify-start items-center space-x-2 text-destructive">
-          <CircleAlert />
-          <span>{error}</span>
-        </p>
-      )}
     </div>
   )
 }

@@ -35,28 +35,35 @@ export default function LeverageSelector({
   )
 
   return (
-    <div className="w-full space-y-4">
-      <Slider
-        min={min}
-        max={max}
-        step={0.1}
-        value={[leverageValue]}
-        onValueChange={(value) => {
-          setIsSizeByLeverage(true)
-          setLeverageValue(value[0])
-        }}
-      />
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <p>Leverage</p>
+        <p>{leverageValue.toFixed(2)}x</p>
+      </div>
 
-      <div className="grid grid-cols-4 gap-2">
-        {[25, 50, 75, 100].map((percent, index) => (
-          <Button
-            key={index}
-            variant={ButtonVariant.BADGE}
-            onClick={() => handlePercentageChange(percent)}
-          >
-            {percent}%
-          </Button>
-        ))}
+      <div className="w-full space-y-4">
+        <Slider
+          min={min}
+          max={max}
+          step={0.1}
+          value={[leverageValue]}
+          onValueChange={(value) => {
+            setIsSizeByLeverage(true)
+            setLeverageValue(value[0])
+          }}
+        />
+
+        <div className="grid grid-cols-4 gap-2">
+          {[25, 50, 75, 100].map((percent, index) => (
+            <Button
+              key={index}
+              variant={ButtonVariant.BADGE}
+              onClick={() => handlePercentageChange(percent)}
+            >
+              {percent}%
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   )

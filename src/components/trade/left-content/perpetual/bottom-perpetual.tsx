@@ -30,12 +30,12 @@ export function BottomPerpetual({
   return (
     <Card>
       <CardContent className="space-y-4">
-        <div className="flex justify-between items-center text-primary text-sm">
+        {/* <div className="flex justify-between items-center text-primary text-sm">
           <p>Dynamic Slippage</p>
           <p>Fee 0.00%</p>
-        </div>
+        </div> */}
 
-        <Separator />
+        {/* <Separator /> */}
 
         <div className="flex justify-between items-center text-sm">
           <p>Est.Liquidation Price</p>
@@ -62,7 +62,7 @@ export function BottomPerpetual({
 
         <div className="flex justify-between items-center text-sm">
           <p>Fees</p>
-          <p>$0.25</p>
+          <p>0</p>
         </div>
 
         <div className="flex justify-between items-center text-sm">

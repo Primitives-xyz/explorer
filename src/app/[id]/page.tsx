@@ -2,6 +2,7 @@ import { MainContentWrapper } from '@/components/common/main-content-wrapper'
 import { ProfileWithUsername } from '@/components/profile/components/profile-with-username'
 import { SwapTray } from '@/components/swap/components/swap-tray'
 import { TokenContent } from '@/components/token/token-content'
+import TransactionDetails from '@/components/transactions/transaction-view'
 import { determineRouteType, RouteType } from '@/utils/entity'
 
 export default async function Entity({
@@ -17,7 +18,7 @@ export default async function Entity({
   function renderContent(routeType: RouteType, cleanId: string) {
     switch (routeType) {
       case RouteType.TRANSACTION:
-        return <p>transaction page</p>
+        return <TransactionDetails signature={cleanId} />
       case RouteType.TOKEN:
         return <TokenContent id={cleanId} />
       case RouteType.PROFILE:

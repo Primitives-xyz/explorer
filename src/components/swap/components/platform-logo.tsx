@@ -4,6 +4,7 @@ import Image from 'next/image'
 // Define a mapping of platform names to their logo paths
 const PLATFORM_LOGOS: Record<string, string> = {
   sse: '/dexlogos/sse.svg',
+  jupiter: '/dexlogos/jupiter.webp',
   raydium: '/dexlogos/raydium.svg',
   orca: '/dexlogos/orca.svg',
   'meteora dlmm': '/dexlogos/meteora.png',
@@ -27,12 +28,13 @@ export function PlatformLogo({ name }: PlatformLogoProps) {
   }
 
   return (
-    <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center">
+    <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
       <Image
         src={logoPath || '/placeholder.svg'}
         alt={`${name} logo`}
-        width={20}
-        height={20}
+        width={24}
+        height={24}
+        className="object-contain"
       />
     </div>
   )

@@ -20,6 +20,30 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
 
+const isStable = (token: string) => {
+  const STABLE_TOKENS = [
+    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // usdc
+    'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // usdt
+    'So11111111111111111111111111111111111111112', // sol
+  ]
+  return STABLE_TOKENS.includes(token)
+}
+
+const getTargetToken = (tokenA: string, tokenB: string) => {
+  const aStable = isStable(tokenA)
+  const bStable = isStable(tokenB)
+
+  // Rule 1: If only one is stable, return the other
+  if (aStable && !bStable) return tokenB
+  if (!aStable && bStable) return tokenA
+
+  // Rule 2: If both are stable, return tokenB
+  if (aStable && bStable) return tokenB
+
+  // Rule 3: Both are alt/meme, return the buyingToken
+  return tokenB
+}
+
 const validateAmount = (value: string, decimals: number = 6): boolean => {
   if (value === '') return true
 
@@ -57,7 +81,7 @@ export function Swap({ setTokenMint }: Props) {
   const pathname = usePathname()
   const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
   const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
-  const [inAmount, setInAmount] = useState('')
+  const [inAmount, setInAmount] = useState('1')
   const [outAmount, setOutAmount] = useState('')
   const [swapMode, setSwapMode] = useState(ESwapMode.EXACT_IN)
   const [useSSEForFees, setUseSSEForFees] = useState(false)
@@ -306,9 +330,10 @@ export function Swap({ setTokenMint }: Props) {
 
   useEffect(() => {
     if (setTokenMint) {
-      setTokenMint(outputTokenMint)
+      const tokenForChart = getTargetToken(inputTokenMint, outputTokenMint)
+      setTokenMint(tokenForChart)
     }
-  }, [outputTokenMint, setTokenMint])
+  }, [inputTokenMint, outputTokenMint, setTokenMint])
 
   useEffect(() => {
     if (inputs) {
@@ -325,35 +350,15 @@ export function Swap({ setTokenMint }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
-  // useEffect(() => {
-  //   return () => {
-  //     const params = new URLSearchParams(searchParams.toString())
-  //     params.delete('inputMint')
-  //     params.delete('outputMint')
-  //     replace(`${pathname}?${params.toString()}`)
-  //   }
-  // }, [pathname, replace, searchParams])
-
-  // useEffect(() => {
-  //   const inputMintParam = searchParams.get('inputMint')
-  //   const outputMintParam = searchParams.get('outputMint')
-  //   const inputAmountParam = searchParams.get('inputAmount')
-
-  //   if (inputMintParam) {
-  //     setInputTokenMint(inputMintParam)
-  //   }
-
-  //   if (outputMintParam) {
-  //     setOutputTokenMint(outputMintParam)
-  //   }
-
-  //   if (
-  //     inputAmountParam &&
-  //     validateAmount(inputAmountParam, inputTokenDecimals)
-  //   ) {
-  //     setInAmount(inputAmountParam)
-  //   }
-  // }, [searchParams, inputTokenDecimals])
+  // Set initial inputs when component mounts
+  useEffect(() => {
+    setInputs({
+      inputMint: SOL_MINT,
+      outputMint: SSE_MINT,
+      inputAmount: 1,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Empty dependency array means this runs once on mount
 
   return (
     <div className="space-y-4">
