@@ -37,7 +37,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Failed to exchange code for token' }, { status: 400 })
     }
     
-    console.log('Successfully exchange token. ');
     const tokenData = await tokenResponse.json()
     return NextResponse.json(tokenData)
   } catch (error) {

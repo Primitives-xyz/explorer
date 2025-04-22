@@ -21,9 +21,7 @@ export async function GET(request: Request) {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
-      // Include necessary fields in the request
-      // This is Twitter API v2 with query parameters to expand user fields
-      next: { 
+       next: { 
         revalidate: 0,
         tags: ['twitter-user'],
       },

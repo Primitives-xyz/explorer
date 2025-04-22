@@ -53,25 +53,13 @@ export default function TwitterCallback() {
             'Authorization': `Bearer ${tokenData.access_token}`,
           },
         })
-        console.log("🚀 ~ userResponse ~ userResponse:", userResponse)
         
         if (!userResponse.ok) {
           const errorData = await userResponse.json()
           throw new Error(errorData.message || 'Failed to fetch user data')
         }
         
-        const userData = await userResponse.json()
-        
-        // 5. Store user data in localStorage or state management
-        localStorage.setItem('twitter_user_data', JSON.stringify({
-          id: userData.id,
-          username: userData.username,
-        // bio: userData.description,
-        // image: userData.profile_image_url,
-        }))
-                
-
-        // 6. Redirect to Dynamic Auth 
+        // 5. Redirect to Dynamic Auth - so user can login with twitter in the future.
        router.push(`https://app.dynamicauth.com/api/v0/sdk/ab6ac670-0b93-4483-86a5-d0eff1dfca10/providers/twitter/redirect?code={code}&state={state}`)
         
       } catch (error) {

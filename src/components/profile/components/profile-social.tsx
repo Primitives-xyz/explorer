@@ -94,7 +94,6 @@ const handleTwitterLogin = async () => {
     authUrl.searchParams.append('client_id', 'WVBrRlBhVHQxNWEwNUpwb1loUUI6MTpjaQ');
     authUrl.searchParams.append('redirect_uri', `${window.location.origin}${TWITTER_REDIRECT_URL}`);
     authUrl.searchParams.append('scope', 'tweet.read users.read offline.access');
-    console.log("🚀 ~ handleTwitterLogin ~ `${window.location.origin}${TWITTER_REDIRECT_URL}`:", `${window.location.origin}${TWITTER_REDIRECT_URL}`)
     authUrl.searchParams.append('state', state);
     authUrl.searchParams.append('code_challenge', 'challenge'); // Should generate a proper PKCE challenge
     authUrl.searchParams.append('code_challenge_method', 'plain');
