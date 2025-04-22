@@ -13,12 +13,16 @@ import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useToastContent } from './use-toast-content'
+import { OrderType } from '@/components/tapestry/models/drift.model'
 
 interface UsePlacePerpsOrderParams {
   amount: string
   symbol: string
   direction: PositionDirection
   slippage?: string
+  orderType: OrderType
+  limitPrice: string
+  reduceOnly: boolean
 }
 
 const env = 'mainnet-beta'
@@ -28,6 +32,9 @@ export function usePlacePerpsOrder({
   symbol,
   direction,
   slippage = '0.1',
+  orderType,
+  limitPrice,
+  reduceOnly
 }: UsePlacePerpsOrderParams) {
   const [loading, setLoading] = useState<boolean>(false)
   const { driftClient } = useInitializeDrift()
@@ -102,7 +109,7 @@ export function usePlacePerpsOrder({
 
       // Convert the human‑readable `amount` (string) into Drift's perp precision (10^9).
       // e.g. "0.5" SOL => 0.5 * 1_000_000_000 = 500_000_000 (BN)
-      const baseAssetAmount = new BN(Math.round(Number(amount) * 1e9))
+      const baseAssetAmount = driftClient.convertToPerpPrecision(Number(amount))
 
       const orderParams = getMarketOrderParams({
         baseAssetAmount,
@@ -118,7 +125,9 @@ export function usePlacePerpsOrder({
           const maxPrice = ask
             .mul(new BN(Math.floor((1 + slippageDecimal) * 1e6)))
             .div(new BN(1e6))
-          orderParams.oraclePriceOffset = convertToNumber(maxPrice.sub(ask), PRICE_PRECISION)
+          console.log(slippageDecimal, convertToNumber(maxPrice.sub(ask), PRICE_PRECISION))
+          // orderParams.oraclePriceOffset = convertToNumber(maxPrice.sub(ask), PRICE_PRECISION)
+          orderParams.oraclePriceOffset = driftClient.convertToPricePrecision(1.36).toNumber()
         } else {
           // When going SHORT, we're willing to receive up to X% less
           const minPrice = bid
@@ -128,6 +137,24 @@ export function usePlacePerpsOrder({
         }
       }
 
+      if (orderType === OrderType.LIMIT) {
+        const price = driftClient.convertToPricePrecision(Number(limitPrice))
+        const formatedPrice = convertToNumber(price, PRICE_PRECISION)
+
+        if (direction === PositionDirection.LONG && formatedPrice >= formattedAskPrice) {
+          toast.error(ERRORS.LIMIT_PRICE_LONG_ERR.title, ERRORS.LIMIT_PRICE_LONG_ERR.content)
+          return
+        }
+
+        if (direction === PositionDirection.SHORT && formatedPrice < formattedAskPrice) {
+          toast.error(ERRORS.LIMIT_PRICE_SHORT_ERR.title, ERRORS.LIMIT_PRICE_SHORT_ERR.content)
+          return
+        }
+
+        orderParams.price = price
+        orderParams.reduceOnly = reduceOnly
+      }
+
       toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
       const txSig = await driftClient.placePerpOrder(orderParams)
 
@@ -135,6 +162,7 @@ export function usePlacePerpsOrder({
       toast.success(SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.title, SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.content)
       console.log('Perp order sent – tx:', txSig)
     } catch (error) {
+      console.error("error", error)
       toast.dismiss()
       toast.error(ERRORS.TX_PERPS_ORDER_ERR.title, ERRORS.TX_PERPS_ORDER_ERR.content)
       return
