@@ -1,9 +1,6 @@
 'use client'
 
-import {
-  DEFAULT_OUTPUT_TOKEN_IMAGEURI,
-  DEFAULT_OUTPUT_TOKEN_SYMBOL,
-} from '@/components/swap/swap.constants'
+import { DEFAULT_OUTPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
@@ -56,17 +53,17 @@ export function Receive({
         >
           <div className="flex items-center gap-3">
             <div>
-              <Image
-                src={
-                  outputTokenImageUri
-                    ? outputTokenImageUri
-                    : DEFAULT_OUTPUT_TOKEN_IMAGEURI
-                }
-                alt="ITokeImg"
-                width={32}
-                height={32}
-                className="rounded-full aspect-square object-cover"
-              />
+              {outputTokenImageUri ? (
+                <Image
+                  src={outputTokenImageUri}
+                  alt="ITokeImg"
+                  width={32}
+                  height={32}
+                  className="rounded-full aspect-square object-cover"
+                />
+              ) : (
+                <span className="rounded-full h-[32px] w-[32px] bg-background" />
+              )}
             </div>
 
             <span>

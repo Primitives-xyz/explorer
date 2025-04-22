@@ -1,11 +1,7 @@
 'use client'
 
 import { TokenBalance } from '@/components/common/left-side-menu/balance'
-import {
-  DEFAULT_INPUT_TOKEN_IMAGEURI,
-  DEFAULT_INPUT_TOKEN_SYMBOL,
-} from '@/components/swap/swap.constants'
-
+import { DEFAULT_INPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
@@ -75,17 +71,17 @@ export function Pay({
       >
         <div className="flex items-center gap-3">
           <div>
-            <Image
-              src={
-                inputTokenImageUri
-                  ? inputTokenImageUri
-                  : DEFAULT_INPUT_TOKEN_IMAGEURI
-              }
-              alt="ITokeImg"
-              width={32}
-              height={32}
-              className="rounded-full aspect-square object-cover"
-            />
+            {inputTokenImageUri ? (
+              <Image
+                src={inputTokenImageUri}
+                alt="ITokeImg"
+                width={32}
+                height={32}
+                className="rounded-full aspect-square object-cover"
+              />
+            ) : (
+              <span className="rounded-full h-[32px] w-[32px] bg-background" />
+            )}
           </div>
           <span>
             {inputTokenSymbol ? inputTokenSymbol : DEFAULT_INPUT_TOKEN_SYMBOL}

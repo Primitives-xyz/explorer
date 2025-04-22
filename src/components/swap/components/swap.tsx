@@ -20,31 +20,29 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
 
-
 const isStable = (token: string) => {
   const STABLE_TOKENS = [
-    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",  // usdc
-    "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",  // usdt
-    "So11111111111111111111111111111111111111112"    // sol
-  ];
-  return STABLE_TOKENS.includes(token);
+    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // usdc
+    'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // usdt
+    'So11111111111111111111111111111111111111112', // sol
+  ]
+  return STABLE_TOKENS.includes(token)
 }
 
 const getTargetToken = (tokenA: string, tokenB: string) => {
-  const aStable = isStable(tokenA);
-  const bStable = isStable(tokenB);
+  const aStable = isStable(tokenA)
+  const bStable = isStable(tokenB)
 
   // Rule 1: If only one is stable, return the other
-  if (aStable && !bStable) return tokenB;
-  if (!aStable && bStable) return tokenA;
+  if (aStable && !bStable) return tokenB
+  if (!aStable && bStable) return tokenA
 
   // Rule 2: If both are stable, return tokenB
-  if (aStable && bStable) return tokenB;
+  if (aStable && bStable) return tokenB
 
   // Rule 3: Both are alt/meme, return the buyingToken
-  return tokenB;
+  return tokenB
 }
-
 
 const validateAmount = (value: string, decimals: number = 6): boolean => {
   if (value === '') return true
@@ -333,7 +331,6 @@ export function Swap({ setTokenMint }: Props) {
   useEffect(() => {
     if (setTokenMint) {
       const tokenForChart = getTargetToken(inputTokenMint, outputTokenMint)
-      console.log('tokenForChart:', tokenForChart)
       setTokenMint(tokenForChart)
     }
   }, [inputTokenMint, outputTokenMint, setTokenMint])
@@ -360,6 +357,7 @@ export function Swap({ setTokenMint }: Props) {
       outputMint: SSE_MINT,
       inputAmount: 1,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty dependency array means this runs once on mount
 
   return (
