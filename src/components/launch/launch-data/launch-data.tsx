@@ -9,7 +9,7 @@ export function LaunchData() {
   const { 
     launchToken, 
     isLoading, 
-    findingTapAddress, 
+    currentStep,
     tapAddressAttempts, 
     launchSuccess, 
     launchData, 
@@ -36,7 +36,6 @@ export function LaunchData() {
           <LaunchForm 
             onSubmit={launchToken} 
             isLoading={isLoading} 
-            findingTapAddress={findingTapAddress} 
             tapAddressAttempts={tapAddressAttempts} 
           />
         )}

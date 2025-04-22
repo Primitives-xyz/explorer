@@ -6,7 +6,9 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  LAMPORTS_PER_SOL
+  LAMPORTS_PER_SOL,
+  VersionedTransaction,
+  TransactionMessage
 } from '@solana/web3.js'
 
 import { 
@@ -51,7 +53,6 @@ export interface MintedTokenResult {
 // Constants
 const DEFAULT_TOKEN_IMAGE = 'https://vertigo.xyz/default-token-image.png'
 const MIN_PAYER_BALANCE = 0.5 * LAMPORTS_PER_SOL
-const AIRDROP_AMOUNT = 1 * LAMPORTS_PER_SOL
 
 /**
  * Creates a base64-encoded metadata URI for token
@@ -163,15 +164,8 @@ async function ensurePayerHasFunds(connection: Connection, payer: Keypair): Prom
   const payerBalance = await connection.getBalance(payer.publicKey)
   
   if (payerBalance < MIN_PAYER_BALANCE) {
-    const airdropSignature = await connection.requestAirdrop(
-      payer.publicKey, 
-      AIRDROP_AMOUNT
-    )
+    throw new Error("Payer does not have enough SOL")
     
-    await connection.confirmTransaction({ 
-      signature: airdropSignature, 
-      ...(await connection.getLatestBlockhash()) 
-    })
   }
 }
 
@@ -308,12 +302,36 @@ async function sendAndConfirmTransaction(
   transaction: Transaction,
   signers: Keypair[]
 ): Promise<string> {
-  const txId = await connection.sendTransaction(transaction, signers)
-  await connection.confirmTransaction({ 
-    signature: txId, 
-    ...(await connection.getLatestBlockhash()) 
-  })
-  return txId
+  // Set the fee payer
+  transaction.feePayer = signers[0].publicKey;
+  
+  // Get latest blockhash
+  const latestBlockhash = await connection.getLatestBlockhash();
+  
+  // Create v0 compatible message
+  const messageV0 = new TransactionMessage({
+    payerKey: signers[0].publicKey,
+    recentBlockhash: latestBlockhash.blockhash,
+    instructions: transaction.instructions
+  }).compileToV0Message();
+  
+  // Create VersionedTransaction
+  const versionedTx = new VersionedTransaction(messageV0);
+  
+  // Sign the transaction
+  versionedTx.sign(signers);
+  
+  // Send the signed transaction
+  const txid = await connection.sendTransaction(versionedTx);
+  
+  // Confirm the transaction
+  await connection.confirmTransaction({
+    signature: txid,
+    blockhash: latestBlockhash.blockhash,
+    lastValidBlockHeight: latestBlockhash.lastValidBlockHeight
+  });
+  
+  return txid;
 }
 
 /**

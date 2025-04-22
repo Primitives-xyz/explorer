@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
     const requestBody = await req.json()
     const ownerAddress = requestBody.account
     const mintParams = requestBody.mintParams
+    console.log('Mint params: ', mintParams)
     
     if (!ownerAddress || !mintParams) {
       return new Response(
@@ -118,18 +119,6 @@ export async function POST(req: NextRequest) {
     if (mintParams.mintKeypair) {
       console.log('Using custom mint keypair with public key:', mintParams.mintKeypair.publicKey);
       
-      // Log the first few characters of the secret key for debugging (never log entire private keys)
-      if (mintParams.mintKeypair.secretKey) {
-        const secretStart = typeof mintParams.mintKeypair.secretKey === 'string' 
-          ? mintParams.mintKeypair.secretKey.substring(0, 10)
-          : 'not a string';
-        
-        console.log(`Secret key format: ${typeof mintParams.mintKeypair.secretKey}, length: ${
-          typeof mintParams.mintKeypair.secretKey === 'string' 
-            ? mintParams.mintKeypair.secretKey.length 
-            : 'unknown'
-        }, starts with: ${secretStart}...`);
-      }
       
       // Make sure mintKeypair.secretKey is a valid hex string
       try {

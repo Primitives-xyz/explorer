@@ -1,5 +1,3 @@
-
-
 import * as anchor from "@coral-xyz/anchor";
 import { BN } from '@coral-xyz/anchor'
 import {
@@ -27,7 +25,7 @@ const VERTIGO_CONFIG = {
 
 export interface PoolParams {
   shift: number // Virtual SOL amount
-  initialTokenReserves: number // Initial token supply
+  initialTokenReserves: BN // Initial token supply
   decimals: number // Token decimals
   feeParams: {
     normalizationPeriod: number
@@ -48,6 +46,12 @@ export interface LaunchPoolParams {
     tokenWallet: PublicKey
     walletAuthority?: Keypair
   }
+  // Dev buy parameters
+  amount?: BN
+  limit?: BN
+  dev?: Keypair
+  devTaA?: PublicKey
+  devTaB?: PublicKey
 }
 
 export interface BuyTokensParams {
@@ -177,7 +181,7 @@ export async function launchPool(
         mint.publicKey,
         tokenWallet,
         mintAuthority.publicKey,
-        initialTokenReserves * Math.pow(10, decimals),
+        initialTokenReserves.toNumber() * Math.pow(10, decimals),
         [mintAuthority],
         undefined,
         TOKEN_2022_PROGRAM_ID
@@ -206,8 +210,8 @@ export async function launchPool(
       },
     }
 
-    // Launch the pool
-    const { deploySignature, poolAddress } = await vertigo.launchPool({
+    // Create launch pool configuration
+    const launchPoolConfig = {
       // Pool configuration
       params: {
         shift: poolParams.shift,
@@ -232,7 +236,22 @@ export async function launchPool(
       mintB,
       tokenProgramA: TOKEN_PROGRAM_ID,
       tokenProgramB: TOKEN_2022_PROGRAM_ID,
-    })
+    }
+    
+    // Add dev buy parameters if provided
+    if (params.dev && params.devTaA && params.devTaB && params.amount) {
+      console.log('Including dev buy parameters in pool launch')
+      Object.assign(launchPoolConfig, {
+        amount: params.amount,
+        limit: params.limit || new BN(0),
+        dev: params.dev,
+        devTaA: params.devTaA,
+        devTaB: params.devTaB
+      })
+    }
+
+    // Launch the pool
+    const { deploySignature, poolAddress } = await vertigo.launchPool(launchPoolConfig)
 
     return {
       signature: deploySignature,

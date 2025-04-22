@@ -25,11 +25,10 @@ import { useLaunch } from '@/components/launch/hooks/use-launch'
 interface Props {
   onSubmit: (values: LaunchTokenData) => void
   isLoading: boolean
-  findingTapAddress: boolean
   tapAddressAttempts: number
 }
 
-export function LaunchForm({ onSubmit, isLoading, findingTapAddress, tapAddressAttempts }: Props) {
+export function LaunchForm({ onSubmit, isLoading, tapAddressAttempts }: Props) {
   const form = useForm<LaunchTokenData>({
     resolver: zodResolver(launchTokenSchema),
     defaultValues: {
@@ -37,14 +36,15 @@ export function LaunchForm({ onSubmit, isLoading, findingTapAddress, tapAddressA
       tokenSymbol: '',
       initialTokenReserves: 1_000_000_000,
       shift: 100,
+      initialDevBuy: 0,
       decimals: 9,
       royaltiesBps: 100,
       useTapAddress: false,
     },
   })
 
-  // Get the launchingPool and mintingToken states from useLaunch hook
-  const { mintingToken, launchingPool } = useLaunch()
+  // Get the currentStep from useLaunch hook
+  const { currentStep } = useLaunch()
 
   const { uploadLoading, onFileChange, UploadFilesModal } = useFileUpload((imageUrl) => {
     form.setValue('tokenImage', imageUrl)
@@ -60,6 +60,14 @@ export function LaunchForm({ onSubmit, isLoading, findingTapAddress, tapAddressA
     form.setValue('shift', value)
   }
 
+  // Custom handler for initialDevBuy
+  const handleInitialDevBuyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Parse the string to a number
+    const value = parseFloat(e.target.value)
+    // Set the value only if it's a valid number, otherwise set to 0
+    form.setValue('initialDevBuy', isNaN(value) ? 0 : value)
+  }
+
   // Calculate estimated market cap
   const calculateEstimatedMarketCap = () => {
     const initialSupply = form.getValues('initialTokenReserves') || 0
@@ -73,13 +81,14 @@ export function LaunchForm({ onSubmit, isLoading, findingTapAddress, tapAddressA
 
   // Determine the current status message for the button
   const getStatusMessage = () => {
-    if (findingTapAddress) return "Finding TAP Address..."
-    if (mintingToken) return "Minting Coin..."
-    if (launchingPool) return "Launching Pool..."
+    if (currentStep === 'finding_tap_address') return "Finding TAP Address..."
+    if (currentStep === 'minting_token') return "Minting Coin..."
+    if (currentStep === 'launching_pool') return "Launching Pool..."
+    if (currentStep === 'paying_fee') return "Processing Payment..."
     if (isLoading) return "Processing..."
     return "Launch Coin 🚀"
   }
-
+  
   return (
     <>
       <div className="mb-6">
@@ -239,7 +248,7 @@ export function LaunchForm({ onSubmit, isLoading, findingTapAddress, tapAddressA
               </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="royaltiesBps"
@@ -262,6 +271,37 @@ export function LaunchForm({ onSubmit, isLoading, findingTapAddress, tapAddressA
                     </FormControl>
                     <FormDescription>
                       Fee paid to you on every transaction (Default: 100 bps = 1%)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="initialDevBuy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-1">
+                      <DollarSignIcon size={16} className="text-primary" />
+                      Initial Purchase (SOL)
+                    </FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="0.01" 
+                        min="0"
+                        step="0.01"
+                        onChange={handleInitialDevBuyChange}
+                        value={field.value}
+                        name={field.name}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        className="max-w-[200px]"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Amount of SOL you'll use for your first purchase (0 for no purchase)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -300,36 +340,43 @@ export function LaunchForm({ onSubmit, isLoading, findingTapAddress, tapAddressA
           </div>
           
           {/* Status messages for different stages */}
-          {findingTapAddress && (
+          {currentStep === 'finding_tap_address' && (
             <div className="bg-primary/10 p-4 rounded-md border border-primary/20 animate-pulse">
               <p className="text-sm font-medium">Finding a premium address ending with "tap"...</p>
               <p className="text-xs mt-1">Attempts: {tapAddressAttempts} (This may take a few minutes)</p>
             </div>
           )}
           
-          {mintingToken && (
+          {currentStep === 'minting_token' && (
             <div className="bg-blue-50/10 border border-blue-400/50 p-4 rounded-md animate-pulse">
               <p className="text-sm font-medium text-blue-600">Minting your coin...</p>
               <p className="text-xs mt-1">Creating your {form.getValues('tokenName')} coin on the blockchain</p>
             </div>
           )}
           
-          {launchingPool && (
+          {currentStep === 'launching_pool' && (
             <div className="bg-indigo-50/10 border border-indigo-400/50 p-4 rounded-md animate-pulse">
               <p className="text-sm font-medium text-indigo-600">Launching liquidity pool...</p>
               <p className="text-xs mt-1">Creating a trading pool for {form.getValues('tokenSymbol')} - your coin will be live after this step!</p>
             </div>
           )}
           
+          {currentStep === 'paying_fee' && (
+            <div className="bg-green-50/10 border border-green-400/50 p-4 rounded-md animate-pulse">
+              <p className="text-sm font-medium text-green-600">Processing payment...</p>
+              <p className="text-xs mt-1">Paying platform fee to create your {form.getValues('tokenSymbol')} coin</p>
+            </div>
+          )}
+          
           <Button 
             type="submit" 
-            disabled={isLoading || uploadLoading || findingTapAddress || mintingToken || launchingPool}
+            disabled={isLoading || uploadLoading || currentStep !== null}
             className="w-full py-6 text-lg"
           >
             {getStatusMessage()}
           </Button>
 
-          {!isLoading && !uploadLoading && !findingTapAddress && !mintingToken && !launchingPool && (
+          {!isLoading && !uploadLoading && currentStep === null && (
             <p className="text-center text-sm text-muted-foreground mt-2">
               Your coin will be immediately available for trading once launched
             </p>
