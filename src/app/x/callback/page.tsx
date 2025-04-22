@@ -59,9 +59,7 @@ export default function TwitterCallback() {
           throw new Error(errorData.message || 'Failed to fetch user data')
         }
 
-        setTimeout(() => {
-          router.push(`/${localStorage.getItem('profileId')}`) 
-        }, 3000) // give 3 s because sometimes the identities take a while to be added.
+        window.location.href = `/${localStorage.getItem('profileId')}`
       } catch (error) {
         console.error('Twitter callback error:', error)
         setError(error instanceof Error ? error.message : 'Unknown error occurred')
