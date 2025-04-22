@@ -71,7 +71,7 @@ export default function TwitterCallback() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center min-h-screen">
         <h1 className="text-xl font-bold mb-4">Unexpected Authentication Error</h1>
         <p className="text-red-500">{error}, Please try again.</p>
       </div>
