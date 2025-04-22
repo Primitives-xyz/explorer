@@ -8,77 +8,91 @@ export function useToastContent() {
       title: "Fee Calculation Error",
       content: {
         description: "Failed to calculate SSE fees. Please try again or check your inputs.",
-        duration: 2000,
+        duration: 5000,
       }
     },
     JUP_QUOTE_API_ERR: {
       title: "Jupiter Quote API Error",
       content: {
         description: "Failed to fetch Jupiter Quote API. Please try again later",
-        duration: 2000,
+        duration: 5000,
       }
     },
     JUP_SWAP_API_ERR: {
       title: "Jupiter SWAP API Error",
       content: {
         description: "Failed to fetch Jupiter SWAP API. Please try again later",
-        duration: 2000,
+        duration: 5000,
       }
     },
     WALLET_CONNETION_ERR: {
       title: "WALLET ERROR",
       content: {
         description: "Please connect the solana wallet",
-        duration: 2000,
+        duration: 5000,
       }
     },
     TX_FAILED_ERR: {
       title: t('trade.transaction_failed'),
       content: {
         description: t('trade.the_swap_transaction_failed_please_try_again'),
-        duration: 2000,
+        duration: 5000,
       }
     },
     TX_PERPS_ORDER_ERR: {
       title: t('trade.transaction_failed'),
       content: {
         description: 'Failed to Place Perps Order. Please try again later.',
-        duration: 2000,
+        duration: 5000,
       }
     },
     TX_DEPOSIT_COLLATERAL_ERR: {
       title: t('trade.transaction_failed'),
       content: {
         description: 'Failed to deposit collateral',
-        duration: 2000,
+        duration: 5000,
       }
     },
     PERPS_ORDER_SIZE_ERR: {
       title: 'Order Size Error',
       content: {
         description: 'Order size must be at least 0.01 SOL',
-        duration: 2000,
+        duration: 5000,
       }
     },
     DRIFT_CLIENT_INIT_ERR: {
       title: 'Drift Client Error',
       content: {
         description: 'Drift client not initialized',
-        duration: 2000,
+        duration: 5000,
       }
     },
     PERPS_MARKET_ERR: {
       title: 'Perpetual Market Error',
       content: {
         description: 'Perpetual Market Not Found',
-        duration: 2000,
+        duration: 5000,
       }
     },
     PERPS_MARKET_ACCOUNT_ERR: {
       title: 'Perpetual Market Account Error',
       content: {
         description: 'Perpetual Market Account Not Found',
-        duration: 2000,
+        duration: 5000,
+      }
+    },
+    LIMIT_PRICE_LONG_ERR: {
+      title: 'Limit Price Error',
+      content: {
+        description: 'The limit price is above or equal to the current orderbook ask price',
+        duration: 5000,
+      }
+    },
+    LIMIT_PRICE_SHORT_ERR: {
+      title: 'Limit Price Error',
+      content: {
+        description: 'The limit price is below the current ask price',
+        duration: 5000,
       }
     }
   }

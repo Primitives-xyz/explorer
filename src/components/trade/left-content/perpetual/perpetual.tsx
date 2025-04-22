@@ -20,42 +20,37 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { PositionDirection } from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import AddFundsModal from './add-funds-modal'
+import { OrderType, PerpsMarketType, ProOrderType } from '@/components/tapestry/models/drift.model'
 
-enum OrderType {
-  MARKET = 'market',
-  LIMIT = 'limit',
-  PRO = 'pro',
+const isValidNumericInput = (val: string) =>
+  val === '' || val === '.' || /^[0]?\.[0-9]*$/.test(val) || /^[0-9]*\.?[0-9]*$/.test(val)
+
+const restoreCursor = (e: React.ChangeEvent<HTMLInputElement>, cursor: number) => {
+  setTimeout(() => {
+    e.target.focus()
+    e.target.setSelectionRange(cursor, cursor)
+  }, 0)
 }
 
-enum ProOrderType {
-  STOP_MARKET = 'Stop Market',
-  STOP_LIMIT = 'Stop Limit',
-  TAKE_PROFIT_MARKET = 'Take Profit',
-  TAKE_PROFIT_LIMIT = 'Take Profit Limit',
-  ORACLE_Limit = 'Oracle Market',
-  SCALE = 'Scale',
-}
+const options = [
+  { label: 'Market', value: OrderType.MARKET },
+  { label: 'Limit', value: OrderType.LIMIT },
+]
 
-enum PerpsMarketType {
-  SOL = 'SOL',
-  USDC = 'USDC',
+const formatLeverage = (leverage: number) => {
+  return leverage.toFixed(2) + 'x'
 }
 
 export function Perpetual() {
   const { accountIds } = useDriftUsers()
-  const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { userStats, loading: statsLoading } = useUserStats(accountIds[0] || 0)
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
+
+  // State
+  const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
-  const [limitPrice, setLimitPrice] = useState<number>(0)
-  const [proOrderType, setProOrderType] = useState<ProOrderType>(
-    ProOrderType.STOP_MARKET
-  )
-  const [perpsMarketType, setPerpsMarketType] = useState<PerpsMarketType>(
-    PerpsMarketType.SOL
-  )
-  const [selectedDirection, setSelectedDirection] =
-    useState<DirectionFilterType>(DirectionFilterType.LONG)
+  const [reduceOnly, setRedulyOnly] = useState<boolean>(false)
+  const [selectedDirection, setSelectedDirection] = useState<DirectionFilterType>(DirectionFilterType.LONG)
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
   const [slippageOption, setSlippageOption] = useState<string>('0.1')
   const [swift, setSwift] = useState<boolean>(false)
@@ -63,18 +58,18 @@ export function Perpetual() {
   const [amount, setAmount] = useState<string>('')
   const [orderAmount, setOrderAmount] = useState<string>('')
   const [symbol, setSymbol] = useState<string>('SOL')
+  const [limitPrice, setLimitPrice] = useState<string>("")
   const [leverageValue, setLeverageValue] = useState<number>(1)
   const [isSizeByLeverage, setIsSizeByLeverage] = useState<boolean>(false)
-  const { price: marketPrice, loading: priceLoading } = useMarketPrice({
-    symbol,
-  })
+
+  // Market
+  const { price: marketPrice, loading: priceLoading } = useMarketPrice({ symbol })
   const { liquidationPrice, loading: liqPriceLoading } = useLiquidationPrice({
     symbol,
     amount,
     direction:
       selectedDirection === DirectionFilterType.LONG ? 'long' : 'short',
   })
-
   const { selectedLeverageSizeUsd, selectedLeverageSizeToken } =
     useLeverageSize({
       userStats,
@@ -91,59 +86,48 @@ export function Perpetual() {
         ? PositionDirection.LONG
         : PositionDirection.SHORT,
     slippage: slippageOption,
+    orderType,
+    limitPrice,
+    reduceOnly,
   })
 
+  // Derived Data
   const getMaxTradeAmount = useMemo(() => {
     if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
 
     return userStats.maxTradeSize.toFixed(2)
   }, [userStats])
 
-  const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsSizeByLeverage(false)
-      const val = e.target.value
-      if (
-        val === '' ||
-        val === '.' ||
-        /^[0]?\.[0-9]*$/.test(val) ||
-        /^[0-9]*\.?[0-9]*$/.test(val)
-      ) {
-        const cursorPosition = e.target.selectionStart
-        if (Number(val) * marketPrice > userStats.maxTradeSize) {
-          setAmount((userStats.maxTradeSize / marketPrice).toFixed(2))
-        } else {
-          setAmount(val)
-        }
-        window.setTimeout(() => {
-          e.target.focus()
-          e.target.setSelectionRange(cursorPosition, cursorPosition)
-        }, 0)
-      }
-    },
+  // handlers
+  const handleAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    const cursorPosition = e.target.selectionStart || 0
+
+    setIsSizeByLeverage(false)
+
+    if (!isValidNumericInput(val)) return
+
+    const maxAmount = userStats?.maxTradeSize || 0
+    const totalAmountInUSD = Number(val) * marketPrice
+
+    const newVal = totalAmountInUSD > maxAmount ? (maxAmount / marketPrice).toFixed(2) : val
+
+    setAmount(newVal)
+
+    restoreCursor(e, cursorPosition)
+  },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [userStats, marketPrice]
   )
 
   const handleDynamicSlippage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
-    if (
-      val === '' ||
-      val === '.' ||
-      /^[0]?\.[0-9]*$/.test(val) ||
-      /^[0-9]*\.?[0-9]*$/.test(val)
-    ) {
-      const cursorPosition = e.target.selectionStart
-      if (Number(val) < 100) {
-        setSlippageOption(e.target.value)
-      } else {
-        setSlippageOption('99')
-      }
-      window.setTimeout(() => {
-        e.target.focus()
-        e.target.setSelectionRange(cursorPosition, cursorPosition)
-      }, 0)
-    }
+    const cursor = e.target.selectionStart || 0
+
+    if (!isValidNumericInput(val)) return
+
+    setSlippageOption(Number(val) < 100 ? val : '99')
+    restoreCursor(e, cursor)
   }
 
   const handleLeverageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,13 +135,15 @@ export function Perpetual() {
     setLeverageValue(newLeverage)
   }
 
-  const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLimitPrice(parseFloat(e.target.value))
-  }
+  const handleLimitPriceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    const cursor = e.target.selectionStart || 0
 
-  const formatLeverage = (leverage: number) => {
-    return leverage.toFixed(2) + 'x'
-  }
+    if (!isValidNumericInput(val)) return
+
+    setLimitPrice(val)
+    restoreCursor(e, cursor)
+  }, [])
 
   useEffect(() => {
     if (!isSizeByLeverage) {
@@ -177,11 +163,6 @@ export function Perpetual() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, selectedLeverageSizeToken])
-
-  const options = [
-    { label: 'Market', value: OrderType.MARKET },
-    { label: 'Limit', value: OrderType.LIMIT },
-  ]
 
   return (
     <div className="w-full">
@@ -203,79 +184,63 @@ export function Perpetual() {
                 selected={orderType}
                 onSelect={setOrderType}
               />
-
-              {/* <Select
-                  value={proOrderType}
-                  defaultValue="Pro Orders"
-                  onValueChange={(value) => {
-                    setProOrderType(value as ProOrderType)
-                    setOrderType(OrderType.PRO)
-                  }}
-                >
-                  <SelectTrigger
-                    className={cn(
-                      'bg-transparent h-12 border-none text-normal text-white',
-                      orderType === OrderType.PRO && 'text-primary'
-                    )}
-                  >
-                    <SelectValue defaultValue="Pro Orders" />
-                  </SelectTrigger>
-                  <SelectContent className="border border-primary text-primary">
-                    {Object.values(ProOrderType).map((type, index) => (
-                      <SelectItem value={type} key={index}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select> */}
             </div>
 
             <Separator className="mt-0" />
 
             {orderType === OrderType.MARKET && (
               <MarketOrder
-                getMaxTradeAmount={getMaxTradeAmount}
-                priceLoading={priceLoading}
-                handleAmountChange={handleAmountChange}
                 amount={amount}
-                marketPrice={marketPrice}
-                leverageValue={leverageValue}
-                handleLeverageChange={handleLeverageChange}
-                setLeverageValue={setLeverageValue}
-                slippageExpanded={slippageExpanded}
-                setSlippageExpanded={setSlippageExpanded}
-                slippageOption={slippageOption}
-                setSlippageOption={setSlippageOption}
+                getMaxTradeAmount={getMaxTradeAmount}
+                handleAmountChange={handleAmountChange}
                 handleDynamicSlippage={handleDynamicSlippage}
-                swift={swift}
-                setSwift={setSwift}
-                userStats={userStats}
-                setAmount={setAmount}
-                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
-                selectedLeverageSizeToken={selectedLeverageSizeToken}
+                handleLeverageChange={handleLeverageChange}
                 isSizeByLeverage={isSizeByLeverage}
+                leverageValue={leverageValue}
+                marketPrice={marketPrice}
+                priceLoading={priceLoading}
+                selectedLeverageSizeToken={selectedLeverageSizeToken}
+                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
+                setAmount={setAmount}
                 setIsSizeByLeverage={setIsSizeByLeverage}
+                setLeverageValue={setLeverageValue}
+                setSlippageExpanded={setSlippageExpanded}
+                setSlippageOption={setSlippageOption}
+                setSwift={setSwift}
+                slippageExpanded={slippageExpanded}
+                slippageOption={slippageOption}
+                swift={swift}
+                userStats={userStats}
               />
+
             )}
 
             {orderType === OrderType.LIMIT && (
               <LimitOrder
-                limitPrice={limitPrice}
-                handleLimitPriceChange={handleLimitPriceChange}
                 amount={amount}
-                marketPrice={marketPrice}
-                leverageValue={leverageValue}
-                setLeverageValue={setLeverageValue}
-                handleLeverageChange={handleLeverageChange}
-                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
-                selectedLeverageSizeToken={selectedLeverageSizeToken}
                 handleAmountChange={handleAmountChange}
-                setAmount={setAmount}
-                userStats={userStats}
-                swift={swift}
-                setSwift={setSwift}
+                handleDynamicSlippage={handleDynamicSlippage}
+                handleLeverageChange={handleLeverageChange}
+                handleLimitPriceChange={handleLimitPriceChange}
                 isSizeByLeverage={isSizeByLeverage}
+                leverageValue={leverageValue}
+                limitPrice={limitPrice}
+                marketPrice={marketPrice}
+                marketPriceLoading={priceLoading}
+                selectedLeverageSizeToken={selectedLeverageSizeToken}
+                selectedLeverageSizeUsd={selectedLeverageSizeUsd.toString()}
+                setAmount={setAmount}
                 setIsSizeByLeverage={setIsSizeByLeverage}
+                setLeverageValue={setLeverageValue}
+                setReduceOnly={setRedulyOnly}
+                setSlippageExpanded={setSlippageExpanded}
+                setSlippageOption={setSlippageOption}
+                setSwift={setSwift}
+                slippageExpanded={slippageExpanded}
+                slippageOption={slippageOption}
+                swift={swift}
+                reduceOnly={reduceOnly}
+                userStats={userStats}
               />
             )}
           </CardContent>
@@ -310,7 +275,6 @@ export function Perpetual() {
           isOpen={isFundsModalOpen}
           setIsOpen={setIsFundsModalOpen}
         />
-
       </div>
     </div>
   )
