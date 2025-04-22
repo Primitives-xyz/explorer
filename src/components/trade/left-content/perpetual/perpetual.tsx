@@ -43,7 +43,6 @@ const formatLeverage = (leverage: number) => {
 
 export function Perpetual() {
   const { accountIds } = useDriftUsers()
-  const { userStats, loading: statsLoading } = useUserStats(accountIds[0] || 0)
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
 
   // State
@@ -64,9 +63,13 @@ export function Perpetual() {
 
   // Market
   const { price: marketPrice, loading: priceLoading } = useMarketPrice({ symbol })
+  const { userStats, loading: statsLoading } = useUserStats({
+    subAccountId: accountIds[0] || 0,
+    symbol
+  })
   const { liquidationPrice, loading: liqPriceLoading } = useLiquidationPrice({
     symbol,
-    amount,
+    amount: orderAmount,
     direction:
       selectedDirection === DirectionFilterType.LONG ? 'long' : 'short',
   })
@@ -170,6 +173,7 @@ export function Perpetual() {
         <HeroPerpetual
           selectedDirection={selectedDirection}
           userStats={userStats}
+          statsLoading={statsLoading}
           setSelectedDirection={setSelectedDirection}
           formatLeverage={formatLeverage}
           blur={!accountIds.length}

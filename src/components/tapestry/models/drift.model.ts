@@ -1,4 +1,4 @@
-import { PerpPosition, SpotPosition } from '@drift-labs/sdk-browser'
+import { Order, PerpPosition } from '@drift-labs/sdk-browser'
 
 export interface IUserStats {
   // User health
@@ -13,11 +13,16 @@ export interface IUserStats {
 
   // Positions
   perpPositions: PerpPosition[]
-  spotPositions: SpotPosition[]
+  orders: Order[]
 
   // Trading limits
   maxLeverage: number
   maxTradeSize: number
+}
+
+export enum MarketType {
+  SPOT = 'spot',
+  PERP = 'perp',
 }
 
 export enum OrderType {
@@ -38,5 +43,10 @@ export enum ProOrderType {
 export enum PerpsMarketType {
   SOL = 'SOL',
   USDC = 'USDC',
+}
+
+export enum DirectionFilterType {
+  LONG = 'long',
+  SHORT = 'short',
 }
 
