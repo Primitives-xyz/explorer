@@ -185,9 +185,10 @@ return (
               ? identities[0].namespace.name + identities[0].profile.id
               : "x-default-tab"}
           >
-            {hasXIdentity && mainProfile?.username != '' && mainProfile?.username === explorerProfile?.profile.username
+            {hasXIdentity 
               ? <ProfileExternalProfile identity={identities[0]} />
-              : <div style={{"padding": "40px"}} className="rounded-card border text-card-foreground shadow-card overflow-hidden backdrop-blur-xl bg-secondary/10 border-foreground/20">
+              : ( mainProfile?.username !== explorerProfile?.profile.username &&
+              <div style={{"padding": "40px"}} className="rounded-card border text-card-foreground shadow-card overflow-hidden backdrop-blur-xl bg-secondary/10 border-foreground/20">
                 <h3>Oops! No linked X</h3>
                 <br/>
                 <p>Connect your X to let others know what you're up to</p>
@@ -200,7 +201,7 @@ return (
                   <path d="M13.6419 11.2186L20.9272 2.75H19.2009L12.875 10.1032L7.82253 2.75H1.99512L9.63542 13.8693L1.99512 22.75H3.72161L10.4019 14.9848L15.7377 22.75H21.5651L13.6415 11.2186H13.6419ZM11.2772 13.9673L10.5031 12.8601L4.34369 4.04968H6.99548L11.9662 11.1599L12.7403 12.2672L19.2017 21.5094H16.5499L11.2772 13.9677V13.9673Z" fill="#F5F8FD"/>
                   </svg>
                 </Button>
-                </div>}
+                </div>)}
           </TabsContent>
           
           {/* Add content for the rest of the tabs */}
