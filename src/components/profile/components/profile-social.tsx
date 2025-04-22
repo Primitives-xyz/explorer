@@ -1,6 +1,4 @@
 'use client'
-import { useProcessedIdentities } from '@/components/profile/hooks/use-processed-identities'
-import { useTwitterOAuth } from '@/components/profile/hooks/use-twitter-o-auth'
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import {
   Card,
@@ -15,8 +13,11 @@ import {
   TabVariant,
 } from '@/components/ui'
 import { Button, ButtonVariant } from '@/components/ui/button'
+import { EXPLORER_NAMESPACE, TWITTER_REDIRECT_URL } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useMemo } from 'react'
 import { ProfileExternalProfile } from './profile-external-profile'
 
 interface Props {
@@ -25,20 +26,105 @@ interface Props {
 
 export function ProfileSocial({ walletAddress }: Props) {
   const { mainProfile } = useCurrentWallet()
+  const router = useRouter()
 
   const { identities: originalIdentities, loading } = useGetIdentities({
     walletAddress,
   })
 
-  const { identities, hasXIdentity, explorerProfile } =
-    useProcessedIdentities(originalIdentities)
+  // const { identities, hasXIdentity, explorerProfile } =
+  //   useProcessedIdentities(originalIdentities)
+
+  const { identities, hasXIdentity, explorerProfile } = useMemo(() => {
+    if (!originalIdentities) {
+      return { identities: undefined, hasXIdentity: false }
+    }
+
+    // Check if there's an identity with namespace.name === 'x'
+    const xIdentityIndex = originalIdentities.findIndex(
+      (identity) => identity.namespace.name === 'x'
+    )
+
+    const explorerIdentityIndex = originalIdentities.findIndex(
+      (identity) => identity.namespace.name === EXPLORER_NAMESPACE
+    )
+
+    const hasXIdentity = xIdentityIndex !== -1
+    const explorerProfile =
+      explorerIdentityIndex !== -1
+        ? originalIdentities[explorerIdentityIndex]
+        : null
+
+    // If there's no X identity, return the original array
+    if (!hasXIdentity) {
+      return {
+        identities: originalIdentities,
+        hasXIdentity,
+        explorerProfile: explorerProfile,
+      }
+    }
+
+    // Create a new array with the X identity first, followed by the rest
+    const xIdentity = originalIdentities[xIdentityIndex]
+    const otherIdentities = originalIdentities.filter(
+      (_, index) => index !== xIdentityIndex
+    )
+
+    return {
+      identities: [xIdentity, ...otherIdentities],
+      hasXIdentity,
+      explorerProfile: explorerProfile,
+    }
+  }, [originalIdentities])
 
   const defaultTabValue =
     hasXIdentity && identities?.[0]?.namespace
       ? identities?.[0]?.namespace?.name + identities?.[0]?.profile?.id
       : 'x-default-tab'
 
-  const { initiateTwitterLogin } = useTwitterOAuth()
+  //const { initiateTwitterLogin } = useTwitterOAuth()
+
+  const handleTwitterLogin = async () => {
+    try {
+      // Generate a random state value for security
+      const state = Math.random().toString(36).substring(2, 15)
+
+      if (!explorerProfile?.profile) {
+        throw new Error(
+          'Explorer profile not found! You must create an explorer profile before adding a twitter profile'
+        )
+      }
+
+      // Store state in localStorage for verification after redirect
+      localStorage.setItem('twitter_oauth_state', state)
+      localStorage.setItem('profileId', explorerProfile.profile.id)
+      // Construct the Twitter OAuth URL
+      const authUrl = new URL('https://twitter.com/i/oauth2/authorize')
+      // Set required OAuth parameters
+      authUrl.searchParams.append('response_type', 'code')
+      authUrl.searchParams.append(
+        'client_id',
+        'WVBrRlBhVHQxNWEwNUpwb1loUUI6MTpjaQ'
+      )
+      authUrl.searchParams.append(
+        'redirect_uri',
+        `${window.location.origin}${TWITTER_REDIRECT_URL}`
+      )
+      authUrl.searchParams.append(
+        'scope',
+        'tweet.read users.read offline.access'
+      )
+      authUrl.searchParams.append('state', state)
+      authUrl.searchParams.append('code_challenge', 'challenge') // Should generate a proper PKCE challenge
+      authUrl.searchParams.append('code_challenge_method', 'plain')
+
+      // Redirect to Twitter authorization page
+      router.push(authUrl.toString())
+    } catch (error) {
+      console.error('Twitter login error:', error)
+      // if (onError) onError(error);
+    }
+  }
 
   return (
     <Card>
@@ -132,9 +218,7 @@ export function ProfileSocial({ walletAddress }: Props) {
                       <Button
                         variant={ButtonVariant.OUTLINE_WHITE}
                         className="w-full"
-                        onClick={() =>
-                          initiateTwitterLogin(explorerProfile?.profile?.id)
-                        }
+                        onClick={async () => await handleTwitterLogin()}
                       >
                         Connect
                         <div>
