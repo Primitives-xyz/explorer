@@ -120,14 +120,12 @@ export function usePlacePerpsOrder({
       // Apply slippage to the order
       if (slippageDecimal > 0) {
         // For limit price, we need to adjust based on direction
-        if (direction === PositionDirection.LONG) {
+        if ('long' in direction) {
           // When going LONG, we're willing to pay up to X% more
           const maxPrice = ask
             .mul(new BN(Math.floor((1 + slippageDecimal) * 1e6)))
             .div(new BN(1e6))
-          console.log(slippageDecimal, convertToNumber(maxPrice.sub(ask), PRICE_PRECISION))
-          // orderParams.oraclePriceOffset = convertToNumber(maxPrice.sub(ask), PRICE_PRECISION)
-          orderParams.oraclePriceOffset = driftClient.convertToPricePrecision(1.36).toNumber()
+          orderParams.oraclePriceOffset = convertToNumber(maxPrice.sub(ask), PRICE_PRECISION)
         } else {
           // When going SHORT, we're willing to receive up to X% less
           const minPrice = bid

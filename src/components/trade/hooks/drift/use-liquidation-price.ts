@@ -4,6 +4,7 @@ import {
   convertToNumber,
   PerpMarkets,
   PRICE_PRECISION,
+  QUOTE_PRECISION,
   ZERO,
 } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
