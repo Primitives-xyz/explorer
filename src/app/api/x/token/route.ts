@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server'
 
-const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID // Use environment variables in a real app
-const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET // Use environment variables in a real app
-
 import { TWITTER_REDIRECT_URL } from '@/utils/constants';
 export async function POST(request: Request) {
   try {
@@ -16,7 +13,7 @@ export async function POST(request: Request) {
     const protocol = request.headers.get('x-forwarded-proto') || 'http';
     const redirectUrl = `${protocol}://${host}${TWITTER_REDIRECT_URL}`;
 
-    const basicAuth = Buffer.from(`${TWITTER_CLIENT_ID}:${TWITTER_CLIENT_SECRET}`).toString('base64')
+    const basicAuth = Buffer.from(`${process.env.TWITTER_CLIENT_ID}:${process.env.TWITTER_CLIENT_SECRET}`).toString('base64')
 
     // Exchange code for access token
     const tokenUrl = 'https://api.twitter.com/2/oauth2/token'
