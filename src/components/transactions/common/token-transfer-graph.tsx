@@ -47,14 +47,12 @@ const AccountNode: FC<{ data: any }> = ({ data }) => {
               <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full">Fee Payer</span>
             )}
           </div>
-          <CardDescription className="text-xs text-gray-400 overflow-visible">
             <SolanaAddressDisplay 
             address={data.address}
             displayAbbreviatedAddress
             showCopyButton
             highlightable
              />
-          </CardDescription>
         </CardHeader>
       </Card>
       <Handle 
