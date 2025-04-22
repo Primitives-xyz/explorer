@@ -13,6 +13,10 @@ export async function POST(request: Request) {
     const protocol = request.headers.get('x-forwarded-proto') || 'http';
     const redirectUrl = `${protocol}://${host}${TWITTER_REDIRECT_URL}`;
 
+    if (!process.env.TWITTER_CLIENT_ID || !process.env.TWITTER_CLIENT_SECRET) {
+      return NextResponse.json({ message: 'Twitter client ID or client secret is not configured' }, { status: 500 })
+    }
+
     const basicAuth = Buffer.from(`${process.env.TWITTER_CLIENT_ID}:${process.env.TWITTER_CLIENT_SECRET}`).toString('base64')
 
     // Exchange code for access token
