@@ -66,17 +66,19 @@ export function ProfileSocial({ walletAddress }: Props) {
                   }
                   className="flex-1 gap-1.5"
                 >
-                  <Image
-                    src={
-                      hasXIdentity
-                        ? identities[0]?.namespace?.faviconURL
-                        : '/images/x.png'
-                    }
-                    alt="x logo"
-                    width={22}
-                    height={22}
-                    className="w-full h-full object-contain"
-                  />
+                  <div>
+                    <Image
+                      src={
+                        hasXIdentity
+                          ? identities[0]?.namespace?.faviconURL
+                          : '/images/x.png'
+                      }
+                      alt="x logo"
+                      width={16}
+                      height={16}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
 
                   <span>
                     {hasXIdentity ? identities[0].namespace.readableName : 'X'}
