@@ -2,6 +2,7 @@ import { Button, ButtonVariant, Card, CardContent, CardVariant, Spinner } from "
 import { cn } from "@/utils/utils"
 import { X } from "lucide-react"
 import { useLimitOrders } from "../../hooks/drift/use-limit-orders"
+import Tooltip from "@/components/ui/tooltip"
 
 interface OrdersTabContentProps {
   subAccountId: number,
@@ -9,7 +10,7 @@ interface OrdersTabContentProps {
 
 export default function OrdersTabContent({ subAccountId }: OrdersTabContentProps) {
   const symbol = "SOL"
-  const { limitOrders, cancelLoading, cancelOrder } = useLimitOrders({
+  const { limitOrders, cancelLoading, loading, cancelOrder } = useLimitOrders({
     subAccountId,
     symbol,
   })
@@ -31,58 +32,70 @@ export default function OrdersTabContent({ subAccountId }: OrdersTabContentProps
         <div className="text-primary">Action</div>
       </div>
 
-      <div className="space-y-2">
-        {limitOrders.length ? (
-          <>
-            {
-              limitOrders.map((limitOrder, index) => {
-                return (
-                  <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
-                    <CardContent className="p-2 grid grid-cols-5 gap-2 items-center text-center">
-                      <div>
-                        <p>{limitOrder.market}</p>
-                        <p className={cn(
-                          "text-red-500",
-                          limitOrder.direction === "LONG" && "text-primary"
-                        )}>{limitOrder.direction}</p>
-                      </div>
+      <div className="h-[250px] overflow-auto space-y-2">
+        {
+          loading ? (
+            <div className="flex justify-center items-center w-full h-full">
+              <Spinner size={32} />
+            </div>
+          ) : (
+            <>
+              {limitOrders.length ? (
+                <>
+                  {
+                    limitOrders.map((limitOrder, index) => {
+                      return (
+                        <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
+                          <CardContent className="px-2 py-4 grid grid-cols-5 gap-2 items-center text-center">
+                            <div>
+                              <p>{limitOrder.market}</p>
+                              <p className={cn(
+                                "text-red-500",
+                                limitOrder.direction === "LONG" && "text-primary"
+                              )}>{limitOrder.direction}</p>
+                            </div>
 
-                      <p>LIMIT</p>
+                            <p>LIMIT</p>
 
-                      <div>
-                        <p>0 / {limitOrder.baseAssetAmount}</p>
-                      </div>
+                            <div>
+                              <p>0 / {limitOrder.baseAssetAmount}</p>
+                            </div>
 
-                      <div>
-                        <p>
-                          {limitOrder.triggerPrice ? limitOrder.triggerPrice.toFixed(2) : "-"} / {limitOrder.price.toFixed(2)}
-                        </p>
-                      </div>
+                            <div>
+                              <p>
+                                {limitOrder.triggerPrice ? limitOrder.triggerPrice.toFixed(2) : "-"} / {limitOrder.price.toFixed(2)}
+                              </p>
+                            </div>
 
-                      <div className="flex justify-center items-center">
-                        <Button
-                          variant={ButtonVariant.OUTLINE}
-                          disabled={cancelLoading}
-                          onClick={() => {
-                            handleClose(limitOrder.orderId, subAccountId)
-                          }}
-                        >
-                          {
-                            cancelLoading ? <Spinner /> : <X size={16} className="font-bold" />
-                          }
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })
-            }
-          </>
-        ) : (
-          <div className="flex justify-center items-center p-4">
-            <span>No Limit Orders</span>
-          </div>
-        )
+                            <div className="flex justify-center items-center">
+                              <Tooltip content="Cancel Order">
+                                <Button
+                                  variant={ButtonVariant.OUTLINE}
+                                  disabled={cancelLoading}
+                                  onClick={() => {
+                                    handleClose(limitOrder.orderId, subAccountId)
+                                  }}
+                                >
+                                  {
+                                    cancelLoading ? <Spinner /> : <X size={16} className="font-bold" />
+                                  }
+                                </Button>
+                              </Tooltip>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })
+                  }
+                </>
+              ) : (
+                <div className="flex justify-center items-center w-full h-full">
+                  <span>No Limit Orders</span>
+                </div>
+              )
+              }
+            </>
+          )
         }
       </div>
     </div >

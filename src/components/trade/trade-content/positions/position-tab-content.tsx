@@ -5,6 +5,7 @@ import { X } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useToastContent } from "../../hooks/drift/use-toast-content"
+import Tooltip from "@/components/ui/tooltip"
 
 interface PositionTabContentProps {
   subAccountId: number,
@@ -46,73 +47,85 @@ export default function PositionTabContent({ subAccountId }: PositionTabContentP
         <div className="text-primary">Action</div>
       </div>
 
-      <>
-        {perpsPositionsInfo.length ? (
-          <>
-            {
-              perpsPositionsInfo.map((position, index) => {
-                return (
-                  <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
-                    <CardContent className="p-2 grid grid-cols-6 gap-2 items-center">
-                      <div>
-                        <p>{position.market}</p>
-                        <p className={cn(
-                          "text-red-500",
-                          position.direction === "LONG" && "text-primary"
-                        )}>{position.direction}</p>
-                      </div>
+      <div className="h-[250px] overflow-auto space-y-2">
+        {
+          positionsLoading ? (
+            <div className="flex justify-center items-center w-full h-full">
+              <Spinner size={32} />
+            </div>
+          ) : (
+            <>
+              {perpsPositionsInfo.length ? (
+                <>
+                  {
+                    perpsPositionsInfo.map((position, index) => {
+                      return (
+                        <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
+                          <CardContent className="px-2 py-4 grid grid-cols-6 gap-2 items-center">
+                            <div>
+                              <p>{position.market}</p>
+                              <p className={cn(
+                                "text-red-500",
+                                position.direction === "LONG" && "text-primary"
+                              )}>{position.direction}</p>
+                            </div>
 
-                      <div>
-                        <p>{position.baseAssetAmountInToken.toFixed(2)} {symbol}</p>
-                        <p className="text-gray-400">${position.baseAssetAmountInUsd.toFixed(2)}</p>
-                      </div>
+                            <div>
+                              <p>{position.baseAssetAmountInToken.toFixed(2)} {symbol}</p>
+                              <p className="text-gray-400">${position.baseAssetAmountInUsd.toFixed(2)}</p>
+                            </div>
 
-                      <div>
-                        <p>${position.entryPrice.toFixed(2)}</p>
-                        <p className="text-gray-400">${position.markPrice.toFixed(2)}</p>
-                      </div>
+                            <div>
+                              <p>${position.entryPrice.toFixed(2)}</p>
+                              <p className="text-gray-400">${position.markPrice.toFixed(2)}</p>
+                            </div>
 
-                      <div>
-                        <p className={cn(
-                          "text-red-500",
-                          position.pnlInUsd > 0 && "text-primary",
-                        )}>
-                          ${position.pnlInUsd.toFixed(2)}
-                        </p>
-                        <p className={cn(
-                          "text-red-500",
-                          position.pnlInUsd > 0 && "text-primary",
-                        )}>
-                          {position.pnlInPercentage.toFixed(2)}%
-                        </p>
-                      </div>
+                            <div>
+                              <p className={cn(
+                                "text-red-500",
+                                position.pnlInUsd > 0 && "text-primary",
+                              )}>
+                                ${position.pnlInUsd.toFixed(2)}
+                              </p>
+                              <p className={cn(
+                                "text-red-500",
+                                position.pnlInUsd > 0 && "text-primary",
+                              )}>
+                                {position.pnlInPercentage.toFixed(2)}%
+                              </p>
+                            </div>
 
-                      <p>${position.liqPrice.toFixed(2)}</p>
+                            <p>${position.liqPrice.toFixed(2)}</p>
 
-                      <div className="flex justify-center items-center">
-                        <Button
-                          variant={ButtonVariant.OUTLINE}
-                          disabled={loading}
-                          onClick={async () => await handleClose()}
-                        >
-                          {
-                            loading ? <Spinner /> : <X size={16} className="font-bold" />
-                          }
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })
-            }
-          </>
-        ) : (
-          <div className="flex justify-center items-center p-4">
-            <span>No Open Positions</span>
-          </div>
-        )
+                            <div className="flex justify-center items-center">
+                              <Tooltip content="Close position">
+                                <Button
+                                  variant={ButtonVariant.OUTLINE}
+                                  disabled={loading}
+                                  onClick={async () => await handleClose()}
+                                >
+                                  {
+                                    loading ? <Spinner /> : <X size={16} className="font-bold" />
+                                  }
+                                </Button>
+                              </Tooltip>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })
+                  }
+                </>
+              ) : (
+                <div className="flex justify-center items-center p-4 w-full h-full">
+                  <span>No Open Positions</span>
+                </div>
+              )
+              }
+            </>
+          )
         }
-      </>
+      </div>
     </div >
   )
 }

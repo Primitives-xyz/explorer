@@ -6,7 +6,6 @@ import {
 } from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
-import { useMarketPrice } from './use-market-price'
 import { toast } from 'sonner'
 import { useToastContent } from './use-toast-content'
 
@@ -30,7 +29,7 @@ export function useLimitOrders({
   subAccountId,
   symbol
 }: Props) {
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const [cancelLoading, setCancelLoading] = useState<boolean>(false)
   const { driftClient } = useInitializeDrift()
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
@@ -49,7 +48,7 @@ export function useLimitOrders({
       toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
       const sig = await driftClient.cancelOrder(orderId, undefined, subAccountId)
       toast.success(SUCCESS.CANCEL_ORDER_TX_SUCCESS.title, SUCCESS.CANCEL_ORDER_TX_SUCCESS.content)
-      refreshFetchLimitOrders()
+      await refreshFetchLimitOrders()
       return sig
     } catch (error) {
       console.log(error)
@@ -118,8 +117,8 @@ export function useLimitOrders({
     }
   }, [driftClient, subAccountId])
 
-  const refreshFetchLimitOrders = () => {
-    fetchLimitOrders()
+  const refreshFetchLimitOrders = async () => {
+    await fetchLimitOrders()
   }
 
   useEffect(() => {
