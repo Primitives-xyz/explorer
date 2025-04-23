@@ -44,9 +44,9 @@ export function ProfileWalletInfo({ walletAddress }: Props) {
         label="Net Worth"
         value={`$${formatNumber(data.data.totalUsd)}`}
       />
-      <SmallCard label="PNL/Trade" value="" />
-      <SmallCard label="Vol" value="" />
-      <SmallCard label="W/L" value="" />
+      {/* <SmallCard label="PNL/Trade" value="" /> */}
+      {/* <SmallCard label="Vol" value="" /> */}
+      {/* <SmallCard label="W/L" value="" /> */}
     </div>
   )
 }

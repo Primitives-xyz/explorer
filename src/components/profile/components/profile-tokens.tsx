@@ -21,6 +21,8 @@ export function ProfileTokens({ walletAddress }: Props) {
   })
   const { setOpen, setInputs } = useSwapStore()
 
+  console.log('fungibleTokens', fungibleTokens)
+
   const columns: ColumnDef<IFungibleToken>[] = [
     {
       id: 'name',
@@ -41,7 +43,7 @@ export function ProfileTokens({ walletAddress }: Props) {
                   />
                 )}
             </div>
-            <h4>{row.original.name}</h4>
+            <h4 className="max-w-[5rem] truncate">{row.original.name}</h4>
           </div>
         )
       },
@@ -64,9 +66,11 @@ export function ProfileTokens({ walletAddress }: Props) {
       },
     },
     {
-      accessorKey: 'price',
+      accessorKey: 'totalPrice',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="Price" column={column} />,
+      header: ({ column }) => (
+        <SortableHeader label="Total Price" column={column} />
+      ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
 
