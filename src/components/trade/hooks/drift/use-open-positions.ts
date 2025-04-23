@@ -34,7 +34,7 @@ export function useOpenPositions({
   subAccountId,
   symbol
 }: UseUserStatsProps) {
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const { ERRORS } = useToastContent()
   const { price: marketPrice } = useMarketPrice({ symbol })
   const { driftClient } = useInitializeDrift()
