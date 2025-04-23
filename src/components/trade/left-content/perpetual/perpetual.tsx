@@ -21,6 +21,11 @@ import { PositionDirection } from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import AddFundsModal from './add-funds-modal'
 import { OrderType, PerpsMarketType, ProOrderType } from '@/components/tapestry/models/drift.model'
+import { SOL_MINT } from '@/utils/constants'
+
+interface Props {
+  setTokenMint?: (value: string) => void
+}
 
 const isValidNumericInput = (val: string) =>
   val === '' || val === '.' || /^[0]?\.[0-9]*$/.test(val) || /^[0-9]*\.?[0-9]*$/.test(val)
@@ -41,7 +46,7 @@ const formatLeverage = (leverage: number) => {
   return leverage.toFixed(2) + 'x'
 }
 
-export function Perpetual() {
+export function Perpetual({ setTokenMint }: Props) {
   const { accountIds } = useDriftUsers()
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
 
@@ -166,6 +171,12 @@ export function Perpetual() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, selectedLeverageSizeToken])
+
+  useEffect(() => {
+    if (setTokenMint) {
+      setTokenMint(SOL_MINT)
+    }
+  }, [setTokenMint])
 
   return (
     <div className="w-full">
