@@ -25,6 +25,7 @@ import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { TokenLine } from '@/components/transactions/common/token-line'
 import { getSourceIcon } from '@/utils/transactions'
 import { CopyToClipboardButton } from '@/components/ui/button/copy-to-clipboard-button'
+import { TransactionsHeader } from '@/components/transactions/transactions-header'
 
 interface SwapTransactionSummaryProps {
   transaction: Transaction
@@ -54,79 +55,26 @@ export const SwapTransactionSummary = ({
   
   return (
     <Card className="overflow-visible">
-      <CardContent className="p-4 space-y-4 overflow-visible">
-        {/* Header row with user info and copy trade button */}
-        <div className="flex items-center w-full justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar
-              username={profile?.username || processedTx.feePayer}
-              size={40}
-              className="w-10"
-              imageUrl={profile?.image}
-            />
-            
-            <div>
-              <div className="flex items-center gap-2">
-                {profile?.username && profile.username !== processedTx.feePayer ? (
-                  <Button
-                    variant={ButtonVariant.GHOST}
-                    href={route('entity', {
-                      id: profile.username || processedTx.feePayer,
-                    })}
-                    className="p-0 hover:bg-transparent"
-                  >
-                    @{profile.username}
-                  </Button>
-                ) : (
-                  <SolanaAddressDisplay
-                    address={processedTx.feePayer}
-                    highlightable={true}
-                    showCopyButton={false}
-                  />
-                )}
-                
-                <Button
-                  href={route('entity', { id: transaction.signature })}
-                  variant={ButtonVariant.BADGE}
-                  size={ButtonSize.SM}
-                >
-                  {transaction.signature.slice(0, 4)}...{transaction.signature.slice(-4)}
-                </Button>
-                
-                <span className="text-muted-foreground text-xs">
-                  • {formatTimeAgo(processedTx.timeAgo)}
-                </span>
-              </div>
-              
-              <div className="flex items-center mt-1 text-sm">
-                <span>{transaction.type}</span>
-                <span className="mx-2">on</span>
-                <span className="font-medium flex items-center gap-1">
-                  {getSourceIcon(transaction.source)}
-                </span>
-                <span>{transaction.source}</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex gap-2 ml-4">
-            <Button
-              variant={ButtonVariant.DEFAULT}
-              onClick={onCopyTrade}
-              className="min-w-[160px] px-6 text-base font-semibold"
-            >
-              <ArrowRightLeft size={20} className="mr-2" />
-              Copy Trade
-            </Button>
+      <CardContent>
+        {/* Header row with user info and copy trade button (replaced with TransactionsHeader) */}
+        <TransactionsHeader
+          transaction={transaction}
+          sourceWallet={processedTx.feePayer}
+          profiles={profiles}
+          onClickTradeButton={onCopyTrade}
+        >
+          <div className="flex flex-row justify-between gap-2">
+          <span>Swap on {getSourceIcon(transaction.source)} {transaction.source}</span>
             <CopyToClipboardButton
               textToCopy={typeof window !== 'undefined' ? window.location.href : ''}
               variant={ButtonVariant.OUTLINE}
-              className="min-w-[56px] px-4 text-base font-semibold"
+              size={ButtonSize.DEFAULT}
             >
               <Share size={20} className="mr-2" />
               Share
             </CopyToClipboardButton>
           </div>
-        </div>
+        </TransactionsHeader>
 
         {/* Swap details row */}
         <div className="grid grid-cols-2 gap-4 ml-[52px] overflow-visible">

@@ -12,6 +12,7 @@ import { TransferLine } from '@/components/transactions/common/transfer-line'
 import { getSwapPairsFromTokenTransfers, getTokenFeeTransfers } from './swap-transaction-utils'
 import { SwapLine } from '@/components/transactions/common/swap-line'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 
 interface SwapTransactionViewProps {
   transaction: Transaction;
@@ -20,8 +21,12 @@ interface SwapTransactionViewProps {
 export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) => {
   // Process transaction using utility function
   const processedTx = processSwapTransaction(transaction)
-  
+  const { setOpen, setInputs } = useSwapStore()
   const [showDetails, setShowDetails] = useState(false)
+
+  // Get the primary swap tokens
+  const fromToken = processedTx.primaryOutgoingToken
+  const toToken = processedTx.primaryIncomingToken
 
   return (
     <div className="space-y-4">
@@ -29,8 +34,14 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
       <SwapTransactionSummary 
         transaction={transaction} 
         onCopyTrade={() => {
-          // Implement copy trade functionality
-          console.log('Copy trade clicked')
+          if (fromToken && toToken) {
+            setOpen(true)
+            setInputs({
+              inputMint: fromToken.mint,
+              outputMint: toToken.mint,
+              inputAmount: fromToken.amount,
+            })
+          }
         }} 
       />
 

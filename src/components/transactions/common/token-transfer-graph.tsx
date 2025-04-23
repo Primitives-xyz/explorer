@@ -74,10 +74,8 @@ const edgeTypes: EdgeTypes = {
 };
 
 const TokenTransferGraph: FC<TokenTransferGraphProps> = ({ transaction }) => {
-  // Only render if there are token transfers
-  if (!transaction.tokenTransfers || transaction.tokenTransfers.length === 0) {
-    return <div className="text-center p-4">No token transfers in this transaction</div>
-  }
+  // Check if there are token transfers
+  const hasTokenTransfers = !!transaction.tokenTransfers && transaction.tokenTransfers.length > 0;
 
   // Prepare nodes and edges from transaction data
   const { initialNodes, initialEdges } = useMemo(() => {
@@ -306,6 +304,10 @@ const TokenTransferGraph: FC<TokenTransferGraphProps> = ({ transaction }) => {
     },
     [nodes, setEdges]
   );
+
+  if (!hasTokenTransfers) {
+    return <div className="text-center p-4">No token transfers in this transaction</div>
+  }
 
   return (
     <div className="w-full h-[295px] bg-gradient-to-b from-[#312C30]
