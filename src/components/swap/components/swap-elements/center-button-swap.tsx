@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, ButtonVariant, Spinner } from '@/components/ui'
+import { Button, ButtonSize, ButtonVariant, Spinner } from '@/components/ui'
 
 interface Props {
   sdkHasLoaded: boolean
@@ -37,10 +37,12 @@ export function CenterButtonSwap({
       ) : (
         <Button
           onClick={handleSwap}
-          className="text-lg capitalize font-bold w-full"
+          loading={loading}
+          size={ButtonSize.LG}
           disabled={loading}
+          className="w-full"
         >
-          {loading ? <Spinner /> : <p>Execute Swap</p>}
+          {loading ? <Spinner /> : 'Execute Swap'}
         </Button>
       )}
     </div>
