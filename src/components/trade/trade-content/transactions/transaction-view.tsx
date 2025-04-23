@@ -33,6 +33,7 @@ export default function TransactionView({
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
             <div className="flex items-center gap-2">
+              HELLOOOO
               <Image
                 src={baseTokenImageUri || '/placeholder.svg'}
                 alt={'baseTokenImage'}
@@ -61,6 +62,7 @@ export default function TransactionView({
           </div>
 
           <div className="flex flex-col items-end space-y-2">
+            AHHHHH
             <Link href={`https://solscan.io/tx/${signature}`} target="_blank">
               <div className="transition-colors">
                 <ExternalLink className="w-5 h-5" />

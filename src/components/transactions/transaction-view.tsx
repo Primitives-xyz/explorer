@@ -7,7 +7,7 @@ import { TransactionNotFound } from './transaction-not-found'
 import { SwapTransactionView } from './swap-transaction/swap-transaction-view'
 import { AmbiguousTransactionView } from './ambiguous-transaction/ambiguous-transaction-view'
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
-
+import { TransferTransactionView } from './transfer-transaction/transfer-transaction-view'
 interface TransactionDetailsProps {
   signature: string
 }
@@ -25,6 +25,7 @@ export default function TransactionDetails({
   
   const type_to_component_map = {
     "SWAP": SwapTransactionView,
+    "TRANSFER": TransferTransactionView,
   }
 
   const renderTransactionContent = () => {
