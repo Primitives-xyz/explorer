@@ -120,9 +120,7 @@ export function ProfileSocial({ walletAddress }: Props) {
                 mainProfile?.username === explorerProfile?.profile.username && (
                   <Card>
                     <CardContent>
-                      <h3>Oops! No linked X</h3>
-                      <br />
-                      <p>Connect your X to let others know what you're up to</p>
+                      <p>Connect your X to let others know what you're up to...</p>
                       <br />
                       <Button
                         variant={ButtonVariant.OUTLINE_WHITE}

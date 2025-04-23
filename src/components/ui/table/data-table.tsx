@@ -19,6 +19,7 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import { useState } from 'react'
 
@@ -30,6 +31,8 @@ interface DataTableProps<TData> {
   loading?: boolean
   isSmall?: boolean
   tableClassName?: string
+  sorting?: SortingState
+  onSortingChange?: OnChangeFn<SortingState>
 }
 
 export function DataTable<TData>({
@@ -40,12 +43,17 @@ export function DataTable<TData>({
   loading,
   isSmall,
   tableClassName,
+  sorting: externalSorting,
+  onSortingChange: externalOnSortingChange,
 }: DataTableProps<TData>) {
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [internalSorting, setInternalSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 5,
   })
+
+  const sorting = externalSorting ?? internalSorting
+  const setSorting = externalOnSortingChange ?? setInternalSorting
 
   const setupWithoutPagination = {
     data,
