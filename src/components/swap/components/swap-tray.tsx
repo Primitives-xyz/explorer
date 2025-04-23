@@ -1,21 +1,20 @@
 'use client'
 
+import { Swap } from '@/components/swap/components/swap'
+import { useSwapStore } from '@/components/swap/stores/use-swap-store'
+import { Button, ButtonVariant } from '@/components/ui'
 import { motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useSwapStore } from '../stores/use-swap-store'
-import { Swap } from './swap'
 
-export function SwapTray() {
+interface Props {
+  isAlwaysOpen?: boolean
+}
+
+export function SwapTray({ isAlwaysOpen = false }: Props) {
   const { open, setOpen } = useSwapStore()
   const [displaySwap, setDisplaySwap] = useState(false)
   const pathname = usePathname()
-
-  useEffect(() => {
-    if (pathname === '/') {
-      setOpen(true)
-    }
-  }, [pathname, setOpen])
 
   useEffect(() => {
     if (open) {
@@ -24,16 +23,13 @@ export function SwapTray() {
       const timeout = setTimeout(() => {
         setDisplaySwap(false)
       }, 500)
-
       return () => clearTimeout(timeout)
     }
   }, [open])
 
   useEffect(() => {
-    if (pathname !== '/') {
-      setOpen(false)
-    }
-  }, [pathname, setOpen])
+    setOpen(isAlwaysOpen)
+  }, [pathname, isAlwaysOpen, setOpen])
 
   return (
     <motion.div
@@ -53,6 +49,15 @@ export function SwapTray() {
         <div className="absolute top-topbar right-0 inset-y-0 w-[calc(100%+70px)] fade-out-text--left backdrop-blur-xl" />
       )}
       <div className="pt-topbar relative h-full z-50">
+        {!isAlwaysOpen && (
+          <Button
+            className="w-[100px] absolute top-20 left-0 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"
+            variant={open ? ButtonVariant.OUTLINE : ButtonVariant.DEFAULT}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? 'Close Swap' : 'Swap'}
+          </Button>
+        )}
         {displaySwap && (
           <div className="h-full pr-6 py-5 w-[330px] overflow-y-auto">
             <Swap />
