@@ -10,7 +10,7 @@ export default function Home() {
         <HomeContent />
       </MainContentWrapper>
       <RightSidebarWrapper>
-        <SwapTray />
+        <SwapTray isAlwaysOpen />
       </RightSidebarWrapper>
     </>
   )
