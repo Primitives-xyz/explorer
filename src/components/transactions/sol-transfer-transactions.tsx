@@ -2,7 +2,7 @@ import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import { Transaction } from '@/components/tapestry/models/helius.models'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
-import { getSourceIcon } from '@/utils/transactions'
+import { getSourceIcon, LAMPORTS_PER_SOL } from '@/utils/transactions'
 import { formatSmallNumber } from '@/utils/utils'
 import Image from 'next/image'
 
@@ -16,7 +16,7 @@ export function SolTransferTransactions({ transaction, sourceWallet }: Props) {
     walletAddress: sourceWallet,
   })
 
-  const amount = transaction.nativeTransfers?.[0]?.amount || 0
+  const amount = transaction.nativeTransfers?.[0]?.amount/LAMPORTS_PER_SOL || 0
 
   return (
     <Card>
@@ -55,7 +55,7 @@ export function SolTransferTransactions({ transaction, sourceWallet }: Props) {
           </div>
           <div className="flex items-center">
             <span className="text-destructive text-md">-</span>
-            <span className="text-md">{formatSmallNumber(amount)}</span>
+            <span className="text-md">{amount}</span>
             <span className="font-mono text-base">SOL</span>
           </div>
         </div>

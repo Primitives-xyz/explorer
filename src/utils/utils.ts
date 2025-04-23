@@ -83,9 +83,11 @@ export const formatCurrency = (value: number) => {
 export const abbreviateWalletAddress = ({
   address,
   maxLength = 10,
+  desiredLength = 8,
 }: {
   address: string
   maxLength?: number
+  desiredLength?: number
 }) => {
   if (address.length <= maxLength) return address
 
@@ -94,8 +96,10 @@ export const abbreviateWalletAddress = ({
     return 'LOADING…'
   }
 
-  const start = address.substring(0, 4)
-  const end = address.substring(address.length - 4)
+  // Calculate how many characters to show on each end
+  const charsPerSide = Math.floor((desiredLength - 1) / 2) // -1 for the ellipsis
+  const start = address.substring(0, charsPerSide)
+  const end = address.substring(address.length - charsPerSide)
 
   return `${start}…${end}`
 }

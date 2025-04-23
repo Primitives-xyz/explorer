@@ -3,6 +3,7 @@ import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { WalletProvider } from '@/components/common/wallet-provider'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
 import { Toaster } from '@/components/ui/sonner'
+import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -91,18 +92,20 @@ export default async function RootLayout({
       <body className={rethinkSans.className}>
         <NextIntlClientProvider messages={messages}>
           <WalletProvider>
-            <Onboarding />
-            <div className="fixed inset-0 z-0 background-gradient" />
-            <div className="relative min-h-screen">
-              <ActivityTape />
-              <main className="w-full flex justify-between pt-topbar">
-                <LeftSideMenu />
-                <div className="flex-1 flex justify-between pt-5">
-                  <Toaster />
-                  {children}
-                </div>
-              </main>
-            </div>
+            <AddressHighlightProvider>
+              <Onboarding />
+              <div className="fixed inset-0 z-0 background-gradient" />
+              <div className="relative min-h-screen">
+                <ActivityTape />
+                <main className="w-full flex justify-between pt-topbar">
+                  <LeftSideMenu />
+                  <div className="flex-1 flex justify-between pt-5">
+                    <Toaster />
+                    {children}
+                  </div>
+                </main>
+              </div>
+            </AddressHighlightProvider>
           </WalletProvider>
         </NextIntlClientProvider>
       </body>

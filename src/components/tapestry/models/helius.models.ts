@@ -149,6 +149,7 @@ export interface Transaction {
     toUserAccount: string
     tokenAmount: number
     tokenStandard: string
+    mint?: string
   }[]
   accountData: AccountData[]
   parsedInstructions?: ParsedInstruction[]
