@@ -37,7 +37,6 @@ export function CenterButtonSwap({
       ) : (
         <Button
           onClick={handleSwap}
-          loading={loading}
           size={ButtonSize.LG}
           disabled={loading}
           className="w-full"
