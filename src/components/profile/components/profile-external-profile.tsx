@@ -16,8 +16,6 @@ export function ProfileExternalProfile({ profile }: Props) {
     (!profile.namespace.userProfileURL ||
       (profile.namespace.name === 'tribe.run' && !profile.wallet?.address))
 
-  console.log('identity', identity)
-
   return (
     <>
       <Card variant={CardVariant.ACCENT_SOCIAL}>

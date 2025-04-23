@@ -1,7 +1,6 @@
 'use client'
 
 import { useTwitterOAuth } from '@/components/profile/hooks/use-twitter-o-auth'
-import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import {
   Card,
   CardContent,
@@ -17,7 +16,7 @@ import {
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import Image from 'next/image'
-import { useProcessedIdentities } from '../hooks/use-processed-identities'
+import { useGetProfileExternalNamespaces } from '../hooks/use-get-profile-external-namespace'
 import { ProfileExternalProfile } from './profile-external-profile'
 
 interface Props {
@@ -25,22 +24,16 @@ interface Props {
 }
 
 export function ProfileSocial({ walletAddress }: Props) {
-  // const { namespaces, loading } = useGetProfileExternalNamespaces({
-  //   walletAddress,
-  // })
-  const { identities: originalIdentities, loading } = useGetIdentities({
-    walletAddress,
-  })
-
+  const { namespaces, hasXIdentity, explorerProfile, loading } =
+    useGetProfileExternalNamespaces({
+      walletAddress,
+    })
   const { initiateTwitterLogin } = useTwitterOAuth()
   const { mainProfile } = useCurrentWallet()
 
-  const { identities, hasXIdentity, explorerProfile } =
-    useProcessedIdentities(originalIdentities)
-
   const defaultTabValue =
-    hasXIdentity && identities?.[0]?.namespace
-      ? identities?.[0]?.namespace?.name + identities?.[0]?.profile?.id
+    hasXIdentity && namespaces?.[0]?.namespace
+      ? namespaces?.[0]?.namespace?.name
       : 'x-default-tab'
 
   return (
@@ -49,55 +42,13 @@ export function ProfileSocial({ walletAddress }: Props) {
         <CardTitle>Social</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* {!!namespaces?.length && (
-          <Tabs defaultValue={namespaces?.[0]?.namespace.name}>
-            <div className="overflow-auto w-full">
-              <TabsList>
-                {namespaces.map((namespace) => (
-                  <TabsTrigger
-                    key={namespace.namespace.name}
-                    variant={TabVariant.SOCIAL}
-                    value={namespace.namespace.name}
-                    className="flex-1 gap-1.5"
-                  >
-                    <div className="w-5 h-5 shrink-0">
-                      <Image
-                        src={namespace.namespace.faviconURL}
-                        alt=""
-                        width={16}
-                        height={16}
-                        className="w-full h-full"
-                      />
-                    </div>{' '}
-                    <span>{namespace.namespace.readableName}</span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-            {namespaces.map((namespace) => (
-              <TabsContent
-                key={namespace.namespace.name}
-                value={namespace.namespace.name}
-                className="space-y-4"
-              >
-                {namespace.profiles.map((profile) => (
-                  <ProfileExternalProfile
-                    key={profile.profile.id}
-                    profile={profile}
-                  />
-                ))}
-              </TabsContent>
-            ))}
-          </Tabs>
-        )} */}
-
         {loading && (
           <div className="h-20 flex items-center justify-center">
             <Spinner />
           </div>
         )}
 
-        {!!identities?.length && (
+        {!!namespaces?.length && (
           <Tabs defaultValue={defaultTabValue}>
             <div className="overflow-auto w-full">
               <TabsList>
@@ -106,37 +57,36 @@ export function ProfileSocial({ walletAddress }: Props) {
                   variant={TabVariant.SOCIAL}
                   value={
                     hasXIdentity
-                      ? identities[0].namespace.name + identities[0].profile.id
+                      ? namespaces[0].namespace.name
                       : 'x-default-tab'
                   }
                   className="flex-1 gap-1.5"
                 >
-                  <div>
+                  <div className="w-5 h-5 shrink-0">
                     <Image
                       src={
                         hasXIdentity
-                          ? identities[0]?.namespace?.faviconURL
+                          ? namespaces[0]?.namespace?.faviconURL
                           : '/images/x.png'
                       }
                       alt="x logo"
                       width={16}
                       height={16}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full"
                     />
-                  </div>
-
-                  <span>
-                    {hasXIdentity ? identities[0].namespace.readableName : 'X'}
-                  </span>
+                  </div>{' '}
+                  {/* <span>
+                    {hasXIdentity ? namespaces[0].namespace.readableName : ''}
+                  </span> */}
                 </TabsTrigger>
 
-                {identities
+                {namespaces
                   .filter((_, index) => !hasXIdentity || index > 0)
                   .map((identity) => (
                     <TabsTrigger
-                      key={identity.namespace.name + identity.profile.id}
+                      key={identity.namespace.name}
                       variant={TabVariant.SOCIAL}
-                      value={identity.namespace.name + identity.profile.id}
+                      value={identity.namespace.name}
                       className="flex-1 gap-1.5"
                     >
                       <div className="w-5 h-5 shrink-0">
@@ -156,18 +106,16 @@ export function ProfileSocial({ walletAddress }: Props) {
 
             <TabsContent
               key={
-                hasXIdentity
-                  ? identities[0].namespace.name + identities[0].profile.id
-                  : 'x-default-tab'
+                hasXIdentity ? namespaces[0].namespace.name : 'x-default-tab'
               }
               value={
-                hasXIdentity
-                  ? identities[0].namespace.name + identities[0].profile.id
-                  : 'x-default-tab'
+                hasXIdentity ? namespaces[0].namespace.name : 'x-default-tab'
               }
             >
               {hasXIdentity ? (
-                <ProfileExternalProfile profile={identities[0]} />
+                <ProfileExternalProfile
+                  profile={namespaces[0]?.profiles?.[0]}
+                />
               ) : (
                 mainProfile?.username === explorerProfile?.profile.username && (
                   <Card>
@@ -200,14 +148,20 @@ export function ProfileSocial({ walletAddress }: Props) {
               )}
             </TabsContent>
 
-            {identities
+            {namespaces
               .filter((_, index) => !hasXIdentity || index > 0)
               .map((identity) => (
                 <TabsContent
-                  key={identity.namespace.name + identity.profile.id}
-                  value={identity.namespace.name + identity.profile.id}
+                  key={identity.namespace.name}
+                  value={identity.namespace.name}
+                  className="space-y-4"
                 >
-                  <ProfileExternalProfile profile={identity} />
+                  {identity.profiles.map((profile) => (
+                    <ProfileExternalProfile
+                      key={profile.profile.id}
+                      profile={profile}
+                    />
+                  ))}
                 </TabsContent>
               ))}
           </Tabs>

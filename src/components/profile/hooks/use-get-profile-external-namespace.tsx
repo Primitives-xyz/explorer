@@ -1,13 +1,17 @@
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { IExternalNamespace } from '@/components/tapestry/models/profiles.models'
+import { useProcessedIdentities } from './use-processed-identities'
 
 interface Props {
   walletAddress: string
 }
 
 export const useGetProfileExternalNamespaces = ({ walletAddress }: Props) => {
-  const { identities, loading } = useGetIdentities({
+  const { identities: originalIdentities, loading } = useGetIdentities({
     walletAddress,
+  })
+  const { identities, hasXIdentity, explorerProfile } = useProcessedIdentities({
+    originalIdentities,
   })
 
   let namespaces: IExternalNamespace[] = []
@@ -29,6 +33,8 @@ export const useGetProfileExternalNamespaces = ({ walletAddress }: Props) => {
 
   return {
     namespaces,
+    hasXIdentity,
+    explorerProfile,
     loading,
   }
 }
