@@ -34,7 +34,7 @@ export function useOpenPositions({
   subAccountId,
   symbol
 }: UseUserStatsProps) {
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(false)
   const { ERRORS } = useToastContent()
   const { price: marketPrice } = useMarketPrice({ symbol })
   const { driftClient } = useInitializeDrift()
@@ -59,9 +59,9 @@ export function useOpenPositions({
     return sig
   }
 
-  const fetchOpenPositions = useCallback(async () => {
-    setLoading(true)
+  const fetchOpenPositions = async () => {
     try {
+      setLoading(true)
       if (!driftClient) {
         toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
         return
@@ -119,15 +119,16 @@ export function useOpenPositions({
     } finally {
       setLoading(false)
     }
-  }, [driftClient, subAccountId, marketPrice])
+  }
 
   const refreshFetchOpenPositions = () => {
-    setLoading(false)
-    fetchOpenPositions()
+    if (!loading) {
+      fetchOpenPositions()
+    }
   }
 
   useEffect(() => {
-    if (marketPrice) {
+    if (marketPrice && !loading) {
       fetchOpenPositions()
     }
   }, [driftClient, subAccountId, marketPrice])

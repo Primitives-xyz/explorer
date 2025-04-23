@@ -29,7 +29,7 @@ export function useLimitOrders({
   subAccountId,
   symbol
 }: Props) {
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(false)
   const [cancelLoading, setCancelLoading] = useState<boolean>(false)
   const { driftClient } = useInitializeDrift()
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
@@ -117,8 +117,10 @@ export function useLimitOrders({
     }
   }, [driftClient, subAccountId])
 
-  const refreshFetchLimitOrders = async () => {
-    await fetchLimitOrders()
+  const refreshFetchLimitOrders = () => {
+    if (!loading) {
+      fetchLimitOrders()
+    }
   }
 
   useEffect(() => {
@@ -131,6 +133,7 @@ export function useLimitOrders({
     limitOrders,
     loading,
     cancelLoading,
-    cancelOrder
+    cancelOrder,
+    refreshFetchLimitOrders
   }
 }
