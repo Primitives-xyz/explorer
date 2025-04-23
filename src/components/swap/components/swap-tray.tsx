@@ -45,7 +45,7 @@ export function SwapTray({ isAlwaysOpen = false }: Props) {
       }}
       className="fixed top-0 right-0 bottom-0 z-50 h-screen"
     >
-      {displaySwap && (
+      {displaySwap && !isAlwaysOpen && (
         <div className="absolute top-topbar right-0 inset-y-0 w-[calc(100%+70px)] fade-out-text--left backdrop-blur-xl" />
       )}
       <div className="pt-topbar relative h-full z-50">

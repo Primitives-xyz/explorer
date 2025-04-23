@@ -42,7 +42,7 @@ export function Pay({
     <div className="space-y-3">
       <div className="flex justify-between items-center">
         <p>Selling</p>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-muted-foreground">
           Balance:{' '}
           <TokenBalance
             walletAddress={walletAddress}
@@ -60,7 +60,7 @@ export function Pay({
           onChange={(e) => handleInAmountChange(e)}
           value={displayInAmount}
         />
-        <p className="text-xs text-muted">{displayInAmountInUsd}</p>
+        <p className="text-xs text-muted-foreground">{displayInAmountInUsd}</p>
       </div>
 
       <Button

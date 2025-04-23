@@ -151,3 +151,125 @@ kbd {
   scrollbar-width: thin;
   scrollbar-color: rgba(246, 248, 253, 0.2) rgba(0, 0, 0, 0.2);
 }
+
+@keyframes scanner-animation {
+  0% {
+    top: 0%;
+  }
+
+  50% {
+    top: 100%;
+  }
+
+  100% {
+    top: 100%;
+  }
+}
+
+.scanner {
+  animation: scanner-animation 8s linear infinite forwards;
+}
+
+@keyframes shiver-screen {
+  0% {
+    transform: skewX(0deg);
+  }
+
+  4% {
+    transform: skewX(0.7deg) scale(1.0001);
+  }
+
+  8% {
+    transform: skewX(0.2deg) skewY(-0.1deg);
+  }
+
+  16% {
+    transform: skewX(0.2deg);
+  }
+
+  50% {
+    transform: skewX(0.2deg);
+  }
+}
+
+.screen-effects {
+  animation: shiver-screen 10s linear infinite;
+}
+
+.pixels {
+  /* background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.21) 0),
+    linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.055),
+      rgba(0, 255, 0, 0.03),
+      rgba(0, 0, 255, 0.055)
+    );
+  background-position-y: 0.0714285714rem;
+  background-size: 100% 0.2142857143rem, 0.2857142857rem 100%; */
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 1000;
+    background: repeating-linear-gradient(
+      0deg,
+      #111 0px,
+      #111 1px,
+      transparent 2px,
+      transparent 5px
+    );
+    background-size: 100% 5px;
+    animation: lines 2s ease-out infinite;
+    opacity: 0.3;
+    mix-blend-mode: color-burn;
+    pointer-events: none;
+  }
+}
+
+/* ------ */
+
+/* .pixels {
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 1000;
+    background: repeating-linear-gradient(
+      0deg,
+      #111 0px,
+      #111 1px,
+      transparent 2px,
+      transparent 5px
+    );
+    background-size: 100% 5px;
+    animation: lines 2s ease-out infinite;
+    opacity: 0.3;
+    mix-blend-mode: color-burn;
+    pointer-events: none;
+  }
+} */
+
+@keyframes giggle {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(-2px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(2px);
+  }
+}
+@keyframes lines {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: 0px 25px;
+  }
+}

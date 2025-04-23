@@ -42,7 +42,9 @@ export function Receive({
             value={displayOutAmount}
           />
 
-          <p className="text-xs text-muted">{displayOutAmountInUsd}</p>
+          <p className="text-xs text-muted-foreground">
+            {displayOutAmountInUsd}
+          </p>
         </div>
 
         <Button

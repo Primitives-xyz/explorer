@@ -88,20 +88,27 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
+      {/* <body className={cn(rethinkSans.className, 'screen-effects')}> */}
       <body className={rethinkSans.className}>
         <NextIntlClientProvider messages={messages}>
           <WalletProvider>
             <Onboarding />
-            <div className="fixed inset-0 z-0 background-gradient" />
-            <div className="relative min-h-screen">
-              <ActivityTape />
-              <main className="w-full flex justify-between pt-topbar">
-                <LeftSideMenu />
-                <div className="flex-1 flex justify-between pt-5">
-                  <Toaster />
-                  {children}
-                </div>
-              </main>
+            <div className="screen-effects">
+              <div className="absolute top-0 left-0 inset-x-0 z-50 h-10 bg-gradient-to-t from-neutral-200 to-neutral-200/10 opacity-[0.05] pointer-events-none scanner" />
+              <div className="pixels absolute z-0 top-0 left-0 inset-0" />
+
+              {/* <div className="fixed inset-0 z-0 background-gradient" /> */}
+
+              <div className="relative min-h-screen">
+                <ActivityTape />
+                <main className="w-full flex justify-between pt-topbar">
+                  <LeftSideMenu />
+                  <div className="flex-1 flex justify-between pt-5">
+                    <Toaster />
+                    {children}
+                  </div>
+                </main>
+              </div>
             </div>
           </WalletProvider>
         </NextIntlClientProvider>

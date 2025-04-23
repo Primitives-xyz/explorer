@@ -54,10 +54,9 @@
   --text-3xl: 32px;
 
   /* Radius */
-  --radius: 0.5rem;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
   --radius-button: var(--radius-md);
   --radius-input: var(--radius-lg);
   --radius-card: var(--radius-lg);

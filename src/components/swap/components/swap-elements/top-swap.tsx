@@ -47,39 +47,45 @@ export function TopSwap({
 }: Props) {
   return (
     <Card>
+      {/* <CardContent className="screen-effects"> */}
       <CardContent>
-        <Pay
-          walletAddress={walletAddress}
-          inputTokenMint={inputTokenMint}
-          setSwapMode={setSwapMode}
-          handleInAmountChange={handleInAmountChange}
-          displayInAmount={displayInAmount}
-          displayInAmountInUsd={displayInAmountInUsd}
-          setShowInputTokenSearch={setShowInputTokenSearch}
-          inputTokenImageUri={inputTokenImageUri}
-          inputTokenSymbol={inputTokenSymbol}
-          handleInputAmountByPercentage={handleInputAmountByPercentage}
-        />
+        {/* <div className="absolute top-0 left-0 inset-x-0 h-10 bg-gradient-to-t from-neutral-200 to-neutral-200/10 opacity-10 pointer-events-none scanner" />
+        <div className="pixels absolute z-0 top-0 left-0 inset-0" /> */}
 
-        <div className="flex items-center w-full justify-between text-muted space-x-2">
-          <div className="bg-muted w-full h-[1px]" />
-          <ArrowDownUp
-            size={40}
-            className="cursor-pointer"
-            onClick={handleSwapDirection}
+        <div className="relative">
+          <Pay
+            walletAddress={walletAddress}
+            inputTokenMint={inputTokenMint}
+            setSwapMode={setSwapMode}
+            handleInAmountChange={handleInAmountChange}
+            displayInAmount={displayInAmount}
+            displayInAmountInUsd={displayInAmountInUsd}
+            setShowInputTokenSearch={setShowInputTokenSearch}
+            inputTokenImageUri={inputTokenImageUri}
+            inputTokenSymbol={inputTokenSymbol}
+            handleInputAmountByPercentage={handleInputAmountByPercentage}
           />
-          <div className="bg-muted w-full h-[1px]" />
-        </div>
 
-        <Receive
-          setSwapMode={setSwapMode}
-          handleOutAmountChange={handleOutAmountChange}
-          displayOutAmount={displayOutAmount}
-          displayOutAmountInUsd={displayOutAmountInUsd}
-          setShowOutputTokenSearch={setShowOutputTokenSearch}
-          outputTokenImageUri={outputTokenImageUri}
-          outputTokenSymbol={outputTokenSymbol}
-        />
+          <div className="flex items-center w-full justify-between text-muted-foreground space-x-2">
+            <div className="bg-muted-foreground w-full h-[1px]" />
+            <ArrowDownUp
+              size={40}
+              className="cursor-pointer"
+              onClick={handleSwapDirection}
+            />
+            <div className="bg-muted-foreground w-full h-[1px]" />
+          </div>
+
+          <Receive
+            setSwapMode={setSwapMode}
+            handleOutAmountChange={handleOutAmountChange}
+            displayOutAmount={displayOutAmount}
+            displayOutAmountInUsd={displayOutAmountInUsd}
+            setShowOutputTokenSearch={setShowOutputTokenSearch}
+            outputTokenImageUri={outputTokenImageUri}
+            outputTokenSymbol={outputTokenSymbol}
+          />
+        </div>
       </CardContent>
     </Card>
   )

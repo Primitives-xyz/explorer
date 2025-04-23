@@ -16,7 +16,7 @@ module.exports = {
       input: 'var(--radius-input)',
       card: 'var(--radius-card)',
       'popover-card': 'var(--radius-popover-card)',
-      full: '9999px',
+      full: '0',
       none: '0px',
     },
     extend: {
