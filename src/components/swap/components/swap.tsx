@@ -350,16 +350,6 @@ export function Swap({ setTokenMint }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
-  // Set initial inputs when component mounts
-  useEffect(() => {
-    setInputs({
-      inputMint: SOL_MINT,
-      outputMint: SSE_MINT,
-      inputAmount: 1,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Empty dependency array means this runs once on mount
-
   return (
     <div className="space-y-4">
       <TopSwap
