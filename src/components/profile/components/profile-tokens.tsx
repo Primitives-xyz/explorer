@@ -21,8 +21,6 @@ export function ProfileTokens({ walletAddress }: Props) {
   })
   const { setOpen, setInputs } = useSwapStore()
 
-  console.log('fungibleTokens', fungibleTokens)
-
   const columns: ColumnDef<IFungibleToken>[] = [
     {
       id: 'name',

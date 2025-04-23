@@ -1,6 +1,5 @@
 'use client'
 
-import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import {
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import {
   TabVariant,
 } from '@/components/ui'
 import Image from 'next/image'
+import { useGetProfileExternalNamespaces } from '../hooks/use-get-profile-external-namespace'
 import { ProfileExternalProfile } from './profile-external-profile'
 
 interface Props {
@@ -21,11 +21,9 @@ interface Props {
 }
 
 export function ProfileSocial({ walletAddress }: Props) {
-  const { identities, loading } = useGetIdentities({
+  const { namespaces, loading } = useGetProfileExternalNamespaces({
     walletAddress,
   })
-
-  console.log('identities', identities)
 
   return (
     <Card>
@@ -33,41 +31,43 @@ export function ProfileSocial({ walletAddress }: Props) {
         <CardTitle>Social</CardTitle>
       </CardHeader>
       <CardContent>
-        {!!identities?.length && (
-          <Tabs
-            defaultValue={
-              identities?.[0]?.namespace.name + identities?.[0]?.profile?.id
-            }
-          >
+        {!!namespaces?.length && (
+          <Tabs defaultValue={namespaces?.[0]?.namespace.name}>
             <div className="overflow-auto w-full">
               <TabsList>
-                {identities.map((identity) => (
+                {namespaces.map((namespace) => (
                   <TabsTrigger
-                    key={identity.namespace.name + identity.profile.id}
+                    key={namespace.namespace.name}
                     variant={TabVariant.SOCIAL}
-                    value={identity.namespace.name + identity.profile.id}
+                    value={namespace.namespace.name}
                     className="flex-1 gap-1.5"
                   >
                     <div className="w-5 h-5 shrink-0">
                       <Image
-                        src={identity.namespace.faviconURL}
+                        src={namespace.namespace.faviconURL}
                         alt=""
                         width={16}
                         height={16}
                         className="w-full h-full"
                       />
                     </div>{' '}
-                    <span>{identity.namespace.readableName}</span>
+                    <span>{namespace.namespace.readableName}</span>
                   </TabsTrigger>
                 ))}
               </TabsList>
             </div>
-            {identities.map((identity) => (
+            {namespaces.map((namespace) => (
               <TabsContent
-                key={identity.namespace.name + identity.profile.id}
-                value={identity.namespace.name + identity.profile.id}
+                key={namespace.namespace.name}
+                value={namespace.namespace.name}
+                className="space-y-4"
               >
-                <ProfileExternalProfile identity={identity} />
+                {namespace.profiles.map((profile) => (
+                  <ProfileExternalProfile
+                    key={profile.profile.id}
+                    profile={profile}
+                  />
+                ))}
               </TabsContent>
             ))}
           </Tabs>
