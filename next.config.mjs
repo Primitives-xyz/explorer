@@ -34,6 +34,11 @@ const nextConfig = {
   },
   experimental: {
     webpackMemoryOptimizations: true,
+    turbo: {
+      resolveAlias: {
+        fs: { browser: './node-browser-compatibility/index.js' },
+      },
+    },
   },
 }
 
