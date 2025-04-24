@@ -22,6 +22,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import AddFundsModal from './add-funds-modal'
 import { OrderType, PerpsMarketType, ProOrderType } from '@/components/tapestry/models/drift.model'
 import { SOL_MINT } from '@/utils/constants'
+import { useOpenPositions } from '../../hooks/drift/use-open-positions'
+import { useLimitOrders } from '../../hooks/drift/use-limit-orders'
 
 interface Props {
   setTokenMint?: (value: string) => void
@@ -99,6 +101,16 @@ export function Perpetual({ setTokenMint }: Props) {
     reduceOnly,
   })
 
+  const { refreshFetchOpenPositions } = useOpenPositions({
+    subAccountId: accountIds[0] || 0,
+    symbol
+  })
+
+  const { refreshFetchLimitOrders } = useLimitOrders({
+    subAccountId: accountIds[0] || 0,
+    symbol
+  })
+
   // Derived Data
   const getMaxTradeAmount = useMemo(() => {
     if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
@@ -107,6 +119,18 @@ export function Perpetual({ setTokenMint }: Props) {
   }, [userStats])
 
   // handlers
+  const handlePlaceOrder = async () => {
+    await placePerpsOrder()
+
+    if (orderType === OrderType.MARKET) {
+      refreshFetchOpenPositions()
+    }
+
+    if (orderType === OrderType.LIMIT) {
+      refreshFetchLimitOrders()
+    }
+  }
+
   const handleAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     const cursorPosition = e.target.selectionStart || 0
@@ -266,7 +290,7 @@ export function Perpetual({ setTokenMint }: Props) {
           isLoggedIn={isLoggedIn}
           setShowAuthFlow={setShowAuthFlow}
           accountIds={accountIds}
-          placePerpsOrder={placePerpsOrder}
+          placePerpsOrder={handlePlaceOrder}
           loading={loading}
           selectedDirection={selectedDirection}
           amount={orderAmount}

@@ -34,68 +34,73 @@ export default function OrdersTabContent({ subAccountId }: OrdersTabContentProps
 
       <div className="h-[250px] overflow-auto space-y-2">
         {
-          loading ? (
-            <div className="flex justify-center items-center w-full h-full">
-              <Spinner size={32} />
+          loading && (
+            <div className="flex items-center gap-2">
+              <p>Loading Limit Orders</p>
+              <Spinner size={16} />
             </div>
-          ) : (
-            <>
-              {limitOrders.length ? (
-                <>
-                  {
-                    limitOrders.map((limitOrder, index) => {
-                      return (
-                        <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
-                          <CardContent className="px-2 py-4 grid grid-cols-5 gap-2 items-center text-center">
-                            <div>
-                              <p>{limitOrder.market}</p>
-                              <p className={cn(
-                                "text-red-500",
-                                limitOrder.direction === "LONG" && "text-primary"
-                              )}>{limitOrder.direction}</p>
-                            </div>
+          )
+        }
 
-                            <p>LIMIT</p>
+        {limitOrders.length ? (
+          <>
+            {
+              limitOrders.map((limitOrder, index) => {
+                return (
+                  <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
+                    <CardContent className="px-2 py-4 grid grid-cols-5 gap-2 items-center text-center">
+                      <div>
+                        <p>{limitOrder.market}</p>
+                        <p className={cn(
+                          "text-red-500",
+                          limitOrder.direction === "LONG" && "text-primary"
+                        )}>{limitOrder.direction}</p>
+                      </div>
 
-                            <div>
-                              <p>0 / {limitOrder.baseAssetAmount}</p>
-                            </div>
+                      <p>LIMIT</p>
 
-                            <div>
-                              <p>
-                                {limitOrder.triggerPrice ? limitOrder.triggerPrice.toFixed(2) : "-"} / {limitOrder.price.toFixed(2)}
-                              </p>
-                            </div>
+                      <div>
+                        <p>0 / {limitOrder.baseAssetAmount}</p>
+                      </div>
 
-                            <div className="flex justify-center items-center">
-                              <Tooltip content="Cancel Order">
-                                <Button
-                                  variant={ButtonVariant.OUTLINE}
-                                  disabled={cancelLoading}
-                                  onClick={() => {
-                                    handleClose(limitOrder.orderId, subAccountId)
-                                  }}
-                                >
-                                  {
-                                    cancelLoading ? <Spinner /> : <X size={16} className="font-bold" />
-                                  }
-                                </Button>
-                              </Tooltip>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )
-                    })
-                  }
-                </>
-              ) : (
+                      <div>
+                        <p>
+                          {limitOrder.triggerPrice ? limitOrder.triggerPrice.toFixed(2) : "-"} / {limitOrder.price.toFixed(2)}
+                        </p>
+                      </div>
+
+                      <div className="flex justify-center items-center">
+                        <Tooltip content="Cancel Order">
+                          <Button
+                            variant={ButtonVariant.OUTLINE}
+                            disabled={cancelLoading}
+                            onClick={() => {
+                              handleClose(limitOrder.orderId, subAccountId)
+                            }}
+                          >
+                            {
+                              cancelLoading ? <Spinner /> : <X size={16} className="font-bold" />
+                            }
+                          </Button>
+                        </Tooltip>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })
+            }
+          </>
+        ) : (
+          <>
+            {
+              !loading && (
                 <div className="flex justify-center items-center w-full h-full">
                   <span>No Limit Orders</span>
                 </div>
               )
-              }
-            </>
-          )
+            }
+          </>
+        )
         }
       </div>
     </div >

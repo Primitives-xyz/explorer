@@ -310,7 +310,7 @@
     "unable_get_response_llm": "Unable to explain the transaction. Please try again later.",
     "no_description_available": "No description available",
     "loading_transaction_details": "Loading transaction details...",
-    "transaction_details": "🚧 Transaction Details Under Construction 🚧",
+    "transaction_details": "Transaction Details",
     "timestamp": "Timestamp",
     "type": "Type",
     "fee": "Fee",
