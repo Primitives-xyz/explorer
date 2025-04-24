@@ -1,5 +1,4 @@
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
-import { RightSidebarWrapper } from '@/components/common/right-sidebar-wrapper'
 import { ProfileWithUsername } from '@/components/profile/components/profile-with-username'
 import { SwapTray } from '@/components/swap/components/swap-tray'
 import { TokenContent } from '@/components/token/token-content'
@@ -34,9 +33,7 @@ export default async function Entity({
       <MainContentWrapper>
         <div className="pr-[36px]">{renderContent(routeType, cleanId)}</div>
       </MainContentWrapper>
-        <RightSidebarWrapper>
-          <SwapTray />
-        </RightSidebarWrapper>
+      <SwapTray />
     </>
   )
 }
