@@ -12,10 +12,10 @@ const nextConfig = {
         net: false,
         dgram: false,
         dns: false,
-      }
+      };
     }
 
-    return config
+    return config;
   },
   images: {
     remotePatterns: [

@@ -1,7 +1,6 @@
 'use client'
 
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
-import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { SOL_MINT } from '@/utils/constants'
 import { abbreviateWalletAddress, formatNumber } from '@/utils/utils'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
@@ -24,16 +23,13 @@ export function TokenLine({
   compact = false,
 }: TokenLineProps) {
   const isSol = mint === SOL_MINT
-  const { symbol, name, image, decimals } = useTokenInfo(isSol ? null : mint)
+  const { data: tokenData, symbol, name, image, decimals, loading: tokenLoading } = useTokenInfo(isSol ? null : mint)
 
   const displaySymbol = symbol || (isSol ? 'SOL' : undefined)
 
-  const priceDecimals = isSol ? 9 : decimals ?? 6
-  const { price, loading: priceLoading } = useTokenUSDCPrice({
-    tokenMint: showUsd ? mint : null,
-    decimals: showUsd ? priceDecimals : 0,
-  })
-
+  const price = tokenData?.result && 'token_info' in tokenData.result
+    ? tokenData.result.token_info?.price_info?.price_per_token ?? null
+    : null
   const usdValue = price !== null ? amount * price : null
 
   const iconSize = compact ? 16 : 20
@@ -108,7 +104,7 @@ export function TokenLine({
         </div>
         {showUsd && !compact && (
           <span className="text-xs text-muted-foreground block">
-            {priceLoading
+            {tokenLoading
               ? 'Loading...'
               : usdValue !== null
               ? `$${formatNumber(usdValue)}`
