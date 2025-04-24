@@ -13,7 +13,7 @@ export function ProfileContent({ profileInfo }: Props) {
   return (
     <div className="flex flex-col w-full space-y-6 pb-6">
       <ProfileHeader profileInfo={profileInfo} />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 w-full gap-4">
         <ProfileWallets walletAddress={profileInfo.walletAddress} />
         <ProfileSocial walletAddress={profileInfo.walletAddress} />
       </div>
