@@ -28,9 +28,8 @@ export function FollowingTransactions() {
     useCurrentWallet()
 
   const options = [
-    { label: 'All', value: FilterType.ALL },
-    { label: 'Following', value: FilterType.SWAP },
     { label: 'Twitter KOL', value: FilterType.KOL },
+    { label: 'Following', value: FilterType.SWAP },
   ]
 
   const { following } = useGetFollowing({

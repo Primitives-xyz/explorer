@@ -20,7 +20,7 @@ async function fetchWalletTransactions(
   url.searchParams.set('address', walletId)
   url.searchParams.set('limit', '7')
 
-  if (type && type !== FilterType.ALL && type !== FilterType.KOL) {
+  if (type && type !== FilterType.KOL) {
     const apiType =
       type === FilterType.COMPRESSED_NFT_MINT
         ? 'COMPRESSED_NFT_MINT'
@@ -56,7 +56,7 @@ export const useFollowingTransactions = ({ following, kolData }: Props) => {
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false)
   const [loadedWallets, setLoadedWallets] = useState<Set<string>>(new Set())
   const [totalWallets, setTotalWallets] = useState<number>(0)
-  const [selectedType, setSelectedType] = useState<FilterType>(FilterType.ALL)
+  const [selectedType, setSelectedType] = useState<FilterType>(FilterType.KOL)
   const { walletAddress } = useCurrentWallet()
 
   useEffect(() => {
