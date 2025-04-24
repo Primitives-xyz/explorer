@@ -124,14 +124,18 @@ export default function LimitOrder({
         </div>
       </div>
 
-      <LeverageSelector
-        min={0}
-        max={Math.min(userStats.maxLeverage, 20)}
-        setAmount={setAmount}
-        leverageValue={leverageValue}
-        setLeverageValue={setLeverageValue}
-        setIsSizeByLeverage={setIsSizeByLeverage}
-      />
+      {
+        userStats.maxLeverage ? (
+          <LeverageSelector
+            min={0}
+            max={Math.min(userStats.maxLeverage, 20)}
+            setAmount={setAmount}
+            leverageValue={leverageValue}
+            setLeverageValue={setLeverageValue}
+            setIsSizeByLeverage={setIsSizeByLeverage}
+          />
+        ) : (<></>)
+      }
 
       <Slippage
         handleDynamicSlippage={handleDynamicSlippage}

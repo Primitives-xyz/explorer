@@ -1,4 +1,3 @@
-import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -7,41 +6,43 @@ import { PublicKey } from '@solana/web3.js'
 export function useDriftUsers() {
   const [error, setError] = useState<string | null>(null)
   const { driftClient } = useInitializeDrift()
-  const { primaryWallet, walletAddress } = useCurrentWallet()
+  const { walletAddress } = useCurrentWallet()
   const [accountIds, setAccountIds] = useState<number[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
-      setError('Wallet not connected')
-      return
-    }
-
-    if (!driftClient) {
-      setError('Drift client not initialized')
-      return
-    }
-
-    const getUserAccountIds = async () => {
+  const getUserAccountIds = async () => {
+    try {
       setLoading(true)
-      try {
-        const userAccounts = await driftClient.getUserAccountsForAuthority(new PublicKey(walletAddress))
-        const userAccountIds = userAccounts.map((userAccount) => userAccount.subAccountId)
-        setAccountIds(userAccountIds)
-      } catch (error) {
+
+      if (!driftClient) {
+        setError('Drift client not initialized')
         setAccountIds([])
-      } finally {
-        setLoading(false)
+        return
       }
+
+      const userAccounts = await driftClient.getUserAccountsForAuthority(new PublicKey(walletAddress))
+      const userAccountIds = userAccounts.map((userAccount) => userAccount.subAccountId)
+      setAccountIds(userAccountIds)
+    } catch (error) {
+      console.error(error)
+      setAccountIds([])
+    } finally {
+      setLoading(false)
     }
+  }
 
+  const refreshGetUserAccountIds = () => {
     getUserAccountIds()
+  }
 
-  }, [primaryWallet, walletAddress, driftClient])
+  useEffect(() => {
+    getUserAccountIds()
+  }, [walletAddress, driftClient])
 
   return {
     accountIds,
     error,
-    loading
+    loading,
+    refreshGetUserAccountIds
   }
 }
