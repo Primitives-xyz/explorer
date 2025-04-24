@@ -358,12 +358,12 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
         {/* Token Transfer Graph */}
         <TokenTransferGraph transaction={transaction} />
         {/* Token Transfers Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Token Transfers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {transaction.tokenTransfers && transaction.tokenTransfers.length > 0 ? (
+        {transaction.tokenTransfers && transaction.tokenTransfers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Token Transfers</CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-2">
                 {transaction.tokenTransfers.map((tt: any, i: number) => (
                   <TransferLine
@@ -378,11 +378,9 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
                   />
                 ))}
               </div>
-            ) : (
-              <div className="text-center text-muted-foreground p-3">No token transfers found for this transaction</div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     )
   }
@@ -425,12 +423,12 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
       {/* Token Transfer Graph */}
       <TokenTransferGraph transaction={transaction} />
       {/* Token Transfers Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Token Transfers</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {transaction.tokenTransfers && transaction.tokenTransfers.length > 0 ? (
+      {transaction.tokenTransfers && transaction.tokenTransfers.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Token Transfers</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-2">
               {transaction.tokenTransfers.map((tt: any, i: number) => (
                 <TransferLine
@@ -445,11 +443,9 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
                 />
               ))}
             </div>
-          ) : (
-            <div className="text-center text-muted-foreground p-3">No token transfers found for this transaction</div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 } 
