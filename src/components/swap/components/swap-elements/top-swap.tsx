@@ -9,6 +9,7 @@ import { ESwapMode } from '../../swap.models'
 interface Props {
   walletAddress: string
   inputTokenMint: string
+  outputTokenMint: string
   displayInAmount: string
   displayInAmountInUsd: string
   inputTokenImageUri?: string
@@ -29,6 +30,7 @@ interface Props {
 export function TopSwap({
   walletAddress,
   inputTokenMint,
+  outputTokenMint,
   displayInAmount,
   displayInAmountInUsd,
   inputTokenImageUri,
@@ -72,6 +74,7 @@ export function TopSwap({
         </div>
 
         <Receive
+          outputTokenMint={outputTokenMint}
           setSwapMode={setSwapMode}
           handleOutAmountChange={handleOutAmountChange}
           displayOutAmount={displayOutAmount}

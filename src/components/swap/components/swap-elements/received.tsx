@@ -1,6 +1,8 @@
 'use client'
 
+import { TokenHolders } from '@/components/common/token-holders'
 import { DEFAULT_OUTPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
+import { useGetProfilesOwnSpecificToken } from '@/components/tapestry/hooks/use-get-profiles-own-specific-token'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
@@ -9,6 +11,7 @@ import { ESwapMode } from '../../swap.models'
 interface Props {
   displayOutAmount: string
   displayOutAmountInUsd: string
+  outputTokenMint: string
   outputTokenImageUri?: string
   outputTokenSymbol?: string
   setSwapMode: (mode: ESwapMode) => void
@@ -19,12 +22,17 @@ interface Props {
 export function Receive({
   displayOutAmount,
   displayOutAmountInUsd,
+  outputTokenMint,
   outputTokenImageUri,
   outputTokenSymbol,
   setSwapMode,
   handleOutAmountChange,
   setShowOutputTokenSearch,
 }: Props) {
+  const { data: tokenHolders } = useGetProfilesOwnSpecificToken({
+    tokenAddress: outputTokenMint,
+  })
+
   return (
     <>
       <div className="space-y-3">
@@ -74,6 +82,7 @@ export function Receive({
           </div>
           <ChevronDown size={32} />
         </Button>
+        {tokenHolders && <TokenHolders data={tokenHolders} />}
       </div>
     </>
   )
