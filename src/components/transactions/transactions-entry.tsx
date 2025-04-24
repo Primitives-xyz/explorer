@@ -27,7 +27,11 @@ export function TransactionsEntry({
   displaySolTransfer,
   displayOther,
 }: Props) {
-  const primaryType = useTransactionType(transaction)
+  const transactionForType = {
+    ...transaction,
+    events: transaction.events && transaction.events.nft ? [] : undefined,
+  }
+  const primaryType = useTransactionType(transactionForType)
 
   return (
     <>
