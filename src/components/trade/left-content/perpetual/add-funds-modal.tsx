@@ -1,17 +1,31 @@
 'use client'
 
-import { useEffect, useMemo, useState } from "react"
-import { PublicKey } from "@solana/web3.js"
-import { SpotMarketConfig, SpotMarkets } from "@drift-labs/sdk-browser"
-import { getAssociatedTokenAddress } from "@solana/spl-token"
-import { CircleAlert, X } from "lucide-react"
-import { cn, formatRawAmount } from "@/utils/utils"
-import { useCurrentWallet } from "@/utils/use-current-wallet"
-import { useTokenBalance } from "../../hooks/use-token-balance"
-import { CheckboxSize } from "@/components/ui/switch/checkbox.models"
-import { Button, ButtonSize, ButtonVariant, Card, CardContent, Checkbox, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Spinner } from "@/components/ui"
-import { useDeposit } from "../../hooks/drift/use-deposit"
-import { useDriftUsers } from "../../hooks/drift/use-drift-users"
+import {
+  Button,
+  ButtonSize,
+  ButtonVariant,
+  Card,
+  CardContent,
+  Checkbox,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Spinner,
+} from '@/components/ui'
+import { CheckboxSize } from '@/components/ui/switch/checkbox.models'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { cn, formatRawAmount } from '@/utils/utils'
+import { SpotMarketConfig, SpotMarkets } from '@drift-labs/sdk-browser'
+import { getAssociatedTokenAddress } from '@solana/spl-token'
+import { PublicKey } from '@solana/web3.js'
+import { CircleAlert, X } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useDeposit } from '../../hooks/drift/use-deposit'
+import { useDriftUsers } from '../../hooks/drift/use-drift-users'
+import { useTokenBalance } from '../../hooks/use-token-balance'
 
 interface AddFundsModalProps {
   isOpen: boolean
@@ -50,15 +64,19 @@ export default function AddFundsModal({
   const [depositAmount, setDepositAmount] = useState<string>('')
   const [inputError, setInputError] = useState<InputError | null>(null)
   const [depositTokenSymbol, setDepositTokenSymbol] = useState<string>('SOL')
-  const [sportMarketInfo, setSportMarketInfo] = useState<SpotMarketConfig[]>(SpotMarkets[env])
+  const [sportMarketInfo, setSportMarketInfo] = useState<SpotMarketConfig[]>(
+    SpotMarkets[env]
+  )
   const { accountIds, loading: userAccountsLoading } = useDriftUsers()
 
   const depositTokenSpotMarketInfo = useMemo(() => {
-    const depositTokenSportMarketInfo = sportMarketInfo?.find((market) => market.symbol === depositTokenSymbol)
+    const depositTokenSportMarketInfo = sportMarketInfo?.find(
+      (market) => market.symbol === depositTokenSymbol
+    )
 
     return {
       mint: depositTokenSportMarketInfo?.mint.toBase58(),
-      decimals: Number(depositTokenSportMarketInfo?.precisionExp)
+      decimals: Number(depositTokenSportMarketInfo?.precisionExp),
     }
   }, [depositTokenSymbol, sportMarketInfo])
 
@@ -70,13 +88,13 @@ export default function AddFundsModal({
   const {
     depositCollateral,
     loading: depositCollateralLoading,
-    error: depositCollateralError
+    error: depositCollateralError,
   } = useDeposit({
     amount: depositAmount,
     depositToken: depositTokenSpotMarketInfo.mint ?? '',
     depositTokenSymbol: depositTokenSymbol,
     depositTokenDecimals: depositTokenSpotMarketInfo.decimals,
-    subAccountId: selectedAccount === "" ? null : Number(selectedAccount)
+    subAccountId: selectedAccount === '' ? null : Number(selectedAccount),
   })
 
   const validateAmount = (value: string, decimals: number = 6): boolean => {
@@ -114,7 +132,9 @@ export default function AddFundsModal({
         BigInt(depositTokenSpotMarketInfo.decimals)
       )
 
-      if (validateAmount(formattedQuarter, depositTokenSpotMarketInfo.decimals)) {
+      if (
+        validateAmount(formattedQuarter, depositTokenSpotMarketInfo.decimals)
+      ) {
         setDepositAmount(formattedQuarter)
       }
     } catch (err) {
@@ -144,10 +164,6 @@ export default function AddFundsModal({
   const initAndDeposit = () => {
     depositCollateral()
   }
-
-  useEffect(() => {
-    console.log('clicked', isChecked)
-  }, [isChecked])
 
   return (
     <div
@@ -190,45 +206,47 @@ export default function AddFundsModal({
         </div>
 
         <div className="p-4 space-y-6">
-          {
-            !accountIds.length ? (
-              <div className="flex justify-between items-center space-x-2">
-                <p className="text-gray-400">Deposit Collateral From</p>
-                <div className="bg-[#1a1f2a] rounded-button">
-                  <Button
-                    variant={ButtonVariant.GHOST}
-                    size={ButtonSize.DEFAULT}
-                    className="cursor-pointer bg-[#3a4252] text-white"
-                  >
-                    Wallet
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-4 space-y-2">
-                <p className="text-sm text-gray-400">Deposit to</p>
-                <Select
-                  value={selectedAccount}
-                  onValueChange={(value) => setSelectedAccount(value)}
+          {!accountIds.length ? (
+            <div className="flex justify-between items-center space-x-2">
+              <p className="text-gray-400">Deposit Collateral From</p>
+              <div className="bg-[#1a1f2a] rounded-button">
+                <Button
+                  variant={ButtonVariant.GHOST}
+                  size={ButtonSize.DEFAULT}
+                  className="cursor-pointer bg-[#3a4252] text-white"
                 >
-                  <SelectTrigger className="bg-transparent text-primary h-12 rounded-input">
-                    <SelectValue placeholder={`${userAccountsLoading ? "Loading Accounts..." : "Select Accounts"}`} />
-                  </SelectTrigger>
-                  {
-                    !userAccountsLoading && (
-                      <SelectContent className="border border-primary text-primary">
-                        {
-                          accountIds.map((id) => (
-                            <SelectItem value={id.toString()} key={id}>{id === 0 ? 'Main Account' : `SubAccount ${id}`}</SelectItem>
-                          ))
-                        }
-                      </SelectContent>
-                    )
-                  }
-                </Select>
+                  Wallet
+                </Button>
               </div>
-            )
-          }
+            </div>
+          ) : (
+            <div className="mt-4 space-y-2">
+              <p className="text-sm text-gray-400">Deposit to</p>
+              <Select
+                value={selectedAccount}
+                onValueChange={(value) => setSelectedAccount(value)}
+              >
+                <SelectTrigger className="bg-transparent text-primary h-12 rounded-input">
+                  <SelectValue
+                    placeholder={`${
+                      userAccountsLoading
+                        ? 'Loading Accounts...'
+                        : 'Select Accounts'
+                    }`}
+                  />
+                </SelectTrigger>
+                {!userAccountsLoading && (
+                  <SelectContent className="border border-primary text-primary">
+                    {accountIds.map((id) => (
+                      <SelectItem value={id.toString()} key={id}>
+                        {id === 0 ? 'Main Account' : `SubAccount ${id}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                )}
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
@@ -244,13 +262,12 @@ export default function AddFundsModal({
                     <SelectValue placeholder="Select Token" />
                   </SelectTrigger>
                   <SelectContent className="border border-primary text-primary">
-                    {
-                      sportMarketInfo && sportMarketInfo.map((market, index) => (
+                    {sportMarketInfo &&
+                      sportMarketInfo.map((market, index) => (
                         <SelectItem value={market.symbol} key={index}>
                           {market.symbol}
                         </SelectItem>
-                      ))
-                    }
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -291,75 +308,80 @@ export default function AddFundsModal({
             </div>
           )}
 
-          {
-            !accountIds.length && (
-              <>
-                <p className="text-gray-400">Depositing funds from wallet</p>
+          {!accountIds.length && (
+            <>
+              <p className="text-gray-400">Depositing funds from wallet</p>
 
-                <Card>
-                  <CardContent className='flex space-x-3'>
-                    <div className='flex justify-center items-center'>
-                      <div className="h-8 w-8 flex justify-center items-center rounded-full bg-yellow-900/30 ">
-                        <CircleAlert size={32} className="text-[#f2c94c]" />
-                      </div>
+              <Card>
+                <CardContent className="flex space-x-3">
+                  <div className="flex justify-center items-center">
+                    <div className="h-8 w-8 flex justify-center items-center rounded-full bg-yellow-900/30 ">
+                      <CircleAlert size={32} className="text-[#f2c94c]" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-[#f2c94c]">
+                      <span>Creating an account costs 0.0314 SOL</span>
                     </div>
 
-                    <div className='space-y-3'>
-                      <div className='flex items-center justify-between text-[#f2c94c]'>
-                        <span>
-                          Creating an account costs 0.0314 SOL
-                        </span>
-                      </div>
+                    <label
+                      htmlFor="terms"
+                      className="flex items-center cursor-pointer space-x-3"
+                    >
+                      <Checkbox
+                        id="terms"
+                        checked={isChecked}
+                        onClick={() => {
+                          setIsChecked(!isChecked)
+                        }}
+                        onChange={() => {}}
+                        // className="pointer-events-none"
+                        size={CheckboxSize.DEFAULT}
+                      />
+                      <span className="text-sm">
+                        I understand that dynamic fees are in place as a safe
+                        guard and that rent can be reclaimed upon account
+                        deletion, other than the 0.0001 SOL New Account Fee.
+                      </span>
+                    </label>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
 
-                      <label htmlFor="terms" className="flex items-center cursor-pointer space-x-3">
-                        <Checkbox
-                          id="terms"
-                          checked={isChecked}
-                          onClick={() => {
-                            setIsChecked(!isChecked)
-                          }}
-                          onChange={() => { }}
-                          // className="pointer-events-none"
-                          size={CheckboxSize.DEFAULT}
-                        />
-                        <span className="text-sm">
-                          I understand that dynamic fees are in place as a safe guard
-                          and that rent can be reclaimed upon account deletion, other
-                          than the 0.0001 SOL New Account Fee.
-                        </span>
-                      </label>
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            )
-          }
-
-          {
-            !accountIds.length ? (
-              <Button
-                variant={(isChecked && Number(depositAmount) > 0) ? ButtonVariant.DEFAULT : ButtonVariant.OUTLINE_WHITE}
-                className="w-full"
-                onClick={initAndDeposit}
-                disabled={!isChecked || depositCollateralLoading || Number(depositAmount) === 0}
-              >
-                {
-                  depositCollateralLoading ? <Spinner /> : 'ADD'
-                }
-              </Button>
-            ) : (
-              <Button
-                variant={Number(depositAmount) > 0 ? ButtonVariant.DEFAULT : ButtonVariant.OUTLINE_WHITE}
-                className="w-full"
-                onClick={initAndDeposit}
-                disabled={Number(depositAmount) === 0 || depositCollateralLoading}
-              >
-                {
-                  depositCollateralLoading ? <Spinner /> : 'ADD'
-                }
-              </Button>
-            )
-          }
+          {!accountIds.length ? (
+            <Button
+              variant={
+                isChecked && Number(depositAmount) > 0
+                  ? ButtonVariant.DEFAULT
+                  : ButtonVariant.OUTLINE_WHITE
+              }
+              className="w-full"
+              onClick={initAndDeposit}
+              disabled={
+                !isChecked ||
+                depositCollateralLoading ||
+                Number(depositAmount) === 0
+              }
+            >
+              {depositCollateralLoading ? <Spinner /> : 'ADD'}
+            </Button>
+          ) : (
+            <Button
+              variant={
+                Number(depositAmount) > 0
+                  ? ButtonVariant.DEFAULT
+                  : ButtonVariant.OUTLINE_WHITE
+              }
+              className="w-full"
+              onClick={initAndDeposit}
+              disabled={Number(depositAmount) === 0 || depositCollateralLoading}
+            >
+              {depositCollateralLoading ? <Spinner /> : 'ADD'}
+            </Button>
+          )}
         </div>
       </div>
     </div>

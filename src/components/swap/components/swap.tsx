@@ -355,6 +355,7 @@ export function Swap({ setTokenMint }: Props) {
       <TopSwap
         walletAddress={walletAddress}
         inputTokenMint={inputTokenMint}
+        outputTokenMint={outputTokenMint}
         displayInAmount={displayInAmount}
         displayInAmountInUsd={displayInAmountInUsd}
         inputTokenImageUri={inputTokenImageUri}
