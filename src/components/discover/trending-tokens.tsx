@@ -1,7 +1,7 @@
 'use client'
 
+import { useGetTrendingTokens } from '@/components/birdeye/hooks/use-get-trending-tokens'
 import { TokenHolders } from '@/components/common/token-holders'
-import { useGetTrendingTokensWithHolders } from '@/components/discover/hooks/use-get-trending-tokens-with-holders'
 import { ITrendingTokenWidthHolders } from '@/components/discover/models/trending-tokens.models'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { Button, ButtonVariant } from '@/components/ui'
@@ -14,7 +14,9 @@ import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
 
 export function TrendingTokens() {
-  const { tokens, loading } = useGetTrendingTokensWithHolders()
+  const { tokens, loading } = useGetTrendingTokens()
+  //const { tokens, loading } = useGetTrendingTokensWithHolders()
+
   const { setOpen, setInputs } = useSwapStore()
 
   const columns: ColumnDef<ITrendingTokenWidthHolders>[] = [
