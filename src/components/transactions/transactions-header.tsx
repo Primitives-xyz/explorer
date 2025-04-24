@@ -43,7 +43,7 @@ export function TransactionsHeader({
   }
 
   return (
-    <div className="flex flex-row gap-2 items-start">
+    <div className="flex flex-row gap-2 items-start overflow-visible">
       <div className="w-12">
         <Button
           variant={ButtonVariant.GHOST}
@@ -73,6 +73,7 @@ export function TransactionsHeader({
             >
               {abbreviateWalletAddress({
                 address: transaction.signature,
+                desiredLength: 8,
               })}
             </Button>
 
@@ -83,6 +84,7 @@ export function TransactionsHeader({
             <Button
               variant={ButtonVariant.OUTLINE}
               onClick={onClickTradeButton}
+              size={ButtonSize.SM}
             >
               <ArrowRightLeft size={16} />
               Copy Trade
@@ -126,7 +128,7 @@ function TimeAgo({
 }) {
   return (
     <p className="text-muted-foreground text-xs">
-      • {formatTimeAgo(new Date(transaction.timestamp))}
+      • {formatTimeAgo(new Date(transaction.timestamp * 1000))}
     </p>
   )
 }
