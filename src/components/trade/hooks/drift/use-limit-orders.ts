@@ -48,7 +48,7 @@ export function useLimitOrders({
       toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
       const sig = await driftClient.cancelOrder(orderId, undefined, subAccountId)
       toast.success(SUCCESS.CANCEL_ORDER_TX_SUCCESS.title, SUCCESS.CANCEL_ORDER_TX_SUCCESS.content)
-      await refreshFetchLimitOrders()
+      refreshFetchLimitOrders()
       return sig
     } catch (error) {
       console.log(error)
@@ -64,7 +64,6 @@ export function useLimitOrders({
     setLoading(true)
     try {
       if (!driftClient) {
-        toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
         return
       }
 
@@ -75,14 +74,12 @@ export function useLimitOrders({
       )
 
       if (!marketInfo) {
-        toast.error(ERRORS.PERPS_MARKET_ERR.title, ERRORS.PERPS_MARKET_ERR.content)
         return
       }
 
       const user = driftClient.getUser(subAccountId)
 
       if (!user) {
-        toast.error(ERRORS.PERPS_USER_ERR.title, ERRORS.PERPS_USER_ERR.content)
         return
       }
 
@@ -111,7 +108,6 @@ export function useLimitOrders({
       setLimitOrders(limitOrders)
     } catch (error) {
       console.log(error)
-      toast.error(ERRORS.FETCH_PERPS_POSITION_ERR.title, ERRORS.FETCH_PERPS_POSITION_ERR.content)
     } finally {
       setLoading(false)
     }

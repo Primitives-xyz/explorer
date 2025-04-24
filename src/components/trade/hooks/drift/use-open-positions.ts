@@ -63,7 +63,6 @@ export function useOpenPositions({
     try {
       setLoading(true)
       if (!driftClient) {
-        toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
         return
       }
 
@@ -74,14 +73,12 @@ export function useOpenPositions({
       )
 
       if (!marketInfo) {
-        toast.error(ERRORS.PERPS_MARKET_ERR.title, ERRORS.PERPS_MARKET_ERR.content)
         return
       }
 
       const user = driftClient.getUser(subAccountId)
 
       if (!user) {
-        toast.error(ERRORS.PERPS_USER_ERR.title, ERRORS.PERPS_USER_ERR.content)
         return
       }
 
@@ -115,7 +112,6 @@ export function useOpenPositions({
       setPerpsPositionsInfo(perpsPositionsInfo)
     } catch (error) {
       console.log(error)
-      toast.error(ERRORS.FETCH_PERPS_POSITION_ERR.title, ERRORS.FETCH_PERPS_POSITION_ERR.content)
     } finally {
       setLoading(false)
     }

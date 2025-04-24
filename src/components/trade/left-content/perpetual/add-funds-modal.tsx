@@ -67,7 +67,7 @@ export default function AddFundsModal({
   const [sportMarketInfo, setSportMarketInfo] = useState<SpotMarketConfig[]>(
     SpotMarkets[env]
   )
-  const { accountIds, loading: userAccountsLoading } = useDriftUsers()
+  const { accountIds, loading: userAccountsLoading, refreshGetUserAccountIds } = useDriftUsers()
 
   const depositTokenSpotMarketInfo = useMemo(() => {
     const depositTokenSportMarketInfo = sportMarketInfo?.find(
@@ -161,8 +161,12 @@ export default function AddFundsModal({
     }
   }
 
-  const initAndDeposit = () => {
-    depositCollateral()
+  const initAndDeposit = async () => {
+    await depositCollateral()
+    setIsOpen(false)
+    setIsChecked(false)
+    setDepositAmount("")
+    refreshGetUserAccountIds()
   }
 
   return (
@@ -230,9 +234,9 @@ export default function AddFundsModal({
                   <SelectValue
                     placeholder={`${
                       userAccountsLoading
-                        ? 'Loading Accounts...'
-                        : 'Select Accounts'
-                    }`}
+                      ? 'Loading Accounts...'
+                      : 'Select Accounts'
+                      }`}
                   />
                 </SelectTrigger>
                 {!userAccountsLoading && (
