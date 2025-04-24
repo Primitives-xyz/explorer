@@ -5,6 +5,7 @@ import { SolanaAddressDisplay } from '@/components/common/solana-address-display
 import Image from 'next/image'
 import { cn } from '@/utils/utils'
 import { Card } from '@/components/ui'
+import { FungibleTokenInfo } from '@/types/Token'
 
 interface TransferLineProps {
   from: string
@@ -31,14 +32,23 @@ export function TransferLine({
   direction,
   className,
 }: TransferLineProps) {
-  const { symbol, image, decimals } = useTokenInfo(mint)
+  const { data: tokenData, loading: priceLoading } = useTokenInfo(mint)
+  const price =
+    tokenData?.result && 'token_info' in tokenData.result
+      ? tokenData.result.token_info?.price_info?.price_per_token
+      : null
+  const tokenResult = tokenData?.result && 'token_info' in tokenData.result
+    ? tokenData.result
+    : undefined
+
+    
+  const symbol = tokenResult?.content?.metadata?.symbol
+  const image = tokenResult?.content?.links?.image
+  const decimals = tokenResult?.token_info?.decimals
+
   const displaySymbol = symbol || abbreviateWalletAddress({ address: mint })
   const iconSize = compact ? 16 : 20
-  const { price, loading: priceLoading } = useTokenUSDCPrice({
-    tokenMint: !compact ? mint : null,
-    decimals: !compact ? decimals ?? 6 : 0,
-  })
-  const usdValue = price !== null ? amount * price : null
+  const usdValue = price != null ? amount * price : null
 
   return (
     <div

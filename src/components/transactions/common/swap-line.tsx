@@ -1,6 +1,5 @@
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
-import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import Image from 'next/image'
 import { formatNumber } from '@/utils/utils'
 import { cn } from '@/utils/utils'
@@ -30,13 +29,20 @@ export function SwapLine({
   showTimestamp = true,
   className,
 }: SwapLineProps) {
-  const { image: imageA, decimals: decimalsA, symbol: symbolA } = useTokenInfo(mintA)
-  const { image: imageB, decimals: decimalsB, symbol: symbolB } = useTokenInfo(mintB)
+  const { data: tokenDataA, image: imageA, decimals: decimalsA, symbol: symbolA, loading: loadingA } = useTokenInfo(mintA)
+  const { data: tokenDataB, image: imageB, decimals: decimalsB, symbol: symbolB, loading: loadingB } = useTokenInfo(mintB)
   const iconSize = compact ? 16 : 20
-  const { price: priceA, loading: loadingA } = useTokenUSDCPrice({ tokenMint: !compact ? mintA : null, decimals: !compact ? decimalsA ?? 6 : 0 })
-  const { price: priceB, loading: loadingB } = useTokenUSDCPrice({ tokenMint: !compact ? mintB : null, decimals: !compact ? decimalsB ?? 6 : 0 })
-  const usdValueA = priceA !== null ? amountA * priceA : null
-  const usdValueB = priceB !== null ? amountB * priceB : null
+
+  // Extract price from token info (like transfer-line.tsx)
+  const priceA = tokenDataA?.result && 'token_info' in tokenDataA.result
+    ? tokenDataA.result.token_info?.price_info?.price_per_token
+    : null
+  const priceB = tokenDataB?.result && 'token_info' in tokenDataB.result
+    ? tokenDataB.result.token_info?.price_info?.price_per_token
+    : null
+
+  const usdValueA = priceA != null ? amountA * priceA : null
+  const usdValueB = priceB != null ? amountB * priceB : null
 
   return (
     <div

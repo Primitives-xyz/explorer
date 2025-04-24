@@ -8,7 +8,6 @@ import {
 } from '@/components/tapestry/models/helius.models'
 import { TokenInfo } from '@/components/tapestry/models/token.models'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
-import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
@@ -48,29 +47,14 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
     toToken?.mint
   )
 
-  const shouldFetchFromPrice =
-    fromToken?.mint &&
-    (fromToken.mint === SOL_MINT || fromToken.mint === USDC_MINT)
-
-  const shouldFetchToPrice =
-    toToken?.mint && (toToken.mint === SOL_MINT || toToken.mint === USDC_MINT)
-
-  const { price: fromTokenPriceRaw, loading: fromPriceLoadingRaw } =
-    useTokenUSDCPrice({
-      tokenMint: shouldFetchFromPrice ? fromToken?.mint : null,
-      decimals: shouldFetchFromPrice ? 9 : 0,
-    })
-
-  const { price: toTokenPriceRaw, loading: toPriceLoadingRaw } =
-    useTokenUSDCPrice({
-      tokenMint: shouldFetchToPrice ? toToken?.mint : null,
-      decimals: shouldFetchToPrice ? 9 : 0,
-    })
-
-  const fromTokenPrice = shouldFetchFromPrice ? fromTokenPriceRaw : null
-  const toTokenPrice = shouldFetchToPrice ? toTokenPriceRaw : null
-
   if (!fromToken || !toToken) return null
+
+  const fromTokenPrice = fromTokenInfo?.result && 'token_info' in fromTokenInfo.result
+    ? fromTokenInfo.result.token_info?.price_info?.price_per_token
+    : null
+  const toTokenPrice = toTokenInfo?.result && 'token_info' in toTokenInfo.result
+    ? toTokenInfo.result.token_info?.price_info?.price_per_token
+    : null
 
   return (
     <Card className="overflow-visible">
@@ -109,13 +93,13 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
         <SwapTransactionsViewDetails
           token={{ ...fromToken, ...fromTokenInfo }}
           tokenLoading={fromTokenLoading}
-          tokenPrice={fromTokenPrice}
+          tokenPrice={fromTokenPrice ?? null}
           priceLoading={fromTokenLoading}
         />
         <SwapTransactionsViewDetails
           token={{ ...toToken, ...toTokenInfo }}
           tokenLoading={toTokenLoading}
-          tokenPrice={toTokenPrice}
+          tokenPrice={toTokenPrice ?? null}
           priceLoading={toTokenLoading}
           isReceived
         />
