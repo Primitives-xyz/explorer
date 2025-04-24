@@ -1,29 +1,31 @@
 import { ITrendingTokenWidthHolders } from '@/components/discover/models/trending-tokens.models'
-import { FetchMethod } from '@/utils/api'
+import { FetchMethod, fetchWrapper } from '@/utils/api'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { NextResponse } from 'next/server'
 
-const BIRDEYE_ENDPOINT =
-  'https://public-api.birdeye.so/defi/token_trending?sort_by=volume24hUSD&sort_type=desc&offset=0&limit=20'
+const BIRDEYE_ENDPOINT = 'https://public-api.birdeye.so/defi/token_trending'
 
 export async function GET() {
   try {
-    const res = await fetch(BIRDEYE_ENDPOINT, {
+    const birdeyeData = await fetchWrapper<{
+      data: { tokens: ITrendingTokenWidthHolders[] }
+    }>({
+      method: FetchMethod.GET,
+      endpoint: BIRDEYE_ENDPOINT,
+      queryParams: {
+        sort_by: 'volume24hUSD',
+        sort_type: 'desc',
+        offset: 0,
+        limit: 20,
+      },
       headers: {
         'x-chain': 'solana',
         'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY!,
       },
+      toBackend: false,
     })
 
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch trending tokens' },
-        { status: 500 }
-      )
-    }
-
-    const data = await res.json()
-    const tokens = data?.data?.tokens ?? []
+    const tokens = birdeyeData?.data?.tokens ?? []
 
     const tokensWithHolders = await Promise.all(
       tokens.map(async (token: ITrendingTokenWidthHolders) => {
@@ -54,8 +56,13 @@ export async function GET() {
     )
 
     return NextResponse.json({
-      tokens: tokensWithHolders,
-      total: tokensWithHolders.length,
+      success: true,
+      data: {
+        updateUnixTime: Date.now(),
+        updateTime: new Date().toISOString(),
+        tokens: tokensWithHolders,
+        total: tokensWithHolders.length,
+      },
     })
   } catch (error: any) {
     console.error('[Trending With Holders API Error]', error)
