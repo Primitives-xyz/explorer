@@ -58,6 +58,8 @@ export function Pay({
           onFocus={() => setSwapMode(ESwapMode.EXACT_IN)}
           onChange={(event) => handleInAmountChange(event)}
           value={displayInAmount}
+          autoFocus
+          // type="number"
         />
         <p className="text-xs text-muted-foreground">{displayInAmountInUsd}</p>
       </div>

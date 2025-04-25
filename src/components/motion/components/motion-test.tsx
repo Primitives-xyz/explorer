@@ -15,9 +15,9 @@ export function MotionTest() {
             '0 0 15px 5px rgba(57, 255, 20, 0.1)',
           ],
           backgroundColor: [
-            'rgba(57, 255, 20, 0.1)',
-            'rgba(57, 255, 20, 0.15)',
-            'rgba(57, 255, 20, 0.1)',
+            'rgba(57, 255, 20, 0.05)',
+            'rgba(57, 255, 20, 0.03)',
+            'rgba(57, 255, 20, 0.05)',
           ],
         }}
         transition={{
