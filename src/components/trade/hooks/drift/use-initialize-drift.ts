@@ -5,33 +5,39 @@ import { Connection, PublicKey } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 
 export function useInitializeDrift() {
-  const [driftClient, setDriftClient] = useState<DriftClient>()
+  const [driftClient, setDriftClient] = useState<DriftClient | null>(null)
   const { primaryWallet, walletAddress } = useCurrentWallet()
   const [connection, setConnection] = useState<Connection>()
 
   useEffect(() => {
-    if (!walletAddress ||!primaryWallet || !isSolanaWallet(primaryWallet)) {
-      return
-    }
-
     const initializeClient = async () => {
-      const signer = await primaryWallet.getSigner()
+      try {
+        if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+          setDriftClient(null)
+          return
+        }
 
-      const rpcUrl =
-        process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
-      const connection = new Connection(rpcUrl, 'confirmed')
-      setConnection(connection)
+        const signer = await primaryWallet.getSigner()
 
-      const driftClient = new DriftClient({
-        connection,
-        wallet: {
-          publicKey: new PublicKey(walletAddress),
-          signTransaction: signer.signTransaction,
-          signAllTransactions: signer.signAllTransactions,
-        },
-        env: 'mainnet-beta',
-      })
-      setDriftClient(driftClient)
+        const rpcUrl =
+          process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
+        const connection = new Connection(rpcUrl, 'confirmed')
+        setConnection(connection)
+
+        const driftClient = new DriftClient({
+          connection,
+          wallet: {
+            publicKey: new PublicKey(walletAddress),
+            signTransaction: signer.signTransaction,
+            signAllTransactions: signer.signAllTransactions,
+          },
+          env: 'mainnet-beta',
+        })
+        setDriftClient(driftClient)
+      }
+      catch (error) {
+        setDriftClient(null)
+      }
     }
 
     initializeClient()

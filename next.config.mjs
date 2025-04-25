@@ -12,10 +12,10 @@ const nextConfig = {
         net: false,
         dgram: false,
         dns: false,
-      }
+      };
     }
 
-    return config
+    return config;
   },
   images: {
     remotePatterns: [
@@ -34,6 +34,11 @@ const nextConfig = {
   },
   experimental: {
     webpackMemoryOptimizations: true,
+    turbo: {
+      resolveAlias: {
+        fs: { browser: './node-browser-compatibility/index.js' },
+      },
+    },
   },
 }
 

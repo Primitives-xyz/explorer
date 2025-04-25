@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     const searchParams = req.nextUrl.searchParams
     const requestorId = searchParams.get('requestorId')
     const page = searchParams.get('page') || '1'
-    const pageSize = searchParams.get('pageSize') || '1000'
+    const pageSize = searchParams.get('pageSize') || '10'
 
     if (!mint) {
       return NextResponse.json(
