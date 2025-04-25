@@ -2,8 +2,10 @@ import { ActivityTape } from '@/components/activity-tape/components/activity-tap
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { WalletProvider } from '@/components/common/wallet-provider'
+import { Scanner } from '@/components/motion/components/scanner'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
 import { Toaster } from '@/components/ui/sonner'
+import { cn } from '@/utils/utils'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -89,30 +91,24 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      {/* <body className={cn(rethinkSans.className, 'screen-effects')}> */}
-      <body className={rethinkSans.className}>
+      <body className={cn('relative min-h-screen', rethinkSans.className)}>
         <NextIntlClientProvider messages={messages}>
           <WalletProvider>
             <AddressHighlightProvider>
-              <Onboarding />
-              <div className="screen-effects">
-                <div className="absolute top-0 left-0 inset-x-0 z-50 h-10 bg-gradient-to-t from-neutral-200 to-neutral-200/10 opacity-[0.05] pointer-events-none scanner" />
-                <div className="pixels absolute z-0 top-0 left-0 inset-0" />
+              <div className="fixed inset-0 z-0 background-gradient" />
+              <Scanner />
+              <div className="pixels absolute z-0 top-0 left-0 inset-0" />
 
-                {/* <div className="fixed inset-0 z-0 background-gradient" /> */}
-
+              <div className="relative">
                 <Onboarding />
-                <div className="fixed inset-0 z-0 background-gradient" />
-                <div className="relative min-h-screen">
-                  <ActivityTape />
-                  <main className="w-full flex justify-between pt-topbar">
-                    <LeftSideMenu />
-                    <div className="flex-1 flex justify-between pt-5">
-                      <Toaster />
-                      {children}
-                    </div>
-                  </main>
-                </div>
+                <ActivityTape />
+                <main className="w-full flex justify-between pt-topbar">
+                  <LeftSideMenu />
+                  <div className="flex-1 flex justify-between pt-5">
+                    <Toaster />
+                    {children}
+                  </div>
+                </main>
               </div>
             </AddressHighlightProvider>
           </WalletProvider>

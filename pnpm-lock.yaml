@@ -206,6 +206,9 @@ importers:
       react-intersection-observer:
         specifier: 9.16.0
         version: 9.16.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react-powerglitch:
+        specifier: 1.1.0
+        version: 1.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-use-clipboard:
         specifier: 1.0.9
         version: 1.0.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -7689,6 +7692,9 @@ packages:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  powerglitch@2.4.0:
+    resolution: {integrity: sha512-O/WgCJ2GthDfKanl6YDUn7FHWa9GOj8R7UPTX6cwGbl0R+FTiQtba0zuVOIviydr6cOIgNqvz+8hAhvyn7FtBw==}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -7933,6 +7939,12 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  react-powerglitch@1.1.0:
+    resolution: {integrity: sha512-ueYw9dZFszBnchxbTOBJunvoWhVDoValhjDBjuZTXl3Hnj3DdwykcrS5Hdz4HDapnjveERMWeQo78OS5hmwF9A==}
+    peerDependencies:
+      react: '>= 16.8.0'
+      react-dom: '>= 16.8.0'
 
   react-qr-reader@2.2.1:
     resolution: {integrity: sha512-EL5JEj53u2yAOgtpAKAVBzD/SiKWn0Bl7AZy6ZrSf1lub7xHwtaXe6XSx36Wbhl1VMGmvmrwYMRwO1aSCT2fwA==}
@@ -19799,6 +19811,8 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  powerglitch@2.4.0: {}
+
   prelude-ls@1.2.1: {}
 
   prettier-plugin-organize-imports@3.2.3(prettier@2.8.8)(typescript@5.8.3):
@@ -20089,6 +20103,12 @@ snapshots:
       - encoding
       - supports-color
       - utf-8-validate
+
+  react-powerglitch@1.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      powerglitch: 2.4.0
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   react-qr-reader@2.2.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
