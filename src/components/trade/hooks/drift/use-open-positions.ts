@@ -1,15 +1,12 @@
 import {
-  BN,
-  convertToNumber,
-  PerpMarkets,
-  PRICE_PRECISION,
-  QUOTE_PRECISION,
+  PerpMarkets
 } from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useMarketPrice } from './use-market-price'
 import { toast } from 'sonner'
 import { useToastContent } from './use-toast-content'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 interface UseUserStatsProps {
   subAccountId: number,
@@ -36,9 +33,10 @@ export function useOpenPositions({
 }: UseUserStatsProps) {
   const [loading, setLoading] = useState<boolean>(false)
   const { ERRORS } = useToastContent()
-  const { price: marketPrice } = useMarketPrice({ symbol })
+  const { price: marketPrice, loading: marketPriceLoading } = useMarketPrice({ symbol })
   const { driftClient } = useInitializeDrift()
   const [perpsPositionsInfo, setPerpsPositionsInfo] = useState<PerpsPositionInfoProps[]>([])
+  const { walletAddress } = useCurrentWallet()
 
   const closePosition = async () => {
     if (!driftClient) {
@@ -62,54 +60,20 @@ export function useOpenPositions({
   const fetchOpenPositions = async () => {
     try {
       setLoading(true)
-      if (!driftClient) {
-        return
-      }
 
-      await driftClient.subscribe()
+      if (marketPriceLoading) return
 
-      const marketInfo = PerpMarkets[env].find(
-        (market) => market.baseAssetSymbol === symbol
-      )
+      const baseUrl = `/api/drift/perpspositions/?wallet=${walletAddress}&&subAccountId=${subAccountId}&&symbol=${symbol}&&marketPrice=${marketPrice}`
 
-      if (!marketInfo) {
-        return
-      }
-
-      const user = driftClient.getUser(subAccountId)
-
-      if (!user) {
-        return
-      }
-
-      await user.subscribe()
-      const perpPositions = user.getActivePerpPositions()
-      const liqPrice = convertToNumber(user.liquidationPrice(marketInfo.marketIndex), PRICE_PRECISION)
-      let perpsPositionsInfo: PerpsPositionInfoProps[] = []
-
-      perpPositions.forEach((position) => {
-        const baseAssetAmount = convertToNumber(position.baseAssetAmount, new BN(10).pow(new BN(9)))
-        const quoteAssetAmount = convertToNumber(position.quoteAssetAmount, QUOTE_PRECISION)
-        const entryPrice = Math.abs(quoteAssetAmount / baseAssetAmount)
-        const unrealizedPnL = (marketPrice - entryPrice) * baseAssetAmount
-        const unrealizedPnlPercentage = unrealizedPnL / (baseAssetAmount * marketPrice) * 100
-
-        if (baseAssetAmount) {
-          perpsPositionsInfo.push({
-            market: marketInfo.symbol,
-            direction: baseAssetAmount > 0 ? "LONG" : "SHORT",
-            baseAssetAmountInToken: Math.abs(baseAssetAmount),
-            baseAssetAmountInUsd: Math.abs(baseAssetAmount * marketPrice),
-            entryPrice: entryPrice,
-            markPrice: marketPrice,
-            pnlInUsd: unrealizedPnL,
-            pnlInPercentage: unrealizedPnlPercentage,
-            liqPrice: liqPrice
-          })
-        }
+      const res = await fetch(baseUrl, {
+        method: 'GET'
       })
+      const data = await res.json()
 
-      setPerpsPositionsInfo(perpsPositionsInfo)
+      if (!data.error) {
+        const perpsPositionsInfo = data.perpPositions
+        setPerpsPositionsInfo(perpsPositionsInfo)
+      }
     } catch (error) {
       console.log(error)
     } finally {
