@@ -52,33 +52,37 @@ export function ProfileSocial({ walletAddress }: Props) {
           <Tabs defaultValue={defaultTabValue}>
             <div className="overflow-auto w-full">
               <TabsList>
-                <TabsTrigger
-                  key="x-tab"
-                  variant={TabVariant.SOCIAL}
-                  value={
-                    hasXIdentity
-                      ? namespaces[0].namespace.name
-                      : 'x-default-tab'
-                  }
-                  className="flex-1 gap-1.5"
-                >
-                  <div className="w-5 h-5 shrink-0">
-                    <Image
-                      src={
+                {hasXIdentity &&
+                  mainProfile?.username ===
+                    explorerProfile?.profile.username && (
+                    <TabsTrigger
+                      key="x-tab"
+                      variant={TabVariant.SOCIAL}
+                      value={
                         hasXIdentity
-                          ? namespaces[0]?.namespace?.faviconURL
-                          : '/images/x.png'
+                          ? namespaces[0].namespace.name
+                          : 'x-default-tab'
                       }
-                      alt="x logo"
-                      width={16}
-                      height={16}
-                      className="w-full h-full"
-                    />
-                  </div>{' '}
-                  {/* <span>
+                      className="flex-1 gap-1.5"
+                    >
+                      <div className="w-5 h-5 shrink-0">
+                        <Image
+                          src={
+                            hasXIdentity
+                              ? namespaces[0]?.namespace?.faviconURL
+                              : '/images/x.png'
+                          }
+                          alt="x logo"
+                          width={16}
+                          height={16}
+                          className="w-full h-full"
+                        />
+                      </div>{' '}
+                      {/* <span>
                     {hasXIdentity ? namespaces[0].namespace.readableName : ''}
-                  </span> */}
-                </TabsTrigger>
+                    </span> */}
+                    </TabsTrigger>
+                  )}
 
                 {namespaces
                   .filter((_, index) => !hasXIdentity || index > 0)
@@ -120,7 +124,9 @@ export function ProfileSocial({ walletAddress }: Props) {
                 mainProfile?.username === explorerProfile?.profile.username && (
                   <Card>
                     <CardContent>
-                      <p>Connect your X to let others know what you're up to...</p>
+                      <p>
+                        Connect your X to let others know what you're up to...
+                      </p>
                       <br />
                       <Button
                         variant={ButtonVariant.OUTLINE_WHITE}
