@@ -3,7 +3,7 @@
 import { TokenBalance } from '@/components/common/left-side-menu/balance'
 import { DEFAULT_INPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDownIcon } from 'lucide-react'
 import Image from 'next/image'
 import { ESwapMode } from '../../swap.models'
 
@@ -39,7 +39,7 @@ export function Pay({
   ]
 
   return (
-    <div className="space-y-3">
+    <div>
       <div className="flex justify-between items-center">
         <p>Selling</p>
         <p className="text-xs text-muted-foreground">
@@ -54,17 +54,16 @@ export function Pay({
       <div className="flex justify-between items-center">
         <Input
           placeholder="0.00"
-          className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
-          type="text"
+          className="text-primary placeholder:text-primary text-xl bg-transparent border-none px-0"
           onFocus={() => setSwapMode(ESwapMode.EXACT_IN)}
-          onChange={(e) => handleInAmountChange(e)}
+          onChange={(event) => handleInAmountChange(event)}
           value={displayInAmount}
         />
         <p className="text-xs text-muted-foreground">{displayInAmountInUsd}</p>
       </div>
 
       <Button
-        variant={ButtonVariant.OUTLINE_WHITE}
+        variant={ButtonVariant.BADGE_WHITE}
         onClick={() => setShowInputTokenSearch(true)}
         size={ButtonSize.LG}
         className="flex justify-between px-4 w-full"
@@ -87,10 +86,9 @@ export function Pay({
             {inputTokenSymbol ? inputTokenSymbol : DEFAULT_INPUT_TOKEN_SYMBOL}
           </span>
         </div>
-        <ChevronDown size={32} />
+        <ChevronDownIcon />
       </Button>
-
-      <div className="flex items-center justify-end space-x-2">
+      <div className="flex items-center justify-end space-x-2 mt-2">
         {percentageButtons.map(({ label, value }) => (
           <Button
             key={value}

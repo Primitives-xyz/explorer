@@ -2,6 +2,8 @@ import { ActivityTape } from '@/components/activity-tape/components/activity-tap
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { WalletProvider } from '@/components/common/wallet-provider'
+import { BackgroundLinesEffect } from '@/components/motion/components/background-lines-effect'
+import { BackgroundPixelsEffect } from '@/components/motion/components/background-pixels-effect'
 import { Scanner } from '@/components/motion/components/scanner'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
 import { Toaster } from '@/components/ui/sonner'
@@ -96,20 +98,23 @@ export default async function RootLayout({
           <WalletProvider>
             <AddressHighlightProvider>
               <div className="fixed inset-0 z-0 background-gradient" />
-              <Scanner />
-              <div className="pixels absolute z-0 top-0 left-0 inset-0" />
+              <BackgroundPixelsEffect />
 
-              <div className="relative">
+              <div className="relative z-20">
                 <Onboarding />
                 <ActivityTape />
+                <Toaster />
+
                 <main className="w-full flex justify-between pt-topbar">
                   <LeftSideMenu />
                   <div className="flex-1 flex justify-between pt-5">
-                    <Toaster />
                     {children}
                   </div>
                 </main>
               </div>
+
+              <Scanner />
+              <BackgroundLinesEffect />
             </AddressHighlightProvider>
           </WalletProvider>
         </NextIntlClientProvider>

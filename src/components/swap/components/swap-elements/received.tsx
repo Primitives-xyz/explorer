@@ -4,7 +4,7 @@ import { TokenHolders } from '@/components/common/token-holders'
 import { DEFAULT_OUTPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
 import { useGetProfilesOwnSpecificToken } from '@/components/tapestry/hooks/use-get-profiles-own-specific-token'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDownIcon } from 'lucide-react'
 import Image from 'next/image'
 import { ESwapMode } from '../../swap.models'
 
@@ -35,7 +35,7 @@ export function Receive({
 
   return (
     <>
-      <div className="space-y-3">
+      <div>
         <div className="flex justify-between items-center">
           <p>Buying</p>
         </div>
@@ -43,10 +43,9 @@ export function Receive({
         <div className="flex justify-between items-center">
           <Input
             placeholder="0.00"
-            className="text-primary text-xl bg-transparent border-none placeholder:text-primary"
-            type="text"
+            className="text-primary placeholder:text-primary text-xl bg-transparent border-none px-0"
             onFocus={() => setSwapMode(ESwapMode.EXACT_OUT)}
-            onChange={(e) => handleOutAmountChange(e)}
+            onChange={(event) => handleOutAmountChange(event)}
             value={displayOutAmount}
           />
 
@@ -56,7 +55,7 @@ export function Receive({
         </div>
 
         <Button
-          variant={ButtonVariant.OUTLINE_WHITE}
+          variant={ButtonVariant.BADGE_WHITE}
           onClick={() => setShowOutputTokenSearch(true)}
           size={ButtonSize.LG}
           className="flex justify-between px-4 w-full"
@@ -82,9 +81,13 @@ export function Receive({
                 : DEFAULT_OUTPUT_TOKEN_SYMBOL}
             </span>
           </div>
-          <ChevronDown size={32} />
+          <ChevronDownIcon />
         </Button>
-        {tokenHolders && <TokenHolders data={tokenHolders} />}
+        {tokenHolders && (
+          <div className="mt-3">
+            <TokenHolders data={tokenHolders} />
+          </div>
+        )}
       </div>
     </>
   )

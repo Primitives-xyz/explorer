@@ -49,7 +49,7 @@ export function TopSwap({
 }: Props) {
   return (
     <Card>
-      <CardContent>
+      <CardContent className="p-4">
         <Pay
           walletAddress={walletAddress}
           inputTokenMint={inputTokenMint}
