@@ -240,3 +240,22 @@ kbd {
     pointer-events: none;
   }
 }
+
+@keyframes border-glow-animation {
+  0%,
+  100% {
+    border-color: hsla(var(--primary) / 0.2);
+    box-shadow: 0 0 10px 5px hsla(var(--primary) / 0.1);
+    background-color: hsla(var(--foreground) / 0.1);
+  }
+  50% {
+    border-color: hsla(var(--primary) / 0.5);
+    box-shadow: 0 0 20px 5px hsla(var(--primary) / 0.5);
+    /* background-color: hsla(var(--primary) / 0.2); */
+    background-color: hsla(var(--primary) / 0.1);
+  }
+}
+
+.card-motion {
+  animation: border-glow-animation 5s ease-in-out infinite;
+}

@@ -1,7 +1,7 @@
 'use client'
 
+import { Glitch } from '@/components/motion/components/glitch'
 import { Button, ButtonSize, ButtonVariant, Spinner } from '@/components/ui'
-import { useGlitch } from 'react-powerglitch'
 
 interface Props {
   sdkHasLoaded: boolean
@@ -18,8 +18,6 @@ export function CenterButtonSwap({
   setShowAuthFlow,
   handleSwap,
 }: Props) {
-  const glitch = useGlitch()
-
   return (
     <div className="w-full">
       {!sdkHasLoaded ? (
@@ -38,7 +36,14 @@ export function CenterButtonSwap({
           Connect Wallet
         </Button>
       ) : (
-        <div ref={glitch.ref} className="w-full">
+        <Glitch
+          options={{
+            playMode: 'hover',
+            // pulse: {
+            //   scale: 2,
+            // },
+          }}
+        >
           <Button
             onClick={handleSwap}
             size={ButtonSize.LG}
@@ -47,7 +52,7 @@ export function CenterButtonSwap({
           >
             {loading ? <Spinner /> : 'Execute Swap'}
           </Button>
-        </div>
+        </Glitch>
       )}
     </div>
   )

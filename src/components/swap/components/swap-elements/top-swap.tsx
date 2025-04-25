@@ -1,9 +1,9 @@
 'use client'
 
+import { Glitch } from '@/components/motion/components/glitch'
 import { Pay } from '@/components/swap/components/swap-elements/pay'
 import { Receive } from '@/components/swap/components/swap-elements/received'
 import { Card, CardContent } from '@/components/ui/card'
-import { motion } from 'framer-motion'
 import { ArrowDownUp } from 'lucide-react'
 import { ESwapMode } from '../../swap.models'
 
@@ -49,29 +49,20 @@ export function TopSwap({
   setShowOutputTokenSearch,
 }: Props) {
   return (
-    <div className="relative">
-      <motion.div
-        className="absolute inset-0 rounded-card z-0 overflow-hidden blur-md"
-        animate={{
-          boxShadow: [
-            '0 0 5px 3px rgba(57, 255, 20, 0.1)',
-            '0 0 10px 5px rgba(57, 255, 20, 0.15)',
-            '0 0 5px 3px rgba(57, 255, 20, 0.1)',
-          ],
-          backgroundColor: [
-            'rgba(57, 255, 20, 0.1)',
-            'rgba(57, 255, 20, 0.03)',
-            'rgba(57, 255, 20, 0.1)',
-          ],
-        }}
-        transition={{
-          duration: 3,
-          ease: 'easeInOut',
-          repeat: Infinity,
-          repeatType: 'reverse',
-        }}
-      />
-      <Card className="border-primary/30">
+    <Glitch
+      options={{
+        timing: {
+          duration: 10000,
+          // iterations: 3,
+          // easing: 'ease-in-out',
+        },
+        glitchTimeSpan: {
+          start: 0,
+          end: 0.1,
+        },
+      }}
+    >
+      <Card className="card-motion">
         <CardContent className="p-4">
           <Pay
             walletAddress={walletAddress}
@@ -108,6 +99,6 @@ export function TopSwap({
           />
         </CardContent>
       </Card>
-    </div>
+    </Glitch>
   )
 }
