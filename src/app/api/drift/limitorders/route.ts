@@ -100,9 +100,9 @@ export async function GET(request: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Error fetching Perps Positions:', error)
+    console.error('Error fetching Limit Orders:', error)
     return NextResponse.json(
-      { error: 'Error fetching Perps Positions' },
+      { error: 'Error fetching Limit Orders' },
       { status: 500 }
     )
   }

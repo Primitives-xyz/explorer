@@ -28,18 +28,16 @@ export function LeftSideMenu() {
           <LowFeeTrades />
         </div>
         <div className="flex flex-col items-center gap-4">
-          {
-            !accountIds.length ? (
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                className="w-full"
-                onClick={() => setIsFundsModalOpen(true)}
-              >
-                <Lock size={16} />
-                Unlock Perpetuals
-              </Button>
-            ) : (<></>)
-          }
+          <Button
+            variant={ButtonVariant.OUTLINE}
+            className="w-full"
+            onClick={() => setIsFundsModalOpen(true)}
+          >
+            <Lock size={16} />
+            {
+              !accountIds.length ? 'Unlock Perpetuals' : 'Deposite'
+            }
+          </Button>
           <LanguageSwitcher />
           <Button
             variant={ButtonVariant.OUTLINE_WHITE}
