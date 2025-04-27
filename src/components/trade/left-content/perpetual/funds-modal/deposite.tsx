@@ -1,3 +1,5 @@
+'use client'
+
 import { useTokenBalance } from "@/components/trade/hooks/use-token-balance"
 import { Button, ButtonSize, ButtonVariant, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui"
 import { useCurrentWallet } from "@/utils/use-current-wallet"
