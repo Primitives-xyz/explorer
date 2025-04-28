@@ -41,34 +41,6 @@ export async function GET(request: Request) {
 
     const userData = await userResponse.json()
 
-    const userId = userData.data.id
-
-    // Fetch user tweets
-    const tweetsResponse = await fetch(
-      `https://api.twitter.com/2/users/${userId}/tweets?max_results=5&tweet.fields=created_at,text`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 0,
-          tags: ['twitter-tweets'],
-        },
-      }
-    )
-
-    if (!tweetsResponse.ok) {
-      const errorData = await tweetsResponse.json()
-      console.error('Twitter tweets API error:', errorData)
-      return NextResponse.json(
-        { message: 'Failed to fetch tweets' },
-        { status: 400 }
-      )
-    }
-
-    const tweetsData = await tweetsResponse.json()
-
     await fetchTapestryServer({
       endpoint: `profiles/${profile}/contacts`,
       method: FetchMethod.PATCH,
@@ -83,10 +55,7 @@ export async function GET(request: Request) {
       ],
     })
 
-    return NextResponse.json({
-      user: userData.data,
-      tweets: tweetsData.data,
-    })
+    return NextResponse.json(userData)
   } catch (error) {
     console.error('User data fetch error:', error)
     return NextResponse.json(

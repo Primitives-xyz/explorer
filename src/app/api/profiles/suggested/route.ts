@@ -1,29 +1,11 @@
 // app/api/profiles/suggested/route.ts
+import { ISuggestedProfile } from '@/components/tapestry/models/profiles.models'
 import { FetchMethod } from '@/utils/api'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
 
-interface SuggestedProfile {
-  namespaces: Array<{
-    name: string
-    readableName: string
-    faviconURL?: string | null
-    userProfileURL?: string
-  }>
-  profile: {
-    image: string
-    namespace: string
-    created_at: number
-    id: string
-    username: string
-  }
-  wallet: {
-    address: string
-  }
-}
-
 interface SuggestedProfilesResponse {
-  [key: string]: SuggestedProfile
+  [key: string]: ISuggestedProfile
 }
 
 export async function GET(req: NextRequest) {

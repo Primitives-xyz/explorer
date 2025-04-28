@@ -124,7 +124,7 @@ export function ProfileSocial({ walletAddress }: Props) {
                     profile={namespaces[0]?.profiles?.[0]}
                   />
                   {explorerProfile && (
-                    <TwitterFeed explorerProfile={explorerProfile} />
+                    <TwitterFeed profile={namespaces[0]?.profiles?.[0]} />
                   )}
                 </>
               ) : (

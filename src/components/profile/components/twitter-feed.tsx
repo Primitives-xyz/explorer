@@ -2,19 +2,16 @@ import { IGetProfilesResponseEntry } from '@/components/tapestry/models/profiles
 import { useQuery } from '@/utils/api'
 
 interface Props {
-  explorerProfile: IGetProfilesResponseEntry
+  profile: IGetProfilesResponseEntry
 }
+export function TwitterFeed({ profile }: Props) {
+  console.log(profile.profile.username)
 
-export function TwitterFeed({ explorerProfile }: Props) {
-  const { data, error, loading } = useQuery<{
-    user: { username: string }
-    tweets: { id: string; text: string; created_at: string }[]
-  }>({
-    endpoint: `/x/user`,
+  const { data, error, loading } = useQuery<any>({
+    endpoint: 'twitter/tweets',
     queryParams: {
-      profile: explorerProfile?.profile?.id,
+      handle: profile.profile.username,
     },
-    skip: !explorerProfile?.profile?.id,
   })
 
   console.log('TwitterFeed data:', data)
@@ -26,14 +23,14 @@ export function TwitterFeed({ explorerProfile }: Props) {
 
   return (
     <div className="space-y-4">
-      {data.tweets.map((tweet) => (
+      {/* {data.tweets.map((tweet) => (
         <div key={tweet.id} className="p-4 border rounded bg-muted">
           <p className="whitespace-pre-wrap text-sm">{tweet.text}</p>
           <p className="text-xs mt-1">
             {new Date(tweet.created_at).toLocaleString()}
           </p>
         </div>
-      ))}
+      ))} */}
     </div>
   )
 }
