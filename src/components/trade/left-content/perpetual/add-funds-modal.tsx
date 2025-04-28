@@ -109,7 +109,7 @@ export default function AddFundsModal({
           ) : (
             <Tabs defaultValue="deposite">
               <TabsList className="w-full grid grid-cols-2">
-                <TabsTrigger value="deposite">Deposite</TabsTrigger>
+                <TabsTrigger value="deposite">Deposit</TabsTrigger>
                 <TabsTrigger value="withdraw">Withdraw</TabsTrigger>
               </TabsList>
               <TabsContent value="deposite" className="space-y-4">
