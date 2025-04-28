@@ -3,12 +3,12 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
+import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
-import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 
 export function LeftSideMenu() {
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
@@ -21,6 +21,7 @@ export function LeftSideMenu() {
           <h1 className="font-bold text-primary leading-none">
             solana_social_explorer
           </h1>
+
           <ProfileInfos />
           <Menu />
         </div>
@@ -34,14 +35,11 @@ export function LeftSideMenu() {
             onClick={() => setIsFundsModalOpen(true)}
           >
             <Lock size={16} />
-            {
-              !accountIds.length ? 'Unlock Perpetuals' : 'Deposite'
-            }
+            {!accountIds.length ? 'Unlock Perpetuals' : 'Deposite'}
           </Button>
           <LanguageSwitcher />
           <Button
             variant={ButtonVariant.OUTLINE_WHITE}
-            className="w-full"
             href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
             newTab
           >
