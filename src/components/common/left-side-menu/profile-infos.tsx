@@ -1,7 +1,9 @@
 'use client'
 
+import { useMotionStore } from '@/components/motion/stores/use-motion-store'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
 import {
+  Checkbox,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -11,13 +13,14 @@ import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
 import { SSE_TOKEN_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { EllipsisVerticalIcon } from 'lucide-react'
+import { EllipsisVerticalIcon, LogOutIcon } from 'lucide-react'
 import Image from 'next/image'
 
 export function ProfileInfos() {
   const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
+  const { enableMotion, setEnableMotion } = useMotionStore()
 
   return (
     <div>
@@ -63,8 +66,15 @@ export function ProfileInfos() {
                 <EllipsisVerticalIcon size={18} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem onClick={logout}>logout</DropdownMenuItem>
+            <DropdownMenuContent align="end" className="w-46">
+              <DropdownMenuItem onClick={() => setEnableMotion(!enableMotion)}>
+                <Checkbox checked={enableMotion} />
+                Enable animation
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>
+                <LogOutIcon size={18} />
+                Logout
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

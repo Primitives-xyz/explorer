@@ -3,12 +3,12 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
+import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
-import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 
 export function LeftSideMenu() {
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
@@ -28,18 +28,16 @@ export function LeftSideMenu() {
           <LowFeeTrades />
         </div>
         <div className="flex flex-col items-center gap-4">
-          {
-            !accountIds.length ? (
-              <Button
-                variant={ButtonVariant.OUTLINE}
-                className="w-full"
-                onClick={() => setIsFundsModalOpen(true)}
-              >
-                <Lock size={16} />
-                Unlock Perpetuals
-              </Button>
-            ) : (<></>)
-          }
+          {!accountIds.length && (
+            <Button
+              variant={ButtonVariant.OUTLINE}
+              className="w-full"
+              onClick={() => setIsFundsModalOpen(true)}
+            >
+              <Lock size={16} />
+              Unlock Perpetuals
+            </Button>
+          )}
           <LanguageSwitcher />
           <Button
             variant={ButtonVariant.OUTLINE_WHITE}
