@@ -2,13 +2,6 @@
 /* 🎭 DIALECT NOTIFICATIONS THEME  */
 /* ========================= */
 
-.dialect > * > button {
-    border-radius: 0% !important;
-    background-color: transparent !important;
-    width: fit-content !important;
-    height: fit-content !important;
-  }
-  
   .dt-modal {
     position: fixed !important;
     top: 50% !important;

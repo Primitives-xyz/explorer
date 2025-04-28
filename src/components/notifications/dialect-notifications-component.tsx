@@ -1,13 +1,16 @@
 'use client'
 
 import { ErrorBoundary } from '@/components/notifications/error-boundary'
+import { Button, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { cn } from '@/utils/utils'
 import { DialectSolanaSdk } from '@dialectlabs/react-sdk-blockchain-solana'
 import { NotificationsButton } from '@dialectlabs/react-ui'
 import '@dialectlabs/react-ui/index.css'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import type { ISolana } from '@dynamic-labs/solana-core'
 import { PublicKey } from '@solana/web3.js'
+import { Bell } from 'lucide-react'
 import { useMemo } from 'react'
 
 // Component that renders just the notifications button with error handling
@@ -60,7 +63,26 @@ const DialectNotificationsComponentInner = () => {
       dappAddress={DAPP_ADDRESS}
       customWalletAdapter={walletAdapter}
     >
-      <NotificationsButton theme="dark" />
+      <NotificationsButton theme="dark">
+        {({ open, setOpen, unreadCount, ref }) => {
+          return (
+            <Button
+              variant={ButtonVariant.GHOST}
+              className={cn(
+                '!flex !justify-start !w-full !gap-4 !text-sm !hover:bg-primary !hover:text-background !text-foreground !px-4 !py-2 !mb-2',
+                {
+                  '!bg-primary !text-background': open,
+                }
+              )}
+              ref={ref}
+              onClick={() => setOpen((prev) => !prev)}
+            >
+              <Bell size={20} />
+              Notifications
+            </Button>
+          )
+        }}
+      </NotificationsButton>
     </DialectSolanaSdk>
   )
 }

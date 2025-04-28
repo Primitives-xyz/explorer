@@ -1,5 +1,6 @@
 'use client'
 
+import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -13,12 +14,10 @@ import {
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { useRef } from 'react'
 import { SearchButton } from '../../search/components/search-button'
 
 export function Menu() {
   const { mainProfile } = useCurrentWallet()
-  const dialectButtonRef = useRef<HTMLButtonElement | null>(null)
 
   return (
     <div className="space-y-2">
@@ -40,6 +39,8 @@ export function Menu() {
       />
 
       <Entry title="Stake" icon={Beef} href={route('stake')} />
+
+      <DialectNotificationsComponent />
 
       {/* <Entry
         title="Design System"
