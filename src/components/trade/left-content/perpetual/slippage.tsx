@@ -12,9 +12,9 @@ interface SlippageProps {
 const slippageOptions = [
   { value: '0.1', label: '0.1%' },
   { value: '0.5', label: '0.5%' },
-  { value: '1', label: '1%' },
-  { value: 'zap', icon: <Zap size={16} /> },
-  { value: 'infinity', icon: <Infinity size={16} /> },
+  // { value: '1', label: '1%' },
+  // { value: 'zap', icon: <Zap size={16} /> },
+  // { value: 'infinity', icon: <Infinity size={16} /> },
 ]
 
 export function Slippage({
@@ -43,7 +43,7 @@ export function Slippage({
         {
           slippageExpanded && (
             <div className="space-y-4">
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {slippageOptions.map((option) => (
                   <Button
                     variant={
@@ -55,7 +55,8 @@ export function Slippage({
                     className="px-0"
                     onClick={() => setSlippageOption(option.value)}
                   >
-                    {option.icon || option.label}
+                    {/* {option.icon || option.label} */}
+                    {option.label}
                   </Button>
                 ))}
               </div>

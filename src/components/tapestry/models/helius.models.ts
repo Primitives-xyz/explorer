@@ -123,6 +123,28 @@ export type TransactionEvent =
   | { type: 'SWAP'; swap: SwapEvent }
   | CompressedNFTMintEvent
 
+export interface TransactionEventsObject {
+  nft?: {
+    type: string
+    source: string
+    description: string
+    amount?: number
+    fee?: number
+    feePayer?: string
+    signature?: string
+    slot?: number
+    timestamp?: number
+    saleType?: string
+    buyer?: string
+    seller?: string
+    staker?: string
+    nfts?: Array<{
+      mint: string
+      tokenStandard?: string
+    }>
+  }
+}
+
 export interface Transaction {
   description: string
   type: string
@@ -153,7 +175,7 @@ export interface Transaction {
   }[]
   accountData: AccountData[]
   parsedInstructions?: ParsedInstruction[]
-  events?: TransactionEvent[]
+  events?: TransactionEventsObject
   balanceChanges: {
     [address: string]: number
   }

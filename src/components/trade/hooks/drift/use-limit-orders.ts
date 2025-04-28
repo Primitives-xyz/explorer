@@ -1,13 +1,8 @@
-import {
-  BN,
-  convertToNumber,
-  PerpMarkets,
-  QUOTE_PRECISION,
-} from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 import { toast } from 'sonner'
 import { useToastContent } from './use-toast-content'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 interface Props {
   subAccountId: number,
@@ -23,8 +18,6 @@ interface LimitOrderProps {
   orderId: number
 }
 
-const env = 'mainnet-beta'
-
 export function useLimitOrders({
   subAccountId,
   symbol
@@ -34,6 +27,7 @@ export function useLimitOrders({
   const { driftClient } = useInitializeDrift()
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
   const [limitOrders, setLimitOrders] = useState<LimitOrderProps[]>([])
+  const { walletAddress } = useCurrentWallet()
 
   const cancelOrder = async (orderId: number, subAccountId: number) => {
     if (!driftClient) {
@@ -61,51 +55,20 @@ export function useLimitOrders({
   }
 
   const fetchLimitOrders = useCallback(async () => {
-    setLoading(true)
     try {
-      if (!driftClient) {
-        return
-      }
+      setLoading(true)
 
-      await driftClient.subscribe()
+      const baseUrl = `/api/drift/limitorders/?wallet=${walletAddress}&&subAccountId=${subAccountId}&&symbol=${symbol}`
 
-      const marketInfo = PerpMarkets[env].find(
-        (market) => market.baseAssetSymbol === symbol
-      )
-
-      if (!marketInfo) {
-        return
-      }
-
-      const user = driftClient.getUser(subAccountId)
-
-      if (!user) {
-        return
-      }
-
-      await user.subscribe()
-
-      const orders = user.getOpenOrders()
-      let limitOrders: LimitOrderProps[] = []
-
-      orders.forEach((order) => {
-        const direction = "long" in order.direction ? "LONG" : "SHORT"
-        const price = convertToNumber(order.price, QUOTE_PRECISION)
-        const triggerPrice = convertToNumber(order.triggerPrice, QUOTE_PRECISION)
-        const baseAssetAmount = convertToNumber(order.baseAssetAmount, new BN(10).pow(new BN(9)))
-        const orderId = order.orderId
-
-        limitOrders.push({
-          market: marketInfo.symbol,
-          direction,
-          baseAssetAmount,
-          orderId,
-          price,
-          triggerPrice
-        })
+      const res = await fetch(baseUrl, {
+        method: 'GET'
       })
+      const data = await res.json()
 
-      setLimitOrders(limitOrders)
+      if (!data.error) {
+        const limitOrders = data.limitOrders
+        setLimitOrders(limitOrders)
+      }
     } catch (error) {
       console.log(error)
     } finally {
@@ -120,7 +83,7 @@ export function useLimitOrders({
   }
 
   useEffect(() => {
-    const interval = setInterval(fetchLimitOrders, 10000)
+    const interval = setInterval(fetchLimitOrders, 5000)
 
     return () => clearInterval(interval)
   }, [driftClient, subAccountId])

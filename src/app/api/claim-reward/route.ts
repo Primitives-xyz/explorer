@@ -17,7 +17,7 @@ const SEED_CONFIG = 'config'
 export async function POST(req: NextRequest) {
   try {
     const { walletAddy } = await req.json()
-    const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+    const connection = new Connection(process.env.RPC_URL || '')
     const program = new anchor.Program(stakingProgramIdl as SseStake, {
       connection,
     })
