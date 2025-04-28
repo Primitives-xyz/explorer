@@ -5,11 +5,12 @@ import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
 import { DataTable } from '@/components/ui/table/data-table'
 import { SOL_MINT } from '@/utils/constants'
 import { formatNumber } from '@/utils/utils'
-import { ColumnDef } from '@tanstack/react-table'
+import { ColumnDef, SortingState } from '@tanstack/react-table'
 import Image from 'next/image'
 import { SortableHeader } from '../../ui/table/sortable-header'
 import { IFungibleToken } from '../fungible-tokens.models'
 import { useGetWalletTokens } from '../hooks/use-get-wallet-tokens'
+import { useState } from 'react'
 
 interface Props {
   walletAddress: string
@@ -20,6 +21,10 @@ export function ProfileTokens({ walletAddress }: Props) {
     walletAddress,
   })
   const { setOpen, setInputs } = useSwapStore()
+
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'totalPrice', desc: true }
+  ])
 
   const columns: ColumnDef<IFungibleToken>[] = [
     {
@@ -41,7 +46,7 @@ export function ProfileTokens({ walletAddress }: Props) {
                   />
                 )}
             </div>
-            <h4>{row.original.name}</h4>
+            <h4 className="max-w-[5rem] truncate">{row.original.name}</h4>
           </div>
         )
       },
@@ -64,9 +69,11 @@ export function ProfileTokens({ walletAddress }: Props) {
       },
     },
     {
-      accessorKey: 'price',
+      accessorKey: 'totalPrice',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="Price" column={column} />,
+      header: ({ column }) => (
+        <SortableHeader label="Value" column={column} />
+      ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
 
@@ -113,6 +120,8 @@ export function ProfileTokens({ walletAddress }: Props) {
         loading={isLoading}
         tableClassName="h-[300px]"
         isSmall
+        sorting={sorting}
+        onSortingChange={setSorting}
       />
     </div>
   )

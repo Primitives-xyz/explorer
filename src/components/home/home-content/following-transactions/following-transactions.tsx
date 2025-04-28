@@ -28,9 +28,8 @@ export function FollowingTransactions() {
     useCurrentWallet()
 
   const options = [
-    { label: 'All', value: FilterType.ALL },
-    { label: 'Following', value: FilterType.SWAP },
     { label: 'Twitter KOL', value: FilterType.KOL },
+    { label: 'Following', value: FilterType.SWAP },
   ]
 
   const { following } = useGetFollowing({
@@ -60,7 +59,7 @@ export function FollowingTransactions() {
           <div className="w-full flex justify-center items-center h-[400px]">
             <Spinner large />
           </div>
-        ) : !isLoggedIn || !mainProfile ? (
+        ) : (!isLoggedIn || !mainProfile) && selectedType === FilterType.SWAP ? (
           <Card>
             <CardContent className="flex flex-col space-y-10 items-center justify-center">
               <Paragraph>

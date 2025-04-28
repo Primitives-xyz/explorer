@@ -25,9 +25,14 @@ const nextConfig = {
         pathname: '/7.x/shapes/svg/**',
         port: '',
       },
+      // This is scuffed and needs to be looked at
       {
         protocol: 'https',
         hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '*', 
       },
     ],
     dangerouslyAllowSVG: true,

@@ -106,14 +106,18 @@ export default function MarketOrder({
 
       {/* Leverage */}
 
-      <LeverageSelector
-        min={0}
-        max={Math.min(userStats.maxLeverage, 20)}
-        setAmount={setAmount}
-        leverageValue={leverageValue}
-        setLeverageValue={setLeverageValue}
-        setIsSizeByLeverage={setIsSizeByLeverage}
-      />
+      {
+        userStats.maxLeverage ? (
+          <LeverageSelector
+            min={0}
+            max={Math.min(userStats.maxLeverage, 20)}
+            setAmount={setAmount}
+            leverageValue={leverageValue}
+            setLeverageValue={setLeverageValue}
+            setIsSizeByLeverage={setIsSizeByLeverage}
+          />
+        ) : (<></>)
+      }
 
       <Slippage
         handleDynamicSlippage={handleDynamicSlippage}
@@ -124,10 +128,10 @@ export default function MarketOrder({
       />
 
       {/* Swift */}
-      <div className="flex items-center space-x-2">
+      {/* <div className="flex items-center space-x-2">
         <p>SWIFT</p>
         <Switch checked={swift} onCheckedChange={setSwift} />
-      </div>
+      </div> */}
     </div>
   )
 }

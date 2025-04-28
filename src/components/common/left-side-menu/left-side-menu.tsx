@@ -9,9 +9,11 @@ import { Button, ButtonVariant } from '@/components/ui/button'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
+import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 
 export function LeftSideMenu() {
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
+  const { accountIds } = useDriftUsers()
 
   return (
     <div className="sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar">
@@ -37,7 +39,9 @@ export function LeftSideMenu() {
             onClick={() => setIsFundsModalOpen(true)}
           >
             <Lock size={16} />
-            Unlock Perpetuals
+            {
+              !accountIds.length ? 'Unlock Perpetuals' : 'Deposite'
+            }
           </Button>
           <LanguageSwitcher />
           <Button

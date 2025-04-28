@@ -17,7 +17,7 @@ import {
 import bs58 from 'bs58'
 import { NextResponse } from 'next/server'
 
-const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+const connection = new Connection(process.env.RPC_URL || '')
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY
 const HELIUS_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
 const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'

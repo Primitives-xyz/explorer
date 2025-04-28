@@ -3,6 +3,7 @@ export enum FetchMethod {
   POST = 'POST',
   PUT = 'PUT',
   DELETE = 'DELETE',
+  PATCH = 'PATCH',
 }
 
 export interface IError {

@@ -7,14 +7,14 @@ import { cn } from '@/utils/utils'
 import { ExternalLinkIcon } from 'lucide-react'
 
 interface Props {
-  identity: IGetProfilesResponseEntry
+  profile: IGetProfilesResponseEntry
 }
 
-export function ProfileExternalProfile({ identity }: Props) {
+export function ProfileExternalProfile({ profile }: Props) {
   const disabled =
-    identity.namespace.name !== EXPLORER_NAMESPACE &&
-    (!identity.namespace.userProfileURL ||
-      (identity.namespace.name === 'tribe.run' && !identity.wallet?.address))
+    profile.namespace.name !== EXPLORER_NAMESPACE &&
+    (!profile.namespace.userProfileURL ||
+      (profile.namespace.name === 'tribe.run' && !profile.wallet?.address))
 
   return (
     <>
@@ -27,40 +27,40 @@ export function ProfileExternalProfile({ identity }: Props) {
             isInvisible
             disabled={disabled}
             href={
-              identity.namespace.name === EXPLORER_NAMESPACE
+              profile.namespace.name === EXPLORER_NAMESPACE
                 ? route('entity', {
-                    id: identity.profile.username,
+                    id: profile.profile.username,
                   })
-                : identity.namespace.name === 'tribe.run' &&
-                  identity.wallet?.address
-                ? `${identity.namespace.userProfileURL}${identity.wallet.address}`
-                : `${identity.namespace.userProfileURL}${identity.profile.username}`
+                : profile.namespace.name === 'tribe.run' &&
+                  profile.wallet?.address
+                ? `${profile.namespace.userProfileURL}${profile.wallet.address}`
+                : `${profile.namespace.userProfileURL}${profile.profile.username}`
             }
-            newTab={identity.namespace.name !== EXPLORER_NAMESPACE}
+            newTab={profile.namespace.name !== EXPLORER_NAMESPACE}
           >
             <div>
               <Avatar
-                imageUrl={identity.profile.image}
-                username={identity.profile.username}
+                imageUrl={profile.profile.image}
+                username={profile.profile.username}
                 className="w-10"
                 size={40}
               />
             </div>
             <div className="flex-1 w-full overflow-hidden flex flex-col items-start justify-start gap-1">
               <div className="text-sm truncate text-secondary flex items-center gap-2">
-                @{identity.profile.username}{' '}
+                @{profile.profile.username}{' '}
                 {!disabled && (
                   <ExternalLinkIcon className="text-foreground" size={14} />
                 )}
               </div>
-              {!!identity.profile.bio && (
+              {!!profile.profile.bio && (
                 <div className="text-xs text-muted-foreground truncate">
-                  {identity.profile.bio}
+                  {profile.profile.bio}
                 </div>
               )}
               <p className="text-xs text-muted-foreground">
-                {identity.socialCounts?.followers ?? 0} Followers |{' '}
-                {identity.socialCounts?.following ?? 0} Following
+                {profile.socialCounts?.followers ?? 0} Followers |{' '}
+                {profile.socialCounts?.following ?? 0} Following
               </p>
             </div>
           </Button>

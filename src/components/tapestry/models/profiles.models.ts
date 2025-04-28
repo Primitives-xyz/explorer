@@ -127,3 +127,9 @@ export interface ISuggestedUsername {
   faviconURL?: string | null
   image?: string | null
 }
+
+// Explorer external profiles
+export interface IExternalNamespace {
+  namespace: INameSpace
+  profiles: IGetProfilesResponseEntry[]
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { SOL_MINT, SOLANA_RPC_URL } from '@/utils/constants'
+import { SOL_MINT, SOLANA_PUBLIC_RPC_URL } from '@/utils/constants'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 
@@ -38,7 +38,7 @@ export const TokenBalance = ({
       setLoading(true)
       try {
         if (tokenMint === SOL_MINT) {
-          const response = await fetch(SOLANA_RPC_URL, {
+          const response = await fetch(SOLANA_PUBLIC_RPC_URL, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
