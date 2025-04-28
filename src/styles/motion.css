@@ -76,7 +76,7 @@
   }
 }
 
-.card-motion {
+.border-glow-animation {
   animation: border-glow-animation 5s ease-in-out infinite;
 }
 

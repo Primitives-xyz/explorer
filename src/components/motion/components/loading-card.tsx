@@ -6,7 +6,7 @@ export function LoadingCard() {
       className={cn(
         'rounded-card overflow-hidden',
         'w-full h-full absolute inset-0 top-0 left-0 p-1',
-        'card-motion'
+        'border-glow-animation'
       )}
     >
       <div className="absolute-centered w-[120%] aspect-square z-10">

@@ -48,7 +48,7 @@ export function TopSwap({
   setShowOutputTokenSearch,
 }: Props) {
   return (
-    <Card className="card-motion">
+    <Card className="border-glow-animation">
       <CardContent className="p-4">
         <Pay
           walletAddress={walletAddress}
