@@ -3,6 +3,7 @@
 import { useGetFollowing } from '@/components/tapestry/hooks/use-get-following'
 import { useGetNamespaceProfiles } from '@/components/tapestry/hooks/use-get-namespace-profiles'
 import { useFollowingTransactions } from '@/components/transactions/hooks/use-following-transactions'
+import { TransactionsEntry } from '@/components/transactions/transactions-entry'
 import {
   Button,
   Card,
@@ -13,7 +14,6 @@ import {
 } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
-import { FollowingTransactionsList } from './following-transactions-list'
 
 export enum FilterType {
   ALL = 'all',
@@ -28,6 +28,7 @@ export function FollowingTransactions() {
     mainProfile,
     isLoggedIn,
     loading: getCurrentProfileLoading,
+    walletAddress,
     setShowAuthFlow,
   } = useCurrentWallet()
 
@@ -81,7 +82,14 @@ export function FollowingTransactions() {
             </CardContent>
           </Card>
         ) : (
-          <FollowingTransactionsList transactions={aggregatedTransactions} />
+          aggregatedTransactions.map((transaction, index) => (
+            <TransactionsEntry
+              key={transaction.signature + index}
+              transaction={transaction}
+              walletAddress={walletAddress}
+              displaySwap
+            />
+          ))
         )}
       </div>
     </div>
