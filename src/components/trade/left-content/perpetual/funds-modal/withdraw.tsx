@@ -1,13 +1,27 @@
 'use client'
 
-import { useWithdraw } from "@/components/trade/hooks/drift/use-withdraw"
-import { Button, ButtonSize, ButtonVariant, Card, CardContent, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui"
-import { SpotMarketConfig, SpotMarkets } from "@drift-labs/sdk-browser"
-import Confirm from "./confirm"
-import { useMemo, useState } from "react"
+import { useWithdraw } from '@/components/trade/hooks/drift/use-withdraw'
+import {
+  Button,
+  ButtonSize,
+  ButtonVariant,
+  Card,
+  CardContent,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Spinner,
+} from '@/components/ui'
+import { BN, convertToNumber, SpotMarkets } from '@drift-labs/sdk-browser'
+import { useEffect, useMemo, useState } from 'react'
+import Confirm from './confirm'
 
 interface WithDrawProps {
-  accountIds: number[],
+  accountIds: number[]
+  open: boolean
   validateAmount: (value: string, decimals: number) => boolean
 }
 
@@ -18,11 +32,12 @@ const percentageButtons = [
 
 export default function WithDraw({
   accountIds,
-  validateAmount
+  open,
+  validateAmount,
 }: WithDrawProps) {
   // state
-  const [withdrawAmount, setWithdrawAmount] = useState<string>("")
-  const [tokenSymbol, setTokenSymbol] = useState<string>("SOL")
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('')
+  const [tokenSymbol, setTokenSymbol] = useState<string>('SOL')
   const tokenSpotMarketInfo = useMemo(() => {
     const depositTokenSportMarketInfo = SpotMarkets['mainnet-beta'].find(
       (market) => market.symbol === tokenSymbol
@@ -33,6 +48,13 @@ export default function WithDraw({
       decimals: Number(depositTokenSportMarketInfo?.precisionExp),
     }
   }, [tokenSymbol])
+  const {
+    withdraw,
+    loading,
+    withdrawalLimit,
+    withdrawalLimitLoading,
+    precision,
+  } = useWithdraw({ subAccountId: 0, tokenSymbol: tokenSymbol })
 
   // handlers
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +75,22 @@ export default function WithDraw({
       }, 0)
     }
   }
-  const { withDraw, loading } = useWithdraw({ subAccountId: 0, tokenSymbol: "SOL" })
+
+  const handleInputAmountByPercentage = (percent: number) => {
+    try {
+      const amount = withdrawalLimit.div(new BN(100 / percent))
+      const numbericAmount = convertToNumber(amount, precision)
+      setWithdrawAmount(numbericAmount.toString())
+    } catch (err) {
+      console.error('Error calculating amount:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (!open) {
+      setWithdrawAmount('')
+    }
+  }, [open])
 
   return (
     <div className="space-y-4">
@@ -72,13 +109,11 @@ export default function WithDraw({
                 <SelectValue placeholder="Select Token" />
               </SelectTrigger>
               <SelectContent className="border border-primary text-primary">
-                {
-                  SpotMarkets['mainnet-beta'].map((market, index) => (
-                    <SelectItem value={market.symbol} key={index}>
-                      {market.symbol}
-                    </SelectItem>
-                  ))
-                }
+                {SpotMarkets['mainnet-beta'].map((market, index) => (
+                  <SelectItem value={market.symbol} key={index}>
+                    {market.symbol}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -94,8 +129,14 @@ export default function WithDraw({
 
       <div className="flex items-center justify-between space-x-2">
         <div className="flex items-center space-x-2">
-          <span>Available Balance</span>
-          {/* <span>{balance}</span> */}
+          <span>Available to withdraw</span>
+          <p>
+            {withdrawalLimitLoading ? (
+              <Spinner size={16} />
+            ) : (
+              `${convertToNumber(withdrawalLimit, precision)}`
+            )}
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           {percentageButtons.map(({ label, value }) => (
@@ -103,7 +144,7 @@ export default function WithDraw({
               key={value}
               variant={ButtonVariant.BADGE}
               size={ButtonSize.SM}
-            // onClick={() => handleInputAmountByPercentage(value)}
+              onClick={() => handleInputAmountByPercentage(value)}
             >
               {label}
             </Button>
@@ -114,7 +155,9 @@ export default function WithDraw({
       <Card>
         <CardContent>
           <span className="text-sm">
-            The available amount to withdraw may be less than your balance due to open positions, orders, borrows, and/or daily withdrawal limits being reached.
+            The available amount to withdraw may be less than your balance due
+            to open positions, orders, borrows, and/or daily withdrawal limits
+            being reached.
           </span>
         </CardContent>
       </Card>
@@ -122,7 +165,7 @@ export default function WithDraw({
       <Confirm
         accountIds={accountIds}
         amount={withdrawAmount}
-        handleConfirm={withDraw}
+        handleConfirm={() => withdraw(withdrawAmount)}
         isChecked={true}
         loading={loading}
       />

@@ -34,7 +34,9 @@ export function LeftSideMenu() {
             onClick={() => setIsFundsModalOpen(true)}
           >
             <Lock size={16} />
-            {!accountIds.length ? 'Unlock Perpetuals' : 'Deposite'}
+            {
+              !accountIds.length ? 'Unlock Perpetuals' : 'Deposit/Withdraw'
+            }
           </Button>
           <LanguageSwitcher />
           <Button
