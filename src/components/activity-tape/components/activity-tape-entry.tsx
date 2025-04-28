@@ -13,7 +13,7 @@ export function ActivityTapeEntry({ activity }: Props) {
       isInvisible
       disabled={!activity.signature}
       href={activity.signature ? `/${activity.signature}` : '#'}
-      className="disabled:opacity-100"
+      className="opacity-100!"
     >
       <div className="inline-flex items-center gap-2 text-xs hover:opacity-80 bg-card rounded-lg px-4 py-1">
         <span className="bg-background py-1 px-1.5 rounded">

@@ -35,8 +35,8 @@ export interface IActivityTapeEntry {
   wallet: string
   timestamp: number
   highlight: string
-  amount: string
-  amountSuffix: string
-  isSSEBuy: boolean
-  signature: string
+  amount?: string
+  amountSuffix?: string
+  isSSEBuy?: boolean
+  signature?: string
 }
