@@ -1,5 +1,6 @@
 'use client'
 
+import { TwitterFeed } from '@/components/profile/components/twitter-feed'
 import { useTwitterOAuth } from '@/components/profile/hooks/use-twitter-o-auth'
 import {
   Card,
@@ -28,6 +29,7 @@ export function ProfileSocial({ walletAddress }: Props) {
     useGetProfileExternalNamespaces({
       walletAddress,
     })
+
   const { initiateTwitterLogin } = useTwitterOAuth()
   const { mainProfile } = useCurrentWallet()
 
@@ -117,9 +119,14 @@ export function ProfileSocial({ walletAddress }: Props) {
               }
             >
               {hasXIdentity ? (
-                <ProfileExternalProfile
-                  profile={namespaces[0]?.profiles?.[0]}
-                />
+                <>
+                  <ProfileExternalProfile
+                    profile={namespaces[0]?.profiles?.[0]}
+                  />
+                  {explorerProfile && (
+                    <TwitterFeed explorerProfile={explorerProfile} />
+                  )}
+                </>
               ) : (
                 mainProfile?.username === explorerProfile?.profile.username && (
                   <Card>
