@@ -48,8 +48,8 @@ export function TopSwap({
   setShowOutputTokenSearch,
 }: Props) {
   return (
-    <Card>
-      <CardContent>
+    <Card className="border-glow-animation">
+      <CardContent className="p-4">
         <Pay
           walletAddress={walletAddress}
           inputTokenMint={inputTokenMint}

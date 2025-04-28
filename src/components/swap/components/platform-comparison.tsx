@@ -118,7 +118,7 @@ export function PlatformComparison({
           <div
             key={platform.name}
             className={cn(
-              'flex items-center justify-between rounded-lg py-1.5 px-1',
+              'flex items-center justify-between rounded-md py-1.5 px-2 pl-1',
               {
                 'bg-primary/5': platform.name === 'SSE',
               }

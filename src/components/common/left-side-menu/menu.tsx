@@ -1,5 +1,6 @@
 'use client'
 
+import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -38,6 +39,8 @@ export function Menu() {
       />
 
       <Entry title="Stake" icon={Beef} href={route('stake')} />
+
+      <DialectNotificationsComponent />
 
       {/* <Entry
         title="Design System"

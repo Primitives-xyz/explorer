@@ -18,7 +18,7 @@ export function ScrollingText({
   return (
     <div
       className={cn(
-        'overflow-hidden whitespace-nowrap relative fade-out-text-small',
+        'overflow-hidden whitespace-nowrap relative fade-out-text-small space-x-4',
         className
       )}
     >

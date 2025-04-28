@@ -93,15 +93,17 @@ export function ProfileSocial({ walletAddress }: Props) {
                       value={identity.namespace.name}
                       className="flex-1 gap-1.5"
                     >
-                      <div className="w-5 h-5 shrink-0">
-                        <Image
-                          src={identity.namespace.faviconURL}
-                          alt="favicon"
-                          width={16}
-                          height={16}
-                          className="w-full h-full"
-                        />
-                      </div>{' '}
+                      {!!identity.namespace.faviconURL && (
+                        <div className="w-5 h-5 shrink-0">
+                          <Image
+                            src={identity.namespace.faviconURL}
+                            alt="favicon"
+                            width={16}
+                            height={16}
+                            className="w-full h-full"
+                          />
+                        </div>
+                      )}
                       <span>{identity.namespace.readableName}</span>
                     </TabsTrigger>
                   ))}
