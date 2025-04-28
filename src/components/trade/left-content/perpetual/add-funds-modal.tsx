@@ -14,7 +14,6 @@ import { X } from 'lucide-react'
 import { useState } from 'react'
 import { useDriftUsers } from '../../hooks/drift/use-drift-users'
 import Deposite from './funds-modal/deposite'
-import WithDraw from './funds-modal/withdraw'
 import InitAndDeposite from './funds-modal/init-and-deposit'
 
 interface AddFundsModalProps {
@@ -42,7 +41,11 @@ export default function AddFundsModal({
   setIsOpen,
 }: AddFundsModalProps) {
   const [inputError, setInputError] = useState<InputError | null>(null)
-  const { accountIds, loading: userAccountsLoading, refreshGetUserAccountIds } = useDriftUsers()
+  const {
+    accountIds,
+    loading: userAccountsLoading,
+    refreshGetUserAccountIds,
+  } = useDriftUsers()
 
   const validateAmount = (value: string, decimals: number = 6): boolean => {
     const numericValue = Number(value)
@@ -70,7 +73,9 @@ export default function AddFundsModal({
         'fixed inset-0 z-50 flex justify-start bg-black/50 transition-opacity duration-300',
         isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
       )}
-      onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false) }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setIsOpen(false)
+      }}
     >
       <div
         className={cn(
@@ -80,9 +85,7 @@ export default function AddFundsModal({
       >
         <div className="flex items-center justify-between p-4 mt-topbar">
           <h2 className="text-2xl font-bold text-white">
-            {
-              !accountIds.length ? 'Add funds' : 'Manage Balances'
-            }
+            {!accountIds.length ? 'Add funds' : 'Manage Balances'}
           </h2>
           <Button
             variant="ghost"
@@ -103,12 +106,12 @@ export default function AddFundsModal({
               setIsOpen={setIsOpen}
             />
           ) : (
-            <Tabs defaultValue="deposite">
-              <TabsList className='w-full grid grid-cols-2'>
-                <TabsTrigger value="deposite">Deposite</TabsTrigger>
+            <Tabs defaultValue="deposit">
+              <TabsList className="w-full grid grid-cols-2">
+                <TabsTrigger value="deposite">Deposit</TabsTrigger>
                 {/* <TabsTrigger value="withdraw">Withdraw</TabsTrigger> */}
               </TabsList>
-              <TabsContent value="deposite" className='space-y-4'>
+              <TabsContent value="deposit" className="space-y-4">
                 <Deposite
                   accountIds={accountIds}
                   refreshGetUserAccountIds={refreshGetUserAccountIds}
