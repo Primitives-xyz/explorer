@@ -54,6 +54,7 @@ export function SwapTray({ isAlwaysOpen = false }: Props) {
             className="w-[100px] absolute top-20 left-6 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"
             variant={open ? ButtonVariant.OUTLINE : ButtonVariant.DEFAULT}
             onClick={() => setOpen(!open)}
+            disableHoverFeedback
           >
             {open ? 'Close Swap' : 'Swap'}
           </Button>
