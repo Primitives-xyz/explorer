@@ -1,0 +1,99 @@
+@keyframes scanner-animation {
+  0% {
+    top: 0%;
+  }
+
+  50% {
+    top: 100%;
+  }
+
+  100% {
+    top: 100%;
+  }
+}
+
+.scanner-effect {
+  animation: scanner-animation 8s linear infinite forwards;
+}
+
+.background-pixels-effect {
+  background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.21) 0),
+    linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.055),
+      rgba(0, 255, 0, 0.03),
+      rgba(0, 0, 255, 0.055)
+    );
+  background-position-y: 0.0714285714rem;
+  background-size: 100% 0.2142857143rem, 0.2857142857rem 100%;
+}
+
+@keyframes lines {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: 0px 25px;
+  }
+}
+
+.background-lines-effect {
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 1000;
+    background: repeating-linear-gradient(
+      0deg,
+      #111 0px,
+      #111 1px,
+      transparent 2px,
+      transparent 5px
+    );
+    background-size: 100% 5px;
+    animation: lines 2s ease-out infinite;
+    opacity: 0.1;
+    mix-blend-mode: color-burn;
+    pointer-events: none;
+  }
+}
+
+@keyframes border-glow-animation {
+  0%,
+  100% {
+    border-color: hsla(var(--primary) / 0.2);
+    box-shadow: 0 0 10px 5px hsla(var(--primary) / 0.1);
+    background-color: hsla(var(--foreground) / 0.1);
+  }
+  50% {
+    border-color: hsla(var(--primary) / 0.5);
+    box-shadow: 0 0 20px 5px hsla(var(--primary) / 0.5);
+    /* background-color: hsla(var(--primary) / 0.2); */
+    background-color: hsla(var(--primary) / 0.1);
+  }
+}
+
+.card-motion {
+  animation: border-glow-animation 5s ease-in-out infinite;
+}
+
+@keyframes rotate-radial-gradient {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.card-radial-border {
+  background: radial-gradient(
+    circle at left,
+    hsla(var(--primary) / 1) 0%,
+    /* hsla(var(--primary) / 1) 10%, */ /* transparent 20%, */ transparent 80%
+  );
+  animation: rotate-radial-gradient 2s ease-in-out infinite;
+}

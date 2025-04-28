@@ -11,3 +11,19 @@ export function Glitch({ children, options }: Props) {
 
   return <div ref={glitch.ref}>{children}</div>
 }
+
+// infinite glitch
+
+//  <Glitch
+//       options={{
+//         timing: {
+//           duration: 10000,
+//           // iterations: 3,
+//           // easing: 'ease-in-out',
+//         },
+//         glitchTimeSpan: {
+//           start: 0,
+//           end: 0.1,
+//         },
+//       }}
+// ></Glitch>

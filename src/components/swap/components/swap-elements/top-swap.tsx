@@ -1,6 +1,5 @@
 'use client'
 
-import { Glitch } from '@/components/motion/components/glitch'
 import { Pay } from '@/components/swap/components/swap-elements/pay'
 import { Receive } from '@/components/swap/components/swap-elements/received'
 import { Card, CardContent } from '@/components/ui/card'
@@ -49,56 +48,42 @@ export function TopSwap({
   setShowOutputTokenSearch,
 }: Props) {
   return (
-    <Glitch
-      options={{
-        timing: {
-          duration: 10000,
-          // iterations: 3,
-          // easing: 'ease-in-out',
-        },
-        glitchTimeSpan: {
-          start: 0,
-          end: 0.1,
-        },
-      }}
-    >
-      <Card className="card-motion">
-        <CardContent className="p-4">
-          <Pay
-            walletAddress={walletAddress}
-            inputTokenMint={inputTokenMint}
-            setSwapMode={setSwapMode}
-            handleInAmountChange={handleInAmountChange}
-            displayInAmount={displayInAmount}
-            displayInAmountInUsd={displayInAmountInUsd}
-            setShowInputTokenSearch={setShowInputTokenSearch}
-            inputTokenImageUri={inputTokenImageUri}
-            inputTokenSymbol={inputTokenSymbol}
-            handleInputAmountByPercentage={handleInputAmountByPercentage}
-          />
+    <Card className="card-motion">
+      <CardContent className="p-4">
+        <Pay
+          walletAddress={walletAddress}
+          inputTokenMint={inputTokenMint}
+          setSwapMode={setSwapMode}
+          handleInAmountChange={handleInAmountChange}
+          displayInAmount={displayInAmount}
+          displayInAmountInUsd={displayInAmountInUsd}
+          setShowInputTokenSearch={setShowInputTokenSearch}
+          inputTokenImageUri={inputTokenImageUri}
+          inputTokenSymbol={inputTokenSymbol}
+          handleInputAmountByPercentage={handleInputAmountByPercentage}
+        />
 
-          <div className="flex items-center w-full justify-between text-muted space-x-2">
-            <div className="bg-muted w-full h-[1px]" />
-            <ArrowDownUp
-              size={40}
-              className="cursor-pointer"
-              onClick={handleSwapDirection}
-            />
-            <div className="bg-muted w-full h-[1px]" />
-          </div>
-
-          <Receive
-            outputTokenMint={outputTokenMint}
-            setSwapMode={setSwapMode}
-            handleOutAmountChange={handleOutAmountChange}
-            displayOutAmount={displayOutAmount}
-            displayOutAmountInUsd={displayOutAmountInUsd}
-            setShowOutputTokenSearch={setShowOutputTokenSearch}
-            outputTokenImageUri={outputTokenImageUri}
-            outputTokenSymbol={outputTokenSymbol}
+        <div className="flex items-center w-full justify-between text-muted space-x-2">
+          <div className="bg-muted w-full h-[1px]" />
+          <ArrowDownUp
+            size={40}
+            className="cursor-pointer"
+            onClick={handleSwapDirection}
           />
-        </CardContent>
-      </Card>
-    </Glitch>
+          <div className="bg-muted w-full h-[1px]" />
+        </div>
+
+        <Receive
+          outputTokenMint={outputTokenMint}
+          setSwapMode={setSwapMode}
+          handleOutAmountChange={handleOutAmountChange}
+          displayOutAmount={displayOutAmount}
+          displayOutAmountInUsd={displayOutAmountInUsd}
+          setShowOutputTokenSearch={setShowOutputTokenSearch}
+          outputTokenImageUri={outputTokenImageUri}
+          outputTokenSymbol={outputTokenSymbol}
+        />
+      </CardContent>
+    </Card>
   )
 }
