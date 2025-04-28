@@ -35,7 +35,7 @@ export function LeftSideMenu() {
           >
             <Lock size={16} />
             {
-              !accountIds.length ? 'Unlock Perpetuals' : 'Deposite'
+              !accountIds.length ? 'Unlock Perpetuals' : 'Deposite/Withdraw'
             }
           </Button>
           <LanguageSwitcher />
