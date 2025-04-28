@@ -1,0 +1,39 @@
+/* ========================= */
+/* 🎭 DIALECT NOTIFICATIONS THEME  */
+/* ========================= */
+
+  .dt-modal {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+  
+  /* @media only screen and (min-width: 640px) {
+    .dt-modal {
+      top: 40% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+    }
+  } */
+  
+  .dialect input {
+    --dt-text-primary: hsl(var(--primary)) !important;
+  }
+  
+  .dialect {
+    --dt-button-secondary: hsl(var(--background)) !important;
+    --dt-text-primary: hsl(var(--primary)) !important;
+    --dt-icon-secondary: hsl(var(--primary)) !important;
+    --dt-button-primary: hsl(var(--primary)) !important;
+    --dt-icon-primary: hsl(var(--primary)) !important;
+    --dt-input-checked: hsl(var(--primary)) !important;
+  }
+
+  .dialect .dt-text-\[--dt-text-accent\] {
+    color: hsl(var(--primary)) !important;
+  }
+
+  .dialect .dt-bg-\[--dt-input-checked\] {
+    background-color: hsl(var(--background)) !important;
+}

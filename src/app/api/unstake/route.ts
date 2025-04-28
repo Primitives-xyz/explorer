@@ -16,7 +16,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest) {
   try {
     const { walletAddy } = await await req.json()
-    const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+    const connection = new Connection(process.env.RPC_URL || '')
     const wallet = new NodeWallet(Keypair.generate())
     const provider = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: 'confirmed',

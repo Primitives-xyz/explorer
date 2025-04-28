@@ -23,15 +23,12 @@ export default function PositionTabContent({ subAccountId }: PositionTabContentP
   const handleClose = async () => {
     try {
       setLoading(true)
-      toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
       const sig = await closePosition()
-      toast.success(SUCCESS.CLOSE_POSITION_TX_SUCCESS.title, SUCCESS.CLOSE_POSITION_TX_SUCCESS.content)
+      console.log("sig:", sig)
       refreshFetchOpenPositions()
     } catch (error) {
       console.log(error)
-      toast.error(ERRORS.CLOSE_POS_ERR.title, ERRORS.CLOSE_POS_ERR.content)
     } finally {
-      toast.dismiss()
       setLoading(false)
     }
   }

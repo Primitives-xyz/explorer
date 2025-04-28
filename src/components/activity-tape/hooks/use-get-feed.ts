@@ -2,7 +2,7 @@ import { useQuery } from '@/utils/api'
 import { useMemo } from 'react'
 import { IActivityTapeEntry, IGetFeedResponse } from '../activity-tape.models'
 
-const BASE_TIME = Math.floor(Date.now()) // Unix timestamp in seconds
+const BASE_TIME = Math.floor(Date.now())
 
 const FAKE_ACTIVITIES: IActivityTapeEntry[] = [
   {
@@ -99,6 +99,6 @@ export function useGetFeed() {
   }, [data])
 
   return {
-    transactions: [...transactions, ...FAKE_ACTIVITIES],
+    transactions: [...FAKE_ACTIVITIES, ...transactions],
   }
 }

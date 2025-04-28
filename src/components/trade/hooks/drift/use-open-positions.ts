@@ -1,15 +1,12 @@
 import {
-  BN,
-  convertToNumber,
-  PerpMarkets,
-  PRICE_PRECISION,
-  QUOTE_PRECISION,
+  PerpMarkets
 } from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useMarketPrice } from './use-market-price'
 import { toast } from 'sonner'
 import { useToastContent } from './use-toast-content'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 interface UseUserStatsProps {
   subAccountId: number,
@@ -35,34 +32,16 @@ export function useOpenPositions({
   symbol
 }: UseUserStatsProps) {
   const [loading, setLoading] = useState<boolean>(false)
-  const { ERRORS } = useToastContent()
-  const { price: marketPrice } = useMarketPrice({ symbol })
+  const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
+  const { price: marketPrice, loading: marketPriceLoading } = useMarketPrice({ symbol })
   const { driftClient } = useInitializeDrift()
   const [perpsPositionsInfo, setPerpsPositionsInfo] = useState<PerpsPositionInfoProps[]>([])
+  const { walletAddress } = useCurrentWallet()
 
   const closePosition = async () => {
-    if (!driftClient) {
-      toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
-      return
-    }
-
-    const marketInfo = PerpMarkets[env].find(
-      (market) => market.baseAssetSymbol === symbol
-    )
-
-    if (!marketInfo) {
-      toast.error(ERRORS.PERPS_MARKET_ERR.title, ERRORS.PERPS_MARKET_ERR.content)
-      return
-    }
-
-    const sig = await driftClient.closePosition(marketInfo.marketIndex, undefined, subAccountId)
-    return sig
-  }
-
-  const fetchOpenPositions = async () => {
     try {
-      setLoading(true)
       if (!driftClient) {
+        toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
         return
       }
 
@@ -73,43 +52,38 @@ export function useOpenPositions({
       )
 
       if (!marketInfo) {
+        toast.error(ERRORS.PERPS_MARKET_ERR.title, ERRORS.PERPS_MARKET_ERR.content)
         return
       }
+      toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
+      const sig = await driftClient.closePosition(marketInfo.marketIndex, undefined, subAccountId)
+      toast.dismiss()
+      toast.success(SUCCESS.CLOSE_POSITION_TX_SUCCESS.title, SUCCESS.CLOSE_POSITION_TX_SUCCESS.content)
+      return sig
+    } catch (error) {
+      console.error(error)
+      toast.dismiss()
+      toast.error(ERRORS.CLOSE_POS_ERR.title, ERRORS.CLOSE_POS_ERR.content)
+    }
+  }
 
-      const user = driftClient.getUser(subAccountId)
+  const fetchOpenPositions = async () => {
+    try {
+      setLoading(true)
 
-      if (!user) {
-        return
-      }
+      if (marketPriceLoading) return
 
-      await user.subscribe()
-      const perpPositions = user.getActivePerpPositions()
-      const liqPrice = convertToNumber(user.liquidationPrice(marketInfo.marketIndex), PRICE_PRECISION)
-      let perpsPositionsInfo: PerpsPositionInfoProps[] = []
+      const baseUrl = `/api/drift/perpspositions/?wallet=${walletAddress}&&subAccountId=${subAccountId}&&symbol=${symbol}&&marketPrice=${marketPrice}`
 
-      perpPositions.forEach((position) => {
-        const baseAssetAmount = convertToNumber(position.baseAssetAmount, new BN(10).pow(new BN(9)))
-        const quoteAssetAmount = convertToNumber(position.quoteAssetAmount, QUOTE_PRECISION)
-        const entryPrice = Math.abs(quoteAssetAmount / baseAssetAmount)
-        const unrealizedPnL = (marketPrice - entryPrice) * baseAssetAmount
-        const unrealizedPnlPercentage = unrealizedPnL / (baseAssetAmount * marketPrice) * 100
-
-        if (baseAssetAmount) {
-          perpsPositionsInfo.push({
-            market: marketInfo.symbol,
-            direction: baseAssetAmount > 0 ? "LONG" : "SHORT",
-            baseAssetAmountInToken: Math.abs(baseAssetAmount),
-            baseAssetAmountInUsd: Math.abs(baseAssetAmount * marketPrice),
-            entryPrice: entryPrice,
-            markPrice: marketPrice,
-            pnlInUsd: unrealizedPnL,
-            pnlInPercentage: unrealizedPnlPercentage,
-            liqPrice: liqPrice
-          })
-        }
+      const res = await fetch(baseUrl, {
+        method: 'GET'
       })
+      const data = await res.json()
 
-      setPerpsPositionsInfo(perpsPositionsInfo)
+      if (!data.error) {
+        const perpsPositionsInfo = data.perpPositions
+        setPerpsPositionsInfo(perpsPositionsInfo)
+      }
     } catch (error) {
       console.log(error)
     } finally {

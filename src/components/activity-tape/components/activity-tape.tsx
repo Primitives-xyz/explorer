@@ -14,7 +14,7 @@ export function ActivityTape() {
         entries={transactions?.map((activity, index) => (
           <ActivityTapeEntry key={index} activity={activity} />
         ))}
-        duration={200}
+        duration={20}
       />
     </div>
   )

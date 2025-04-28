@@ -42,14 +42,15 @@ export function useDeposit({
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
 
   const depositCollateral = async () => {
-    let isDriftAccountExist = false
-    setLoading(true)
-    if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
-      toast.error(ERRORS.WALLET_CONNETION_ERR.title, ERRORS.WALLET_CONNETION_ERR.content)
-      return
-    }
-
     try {
+      let isDriftAccountExist = false
+      setLoading(true)
+      if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+        toast.error(ERRORS.WALLET_CONNETION_ERR.title, ERRORS.WALLET_CONNETION_ERR.content)
+
+        return
+      }
+
       if (!driftClient) {
         toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
         return
