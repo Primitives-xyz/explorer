@@ -3,19 +3,15 @@
 import { Animate, Card, CardProps } from '@/components/ui'
 import { cn } from '@/utils/utils'
 import { motion } from 'framer-motion'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { LoadingCard } from './loading-card'
 
-export const MotionCard = React.forwardRef<HTMLDivElement, CardProps>(
-  (props, ref) => {
-    const [loading, setLoading] = useState(true)
+interface MotionCardBackupProps extends CardProps {
+  loading?: boolean
+}
 
-    useEffect(() => {
-      setTimeout(() => {
-        setLoading(false)
-      }, 2000)
-    }, [])
-
+export const MotionCardBackup = React.forwardRef<HTMLDivElement, MotionCardBackupProps>(
+  ({ loading = true, ...props }, ref) => {
     const animate = {
       opacity: 1,
       scale: 1,
@@ -35,9 +31,7 @@ export const MotionCard = React.forwardRef<HTMLDivElement, CardProps>(
             scale: 0.95,
           }}
           animate={loading ? {} : animate}
-          transition={{
-            duration: 0.3,
-          }}
+          transition={{ duration: 0.3 }}
         >
           <Card {...props} ref={ref} />
         </motion.div>
@@ -46,4 +40,4 @@ export const MotionCard = React.forwardRef<HTMLDivElement, CardProps>(
   }
 )
 
-MotionCard.displayName = 'MotionCard'
+MotionCardBackup.displayName = 'MotionCardBackup'
