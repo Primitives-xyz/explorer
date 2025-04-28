@@ -90,7 +90,7 @@ export function useGetFeed() {
         wallet: entry.username || entry.walletAddress,
         timestamp: Math.floor(new Date(entry.timestamp).getTime()),
         highlight: 'positive',
-        amount: `${entry.to.amount.toFixed(2)} `,
+        amount: `${entry.to.amount.toFixed(2)}`,
         amountSuffix: 'SSE',
         isSSEBuy: true,
         signature: entry.signature,

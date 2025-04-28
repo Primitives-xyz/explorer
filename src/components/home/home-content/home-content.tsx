@@ -1,4 +1,6 @@
-import { FollowingTransactions } from '@/components/home/home-content/following-transactions/following-transactions'
+'use client'
+
+import { FollowingTransactions } from './following-transactions/following-transactions'
 
 export function HomeContent() {
   return (

@@ -21,7 +21,6 @@ export function LeftSideMenu() {
           <h1 className="font-bold text-primary leading-none">
             solana_social_explorer
           </h1>
-
           <ProfileInfos />
           <Menu />
         </div>
