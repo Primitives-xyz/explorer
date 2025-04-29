@@ -101,6 +101,8 @@ export const fetchWrapper = async <
     endpoint,
   })
 
+  // console.log('------url', url)
+
   const response = await fetch(url, {
     method,
     headers,
