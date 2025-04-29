@@ -3,7 +3,6 @@
 import { useMotionStore } from '@/components/motion/stores/use-motion-store'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
 import {
-  Checkbox,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -68,12 +67,12 @@ export function ProfileInfos() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-46">
-                <DropdownMenuItem
+                {/* <DropdownMenuItem
                   onClick={() => setEnableMotion(!enableMotion)}
                 >
                   <Checkbox checked={enableMotion} />
                   Enable animation
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem onClick={logout}>
                   <LogOutIcon size={18} />
                   Logout

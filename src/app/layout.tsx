@@ -1,9 +1,7 @@
 import { ActivityTape } from '@/components/activity-tape/components/activity-tape'
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
-import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { WalletProvider } from '@/components/common/wallet-provider'
-import { ScreenEffects } from '@/components/motion/components/screen-effects'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils/utils'
@@ -98,16 +96,15 @@ export default async function RootLayout({
             <AddressHighlightProvider>
               <div className="fixed inset-0 z-0 background-gradient" />
 
-              <ScreenEffects />
+              {/* <ScreenEffects /> */}
 
               <div className="relative z-20">
                 <Onboarding />
                 <ActivityTape />
                 <Toaster />
-
                 <main className="w-full flex justify-between md:pt-topbar">
                   <LeftSideMenu />
-                  <MobileHeader />
+                  {/* <MobileHeader /> */}
                   <div className="flex-1 flex justify-between pt-5">
                     {children}
                   </div>
