@@ -54,9 +54,8 @@ export function ProfileSocial({ walletAddress }: Props) {
           <Tabs defaultValue={defaultTabValue}>
             <div className="overflow-auto w-full">
               <TabsList>
-                {hasXIdentity &&
-                  mainProfile?.username ===
-                    explorerProfile?.profile.username && (
+                {hasXIdentity
+                  && mainProfile?.username === explorerProfile?.profile.username && (
                     <TabsTrigger
                       key="x-tab"
                       variant={TabVariant.SOCIAL}
@@ -130,7 +129,11 @@ export function ProfileSocial({ walletAddress }: Props) {
                   )}
                 </>
               ) : (
-                mainProfile?.username === explorerProfile?.profile.username && (
+                mainProfile?.username 
+                && mainProfile.username != ''
+                && explorerProfile?.profile.username 
+                && explorerProfile.profile.username != ''
+                && mainProfile.username === explorerProfile.profile.username && (
                   <Card>
                     <CardContent>
                       <p>
