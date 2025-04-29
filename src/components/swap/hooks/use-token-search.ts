@@ -75,6 +75,8 @@ export function useTokenSearch() {
 
   // Process wallet tokens when they're available
   useEffect(() => {
+    // Reset the state when verifiedOnly changes to prevent potential issues
+    // with invalid tokens causing errors
     if (!searchQuery.trim()) {
       const newResults =
         walletAddress && walletTokens.length > 0 ? walletTokens : DEFAULT_TOKENS
@@ -83,9 +85,11 @@ export function useTokenSearch() {
       if (JSON.stringify(newResults) !== JSON.stringify(searchResults)) {
         setSearchResults(newResults)
       }
-      setIsLoading(false)
+    } else {
+      // Re-fetch results when verifiedOnly changes
+      debouncedSearch(searchQuery)
     }
-  }, [walletAddress, walletTokens, searchQuery, searchResults])
+  }, [verifiedOnly])
 
   // Function to prioritize wallet tokens in search results
   const prioritizeWalletTokens = useCallback(
@@ -136,11 +140,17 @@ export function useTokenSearch() {
 
         // If not found by address or not an address, use keyword search
         const results = await searchTokensByKeyword(query, verifiedOnly)
-        setSearchResults(results)
+        if (Array.isArray(results)) {
+          setSearchResults(results)
+        } else {
+          setSearchResults([])
+        }
       } catch (err) {
+        console.error('Error searching tokens:', err)
         setError(
           err instanceof Error ? err.message : t('error.an_error_occurred')
         )
+        setSearchResults([]) // Set empty results on error to prevent UI issues
       } finally {
         setIsLoading(false)
       }

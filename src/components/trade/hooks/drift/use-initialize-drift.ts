@@ -12,7 +12,11 @@ export function useInitializeDrift() {
   useEffect(() => {
     const initializeClient = async () => {
       try {
-        if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+        if (
+          !walletAddress ||
+          !primaryWallet ||
+          !isSolanaWallet(primaryWallet)
+        ) {
           setDriftClient(null)
           return
         }
@@ -20,7 +24,8 @@ export function useInitializeDrift() {
         const signer = await primaryWallet.getSigner()
 
         const rpcUrl =
-          process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
+          process.env.NEXT_PUBLIC_RPC_URL ||
+          'https://api.mainnet-beta.solana.com'
         const connection = new Connection(rpcUrl, 'confirmed')
         setConnection(connection)
 
@@ -34,8 +39,7 @@ export function useInitializeDrift() {
           env: 'mainnet-beta',
         })
         setDriftClient(driftClient)
-      }
-      catch (error) {
+      } catch (error) {
         setDriftClient(null)
       }
     }
@@ -45,6 +49,6 @@ export function useInitializeDrift() {
 
   return {
     driftClient,
-    connection
+    connection,
   }
 }

@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { OrderType } from '@/components/tapestry/models/drift.model'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   BN,
@@ -11,9 +11,9 @@ import {
 } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useToastContent } from './use-toast-content'
-import { OrderType } from '@/components/tapestry/models/drift.model'
 
 interface UsePlacePerpsOrderParams {
   amount: string
@@ -34,7 +34,7 @@ export function usePlacePerpsOrder({
   slippage = '0.1',
   orderType,
   limitPrice,
-  reduceOnly
+  reduceOnly,
 }: UsePlacePerpsOrderParams) {
   const [loading, setLoading] = useState<boolean>(false)
   const { driftClient } = useInitializeDrift()
@@ -43,12 +43,18 @@ export function usePlacePerpsOrder({
 
   const placePerpsOrder = async () => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
-      toast.error(ERRORS.WALLET_CONNETION_ERR.title, ERRORS.WALLET_CONNETION_ERR.content)
+      toast.error(
+        ERRORS.WALLET_CONNETION_ERR.title,
+        ERRORS.WALLET_CONNETION_ERR.content
+      )
       return
     }
 
     if (Number(amount) <= 0.01) {
-      toast.error(ERRORS.PERPS_ORDER_SIZE_ERR.title, ERRORS.PERPS_ORDER_SIZE_ERR.content)
+      toast.error(
+        ERRORS.PERPS_ORDER_SIZE_ERR.title,
+        ERRORS.PERPS_ORDER_SIZE_ERR.content
+      )
       return
     }
 
@@ -56,7 +62,10 @@ export function usePlacePerpsOrder({
 
     try {
       if (!driftClient) {
-        toast.error(ERRORS.DRIFT_CLIENT_INIT_ERR.title, ERRORS.DRIFT_CLIENT_INIT_ERR.content)
+        toast.error(
+          ERRORS.DRIFT_CLIENT_INIT_ERR.title,
+          ERRORS.DRIFT_CLIENT_INIT_ERR.content
+        )
         return
       }
 
@@ -74,14 +83,20 @@ export function usePlacePerpsOrder({
       )
 
       if (!marketInfo) {
-        toast.error(ERRORS.PERPS_MARKET_ERR.title, ERRORS.PERPS_MARKET_ERR.content)
+        toast.error(
+          ERRORS.PERPS_MARKET_ERR.title,
+          ERRORS.PERPS_MARKET_ERR.content
+        )
         return
       }
 
       const marketIndex = marketInfo.marketIndex
       const perpMarketAccount = driftClient.getPerpMarketAccount(marketIndex)
       if (!perpMarketAccount) {
-        toast.error(ERRORS.PERPS_MARKET_ACCOUNT_ERR.title, ERRORS.PERPS_MARKET_ACCOUNT_ERR.content)
+        toast.error(
+          ERRORS.PERPS_MARKET_ACCOUNT_ERR.title,
+          ERRORS.PERPS_MARKET_ACCOUNT_ERR.content
+        )
         return
       }
       // Get vAMM bid and ask price
@@ -98,12 +113,13 @@ export function usePlacePerpsOrder({
         slippage === 'infinity'
           ? 0.1 // Maximum slippage
           : slippage === 'zap'
-            ? 0.01 // Swift-like dynamic slippage
-            : parseFloat(slippage) / 100 // Regular percentage slippage
+          ? 0.01 // Swift-like dynamic slippage
+          : parseFloat(slippage) / 100 // Regular percentage slippage
 
       console.log(
         env,
-        `vAMM bid: $${formattedBidPrice} and ask: $${formattedAskPrice}, slippage: ${slippageDecimal * 100
+        `vAMM bid: $${formattedBidPrice} and ask: $${formattedAskPrice}, slippage: ${
+          slippageDecimal * 100
         }%`
       )
 
@@ -125,13 +141,19 @@ export function usePlacePerpsOrder({
           const maxPrice = ask
             .mul(new BN(Math.floor((1 + slippageDecimal) * 1e6)))
             .div(new BN(1e6))
-          orderParams.oraclePriceOffset = convertToNumber(maxPrice.sub(ask), PRICE_PRECISION)
+          orderParams.oraclePriceOffset = convertToNumber(
+            maxPrice.sub(ask),
+            PRICE_PRECISION
+          )
         } else {
           // When going SHORT, we're willing to receive up to X% less
           const minPrice = bid
             .mul(new BN(Math.floor((1 - slippageDecimal) * 1e6)))
             .div(new BN(1e6))
-          orderParams.oraclePriceOffset = convertToNumber(minPrice.sub(bid), PRICE_PRECISION)
+          orderParams.oraclePriceOffset = convertToNumber(
+            minPrice.sub(bid),
+            PRICE_PRECISION
+          )
         }
       }
 
@@ -139,13 +161,25 @@ export function usePlacePerpsOrder({
         const price = driftClient.convertToPricePrecision(Number(limitPrice))
         const formatedPrice = convertToNumber(price, PRICE_PRECISION)
 
-        if (direction === PositionDirection.LONG && formatedPrice >= formattedAskPrice) {
-          toast.error(ERRORS.LIMIT_PRICE_LONG_ERR.title, ERRORS.LIMIT_PRICE_LONG_ERR.content)
+        if (
+          direction === PositionDirection.LONG &&
+          formatedPrice >= formattedAskPrice
+        ) {
+          toast.error(
+            ERRORS.LIMIT_PRICE_LONG_ERR.title,
+            ERRORS.LIMIT_PRICE_LONG_ERR.content
+          )
           return
         }
 
-        if (direction === PositionDirection.SHORT && formatedPrice < formattedAskPrice) {
-          toast.error(ERRORS.LIMIT_PRICE_SHORT_ERR.title, ERRORS.LIMIT_PRICE_SHORT_ERR.content)
+        if (
+          direction === PositionDirection.SHORT &&
+          formatedPrice < formattedAskPrice
+        ) {
+          toast.error(
+            ERRORS.LIMIT_PRICE_SHORT_ERR.title,
+            ERRORS.LIMIT_PRICE_SHORT_ERR.content
+          )
           return
         }
 
@@ -153,16 +187,25 @@ export function usePlacePerpsOrder({
         orderParams.reduceOnly = reduceOnly
       }
 
-      toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
+      toast.loading(
+        LOADINGS.CONFIRM_LOADING.title,
+        LOADINGS.CONFIRM_LOADING.content
+      )
       const txSig = await driftClient.placePerpOrder(orderParams)
 
       toast.dismiss()
-      toast.success(SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.title, SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.content)
+      toast.success(
+        SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.title,
+        SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.content
+      )
       console.log('Perp order sent – tx:', txSig)
     } catch (error) {
-      console.error("error", error)
+      console.error('error', error)
       toast.dismiss()
-      toast.error(ERRORS.TX_PERPS_ORDER_ERR.title, ERRORS.TX_PERPS_ORDER_ERR.content)
+      toast.error(
+        ERRORS.TX_PERPS_ORDER_ERR.title,
+        ERRORS.TX_PERPS_ORDER_ERR.content
+      )
       return
     } finally {
       setLoading(false)
