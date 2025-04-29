@@ -1,37 +1,68 @@
 'use client'
 
 import { TokenBalance } from '@/components/common/left-side-menu/balance'
+import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { DEFAULT_INPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
+import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
+import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import Image from 'next/image'
 import { ESwapMode } from '../../swap.models'
 
 interface Props {
   walletAddress: string
-  inputTokenMint: string
-  displayInAmount: string
-  displayInAmountInUsd: string
-  inputTokenImageUri?: string
-  inputTokenSymbol?: string
-  setSwapMode: (mode: ESwapMode) => void
-  handleInAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
 }
 
 export function Pay({
   walletAddress,
-  inputTokenMint,
-  displayInAmount,
-  displayInAmountInUsd,
-  inputTokenImageUri,
-  inputTokenSymbol,
-  setSwapMode,
-  handleInAmountChange,
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
 }: Props) {
+  const {
+    inputs: { inputMint },
+    inAmount,
+    setSwapMode,
+    setInAmount,
+  } = useSwapStore()
+
+  const {
+    symbol: inputTokenSymbol,
+    image: inputTokenImageUri,
+    decimals: inputTokenDecimals,
+  } = useTokenInfo(inputMint)
+  const { price: inputTokenUsdPrice } = useTokenUSDCPrice({
+    tokenMint: inputMint,
+    decimals: inputTokenDecimals,
+  })
+
+  const displayInAmount = inAmount
+  const displayInAmountInUsd = inputTokenUsdPrice
+    ? formatUsdValue(parseFloat(inAmount) * inputTokenUsdPrice)
+    : '...'
+
+  const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    if (
+      val === '' ||
+      val === '.' ||
+      /^[0]?\.[0-9]*$/.test(val) ||
+      /^[0-9]*\.?[0-9]*$/.test(val)
+    ) {
+      const cursorPosition = e.target.selectionStart
+      setInAmount(val)
+      window.setTimeout(() => {
+        if (e.target) {
+          e.target.focus()
+          e.target.setSelectionRange(cursorPosition, cursorPosition)
+        }
+      }, 0)
+    }
+  }
+
   const percentageButtons = [
     { label: '25%', value: 25 },
     { label: '50%', value: 50 },
@@ -44,10 +75,7 @@ export function Pay({
         <p>Selling</p>
         <p className="text-xs text-muted-foreground">
           Balance:{' '}
-          <TokenBalance
-            walletAddress={walletAddress}
-            tokenMint={inputTokenMint}
-          />
+          <TokenBalance walletAddress={walletAddress} tokenMint={inputMint} />
         </p>
       </div>
 
@@ -56,10 +84,9 @@ export function Pay({
           placeholder="0.00"
           className="text-primary placeholder:text-primary text-xl bg-transparent border-none px-0"
           onFocus={() => setSwapMode(ESwapMode.EXACT_IN)}
-          onChange={(event) => handleInAmountChange(event)}
+          onChange={handleInAmountChange}
           value={displayInAmount}
           autoFocus
-          // type="number"
         />
         <p className="text-xs text-muted-foreground">{displayInAmountInUsd}</p>
       </div>
@@ -75,7 +102,7 @@ export function Pay({
             {inputTokenImageUri ? (
               <Image
                 src={inputTokenImageUri}
-                alt="ITokeImg"
+                alt={`${inputTokenSymbol || 'Token'} logo`}
                 width={32}
                 height={32}
                 className="rounded-full aspect-square object-cover"

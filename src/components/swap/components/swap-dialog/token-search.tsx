@@ -8,13 +8,21 @@ import {
   ITokenSearchProps,
   ITokenSearchResult,
 } from '@/components/swap/swap.models'
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui'
+import { VisuallyHidden } from '@/components/ui/visually-hidden'
+import { useTranslations } from 'next-intl'
 
 export function TokenSearch({
   openModal,
   onSelect,
   onClose,
 }: ITokenSearchProps) {
+  const t = useTranslations()
   const {
     searchQuery,
     searchResults,
@@ -43,6 +51,10 @@ export function TokenSearch({
   return (
     <Dialog open={openModal} onOpenChange={onClose}>
       <DialogContent className="max-w-lg flex flex-col">
+        <VisuallyHidden>
+          <DialogTitle>Token Search</DialogTitle>
+        </VisuallyHidden>
+
         <DialogHeader>
           <TokenSearchHeader
             searchQuery={searchQuery}
