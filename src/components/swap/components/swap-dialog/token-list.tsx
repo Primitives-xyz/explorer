@@ -39,7 +39,7 @@ export function TokenList({
     return <div className="p-4 text-destructive text-center">{error}</div>
   }
 
-  if (searchResults.length === 0) {
+  if (!searchResults || searchResults.length === 0) {
     return (
       <div className="p-4 text-center">
         {searchQuery
@@ -49,12 +49,20 @@ export function TokenList({
     )
   }
 
-  const filteredResults = sortTokenResults(searchResults, sortBy).filter(
-    (token) => !verifiedOnly || token.verified
+  // Safely filter and sort tokens
+  const safeResults = searchResults.filter(
+    (token) =>
+      token &&
+      typeof token.address === 'string' &&
+      typeof token.symbol === 'string'
+  )
+
+  const filteredResults = sortTokenResults(safeResults, sortBy).filter(
+    (token) => !verifiedOnly || Boolean(token.verified)
   )
 
   if (filteredResults.length === 0) {
-    return <div className="p-4 text-center">no verified tokens found</div>
+    return <div className="p-4 text-center">No verified tokens found</div>
   }
 
   return (
