@@ -59,7 +59,7 @@ export function ProfileInfos() {
               <span>Bal: {balance}</span>
             </p>
           </div>
-          <div className="hidden flex:md">
+          <div className="desktop">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant={ButtonVariant.GHOST} size={ButtonSize.ICON_SM}>

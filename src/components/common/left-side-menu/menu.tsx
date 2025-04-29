@@ -29,7 +29,7 @@ export function Menu({ setOpen }: Props) {
         icon={House}
         href={route('home')}
         setOpen={setOpen}
-        onlyDeskop
+        onlyDesktop
       />
 
       <SearchButton />
@@ -46,7 +46,7 @@ export function Menu({ setOpen }: Props) {
         icon={Compass}
         href={route('discover')}
         setOpen={setOpen}
-        onlyDeskop
+        onlyDesktop
       />
 
       {/* <Entry title="Tokens" icon={CircleDollarSign} href={route('tokens')} /> */}
@@ -57,7 +57,7 @@ export function Menu({ setOpen }: Props) {
         href={route('entity', { id: mainProfile?.username || '' })}
         disabled={!mainProfile?.username}
         setOpen={setOpen}
-        onlyDeskop
+        onlyDesktop
       />
 
       <Entry
@@ -65,7 +65,7 @@ export function Menu({ setOpen }: Props) {
         icon={Beef}
         href={route('stake')}
         setOpen={setOpen}
-        onlyDeskop
+        onlyDesktop
       />
 
       <DialectNotificationsComponent />
@@ -78,11 +78,11 @@ interface IEntry {
   icon: LucideIcon
   href: string
   disabled?: boolean
-  onlyDeskop?: boolean
+  onlyDesktop?: boolean
   setOpen?: (open: boolean) => void
 }
 
-function Entry({ title, icon, href, disabled, onlyDeskop, setOpen }: IEntry) {
+function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
@@ -91,10 +91,10 @@ function Entry({ title, icon, href, disabled, onlyDeskop, setOpen }: IEntry) {
       disabled={disabled}
       variant={ButtonVariant.GHOST}
       className={cn(
-        'flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
+        'justify-start w-full gap-4 hover:bg-primary hover:text-background',
         {
           'bg-primary text-background': pathname === href,
-          'hidden md:flex': onlyDeskop,
+          'hidden md:flex': onlyDesktop,
         }
       )}
       href={href}

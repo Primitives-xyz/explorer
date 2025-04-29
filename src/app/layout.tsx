@@ -1,5 +1,6 @@
 import { ActivityTape } from '@/components/activity-tape/components/activity-tape'
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
+import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { WalletProvider } from '@/components/common/wallet-provider'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
@@ -104,7 +105,7 @@ export default async function RootLayout({
                 <Toaster />
                 <main className="w-full flex justify-between md:pt-topbar">
                   <LeftSideMenu />
-                  {/* <MobileHeader /> */}
+                  <MobileHeader />
                   <div className="flex-1 flex justify-between pt-5">
                     {children}
                   </div>
