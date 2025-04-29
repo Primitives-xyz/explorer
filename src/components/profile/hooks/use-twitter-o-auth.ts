@@ -31,7 +31,7 @@ export function useTwitterOAuth() {
         'tweet.read users.read offline.access'
       )
       authUrl.searchParams.append('state', state)
-      authUrl.searchParams.append('code_challenge', 'challenge') // Remplacer par challenge PKCE réel
+      authUrl.searchParams.append('code_challenge', 'challenge')
       authUrl.searchParams.append('code_challenge_method', 'plain')
 
       router.push(authUrl.toString())

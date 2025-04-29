@@ -101,6 +101,7 @@ export interface ISuggestedProfile {
     name: string
     readableName: string
     faviconURL: string
+    userProfileURL?: string
   }[]
   profile: {
     blockchain: string
