@@ -69,7 +69,7 @@ export async function fetchTapestryServer<T = any>({
       }
     }
 
-    if(response.status === 204) {
+    if (response.status === 204) {
       return {} as T
     }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 
 // Predefined highlight colors
 export const HIGHLIGHT_COLORS = [
@@ -14,12 +14,12 @@ export const HIGHLIGHT_COLORS = [
 
 // Interface for our context
 interface AddressHighlightContextType {
-  highlightedAddresses: Record<string, string>; // address -> color
-  highlightAddress: (address: string, color: string) => void;
-  removeHighlight: (address: string) => void;
-  clearAllHighlights: () => void;
-  getHighlightColor: (address: string) => string | null;
-  isAddressHighlighted: (address: string) => boolean;
+  highlightedAddresses: Record<string, string> // address -> color
+  highlightAddress: (address: string, color: string) => void
+  removeHighlight: (address: string) => void
+  clearAllHighlights: () => void
+  getHighlightColor: (address: string) => string | null
+  isAddressHighlighted: (address: string) => boolean
 }
 
 // Create context with default values
@@ -33,41 +33,47 @@ const AddressHighlightContext = createContext<AddressHighlightContextType>({
 })
 
 // Provider component
-export function AddressHighlightProvider({ children }: { children: ReactNode }) {
-  const [highlightedAddresses, setHighlightedAddresses] = useState<Record<string, string>>({})
-  
+export function AddressHighlightProvider({
+  children,
+}: {
+  children: ReactNode
+}) {
+  const [highlightedAddresses, setHighlightedAddresses] = useState<
+    Record<string, string>
+  >({})
+
   // Highlight an address with a specific color
   const highlightAddress = (address: string, color: string) => {
-    setHighlightedAddresses(prev => ({
+    setHighlightedAddresses((prev) => ({
       ...prev,
-      [address]: color
+      [address]: color,
     }))
   }
-  
+
   // Remove highlight from an address
   const removeHighlight = (address: string) => {
-    setHighlightedAddresses(prev => {
+    setHighlightedAddresses((prev) => {
       const newHighlights = { ...prev }
       delete newHighlights[address]
       return newHighlights
     })
   }
-  
+
   // Clear all highlights
   const clearAllHighlights = () => {
     setHighlightedAddresses({})
   }
-  
+
   // Get the highlight color for an address if it exists
   const getHighlightColor = (address: string): string | null => {
     return highlightedAddresses[address] || null
   }
-  
+
   // Check if an address is highlighted
   const isAddressHighlighted = (address: string): boolean => {
     return !!highlightedAddresses[address]
   }
-  
+
   return (
     <AddressHighlightContext.Provider
       value={{
@@ -88,7 +94,9 @@ export function AddressHighlightProvider({ children }: { children: ReactNode }) 
 export function useAddressHighlight() {
   const context = useContext(AddressHighlightContext)
   if (!context) {
-    throw new Error('useAddressHighlight must be used within an AddressHighlightProvider')
+    throw new Error(
+      'useAddressHighlight must be used within an AddressHighlightProvider'
+    )
   }
   return context
-} 
+}
