@@ -417,19 +417,6 @@ export function Swap({ setTokenMint }: Props) {
     }
   }, [searchParams, setInputs, inputTokenMint, outputTokenMint, inAmount])
 
-  // Add a debugging effect to verify token changes are being reflected
-  useEffect(() => {
-    // Log to verify that token mint changes are being processed
-    console.log('Token mints updated:', {
-      inputTokenMint,
-      outputTokenMint,
-      inputsFromStore: {
-        inputMint: inputs.inputMint,
-        outputMint: inputs.outputMint,
-      },
-    })
-  }, [inputTokenMint, outputTokenMint, inputs.inputMint, inputs.outputMint])
-
   // Update URL when tokens change
   useEffect(() => {
     // Only update URL when tokens change
