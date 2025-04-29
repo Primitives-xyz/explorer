@@ -8,15 +8,13 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
-import { SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   formatLargeNumber,
   formatRawAmount,
   formatUsdValue,
 } from '@/utils/utils'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
 
@@ -76,18 +74,21 @@ interface Props {
 }
 
 export function Swap({ setTokenMint }: Props) {
-  const searchParams = useSearchParams()
-  const { replace } = useRouter()
-  const pathname = usePathname()
-  const [inputTokenMint, setInputTokenMint] = useState<string>(SOL_MINT)
-  const [outputTokenMint, setOutputTokenMint] = useState<string>(SSE_MINT)
-  const [inAmount, setInAmount] = useState('1')
-  const [outAmount, setOutAmount] = useState('')
-  const [swapMode, setSwapMode] = useState(ESwapMode.EXACT_IN)
+  // Centralized swap state from store
+  const {
+    inputs: { inputMint: inputTokenMint, outputMint: outputTokenMint },
+    swapMode,
+    inAmount,
+    outAmount,
+    setInputs,
+    setSwapMode,
+    setInAmount,
+    setOutAmount,
+  } = useSwapStore()
+
   const [useSSEForFees, setUseSSEForFees] = useState(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
-  const { inputs, setOpen, setInputs } = useSwapStore()
 
   const {
     symbol: inputTokenSymbol,
@@ -100,18 +101,6 @@ export function Swap({ setTokenMint }: Props) {
     image: outputTokenImageUri,
   } = useTokenInfo(outputTokenMint)
 
-  const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } =
-    useTokenUSDCPrice({
-      tokenMint: inputTokenMint,
-      decimals: inputTokenDecimals,
-    })
-
-  const { price: outputTokenUsdPrice, loading: outputTokenUsdPriceLoading } =
-    useTokenUSDCPrice({
-      tokenMint: outputTokenMint,
-      decimals: outputTokenDecimals,
-    })
-
   const {
     isLoggedIn,
     sdkHasLoaded,
@@ -121,6 +110,17 @@ export function Swap({ setTokenMint }: Props) {
   } = useCurrentWallet()
   const { balance: inputBalance, rawBalance: inputRawBalance } =
     useTokenBalance(walletAddress, inputTokenMint)
+
+  const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } =
+    useTokenUSDCPrice({
+      tokenMint: inputTokenMint,
+      decimals: inputTokenDecimals,
+    })
+  const { price: outputTokenUsdPrice, loading: outputTokenUsdPriceLoading } =
+    useTokenUSDCPrice({
+      tokenMint: outputTokenMint,
+      decimals: outputTokenDecimals,
+    })
 
   const {
     loading,
@@ -228,72 +228,34 @@ export function Swap({ setTokenMint }: Props) {
     }
   }
 
-  const handleInputTokenSelect = (token: {
-    address: string
-    symbol: string
-    name: string
-    decimals: number
-  }) => {
-    setInputTokenMint(token.address)
+  const handleInputTokenSelect = (token: { address: string }) => {
+    if (!token || !token.address) {
+      console.error('Invalid token selected')
+      return
+    }
+
+    // Update store with new tokens & amounts
     setInputs({
       inputMint: token.address,
       outputMint: outputTokenMint,
       inputAmount: parseFloat(inAmount) || 0,
     })
-    updateTokensInURL(token.address, outputTokenMint)
     setShowInputTokenSearch(false)
-
-    // Force refresh token info after selection
-    setTimeout(() => {
-      // This will trigger a re-render with the new token info
-      setInputTokenMint((prevMint) => {
-        if (prevMint === token.address) {
-          return token.address // Return same value but will trigger state update
-        }
-        return token.address
-      })
-    }, 0)
   }
 
-  const handleOutputTokenSelect = (token: {
-    address: string
-    symbol: string
-    name: string
-    decimals: number
-  }) => {
-    setOutputTokenMint(token.address)
+  const handleOutputTokenSelect = (token: { address: string }) => {
+    if (!token || !token.address) {
+      console.error('Invalid token selected')
+      return
+    }
+
     setInputs({
       inputMint: inputTokenMint,
       outputMint: token.address,
       inputAmount: parseFloat(inAmount) || 0,
     })
-    updateTokensInURL(inputTokenMint, token.address)
     setShowOutputTokenSearch(false)
-
-    // Force refresh token info after selection
-    setTimeout(() => {
-      // This will trigger a re-render with the new token info
-      setOutputTokenMint((prevMint) => {
-        if (prevMint === token.address) {
-          return token.address // Return same value but will trigger state update
-        }
-        return token.address
-      })
-    }, 0)
   }
-
-  const updateTokensInURL = useCallback(
-    (input: string, output: string) => {
-      const params = new URLSearchParams(searchParams.toString())
-
-      params.set('inputMint', input)
-      params.set('outputMint', output)
-
-      replace(`${pathname}?${params.toString()}`)
-    },
-
-    [searchParams, pathname, replace]
-  )
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -330,100 +292,36 @@ export function Swap({ setTokenMint }: Props) {
   }
 
   const handleSwapDirection = () => {
-    const tempInputMint = inputTokenMint
-    const tempOutputMint = outputTokenMint
+    // Swap input/output tokens & amounts in store
+    const tempIn = inputTokenMint
+    const tempOut = outputTokenMint
+    const tempAmtIn = inAmount
+    const tempAmtOut = outAmount
 
-    // Update state directly for immediate effect
-    setInputTokenMint(tempOutputMint)
-    setOutputTokenMint(tempInputMint)
-
-    // Then update the store to keep everything in sync
     setInputs({
-      inputMint: tempOutputMint,
-      outputMint: tempInputMint,
-      inputAmount: parseFloat(outAmount) || 0,
+      inputMint: tempOut,
+      outputMint: tempIn,
+      inputAmount: parseFloat(tempAmtOut) || 0,
     })
-
-    // Update URL to match new state
-    updateTokensInURL(tempOutputMint, tempInputMint)
+    setInAmount(tempAmtOut)
+    setOutAmount(tempAmtIn)
   }
 
+  // Update amounts when quote changes
   useEffect(() => {
     if (swapMode === ESwapMode.EXACT_IN) {
-      if (inAmount == '' || isNaN(parseFloat(expectedOutput))) {
-        setOutAmount('')
-      } else {
-        setOutAmount(expectedOutput)
-      }
+      setOutAmount(isNaN(parseFloat(expectedOutput)) ? '' : expectedOutput)
     } else {
-      if (outAmount == '' || isNaN(parseFloat(expectedOutput))) {
-        setInAmount('')
-      } else {
-        setInAmount(expectedOutput)
-      }
+      setInAmount(isNaN(parseFloat(expectedOutput)) ? '' : expectedOutput)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expectedOutput])
 
+  // Inform parent (chart) of token for display
   useEffect(() => {
     if (setTokenMint) {
-      const tokenForChart = getTargetToken(inputTokenMint, outputTokenMint)
-      setTokenMint(tokenForChart)
+      setTokenMint(getTargetToken(inputTokenMint, outputTokenMint))
     }
   }, [inputTokenMint, outputTokenMint, setTokenMint])
-
-  useEffect(() => {
-    if (inputs) {
-      // Only update if values actually changed to avoid infinite loops
-      if (inputs.inputMint !== inputTokenMint) {
-        setInputTokenMint(inputs.inputMint)
-      }
-
-      if (inputs.outputMint !== outputTokenMint) {
-        setOutputTokenMint(inputs.outputMint)
-      }
-
-      if (
-        inputs.inputAmount.toString() !== inAmount &&
-        inputs.inputAmount > 0
-      ) {
-        setInAmount(inputs.inputAmount.toString())
-      }
-    }
-  }, [inputs, inputTokenMint, outputTokenMint, inAmount])
-
-  // Read URL parameters on initial load
-  useEffect(() => {
-    const inputMintParam = searchParams.get('inputMint')
-    const outputMintParam = searchParams.get('outputMint')
-
-    if (inputMintParam || outputMintParam) {
-      // Update local state directly for immediate UI effect
-      if (inputMintParam && inputMintParam !== inputTokenMint) {
-        setInputTokenMint(inputMintParam)
-      }
-
-      if (outputMintParam && outputMintParam !== outputTokenMint) {
-        setOutputTokenMint(outputMintParam)
-      }
-
-      // Then update the store to keep everything in sync
-      // Only update if we actually have parameters
-      setInputs({
-        inputMint: inputMintParam || inputTokenMint,
-        outputMint: outputMintParam || outputTokenMint,
-        inputAmount: parseFloat(inAmount) || 0,
-      })
-    }
-  }, [searchParams, setInputs, inputTokenMint, outputTokenMint, inAmount])
-
-  // Update URL when tokens change
-  useEffect(() => {
-    // Only update URL when tokens change
-    if (inputTokenMint && outputTokenMint) {
-      updateTokensInURL(inputTokenMint, outputTokenMint)
-    }
-  }, [inputTokenMint, outputTokenMint, updateTokensInURL])
 
   return (
     <div className="space-y-4">
