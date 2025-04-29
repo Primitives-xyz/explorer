@@ -94,15 +94,17 @@ export function CreateUsernameForm({
         className="flex-1 flex flex-col"
       >
         <div
-          className={cn({
-            'grid grid-cols-5 gap-8': !!suggestedUsernames?.length,
-            'flex justify-center': !suggestedUsernames?.length,
+          className={cn('space-y-4 md:space-y-0', {
+            'grid grid-cols-1 md:grid-cols-5 md:gap-8':
+              !!suggestedUsernames?.length,
+            'flex flex-col md:flex-row justify-center':
+              !suggestedUsernames?.length,
           })}
         >
           <div
             className={cn({
               'col-span-2': !!suggestedUsernames?.length,
-              'w-[350px]': !suggestedUsernames?.length,
+              'w-full md:w-[350px]': !suggestedUsernames?.length,
             })}
           >
             <FormField
@@ -134,7 +136,7 @@ export function CreateUsernameForm({
         </div>
         <div className="flex justify-between mt-auto">
           <Button
-            className="w-[160px]"
+            className="w-[48%] md:w-[160px]"
             onClick={() => {
               logout()
               refetchCurrentUser()
@@ -144,7 +146,11 @@ export function CreateUsernameForm({
           >
             Cancel
           </Button>
-          <Button type="submit" className="w-[160px]" loading={loading}>
+          <Button
+            type="submit"
+            className="w-[48%] md:w-[160px]"
+            loading={loading}
+          >
             Next
           </Button>
         </div>
