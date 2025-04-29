@@ -39,7 +39,7 @@ export async function determineRouteType(id: string, connection: Connection): Pr
       if (tokenInfo && tokenInfo.result && isNFTToken(tokenInfo.result)) {
         return RouteType.NFT
       }
-      return RouteType.WALLET // Token account or mint
+      return RouteType.WALLET // Token account most likely
     }
   }
 
