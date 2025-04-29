@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui'
 import { cn, formatTimeAgo } from '@/utils/utils'
 import Image from 'next/image'

@@ -2,7 +2,7 @@
 
 import { useGetTrendingTokens } from '@/components/birdeye/hooks/use-get-trending-tokens'
 import { route } from '@/utils/route'
-import { abbreviateWalletAddress, formatNumber } from '@/utils/utils'
+import { formatNumber } from '@/utils/utils'
 import Image from 'next/image'
 import { SEARCH_RESULTS_LIMIT } from './search-button'
 import { SearchResultsEntry } from './search-results-entry'
@@ -15,7 +15,6 @@ export function SearchTrendingTokens({ closePopover }: Props) {
   const { tokens } = useGetTrendingTokens({
     limit: SEARCH_RESULTS_LIMIT,
   })
-
   return (
     <div>
       <div className="flex items-center justify-between text-xs p-3">
@@ -43,9 +42,7 @@ export function SearchTrendingTokens({ closePopover }: Props) {
                 )}
               </div>
             }
-            title={abbreviateWalletAddress({
-              address: entry.address,
-            })}
+            title={entry.name}
             subtitle={
               <>
                 Liq {formatNumber(entry.liquidity)} • Price{' '}

@@ -238,8 +238,21 @@ export function Swap({ setTokenMint }: Props) {
     setInputs({
       inputMint: token.address,
       outputMint: outputTokenMint,
-      inputAmount: parseFloat(inAmount),
+      inputAmount: parseFloat(inAmount) || 0,
     })
+    updateTokensInURL(token.address, outputTokenMint)
+    setShowInputTokenSearch(false)
+
+    // Force refresh token info after selection
+    setTimeout(() => {
+      // This will trigger a re-render with the new token info
+      setInputTokenMint((prevMint) => {
+        if (prevMint === token.address) {
+          return token.address // Return same value but will trigger state update
+        }
+        return token.address
+      })
+    }, 0)
   }
 
   const handleOutputTokenSelect = (token: {
@@ -252,8 +265,21 @@ export function Swap({ setTokenMint }: Props) {
     setInputs({
       inputMint: inputTokenMint,
       outputMint: token.address,
-      inputAmount: parseFloat(inAmount),
+      inputAmount: parseFloat(inAmount) || 0,
     })
+    updateTokensInURL(inputTokenMint, token.address)
+    setShowOutputTokenSearch(false)
+
+    // Force refresh token info after selection
+    setTimeout(() => {
+      // This will trigger a re-render with the new token info
+      setOutputTokenMint((prevMint) => {
+        if (prevMint === token.address) {
+          return token.address // Return same value but will trigger state update
+        }
+        return token.address
+      })
+    }, 0)
   }
 
   const updateTokensInURL = useCallback(
@@ -304,11 +330,22 @@ export function Swap({ setTokenMint }: Props) {
   }
 
   const handleSwapDirection = () => {
+    const tempInputMint = inputTokenMint
+    const tempOutputMint = outputTokenMint
+
+    // Update state directly for immediate effect
+    setInputTokenMint(tempOutputMint)
+    setOutputTokenMint(tempInputMint)
+
+    // Then update the store to keep everything in sync
     setInputs({
-      inputMint: outputTokenMint,
-      outputMint: inputTokenMint,
-      inputAmount: parseFloat(outAmount),
+      inputMint: tempOutputMint,
+      outputMint: tempInputMint,
+      inputAmount: parseFloat(outAmount) || 0,
     })
+
+    // Update URL to match new state
+    updateTokensInURL(tempOutputMint, tempInputMint)
   }
 
   useEffect(() => {
@@ -337,14 +374,65 @@ export function Swap({ setTokenMint }: Props) {
 
   useEffect(() => {
     if (inputs) {
-      setInputTokenMint(inputs.inputMint)
-      setOutputTokenMint(inputs.outputMint)
-      setInAmount(inputs.inputAmount.toString())
-      updateTokensInURL(inputs.inputMint, inputs.outputMint)
-    }
-  }, [inputs, updateTokensInURL])
+      // Only update if values actually changed to avoid infinite loops
+      if (inputs.inputMint !== inputTokenMint) {
+        setInputTokenMint(inputs.inputMint)
+      }
 
+      if (inputs.outputMint !== outputTokenMint) {
+        setOutputTokenMint(inputs.outputMint)
+      }
+
+      if (
+        inputs.inputAmount.toString() !== inAmount &&
+        inputs.inputAmount > 0
+      ) {
+        setInAmount(inputs.inputAmount.toString())
+      }
+    }
+  }, [inputs, inputTokenMint, outputTokenMint, inAmount])
+
+  // Read URL parameters on initial load
   useEffect(() => {
+    const inputMintParam = searchParams.get('inputMint')
+    const outputMintParam = searchParams.get('outputMint')
+
+    if (inputMintParam || outputMintParam) {
+      // Update local state directly for immediate UI effect
+      if (inputMintParam && inputMintParam !== inputTokenMint) {
+        setInputTokenMint(inputMintParam)
+      }
+
+      if (outputMintParam && outputMintParam !== outputTokenMint) {
+        setOutputTokenMint(outputMintParam)
+      }
+
+      // Then update the store to keep everything in sync
+      // Only update if we actually have parameters
+      setInputs({
+        inputMint: inputMintParam || inputTokenMint,
+        outputMint: outputMintParam || outputTokenMint,
+        inputAmount: parseFloat(inAmount) || 0,
+      })
+    }
+  }, [searchParams, setInputs, inputTokenMint, outputTokenMint, inAmount])
+
+  // Add a debugging effect to verify token changes are being reflected
+  useEffect(() => {
+    // Log to verify that token mint changes are being processed
+    console.log('Token mints updated:', {
+      inputTokenMint,
+      outputTokenMint,
+      inputsFromStore: {
+        inputMint: inputs.inputMint,
+        outputMint: inputs.outputMint,
+      },
+    })
+  }, [inputTokenMint, outputTokenMint, inputs.inputMint, inputs.outputMint])
+
+  // Update URL when tokens change
+  useEffect(() => {
+    // Only update URL when tokens change
     if (inputTokenMint && outputTokenMint) {
       updateTokensInURL(inputTokenMint, outputTokenMint)
     }
@@ -407,10 +495,11 @@ export function Swap({ setTokenMint }: Props) {
               : handleOutputTokenSelect
           }
           onClose={() => {
-            showInputTokenSearch
-              ? setShowInputTokenSearch(false)
-              : setShowOutputTokenSearch(false)
-            setInAmount('')
+            if (showInputTokenSearch) {
+              setShowInputTokenSearch(false)
+            } else {
+              setShowOutputTokenSearch(false)
+            }
           }}
         />
       )}
