@@ -59,7 +59,8 @@ export function FollowingTransactions() {
           <div className="w-full flex justify-center items-center h-[400px]">
             <Spinner large />
           </div>
-        ) : (!isLoggedIn || !mainProfile) && selectedType === FilterType.SWAP ? (
+        ) : (!isLoggedIn || !mainProfile) &&
+          selectedType === FilterType.SWAP ? (
           <Card>
             <CardContent className="flex flex-col space-y-10 items-center justify-center">
               <Paragraph>

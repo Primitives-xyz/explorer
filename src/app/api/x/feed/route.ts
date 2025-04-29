@@ -1,19 +1,8 @@
 // app/api/profiles/suggested/route.ts
+import { ITwitterFeed } from '@/components/tapestry/models/twitter.models'
 import { FetchMethod } from '@/utils/api'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'
-
-export interface ITwitterFeed {
-  handle: string
-  tweets: {
-    id: string
-    text: string
-    createdAt: string
-    likes: number
-    retweets: number
-    url: string
-  }[]
-}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -24,18 +13,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const response = await fetchTapestryServer<ITwitterFeed>({
+    const data: ITwitterFeed = await fetchTapestryServer({
       endpoint: `external/twitter/users/${handle}/tweets`,
       method: FetchMethod.GET,
     })
 
-    console.log('Response from Tapestry:', response)
-
-    if (response.error) {
-      return NextResponse.json({ error: response.error }, { status: 500 })
-    }
-
-    return NextResponse.json(response)
+    return NextResponse.json(data)
   } catch (error: any) {
     console.error('Error fetching tweets:', error)
     return NextResponse.json(

@@ -1,21 +1,15 @@
+import { useGetXFeed } from '@/components/tapestry/hooks/use-get-x-feed'
 import { IGetProfilesResponseEntry } from '@/components/tapestry/models/profiles.models'
-import { useQuery } from '@/utils/api'
 
 interface Props {
   profile: IGetProfilesResponseEntry
 }
 export function TwitterFeed({ profile }: Props) {
-  console.log(profile.profile.username)
-
-  const { data, error, loading } = useQuery<any>({
-    endpoint: 'twitter/tweets',
-    queryParams: {
-      handle: profile.profile.username,
-    },
+  const { data, error, loading } = useGetXFeed({
+    xUsername: profile.profile.username,
   })
 
-  console.log('TwitterFeed data:', data)
-  console.log('TwitterFeed error:', error)
+  console.log({ data })
 
   if (loading) return <p>Loading tweets...</p>
   if (error) return <p className="text-destructive">Error fetching tweets</p>
