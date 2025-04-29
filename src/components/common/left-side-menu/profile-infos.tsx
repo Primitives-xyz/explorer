@@ -1,6 +1,5 @@
 'use client'
 
-import { useMotionStore } from '@/components/motion/stores/use-motion-store'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
 import {
   DropdownMenu,
@@ -19,7 +18,7 @@ export function ProfileInfos() {
   const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
-  const { enableMotion, setEnableMotion } = useMotionStore()
+  // const { enableMotion, setEnableMotion } = useMotionStore()
 
   return (
     <div>
