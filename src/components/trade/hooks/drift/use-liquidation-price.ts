@@ -22,9 +22,10 @@ export function useLiquidationPrice({
       try {
         setLoading(true)
 
-        const baseurl = `api/drift/liqprice/?wallet=${walletAddress}&subAccountId=0&symbol=SOL&direction=${direction}&amount=${Number(amount)}`
+        const baseurl = 
+          `api/drift/liqprice/?wallet=${walletAddress}&subAccountId=0&symbol=SOL&direction=${direction}&amount=${Number(amount)}`
         const res = await fetch(baseurl, {
-          method: 'GET'
+          method: 'GET',
         })
         const data = await res.json()
         if (!data.error) {
@@ -42,12 +43,7 @@ export function useLiquidationPrice({
     }
 
     fetchLiquidationPrice()
-  }, [
-    walletAddress,
-    symbol,
-    amount,
-    direction,
-  ])
+  }, [walletAddress, symbol, amount, direction])
 
   return {
     liquidationPrice,
