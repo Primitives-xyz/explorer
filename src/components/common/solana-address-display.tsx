@@ -9,6 +9,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/utils/utils'
 import { useState, useRef, useEffect } from 'react'
 import { HIGHLIGHT_COLORS, useAddressHighlight } from '@/components/common/use-address-highlight'
+import { useRouter } from 'next/navigation'
+import { route } from '@/utils/route'
 
 interface SolanaAddressDisplayProps {
   address: string
@@ -52,6 +54,8 @@ export function SolanaAddressDisplay({
   const highlightColor = getHighlightColor(address)
   const isHighlighted = isAddressHighlighted(address)
   
+  const router = useRouter()
+  
   // Clear any existing hide timer
   const clearHideTimer = () => {
     if (hideTimerRef.current) {
@@ -92,12 +96,19 @@ export function SolanaAddressDisplay({
     setShowColorPicker(false)
   }
   
+  // Handler for navigation
+  const handleAddressClick = (e: React.MouseEvent) => {
+    if (!isValid) return
+    e.stopPropagation()
+    router.push(route('entity', { id: address }))
+  }
+  
   const displayElement = (
     <span
       ref={addressRef}
       className={cn(
         "font-mono transition-colors duration-200 relative",
-        highlightable && "cursor-pointer",
+        "cursor-pointer hover:underline",
         isHighlighted && "font-medium",
         className
       )}
@@ -109,6 +120,19 @@ export function SolanaAddressDisplay({
       } : undefined}
       onMouseEnter={highlightable ? showPicker : undefined}
       onMouseLeave={highlightable ? hidePicker : undefined}
+      onClick={isValid ? handleAddressClick : undefined}
+      role={isValid ? "button" : undefined}
+      tabIndex={isValid ? 0 : undefined}
+      onKeyDown={
+        isValid
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleAddressClick(e as any)
+              }
+            }
+          : undefined
+      }
+      aria-label={isValid ? `Go to address ${address}` : undefined}
     >
       {displayText || (displayAbbreviatedAddress ? abbreviatedAddress : address)}
     </span>
