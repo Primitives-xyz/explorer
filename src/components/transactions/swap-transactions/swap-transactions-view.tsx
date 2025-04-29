@@ -55,7 +55,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       : null
 
   return (
-    <MotionCard className="overflow-visible">
+    <MotionCard>
       <CardHeader>
         <TransactionsHeader
           transaction={transaction}
