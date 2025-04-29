@@ -15,12 +15,15 @@ import {
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { SearchButton } from '../../search/components/search-button'
+interface Props {
+  setOpen?: (open: boolean) => void
+}
 
-export function Menu() {
+export function Menu({ setOpen }: Props) {
   const { mainProfile } = useCurrentWallet()
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4 md:space-y-2">
       <Entry title="Home" icon={House} href={route('home')} />
 
       <SearchButton />
@@ -56,9 +59,10 @@ interface IEntry {
   icon: LucideIcon
   href: string
   disabled?: boolean
+  setOpen?: (open: boolean) => void
 }
 
-function Entry({ title, icon, href, disabled }: IEntry) {
+function Entry({ title, icon, href, disabled, setOpen }: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
@@ -73,6 +77,9 @@ function Entry({ title, icon, href, disabled }: IEntry) {
         }
       )}
       href={href}
+      onClick={() => {
+        setOpen && setOpen(false)
+      }}
     >
       <Icon size={20} />
       {title}

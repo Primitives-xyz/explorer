@@ -9,7 +9,7 @@ export function ActivityTape() {
 
   return (
     // <div className="fixed top-0 left-0 right-0 inset-x-0 p-2 z-40 backdrop-blur-md overflow-hidden">
-    <div className="fixed top-0 left-0 right-0 inset-x-0 p-2 z-40 overflow-hidden">
+    <div className="hidden md:flex fixed top-0 left-0 right-0 inset-x-0 p-2 z-40 overflow-hidden">
       <ScrollingText
         entries={transactions?.map((activity, index) => (
           <ActivityTapeEntry key={index} activity={activity} />

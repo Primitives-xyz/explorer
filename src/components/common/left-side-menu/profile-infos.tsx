@@ -35,11 +35,11 @@ export function ProfileInfos() {
       ) : (
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start">
-            <p className="text-xs pr-1">hi</p>
-            <p className="font-bold text-xs max-w-[4rem] truncate pr-1">
+            <p className="md:text-xs pr-1">hi</p>
+            <p className="font-bold md:text-xs max-w-[4rem] truncate pr-1">
               {mainProfile?.username}
             </p>
-            <p className="text-xs flex items-center gap-1">
+            <p className="md:text-xs flex items-center gap-1">
               <span>|</span>
               <Button
                 variant={ButtonVariant.GHOST}
@@ -60,23 +60,27 @@ export function ProfileInfos() {
               <span>Bal: {balance}</span>
             </p>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={ButtonVariant.GHOST} size={ButtonSize.ICON_SM}>
-                <EllipsisVerticalIcon size={18} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-46">
-              <DropdownMenuItem onClick={() => setEnableMotion(!enableMotion)}>
-                <Checkbox checked={enableMotion} />
-                Enable animation
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={logout}>
-                <LogOutIcon size={18} />
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="hidden flex:md">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={ButtonVariant.GHOST} size={ButtonSize.ICON_SM}>
+                  <EllipsisVerticalIcon size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-46">
+                <DropdownMenuItem
+                  onClick={() => setEnableMotion(!enableMotion)}
+                >
+                  <Checkbox checked={enableMotion} />
+                  Enable animation
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
+                  <LogOutIcon size={18} />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       )}
     </div>
