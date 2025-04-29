@@ -6,6 +6,8 @@ import { abbreviateWalletAddress, formatNumber } from '@/utils/utils'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
 import Image from 'next/image'
 import { cn } from '@/utils/utils'
+import { useRouter } from 'next/navigation'
+import { route } from '@/utils/route'
 
 interface TokenLineProps {
   mint: string
@@ -24,6 +26,7 @@ export function TokenLine({
 }: TokenLineProps) {
   const isSol = mint === SOL_MINT
   const { data: tokenData, symbol, name, image, decimals, loading: tokenLoading } = useTokenInfo(isSol ? null : mint)
+  const router = useRouter()
 
   const displaySymbol = symbol || (isSol ? 'SOL' : undefined)
 
@@ -54,6 +57,11 @@ export function TokenLine({
     <span className="font-mono text-xs">{mint.slice(0, 2)}</span>
   )
 
+  const handleTokenClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    router.push(route('entity', { id: mint }))
+  }
+
   return (
     <div
       className={cn(
@@ -64,14 +72,27 @@ export function TokenLine({
       <div
         className={cn(
           compact ? 'w-4 h-4' : 'w-5 h-5',
-          'rounded-full flex items-center justify-center overflow-hidden'
+          'rounded-full flex items-center justify-center overflow-hidden',
+          'cursor-pointer hover:opacity-80'
         )}
+        onClick={handleTokenClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleTokenClick(e as any) }}
+        aria-label={`Go to token ${mint}`}
       >
         {icon}
       </div>
 
       <div className="flex flex-col min-w-0 overflow-visible">
-        <div className={cn('flex items-center gap-1 truncate', compact && 'leading-tight')}>
+        <div
+          className={cn('flex items-center gap-1 truncate', compact && 'leading-tight', 'cursor-pointer hover:underline')}
+          onClick={handleTokenClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleTokenClick(e as any) }}
+          aria-label={`Go to token ${mint}`}
+        >
           <span className="font-medium truncate">
             {displaySymbol || abbreviateWalletAddress({ address: mint })}
           </span>
@@ -80,7 +101,14 @@ export function TokenLine({
           )}
         </div>
         {!compact && (
-          <span className="text-xs text-muted-foreground relative">
+          <span
+            className="text-xs text-muted-foreground relative cursor-pointer hover:underline"
+            onClick={handleTokenClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleTokenClick(e as any) }}
+            aria-label={`Go to token ${mint}`}
+          >
             <SolanaAddressDisplay
               address={mint}
               displayAbbreviatedAddress

@@ -108,7 +108,7 @@ function Username({
     <Button
       variant={ButtonVariant.GHOST}
       href={route('entity', {
-        id: sourceProfile?.username || sourceWallet,
+        id: sourceWallet,
       })}
       className="p-0 hover:bg-transparent"
     >

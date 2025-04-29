@@ -105,6 +105,7 @@ export interface NFTTokenInfo extends BaseTokenInfo {
     | 'LEGACY_NFT'
     | 'ProgrammableNFT'
     | 'MplCoreCollection'
+    | 'MplCoreAsset'
 }
 
 // Fungible token-specific properties

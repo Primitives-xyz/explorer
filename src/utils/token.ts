@@ -225,3 +225,14 @@ export const getAssociatedTokenAccount = (
 
   return associatedTokenAccountPubkey
 }
+
+export async function getAccountOwner(address: string | PublicKey, connection: Connection): Promise<string | null> {
+  try {
+    const pubkey = typeof address === 'string' ? new PublicKey(address) : address
+    const accountInfo = await connection.getAccountInfo(pubkey)
+    if (!accountInfo) return null
+    return accountInfo.owner.toString()
+  } catch (e) {
+    return null
+  }
+}
