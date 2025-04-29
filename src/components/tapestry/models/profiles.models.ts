@@ -24,7 +24,7 @@ export interface IProfile {
   created_at: number
   username: string
   bio: string
-  image?: string | null
+  image?: string
   namespace: string
   blockchain: BLOCKCHAIN
   wallet: IWallet

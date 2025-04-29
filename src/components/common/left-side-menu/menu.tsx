@@ -40,9 +40,7 @@ export function Menu() {
 
       <Entry title="Stake" icon={Beef} href={route('stake')} />
 
-      {process.env.NODE_ENV === 'production' && (
-        <DialectNotificationsComponent />
-      )}
+      <DialectNotificationsComponent />
 
       {/* <Entry
         title="Design System"
