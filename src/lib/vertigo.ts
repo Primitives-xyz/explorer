@@ -75,7 +75,7 @@ export interface ClaimRoyaltiesParams {
 }
 
 // Helper function to get payer keypair
-function getPayerKeypair(): Keypair {
+export function getPayerKeypair(): Keypair {
   if (!VERTIGO_CONFIG.PAYER_PRIVATE_KEY) {
     throw new Error('PAYER_PRIVATE_KEY is not set')
   }
