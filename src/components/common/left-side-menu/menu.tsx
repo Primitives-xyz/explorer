@@ -24,13 +24,30 @@ export function Menu({ setOpen }: Props) {
 
   return (
     <div className="space-y-4 md:space-y-2">
-      <Entry title="Home" icon={House} href={route('home')} />
+      <Entry
+        title="Home"
+        icon={House}
+        href={route('home')}
+        setOpen={setOpen}
+        onlyDeskop
+      />
 
       <SearchButton />
 
-      <Entry title="Trade" icon={ArrowRightLeft} href={route('trade')} />
+      <Entry
+        title="Trade"
+        icon={ArrowRightLeft}
+        href={route('trade')}
+        setOpen={setOpen}
+      />
 
-      <Entry title="Discover" icon={Compass} href={route('discover')} />
+      <Entry
+        title="Discover"
+        icon={Compass}
+        href={route('discover')}
+        setOpen={setOpen}
+        onlyDeskop
+      />
 
       {/* <Entry title="Tokens" icon={CircleDollarSign} href={route('tokens')} /> */}
 
@@ -39,17 +56,19 @@ export function Menu({ setOpen }: Props) {
         icon={User}
         href={route('entity', { id: mainProfile?.username || '' })}
         disabled={!mainProfile?.username}
+        setOpen={setOpen}
+        onlyDeskop
       />
 
-      <Entry title="Stake" icon={Beef} href={route('stake')} />
+      <Entry
+        title="Stake"
+        icon={Beef}
+        href={route('stake')}
+        setOpen={setOpen}
+        onlyDeskop
+      />
 
       <DialectNotificationsComponent />
-
-      {/* <Entry
-        title="Design System"
-        icon={PaintbrushVertical}
-        href={route('designSystem')}
-      /> */}
     </div>
   )
 }
@@ -59,10 +78,11 @@ interface IEntry {
   icon: LucideIcon
   href: string
   disabled?: boolean
+  onlyDeskop?: boolean
   setOpen?: (open: boolean) => void
 }
 
-function Entry({ title, icon, href, disabled, setOpen }: IEntry) {
+function Entry({ title, icon, href, disabled, onlyDeskop, setOpen }: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
@@ -74,6 +94,7 @@ function Entry({ title, icon, href, disabled, setOpen }: IEntry) {
         'flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
         {
           'bg-primary text-background': pathname === href,
+          'hidden md:flex': onlyDeskop,
         }
       )}
       href={href}
