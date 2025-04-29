@@ -11,6 +11,7 @@ import {
   House,
   LucideIcon,
   User,
+  TrendingUp,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { SearchButton } from '../../search/components/search-button'
@@ -38,6 +39,8 @@ export function Menu() {
       />
 
       <Entry title="Stake" icon={Beef} href={route('stake')} />
+
+      <Entry title="Stream" icon={TrendingUp} href={route('stream')} />
 
       {/* <Entry
         title="Design System"
