@@ -26,6 +26,8 @@ export async function GET(request: NextRequest) {
       endpoint: `profiles/${username}/following`,
     })
 
+    console.log('-----profilesData', profilesData)
+
     const walletIds = profilesData?.profiles?.map(
       (profile) => profile.wallet?.id
     )
