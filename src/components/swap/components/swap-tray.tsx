@@ -34,10 +34,10 @@ export function SwapTray({ isAlwaysOpen = false }: Props) {
   return (
     <motion.div
       initial={{
-        x: '100%',
+        x: 'calc(100% - 1.5rem)',
       }}
       animate={{
-        x: open ? 0 : '100%',
+        x: open ? 0 : 'calc(100% - 1.5rem)',
       }}
       transition={{
         duration: 0.5,
@@ -45,21 +45,22 @@ export function SwapTray({ isAlwaysOpen = false }: Props) {
       }}
       className="fixed top-0 right-0 bottom-0 z-50 h-screen"
     >
-      {displaySwap && (
-        <div className="absolute top-topbar right-0 inset-y-0 w-[calc(100%+70px)] fade-out-text--left backdrop-blur-xl" />
+      {displaySwap && !isAlwaysOpen && (
+        <div className="absolute top-topbar right-0 inset-y-0 w-[calc(100%+40px)] fade-out-text--left backdrop-blur-xl" />
       )}
       <div className="pt-topbar relative h-full z-50">
         {!isAlwaysOpen && (
           <Button
-            className="w-[100px] absolute top-20 left-0 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"
+            className="w-[100px] absolute top-20 left-6 -translate-x-full -rotate-90 rounded-b-none origin-bottom-right"
             variant={open ? ButtonVariant.OUTLINE : ButtonVariant.DEFAULT}
             onClick={() => setOpen(!open)}
+            disableHoverFeedback
           >
             {open ? 'Close Swap' : 'Swap'}
           </Button>
         )}
         {displaySwap && (
-          <div className="h-full pr-6 py-5 w-[330px] overflow-y-auto">
+          <div className="h-full px-6 py-5 w-[350px] overflow-y-auto">
             <Swap />
           </div>
         )}

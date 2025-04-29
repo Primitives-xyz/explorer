@@ -20,11 +20,7 @@ const getSize = (element: HTMLElement | null) => {
   }
 }
 
-export function useElementSize<T extends HTMLElement = HTMLDivElement>(): [
-  (node: T | null) => void,
-  Size,
-  T | null
-] {
+export function useElementSize<T extends HTMLElement = HTMLDivElement>() {
   const [ref, setRef] = useState<T | null>(null)
   const [size, setSize] = useState<Size>(getSize(ref))
 
@@ -39,5 +35,9 @@ export function useElementSize<T extends HTMLElement = HTMLDivElement>(): [
     }
   }, [ref])
 
-  return [setRef, size, ref]
+  return {
+    setRef,
+    size,
+    ref,
+  }
 }

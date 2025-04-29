@@ -21,7 +21,6 @@ export function LeftSideMenu() {
           <h1 className="font-bold text-primary leading-none">
             solana_social_explorer
           </h1>
-
           <ProfileInfos />
           <Menu />
         </div>
@@ -35,7 +34,9 @@ export function LeftSideMenu() {
             onClick={() => setIsFundsModalOpen(true)}
           >
             <Lock size={16} />
-            {!accountIds.length ? 'Unlock Perpetuals' : 'Deposite'}
+            {
+              !accountIds.length ? 'Unlock Perpetuals' : 'Deposit/Withdraw'
+            }
           </Button>
           <LanguageSwitcher />
           <Button

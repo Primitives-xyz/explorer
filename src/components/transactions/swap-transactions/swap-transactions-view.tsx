@@ -1,19 +1,15 @@
 'use client'
 
+import { MotionCard } from '@/components/motion/components/motion-card'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
-import {
-  Transaction,
-  TransactionEvent,
-} from '@/components/tapestry/models/helius.models'
+import { Transaction } from '@/components/tapestry/models/helius.models'
 import { TokenInfo } from '@/components/tapestry/models/token.models'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
-import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
-import { SOL_MINT, USDC_MINT } from '@/utils/constants'
+import { Badge, CardContent, CardHeader } from '@/components/ui'
 import { getSourceIcon } from '@/utils/transactions'
-import { useEffect, useState } from 'react'
 import { processSwapTransaction } from '../swap-transaction/swap-transaction-utils'
 
 export type TokenDisplay = {
@@ -49,15 +45,17 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
 
   if (!fromToken || !toToken) return null
 
-  const fromTokenPrice = fromTokenInfo?.result && 'token_info' in fromTokenInfo.result
-    ? fromTokenInfo.result.token_info?.price_info?.price_per_token
-    : null
-  const toTokenPrice = toTokenInfo?.result && 'token_info' in toTokenInfo.result
-    ? toTokenInfo.result.token_info?.price_info?.price_per_token
-    : null
+  const fromTokenPrice =
+    fromTokenInfo?.result && 'token_info' in fromTokenInfo.result
+      ? fromTokenInfo.result.token_info?.price_info?.price_per_token
+      : null
+  const toTokenPrice =
+    toTokenInfo?.result && 'token_info' in toTokenInfo.result
+      ? toTokenInfo.result.token_info?.price_info?.price_per_token
+      : null
 
   return (
-    <Card className="overflow-visible">
+    <MotionCard className="overflow-visible">
       <CardHeader>
         <TransactionsHeader
           transaction={transaction}
@@ -104,6 +102,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           isReceived
         />
       </CardContent>
-    </Card>
+    </MotionCard>
   )
 }

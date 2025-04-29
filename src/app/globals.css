@@ -1,6 +1,8 @@
 @import '../styles/variables.css' layer(base);
 @import '../styles/loading-dots.css' layer(base);
-@import '../styles/dialect.css' layer(base);  
+@import '../styles/motion.css' layer(base);
+@import '../styles/dialect.css' layer(base);
+
 @import 'tailwindcss';
 
 @config "../../tailwind.config.ts";

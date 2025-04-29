@@ -1,4 +1,4 @@
-import { Button, ButtonVariant, Spinner } from "@/components/ui";
+import { Button, ButtonVariant, Spinner } from '@/components/ui'
 
 interface ConfirmProps {
   accountIds: number[]
@@ -13,7 +13,7 @@ export default function Confirm({
   amount,
   loading,
   isChecked,
-  handleConfirm
+  handleConfirm,
 }: ConfirmProps) {
   return (
     <>
@@ -26,11 +26,7 @@ export default function Confirm({
           }
           className="w-full"
           onClick={handleConfirm}
-          disabled={
-            !isChecked ||
-            loading ||
-            Number(amount) === 0
-          }
+          disabled={!isChecked || loading || Number(amount) === 0}
         >
           {loading ? <Spinner /> : 'Confirm'}
         </Button>

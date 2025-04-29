@@ -4,6 +4,7 @@ import { SwapTray } from '@/components/swap/components/swap-tray'
 import { TokenContent } from '@/components/token/token-content'
 import TransactionDetails from '@/components/transactions/transaction-view'
 import { determineRouteType, RouteType } from '@/utils/entity'
+import { redirect } from 'next/navigation'
 
 export default async function Entity({
   params,
@@ -14,6 +15,11 @@ export default async function Entity({
 
   const cleanId = id.startsWith('@') ? id.slice(1) : id
   const routeType = determineRouteType(id)
+
+  // Redirect if token
+  if (routeType === RouteType.TOKEN) {
+    redirect(`/trade?inputMint=So11111111111111111111111111111111111111112&outputMint=${cleanId}`)
+  }
 
   function renderContent(routeType: RouteType, cleanId: string) {
     switch (routeType) {
