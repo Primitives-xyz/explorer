@@ -24,7 +24,7 @@ import { SuggestedFollow } from './suggested-follow'
 
 export function Onboarding() {
   const { isMobile } = useIsMobile()
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   const {
     isLoggedIn,
