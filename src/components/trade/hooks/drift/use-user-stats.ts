@@ -13,14 +13,11 @@ import { useInitializeDrift } from './use-initialize-drift'
 import { useMarketPrice } from './use-market-price'
 
 interface UseUserStatsProps {
-  subAccountId: number,
+  subAccountId: number
   symbol: string
 }
 
-export function useUserStats({
-  subAccountId,
-  symbol
-}: UseUserStatsProps) {
+export function useUserStats({ subAccountId, symbol }: UseUserStatsProps) {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [userStats, setUserStats] = useState<IUserStats>({
@@ -33,7 +30,9 @@ export function useUserStats({
     maxLeverage: 0,
     maxTradeSize: 0,
   })
-  const { price: marketPrice, loading: priceLoading } = useMarketPrice({ symbol })
+  const { price: marketPrice, loading: priceLoading } = useMarketPrice({
+    symbol,
+  })
 
   const { driftClient } = useInitializeDrift()
   const { primaryWallet, walletAddress } = useCurrentWallet()
@@ -90,22 +89,23 @@ export function useUserStats({
           new BN(0)
         )
 
-        const totalLimitOrdersBaseAmount = orders.reduce(
-          (total, order) => {
-            if ('perp' in order.marketType && 'limit' in order.orderType) {
-              if ('long' in order.direction) {
-                return total.add(order.baseAssetAmount)
-              } else {
-                return total.sub(order.baseAssetAmount)
-              }
+        const totalLimitOrdersBaseAmount = orders.reduce((total, order) => {
+          if ('perp' in order.marketType && 'limit' in order.orderType) {
+            if ('long' in order.direction) {
+              return total.add(order.baseAssetAmount)
+            } else {
+              return total.sub(order.baseAssetAmount)
             }
+          }
 
-            return total
-          },
-          new BN(0)
-        )
+          return total
+        }, new BN(0))
 
-        const total = convertToNumber(totalPerpsPositionBaseAmount.add(totalLimitOrdersBaseAmount), new BN(10).pow(new BN(9))) * marketPrice
+        const total =
+          convertToNumber(
+            totalPerpsPositionBaseAmount.add(totalLimitOrdersBaseAmount),
+            new BN(10).pow(new BN(9))
+          ) * marketPrice
 
         const acctLeverage = netUsdValue > 0 ? total / netUsdValue : 0
 

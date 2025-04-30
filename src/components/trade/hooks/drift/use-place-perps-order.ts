@@ -1,10 +1,10 @@
+import { OrderType } from '@/components/tapestry/models/drift.model'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   BN,
   calculateBidAskPrice,
   convertToNumber,
   getMarketOrderParams,
-  OrderType,
   PerpMarkets,
   PositionDirection,
   PRICE_PRECISION,

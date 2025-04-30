@@ -49,7 +49,7 @@ export function ProfileNfts({ walletAddress }: Props) {
                 >
                   {nft.image && (
                     <Image
-                      src={nft.image}
+                      src={nft.image.trimStart()}
                       alt={nft.name}
                       width={64}
                       height={64}

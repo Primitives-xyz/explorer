@@ -125,7 +125,9 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
             </div>
             <div className="space-y-1 text-right">
               <p>{about.decimals}</p>
-              <p>{about.tokenProgram}</p>
+              <p className="max-w-24 truncate" title={about.tokenProgram}>
+                {about.tokenProgram}
+              </p>
               <p>{overview ? overview.numberMarkets : '...'}</p>
               {overview ? (
                 <>

@@ -26,13 +26,13 @@ export function LanguageSwitcher() {
 
   return (
     <div className="flex items-center">
-      <p className="font-light">languages: </p>
+      <p className="font-light hidden md:flex">languages: </p>
       {locales.map((locale) => (
         <Button
           variant="ghost"
           key={locale}
           onClick={() => changeLanguage(locale)}
-          className={`px-2 ${
+          className={`px-6 md:px-2 ${
             currentLocale === locale ? 'text-white' : 'opacity-50'
           }`}
         >
