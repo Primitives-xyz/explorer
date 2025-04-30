@@ -28,19 +28,19 @@ export async function determineRouteType(id: string, connection: Connection): Pr
     const owner = await getAccountOwner(cleanId, connection)
     if (owner === SystemProgram.programId.toString()) {
       return RouteType.WALLET // Wallet
-    } else if (
+    }
+    // Only fetch token info if not a wallet
+    const tokenInfo = await fetchTokenInfo(cleanId)
+    if (tokenInfo && tokenInfo.result && isNFTToken(tokenInfo.result)) {
+      return RouteType.NFT
+    }
+    if (
       owner === TOKEN_PROGRAM_ID.toString() ||
       owner === TOKEN_2022_PROGRAM_ID.toString()
     ) {
       return RouteType.TOKEN // Token account or mint
-    } else {
-      // Check if it's an NFT
-      const tokenInfo = await fetchTokenInfo(cleanId)
-      if (tokenInfo && tokenInfo.result && isNFTToken(tokenInfo.result)) {
-        return RouteType.NFT
-      }
-      return RouteType.WALLET // Token account most likely
     }
+    return RouteType.WALLET // Token account most likely
   }
 
   return RouteType.PROFILE
