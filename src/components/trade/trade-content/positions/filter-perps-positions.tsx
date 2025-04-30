@@ -1,14 +1,8 @@
-import {
-  FilterTabs,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui'
+import { FilterTabs } from '@/components/ui'
 
 export enum Tabs {
-  PERPS_POSITIONS = 'perps_positions',
+  PERPS_POSITIONS = 'Positions',
+  PERPS_ORDERS = 'Orders',
 }
 
 export enum FilterTabsPerpsPositions {
@@ -18,19 +12,13 @@ export enum FilterTabsPerpsPositions {
 
 interface Props {
   selectedType: Tabs
-  sort: FilterTabsPerpsPositions
   setSelectedType: (type: Tabs) => void
-  setSort: (frame: FilterTabsPerpsPositions) => void
 }
 
-export function FilterPerpsPositions({
-  selectedType,
-  sort,
-  setSort,
-  setSelectedType,
-}: Props) {
+export function FilterPerpsPositions({ selectedType, setSelectedType }: Props) {
   const options = [
-    { label: 'Perps Positions', value: Tabs.PERPS_POSITIONS },
+    { label: 'Positions', value: Tabs.PERPS_POSITIONS },
+    { label: 'Orders', value: Tabs.PERPS_ORDERS },
   ]
 
   return (
@@ -40,24 +28,6 @@ export function FilterPerpsPositions({
         selected={selectedType}
         onSelect={setSelectedType}
       />
-      <div className="mb-4">
-        <Select
-          value={sort}
-          onValueChange={(value) => setSort(value as FilterTabsPerpsPositions)}
-        >
-          <SelectTrigger className="border-none bg-transparent text-primary h-9">
-            <SelectValue placeholder="Select timeframe" />
-          </SelectTrigger>
-          <SelectContent className="border border-primary text-primary">
-            <SelectItem value={FilterTabsPerpsPositions.POSITIONS}>
-              {FilterTabsPerpsPositions.POSITIONS}
-            </SelectItem>
-            <SelectItem value={FilterTabsPerpsPositions.ORDERS}>
-              {FilterTabsPerpsPositions.ORDERS}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
     </div>
   )
 }

@@ -5,6 +5,9 @@ import { TokenContent } from '@/components/token/token-content'
 import TransactionDetails from '@/components/transactions/transaction-view'
 import { determineRouteType, RouteType } from '@/utils/entity'
 import { redirect } from 'next/navigation'
+import { Connection } from '@solana/web3.js'
+import { ProfileWithWallet } from '@/components/profile/components/profile-with-wallet'
+import { NFTContent } from '@/components/nft/NFTContent'
 
 export default async function Entity({
   params,
@@ -14,21 +17,23 @@ export default async function Entity({
   const { id } = await params
 
   const cleanId = id.startsWith('@') ? id.slice(1) : id
-  const routeType = determineRouteType(id)
+  const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com')
+  const routeType = await determineRouteType(id, connection)
 
-  // Redirect if token
   if (routeType === RouteType.TOKEN) {
     redirect(`/trade?inputMint=So11111111111111111111111111111111111111112&outputMint=${cleanId}`)
   }
-
+  
   function renderContent(routeType: RouteType, cleanId: string) {
     switch (routeType) {
       case RouteType.TRANSACTION:
         return <TransactionDetails signature={cleanId} />
-      case RouteType.TOKEN:
-        return <TokenContent id={cleanId} />
       case RouteType.PROFILE:
         return <ProfileWithUsername username={cleanId} />
+      case RouteType.WALLET:
+        return <ProfileWithWallet walletAddress={cleanId} />
+      case RouteType.NFT:
+        return <NFTContent id={cleanId} />
       default:
         return <p>Unknown route type</p>
     }
