@@ -1,12 +1,18 @@
 import { SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { create } from 'zustand'
-import { ISwapInputs } from '../swap.models'
+import { ESwapMode, ISwapInputs } from '../swap.models'
 
 interface State {
   open: boolean
   inputs: ISwapInputs
+  swapMode: ESwapMode
+  inAmount: string
+  outAmount: string
   setOpen: (open: boolean) => void
   setInputs: (inputs: ISwapInputs) => void
+  setSwapMode: (mode: ESwapMode) => void
+  setInAmount: (amount: string) => void
+  setOutAmount: (amount: string) => void
 }
 
 export const useSwapStore = create<State>()((set) => ({
@@ -16,6 +22,9 @@ export const useSwapStore = create<State>()((set) => ({
     outputMint: SSE_MINT,
     inputAmount: 0,
   },
+  swapMode: ESwapMode.EXACT_IN,
+  inAmount: '1',
+  outAmount: '',
   setOpen: (open) =>
     set(() => ({
       open,
@@ -29,4 +38,7 @@ export const useSwapStore = create<State>()((set) => ({
         inputAmount: inputs.inputAmount || 0,
       },
     })),
+  setSwapMode: (mode) => set(() => ({ swapMode: mode })),
+  setInAmount: (amount) => set(() => ({ inAmount: amount })),
+  setOutAmount: (amount) => set(() => ({ outAmount: amount })),
 }))

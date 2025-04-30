@@ -101,7 +101,9 @@ export default async function RootLayout({
 
               <div className="relative z-20">
                 <Toaster />
+
                 <Onboarding />
+
                 <ActivityTape />
                 <MobileHeader />
                 <main className="w-full flex justify-between md:pt-topbar">

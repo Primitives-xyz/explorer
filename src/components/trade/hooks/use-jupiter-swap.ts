@@ -4,14 +4,16 @@ import {
   DEFAULT_SLIPPAGE_VALUE,
   PLATFORM_FEE_ACCOUNT,
   PLATFORM_FEE_BPS,
+  SSE_TOKEN_MINT,
 } from '@/utils/constants'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { getAssociatedTokenAddressSync } from '@solana/spl-token'
+import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { useCreateTradeContentNode } from './use-create-trade-content'
 import { useToastContent } from './drift/use-toast-content'
+import { useCreateTradeContentNode } from './use-create-trade-content'
 
 interface UseJupiterSwapParams {
   inputMint: string
@@ -122,8 +124,9 @@ export function useJupiterSwap({
         Number(inputAmount) * Math.pow(10, inputDecimals)
       )
       const QUOTE_URL = `
-        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-        }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
+        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${
+        platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
+      }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
       `
       const response = await fetch(QUOTE_URL).then((res) => res.json())
       if (swapMode == 'ExactIn') {
@@ -197,19 +200,28 @@ export function useJupiterSwap({
     setIsFullyConfirmed(false)
 
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-      toast.error(ERRORS.WALLET_CONNETION_ERR.title, ERRORS.WALLET_CONNETION_ERR.content)
+      toast.error(
+        ERRORS.WALLET_CONNETION_ERR.title,
+        ERRORS.WALLET_CONNETION_ERR.content
+      )
       setLoading(false)
       return
     }
 
     if (platformFeeBps === 1 && !ssePrice) {
-      toast.error(ERRORS.FEE_CALCULATION_ERR.title, ERRORS.FEE_CALCULATION_ERR.content)
+      toast.error(
+        ERRORS.FEE_CALCULATION_ERR.title,
+        ERRORS.FEE_CALCULATION_ERR.content
+      )
       setLoading(false)
       return
     }
 
     if (!quoteResponse) {
-      toast.error(ERRORS.JUP_QUOTE_API_ERR.title, ERRORS.JUP_QUOTE_API_ERR.content)
+      toast.error(
+        ERRORS.JUP_QUOTE_API_ERR.title,
+        ERRORS.JUP_QUOTE_API_ERR.content
+      )
       setLoading(false)
       return
     }
@@ -233,16 +245,41 @@ export function useJupiterSwap({
         setSseFeeAmount(currentSseFeeAmount)
       }
     } catch (error) {
-      toast.error(ERRORS.FEE_CALCULATION_ERR.title, ERRORS.FEE_CALCULATION_ERR.content)
+      toast.error(
+        ERRORS.FEE_CALCULATION_ERR.title,
+        ERRORS.FEE_CALCULATION_ERR.content
+      )
       currentSseFeeAmount = '0'
       setLoading(false)
       setSseFeeAmount('0')
       return
     }
 
-    const preparingToastId = toast.loading(LOADINGS.PREPARING_LOADING.title, LOADINGS.PREPARING_LOADING.content)
+    const preparingToastId = toast.loading(
+      LOADINGS.PREPARING_LOADING.title,
+      LOADINGS.PREPARING_LOADING.content
+    )
 
     try {
+      // Derive SSE Fee Destination ATA if needed
+      let sseFeeDestinationAtaString: string | undefined = undefined
+      if (platformFeeBps === 1) {
+        try {
+          const sseFeeDestinationAta = getAssociatedTokenAddressSync(
+            new PublicKey(SSE_TOKEN_MINT),
+            new PublicKey(PLATFORM_FEE_ACCOUNT)
+          )
+          sseFeeDestinationAtaString = sseFeeDestinationAta.toBase58()
+        } catch (e) {
+          console.error('Failed to derive SSE fee destination ATA:', e)
+          toast.error(ERRORS.FEE_CALCULATION_ERR.title, {
+            description: 'Failed to determine SSE fee account.',
+          })
+          setLoading(false)
+          return
+        }
+      }
+
       const response = await fetch('/api/jupiter/swap', {
         method: 'POST',
         headers: {
@@ -253,6 +290,7 @@ export function useJupiterSwap({
           walletAddress,
           mintAddress: outputMint,
           sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
+          sseTokenAccount: sseFeeDestinationAtaString,
           slippageMode: slippageBps === 'auto' ? 'auto' : 'fixed',
           slippageBps:
             slippageBps === 'auto'
@@ -260,12 +298,14 @@ export function useJupiterSwap({
               : slippageBps,
           swapMode,
         }),
-      })
-        .then((res) => res.json())
+      }).then((res) => res.json())
 
       if (response.error) {
         toast.dismiss(preparingToastId)
-        toast.error(ERRORS.JUP_SWAP_API_ERR.title, ERRORS.JUP_SWAP_API_ERR.content)
+        toast.error(
+          ERRORS.JUP_SWAP_API_ERR.title,
+          ERRORS.JUP_SWAP_API_ERR.content
+        )
         return
       }
 
@@ -275,14 +315,20 @@ export function useJupiterSwap({
 
       toast.dismiss(preparingToastId)
 
-      const sendingToastId = toast.loading(LOADINGS.SEND_LOADING.title, LOADINGS.SEND_LOADING.content)
+      const sendingToastId = toast.loading(
+        LOADINGS.SEND_LOADING.title,
+        LOADINGS.SEND_LOADING.content
+      )
 
       const signer = await primaryWallet.getSigner()
       const txid = await signer.signAndSendTransaction(transaction)
       setTxSignature(txid.signature)
 
       toast.dismiss(sendingToastId)
-      const confirmToastId = toast.loading(LOADINGS.CONFIRM_LOADING.title, LOADINGS.CONFIRM_LOADING.content)
+      const confirmToastId = toast.loading(
+        LOADINGS.CONFIRM_LOADING.title,
+        LOADINGS.CONFIRM_LOADING.content
+      )
 
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
       const tx = await connection.confirmTransaction(
@@ -309,11 +355,11 @@ export function useJupiterSwap({
         walletAddress,
         usdcFeeAmount: quoteResponse.swapUsdValue
           ? (
-            Number(quoteResponse.swapUsdValue) *
-            (platformFeeBps === 1
-              ? PLATFORM_FEE_BPS / 20000
-              : PLATFORM_FEE_BPS / 10000)
-          ).toString()
+              Number(quoteResponse.swapUsdValue) *
+              (platformFeeBps === 1
+                ? PLATFORM_FEE_BPS / 20000
+                : PLATFORM_FEE_BPS / 10000)
+            ).toString()
           : '0',
       })
 
