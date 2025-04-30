@@ -106,7 +106,7 @@ export default async function RootLayout({
 
                 <ActivityTape />
                 <MobileHeader />
-                <main className="w-full flex justify-between md:pt-topbar">
+                <main className="w-full md:flex md:justify-between md:pt-topbar">
                   <LeftSideMenu />
                   <div className="flex-1 flex justify-between pt-5">
                     {children}

@@ -23,7 +23,7 @@ interface Props {
 }
 
 export function MobileMenu({ open, setOpen }: Props) {
-  const { logout } = useCurrentWallet()
+  const { logout, isLoggedIn } = useCurrentWallet()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
 
@@ -68,7 +68,7 @@ export function MobileMenu({ open, setOpen }: Props) {
                 {!accountIds.length ? 'Perpetuals' : 'Deposit/Withdraw'}
               </Button>
             </div>
-            <div>
+            {!!isLoggedIn && (
               <Button
                 variant={ButtonVariant.OUTLINE}
                 onClick={logout}
@@ -77,7 +77,7 @@ export function MobileMenu({ open, setOpen }: Props) {
                 <LogOutIcon size={18} />
                 Logout
               </Button>
-            </div>
+            )}
 
             {/* <div className="flex items-center w-full justify-center">
               <LanguageSwitcher />
