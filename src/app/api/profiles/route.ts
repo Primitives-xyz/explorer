@@ -17,7 +17,9 @@ export async function GET(request: Request) {
     if (useIdentities) {
       // For related profiles, use identities endpoint
       if (!walletAddress) {
-        return NextResponse.json({ profiles: [] })
+        const response = NextResponse.json({ profiles: [] })
+        response.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+        return response
       }
 
       const identitiesResponse = await fetch(
@@ -37,7 +39,9 @@ export async function GET(request: Request) {
           error: await identitiesResponse.text(),
           walletAddress,
         })
-        return NextResponse.json({ profiles: [] })
+        const response = NextResponse.json({ profiles: [] })
+        response.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+        return response
       }
 
       const identitiesData = await identitiesResponse.json()
@@ -66,7 +70,9 @@ export async function GET(request: Request) {
         })
       )
 
-      return NextResponse.json({ profiles: transformedIdentities })
+      const response = NextResponse.json({ profiles: transformedIdentities })
+      response.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+      return response
     } else {
       // For regular profile fetching, use profiles endpoint
       // TODO: shouldIncludeExternalProfiles was deprecated and no longer exists in tapestry. It should get from the identities.
@@ -104,17 +110,23 @@ export async function GET(request: Request) {
           error: errorText,
           walletAddress,
         })
-        return NextResponse.json(
+        const errorResponse = NextResponse.json(
           { error: 'Failed to fetch profiles from Tapestry' },
           { status: response.status }
         )
+        errorResponse.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+        return errorResponse
       }
 
       const data = await response.json()
-      return NextResponse.json(data)
+      const nextResponse = NextResponse.json(data)
+      nextResponse.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+      return nextResponse
     }
   } catch (error) {
     console.error('Error fetching from Tapestry:', error)
-    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 })
+    const errorResponse = NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 })
+    errorResponse.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
+    return errorResponse
   }
 }
