@@ -2,7 +2,6 @@
 
 import { Spinner } from '@/components/ui/spinner'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { useEffect } from 'react'
 import { useGetHomeFollowingTransactions } from '../hooks/use-get-home-following-transactions'
 import { HomeTransactionEntry } from './home-transaction-entry'
 
@@ -15,10 +14,6 @@ export function HomeFollowingTransactions({ username }: Props) {
   const { transactions, loading } = useGetHomeFollowingTransactions({
     username,
   })
-
-  useEffect(() => {
-    console.log('transactions', transactions)
-  }, [transactions])
 
   if (loading) {
     return (

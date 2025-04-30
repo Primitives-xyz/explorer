@@ -2,17 +2,12 @@
 
 import { Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { useEffect } from 'react'
 import { useGetHomeKolTransactions } from '../hooks/use-get-home-kol-transactions'
 import { HomeTransactionEntry } from './home-transaction-entry'
 
 export function HomeKolTransactions() {
   const { walletAddress } = useCurrentWallet()
   const { transactions, loading } = useGetHomeKolTransactions()
-
-  useEffect(() => {
-    console.log('transactions', transactions)
-  }, [transactions])
 
   if (loading) {
     return (
