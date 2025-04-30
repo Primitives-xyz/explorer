@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { SearchButton } from '../../search/components/search-button'
+
 interface Props {
   setOpen?: (open: boolean) => void
 }
@@ -68,7 +69,15 @@ export function Menu({ setOpen }: Props) {
         onlyDesktop
       />
 
-      <DialectNotificationsComponent />
+      {process.env.NODE_ENV === 'production' && (
+        <DialectNotificationsComponent />
+      )}
+
+      {/* <Entry
+        title="Design System"
+        icon={PaintbrushVertical}
+        href={route('designSystem')}
+      /> */}
     </div>
   )
 }
