@@ -1,82 +1,94 @@
 'use client'
 
-import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { Menu } from '@/components/common/left-side-menu/menu'
 import { ProfileInfos } from '@/components/common/left-side-menu/profile-infos'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
-import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
+import {
+  Button,
+  ButtonVariant,
+  DialogHeader,
+  DialogTitle,
+  Sheet,
+  SheetContent,
+} from '@/components/ui'
+import { Separator } from '@/components/ui/separator'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Lock, LogOutIcon, MessageCircle, X } from 'lucide-react'
 import { useState } from 'react'
 
 interface Props {
+  open: boolean
   setOpen: (open: boolean) => void
 }
 
-export function MobileMenu({ setOpen }: Props) {
+export function MobileMenu({ open, setOpen }: Props) {
   const { logout } = useCurrentWallet()
-
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
 
   return (
-    <div className="flex flex-col items-start md:hidden z-100 h-screen w-full bg-background fixed top-0 left-0">
-      <div className="flex justify-between items-center gap-2">
-        <Button
-          variant={ButtonVariant.GHOST}
-          size={ButtonSize.ICON}
-          onClick={() => setOpen(false)}
-        >
-          <X className="text-primary" />
-        </Button>
-        <h1 className="font-bold text-primary leading-none">
-          solana_social_explorer
-        </h1>
-      </div>
-      <div className="px-4 py-2 space-y-6 w-full">
-        <ProfileInfos />
-        <Menu setOpen={setOpen} />
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <Button
-              variant={ButtonVariant.OUTLINE_WHITE}
-              href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
-              newTab
-              className="w-[48%]"
-            >
-              <MessageCircle size={16} />
-              Give Feedback
-            </Button>
-            <Button
-              variant={ButtonVariant.OUTLINE}
-              className="w-[48%]"
-              onClick={() => setIsFundsModalOpen(true)}
-            >
-              <Lock size={16} />
-              {!accountIds.length ? 'Unlock Perpetuals' : 'Deposit/Withdraw'}
-            </Button>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetContent side="left" className="flex flex-col gap-0" hideCloseButton>
+        <DialogHeader className="hidden">
+          <DialogTitle>solana_social_explorer</DialogTitle>
+        </DialogHeader>
+        <div className="flex items-center gap-5 h-14 px-3">
+          <Button isInvisible onClick={() => setOpen(false)}>
+            <X className="text-primary" />
+          </Button>
+          <h1 className="font-medium text-primary leading-none text-lg">
+            solana_social_explorer
+          </h1>
+        </div>
+        <div className="px-6 pb-6 w-full flex flex-col flex-1">
+          <ProfileInfos />
+          <Separator className="mt-4" />
+          <div className="flex-1">
+            <Menu setOpen={setOpen} />
           </div>
-          <div>
-            <Button
-              variant={ButtonVariant.OUTLINE}
-              onClick={logout}
-              className="w-full"
-            >
-              <LogOutIcon size={18} />
-              Logout
-            </Button>
-          </div>
+          <div className="flex flex-col gap-4 w-full">
+            <Separator className="my-0 mb-2" />
+            <div className="flex items-center gap-4 w-full">
+              <Button
+                variant={ButtonVariant.OUTLINE_WHITE}
+                href="https://1uuq2fsw8t6.typeform.com/to/fEZkbImr"
+                className="flex-1"
+                newTab
+              >
+                <MessageCircle size={16} />
+                Feedback
+              </Button>
+              <Button
+                variant={ButtonVariant.OUTLINE}
+                onClick={() => setIsFundsModalOpen(true)}
+                className="flex-1"
+              >
+                <Lock size={16} />
+                {!accountIds.length ? 'Perpetuals' : 'Deposit/Withdraw'}
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant={ButtonVariant.OUTLINE}
+                onClick={logout}
+                className="w-full"
+              >
+                <LogOutIcon size={18} />
+                Logout
+              </Button>
+            </div>
 
-          <div className="flex items-center w-full justify-center">
-            <LanguageSwitcher />
+            {/* <div className="flex items-center w-full justify-center">
+              <LanguageSwitcher />
+            </div> */}
           </div>
         </div>
-      </div>
-      <AddFundsModal
-        isOpen={isFundsModalOpen}
-        setIsOpen={setIsFundsModalOpen}
-      />
-    </div>
+        <AddFundsModal
+          isOpen={isFundsModalOpen}
+          setIsOpen={setIsFundsModalOpen}
+        />
+      </SheetContent>
+    </Sheet>
   )
 }

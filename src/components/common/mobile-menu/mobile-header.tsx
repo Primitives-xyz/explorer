@@ -1,7 +1,7 @@
 'use client'
 
 import { MobileMenu } from '@/components/common/mobile-menu/mobile-menu'
-import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
+import { Button } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Menu as MenuIcon } from 'lucide-react'
@@ -14,21 +14,17 @@ export function MobileHeader() {
 
   return (
     <>
-      <div className="flex md:hidden items-center justify-between py-2 pr-4">
+      <div className="flex md:hidden items-center justify-between py-2 px-3 h-14">
         <div className="flex items-center gap-3">
-          <Button
-            variant={ButtonVariant.GHOST}
-            size={ButtonSize.ICON}
-            onClick={() => setOpen(true)}
-          >
+          <Button onClick={() => setOpen(true)} isInvisible>
             <MenuIcon className="text-primary" />
           </Button>
           <Button href="/" isInvisible>
             <Image
               src="/images/logo-mobile.svg"
               alt="logo"
-              width={40}
-              height={40}
+              width={34}
+              height={34}
             />
           </Button>
         </div>
@@ -65,7 +61,7 @@ export function MobileHeader() {
           )}
         </div>
       </div>
-      {open && <MobileMenu setOpen={setOpen} />}
+      <MobileMenu open={open} setOpen={setOpen} />
     </>
   )
 }
