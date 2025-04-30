@@ -4,9 +4,10 @@ import { useValidateWallet } from '@/utils/use-validate-wallet'
 
 interface Props {
   walletAddress: string
+  skip?: boolean
 }
 
-export const useGetProfiles = ({ walletAddress }: Props) => {
+export const useGetProfiles = ({ walletAddress, skip }: Props) => {
   const { isValid } = useValidateWallet({
     walletAddress,
   })
@@ -16,7 +17,7 @@ export const useGetProfiles = ({ walletAddress }: Props) => {
     queryParams: {
       walletAddress,
     },
-    skip: !isValid,
+    skip: !isValid || skip,
   })
 
   return {
