@@ -23,7 +23,7 @@ export default async function Entity({
   if (routeType === RouteType.TOKEN) {
     redirect(`/trade?inputMint=So11111111111111111111111111111111111111112&outputMint=${cleanId}`)
   }
-  console.log(routeType)
+  
   function renderContent(routeType: RouteType, cleanId: string) {
     switch (routeType) {
       case RouteType.TRANSACTION:
