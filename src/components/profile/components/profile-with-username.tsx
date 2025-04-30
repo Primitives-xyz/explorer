@@ -24,5 +24,5 @@ export function ProfileWithUsername({ username }: Props) {
     return null
   }
 
-  return <ProfileContent profileInfo={profileInfo} />
+  return <ProfileContent profileInfo={profileInfo} walletAddress={profileInfo.walletAddress} />
 }

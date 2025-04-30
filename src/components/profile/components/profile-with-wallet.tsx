@@ -27,16 +27,17 @@ export function ProfileWithWallet({ walletAddress }: Props) {
     return <FullPageSpinner />
   }
 
-  if (!profileInfo?.wallet?.address) {
-    return null
-  }
-
   return (
     <ProfileContent
-      profileInfo={{
-        ...profileInfo,
-        walletAddress: profileInfo.wallet.address,
-      }}
+      profileInfo={
+        profileInfo?.wallet?.address
+          ? {
+              ...profileInfo,
+              walletAddress: profileInfo.wallet.address,
+            }
+          : null
+      }
+      walletAddress={walletAddress}
     />
   )
 }

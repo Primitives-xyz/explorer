@@ -38,7 +38,7 @@ export function ProfileTokens({ walletAddress }: Props) {
               {row.original.imageUrl &&
                 !row.original.imageUrl.includes('ipfs://') && (
                   <Image
-                    src={row.original.imageUrl}
+                    src={row.original.imageUrl.trimStart()}
                     alt={row.original.symbol}
                     width={24}
                     height={24}
