@@ -58,7 +58,6 @@ export function Menu({ setOpen }: Props) {
         href={route('entity', { id: mainProfile?.username || '' })}
         disabled={!mainProfile?.username}
         setOpen={setOpen}
-        onlyDesktop
       />
 
       <Entry
@@ -66,7 +65,6 @@ export function Menu({ setOpen }: Props) {
         icon={Beef}
         href={route('stake')}
         setOpen={setOpen}
-        onlyDesktop
       />
 
       {process.env.NODE_ENV === 'production' && (

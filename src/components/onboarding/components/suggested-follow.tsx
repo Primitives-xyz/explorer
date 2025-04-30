@@ -67,19 +67,19 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
 
   return (
     <>
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         <Paragraph>
           Follow at least 3 other profiles to finish onboarding and populate
           your feed. <br /> Here are some people you may know.
         </Paragraph>
-        <div className="flex flex-col px-6">
+        <div className="flex flex-col md:px-6">
           <FilterTabs
             options={options}
             selected={selectedType}
             onSelect={setSelectedType}
-            className="mb-8"
+            className="md:mb-8 self-center"
           />
-          <div className="grid grid-cols-2 gap-y-6 gap-x-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 md:gap-x-8 max-h-[300px] md:max-h-auto overflow-auto">
             {traders?.entries?.slice(0, 6).map((user) => (
               <FollowUserEntry
                 key={user.profile.username}
@@ -123,15 +123,25 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
           )}
         </div>
       </div>
+      <p className="flex md:hidden text-primary self-center">
+        {socialCounts?.following ?? 0}/3
+      </p>
       <div className="flex justify-between mt-auto">
         <Button
           onClick={() => setStep(EOnboardingSteps.BIO)}
-          className="w-[160px]"
+          className="w-[48%] md:w-[160px]"
           variant={ButtonVariant.OUTLINE}
         >
           Back
         </Button>
-        <div className="flex items-center gap-3">
+        <Button
+          onClick={closeModal}
+          className="w-[48%] flex md:hidden"
+          disabled={(socialCounts?.following ?? 0) < 3}
+        >
+          Complete
+        </Button>
+        <div className="hidden items-center gap-3 md:flex">
           <p className="text-primary">{socialCounts?.following ?? 0}/3</p>
           <Button
             onClick={closeModal}

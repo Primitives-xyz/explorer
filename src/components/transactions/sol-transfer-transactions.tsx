@@ -3,7 +3,6 @@ import { Transaction } from '@/components/tapestry/models/helius.models'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
 import { getSourceIcon, LAMPORTS_PER_SOL } from '@/utils/transactions'
-import { formatSmallNumber } from '@/utils/utils'
 import Image from 'next/image'
 
 interface Props {
@@ -16,7 +15,8 @@ export function SolTransferTransactions({ transaction, sourceWallet }: Props) {
     walletAddress: sourceWallet,
   })
 
-  const amount = transaction.nativeTransfers?.[0]?.amount/LAMPORTS_PER_SOL || 0
+  const amount =
+    transaction.nativeTransfers?.[0]?.amount / LAMPORTS_PER_SOL || 0
 
   return (
     <Card>
@@ -43,7 +43,7 @@ export function SolTransferTransactions({ transaction, sourceWallet }: Props) {
         </TransactionsHeader>
       </CardHeader>
       <CardContent>
-        <div className="flex bg-card-accent rounded-lg px-4 gap-4 items-center justify-between h-12 ml-12">
+        <div className="flex bg-card-accent rounded-lg px-4 gap-4 items-center justify-between h-12 md:ml-12">
           <div className="bg-card rounded-full w-9 h-9 flex items-center justify-center">
             <Image
               src="/images/solana-icon.svg"
