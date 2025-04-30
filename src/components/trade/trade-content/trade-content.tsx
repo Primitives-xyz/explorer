@@ -12,10 +12,9 @@ interface TradeContentProps {
 
 export function TradeContent({ id, selectedType }: TradeContentProps) {
   return (
-    <div className="w-2/3 space-y-6 mt-[52px]">
+    <div className="w-full md:w-2/3 space-y-6 md:mt-[52px]">
       <Graph id={id} />
       {selectedType === FilterType.SWAP && <TokenDetails id={id} />}
-
       {selectedType === FilterType.PERPETUAL && <PerpsPositions />}
     </div>
   )

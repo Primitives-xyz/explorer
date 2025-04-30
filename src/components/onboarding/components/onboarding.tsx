@@ -3,6 +3,7 @@
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { useIsMobile } from '@/utils/use-is-mobile'
 import { useEffect, useState } from 'react'
 import { mutate } from 'swr'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
@@ -22,7 +23,9 @@ import { StepsWrapper } from './steps-wrapper'
 import { SuggestedFollow } from './suggested-follow'
 
 export function Onboarding() {
+  const { isMobile } = useIsMobile()
   const [open, setOpen] = useState(false)
+
   const {
     isLoggedIn,
     profiles,
@@ -93,12 +96,16 @@ export function Onboarding() {
     }
   }, [socialCounts, mainProfile, updateProfile])
 
+  if (isMobile) {
+    return null
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         isStatic={lockModal}
         hideCloseButton={lockModal}
-        className="max-w-3xl min-h-[600px] flex flex-col"
+        className="max-w-full md:max-w-3xl min-h-[90%] md:min-h-[600px] flex flex-col"
       >
         <DialogHeader>
           <DialogTitle>{getModalTitle()}</DialogTitle>
