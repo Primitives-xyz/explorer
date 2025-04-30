@@ -27,3 +27,8 @@ export type IHomeTransaction = Omit<EnrichedTransaction, 'type'> & {
   sourceWallet: string
   type: ETransactionType
 }
+
+export interface IWalletLastTransaction {
+  walletId: string
+  signature: string
+}

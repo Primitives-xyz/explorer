@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
 
   const limit = searchParams.get('limit') || '20'
-  // const before = searchParams.get('before')
+  const before = searchParams.get('before')
   // Get type(s) - can be comma-separated list
   const walletAddress = searchParams.get('walletAddress')
   const type = searchParams.get('type')
@@ -106,9 +106,9 @@ export async function GET(request: NextRequest) {
       heliusUrl.searchParams.set('type', type)
     }
 
-    // if (before) {
-    //   heliusUrl.searchParams.set('before', before)
-    // }
+    if (before) {
+      heliusUrl.searchParams.set('before', before)
+    }
 
     const heliusTransactions = await fetchWrapper<EnrichedTransaction[]>({
       endpoint: heliusUrl.toString(),

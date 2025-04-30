@@ -1,11 +1,10 @@
 'use client'
 
-import { MotionCard } from '@/components/motion/components/motion-card'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { TokenInfo } from '@/components/tapestry/models/token.models'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'
-import { Badge, CardContent, CardHeader } from '@/components/ui'
+import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
 import { getSourceIcon } from '@/utils/transactions'
 import { IHomeTransaction } from '../home-transactions.models'
 import { processSwapTransaction } from '../utils/swap-transaction.utils'
@@ -50,7 +49,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       : null
 
   return (
-    <MotionCard className="overflow-visible">
+    <Card className="overflow-visible">
       <CardHeader>
         <TransactionsHeader
           transaction={transaction}
@@ -96,6 +95,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           isReceived
         />
       </CardContent>
-    </MotionCard>
+    </Card>
   )
 }
