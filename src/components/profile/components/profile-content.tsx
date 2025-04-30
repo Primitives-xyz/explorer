@@ -4,7 +4,6 @@ import { IGetProfileResponse } from '@/components/tapestry/models/profiles.model
 import { ProfileHeader } from './profile-header'
 import { ProfileSocial } from './profile-social'
 import { ProfileWallets } from './profile-wallets'
-import { Skeleton } from '@/components/ui'
 
 interface Props {
   profileInfo: IGetProfileResponse | null
@@ -22,7 +21,7 @@ export function ProfileContent({ profileInfo, walletAddress }: Props) {
   return (
     <div className="flex flex-col w-full space-y-6 pb-6">
       <ProfileHeader profileInfo={profileInfo} walletAddress={walletAddress} />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ProfileWallets walletAddress={profileInfo.walletAddress} />
         <ProfileSocial walletAddress={profileInfo.walletAddress} />
       </div>

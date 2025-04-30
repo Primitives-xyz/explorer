@@ -58,7 +58,6 @@ export function Menu({ setOpen }: Props) {
         href={route('entity', { id: mainProfile?.username || '' })}
         disabled={!mainProfile?.username}
         setOpen={setOpen}
-        onlyDesktop
       />
 
       <Entry

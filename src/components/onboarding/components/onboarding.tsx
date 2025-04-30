@@ -3,7 +3,6 @@
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { useIsMobile } from '@/utils/use-is-mobile'
 import { useEffect, useState } from 'react'
 import { mutate } from 'swr'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
@@ -23,7 +22,6 @@ import { StepsWrapper } from './steps-wrapper'
 import { SuggestedFollow } from './suggested-follow'
 
 export function Onboarding() {
-  const { isMobile } = useIsMobile()
   const [open, setOpen] = useState(false)
 
   const {
@@ -95,10 +93,6 @@ export function Onboarding() {
       finishOnboarding()
     }
   }, [socialCounts, mainProfile, updateProfile])
-
-  if (isMobile) {
-    return null
-  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
