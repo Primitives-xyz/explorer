@@ -78,7 +78,7 @@ export function StakeData({ selectedType }: Props) {
 
   return (
     <div className="flex flex-col space-y-10">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between md:items-center space-y-6 md:space-y-0">
         <DisplayStakeData
           label={t('trade.platform_total_stake')}
           value={formattedTotalStake}

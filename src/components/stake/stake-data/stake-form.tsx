@@ -172,10 +172,10 @@ export function StakeForm({ initialAmount = '' }: Props) {
   return (
     <div>
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start md:items-center">
           <p>{t('common.amount')}</p>
           {!inputBalanceLoading && inputBalance && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
                 {t('common.balance')}: {inputBalance}
               </p>

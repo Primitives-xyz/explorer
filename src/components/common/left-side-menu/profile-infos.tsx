@@ -42,10 +42,12 @@ export function ProfileInfos() {
                 imageUrl={mainProfile.image}
                 size={40}
               />
-              <p>hi</p>
-              <p className="font-medium max-w-[8rem] truncate pr-1">
-                {mainProfile.username}
-              </p>
+              <span className="flex items-center gap-1">
+                <p>hi</p>
+                <p className="font-medium max-w-[8rem] truncate">
+                  {mainProfile.username}
+                </p>
+              </span>
             </div>
             <div className="desktop">
               <DropdownMenu>
@@ -84,7 +86,7 @@ export function ProfileInfos() {
                 width={16}
                 height={16}
                 alt="icon"
-                className="rounded-full aspect-square object-cover"
+                className="rounded-full aspect-square object-cover w-5 h-5 md:w-4 md:h-4"
               />
               <span className="text-primary">$SSE</span>
             </Button>

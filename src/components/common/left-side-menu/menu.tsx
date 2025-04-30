@@ -65,7 +65,6 @@ export function Menu({ setOpen }: Props) {
         icon={Beef}
         href={route('stake')}
         setOpen={setOpen}
-        onlyDesktop
       />
 
       {process.env.NODE_ENV === 'production' && (

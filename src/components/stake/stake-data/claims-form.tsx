@@ -27,7 +27,7 @@ export function ClaimsForm() {
     <div>
       <h3 className="text-lg">{t('trade.claim_rewards')}</h3>
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-col md:flex-row justify-between md:items-center mb-2">
           <span className="text-muted-foreground">
             {t('trade.total_reward_amount')}
           </span>

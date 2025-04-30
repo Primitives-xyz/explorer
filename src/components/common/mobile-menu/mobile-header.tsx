@@ -3,6 +3,7 @@
 import { MobileMenu } from '@/components/common/mobile-menu/mobile-menu'
 import { Button } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Menu as MenuIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -19,7 +20,7 @@ export function MobileHeader() {
           <Button onClick={() => setOpen(true)} isInvisible>
             <MenuIcon className="text-primary" />
           </Button>
-          <Button href="/" isInvisible>
+          <Button href={route('home')} isInvisible>
             <Image
               src="/images/logo-mobile.svg"
               alt="logo"

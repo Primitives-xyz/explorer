@@ -50,11 +50,11 @@ input[type='number'] {
 }
 
 .mobile {
-  @apply block sm:hidden;
+  @apply flex md:hidden;
 }
 
 .desktop {
-  @apply hidden sm:block;
+  @apply hidden md:flex;
 }
 
 .expanded-button-max-width {
