@@ -16,12 +16,15 @@ export async function GET(request: NextRequest) {
       endpoint: 'profiles',
       queryParams: {
         namespace: 'kolscan',
+        // pageSize: 50,
       },
     })
 
     const walletIds = profilesData?.profiles?.map(
       (profile) => profile.wallet?.address
     )
+
+    // console.log('walletIds', walletIds?.length)
 
     // 2. Getting transactions for each wallet
 
@@ -38,7 +41,8 @@ export async function GET(request: NextRequest) {
         endpoint: 'helius-transactions',
         queryParams: {
           walletAddress: walletId,
-          limit: 4,
+          limit: 10,
+          // before: allTransactions[allTransactions.length - 1]?.signature,
         },
       })
 
