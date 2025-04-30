@@ -7,11 +7,29 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/utils/utils'
 
 interface Props {
-  profileInfo: IGetProfileResponse
+  profileInfo?: IGetProfileResponse
+  walletAddress?: string
 }
 
-export function ProfileHeader({ profileInfo }: Props) {
+export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const { mainProfile } = useCurrentWallet()
+  if (!profileInfo) {
+    // Only wallet address is available
+    return (
+      <div className="flex items-center gap-2">
+        <Avatar username={walletAddress || 'unknown'} className="w-18" size={72} />
+        <div className="space-y-2">
+          <div className="flex gap-1 items-center">
+            {walletAddress && (
+              <p className="text-muted-foreground">
+                {abbreviateWalletAddress({ address: walletAddress })}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
   const creationYear = profileInfo?.profile.created_at
     ? new Date(profileInfo.profile.created_at).getFullYear()
     : new Date().getFullYear()

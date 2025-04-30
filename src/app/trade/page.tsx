@@ -59,7 +59,7 @@ export default function TradePage() {
   }, [inputs.inputMint, inputs.outputMint, searchParams, updateUrlFromStore])
 
   return (
-    <MainContentWrapper className="flex w-full space-x-6 pb-10">
+    <MainContentWrapper className="flex flex-col md:flex-row w-full gap-6 pb-10">
       <TradeLeftContent
         setTokenMint={setTokenMint}
         selectedType={selectedType}

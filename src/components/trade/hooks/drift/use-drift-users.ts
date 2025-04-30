@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { useInitializeDrift } from './use-initialize-drift'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { PublicKey } from '@solana/web3.js'
+import { useEffect, useState } from 'react'
+import { useInitializeDrift } from './use-initialize-drift'
 
 export function useDriftUsers() {
   const [error, setError] = useState<string | null>(null)
@@ -20,8 +20,12 @@ export function useDriftUsers() {
         return
       }
 
-      const userAccounts = await driftClient.getUserAccountsForAuthority(new PublicKey(walletAddress))
-      const userAccountIds = userAccounts.map((userAccount) => userAccount.subAccountId)
+      const userAccounts = await driftClient.getUserAccountsForAuthority(
+        new PublicKey(walletAddress)
+      )
+      const userAccountIds = userAccounts.map(
+        (userAccount) => userAccount.subAccountId
+      )
       setAccountIds(userAccountIds)
     } catch (error) {
       console.error(error)
@@ -43,6 +47,6 @@ export function useDriftUsers() {
     accountIds,
     error,
     loading,
-    refreshGetUserAccountIds
+    refreshGetUserAccountIds,
   }
 }

@@ -69,7 +69,7 @@ const DialectNotificationsComponentInner = () => {
             <Button
               variant={ButtonVariant.GHOST}
               className={cn(
-                '!flex !justify-start !w-full !gap-4 !text-sm !hover:bg-primary !hover:text-background !text-foreground !px-4 !py-2 !mb-2',
+                '!flex !justify-start !w-full !gap-4 !hover:bg-primary !hover:text-background !text-foreground !px-4 !py-2 !mb-2 text-lg md:text-base! h-12! md:h-9! font-medium! hover:bg-primary! hover:text-background!',
                 {
                   '!bg-primary !text-background': open,
                 }

@@ -2,6 +2,7 @@
 
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
 import { Spinner } from '@/components/ui'
+import { useIsMobile } from '@/utils/use-is-mobile'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -9,6 +10,14 @@ export default function TwitterCallback() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
+  const { isMobile } = useIsMobile()
+  const { push } = useRouter()
+
+  useEffect(() => {
+    if (isMobile) {
+      push('/trade')
+    }
+  }, [isMobile, push])
 
   useEffect(() => {
     async function handleTwitterCallback() {
