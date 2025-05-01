@@ -94,6 +94,9 @@ export type TransactionContent =
   | DirectPerpTradeContent
   | CopiedPerpTradeContent
 
+// Union type for Perp Trade content types
+export type PerpTradeContent = DirectPerpTradeContent | CopiedPerpTradeContent
+
 // Type guard to check if a transaction is a perp trade
 export function isPerpTrade(
   content: TransactionContent
