@@ -74,6 +74,8 @@ export function Menu({ setOpen }: Props) {
 
       <Entry title="Stream" icon={TrendingUp} href={route('stream')} />
 
+      <Entry title="Stream" icon={TrendingUp} href={route('stream')} />
+
       {/* <Entry
         title="Design System"
         icon={PaintbrushVertical}
