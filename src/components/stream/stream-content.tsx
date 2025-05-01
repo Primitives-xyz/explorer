@@ -1,13 +1,12 @@
 'use client'
 
-import { MintAggregate, StreamMessage, TokenModalState } from './stream-types'
 import { TokenRow } from '@/components/stream/stream-components'
-import { FilterTabs } from '@/components/ui/tabs/filter-tabs'
-import { useEffect, useRef, useState } from 'react'
-import { useIsMobile } from '@/utils/use-is-mobile'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { SOL_MINT } from '@/utils/constants'
+import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { useEffect, useRef, useState } from 'react'
+import { MintAggregate } from './stream-types'
 
 export function StreamContent() {
   const { isMobile } = useIsMobile()
@@ -17,7 +16,9 @@ export function StreamContent() {
   const TPS_WINDOW = 60 // seconds
 
   useEffect(() => {
-    const ws = new window.WebSocket(process.env.LASERSTREAM_WEBSOCKET || 'ws://localhost:3000')
+    const ws = new window.WebSocket(
+      process.env.NEXT_PUBLIC_LASERSTREAM_WEBSOCKET || 'ws://localhost:3000'
+    )
     wsRef.current = ws
 
     ws.onmessage = (event) => {
@@ -26,9 +27,9 @@ export function StreamContent() {
         if (msg.type === 'MintMapSnapshot') {
           setMintMap(msg.data)
         } else if (msg.type === 'MintAggregateUpdate') {
-          setMintMap(prev => ({
+          setMintMap((prev) => ({
             ...prev,
-            [msg.data.mint]: msg.data
+            [msg.data.mint]: msg.data,
           }))
         }
         // (Handle other message types as needed)
@@ -46,7 +47,7 @@ export function StreamContent() {
 
   // Filtering and sorting logic
   const now = Date.now() / 1000
-  let tokens = Object.values(mintMap).map(agg => {
+  let tokens = Object.values(mintMap).map((agg) => {
     // Tag about-to-graduate if bonding progress > 70%
     const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0]
     let aboutToGraduate = false
@@ -64,35 +65,57 @@ export function StreamContent() {
   tokens = tokens.sort((a, b) => (b.tps || 0) - (a.tps || 0))
 
   // Filter for each column, ensuring no overlap
-  const graduatedMints = new Set(tokens.filter(agg => agg.fullyBonded).map(agg => agg.mint))
-  const aboutToGraduateMints = new Set(tokens.filter(agg => !graduatedMints.has(agg.mint) && agg.aboutToGraduate).map(agg => agg.mint))
-  const newlyMinted = tokens.filter(
-    agg =>
-      !graduatedMints.has(agg.mint) &&
-      !aboutToGraduateMints.has(agg.mint) &&
-      (agg as any).tokenCreatedAt &&
-      (now - (agg as any).tokenCreatedAt < 3600)
-  ).slice(0, 50)
-  const aboutToGraduate = tokens.filter(
-    agg => aboutToGraduateMints.has(agg.mint)
-  ).slice(0, 50)
-  const recentlyGraduated = tokens.filter(
-    agg => graduatedMints.has(agg.mint)
-  ).slice(0, 50)
+  const graduatedMints = new Set(
+    tokens.filter((agg) => agg.fullyBonded).map((agg) => agg.mint)
+  )
+  const aboutToGraduateMints = new Set(
+    tokens
+      .filter((agg) => !graduatedMints.has(agg.mint) && agg.aboutToGraduate)
+      .map((agg) => agg.mint)
+  )
+  const newlyMinted = tokens
+    .filter(
+      (agg) =>
+        !graduatedMints.has(agg.mint) &&
+        !aboutToGraduateMints.has(agg.mint) &&
+        (agg as any).tokenCreatedAt &&
+        now - (agg as any).tokenCreatedAt < 3600
+    )
+    .slice(0, 50)
+  const aboutToGraduate = tokens
+    .filter((agg) => aboutToGraduateMints.has(agg.mint))
+    .slice(0, 50)
+  const recentlyGraduated = tokens
+    .filter((agg) => graduatedMints.has(agg.mint))
+    .slice(0, 50)
 
   return (
-    <div className={`flex flex-col w-full justify-center items-center py-6 gap-4${isMobile ? ' px-2' : ''}`}>
-      <div className={`w-full max-w-7xl grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-4`}>
+    <div
+      className={`flex flex-col w-full justify-center items-center py-6 gap-4${
+        isMobile ? ' px-2' : ''
+      }`}
+    >
+      <div
+        className={`w-full max-w-7xl grid ${
+          isMobile ? 'grid-cols-1' : 'grid-cols-3'
+        } gap-4`}
+      >
         {/* Newly Minted */}
         <div className="flex flex-col gap-2">
-          <div className="text-lg font-bold mb-2 text-white/80 text-center">Newly Minted</div>
+          <div className="text-lg font-bold mb-2 text-white/80 text-center">
+            Newly Minted
+          </div>
           {newlyMinted.map((agg) => (
             <TokenRow
               key={agg.mint}
               agg={agg}
               onClick={(mint) => {
                 setOpen(true)
-                setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: 0 })
+                setInputs({
+                  inputMint: SOL_MINT,
+                  outputMint: mint,
+                  inputAmount: 0,
+                })
               }}
               createdAt={(agg as any).tokenCreatedAt}
               volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
@@ -101,14 +124,20 @@ export function StreamContent() {
         </div>
         {/* About to Graduate */}
         <div className="flex flex-col gap-2">
-          <div className="text-lg font-bold mb-2 text-white/80 text-center">About to Graduate</div>
+          <div className="text-lg font-bold mb-2 text-white/80 text-center">
+            About to Graduate
+          </div>
           {aboutToGraduate.map((agg) => (
             <TokenRow
               key={agg.mint}
               agg={agg}
               onClick={(mint) => {
                 setOpen(true)
-                setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: 0 })
+                setInputs({
+                  inputMint: SOL_MINT,
+                  outputMint: mint,
+                  inputAmount: 0,
+                })
               }}
               createdAt={(agg as any).tokenCreatedAt}
               volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
@@ -117,14 +146,20 @@ export function StreamContent() {
         </div>
         {/* Recently Graduated */}
         <div className="flex flex-col gap-2">
-          <div className="text-lg font-bold mb-2 text-white/80 text-center">Recently Graduated</div>
+          <div className="text-lg font-bold mb-2 text-white/80 text-center">
+            Recently Graduated
+          </div>
           {recentlyGraduated.map((agg) => (
             <TokenRow
               key={agg.mint}
               agg={agg}
               onClick={(mint) => {
                 setOpen(true)
-                setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: 0 })
+                setInputs({
+                  inputMint: SOL_MINT,
+                  outputMint: mint,
+                  inputAmount: 0,
+                })
               }}
               createdAt={(agg as any).tokenCreatedAt}
               volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
@@ -134,4 +169,4 @@ export function StreamContent() {
       </div>
     </div>
   )
-} 
+}
