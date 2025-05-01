@@ -77,7 +77,7 @@ export function TokenRow({ agg, onClick, createdAt, volume }: { agg: MintAggrega
             <div className="flex flex-col min-w-0 gap-1">
               <TokenIdentity agg={agg} tokenInfo={tokenInfo} />
               <TokenRealLiquidity realSolReserves={lastTrade?.realSolReserves} />
-              <TokenBadges topWallets={topWallets} totalVolume={totalVolume} />
+              <TokenBadges agg={agg} />
             </div>
             {/* Right: Price, Top Traders, Created, Volume */}
             <div className="flex flex-col items-end min-w-0 gap-1">
