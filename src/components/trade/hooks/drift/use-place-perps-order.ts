@@ -12,6 +12,7 @@ import {
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useCreatePerpTradeContent } from '../use-create-perp-trade-content'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useToastContent } from './use-toast-content'
 
@@ -40,6 +41,7 @@ export function usePlacePerpsOrder({
   const { driftClient } = useInitializeDrift()
   const { primaryWallet, walletAddress } = useCurrentWallet()
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
+  const { createPerpTradeContentNode } = useCreatePerpTradeContent()
 
   const placePerpsOrder = async () => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -199,6 +201,23 @@ export function usePlacePerpsOrder({
         SUCCESS.PLACE_PERPS_ORDER_TX_SUCCESS.content
       )
       console.log('Perp order sent – tx:', txSig)
+
+      // --- Create Content Node ---
+      if (txSig) {
+        createPerpTradeContentNode({
+          signature: txSig,
+          marketSymbol: symbol,
+          marketIndex: marketIndex,
+          direction: direction,
+          size: amount,
+          orderType: orderType,
+          limitPrice: orderType === OrderType.LIMIT ? limitPrice : null,
+          reduceOnly: reduceOnly,
+          slippage: slippage,
+          walletAddress: walletAddress,
+        })
+      }
+      // --- End Content Node Creation ---
     } catch (error) {
       console.error('error', error)
       toast.dismiss()
