@@ -7,6 +7,8 @@ export interface TradeEvent {
   isBuy: boolean
   user: string
   timestamp: string
+  realSolReserves?: string
+  virtualSolReserves?: string
   [key: string]: any
 }
 
@@ -23,6 +25,13 @@ export interface StreamMessage {
   [key: string]: any
 }
 
+export interface WalletVolume {
+  buyVolume: number;
+  sellVolume: number;
+  totalVolume: number;
+  tradeCount: number;
+}
+
 export interface MintAggregate {
   mint: string
   trades: StreamMessage[]
@@ -32,6 +41,10 @@ export interface MintAggregate {
   tpsTimestamps?: number[]
   tps?: number
   lastUpdate?: number // unix ms
+  tokenCreatedAt?: number | null
+  uniqueTraders?: Set<string>
+  walletVolumes?: Record<string, WalletVolume>
+  volumePerToken?: number
 }
 
 export interface TokenModalState {

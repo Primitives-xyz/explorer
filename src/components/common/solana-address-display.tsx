@@ -11,6 +11,7 @@ import { useState, useRef, useEffect } from 'react'
 import { HIGHLIGHT_COLORS, useAddressHighlight } from '@/components/common/use-address-highlight'
 import { useRouter } from 'next/navigation'
 import { route } from '@/utils/route'
+import { createPortal } from 'react-dom'
 
 interface SolanaAddressDisplayProps {
   address: string
@@ -152,46 +153,66 @@ export function SolanaAddressDisplay({
     </TooltipProvider>
   ) : displayElement
 
-  // Color picker component - reused in both with/without copy button scenarios
-  const colorPickerComponent = showColorPicker && highlightable && (
-    <div 
-      ref={colorPickerRef}
-      className="absolute z-50 p-2 bg-card/95 shadow-lg rounded-md border left-0 top-full mt-1 backdrop-blur-sm"
-      style={{ minHeight: '36px' }}
-      onClick={(e) => e.stopPropagation()}
-      onMouseEnter={showPicker}
-      onMouseLeave={hidePicker}
-    >
-      <div className="flex items-center gap-2">
-        {HIGHLIGHT_COLORS.map(color => (
-          <button
-            key={color}
-            className={cn(
-              "w-5 h-5 rounded-sm border transition-all hover:scale-110",
-              isHighlighted && highlightColor === color ? "ring-2 ring-offset-1" : ""
-            )}
-            style={{ backgroundColor: color }}
-            onClick={() => applyHighlight(color)}
-            aria-label={`Highlight with ${color} color`}
-          >
-            {isHighlighted && highlightColor === color && (
-              <Check className="w-3 h-3 text-white m-auto" />
-            )}
-          </button>
-        ))}
-        
-        {isHighlighted && (
-          <button
-            className="w-5 h-5 rounded-sm border border-destructive flex items-center justify-center bg-card hover:bg-destructive/10 transition-colors"
-            onClick={removeHighlighting}
-            aria-label="Remove highlight"
-          >
-            <X className="w-3 h-3 text-destructive" />
-          </button>
-        )}
-      </div>
-    </div>
-  )
+  // --- Portal-based color picker positioning ---
+  const [pickerPos, setPickerPos] = useState<{top: number, left: number} | null>(null)
+  useEffect(() => {
+    if (showColorPicker && highlightable && addressRef.current) {
+      const rect = addressRef.current.getBoundingClientRect()
+      setPickerPos({
+        top: rect.bottom + window.scrollY + 4, // 4px margin
+        left: rect.left + window.scrollX
+      })
+    }
+  }, [showColorPicker, highlightable])
+
+  // Color picker component - now rendered in a portal
+  let colorPickerComponent = null
+  if (showColorPicker && highlightable && pickerPos && typeof window !== 'undefined' && document.body) {
+    colorPickerComponent = createPortal(
+      <div 
+        ref={colorPickerRef}
+        className="z-50 p-2 bg-card/95 shadow-lg rounded-md border backdrop-blur-sm"
+        style={{
+          minHeight: '36px',
+          position: 'absolute',
+          top: pickerPos.top,
+          left: pickerPos.left,
+        }}
+        onClick={(e) => e.stopPropagation()}
+        onMouseEnter={showPicker}
+        onMouseLeave={hidePicker}
+      >
+        <div className="flex items-center gap-2">
+          {HIGHLIGHT_COLORS.map(color => (
+            <button
+              key={color}
+              className={cn(
+                "w-5 h-5 rounded-sm border transition-all hover:scale-110",
+                isHighlighted && highlightColor === color ? "ring-2 ring-offset-1" : ""
+              )}
+              style={{ backgroundColor: color }}
+              onClick={() => applyHighlight(color)}
+              aria-label={`Highlight with ${color} color`}
+            >
+              {isHighlighted && highlightColor === color && (
+                <Check className="w-3 h-3 text-white m-auto" />
+              )}
+            </button>
+          ))}
+          {isHighlighted && (
+            <button
+              className="w-5 h-5 rounded-sm border border-destructive flex items-center justify-center bg-card hover:bg-destructive/10 transition-colors"
+              onClick={removeHighlighting}
+              aria-label="Remove highlight"
+            >
+              <X className="w-3 h-3 text-destructive" />
+            </button>
+          )}
+        </div>
+      </div>,
+      document.body
+    )
+  }
 
   if (!showCopyButton) {
     return (

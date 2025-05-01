@@ -2,10 +2,22 @@ import { Card, CardContent } from '@/components/ui'
 import { useEffect, useRef, useState } from 'react'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { MintAggregate } from './stream-types'
-import { formatNumber } from '@/utils/utils'
+import { formatNumber, formatTimeAgo } from '@/utils/utils'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
+import { useIsMobile } from '@/utils/use-is-mobile'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { TokenIdentity } from './token-identity'
+import { TokenPrice } from './token-price'
+import { TokenLiquidityProviders } from './token-liquidity-providers'
+import { TokenCreatedTime } from './token-created-time'
+import { TokenVolume } from './token-volume'
+import { TokenRealLiquidity } from './token-real-liquidity'
+import { TokenBuySellBar } from './token-buy-sell-bar'
+import { TokenBondedBar } from './token-bonded-bar'
+import { TokenBadges } from './token-badges'
 
-export function TokenRow({ agg, onClick }: { agg: MintAggregate, onClick: (mint: string, tokenInfo: any) => void }) {
+export function TokenRow({ agg, onClick, createdAt, volume }: { agg: MintAggregate, onClick: (mint: string) => void, createdAt?: number | null, volume?: number }) {
+  const { isMobile } = useIsMobile()
   const tokenInfo = useTokenInfo(agg.mint)
   const loading = tokenInfo.loading
   const symbol = tokenInfo.symbol
@@ -16,7 +28,14 @@ export function TokenRow({ agg, onClick }: { agg: MintAggregate, onClick: (mint:
     : undefined
   const decimals = tokenInfo.decimals ?? 9
   const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0]
-  console.log('lastTrade', lastTrade)
+  const uniqueTraderCount = (agg as any).uniqueTraders ? (agg as any).uniqueTraders.size : 0
+  const topWallets = (agg as any).walletVolumes
+    ? Object.entries((agg as any).walletVolumes)
+        .map(([wallet, stats]: [string, any]) => ({ wallet, totalVolume: stats.totalVolume }))
+        .sort((a, b) => b.totalVolume - a.totalVolume)
+        .slice(0, 3)
+    : []
+  const totalVolume = (agg as any).volumePerToken || 0
 
   // Derived values
   let lastTradePriceSol: string | null = null
@@ -24,6 +43,9 @@ export function TokenRow({ agg, onClick }: { agg: MintAggregate, onClick: (mint:
     const price = Number(lastTrade.solAmount) / Number(lastTrade.tokenAmount)
     lastTradePriceSol = price.toLocaleString(undefined, { maximumFractionDigits: 6 })
   }
+
+  // Calculate real liquidity in SOL
+  const realLiquidity = lastTrade && lastTrade.realSolReserves ? Number(lastTrade.realSolReserves) : 0
 
   // Animation state
   const [flash, setFlash] = useState(false)
@@ -40,89 +62,36 @@ export function TokenRow({ agg, onClick }: { agg: MintAggregate, onClick: (mint:
 
   return (
     <Card
-      className={`w-full transition-all mb-2 ${flash ? 'flash-shake-row flash-shake-row-text-black' : 'bg-neutral-900'} hover:bg-neutral-800 cursor-pointer`}
+      className={`w-full overflow-visible transition-all mb-2 ${flash ? 'flash-shake-row flash-shake-row-text-black' : 'bg-neutral-900'} hover:bg-neutral-800 cursor-pointer`}
       style={{ border: flash ? '2px solid #fff700' : '2px solid transparent' }}
-      onClick={() => onClick(agg.mint, tokenInfo)}
+      onClick={() => onClick(agg.mint)}
     >
-      <CardContent className="flex flex-row items-center w-full px-4 py-3">
-        {/* Image */}
-        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center mr-4 overflow-hidden">
-          {image ? (
-            <img src={image} alt={symbol || agg.mint} className="w-10 h-10 object-cover" />
-          ) : (
-            <span className="font-mono text-xs text-white">{agg.mint.slice(0, 2)}</span>
-          )}
-        </div>
-        {/* Name/Symbol/Mint */}
-        <div className="flex flex-col min-w-0 mr-4" style={{ width: 120 }}>
-          <span className="font-bold text-white truncate">{name || 'Loading...'}</span>
-          <span className="text-xs text-gray-300 truncate">{symbol || <SolanaAddressDisplay address={agg.mint} displayAbbreviatedAddress showCopyButton={false} />}</span>
-          <span className="text-xs text-gray-500 truncate"><SolanaAddressDisplay address={agg.mint} displayAbbreviatedAddress showCopyButton={true} /></span>
-        </div>
-        {/* TPS */}
-        <div className="flex flex-col items-center mr-4 min-w-[60px]">
-          <span className="text-xs text-gray-400">TPS</span>
-          <span className="font-bold text-yellow-400 text-lg">{(agg.tps || 0).toFixed(2)}</span>
-        </div>
-        {/* Buy/Sell Bar */}
-        <div className="flex flex-col items-center mr-4 min-w-[120px]">
-          <span className="text-xs text-gray-400 mb-1">Buy/Sell</span>
-          <div className="relative w-28 h-4 rounded overflow-hidden flex flex-row border border-gray-700 bg-gray-800">
-            {(() => {
-              const total = agg.totalBuy + agg.totalSell
-              const buyPercent = total > 0 ? agg.totalBuy / total : 0.5
-              const sellPercent = total > 0 ? agg.totalSell / total : 0.5
-              return <>
-                <div style={{ width: `${buyPercent * 100}%` }} className="h-full bg-green-500 transition-all"></div>
-                <div style={{ width: `${sellPercent * 100}%` }} className="h-full bg-red-500 transition-all"></div>
-              </>
-            })()}
+      <CardContent className="w-full px-2 py-2">
+        <div
+          className="flex flex-col items-stretch h-full justify-between"
+          style={{ minHeight: 120 }}
+        >
+          {/* Top section: left and right columns */}
+          <div className="flex flex-row w-full justify-between gap-2">
+            {/* Left: Identity and Real Liquidity */}
+            <div className="flex flex-col min-w-0 gap-1">
+              <TokenIdentity agg={agg} tokenInfo={tokenInfo} />
+              <TokenRealLiquidity realSolReserves={lastTrade?.realSolReserves} />
+              <TokenBadges topWallets={topWallets} totalVolume={totalVolume} />
+            </div>
+            {/* Right: Price, Top Traders, Created, Volume */}
+            <div className="flex flex-col items-end min-w-0 gap-1">
+              <TokenPrice lastTradePriceSol={lastTradePriceSol} />
+              <TokenLiquidityProviders topWallets={topWallets} totalVolume={totalVolume} />
+              <TokenCreatedTime createdAt={createdAt} />
+              <TokenVolume volume={volume} />
+            </div>
           </div>
-          <div className="flex flex-row justify-between w-28 text-xs mt-1">
-            <span className="text-green-400 font-bold">{formatNumber(agg.totalBuy / 10 ** decimals)}</span>
-            <span className="text-red-400 font-bold">{formatNumber(agg.totalSell / 10 ** decimals)}</span>
+          {/* Double bars at the bottom */}
+          <div className="flex flex-col gap-1 mt-2">
+            <TokenBuySellBar totalBuy={agg.totalBuy} totalSell={agg.totalSell} decimals={decimals} />
+            <TokenBondedBar realSolReserves={lastTrade?.realSolReserves} LAMPORTS_PER_SOL={LAMPORTS_PER_SOL} />
           </div>
-        </div>
-        {/* Bonding Progress Bar */}
-        <div className="flex flex-col items-center mr-4 min-w-[120px]">
-          <span className="text-xs text-gray-400 mb-1">Bonded</span>
-          {lastTrade && lastTrade.realSolReserves && lastTrade.virtualSolReserves ? (
-            (() => {
-              const real = Number(lastTrade.realSolReserves)
-              const virt = Number(lastTrade.virtualSolReserves)
-              const progress = virt > 0 ? Math.min(real / virt, 1) : 0
-              const percent = (progress * 100).toFixed(1)
-              return (
-                <div className="w-28 h-3 bg-gray-800 rounded overflow-hidden border border-gray-700 relative">
-                  <div style={{ width: `${percent}%` }} className="h-full bg-yellow-400 transition-all"></div>
-                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-bold" style={{color: progress > 0.5 ? '#000' : '#fff'}}>{percent}%</span>
-                </div>
-              )
-            })()
-          ) : (
-            <div className="w-28 h-3 bg-gray-800 rounded border border-gray-700 flex items-center justify-center text-xs text-gray-500">--</div>
-          )}
-        </div>
-        {/* Price */}
-        <div className="flex flex-col items-center mr-4 min-w-[80px]">
-          <span className="text-xs text-gray-400">Price</span>
-          <span className="font-bold text-blue-400">
-            {lastTradePriceSol ? `${lastTradePriceSol} SOL` : '--'}
-          </span>
-        </div>
-        {/* Recent Trade */}
-        <div className="flex flex-col flex-1 min-w-0">
-          <span className="text-xs text-gray-400">Recent Trade</span>
-          {lastTrade ? (
-            <span className="truncate text-sm">
-              <span className={lastTrade.isBuy ? 'text-green-400 font-bold' : 'text-red-400 font-bold'}>{lastTrade.isBuy ? 'Buy' : 'Sell'}</span>{' '}
-              <span className="text-white font-mono">{formatNumber(Number(lastTrade.solAmount) / 10 ** decimals)}</span>{' '}
-              <span className="text-gray-400">by <SolanaAddressDisplay address={lastTrade.user} displayAbbreviatedAddress showCopyButton={true} /></span>{' '}
-              <span className="text-gray-500">{new Date(Number(lastTrade.timestamp) * 1000).toLocaleTimeString()}</span>
-            </span>
-          ) : (
-            <span className="text-gray-500">--</span>
-          )}
         </div>
       </CardContent>
       {/* Animation style */}
