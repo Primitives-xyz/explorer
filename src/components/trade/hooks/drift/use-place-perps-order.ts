@@ -4,7 +4,10 @@ import {
   BN,
   calculateBidAskPrice,
   convertToNumber,
+  getLimitOrderParams,
   getMarketOrderParams,
+  getTriggerMarketOrderParams,
+  OrderTriggerCondition,
   PerpMarkets,
   PositionDirection,
   PRICE_PRECISION,
@@ -15,14 +18,15 @@ import { toast } from 'sonner'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useToastContent } from './use-toast-content'
 
-interface UsePlacePerpsOrderParams {
+export interface UsePlacePerpsOrderParams {
   amount: string
   symbol: string
   direction: PositionDirection
   slippage?: string
   orderType: OrderType
-  limitPrice: string
-  reduceOnly: boolean
+  limitPrice?: string
+  triggerPrice?: string
+  reduceOnly?: boolean
 }
 
 const env = 'mainnet-beta'
@@ -34,6 +38,7 @@ export function usePlacePerpsOrder({
   slippage = '0.1',
   orderType,
   limitPrice,
+  triggerPrice,
   reduceOnly,
 }: UsePlacePerpsOrderParams) {
   const [loading, setLoading] = useState<boolean>(false)
@@ -69,12 +74,7 @@ export function usePlacePerpsOrder({
         return
       }
 
-      // Ensure the client is subscribed (fetches required on-chain accounts)
       await driftClient.subscribe()
-
-      // Make sure a user object is initialised and subscribed.  If an on-chain user account
-      // does not yet exist, `getUser()` will still return a `User` wrapper – but we
-      // need to subscribe it so that the SDK keeps the account in sync.
       const user = driftClient.getUser()
       await user.subscribe()
 
@@ -127,37 +127,41 @@ export function usePlacePerpsOrder({
       // e.g. "0.5" SOL => 0.5 * 1_000_000_000 = 500_000_000 (BN)
       const baseAssetAmount = driftClient.convertToPerpPrecision(Number(amount))
 
-      const orderParams = getMarketOrderParams({
-        baseAssetAmount,
-        direction,
-        marketIndex: perpMarketAccount.marketIndex,
-      })
+      let orderParams
+      if (orderType === OrderType.MARKET) {
+        console.log("OrderType:", orderType)
+        orderParams = getMarketOrderParams({
+          baseAssetAmount,
+          direction,
+          marketIndex: perpMarketAccount.marketIndex,
+        })
 
-      // Apply slippage to the order
-      if (slippageDecimal > 0) {
-        // For limit price, we need to adjust based on direction
-        if ('long' in direction) {
-          // When going LONG, we're willing to pay up to X% more
-          const maxPrice = ask
-            .mul(new BN(Math.floor((1 + slippageDecimal) * 1e6)))
-            .div(new BN(1e6))
-          orderParams.oraclePriceOffset = convertToNumber(
-            maxPrice.sub(ask),
-            PRICE_PRECISION
-          )
-        } else {
-          // When going SHORT, we're willing to receive up to X% less
-          const minPrice = bid
-            .mul(new BN(Math.floor((1 - slippageDecimal) * 1e6)))
-            .div(new BN(1e6))
-          orderParams.oraclePriceOffset = convertToNumber(
-            minPrice.sub(bid),
-            PRICE_PRECISION
-          )
+        if (slippageDecimal > 0) {
+          // For limit price, we need to adjust based on direction
+          if ('long' in direction) {
+            // When going LONG, we're willing to pay up to X% more
+            const maxPrice = ask
+              .mul(new BN(Math.floor((1 + slippageDecimal) * 1e6)))
+              .div(new BN(1e6))
+            orderParams.oraclePriceOffset = convertToNumber(
+              maxPrice.sub(ask),
+              PRICE_PRECISION
+            )
+          } else {
+            // When going SHORT, we're willing to receive up to X% less
+            const minPrice = bid
+              .mul(new BN(Math.floor((1 - slippageDecimal) * 1e6)))
+              .div(new BN(1e6))
+            orderParams.oraclePriceOffset = convertToNumber(
+              minPrice.sub(bid),
+              PRICE_PRECISION
+            )
+          }
         }
       }
 
       if (orderType === OrderType.LIMIT) {
+        console.log("OrderType:", orderType)
         const price = driftClient.convertToPricePrecision(Number(limitPrice))
         const formatedPrice = convertToNumber(price, PRICE_PRECISION)
 
@@ -183,14 +187,76 @@ export function usePlacePerpsOrder({
           return
         }
 
-        orderParams.price = price
-        orderParams.reduceOnly = reduceOnly
+        orderParams = getLimitOrderParams({
+          baseAssetAmount,
+          direction,
+          marketIndex: perpMarketAccount.marketIndex,
+          price,
+          reduceOnly,
+        })
+
+        if (slippageDecimal > 0) {
+          // For limit price, we need to adjust based on direction
+          if ('long' in direction) {
+            // When going LONG, we're willing to pay up to X% more
+            const maxPrice = ask
+              .mul(new BN(Math.floor((1 + slippageDecimal) * 1e6)))
+              .div(new BN(1e6))
+            orderParams.oraclePriceOffset = convertToNumber(
+              maxPrice.sub(ask),
+              PRICE_PRECISION
+            )
+          } else {
+            // When going SHORT, we're willing to receive up to X% less
+            const minPrice = bid
+              .mul(new BN(Math.floor((1 - slippageDecimal) * 1e6)))
+              .div(new BN(1e6))
+            orderParams.oraclePriceOffset = convertToNumber(
+              minPrice.sub(bid),
+              PRICE_PRECISION
+            )
+          }
+        }
+      }
+
+      if (orderType === OrderType.TP) {
+        console.log("OrderType:", orderType)
+        const price = driftClient.convertToPricePrecision(Number(triggerPrice))
+
+        if (direction === PositionDirection.LONG) {
+          orderParams = getTriggerMarketOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.SHORT,
+            baseAssetAmount,
+            triggerPrice: price,
+            triggerCondition: OrderTriggerCondition.ABOVE,
+          })
+        }
+
+        if (direction === PositionDirection.SHORT) {
+          orderParams = getTriggerMarketOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.LONG,
+            baseAssetAmount,
+            triggerPrice: price,
+            triggerCondition: OrderTriggerCondition.BELOW,
+          })
+        }
       }
 
       toast.loading(
         LOADINGS.CONFIRM_LOADING.title,
         LOADINGS.CONFIRM_LOADING.content
       )
+
+      if (!orderParams) {
+        toast.error(
+          ERRORS.TX_PERPS_ORDER_ERR.title,
+          ERRORS.TX_PERPS_ORDER_ERR.content
+        )
+        return
+      }
+
       const txSig = await driftClient.placePerpOrder(orderParams)
 
       toast.dismiss()

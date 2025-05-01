@@ -210,7 +210,6 @@ export function Perpetual({ setTokenMint }: Props) {
           userStats={userStats}
           statsLoading={statsLoading}
           setSelectedDirection={setSelectedDirection}
-          formatLeverage={formatLeverage}
           blur={!accountIds.length}
         />
 

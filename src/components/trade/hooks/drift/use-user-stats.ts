@@ -1,8 +1,8 @@
 import { IUserStats } from '@/components/tapestry/models/drift.model'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
-  BN,
   convertToNumber,
+  PerpMarkets,
   PositionDirection,
   QUOTE_PRECISION,
   TEN_THOUSAND,
@@ -72,42 +72,13 @@ export function useUserStats({ subAccountId, symbol }: UseUserStatsProps) {
         const healthRatio = health / 100
         const perpPositions = user.getActivePerpPositions()
         const orders = user.getOpenOrders()
-
-        // console.log("orders:", convertToNumber(orders[0].baseAssetAmount))
-        // console.log("orders:", convertToNumber(orders[0].price))
+        const currentLeverage = user.getLeverage(true)
 
         // Get net USD value (total account value)
         const netUsdValue = convertToNumber(
           user.getNetUsdValue(),
           QUOTE_PRECISION
         )
-
-        const totalPerpsPositionBaseAmount = perpPositions.reduce(
-          (total, position) => {
-            return total.add(position.baseAssetAmount)
-          },
-          new BN(0)
-        )
-
-        const totalLimitOrdersBaseAmount = orders.reduce((total, order) => {
-          if ('perp' in order.marketType && 'limit' in order.orderType) {
-            if ('long' in order.direction) {
-              return total.add(order.baseAssetAmount)
-            } else {
-              return total.sub(order.baseAssetAmount)
-            }
-          }
-
-          return total
-        }, new BN(0))
-
-        const total =
-          convertToNumber(
-            totalPerpsPositionBaseAmount.add(totalLimitOrdersBaseAmount),
-            new BN(10).pow(new BN(9))
-          ) * marketPrice
-
-        const acctLeverage = netUsdValue > 0 ? total / netUsdValue : 0
 
         const maxTradeSizeUSDCForPerp = user.getMaxTradeSizeUSDCForPerp(
           0,
@@ -118,14 +89,23 @@ export function useUserStats({ subAccountId, symbol }: UseUserStatsProps) {
           QUOTE_PRECISION
         )
 
-        const maxLeverageForPerp = user.getMaxLeverageForPerp(0)
+        const marketInfo = PerpMarkets['mainnet-beta'].find(
+          (market) => market.baseAssetSymbol === symbol
+        )
+
+        if (!marketInfo) return
+        console.log("marketIndex:", marketInfo.marketIndex)
+
+        const maxLeverageForPerp = user.getMaxLeverageForPerp(
+          marketInfo.marketIndex
+        )
         const maxLeverage = convertToNumber(maxLeverageForPerp, TEN_THOUSAND)
         // Update state with fetched data
         setUserStats({
           health,
           healthRatio,
           netUsdValue,
-          leverage: acctLeverage,
+          leverage: convertToNumber(currentLeverage, TEN_THOUSAND),
           perpPositions,
           orders,
           maxLeverage: maxLeverage,
@@ -141,7 +121,14 @@ export function useUserStats({ subAccountId, symbol }: UseUserStatsProps) {
     }
 
     fetchUserStats()
-  }, [driftClient, primaryWallet, walletAddress, subAccountId, marketPrice])
+  }, [
+    driftClient,
+    primaryWallet,
+    walletAddress,
+    subAccountId,
+    marketPrice,
+    symbol,
+  ])
 
   return {
     userStats,
