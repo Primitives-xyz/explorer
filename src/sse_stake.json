@@ -9,16 +9,7 @@
   "instructions": [
     {
       "name": "accept_authority",
-      "discriminator": [
-        107,
-        86,
-        198,
-        91,
-        33,
-        12,
-        107,
-        160
-      ],
+      "discriminator": [107, 86, 198, 91, 33, 12, 107, 160],
       "accounts": [
         {
           "name": "new_admin",
@@ -32,14 +23,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -49,16 +33,7 @@
     },
     {
       "name": "claim_reward",
-      "discriminator": [
-        149,
-        95,
-        181,
-        242,
-        94,
-        90,
-        158,
-        162
-      ],
+      "discriminator": [149, 95, 181, 242, 94, 90, 158, 162],
       "accounts": [
         {
           "name": "global_config",
@@ -67,14 +42,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -90,16 +58,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114,
-                  105,
-                  110,
-                  102,
-                  111
-                ]
+                "value": [117, 115, 101, 114, 105, 110, 102, 111]
               },
               {
                 "kind": "account",
@@ -130,16 +89,7 @@
     },
     {
       "name": "configure",
-      "discriminator": [
-        245,
-        7,
-        108,
-        117,
-        95,
-        196,
-        54,
-        217
-      ],
+      "discriminator": [245, 7, 108, 117, 95, 196, 54, 217],
       "accounts": [
         {
           "name": "payer",
@@ -153,14 +103,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -183,16 +126,7 @@
     },
     {
       "name": "deposit_fund",
-      "discriminator": [
-        189,
-        21,
-        71,
-        93,
-        11,
-        59,
-        198,
-        37
-      ],
+      "discriminator": [189, 21, 71, 93, 11, 59, 198, 37],
       "accounts": [
         {
           "name": "admin",
@@ -215,14 +149,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -239,38 +166,9 @@
               {
                 "kind": "const",
                 "value": [
-                  6,
-                  221,
-                  246,
-                  225,
-                  215,
-                  101,
-                  161,
-                  147,
-                  217,
-                  203,
-                  225,
-                  70,
-                  206,
-                  235,
-                  121,
-                  172,
-                  28,
-                  180,
-                  133,
-                  237,
-                  95,
-                  91,
-                  55,
-                  145,
-                  58,
-                  140,
-                  245,
-                  133,
-                  126,
-                  255,
-                  0,
-                  169
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
+                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
+                  245, 133, 126, 255, 0, 169
                 ]
               },
               {
@@ -282,38 +180,9 @@
             "program": {
               "kind": "const",
               "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
               ]
             }
           }
@@ -338,16 +207,7 @@
     },
     {
       "name": "distribute_trading_fees",
-      "discriminator": [
-        108,
-        35,
-        150,
-        51,
-        108,
-        32,
-        249,
-        8
-      ],
+      "discriminator": [108, 35, 150, 51, 108, 32, 249, 8],
       "accounts": [
         {
           "name": "admin",
@@ -370,14 +230,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -394,38 +247,9 @@
               {
                 "kind": "const",
                 "value": [
-                  6,
-                  221,
-                  246,
-                  225,
-                  215,
-                  101,
-                  161,
-                  147,
-                  217,
-                  203,
-                  225,
-                  70,
-                  206,
-                  235,
-                  121,
-                  172,
-                  28,
-                  180,
-                  133,
-                  237,
-                  95,
-                  91,
-                  55,
-                  145,
-                  58,
-                  140,
-                  245,
-                  133,
-                  126,
-                  255,
-                  0,
-                  169
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
+                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
+                  245, 133, 126, 255, 0, 169
                 ]
               },
               {
@@ -437,38 +261,9 @@
             "program": {
               "kind": "const",
               "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
               ]
             }
           }
@@ -498,16 +293,7 @@
     },
     {
       "name": "nominate_authority",
-      "discriminator": [
-        148,
-        182,
-        144,
-        91,
-        186,
-        12,
-        118,
-        18
-      ],
+      "discriminator": [148, 182, 144, 91, 186, 12, 118, 18],
       "accounts": [
         {
           "name": "admin",
@@ -521,14 +307,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -543,16 +322,7 @@
     },
     {
       "name": "pause",
-      "discriminator": [
-        211,
-        22,
-        221,
-        251,
-        74,
-        121,
-        193,
-        47
-      ],
+      "discriminator": [211, 22, 221, 251, 74, 121, 193, 47],
       "accounts": [
         {
           "name": "admin",
@@ -566,14 +336,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -588,16 +351,7 @@
     },
     {
       "name": "stake",
-      "discriminator": [
-        206,
-        176,
-        202,
-        18,
-        200,
-        209,
-        179,
-        108
-      ],
+      "discriminator": [206, 176, 202, 18, 200, 209, 179, 108],
       "accounts": [
         {
           "name": "global_config",
@@ -606,14 +360,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -630,38 +377,9 @@
               {
                 "kind": "const",
                 "value": [
-                  6,
-                  221,
-                  246,
-                  225,
-                  215,
-                  101,
-                  161,
-                  147,
-                  217,
-                  203,
-                  225,
-                  70,
-                  206,
-                  235,
-                  121,
-                  172,
-                  28,
-                  180,
-                  133,
-                  237,
-                  95,
-                  91,
-                  55,
-                  145,
-                  58,
-                  140,
-                  245,
-                  133,
-                  126,
-                  255,
-                  0,
-                  169
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
+                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
+                  245, 133, 126, 255, 0, 169
                 ]
               },
               {
@@ -673,38 +391,9 @@
             "program": {
               "kind": "const",
               "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
               ]
             }
           }
@@ -716,16 +405,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114,
-                  105,
-                  110,
-                  102,
-                  111
-                ]
+                "value": [117, 115, 101, 114, 105, 110, 102, 111]
               },
               {
                 "kind": "account",
@@ -761,16 +441,7 @@
     },
     {
       "name": "unstake",
-      "discriminator": [
-        90,
-        95,
-        107,
-        42,
-        205,
-        124,
-        50,
-        225
-      ],
+      "discriminator": [90, 95, 107, 42, 205, 124, 50, 225],
       "accounts": [
         {
           "name": "global_config",
@@ -779,14 +450,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+                "value": [99, 111, 110, 102, 105, 103]
               }
             ]
           }
@@ -802,16 +466,7 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [
-                  117,
-                  115,
-                  101,
-                  114,
-                  105,
-                  110,
-                  102,
-                  111
-                ]
+                "value": [117, 115, 101, 114, 105, 110, 102, 111]
               },
               {
                 "kind": "account",
@@ -838,35 +493,22 @@
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
     {
       "name": "Config",
-      "discriminator": [
-        155,
-        12,
-        170,
-        224,
-        30,
-        250,
-        204,
-        130
-      ]
+      "discriminator": [155, 12, 170, 224, 30, 250, 204, 130]
     },
     {
       "name": "User",
-      "discriminator": [
-        159,
-        117,
-        95,
-        227,
-        239,
-        151,
-        58,
-        236
-      ]
+      "discriminator": [159, 117, 95, 227, 239, 151, 58, 236]
     }
   ],
   "errors": [
@@ -964,9 +606,7 @@
         "fields": [
           {
             "name": "authority",
-            "docs": [
-              "authority publickey"
-            ],
+            "docs": ["authority publickey"],
             "type": "pubkey"
           },
           {
@@ -975,16 +615,12 @@
           },
           {
             "name": "token_mint_config",
-            "docs": [
-              "stake token mint publickey"
-            ],
+            "docs": ["stake token mint publickey"],
             "type": "pubkey"
           },
           {
             "name": "claim_period",
-            "docs": [
-              "reward token claim period"
-            ],
+            "docs": ["reward token claim period"],
             "type": "i64"
           },
           {
@@ -993,51 +629,37 @@
           },
           {
             "name": "total_stakers",
-            "docs": [
-              "number of stakers"
-            ],
+            "docs": ["number of stakers"],
             "type": "u64"
           },
           {
             "name": "last_reward_time",
-            "docs": [
-              "the latest staking time"
-            ],
+            "docs": ["the latest staking time"],
             "type": "i64"
           },
           {
             "name": "reward_multiplier",
-            "docs": [
-              "reward for one sec"
-            ],
+            "docs": ["reward for one sec"],
             "type": "u64"
           },
           {
             "name": "deposit_time",
-            "docs": [
-              "reward token deposit time"
-            ],
+            "docs": ["reward token deposit time"],
             "type": "i64"
           },
           {
             "name": "total_deposit",
-            "docs": [
-              "total stakeed token amount"
-            ],
+            "docs": ["total stakeed token amount"],
             "type": "u64"
           },
           {
             "name": "purchase_amt",
-            "docs": [
-              "reward token amount"
-            ],
+            "docs": ["reward token amount"],
             "type": "u64"
           },
           {
             "name": "is_stop",
-            "docs": [
-              "is stopped"
-            ],
+            "docs": ["is stopped"],
             "type": "u8"
           },
           {
@@ -1050,31 +672,22 @@
               "Array of daily trading fee deposits (30 days rolling window)"
             ],
             "type": {
-              "array": [
-                "u64",
-                30
-              ]
+              "array": ["u64", 30]
             }
           },
           {
             "name": "current_day_index",
-            "docs": [
-              "Current index in the daily_deposits array"
-            ],
+            "docs": ["Current index in the daily_deposits array"],
             "type": "u8"
           },
           {
             "name": "last_deposit_day",
-            "docs": [
-              "Last day when deposits were updated"
-            ],
+            "docs": ["Last day when deposits were updated"],
             "type": "i64"
           },
           {
             "name": "avg_daily_deposit",
-            "docs": [
-              "Average daily deposit over the rolling window"
-            ],
+            "docs": ["Average daily deposit over the rolling window"],
             "type": "u64"
           }
         ]
@@ -1087,30 +700,22 @@
         "fields": [
           {
             "name": "user",
-            "docs": [
-              "user publickey"
-            ],
+            "docs": ["user publickey"],
             "type": "pubkey"
           },
           {
             "name": "deposit",
-            "docs": [
-              "deposted stake token amount"
-            ],
+            "docs": ["deposted stake token amount"],
             "type": "u64"
           },
           {
             "name": "debt",
-            "docs": [
-              "withdrawed Reward Token amount"
-            ],
+            "docs": ["withdrawed Reward Token amount"],
             "type": "u64"
           },
           {
             "name": "last_update",
-            "docs": [
-              "the latest staking date"
-            ],
+            "docs": ["the latest staking date"],
             "type": "i64"
           },
           {
