@@ -25,6 +25,7 @@ export function StreamContent() {
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data)
+        console.log({ msg })
         if (msg.type === 'MintMapSnapshot') {
           setMintMap(msg.data)
         } else if (msg.type === 'MintAggregateUpdate') {
@@ -48,6 +49,7 @@ export function StreamContent() {
 
   // Filtering and sorting logic
   const now = Date.now() / 1000
+  console.log({ mintMap })
   let tokens = Object.values(mintMap).map((agg) => {
     // Tag about-to-graduate if bonding progress > 70%
     const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0]
@@ -74,6 +76,7 @@ export function StreamContent() {
       .filter((agg) => !graduatedMints.has(agg.mint) && agg.aboutToGraduate)
       .map((agg) => agg.mint)
   )
+  console.log({ tokens })
   const newlyMinted = tokens
     .filter(
       (agg) =>
@@ -89,6 +92,8 @@ export function StreamContent() {
   const recentlyGraduated = tokens
     .filter((agg) => graduatedMints.has(agg.mint))
     .slice(0, 50)
+
+  console.log(newlyMinted)
 
   return (
     <div
@@ -129,28 +134,6 @@ export function StreamContent() {
             About to Graduate
           </div>
           {aboutToGraduate.map((agg) => (
-            <TokenRow
-              key={agg.mint}
-              agg={agg}
-              onClick={(mint) => {
-                setOpen(true)
-                setInputs({
-                  inputMint: SOL_MINT,
-                  outputMint: mint,
-                  inputAmount: 0,
-                })
-              }}
-              createdAt={(agg as any).tokenCreatedAt}
-              volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
-            />
-          ))}
-        </div>
-        {/* Recently Graduated */}
-        <div className="flex flex-col gap-2">
-          <div className="text-lg font-bold mb-2 text-white/80 text-center">
-            Recently Graduated
-          </div>
-          {recentlyGraduated.map((agg) => (
             <TokenRow
               key={agg.mint}
               agg={agg}
