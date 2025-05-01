@@ -33,7 +33,13 @@ export function StakeData({ selectedType }: Props) {
     }
   )
 
-  const formattedRewardsAmount = formatSmartNumber(rewardsAmount, {
+  // Ensure rewards amount is never negative
+  const nonNegativeRewardsAmount =
+    typeof rewardsAmount === 'string'
+      ? Math.max(0, parseFloat(rewardsAmount)).toString()
+      : '0'
+
+  const formattedRewardsAmount = formatSmartNumber(nonNegativeRewardsAmount, {
     micro: true,
     compact: false,
     withComma: true,
@@ -102,7 +108,7 @@ export function StakeData({ selectedType }: Props) {
           (selectedType === StakeFilterType.UNSTAKE ||
             selectedType === StakeFilterType.CLAIM_REWARDS) && (
             <p className="text-xs text-destructive mt-1">
-              You haven‘t staked yet.
+              You haven't staked yet.
               <br /> Stake tokens first to see your balance here.
             </p>
           )}

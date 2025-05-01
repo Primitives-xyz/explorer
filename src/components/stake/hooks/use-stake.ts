@@ -64,7 +64,7 @@ export function useStake() {
       } else {
         toast.success(t('trade.transaction_successful'), {
           description: t(
-            'error.the_stake_transaction_was_successful_creating_shareable_link'
+            'trade.the_stake_transaction_was_successful_creating_shareable_link'
           ),
         })
         refreshUserInfo()

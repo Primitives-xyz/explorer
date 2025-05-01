@@ -12,7 +12,7 @@ export function useUnstake() {
   const { refreshUserInfo } = useStakeInfo({})
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
-  const unstake = async () => {
+  const unstake = async (amount: string) => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
       return
     }
@@ -27,6 +27,7 @@ export function useUnstake() {
         },
         body: JSON.stringify({
           walletAddy: walletAddress,
+          amount,
         }),
       })
 
