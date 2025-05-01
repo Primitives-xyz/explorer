@@ -1,10 +1,7 @@
 import { MintAggregate } from './stream-types'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
 
-export function TokenIdentity({ agg, tokenInfo }: { agg: MintAggregate, tokenInfo: any }) {
-  const name = tokenInfo.name
-  const symbol = tokenInfo.symbol
-  const image = tokenInfo.image
+export function TokenIdentity({ agg, symbol, name, image }: { agg: MintAggregate, symbol?: string, name?: string, image?: string }) {
   return (
     <div className="flex flex-row items-start gap-2 min-w-0">
       <div className="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-800 overflow-hidden">

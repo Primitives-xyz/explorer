@@ -1,6 +1,5 @@
 import { Card, CardContent } from '@/components/ui'
 import { useEffect, useRef, useState } from 'react'
-import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { MintAggregate } from './stream-types'
 import { formatNumber, formatTimeAgo } from '@/utils/utils'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
@@ -18,15 +17,10 @@ import { TokenBadges } from './token-badges'
 
 export function TokenRow({ agg, onClick, createdAt, volume }: { agg: MintAggregate, onClick: (mint: string) => void, createdAt?: number | null, volume?: number }) {
   const { isMobile } = useIsMobile()
-  const tokenInfo = useTokenInfo(agg.mint)
-  const loading = tokenInfo.loading
-  const symbol = tokenInfo.symbol
-  const name = tokenInfo.name
-  const image = tokenInfo.image
-  const price = tokenInfo.data?.result && 'token_info' in tokenInfo.data.result
-    ? tokenInfo.data.result.token_info?.price_info?.price_per_token
-    : undefined
-  const decimals = tokenInfo.decimals ?? 9
+  const symbol = agg.mintSymbol
+  const name = agg.mintName
+  const image = agg.mintImage
+  const decimals = agg.decimals ?? 9
   const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0]
   const uniqueTraderCount = (agg as any).uniqueTraders ? (agg as any).uniqueTraders.size : 0
   const topWallets = (agg as any).walletVolumes
@@ -75,7 +69,7 @@ export function TokenRow({ agg, onClick, createdAt, volume }: { agg: MintAggrega
           <div className="flex flex-row w-full justify-between gap-2">
             {/* Left: Identity and Real Liquidity */}
             <div className="flex flex-col min-w-0 gap-1">
-              <TokenIdentity agg={agg} tokenInfo={tokenInfo} />
+              <TokenIdentity agg={agg} symbol={symbol} name={name} image={image} />
               <TokenRealLiquidity realSolReserves={lastTrade?.realSolReserves} />
               <TokenBadges agg={agg} />
             </div>

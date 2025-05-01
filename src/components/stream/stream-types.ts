@@ -45,6 +45,10 @@ export interface MintAggregate {
   uniqueTraders?: Set<string>
   walletVolumes?: Record<string, WalletVolume>
   volumePerToken?: number
+  mintSymbol?: string
+  mintName?: string
+  mintImage?: string
+  decimals?: number
 }
 
 export interface TokenModalState {
