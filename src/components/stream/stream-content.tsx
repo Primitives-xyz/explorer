@@ -17,7 +17,8 @@ export function StreamContent() {
 
   useEffect(() => {
     const ws = new window.WebSocket(
-      process.env.NEXT_PUBLIC_LASERSTREAM_WEBSOCKET || 'ws://localhost:3000'
+      process.env.NEXT_PUBLIC_LASERSTREAM_WEBSOCKET ||
+        'wss://laserstream.fly.dev'
     )
     wsRef.current = ws
 
