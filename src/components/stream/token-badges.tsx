@@ -47,8 +47,8 @@ export function TokenBadges({ agg }: { agg?: MintAggregate }) {
     {
       key: 'recent-rug',
       icon: '☠️',
-      tooltip: 'Recently graduated but real liquidity is under 10 SOL. Possible rug.',
-      variant: 'destructive',
+      tooltip: 'Low liquidity post graduation.',
+      variant: 'outline',
       show: (agg) => {
         if (!agg.fullyBonded) return false;
         const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0];

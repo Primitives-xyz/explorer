@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button/button'
 
-export function TokenPrice({ lastTradePriceSol, currency = 'SOL', solPrice = null }: { lastTradePriceSol: string | null, currency?: 'SOL' | 'USD', solPrice?: number | null }) {
-  const [showMarketCap, setShowMarketCap] = useState(false)
+export function TokenPrice({ lastTradePriceSol, currency = 'USD', solPrice = null }: { lastTradePriceSol: string | null, currency?: 'SOL' | 'USD', solPrice?: number | null }) {
+  const [showMarketCap, setShowMarketCap] = useState(true)
   let display = '--'
-  let label = 'Price'
+  let label = 'Market Cap'
   let priceNum = 0
   let priceDisplayNum = 0
   // console.log('lastTradePriceSol', lastTradePriceSol)
@@ -12,21 +12,22 @@ export function TokenPrice({ lastTradePriceSol, currency = 'SOL', solPrice = nul
     priceNum = Number(lastTradePriceSol.replace(/,/g, ''))
     priceDisplayNum = currency === 'USD' && solPrice ? priceNum * solPrice : priceNum
     const decimals = priceDisplayNum < 0.01 ? 8 : 2
-    if (currency === 'USD' && solPrice) {
-      display = `$${priceDisplayNum.toLocaleString(undefined, { maximumFractionDigits: decimals })}`
+    if (showMarketCap && priceNum > 0) {
+      let marketCap = priceNum * 1_000_000_000
+      let marketCapDisplayNum = currency === 'USD' && solPrice ? marketCap * solPrice : marketCap
+      const decimals = marketCapDisplayNum < 0.01 ? 8 : 2
+      if (currency === 'USD' && solPrice) {
+        display = `$${marketCapDisplayNum.toLocaleString(undefined, { maximumFractionDigits: decimals })}`
+      } else {
+        display = `${marketCapDisplayNum.toLocaleString(undefined, { maximumFractionDigits: decimals })} SOL`
+      }
     } else {
-      display = `${priceNum.toLocaleString(undefined, { maximumFractionDigits: decimals })} SOL`
-    }
-  }
-  if (showMarketCap && priceNum > 0) {
-    label = 'Market Cap'
-    let marketCap = priceNum * 1_000_000_000
-    let marketCapDisplayNum = currency === 'USD' && solPrice ? marketCap * solPrice : marketCap
-    const decimals = marketCapDisplayNum < 0.01 ? 8 : 2
-    if (currency === 'USD' && solPrice) {
-      display = `$${marketCapDisplayNum.toLocaleString(undefined, { maximumFractionDigits: decimals })}`
-    } else {
-      display = `${marketCapDisplayNum.toLocaleString(undefined, { maximumFractionDigits: decimals })} SOL`
+      label = 'Price'
+      if (currency === 'USD' && solPrice) {
+        display = `$${priceDisplayNum.toLocaleString(undefined, { maximumFractionDigits: decimals })}`
+      } else {
+        display = `${priceNum.toLocaleString(undefined, { maximumFractionDigits: decimals })} SOL`
+      }
     }
   }
   return (
