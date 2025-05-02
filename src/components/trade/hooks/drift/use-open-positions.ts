@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useMarketPrice } from './use-market-price'
 import { useToastContent } from './use-toast-content'
+import { useDriftUsers } from './use-drift-users'
 
 interface UseUserStatsProps {
   subAccountId: number
@@ -32,10 +33,11 @@ export function useOpenPositions({ subAccountId, symbol }: UseUserStatsProps) {
     symbol,
   })
   const { driftClient } = useInitializeDrift()
+  const { accountIds } = useDriftUsers()
   const [perpsPositionsInfo, setPerpsPositionsInfo] = useState<
     PerpsPositionInfoProps[]
   >([])
-  const { walletAddress } = useCurrentWallet()
+  const { walletAddress, isLoggedIn } = useCurrentWallet()
 
   const closePosition = async () => {
     try {
@@ -84,9 +86,10 @@ export function useOpenPositions({ subAccountId, symbol }: UseUserStatsProps) {
 
   const fetchOpenPositions = async () => {
     try {
-      setLoading(true)
+      if (!isLoggedIn || marketPriceLoading || !driftClient) return
+      if (!accountIds.length) return
 
-      if (marketPriceLoading) return
+      setLoading(true)
 
       const baseUrl = `/api/drift/perpspositions/?wallet=${walletAddress}&&subAccountId=${subAccountId}&&symbol=${symbol}&&marketPrice=${marketPrice}`
 
