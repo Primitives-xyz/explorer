@@ -11,8 +11,8 @@ import {
   Compass,
   House,
   LucideIcon,
-  User,
   TrendingUp,
+  User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { SearchButton } from '../../search/components/search-button'
@@ -72,7 +72,12 @@ export function Menu({ setOpen }: Props) {
         <DialectNotificationsComponent />
       )}
 
-      <Entry title="Stream" icon={TrendingUp} href={route('stream')} />
+      <Entry
+        title="Stream"
+        icon={TrendingUp}
+        href={route('stream')}
+        setOpen={setOpen}
+      />
 
       {/* <Entry
         title="Design System"
@@ -101,7 +106,7 @@ function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
       disabled={disabled}
       variant={ButtonVariant.GHOST}
       className={cn(
-        'justify-start w-full gap-4 hover:bg-primary hover:text-background text-lg md:text-base h-12 md:h-9',
+        'justify-start w-full gap-4 hover:bg-primary hover:text-background text-lg md:text-sm h-12 md:h-9',
         {
           'bg-primary text-background': pathname === href,
           'hidden md:flex': onlyDesktop,

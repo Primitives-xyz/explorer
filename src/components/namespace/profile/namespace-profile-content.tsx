@@ -3,11 +3,7 @@
 import { useNamespaceProfile } from '@/components/namespace/hooks/use-namespace-profile'
 import { NamespaceProfileCardInfos } from '@/components/namespace/profile/namespace-profile-card-infos'
 import { NamespaceProfileHeader } from '@/components/namespace/profile/namespace-profile-header'
-import { FullPageSpinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { useIsMobile } from '@/utils/use-is-mobile'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 
 interface Props {
   namespace: string
@@ -24,19 +20,6 @@ export function NamespaceProfileContent({
     mainUsername: mainProfile?.username,
     namespace,
   })
-
-  const { isMobile } = useIsMobile()
-  const { push } = useRouter()
-
-  useEffect(() => {
-    if (isMobile) {
-      push('/trade')
-    }
-  }, [isMobile, push])
-
-  if (isMobile) {
-    return <FullPageSpinner />
-  }
 
   if (!profileData || !profileData.profile || !profileData.namespace) {
     return null

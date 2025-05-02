@@ -67,7 +67,7 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
 
   return (
     <div>
-      <div className="pb-4 flex justify-between">
+      <div className="pb-4 flex flex-col md-flex-row justify-between space-y-4 md:space-y-0">
         <div
           className={`${
             overview &&
@@ -83,7 +83,7 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
         {overview &&
           overview.extensions &&
           (overview.extensions.website || overview.extensions.twitter) && (
-            <div className="w-1/2 flex flex-col items-end space-y-2">
+            <div className="w-full md:w-1/2 flex flex-col items-end space-y-2">
               <Button
                 variant={ButtonVariant.BADGE}
                 href={overview.extensions.twitter}
@@ -116,14 +116,14 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
         <p>Market Info</p>
         <Card variant={CardVariant.ACCENT}>
           <CardContent className="flex justify-between">
-            <div className="space-y-1">
+            <div className="space-y-1 text-sm md:text-md">
               <p>Decimals</p>
               <p>Token Program</p>
               <p>Markets</p>
               <p>Circulating Supply</p>
               <p>Total Supply</p>
             </div>
-            <div className="space-y-1 text-right">
+            <div className="space-y-1 text-right text-sm md:text-md">
               <p>{about.decimals}</p>
               <p className="max-w-24 truncate" title={about.tokenProgram}>
                 {about.tokenProgram}
