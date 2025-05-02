@@ -12,7 +12,7 @@ interface Props {
 
 export function NamespaceProfileCardInfos({ profileData, username }: Props) {
   return (
-    <Card className="w-1/2">
+    <Card className="w-full md:w-1/2">
       <CardContent className="w-full flex flex-col space-y-6">
         <div className="flex items-center gap-4">
           <div>

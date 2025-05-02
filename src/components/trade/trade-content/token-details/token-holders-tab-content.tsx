@@ -23,12 +23,12 @@ export function TokenHoldersTabContent({ id, overview }: TokenHoldersTabProps) {
   const { holdersLoading, holders } = useTokenHolders(id)
   return (
     <div className="h-full">
-      <div className="grid grid-cols-3 px-6 py-4 font-bold text-muted-foreground">
+      <div className="grid grid-cols-3 px-6 py-4 font-bold text-muted-foreground text-sm md:text-md">
         <p>Trader</p>
         <p className="text-right">% Owned</p>
         <p className="text-right">Amount</p>
       </div>
-      <div className="h-[250px] overflow-auto">
+      <div className="h-[250px] overflow-auto text-sm md:text-md">
         {!holdersLoading ? (
           <div className="flex flex-col gap-2">
             {holders.map((holder, index) => (
@@ -42,10 +42,11 @@ export function TokenHoldersTabContent({ id, overview }: TokenHoldersTabProps) {
                             index <= 2,
                           'text-secondary border border-secondary': index >= 3,
                         },
-                        'w-10 h-10 rounded-full flex items-center justify-center font-bold'
+                        'w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-xs md:text-md aspect-square'
                       )}
                     >
-                      #{index + 1}
+                      <p className="desktop">#{index + 1}</p>
+                      <p className="mobile">{index + 1}</p>
                     </div>
 
                     {holder.address && (
