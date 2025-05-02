@@ -1,5 +1,6 @@
 import { TokenBadge } from './token-badge'
 import { MintAggregate } from './stream-types'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 
 export function TokenBadges({ agg }: { agg?: MintAggregate }) {
   if (!agg) return null;
@@ -41,6 +42,19 @@ export function TokenBadges({ agg }: { agg?: MintAggregate }) {
         const totalVolume = agg.volumePerToken || 0
         const top3Volume = topWallets.slice(0, 3).reduce((sum, w) => sum + (w.totalVolume || 0), 0)
         return totalVolume > 0 && (top3Volume / totalVolume) < 0.2
+      },
+    },
+    {
+      key: 'recent-rug',
+      icon: '☠️',
+      tooltip: 'Recently graduated but real liquidity is under 10 SOL. Possible rug.',
+      variant: 'destructive',
+      show: (agg) => {
+        if (!agg.fullyBonded) return false;
+        const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0];
+        if (!lastTrade || !lastTrade.realSolReserves) return false;
+        const realSol = Number(lastTrade.realSolReserves) / LAMPORTS_PER_SOL;
+        return realSol < 10;
       },
     },
   ]

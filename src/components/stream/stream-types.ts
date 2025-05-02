@@ -49,6 +49,13 @@ export interface MintAggregate {
   mintName?: string
   mintImage?: string
   decimals?: number
+  topWallets?: Array<{ wallet: string; totalVolume: number }>
+  pricePerToken?: number | null
+  realLiquidity?: number | null
+  realSolReserves?: number | string
+  bondingProgress?: number
+  aboutToGraduate?: boolean
+  fullyBonded?: boolean
 }
 
 export interface TokenModalState {
