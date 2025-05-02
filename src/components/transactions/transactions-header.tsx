@@ -43,7 +43,7 @@ export function TransactionsHeader({
   }
 
   return (
-    <div className="flex flex-row gap-2 items-start overflow-visible">
+    <div className="flex gap-2 overflow-visible">
       <div className="w-12">
         <Button
           variant={ButtonVariant.GHOST}
@@ -63,7 +63,7 @@ export function TransactionsHeader({
 
       <div className="flex flex-col space-y-2 w-full">
         <div className="flex items-center gap-2 justify-between w-full">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 desktop">
             <Username sourceProfile={profile} sourceWallet={sourceWallet} />
 
             <Button
@@ -80,11 +80,44 @@ export function TransactionsHeader({
             <TimeAgo transaction={transaction} />
           </div>
 
+          <div className="flex w-full flex-col mobile">
+            <div className="flex justify-between w-full items-center gap-2">
+              <div className="flex items-center gap-2">
+                <Username sourceProfile={profile} sourceWallet={sourceWallet} />
+
+                <Button
+                  href={route('entity', { id: transaction.signature })}
+                  variant={ButtonVariant.BADGE}
+                  size={ButtonSize.SM}
+                >
+                  {abbreviateWalletAddress({
+                    address: transaction.signature,
+                    desiredLength: 8,
+                  })}
+                </Button>
+              </div>
+              {!!onClickTradeButton && (
+                <Button
+                  variant={ButtonVariant.OUTLINE}
+                  onClick={onClickTradeButton}
+                  size={ButtonSize.ICON_SM}
+                >
+                  <ArrowRightLeft size={14} />
+                </Button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <TimeAgo transaction={transaction} />
+            </div>
+          </div>
+
           {!!onClickTradeButton && (
             <Button
               variant={ButtonVariant.OUTLINE}
               onClick={onClickTradeButton}
               size={ButtonSize.SM}
+              className="desktop"
             >
               <ArrowRightLeft size={16} />
               Copy Trade
@@ -108,7 +141,7 @@ function Username({
     <Button
       variant={ButtonVariant.GHOST}
       href={route('entity', {
-        id: sourceProfile?.username || sourceWallet,
+        id: sourceWallet,
       })}
       className="p-0 hover:bg-transparent"
     >

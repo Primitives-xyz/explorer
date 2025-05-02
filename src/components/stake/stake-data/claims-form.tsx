@@ -1,17 +1,27 @@
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
-import { Button, ButtonVariant, Spinner } from '@/components/ui'
+import { Button, ButtonVariant, Card, Spinner } from '@/components/ui'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 import { useClaimRewards } from '../hooks/use-claim'
 
-export function ClaimsForm() {
+interface Props {
+  className?: string
+}
+
+export function ClaimsForm({ className }: Props) {
   const t = useTranslations()
   const { isLoggedIn, sdkHasLoaded, walletAddress, setShowAuthFlow } =
     useCurrentWallet()
   const { rewardsAmount, showUserInfoLoading } = useStakeInfo({})
 
-  const formattedRewardsAmount = formatSmartNumber(rewardsAmount, {
+  // Ensure rewards amount is never negative
+  const nonNegativeRewardsAmount =
+    typeof rewardsAmount === 'string'
+      ? Math.max(0, parseFloat(rewardsAmount)).toString()
+      : '0'
+
+  const formattedRewardsAmount = formatSmartNumber(nonNegativeRewardsAmount, {
     micro: true,
     compact: false,
     withComma: false,
@@ -20,84 +30,93 @@ export function ClaimsForm() {
   })
 
   const { claimRewards, hasRewards, currentStep, isLoading } = useClaimRewards({
-    rewardsAmount,
+    rewardsAmount: nonNegativeRewardsAmount,
   })
 
-  return (
-    <div>
-      <h3 className="text-lg">{t('trade.claim_rewards')}</h3>
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-muted-foreground">
-            {t('trade.total_reward_amount')}
-          </span>
-          {showUserInfoLoading ? (
-            <Spinner />
-          ) : (
-            <span className="text-primary">{formattedRewardsAmount} SSE</span>
-          )}
-        </div>
-      </div>
+  // Determine claim button state text
+  const getClaimButtonText = () => {
+    if (isLoading) {
+      if (currentStep === 'building_transaction')
+        return t('trade.building_transaction')
+      if (currentStep === 'sending_transaction')
+        return t('trade.sending_transaction')
+      if (currentStep === 'waiting_for_confirmation')
+        return t('trade.waiting_for_confirmation')
+      if (currentStep === 'transaction_successful')
+        return t('trade.transaction_successful')
+      return t('common.loading')
+    }
 
-      {!sdkHasLoaded ? (
-        <Button variant={ButtonVariant.OUTLINE} className="mt-4 w-full">
-          <Spinner />
-          <p>{t('trade.checking_wallet_status')}</p>
-        </Button>
-      ) : !isLoggedIn ? (
+    return t('trade.claim_available_rewards')
+  }
+
+  // Render wallet connection states
+  if (!sdkHasLoaded) {
+    return (
+      <Button variant={ButtonVariant.OUTLINE} className="w-full">
+        <Spinner />
+        <p>{t('trade.checking_wallet_status')}</p>
+      </Button>
+    )
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className={className}>
+        <h3 className="text-lg mb-4">{t('trade.claim_rewards')}</h3>
         <Button
           variant={ButtonVariant.OUTLINE}
-          className="mt-4 w-full"
+          className="w-full"
           onClick={() => setShowAuthFlow(true)}
         >
           {t('common.connect_wallet')}
         </Button>
-      ) : (
-        <>
-          {!hasRewards && (
-            <div>
-              <p className="text-md">No Rewards Available</p>
-              <p className="text-sm">
-                You don‘t have any rewards to claim at the moment. Stake more
-                tokens or wait for rewards to accumulate.
-              </p>
-            </div>
-          )}
+        <div className="mt-4 text-sm text-muted-foreground">
+          <p>Connect your wallet to view and claim your accumulated rewards.</p>
+        </div>
+      </div>
+    )
+  }
 
-          {hasRewards && (
-            <Button
-              onClick={claimRewards}
-              disabled={isLoading || !hasRewards}
-              className="w-full"
-            >
-              {isLoading ? (
-                <>
-                  <Spinner />
-                  {currentStep === 'building_transaction' &&
-                    t('trade.building_transaction')}
-                  {currentStep === 'sending_transaction' &&
-                    t('trade.sending_transaction')}
-                  {currentStep === 'waiting_for_confirmation' &&
-                    t('trade.waiting_for_confirmation')}
-                  {currentStep === 'transaction_successful' &&
-                    t('trade.transaction_successful')}
-                  {!currentStep && t('common.loading')}
-                </>
-              ) : !!walletAddress ? (
-                t('trade.claim_available_rewards')
-              ) : (
-                t('common.connect_wallet')
-              )}
-            </Button>
+  return (
+    <div className={className}>
+      <h3 className="text-lg mb-4">{t('trade.claim_rewards')}</h3>
+
+      <Card className="p-4 mb-6 bg-card/40">
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">
+            {t('trade.available_rewards')}
+          </span>
+          {showUserInfoLoading ? (
+            <Spinner className="w-4 h-4" />
+          ) : (
+            <span className="text-primary font-medium">
+              {formattedRewardsAmount} SSE
+            </span>
           )}
-        </>
+        </div>
+      </Card>
+
+      {!hasRewards && (
+        <div className="bg-card/40 p-4 rounded-md mb-6">
+          <p className="font-medium">{t('trade.no_rewards_available')}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t('trade.no_rewards_description')}
+          </p>
+        </div>
       )}
 
+      <Button
+        onClick={claimRewards}
+        disabled={isLoading || !hasRewards}
+        className="w-full"
+      >
+        {isLoading && <Spinner className="mr-2" />}
+        {getClaimButtonText()}
+      </Button>
+
       <div className="mt-4 text-sm text-muted-foreground">
-        <p>
-          Claim your accumulated rewards from staking SSE tokens. Rewards are
-          calculated based on your stake amount and platform activity.
-        </p>
+        <p>{t('trade.claim_rewards_description')}</p>
       </div>
     </div>
   )

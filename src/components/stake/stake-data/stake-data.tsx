@@ -33,7 +33,13 @@ export function StakeData({ selectedType }: Props) {
     }
   )
 
-  const formattedRewardsAmount = formatSmartNumber(rewardsAmount, {
+  // Ensure rewards amount is never negative
+  const nonNegativeRewardsAmount =
+    typeof rewardsAmount === 'string'
+      ? Math.max(0, parseFloat(rewardsAmount)).toString()
+      : '0'
+
+  const formattedRewardsAmount = formatSmartNumber(nonNegativeRewardsAmount, {
     micro: true,
     compact: false,
     withComma: true,
@@ -78,7 +84,7 @@ export function StakeData({ selectedType }: Props) {
 
   return (
     <div className="flex flex-col space-y-10">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between md:items-center space-y-6 md:space-y-0">
         <DisplayStakeData
           label={t('trade.platform_total_stake')}
           value={formattedTotalStake}
@@ -102,7 +108,7 @@ export function StakeData({ selectedType }: Props) {
           (selectedType === StakeFilterType.UNSTAKE ||
             selectedType === StakeFilterType.CLAIM_REWARDS) && (
             <p className="text-xs text-destructive mt-1">
-              You haven‘t staked yet.
+              You haven't staked yet.
               <br /> Stake tokens first to see your balance here.
             </p>
           )}

@@ -43,7 +43,7 @@ export function SwapTray({ isAlwaysOpen = false }: Props) {
         duration: 0.5,
         ease: [0.4, 0, 0.2, 1],
       }}
-      className="fixed top-0 right-0 bottom-0 z-50 h-screen"
+      className="fixed top-0 right-0 bottom-0 z-50 h-screen hidden md:block"
     >
       {displaySwap && !isAlwaysOpen && (
         <div className="absolute top-topbar right-0 inset-y-0 w-[calc(100%+40px)] fade-out-text--left backdrop-blur-xl" />

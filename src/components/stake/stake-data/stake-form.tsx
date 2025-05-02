@@ -8,6 +8,7 @@ import {
   Spinner,
 } from '@/components/ui'
 import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
+import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -32,6 +33,14 @@ export function StakeForm({ initialAmount = '' }: Props) {
     rawBalance: inputRawBalance,
     loading: inputBalanceLoading,
   } = useTokenBalance(walletAddress, SSE_MINT)
+
+  // Format the balance to match unstake form
+  const formattedBalance = formatSmartNumber(inputBalance, {
+    micro: true,
+    compact: true,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  })
 
   const { stake, isLoading: showStakeLoading } = useStake()
 
@@ -67,24 +76,26 @@ export function StakeForm({ initialAmount = '' }: Props) {
     }
 
     // Check if the value exceeds the balance
-    if (
-      BigInt(Math.floor(Math.pow(10, SSE_TOKEN_DECIMAL) * Number(value))) >
-      inputRawBalance
-    ) {
-      setInputError(t('error.amount_exceeds_your_balance'))
-      return false
+    if (inputRawBalance && numericValue > 0) {
+      const rawAmount = BigInt(
+        Math.floor(10 ** SSE_TOKEN_DECIMAL * numericValue)
+      )
+      if (rawAmount > inputRawBalance) {
+        setInputError(t('error.amount_exceeds_your_balance'))
+        return false
+      }
     }
 
     setInputError(null)
     return true
   }
 
-  // Utility function to format raw token amounts
-  const formatRawAmount = (rawAmount: bigint, decimals: bigint): string => {
+  // Helper function to format raw token amounts
+  const formatRawAmount = (rawAmount: bigint, decimals: number): string => {
     try {
       if (rawAmount === 0n) return '0'
 
-      const divisor = 10n ** decimals
+      const divisor = 10n ** BigInt(decimals)
       const integerPart = rawAmount / divisor
       const fractionPart = rawAmount % divisor
 
@@ -94,36 +105,30 @@ export function StakeForm({ initialAmount = '' }: Props) {
 
       // Convert to string and pad with zeros
       let fractionStr = fractionPart.toString()
-      while (fractionStr.length < Number(decimals)) {
+      while (fractionStr.length < decimals) {
         fractionStr = '0' + fractionStr
       }
 
       // Remove trailing zeros
       fractionStr = fractionStr.replace(/0+$/, '')
 
-      return fractionStr
-        ? `${integerPart}.${fractionStr}`
-        : integerPart.toString()
+      return `${integerPart}${fractionStr ? `.${fractionStr}` : ''}`
     } catch (err) {
       console.error('Error formatting amount:', err)
       return '0'
     }
   }
 
-  // Add handlers for quarter, half and max amount
+  // Handle percentage amount buttons
   const handleQuarterAmount = () => {
-    if (!inputBalance || typeof inputRawBalance !== 'bigint') return
+    if (!inputRawBalance) return
 
     try {
-      // Calculate quarter of the raw balance using bigint arithmetic
       const quarterAmount = inputRawBalance / 4n
-      const formattedQuarter = formatRawAmount(
-        quarterAmount,
-        BigInt(SSE_TOKEN_DECIMAL)
-      )
+      const formattedAmount = formatRawAmount(quarterAmount, SSE_TOKEN_DECIMAL)
 
-      if (validateAmount(formattedQuarter)) {
-        setDisplayAmount(formattedQuarter)
+      if (validateAmount(formattedAmount)) {
+        setDisplayAmount(formattedAmount)
         if (debouncedUpdate) clearTimeout(debouncedUpdate)
       }
     } catch (err) {
@@ -131,37 +136,15 @@ export function StakeForm({ initialAmount = '' }: Props) {
     }
   }
 
-  const handleMaxAmount = () => {
-    if (!inputBalance || typeof inputRawBalance !== 'bigint') return
-
-    try {
-      const formattedMax = formatRawAmount(
-        inputRawBalance,
-        BigInt(SSE_TOKEN_DECIMAL)
-      )
-
-      if (validateAmount(formattedMax)) {
-        setDisplayAmount(formattedMax)
-        if (debouncedUpdate) clearTimeout(debouncedUpdate)
-      }
-    } catch (err) {
-      console.error('Error calculating max amount:', err)
-    }
-  }
-
   const handleHalfAmount = () => {
-    if (!inputBalance || typeof inputRawBalance !== 'bigint') return
+    if (!inputRawBalance) return
 
     try {
-      // Calculate half of the raw balance using bigint arithmetic
       const halfAmount = inputRawBalance / 2n
-      const formattedHalf = formatRawAmount(
-        halfAmount,
-        BigInt(SSE_TOKEN_DECIMAL)
-      )
+      const formattedAmount = formatRawAmount(halfAmount, SSE_TOKEN_DECIMAL)
 
-      if (validateAmount(formattedHalf)) {
-        setDisplayAmount(formattedHalf)
+      if (validateAmount(formattedAmount)) {
+        setDisplayAmount(formattedAmount)
         if (debouncedUpdate) clearTimeout(debouncedUpdate)
       }
     } catch (err) {
@@ -169,15 +152,61 @@ export function StakeForm({ initialAmount = '' }: Props) {
     }
   }
 
+  const handleMaxAmount = () => {
+    if (!inputRawBalance) return
+
+    try {
+      const formattedAmount = formatRawAmount(
+        inputRawBalance,
+        SSE_TOKEN_DECIMAL
+      )
+
+      if (validateAmount(formattedAmount)) {
+        setDisplayAmount(formattedAmount)
+        if (debouncedUpdate) clearTimeout(debouncedUpdate)
+      }
+    } catch (err) {
+      console.error('Error calculating max amount:', err)
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+
+    // Only allow valid number patterns
+    if (
+      val === '' ||
+      val === '.' ||
+      /^[0]?\.[0-9]*$/.test(val) ||
+      /^[0-9]*\.?[0-9]*$/.test(val)
+    ) {
+      setDisplayAmount(val)
+      if (debouncedUpdate) clearTimeout(debouncedUpdate)
+
+      const timeout = setTimeout(() => {
+        validateAmount(val)
+      }, 500)
+
+      setDebouncedUpdate(timeout)
+    }
+  }
+
+  const handleStake = () => {
+    if (!displayAmount || Number(displayAmount) <= 0 || inputError) {
+      return
+    }
+    stake(displayAmount)
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start md:items-center">
           <p>{t('common.amount')}</p>
           {!inputBalanceLoading && inputBalance && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
-                {t('common.balance')}: {inputBalance}
+                {t('common.balance')}: {formattedBalance}
               </p>
               <div className="flex items-center justify-end space-x-2">
                 <Button
@@ -217,22 +246,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
         <Input
           type="text"
           value={displayAmount}
-          onChange={(e) => {
-            const val = e.target.value
-            if (
-              val === '' ||
-              val === '.' ||
-              /^[0]?\.[0-9]*$/.test(val) ||
-              /^[0-9]*\.?[0-9]*$/.test(val)
-            ) {
-              setDisplayAmount(val)
-              if (debouncedUpdate) clearTimeout(debouncedUpdate)
-              const timeout = setTimeout(() => {
-                validateAmount(val)
-              }, 500)
-              setDebouncedUpdate(timeout)
-            }
-          }}
+          onChange={handleInputChange}
           placeholder="0.00"
           disabled={showStakeLoading}
         />
@@ -256,8 +270,8 @@ export function StakeForm({ initialAmount = '' }: Props) {
       ) : (
         <Button
           className="mt-4 w-full"
-          onClick={() => stake(displayAmount)}
-          disabled={showStakeLoading}
+          onClick={handleStake}
+          disabled={showStakeLoading || !displayAmount || !!inputError}
         >
           {showStakeLoading ? <Spinner /> : t('trade.stake')}
         </Button>

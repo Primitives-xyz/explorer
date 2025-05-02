@@ -4,7 +4,7 @@ import Image from 'next/image'
 interface Props {
   mainUsername: string
   username: string
-  image?: string
+  image?: string | null
   info?: string
 }
 

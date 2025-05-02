@@ -46,7 +46,7 @@ export function SearchButton() {
         <Button
           variant={ButtonVariant.GHOST}
           className={cn(
-            'flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
+            'hidden md:flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
             {
               'bg-primary text-background': open,
             }

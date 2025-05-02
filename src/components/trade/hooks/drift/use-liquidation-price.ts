@@ -1,5 +1,7 @@
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
+import { useInitializeDrift } from './use-initialize-drift'
+import { useDriftUsers } from './use-drift-users'
 
 interface UseLiquidationPriceProps {
   symbol: string
@@ -15,16 +17,23 @@ export function useLiquidationPrice({
   const [liquidationPrice, setLiquidationPrice] = useState<number | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const { walletAddress } = useCurrentWallet()
+  const { driftClient } = useInitializeDrift()
+  const { accountIds } = useDriftUsers()
+  const { walletAddress, isLoggedIn } = useCurrentWallet()
 
   useEffect(() => {
     const fetchLiquidationPrice = async () => {
       try {
+        if (!isLoggedIn || !driftClient) return
+        if (!accountIds.length) return
+        
         setLoading(true)
 
-        const baseurl = `api/drift/liqprice/?wallet=${walletAddress}&subAccountId=0&symbol=SOL&direction=${direction}&amount=${Number(amount)}`
+        const baseurl = `api/drift/liqprice/?wallet=${walletAddress}&subAccountId=0&symbol=SOL&direction=${direction}&amount=${Number(
+          amount
+        )}`
         const res = await fetch(baseurl, {
-          method: 'GET'
+          method: 'GET',
         })
         const data = await res.json()
         if (!data.error) {
@@ -42,12 +51,7 @@ export function useLiquidationPrice({
     }
 
     fetchLiquidationPrice()
-  }, [
-    walletAddress,
-    symbol,
-    amount,
-    direction,
-  ])
+  }, [walletAddress, symbol, amount, direction])
 
   return {
     liquidationPrice,

@@ -5,8 +5,6 @@
  * IDL can be found at `target/idl/sse_stake.json`.
  */
 export type SseStake = {
-  name: 'sseStake'
-  version: '0.1.0'
   address: 'sseobVr99LLaERn6JvFDC7E9EjYFdP4ggpM51P9XBHJ'
   metadata: {
     name: 'sseStake'
@@ -675,7 +673,12 @@ export type SseStake = {
           address: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'
         }
       ]
-      args: []
+      args: [
+        {
+          name: 'amount'
+          type: 'u64'
+        }
+      ]
     }
   ]
   accounts: [

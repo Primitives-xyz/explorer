@@ -15,7 +15,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const { walletAddy } = await await req.json()
+    const { walletAddy, amount } = await await req.json()
     const connection = new Connection(process.env.RPC_URL || '')
     const wallet = new NodeWallet(Keypair.generate())
     const provider = new anchor.AnchorProvider(connection, wallet, {
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     )
 
     const unstakeTx = await program.methods
-      .unstake()
+      .unstake(new anchor.BN(amount))
       .accounts({
         globalTokenAccount,
         user: new PublicKey(walletAddy),

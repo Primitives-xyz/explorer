@@ -1,11 +1,10 @@
-'use client'
-
-import { FollowingTransactions } from './following-transactions/following-transactions'
+import { HomeTransactions } from '@/components/home-transactions/components/home-transactions'
 
 export function HomeContent() {
   return (
     <div className="w-full pb-6">
-      <FollowingTransactions />
+      {/* <FollowingTransactions /> */}
+      <HomeTransactions />
     </div>
   )
 }

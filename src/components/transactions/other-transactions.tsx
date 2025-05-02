@@ -34,7 +34,7 @@ export function OtherTransactions({ transaction, sourceWallet }: Props) {
         </TransactionsHeader>
       </CardHeader>
       <CardContent>
-        <div className="flex bg-card-accent rounded-lg px-4 gap-4 items-center justify-between h-12 ml-12">
+        <div className="flex bg-card-accent rounded-lg px-4 gap-4 items-center justify-between h-12 md:ml-12">
           <p className="text-xs">No description available</p>
         </div>
       </CardContent>

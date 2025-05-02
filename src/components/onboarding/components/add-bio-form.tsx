@@ -76,14 +76,14 @@ export function AddBioForm({ suggestedBios, mainProfile, setStep }: Props) {
         className="flex-1 flex flex-col"
       >
         <div
-          className={cn({
-            'grid grid-cols-2 gap-8': !!suggestedBios?.length,
-            'flex justify-center': !suggestedBios?.length,
+          className={cn('space-y-4 md:space-y-0', {
+            'grid grid-cols-1 md:grid-cols-2 md:gap-8': !!suggestedBios?.length,
+            'flex flex-col md:flex-row justify-center': !suggestedBios?.length,
           })}
         >
           <div
             className={cn({
-              'w-[350px]': !suggestedBios?.length,
+              'w-full md:w-[350px]': !suggestedBios?.length,
             })}
           >
             <FormField
@@ -116,13 +116,17 @@ export function AddBioForm({ suggestedBios, mainProfile, setStep }: Props) {
         <div className="flex justify-between mt-auto">
           <Button
             onClick={() => setStep(EOnboardingSteps.IMAGE)}
-            className="w-[160px]"
+            className="w-[48%] md:w-[160px]"
             disabled={loading}
             variant={ButtonVariant.OUTLINE}
           >
             Back
           </Button>
-          <Button type="submit" className="w-[160px]" loading={loading}>
+          <Button
+            type="submit"
+            className="w-[48%] md:w-[160px]"
+            loading={loading}
+          >
             Next
           </Button>
         </div>
