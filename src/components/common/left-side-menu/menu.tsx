@@ -34,6 +34,13 @@ export function Menu({ setOpen }: Props) {
         onlyDesktop
       />
 
+      <Entry
+        title="Stream"
+        icon={TrendingUp}
+        href={route('stream')}
+        setOpen={setOpen}
+      />
+
       <SearchButton />
 
       <Entry
@@ -71,13 +78,6 @@ export function Menu({ setOpen }: Props) {
       {process.env.NODE_ENV === 'production' && (
         <DialectNotificationsComponent />
       )}
-
-      <Entry
-        title="Stream"
-        icon={TrendingUp}
-        href={route('stream')}
-        setOpen={setOpen}
-      />
 
       {/* <Entry
         title="Design System"
