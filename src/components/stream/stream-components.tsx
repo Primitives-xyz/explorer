@@ -1,9 +1,6 @@
 import { Card, CardContent } from '@/components/ui'
 import { useEffect, useRef, useState } from 'react'
 import { MintAggregate } from './stream-types'
-import { formatNumber, formatTimeAgo } from '@/utils/utils'
-import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
-import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { TokenIdentity } from './token-identity'
 import { TokenPrice } from './token-price'
@@ -14,32 +11,22 @@ import { TokenRealLiquidity } from './token-real-liquidity'
 import { TokenBuySellBar } from './token-buy-sell-bar'
 import { TokenBondedBar } from './token-bonded-bar'
 import { TokenBadges } from './token-badges'
+import { TokenSmallBuy } from './token-small-buy'
 
-export function TokenRow({ agg, onClick, createdAt, volume }: { agg: MintAggregate, onClick: (mint: string) => void, createdAt?: number | null, volume?: number }) {
-  const { isMobile } = useIsMobile()
+export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', solPrice = null }: { agg: MintAggregate, onClick: (mint: string, amount: number) => void, createdAt?: number | null, volume?: number, currency?: 'SOL' | 'USD', solPrice?: number | null }) {
   const symbol = agg.mintSymbol
   const name = agg.mintName
   const image = agg.mintImage
   const decimals = agg.decimals ?? 9
   const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0]
-  const uniqueTraderCount = (agg as any).uniqueTraders ? (agg as any).uniqueTraders.size : 0
-  const topWallets = (agg as any).walletVolumes
-    ? Object.entries((agg as any).walletVolumes)
-        .map(([wallet, stats]: [string, any]) => ({ wallet, totalVolume: stats.totalVolume }))
-        .sort((a, b) => b.totalVolume - a.totalVolume)
-        .slice(0, 3)
-    : []
-  const totalVolume = (agg as any).volumePerToken || 0
+  const topWallets = agg.topWallets || []
+  const totalVolume = agg.volumePerToken || 0
 
-  // Derived values
+  // Use pricePerToken from agg
   let lastTradePriceSol: string | null = null
-  if (lastTrade && lastTrade.tokenAmount && Number(lastTrade.tokenAmount) > 0 && lastTrade.solAmount) {
-    const price = Number(lastTrade.solAmount) / Number(lastTrade.tokenAmount)
-    lastTradePriceSol = price.toLocaleString(undefined, { maximumFractionDigits: 6 })
+  if (agg.pricePerToken != null) {
+    lastTradePriceSol = agg.pricePerToken.toLocaleString(undefined, { maximumFractionDigits: 8 })
   }
-
-  // Calculate real liquidity in SOL
-  const realLiquidity = lastTrade && lastTrade.realSolReserves ? Number(lastTrade.realSolReserves) : 0
 
   // Animation state
   const [flash, setFlash] = useState(false)
@@ -54,11 +41,11 @@ export function TokenRow({ agg, onClick, createdAt, volume }: { agg: MintAggrega
     }
   }, [agg.lastUpdate])
 
+  // Remove onClick from Card, move buy logic to button
   return (
     <Card
-      className={`w-full overflow-visible transition-all mb-2 ${flash ? 'flash-shake-row flash-shake-row-text-black' : 'bg-neutral-900'} hover:bg-neutral-800 cursor-pointer`}
+      className={`w-full overflow-visible transition-all mb-2 ${flash ? 'flash-shake-row flash-shake-row-text-black' : 'bg-neutral-900'} hover:bg-neutral-800`}
       style={{ border: flash ? '2px solid #fff700' : '2px solid transparent' }}
-      onClick={() => onClick(agg.mint)}
     >
       <CardContent className="w-full px-2 py-2">
         <div
@@ -70,15 +57,16 @@ export function TokenRow({ agg, onClick, createdAt, volume }: { agg: MintAggrega
             {/* Left: Identity and Real Liquidity */}
             <div className="flex flex-col min-w-0 gap-1">
               <TokenIdentity agg={agg} symbol={symbol} name={name} image={image} />
-              <TokenRealLiquidity realSolReserves={lastTrade?.realSolReserves} />
+              <TokenRealLiquidity realSolReserves={lastTrade?.realSolReserves} currency={currency} solPrice={solPrice} />
               <TokenBadges agg={agg} />
+              <TokenSmallBuy onBuy={onClick} mint={agg.mint} />
             </div>
             {/* Right: Price, Top Traders, Created, Volume */}
             <div className="flex flex-col items-end min-w-0 gap-1">
-              <TokenPrice lastTradePriceSol={lastTradePriceSol} />
+              <TokenPrice lastTradePriceSol={lastTradePriceSol} currency={currency} solPrice={solPrice} />
               <TokenLiquidityProviders topWallets={topWallets} totalVolume={totalVolume} />
               <TokenCreatedTime createdAt={createdAt} />
-              <TokenVolume volume={volume} />
+              <TokenVolume volume={volume} currency={currency} solPrice={solPrice} />
             </div>
           </div>
           {/* Double bars at the bottom */}
