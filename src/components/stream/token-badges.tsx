@@ -12,7 +12,7 @@ export function TokenBadges({ agg }: { agg?: MintAggregate }) {
     key: string,
     icon: React.ReactNode,
     tooltip: string,
-    variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'ghost',
+    variant: 'default' | 'secondary' | 'destructive' | 'outline',
     show: (agg: MintAggregate) => boolean
   }[] = [
     {
@@ -48,7 +48,7 @@ export function TokenBadges({ agg }: { agg?: MintAggregate }) {
       key: 'recent-rug',
       icon: '☠️',
       tooltip: 'Low liquidity post graduation.',
-      variant: 'ghost',
+      variant: 'outline',
       show: (agg) => {
         if (!agg.fullyBonded) return false;
         const lastTrade = agg.lastTrade?.eventData?.tradeEvents?.[0];
