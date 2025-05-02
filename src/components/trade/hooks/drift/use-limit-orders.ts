@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useToastContent } from './use-toast-content'
+import { useDriftUsers } from './use-drift-users'
 
 interface Props {
   subAccountId: number
@@ -22,9 +23,10 @@ export function useLimitOrders({ subAccountId, symbol }: Props) {
   const [loading, setLoading] = useState<boolean>(false)
   const [cancelLoading, setCancelLoading] = useState<boolean>(false)
   const { driftClient } = useInitializeDrift()
+  const { accountIds } = useDriftUsers()
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
   const [limitOrders, setLimitOrders] = useState<LimitOrderProps[]>([])
-  const { walletAddress } = useCurrentWallet()
+  const { walletAddress, isLoggedIn } = useCurrentWallet()
 
   const cancelOrder = async (orderId: number, subAccountId: number) => {
     if (!driftClient) {
@@ -65,6 +67,9 @@ export function useLimitOrders({ subAccountId, symbol }: Props) {
 
   const fetchLimitOrders = useCallback(async () => {
     try {
+
+      if (!isLoggedIn || !driftClient) return
+      if (!accountIds.length) return
       setLoading(true)
 
       const baseUrl = `/api/drift/limitorders/?wallet=${walletAddress}&&subAccountId=${subAccountId}&&symbol=${symbol}`
