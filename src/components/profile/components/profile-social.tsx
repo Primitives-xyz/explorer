@@ -129,11 +129,11 @@ export function ProfileSocial({ walletAddress }: Props) {
                   )}
                 </>
               ) : (
-                mainProfile?.username 
-                && mainProfile.username != ''
-                && explorerProfile?.profile.username 
-                && explorerProfile.profile.username != ''
-                && mainProfile.username === explorerProfile.profile.username && (
+                mainProfile?.username && 
+                mainProfile.username !== '' && 
+                explorerProfile?.profile?.username && 
+                explorerProfile.profile.username !== '' && 
+                mainProfile.username === explorerProfile.profile.username && (
                   <Card>
                     <CardContent>
                       <p>
@@ -144,7 +144,7 @@ export function ProfileSocial({ walletAddress }: Props) {
                         variant={ButtonVariant.OUTLINE_WHITE}
                         className="w-full"
                         onClick={() =>
-                          initiateTwitterLogin(explorerProfile?.profile?.id)
+                          initiateTwitterLogin(explorerProfile.profile.id)
                         }
                       >
                         Connect
