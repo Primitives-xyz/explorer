@@ -15,7 +15,7 @@ export function StreamContent() {
   const { setOpen, setInputs } = useSwapStore()
   const [mintMap, setMintMap] = useState<Record<string, MintAggregate>>({})
   const wsRef = useRef<WebSocket | null>(null)
-  const [currency, setCurrency] = useState<'SOL' | 'USD'>('SOL')
+  const [currency, setCurrency] = useState<'SOL' | 'USD'>('USD')
   const { price: solPrice, loading: solPriceLoading } = useTokenUSDCPrice({ tokenMint: 'So11111111111111111111111111111111111111112', decimals: 9 })
 
   useEffect(() => {
