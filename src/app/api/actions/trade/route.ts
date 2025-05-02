@@ -339,12 +339,12 @@ async function fetchJupiterQuote({
     const response = await fetch(quoteUrl.toString())
 
     if (!response.ok) {
-      throw new Error(`Jupiter quote API error: ${response.statusText}`)
+      throw new Error(`Quote API error: ${response.statusText}`)
     }
 
     return await response.json()
   } catch (error) {
-    console.error('Error fetching Jupiter quote:', error)
+    console.error('Error fetching Quote:', error)
     throw error
   }
 }
@@ -422,7 +422,7 @@ async function buildSwapTransactionBad({
         const errorDetails = await errorClone.text()
         console.error(`Error with endpoint ${endpoint}:`, errorDetails)
         lastError = new Error(
-          `Jupiter swap API error (${endpoint}): ${response.statusText}`
+          `Swap API error (${endpoint}): ${response.statusText}`
         )
       } catch (err: any) {
         console.error(`Error with endpoint ${endpoint}:`, err)
@@ -432,7 +432,7 @@ async function buildSwapTransactionBad({
 
     // If no endpoint worked, throw the last error
     if (!response || !response.ok) {
-      throw lastError || new Error('All Jupiter swap API endpoints failed')
+      throw lastError || new Error('All swap API endpoints failed')
     }
 
     const swapResponse = await response.json()
