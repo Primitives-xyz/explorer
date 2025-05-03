@@ -206,7 +206,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
           {!inputBalanceLoading && inputBalance && (
             <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
-                {t('common.balance')}: {formattedBalance}
+                {t('common.balance')}: {inputBalance}
               </p>
               <div className="flex items-center justify-end space-x-2">
                 <Button
