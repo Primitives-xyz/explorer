@@ -10,6 +10,7 @@ import {
 import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { formatNumber } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
@@ -206,7 +207,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
           {!inputBalanceLoading && inputBalance && (
             <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
-                {t('common.balance')}: {inputBalance}
+                {t('common.balance')}: {formatNumber(inputBalance)}
               </p>
               <div className="flex items-center justify-end space-x-2">
                 <Button
