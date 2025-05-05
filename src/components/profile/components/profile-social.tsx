@@ -26,17 +26,26 @@ interface Props {
 
 export function ProfileSocial({ walletAddress }: Props) {
   const { namespaces, hasXIdentity, explorerProfile, loading } =
-    useGetProfileExternalNamespaces({
-      walletAddress,
-    })
+    useGetProfileExternalNamespaces({ walletAddress })
 
   const { initiateTwitterLogin } = useTwitterOAuth()
   const { mainProfile } = useCurrentWallet()
 
-  const defaultTabValue =
-    hasXIdentity && namespaces?.[0]?.namespace
-      ? namespaces?.[0]?.namespace?.name
-      : 'x-default-tab'
+  const isSameUsername =
+    mainProfile?.username &&
+    explorerProfile?.profile?.username &&
+    mainProfile.username === explorerProfile.profile.username
+
+  const showXTab = isSameUsername || hasXIdentity
+  const xTabValue = hasXIdentity
+    ? namespaces?.[0]?.namespace?.name
+    : 'x-default-tab'
+
+  const fallbackTab = namespaces?.[hasXIdentity ? 1 : 0]?.namespace?.name ?? ''
+
+  const defaultTabValue = showXTab ? xTabValue : fallbackTab
+
+  const xTabProfile = namespaces?.[0]?.profiles?.[0]
 
   return (
     <Card>
@@ -54,37 +63,28 @@ export function ProfileSocial({ walletAddress }: Props) {
           <Tabs defaultValue={defaultTabValue}>
             <div className="overflow-auto w-full">
               <TabsList>
-                {hasXIdentity &&
-                  mainProfile?.username ===
-                    explorerProfile?.profile.username && (
-                    <TabsTrigger
-                      key="x-tab"
-                      variant={TabVariant.SOCIAL}
-                      value={
-                        hasXIdentity
-                          ? namespaces[0].namespace.name
-                          : 'x-default-tab'
-                      }
-                      className="flex-1 gap-1.5"
-                    >
-                      <div className="w-5 h-5 shrink-0">
-                        <Image
-                          src={
-                            hasXIdentity
-                              ? namespaces[0]?.namespace?.faviconURL
-                              : '/images/x.png'
-                          }
-                          alt="x logo"
-                          width={16}
-                          height={16}
-                          className="w-full h-full"
-                        />
-                      </div>{' '}
-                      {/* <span>
-                    {hasXIdentity ? namespaces[0].namespace.readableName : ''}
-                    </span> */}
-                    </TabsTrigger>
-                  )}
+                {showXTab && (
+                  <TabsTrigger
+                    key="x-tab"
+                    variant={TabVariant.SOCIAL}
+                    value={xTabValue}
+                    className="flex-1 gap-1.5"
+                  >
+                    <div className="w-5 h-5 shrink-0">
+                      <Image
+                        src={
+                          hasXIdentity
+                            ? namespaces[0]?.namespace?.faviconURL
+                            : '/images/x.png'
+                        }
+                        alt="x logo"
+                        width={16}
+                        height={16}
+                        className="w-full h-full"
+                      />
+                    </div>
+                  </TabsTrigger>
+                )}
 
                 {namespaces
                   .filter((_, index) => !hasXIdentity || index > 0)
@@ -112,58 +112,45 @@ export function ProfileSocial({ walletAddress }: Props) {
               </TabsList>
             </div>
 
-            <TabsContent
-              key={
-                hasXIdentity ? namespaces[0].namespace.name : 'x-default-tab'
-              }
-              value={
-                hasXIdentity ? namespaces[0].namespace.name : 'x-default-tab'
-              }
-            >
-              {hasXIdentity ? (
-                <>
-                  <ProfileExternalProfile
-                    profile={namespaces[0]?.profiles?.[0]}
-                  />
-                  {explorerProfile && (
-                    <TwitterFeed profile={namespaces[0]?.profiles?.[0]} />
-                  )}
-                </>
-              ) : (
-                mainProfile?.username &&
-                mainProfile.username !== '' &&
-                explorerProfile?.profile?.username &&
-                explorerProfile.profile.username !== '' &&
-                mainProfile.username === explorerProfile.profile.username && (
-                  <Card>
-                    <CardContent>
-                      <p>
-                        Connect your X to let others know what you're up to...
-                      </p>
-                      <br />
-                      <Button
-                        variant={ButtonVariant.OUTLINE_WHITE}
-                        className="w-full"
-                        onClick={() =>
-                          initiateTwitterLogin(explorerProfile.profile.id)
-                        }
-                      >
-                        Connect
-                        <div>
-                          <Image
-                            src="/images/x.png"
-                            alt="x"
-                            width={16}
-                            height={16}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )
-              )}
-            </TabsContent>
+            {showXTab && (
+              <TabsContent key={xTabValue} value={xTabValue}>
+                {hasXIdentity ? (
+                  <>
+                    <ProfileExternalProfile profile={xTabProfile} />
+                    {explorerProfile && <TwitterFeed profile={xTabProfile} />}
+                  </>
+                ) : (
+                  isSameUsername && (
+                    <Card>
+                      <CardContent>
+                        <p>
+                          Connect your X to let others know what you're up to...
+                        </p>
+                        <br />
+                        <Button
+                          variant={ButtonVariant.OUTLINE_WHITE}
+                          className="w-full"
+                          onClick={() =>
+                            initiateTwitterLogin(explorerProfile.profile.id)
+                          }
+                        >
+                          Connect
+                          <div>
+                            <Image
+                              src="/images/x.png"
+                              alt="x"
+                              width={16}
+                              height={16}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )
+                )}
+              </TabsContent>
+            )}
 
             {namespaces
               .filter((_, index) => !hasXIdentity || index > 0)
