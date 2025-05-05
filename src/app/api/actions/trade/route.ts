@@ -240,7 +240,7 @@ export async function POST(req: NextRequest) {
       {
         quoteResponse: quote,
         walletAddress: userPublicKey,
-        slippageMode: 'fixed',
+        slippageMode: 'auto',
         slippageBps: DEFAULT_SLIPPAGE_BPS,
         mintAddress: outputMint,
         isCopyTrade: false,

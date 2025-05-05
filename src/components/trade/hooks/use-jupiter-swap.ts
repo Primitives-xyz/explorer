@@ -125,11 +125,7 @@ export function useJupiterSwap({
       )
       const QUOTE_URL = `
         https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${
-        platformFeeBps === 1
-          ? 0
-          : platformFeeBps !== 0
-          ? platformFeeBps ?? PLATFORM_FEE_BPS
-          : 1
+        platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
       }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
       `
       const response = await fetch(QUOTE_URL).then((res) => res.json())
@@ -295,7 +291,7 @@ export function useJupiterSwap({
           mintAddress: outputMint,
           sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
           sseTokenAccount: sseFeeDestinationAtaString,
-          slippageMode: 'fixed',
+          slippageMode: slippageBps === 'auto' ? 'auto' : 'fixed',
           slippageBps:
             slippageBps === 'auto'
               ? calculateAutoSlippage(priceImpact)
