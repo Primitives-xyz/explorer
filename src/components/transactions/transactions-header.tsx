@@ -160,7 +160,7 @@ function TimeAgo({
   transaction: Transaction | ExtendedTransaction
 }) {
   return (
-    <p className="text-muted-foreground text-xs gap-1">
+    <p className="text-muted-foreground text-xs gap-1 flex items-center">
       <span className="desktop">•</span>
       {formatTimeAgo(new Date(transaction.timestamp * 1000))}
     </p>
