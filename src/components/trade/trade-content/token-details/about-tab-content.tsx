@@ -73,7 +73,7 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
             overview &&
             overview.extensions &&
             (overview.extensions.website || overview.extensions.twitter)
-              ? 'w-1/2'
+              ? 'w-full md:w-1/2'
               : 'w-full'
           }`}
         >
