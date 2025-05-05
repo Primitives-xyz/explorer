@@ -96,7 +96,7 @@ export function TransactionsHeader({
                   })}
                 </Button>
               </div>
-              {!!onClickTradeButton && (
+              {/* {!!onClickTradeButton && (
                 <Button
                   variant={ButtonVariant.OUTLINE}
                   onClick={onClickTradeButton}
@@ -104,7 +104,7 @@ export function TransactionsHeader({
                 >
                   <ArrowRightLeft size={14} />
                 </Button>
-              )}
+              )} */}
             </div>
 
             <div className="flex items-center gap-2">
@@ -160,8 +160,9 @@ function TimeAgo({
   transaction: Transaction | ExtendedTransaction
 }) {
   return (
-    <p className="text-muted-foreground text-xs">
-      • {formatTimeAgo(new Date(transaction.timestamp * 1000))}
+    <p className="text-muted-foreground text-xs gap-1">
+      <span className="desktop">•</span>
+      {formatTimeAgo(new Date(transaction.timestamp * 1000))}
     </p>
   )
 }

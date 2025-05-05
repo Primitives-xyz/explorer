@@ -26,13 +26,7 @@ export function Menu({ setOpen }: Props) {
 
   return (
     <div className="space-y-4 md:space-y-2">
-      <Entry
-        title="Home"
-        icon={House}
-        href={route('home')}
-        setOpen={setOpen}
-        onlyDesktop
-      />
+      <Entry title="Home" icon={House} href={route('home')} setOpen={setOpen} />
 
       <Entry
         title="Stream"
