@@ -295,7 +295,7 @@ export function useJupiterSwap({
           mintAddress: outputMint,
           sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
           sseTokenAccount: sseFeeDestinationAtaString,
-          slippageMode: slippageBps === 'auto' ? 'auto' : 'fixed',
+          slippageMode: 'fixed',
           slippageBps:
             slippageBps === 'auto'
               ? calculateAutoSlippage(priceImpact)

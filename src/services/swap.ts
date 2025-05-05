@@ -146,9 +146,9 @@ export class SwapService {
   }> {
     try {
       const effectiveSlippageBps =
-        request.slippageMode === 'auto'
-          ? request.quoteResponse.slippageBps
-          : request.slippageBps
+        request.slippageMode === 'fixed'
+          ? request.slippageBps
+          : request.quoteResponse.slippageBps
 
       // Determine the fee account for Jupiter API based on SSE usage
       let jupiterFeeAccount: string | undefined = undefined
