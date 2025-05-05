@@ -389,7 +389,7 @@ async function buildSwapTransactionBad({
           prioritizationFeeLamports: {
             priorityLevelWithMaxLamports: {
               maxLamports: 1000000,
-              priorityLevel: 'veryHigh',
+              priorityLevel: 'medium',
             },
           },
         }
