@@ -49,7 +49,6 @@ export function Menu({ setOpen }: Props) {
         icon={Compass}
         href={route('discover')}
         setOpen={setOpen}
-        onlyDesktop
       />
 
       {/* <Entry title="Tokens" icon={CircleDollarSign} href={route('tokens')} /> */}
