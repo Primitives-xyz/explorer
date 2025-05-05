@@ -150,13 +150,21 @@ export class SwapService {
           ? request.quoteResponse.slippageBps
           : request.slippageBps
 
+      // Determine the fee account for Jupiter API based on SSE usage
+      let jupiterFeeAccount: string | undefined = undefined
+      if (!request.sseTokenAccount || !request.sseFeeAmount) {
+        // Only set Jupiter's feeAccount if NOT paying via separate SSE transfer
+        // Assuming FEE_WALLET is the public key intended for standard platform fees
+        jupiterFeeAccount = JUPITER_CONFIG.FEE_WALLET
+      }
+
       let swapResponse
       try {
         swapResponse = await fetchSwapInstructions({
           quoteResponse: request.quoteResponse,
           userPublicKey: request.walletAddress,
           prioritizationFeeLamports: request.priorityFee,
-          feeAccount: outputAta.toString(),
+          feeAccount: jupiterFeeAccount,
           slippageBps: effectiveSlippageBps,
         })
       } catch (error: any) {
