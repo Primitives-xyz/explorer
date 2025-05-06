@@ -1,5 +1,5 @@
 // Local types and hooks
-import type { NFTTokenInfo } from '@/types/Token'
+import type { NFTTokenInfo } from '@/types/token'
 export interface CollectionListItem {
   pdaAddress: string
   auctionHouse: string
