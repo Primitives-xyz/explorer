@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
       const entryPrice = Math.abs(quoteEntryAmount / baseAssetAmount)
       const unrealizedPnL = (Number(marketPrice) - entryPrice) * baseAssetAmount
       const unrealizedPnlPercentage =
-        (unrealizedPnL / (baseAssetAmount * Number(marketPrice))) * 100
+        Math.abs(unrealizedPnL / (baseAssetAmount * Number(marketPrice))) * 100
 
       const marketInfo = PerpMarkets[env].find(
         (market) => market.marketIndex === position.marketIndex
