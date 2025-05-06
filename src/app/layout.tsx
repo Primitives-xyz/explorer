@@ -159,7 +159,7 @@ export default async function RootLayout({
               <div className="relative z-20">
                 <Toaster />
 
-                {/* <Onboarding /> */}
+                <Onboarding />
 
                 <ActivityTape />
                 <MobileHeader />
