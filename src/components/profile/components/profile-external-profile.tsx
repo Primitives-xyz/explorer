@@ -3,7 +3,7 @@ import { Button, Card, CardContent, CardVariant } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/route'
-import { cn } from '@/utils/utils'
+import { abbreviateWalletAddress, cn } from '@/utils/utils'
 import { ExternalLinkIcon } from 'lucide-react'
 
 interface Props {
@@ -15,6 +15,8 @@ export function ProfileExternalProfile({ profile }: Props) {
     profile.namespace.name !== EXPLORER_NAMESPACE &&
     (!profile.namespace.userProfileURL ||
       (profile.namespace.name === 'tribe.run' && !profile.wallet?.address))
+
+  const isSame = profile.profile.username === profile.wallet?.address
 
   return (
     <>
@@ -48,7 +50,11 @@ export function ProfileExternalProfile({ profile }: Props) {
             </div>
             <div className="flex-1 w-full overflow-hidden flex flex-col items-start justify-start gap-1">
               <div className="text-sm truncate text-secondary flex items-center gap-2">
-                @{profile.profile.username}{' '}
+                {isSame
+                  ? abbreviateWalletAddress({
+                      address: profile.profile.username,
+                    })
+                  : `@${profile.profile.username} `}
                 {!disabled && (
                   <ExternalLinkIcon className="text-foreground" size={14} />
                 )}
