@@ -12,7 +12,7 @@ export async function GET(
       {
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': 'llJkpcwT0BVs9Hi0x64ikxlMP8WID9JzNCUk9H',
+          'x-api-key': process.env.SOLANA_ID_API_KEY || '',
         },
       }
     )
