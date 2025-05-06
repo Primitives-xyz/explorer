@@ -112,12 +112,10 @@ export function Perpetual({ setTokenMint }: Props) {
 
   const { refreshFetchOpenPositions } = useOpenPositions({
     subAccountId: accountIds[0] || 0,
-    symbol,
   })
 
   const { refreshFetchLimitOrders } = useLimitOrders({
     subAccountId: accountIds[0] || 0,
-    symbol,
   })
 
   // Derived Data

@@ -1,11 +1,20 @@
-import { Connection, PublicKey } from '@solana/web3.js'
-import { BN, convertToNumber, DriftClient, PerpMarkets, PerpPosition, PRICE_PRECISION, QUOTE_PRECISION, Wallet } from '@drift-labs/sdk-browser'
+import {
+  BN,
+  convertToNumber,
+  DriftClient,
+  PerpMarkets,
+  PerpPosition,
+  PRICE_PRECISION,
+  QUOTE_PRECISION,
+  Wallet,
+} from '@drift-labs/sdk-browser'
+import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
-import { Keypair } from '@solana/web3.js'
 
 interface PerpsPositionInfoProps {
-  market: string,
-  direction: string,
+  market: string
+  marketIndex: number
+  direction: string
   baseAssetAmountInToken: number
   baseAssetAmountInUsd: number
   entryPrice: number
@@ -22,11 +31,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const walletAddress = searchParams.get('wallet')
     const subAccountId = searchParams.get('subAccountId')
-    const symbol = searchParams.get('symbol')
-    const marketPrice = searchParams.get('marketPrice')
 
     if (!walletAddress) {
-      console.log("Error: Not Wallet Address")
+      console.log('Error: Not Wallet Address')
       return NextResponse.json(
         { error: 'Wallet address is required' },
         { status: 400 }
@@ -34,17 +41,9 @@ export async function GET(request: NextRequest) {
     }
 
     if (!subAccountId) {
-      console.log("Error: Not Sub Account ID")
+      console.log('Error: Not Sub Account ID')
       return NextResponse.json(
         { error: 'SubAccountId is required' },
-        { status: 400 }
-      )
-    }
-
-    if (!marketPrice) {
-      console.log("Error: No marketPrice")
-      return NextResponse.json(
-        { error: 'marketPrice is required' },
         { status: 400 }
       )
     }
@@ -58,22 +57,10 @@ export async function GET(request: NextRequest) {
       env: env,
       authority: new PublicKey(walletAddress),
       subAccountIds: [Number(subAccountId)],
-      activeSubAccountId: Number(subAccountId)
+      activeSubAccountId: Number(subAccountId),
     })
 
     await driftClient.subscribe()
-
-    const marketInfo = PerpMarkets[env].find(
-      (market) => market.baseAssetSymbol === symbol
-    )
-
-    if (!marketInfo) {
-      console.log("Error: Not Market")
-      return NextResponse.json(
-        { error: 'No Market' },
-        { status: 400 }
-      )
-    }
 
     const user = driftClient.getUser()
 
@@ -88,28 +75,49 @@ export async function GET(request: NextRequest) {
     await user.subscribe()
 
     const perpPositions = user.getActivePerpPositions()
-    const liqPrice = convertToNumber(user.liquidationPrice(marketInfo.marketIndex), PRICE_PRECISION)
 
     let perpsPositionsInfo: PerpsPositionInfoProps[] = []
 
     perpPositions.forEach((position: PerpPosition) => {
-      const baseAssetAmount = convertToNumber(position.baseAssetAmount, new BN(10).pow(new BN(9)))
-      const quoteAssetAmount = convertToNumber(position.quoteAssetAmount, QUOTE_PRECISION)
+      const oraclePriceData = driftClient.getOracleDataForPerpMarket(
+        position.marketIndex
+      )
+      const marketPrice = convertToNumber(
+        oraclePriceData.price,
+        PRICE_PRECISION
+      )
+      const baseAssetAmount = convertToNumber(
+        position.baseAssetAmount,
+        new BN(10).pow(new BN(9))
+      )
+      const quoteAssetAmount = convertToNumber(
+        position.quoteAssetAmount,
+        QUOTE_PRECISION
+      )
       const entryPrice = Math.abs(quoteAssetAmount / baseAssetAmount)
       const unrealizedPnL = (Number(marketPrice) - entryPrice) * baseAssetAmount
-      const unrealizedPnlPercentage = unrealizedPnL / (baseAssetAmount * Number(marketPrice)) * 100
+      const unrealizedPnlPercentage =
+        (unrealizedPnL / (baseAssetAmount * Number(marketPrice))) * 100
 
-      if (baseAssetAmount) {
+      const marketInfo = PerpMarkets[env].find(
+        (market) => market.marketIndex === position.marketIndex
+      )
+
+      if (baseAssetAmount && marketInfo) {
         perpsPositionsInfo.push({
           market: marketInfo.symbol,
-          direction: baseAssetAmount > 0 ? "LONG" : "SHORT",
+          marketIndex: marketInfo.marketIndex,
+          direction: baseAssetAmount > 0 ? 'LONG' : 'SHORT',
           baseAssetAmountInToken: Math.abs(baseAssetAmount),
           baseAssetAmountInUsd: Math.abs(baseAssetAmount * Number(marketPrice)),
           entryPrice: entryPrice,
           markPrice: Number(marketPrice),
           pnlInUsd: unrealizedPnL,
           pnlInPercentage: unrealizedPnlPercentage,
-          liqPrice: liqPrice
+          liqPrice: convertToNumber(
+            user.liquidationPrice(position.marketIndex),
+            PRICE_PRECISION
+          ),
         })
       }
     })
