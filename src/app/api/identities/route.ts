@@ -22,6 +22,10 @@ function processWalletRelatedProfile(identity: any, elem: any) {
       userProfileURL: elem.namespace?.userProfileURL,
       faviconURL: elem.namespace?.faviconURL,
     },
+    socialCounts: {
+      followers: elem.socialCounts?.followers || 0,
+      following: elem.socialCounts?.following || 0,
+    }
   }
 }
 
@@ -41,6 +45,10 @@ function processContactRelatedProfile(elem: any) {
       userProfileURL: elem.namespace?.userProfileURL,
       faviconURL: elem.namespace?.faviconURL,
     },
+    socialCounts: {
+      followers: elem.socialCounts?.followers || 0,
+      following: elem.socialCounts?.following || 0,
+    }
   }
 }
 

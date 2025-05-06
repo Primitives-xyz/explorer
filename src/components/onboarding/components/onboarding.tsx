@@ -23,6 +23,7 @@ import { SuggestedFollow } from './suggested-follow'
 
 export function Onboarding() {
   const [open, setOpen] = useState(false)
+
   const {
     isLoggedIn,
     profiles,
@@ -98,7 +99,7 @@ export function Onboarding() {
       <DialogContent
         isStatic={lockModal}
         hideCloseButton={lockModal}
-        className="max-w-3xl min-h-[600px] flex flex-col"
+        className="max-w-full md:max-w-3xl min-h-[90%] md:min-h-[600px] flex flex-col"
       >
         <DialogHeader>
           <DialogTitle>{getModalTitle()}</DialogTitle>

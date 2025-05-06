@@ -24,7 +24,7 @@ export interface IProfile {
   created_at: number
   username: string
   bio: string
-  image?: string
+  image?: string | null
   namespace: string
   blockchain: BLOCKCHAIN
   wallet: IWallet
@@ -101,6 +101,7 @@ export interface ISuggestedProfile {
     name: string
     readableName: string
     faviconURL: string
+    userProfileURL?: string
   }[]
   profile: {
     blockchain: string

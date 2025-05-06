@@ -11,23 +11,45 @@ import {
   Compass,
   House,
   LucideIcon,
+  TrendingUp,
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { SearchButton } from '../../search/components/search-button'
 
-export function Menu() {
+interface Props {
+  setOpen?: (open: boolean) => void
+}
+
+export function Menu({ setOpen }: Props) {
   const { mainProfile } = useCurrentWallet()
 
   return (
-    <div className="space-y-2">
-      <Entry title="Home" icon={House} href={route('home')} />
+    <div className="space-y-4 md:space-y-2">
+      <Entry title="Home" icon={House} href={route('home')} setOpen={setOpen} />
+
+      <Entry
+        title="Stream"
+        icon={TrendingUp}
+        href={route('stream')}
+        setOpen={setOpen}
+      />
 
       <SearchButton />
 
-      <Entry title="Trade" icon={ArrowRightLeft} href={route('trade')} />
+      <Entry
+        title="Trade"
+        icon={ArrowRightLeft}
+        href={route('trade')}
+        setOpen={setOpen}
+      />
 
-      <Entry title="Discover" icon={Compass} href={route('discover')} />
+      <Entry
+        title="Discover"
+        icon={Compass}
+        href={route('discover')}
+        setOpen={setOpen}
+      />
 
       {/* <Entry title="Tokens" icon={CircleDollarSign} href={route('tokens')} /> */}
 
@@ -36,11 +58,19 @@ export function Menu() {
         icon={User}
         href={route('entity', { id: mainProfile?.username || '' })}
         disabled={!mainProfile?.username}
+        setOpen={setOpen}
       />
 
-      <Entry title="Stake" icon={Beef} href={route('stake')} />
+      <Entry
+        title="Stake"
+        icon={Beef}
+        href={route('stake')}
+        setOpen={setOpen}
+      />
 
-      <DialectNotificationsComponent />
+      {process.env.NODE_ENV === 'production' && (
+        <DialectNotificationsComponent />
+      )}
 
       {/* <Entry
         title="Design System"
@@ -56,9 +86,11 @@ interface IEntry {
   icon: LucideIcon
   href: string
   disabled?: boolean
+  onlyDesktop?: boolean
+  setOpen?: (open: boolean) => void
 }
 
-function Entry({ title, icon, href, disabled }: IEntry) {
+function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
@@ -67,12 +99,16 @@ function Entry({ title, icon, href, disabled }: IEntry) {
       disabled={disabled}
       variant={ButtonVariant.GHOST}
       className={cn(
-        'flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
+        'justify-start w-full gap-4 hover:bg-primary hover:text-background text-lg md:text-sm h-12 md:h-9',
         {
           'bg-primary text-background': pathname === href,
+          'hidden md:flex': onlyDesktop,
         }
       )}
       href={href}
+      onClick={() => {
+        setOpen && setOpen(false)
+      }}
     >
       <Icon size={20} />
       {title}

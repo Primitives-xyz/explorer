@@ -115,7 +115,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       _className
     )
 
-    const hoverEffect = disableHoverFeedback ? '' : 'hover:scale-105'
+    // const hoverEffect = disableHoverFeedback ? '' : 'hover:scale-105'
 
     return (
       <Comp
@@ -131,7 +131,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             : buttonVariants({
                 variant,
                 size,
-                className: cn(hoverEffect, className),
+                // className: cn(hoverEffect, className),
+                className,
               })
         )}
         ref={ref}

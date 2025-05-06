@@ -1,8 +1,3 @@
-import {
-  convertToNumber,
-  PerpMarkets,
-  PRICE_PRECISION,
-} from '@drift-labs/sdk-browser'
 import { useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
 
@@ -26,38 +21,20 @@ export function useMarketPrice({ symbol }: UseMarketPriceProps) {
       try {
         setLoading(true)
 
-        // Find the market for the requested symbol
-        const marketInfo = PerpMarkets[env].find(
-          (market) => market.baseAssetSymbol === symbol
-        )
+        const baseUrl = `/api/drift/marketprice/?symbol=${symbol}`
 
-        if (!marketInfo) {
-          setError('Market not found')
-          return
+        const res = await fetch(baseUrl, {
+          method: 'GET',
+        })
+        const data = await res.json()
+
+        if (!data.error) {
+          const marketPrice = data.marketPrice
+          setPrice(marketPrice)
+          setError(null)
+        } else {
+          setError(data.error)
         }
-
-        // Ensure client is subscribed
-        await driftClient.subscribe()
-
-        // Get the market index
-        const marketIndex = marketInfo.marketIndex
-
-        // Get oracle price data
-        const oraclePriceData =
-          driftClient.getOracleDataForPerpMarket(marketIndex)
-        if (!oraclePriceData) {
-          setError('Oracle price data not available')
-          return
-        }
-
-        // Convert price to human-readable format
-        const priceValue = convertToNumber(
-          oraclePriceData.price,
-          PRICE_PRECISION
-        )
-
-        setPrice(priceValue)
-        setError(null)
       } catch (err) {
         console.error('Error fetching market price:', err)
         setError('Failed to fetch market price')

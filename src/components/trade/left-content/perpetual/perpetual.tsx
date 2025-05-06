@@ -1,5 +1,6 @@
 'use client'
 
+import { OrderType } from '@/components/tapestry/models/drift.model'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import { useLeverageSize } from '@/components/trade/hooks/drift/use-leverage-size'
 import { useLiquidationPrice } from '@/components/trade/hooks/drift/use-liquidation-price'
@@ -16,23 +17,28 @@ import LimitOrder from '@/components/trade/left-content/perpetual/limit-order'
 import MarketOrder from '@/components/trade/left-content/perpetual/market-order'
 import { FilterTabs, Separator } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
+import { SOL_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { PositionDirection } from '@drift-labs/sdk-browser'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import AddFundsModal from './add-funds-modal'
-import { OrderType, PerpsMarketType, ProOrderType } from '@/components/tapestry/models/drift.model'
-import { SOL_MINT } from '@/utils/constants'
-import { useOpenPositions } from '../../hooks/drift/use-open-positions'
 import { useLimitOrders } from '../../hooks/drift/use-limit-orders'
+import { useOpenPositions } from '../../hooks/drift/use-open-positions'
+import AddFundsModal from './add-funds-modal'
 
 interface Props {
   setTokenMint?: (value: string) => void
 }
 
 const isValidNumericInput = (val: string) =>
-  val === '' || val === '.' || /^[0]?\.[0-9]*$/.test(val) || /^[0-9]*\.?[0-9]*$/.test(val)
+  val === '' ||
+  val === '.' ||
+  /^[0]?\.[0-9]*$/.test(val) ||
+  /^[0-9]*\.?[0-9]*$/.test(val)
 
-const restoreCursor = (e: React.ChangeEvent<HTMLInputElement>, cursor: number) => {
+const restoreCursor = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  cursor: number
+) => {
   setTimeout(() => {
     e.target.focus()
     e.target.setSelectionRange(cursor, cursor)
@@ -56,7 +62,8 @@ export function Perpetual({ setTokenMint }: Props) {
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
   const [reduceOnly, setRedulyOnly] = useState<boolean>(false)
-  const [selectedDirection, setSelectedDirection] = useState<DirectionFilterType>(DirectionFilterType.LONG)
+  const [selectedDirection, setSelectedDirection] =
+    useState<DirectionFilterType>(DirectionFilterType.LONG)
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
   const [slippageOption, setSlippageOption] = useState<string>('0.1')
   const [swift, setSwift] = useState<boolean>(false)
@@ -64,15 +71,17 @@ export function Perpetual({ setTokenMint }: Props) {
   const [amount, setAmount] = useState<string>('')
   const [orderAmount, setOrderAmount] = useState<string>('')
   const [symbol, setSymbol] = useState<string>('SOL')
-  const [limitPrice, setLimitPrice] = useState<string>("")
+  const [limitPrice, setLimitPrice] = useState<string>('')
   const [leverageValue, setLeverageValue] = useState<number>(1)
   const [isSizeByLeverage, setIsSizeByLeverage] = useState<boolean>(false)
 
   // Market
-  const { price: marketPrice, loading: priceLoading } = useMarketPrice({ symbol })
+  const { price: marketPrice, loading: priceLoading } = useMarketPrice({
+    symbol,
+  })
   const { userStats, loading: statsLoading } = useUserStats({
     subAccountId: accountIds[0] || 0,
-    symbol
+    symbol,
   })
   const { liquidationPrice, loading: liqPriceLoading } = useLiquidationPrice({
     symbol,
@@ -103,12 +112,10 @@ export function Perpetual({ setTokenMint }: Props) {
 
   const { refreshFetchOpenPositions } = useOpenPositions({
     subAccountId: accountIds[0] || 0,
-    symbol
   })
 
   const { refreshFetchLimitOrders } = useLimitOrders({
     subAccountId: accountIds[0] || 0,
-    symbol
   })
 
   // Derived Data
@@ -131,23 +138,27 @@ export function Perpetual({ setTokenMint }: Props) {
     }
   }
 
-  const handleAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    const cursorPosition = e.target.selectionStart || 0
+  const handleAmountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value
+      const cursorPosition = e.target.selectionStart || 0
 
-    setIsSizeByLeverage(false)
+      setIsSizeByLeverage(false)
 
-    if (!isValidNumericInput(val)) return
+      if (!isValidNumericInput(val)) return
 
-    const maxAmount = userStats?.maxTradeSize || 0
-    const totalAmountInUSD = Number(val) * marketPrice
+      const maxAmount = userStats?.maxTradeSize || 0
+      const totalAmountInUSD = Number(val) * marketPrice
 
-    const newVal = totalAmountInUSD > maxAmount ? (maxAmount / marketPrice).toFixed(2) : val
+      const newVal =
+        totalAmountInUSD > maxAmount
+          ? (maxAmount / marketPrice).toFixed(2)
+          : val
 
-    setAmount(newVal)
+      setAmount(newVal)
 
-    restoreCursor(e, cursorPosition)
-  },
+      restoreCursor(e, cursorPosition)
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [userStats, marketPrice]
   )
@@ -167,15 +178,18 @@ export function Perpetual({ setTokenMint }: Props) {
     setLeverageValue(newLeverage)
   }
 
-  const handleLimitPriceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    const cursor = e.target.selectionStart || 0
+  const handleLimitPriceChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value
+      const cursor = e.target.selectionStart || 0
 
-    if (!isValidNumericInput(val)) return
+      if (!isValidNumericInput(val)) return
 
-    setLimitPrice(val)
-    restoreCursor(e, cursor)
-  }, [])
+      setLimitPrice(val)
+      restoreCursor(e, cursor)
+    },
+    []
+  )
 
   useEffect(() => {
     if (!isSizeByLeverage) {
@@ -213,7 +227,7 @@ export function Perpetual({ setTokenMint }: Props) {
           blur={!accountIds.length}
         />
 
-        <Card className={`${!accountIds.length ? "blur-xs" : ""}`}>
+        <Card className={`${!accountIds.length ? 'blur-xs' : ''}`}>
           <CardContent>
             {/* Order Type */}
             <div className="flex justify-between items-center">
@@ -250,7 +264,6 @@ export function Perpetual({ setTokenMint }: Props) {
                 swift={swift}
                 userStats={userStats}
               />
-
             )}
 
             {orderType === OrderType.LIMIT && (
@@ -297,7 +310,7 @@ export function Perpetual({ setTokenMint }: Props) {
           setIsFundsModalOpen={setIsFundsModalOpen}
         />
 
-        <div className={`${!accountIds.length ? "blur-xs" : ""}`}>
+        <div className={`${!accountIds.length ? 'blur-xs' : ''}`}>
           <BottomPerpetual
             liqPriceLoading={liqPriceLoading}
             liquidationPrice={liquidationPrice}

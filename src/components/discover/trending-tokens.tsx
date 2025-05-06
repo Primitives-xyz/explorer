@@ -9,6 +9,7 @@ import { DataTable } from '@/components/ui/table/data-table'
 import { SortableHeader } from '@/components/ui/table/sortable-header'
 import { SOL_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
+import { useIsMobile } from '@/utils/use-is-mobile'
 import { cn, formatNumber } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import Image from 'next/image'
@@ -19,7 +20,9 @@ export function TrendingTokens() {
 
   const { setOpen, setInputs } = useSwapStore()
 
-  const columns: ColumnDef<ITrendingTokenWidthHolders>[] = [
+  const { isMobile } = useIsMobile()
+
+  const baseColumns: ColumnDef<ITrendingTokenWidthHolders>[] = [
     {
       id: 'name',
       header: 'Token',
@@ -102,30 +105,29 @@ export function TrendingTokens() {
         return <div>${formatNumber(value)}</div>
       },
     },
-    {
-      header: 'Buy',
-      enableSorting: false,
-      cell: ({ row }) => {
-        return (
-          <div>
-            <Button
-              variant={ButtonVariant.OUTLINE}
-              onClick={() => {
-                setOpen(true)
-                setInputs({
-                  inputMint: SOL_MINT,
-                  outputMint: row.original.address,
-                  inputAmount: 0.1,
-                })
-              }}
-            >
-              Buy
-            </Button>
-          </div>
-        )
-      },
-    },
   ]
+
+  const buyColumn: ColumnDef<ITrendingTokenWidthHolders> = {
+    header: 'Buy',
+    enableSorting: false,
+    cell: ({ row }) => (
+      <Button
+        variant={ButtonVariant.OUTLINE}
+        onClick={() => {
+          setOpen(true)
+          setInputs({
+            inputMint: SOL_MINT,
+            outputMint: row.original.address,
+            inputAmount: 0.1,
+          })
+        }}
+      >
+        Buy
+      </Button>
+    ),
+  }
+
+  const columns = isMobile ? baseColumns : [...baseColumns, buyColumn]
 
   return (
     <DataTable

@@ -9,7 +9,7 @@ export default async function Namespace({
   const { id } = await params
 
   return (
-    <MainContentWrapper className="min-w-main-content max-w-main-content mx-auto flex justify-center">
+    <MainContentWrapper className="max-w-main-content mx-auto flex justify-center">
       <NamespaceContent id={id} />
     </MainContentWrapper>
   )

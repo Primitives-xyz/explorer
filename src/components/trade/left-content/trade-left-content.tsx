@@ -17,22 +17,28 @@ export enum FilterType {
   PERPETUAL = 'perpetual',
 }
 
-export function TradeLeftContent({ selectedType, setTokenMint, setSelectedType }: TradeLeftContentProps) {
-
+export function TradeLeftContent({
+  selectedType,
+  setTokenMint,
+  setSelectedType,
+}: TradeLeftContentProps) {
   const options = [
     { label: 'Swap', value: FilterType.SWAP },
     { label: 'Perpetual', value: FilterType.PERPETUAL },
   ]
 
   return (
-    <div className="w-1/3">
+    <div className="w-full md:w-1/3">
       <FilterTabs
         options={options}
         selected={selectedType}
         onSelect={setSelectedType}
+        buttonClassName="flex-1 md:flex-none"
       />
       {selectedType === FilterType.SWAP && <Swap setTokenMint={setTokenMint} />}
-      {selectedType === FilterType.PERPETUAL && <Perpetual setTokenMint={setTokenMint} />}
+      {selectedType === FilterType.PERPETUAL && (
+        <Perpetual setTokenMint={setTokenMint} />
+      )}
     </div>
   )
 }

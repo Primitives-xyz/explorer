@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui'
 import { cn, formatTimeAgo } from '@/utils/utils'
 import Image from 'next/image'
@@ -8,6 +10,7 @@ interface Props {
 }
 
 export function ActivityTapeEntry({ activity }: Props) {
+  const timeago = formatTimeAgo(new Date(activity.timestamp))
   return (
     <Button
       isInvisible
@@ -44,7 +47,7 @@ export function ActivityTapeEntry({ activity }: Props) {
           </span>
         )}
         <span>•</span>
-        <span>{formatTimeAgo(new Date(activity.timestamp))}</span>
+        <span>{timeago}</span>
       </div>
     </Button>
   )
