@@ -1,19 +1,17 @@
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { PerpMarkets } from '@drift-labs/sdk-browser'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { useInitializeDrift } from './use-initialize-drift'
-import { useMarketPrice } from './use-market-price'
-import { useToastContent } from './use-toast-content'
 import { useDriftUsers } from './use-drift-users'
+import { useInitializeDrift } from './use-initialize-drift'
+import { useToastContent } from './use-toast-content'
 
 interface UseUserStatsProps {
   subAccountId: number
-  symbol: string
 }
 
-interface PerpsPositionInfoProps {
+export interface PerpsPositionInfoProps {
   market: string
+  marketIndex: number
   direction: string
   baseAssetAmountInToken: number
   baseAssetAmountInUsd: number
@@ -26,12 +24,9 @@ interface PerpsPositionInfoProps {
 
 const env = 'mainnet-beta'
 
-export function useOpenPositions({ subAccountId, symbol }: UseUserStatsProps) {
+export function useOpenPositions({ subAccountId }: UseUserStatsProps) {
   const [loading, setLoading] = useState<boolean>(false)
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
-  const { price: marketPrice, loading: marketPriceLoading } = useMarketPrice({
-    symbol,
-  })
   const { driftClient } = useInitializeDrift()
   const { accountIds } = useDriftUsers()
   const [perpsPositionsInfo, setPerpsPositionsInfo] = useState<
@@ -39,7 +34,7 @@ export function useOpenPositions({ subAccountId, symbol }: UseUserStatsProps) {
   >([])
   const { walletAddress, isLoggedIn } = useCurrentWallet()
 
-  const closePosition = async () => {
+  const closePosition = async (marketIndex: number) => {
     try {
       if (!driftClient) {
         toast.error(
@@ -51,23 +46,12 @@ export function useOpenPositions({ subAccountId, symbol }: UseUserStatsProps) {
 
       await driftClient.subscribe()
 
-      const marketInfo = PerpMarkets[env].find(
-        (market) => market.baseAssetSymbol === symbol
-      )
-
-      if (!marketInfo) {
-        toast.error(
-          ERRORS.PERPS_MARKET_ERR.title,
-          ERRORS.PERPS_MARKET_ERR.content
-        )
-        return
-      }
       toast.loading(
         LOADINGS.CONFIRM_LOADING.title,
         LOADINGS.CONFIRM_LOADING.content
       )
       const sig = await driftClient.closePosition(
-        marketInfo.marketIndex,
+        marketIndex,
         undefined,
         subAccountId
       )
@@ -86,12 +70,12 @@ export function useOpenPositions({ subAccountId, symbol }: UseUserStatsProps) {
 
   const fetchOpenPositions = async () => {
     try {
-      if (!isLoggedIn || marketPriceLoading || !driftClient) return
+      if (!isLoggedIn || !driftClient) return
       if (!accountIds.length) return
 
       setLoading(true)
 
-      const baseUrl = `/api/drift/perpspositions/?wallet=${walletAddress}&&subAccountId=${subAccountId}&&symbol=${symbol}&&marketPrice=${marketPrice}`
+      const baseUrl = `/api/drift/perpspositions/?wallet=${walletAddress}&subAccountId=${subAccountId}`
 
       const res = await fetch(baseUrl, {
         method: 'GET',
@@ -116,10 +100,14 @@ export function useOpenPositions({ subAccountId, symbol }: UseUserStatsProps) {
   }
 
   useEffect(() => {
-    if (marketPrice && !loading) {
-      fetchOpenPositions()
-    }
-  }, [driftClient, subAccountId, marketPrice])
+    const interval = setInterval(() => {
+      if (!loading) {
+        fetchOpenPositions()
+      }
+    }, 10000)
+
+    return () => clearInterval(interval)
+  }, [driftClient, subAccountId, accountIds])
 
   return {
     perpsPositionsInfo,

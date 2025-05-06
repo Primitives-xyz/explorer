@@ -10,31 +10,28 @@ import Tooltip from '@/components/ui/tooltip'
 import { cn } from '@/utils/utils'
 import { X } from 'lucide-react'
 import { useState } from 'react'
-import { useOpenPositions } from '../../hooks/drift/use-open-positions'
+import { PerpsPositionInfoProps } from '../../hooks/drift/use-open-positions'
 
 interface PositionTabContentProps {
-  subAccountId: number
+  perpsPositionsInfo: PerpsPositionInfoProps[]
+  positionsLoading: boolean
+  closePosition: (value: number) => void
+  refreshFetchOpenPositions: () => void
 }
 
 export default function PositionTabContent({
-  subAccountId,
+  perpsPositionsInfo,
+  positionsLoading,
+  closePosition,
+  refreshFetchOpenPositions,
 }: PositionTabContentProps) {
   const symbol = 'SOL'
   const [loading, setLoading] = useState<boolean>(false)
-  const {
-    perpsPositionsInfo,
-    loading: positionsLoading,
-    closePosition,
-    refreshFetchOpenPositions,
-  } = useOpenPositions({
-    subAccountId,
-    symbol,
-  })
 
-  const handleClose = async () => {
+  const handleClose = async (marketIndex: number) => {
     try {
       setLoading(true)
-      const sig = await closePosition()
+      const sig = await closePosition(marketIndex)
       refreshFetchOpenPositions()
     } catch (error) {
       console.log(error)
@@ -55,13 +52,6 @@ export default function PositionTabContent({
       </div>
 
       <div className="h-[250px] overflow-auto space-y-2">
-        {positionsLoading && (
-          <div className="flex items-center gap-2">
-            <p>Loading Positions</p>
-            <Spinner size={16} />
-          </div>
-        )}
-
         {perpsPositionsInfo.length ? (
           <>
             {perpsPositionsInfo.map((position, index) => {
@@ -122,7 +112,9 @@ export default function PositionTabContent({
                         <Button
                           variant={ButtonVariant.OUTLINE}
                           disabled={loading}
-                          onClick={async () => await handleClose()}
+                          onClick={async () =>
+                            await handleClose(position.marketIndex)
+                          }
                         >
                           {loading ? (
                             <Spinner />

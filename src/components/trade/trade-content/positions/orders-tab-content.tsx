@@ -9,21 +9,23 @@ import {
 import Tooltip from '@/components/ui/tooltip'
 import { cn } from '@/utils/utils'
 import { X } from 'lucide-react'
-import { useLimitOrders } from '../../hooks/drift/use-limit-orders'
+import { LimitOrderProps } from '../../hooks/drift/use-limit-orders'
 
 interface OrdersTabContentProps {
   subAccountId: number
+  limitOrders: LimitOrderProps[]
+  ordersLoading: boolean
+  cancelOrder: (orderId: number, subAccountId: number) => void
+  cancelLoading: boolean
 }
 
 export default function OrdersTabContent({
   subAccountId,
+  limitOrders,
+  ordersLoading,
+  cancelOrder,
+  cancelLoading,
 }: OrdersTabContentProps) {
-  const symbol = 'SOL'
-  const { limitOrders, cancelLoading, loading, cancelOrder } = useLimitOrders({
-    subAccountId,
-    symbol,
-  })
-
   const handleClose = async (orderId: number, subAccountId: number) => {
     await cancelOrder(orderId, subAccountId)
   }
@@ -39,13 +41,6 @@ export default function OrdersTabContent({
       </div>
 
       <div className="h-[250px] overflow-auto space-y-2">
-        {loading && (
-          <div className="flex items-center gap-2">
-            <p>Loading Limit Orders</p>
-            <Spinner size={16} />
-          </div>
-        )}
-
         {limitOrders.length ? (
           <>
             {limitOrders.map((limitOrder, index) => {
@@ -103,7 +98,7 @@ export default function OrdersTabContent({
           </>
         ) : (
           <>
-            {!loading && (
+            {!ordersLoading && (
               <div className="flex justify-center items-center w-full h-full">
                 <span>No Limit Orders</span>
               </div>
