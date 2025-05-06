@@ -6,6 +6,7 @@ import {
   convertToNumber,
   getLimitOrderParams,
   getMarketOrderParams,
+  getTriggerLimitOrderParams,
   getTriggerMarketOrderParams,
   OrderTriggerCondition,
   PerpMarkets,
@@ -240,6 +241,34 @@ export function usePlacePerpsOrder({
             baseAssetAmount,
             triggerPrice: price,
             triggerCondition: OrderTriggerCondition.BELOW,
+          })
+        }
+      }
+
+      if (orderType === OrderType.SL) {
+        console.log("OrderType:", orderType)
+        const tprice = driftClient.convertToPricePrecision(Number(triggerPrice))
+        const lprice = driftClient.convertToPricePrecision(Number(limitPrice))
+
+        if (direction === PositionDirection.LONG) {
+          orderParams = getTriggerLimitOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.SHORT,
+            baseAssetAmount,
+            price: lprice,
+            triggerPrice: tprice,
+            triggerCondition: OrderTriggerCondition.BELOW,
+          })
+        }
+
+        if (direction === PositionDirection.SHORT) {
+          orderParams = getTriggerMarketOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.LONG,
+            baseAssetAmount,
+            price: lprice,
+            triggerPrice: tprice,
+            triggerCondition: OrderTriggerCondition.ABOVE,
           })
         }
       }

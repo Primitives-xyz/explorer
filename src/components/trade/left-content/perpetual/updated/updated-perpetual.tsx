@@ -5,6 +5,7 @@ import {
   MarketOrderParams,
   NeccessaryOrderParams,
   OrderType,
+  StopLimitOrderParams,
   TakeProfitOrderParams,
 } from '@/components/tapestry/models/drift.model'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
@@ -30,9 +31,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { SOL_MINT } from '@/utils/constants'
 import { PositionDirection } from '@drift-labs/sdk-browser'
 import { useEffect, useMemo, useState } from 'react'
+import AddFundsModal from '../add-funds-modal'
 import LimitOrder from './limit-order'
 import MarketOrder from './market-order'
 import { PlacePerpsOrder } from './place-perps-order'
+import StopLimit from './stop-limit'
 import TakeProfit from './take-profit'
 
 interface Props {
@@ -57,6 +60,7 @@ export function Perpetual({ setTokenMint }: Props) {
     | MarketOrderParams
     | LimitOrderParams
     | TakeProfitOrderParams
+    | StopLimitOrderParams
     | NeccessaryOrderParams
   >({
     orderType: OrderType.MARKET,
@@ -102,6 +106,21 @@ export function Perpetual({ setTokenMint }: Props) {
         orderType,
         triggerPrice: (orderParams as TakeProfitOrderParams).triggerPrice,
         reduceOnly: (orderParams as TakeProfitOrderParams).reduceOnly,
+      }
+    }
+
+    if (orderParams.orderType === OrderType.SL) {
+      return {
+        amount: orderParams.amount,
+        symbol,
+        direction:
+          selectedDirection === DirectionFilterType.LONG
+            ? PositionDirection.LONG
+            : PositionDirection.SHORT,
+        orderType,
+        triggerPrice: (orderParams as StopLimitOrderParams).triggerPrice,
+        limitPrice: (orderParams as StopLimitOrderParams).limitPrice,
+        reduceOnly: (orderParams as StopLimitOrderParams).reduceOnly,
       }
     }
 
@@ -233,6 +252,17 @@ export function Perpetual({ setTokenMint }: Props) {
                 setOrderParams={setOrderParams}
               />
             )}
+
+            {orderType === OrderType.SL && (
+              <StopLimit
+                direction={selectedDirection}
+                marketPrice={marketPrice}
+                priceLoading={priceLoading}
+                userStats={userStats}
+                setIsError={setIsError}
+                setOrderParams={setOrderParams}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -245,6 +275,11 @@ export function Perpetual({ setTokenMint }: Props) {
           symbol={symbol}
           isError={isError}
           setIsFundsModalOpen={setIsFundsModalOpen}
+        />
+
+        <AddFundsModal
+          isOpen={isFundsModalOpen}
+          setIsOpen={setIsFundsModalOpen}
         />
       </div>
     </div>

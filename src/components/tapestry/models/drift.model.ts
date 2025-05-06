@@ -40,6 +40,12 @@ export interface TakeProfitOrderParams extends NeccessaryOrderParams {
   reduceOnly: boolean
 }
 
+export interface StopLimitOrderParams extends NeccessaryOrderParams {
+  triggerPrice: string
+  limitPrice: string
+  reduceOnly: boolean
+}
+
 export enum MarketType {
   SPOT = 'spot',
   PERP = 'perp',
