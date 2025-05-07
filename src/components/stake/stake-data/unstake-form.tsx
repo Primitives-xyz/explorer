@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useStakeInfo } from '../hooks/use-stake-info'
 import { useUnstake } from '../hooks/use-unstake'
+import { formatRawAmount } from '@/utils/utils'
 
 interface Props {
   initialAmount?: string
@@ -89,7 +90,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     try {
       const stakedAmount = Number(stakeAmount)
       const quarterAmount = stakedAmount * 0.25
-      const formattedAmount = formatAmount(quarterAmount, SSE_TOKEN_DECIMAL)
+      const formattedAmount = formatRawAmount(BigInt(quarterAmount), BigInt(SSE_TOKEN_DECIMAL))
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -106,7 +107,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     try {
       const stakedAmount = Number(stakeAmount)
       const halfAmount = stakedAmount * 0.5
-      const formattedAmount = formatAmount(halfAmount, SSE_TOKEN_DECIMAL)
+      const formattedAmount = formatRawAmount(BigInt(halfAmount), BigInt(SSE_TOKEN_DECIMAL))
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -120,9 +121,11 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
   const handleMaxAmount = () => {
     if (!stakeAmount) return
 
+    const formattedAmount = formatRawAmount(BigInt(stakeAmount), BigInt(SSE_TOKEN_DECIMAL))
+
     try {
-      if (validateAmount(stakeAmount.toString())) {
-        setDisplayAmount(stakeAmount.toString())
+      if (validateAmount(formattedAmount)) {
+        setDisplayAmount(formattedAmount)
         if (debouncedUpdate) clearTimeout(debouncedUpdate)
       }
     } catch (err) {

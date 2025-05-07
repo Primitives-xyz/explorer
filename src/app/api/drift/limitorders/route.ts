@@ -1,14 +1,20 @@
-import { Connection, PublicKey } from '@solana/web3.js'
-import { BN, convertToNumber, DriftClient, PerpMarkets, PerpPosition, PRICE_PRECISION, QUOTE_PRECISION, Wallet } from '@drift-labs/sdk-browser'
+import {
+  BN,
+  convertToNumber,
+  DriftClient,
+  PerpMarkets,
+  QUOTE_PRECISION,
+  Wallet,
+} from '@drift-labs/sdk-browser'
+import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
-import { Keypair } from '@solana/web3.js'
 
 interface LimitOrderProps {
-  market: string,
-  direction: string,
-  price: number,
+  market: string
+  direction: string
+  price: number
   baseAssetAmount: number
-  triggerPrice: number,
+  triggerPrice: number
   orderId: number
 }
 
@@ -19,10 +25,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const walletAddress = searchParams.get('wallet')
     const subAccountId = searchParams.get('subAccountId')
-    const symbol = searchParams.get('symbol')
 
     if (!walletAddress) {
-      console.log("Error: Not Wallet Address")
+      console.log('Error: Not Wallet Address')
       return NextResponse.json(
         { error: 'Wallet address is required' },
         { status: 400 }
@@ -30,7 +35,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!subAccountId) {
-      console.log("Error: Not Sub Account ID")
+      console.log('Error: Not Sub Account ID')
       return NextResponse.json(
         { error: 'SubAccountId is required' },
         { status: 400 }
@@ -46,22 +51,10 @@ export async function GET(request: NextRequest) {
       env: env,
       authority: new PublicKey(walletAddress),
       subAccountIds: [Number(subAccountId)],
-      activeSubAccountId: Number(subAccountId)
+      activeSubAccountId: Number(subAccountId),
     })
 
     await driftClient.subscribe()
-
-    const marketInfo = PerpMarkets[env].find(
-      (market) => market.baseAssetSymbol === symbol
-    )
-
-    if (!marketInfo) {
-      console.log("Error: Not Market")
-      return NextResponse.json(
-        { error: 'No Market' },
-        { status: 400 }
-      )
-    }
 
     const user = driftClient.getUser()
 
@@ -79,26 +72,32 @@ export async function GET(request: NextRequest) {
     let limitOrders: LimitOrderProps[] = []
 
     orders.forEach((order) => {
-      const direction = "long" in order.direction ? "LONG" : "SHORT"
+      const direction = 'long' in order.direction ? 'LONG' : 'SHORT'
       const price = convertToNumber(order.price, QUOTE_PRECISION)
       const triggerPrice = convertToNumber(order.triggerPrice, QUOTE_PRECISION)
-      const baseAssetAmount = convertToNumber(order.baseAssetAmount, new BN(10).pow(new BN(9)))
+      const baseAssetAmount = convertToNumber(
+        order.baseAssetAmount,
+        new BN(10).pow(new BN(9))
+      )
       const orderId = order.orderId
 
-      limitOrders.push({
-        market: marketInfo.symbol,
-        direction,
-        baseAssetAmount,
-        orderId,
-        price,
-        triggerPrice
-      })
+      const marketInfo = PerpMarkets[env].find(
+        (market) => market.marketIndex === order.marketIndex
+      )
+
+      if (marketInfo) {
+        limitOrders.push({
+          market: marketInfo.symbol,
+          direction,
+          baseAssetAmount,
+          orderId,
+          price,
+          triggerPrice,
+        })
+      }
     })
 
-    return NextResponse.json(
-      { limitOrders: limitOrders },
-      { status: 200 }
-    )
+    return NextResponse.json({ limitOrders: limitOrders }, { status: 200 })
   } catch (error) {
     console.error('Error fetching Limit Orders:', error)
     return NextResponse.json(
