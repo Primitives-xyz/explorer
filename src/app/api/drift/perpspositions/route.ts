@@ -90,14 +90,15 @@ export async function GET(request: NextRequest) {
         position.baseAssetAmount,
         new BN(10).pow(new BN(9))
       )
-      const quoteAssetAmount = convertToNumber(
-        position.quoteAssetAmount,
+      const quoteEntryAmount = convertToNumber(
+        position.quoteEntryAmount,
         QUOTE_PRECISION
       )
-      const entryPrice = Math.abs(quoteAssetAmount / baseAssetAmount)
+
+      const entryPrice = Math.abs(quoteEntryAmount / baseAssetAmount)
       const unrealizedPnL = (Number(marketPrice) - entryPrice) * baseAssetAmount
       const unrealizedPnlPercentage =
-        (unrealizedPnL / (baseAssetAmount * Number(marketPrice))) * 100
+        Math.abs(unrealizedPnL / (baseAssetAmount * Number(marketPrice))) * 100
 
       const marketInfo = PerpMarkets[env].find(
         (market) => market.marketIndex === position.marketIndex
