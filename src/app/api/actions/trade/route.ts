@@ -1,3 +1,4 @@
+import { JUPITER_CONFIG } from '@/config/jupiter'
 import { PLATFORM_FEE_BPS, SSE_TOKEN_MINT } from '@/constants/jupiter'
 import { SwapService } from '@/services/swap'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
@@ -11,7 +12,7 @@ import { NextRequest } from 'next/server'
 
 const DEFAULT_INPUT_MINT = 'So11111111111111111111111111111111111111112' // SOL
 const DEFAULT_OUTPUT_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump' // PUMP
-const DEFAULT_SLIPPAGE_BPS = 50 // 0.5%
+const DEFAULT_SLIPPAGE_BPS = 25 // 0.5%
 const PLATFORM_FEE_ACCOUNT = process.env.PLATFORM_FEE_ACCOUNT || ''
 const SSE_DECIMALS = 6
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
@@ -232,23 +233,17 @@ export async function POST(req: NextRequest) {
     const connection = await SwapService.createConnection()
     // Step 3: Build swap transaction
     const swapService = new SwapService(connection)
-    const outputAta = await swapService.verifyOrCreateATA(
-      outputMint,
-      userPublicKey
-    )
-    const swapTransaction = await swapService.buildSwapTransaction(
-      {
-        quoteResponse: quote,
-        walletAddress: userPublicKey,
-        slippageMode: 'auto',
-        slippageBps: DEFAULT_SLIPPAGE_BPS,
-        mintAddress: outputMint,
-        isCopyTrade: false,
-        priorityFee: quote.priorityFee,
-        sseTokenAccount: useSse ? sseFeeAmount : undefined,
-      },
-      outputAta
-    )
+    const swapTransaction = await swapService.buildSwapTransaction({
+      quoteResponse: quote,
+      walletAddress: userPublicKey,
+      slippageMode: 'fixed',
+      slippageBps: DEFAULT_SLIPPAGE_BPS,
+      mintAddress: outputMint,
+      isCopyTrade: false,
+      priorityFee: quote.priorityFee,
+      sseTokenAccount: useSse ? JUPITER_CONFIG.FEE_WALLET : undefined,
+      sseFeeAmount: useSse ? sseFeeAmount : undefined,
+    })
 
     // Step 4: Return transaction to client
     const response: ActionPostResponse = {

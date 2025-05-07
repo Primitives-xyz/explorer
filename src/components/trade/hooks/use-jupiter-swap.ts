@@ -124,9 +124,7 @@ export function useJupiterSwap({
         Number(inputAmount) * Math.pow(10, inputDecimals)
       )
       const QUOTE_URL = `
-        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${
-        platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-      }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
+        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${0}&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}&restrictIntermediateTokens=true
       `
       const response = await fetch(QUOTE_URL).then((res) => res.json())
       if (swapMode == 'ExactIn') {

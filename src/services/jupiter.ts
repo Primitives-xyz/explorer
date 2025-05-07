@@ -113,8 +113,8 @@ export const fetchSwapInstructions = async (
       body: JSON.stringify({
         quoteResponse: request.quoteResponse,
         userPublicKey: request.userPublicKey,
-        prioritizationFeeLamports: request.prioritizationFeeLamports,
-        dynamicComputeUnitLimit: true,
+        prioritizationFeeLamports: 0,
+        dynamicComputeUnitLimit: false,
         dynamicSlippage: request.slippageBps === 'auto' ? true : false,
         useSharedAccounts: false,
         priorityLevel: 'medium',

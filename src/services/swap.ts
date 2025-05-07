@@ -9,11 +9,18 @@ import {
 } from '@/services/jupiter'
 import type { SwapRouteResponse } from '@/types/jupiter-service'
 import { createATAIfNotExists } from '@/utils/token'
-import { getAssociatedTokenAddress } from '@solana/spl-token'
+import {
+  createAssociatedTokenAccountInstruction,
+  getAccount,
+  getAssociatedTokenAddress,
+  TOKEN_PROGRAM_ID,
+  TokenAccountNotFoundError,
+} from '@solana/spl-token'
 import {
   Connection,
   Keypair,
   PublicKey,
+  TransactionInstruction,
   VersionedTransaction,
 } from '@solana/web3.js'
 import bs58 from 'bs58'
@@ -136,28 +143,136 @@ export class SwapService {
     )
   }
 
-  public async buildSwapTransaction(
-    request: SwapRequest,
-    outputAta: PublicKey
-  ): Promise<{
+  public async buildSwapTransaction(request: SwapRequest): Promise<{
     transaction: VersionedTransaction
     swapResponse: any
     addressLookupTableAccounts: any[]
   }> {
+    const preInstructions: TransactionInstruction[] = []
+    const payerKeypair = await this.getPayerKeypair()
+
+    // Determine and conditionally create platform's fee ATA for the output token
+    const platformFeeOutputAta = await getAssociatedTokenAddress(
+      new PublicKey(request.mintAddress),
+      new PublicKey(JUPITER_CONFIG.FEE_WALLET),
+      false,
+      TOKEN_PROGRAM_ID
+    )
+    try {
+      await getAccount(
+        this.connection,
+        platformFeeOutputAta,
+        'confirmed',
+        TOKEN_PROGRAM_ID
+      )
+      console.log('buildSwapTransaction: getAccount success')
+    } catch (error: any) {
+      console.log('buildSwapTransaction: getAccount error:', error)
+      if (
+        error instanceof TokenAccountNotFoundError ||
+        error.message?.includes('Account not found')
+      ) {
+        preInstructions.push(
+          createAssociatedTokenAccountInstruction(
+            payerKeypair.publicKey, // Payer
+            platformFeeOutputAta,
+            new PublicKey(JUPITER_CONFIG.FEE_WALLET), // Owner
+            new PublicKey(request.mintAddress) // Mint
+          )
+        )
+        console.log(
+          'buildSwapTransaction: Adding instruction to create platformFeeOutputAta:',
+          platformFeeOutputAta.toString()
+        )
+      } else {
+        console.log('buildSwapTransaction: getAccount error:', error)
+        await this.logError({
+          operation: 'buildSwapTransaction.getAccount.platformFeeOutputAta',
+          error: error.message,
+          walletAddress: request.walletAddress,
+          mintAddress: request.mintAddress,
+          details: {
+            ataAddress: platformFeeOutputAta.toString(),
+            owner: JUPITER_CONFIG.FEE_WALLET,
+          },
+        })
+        throw error
+      }
+    }
+
+    // Determine and conditionally create user's source ATA for SSE token if SSE is used
+    let userSseTokenSourceAta: PublicKey | undefined
+    if (
+      request.sseTokenAccount &&
+      request.sseFeeAmount &&
+      request.sseFeeAmount !== '0'
+    ) {
+      userSseTokenSourceAta = await getAssociatedTokenAddress(
+        new PublicKey(JUPITER_CONFIG.SSE_TOKEN_MINT),
+        new PublicKey(request.walletAddress),
+        false,
+        TOKEN_PROGRAM_ID
+      )
+      try {
+        console.log(
+          'buildSwapTransaction: getAccount userSseTokenSourceAta:',
+          userSseTokenSourceAta.toString()
+        )
+        await getAccount(
+          this.connection,
+          userSseTokenSourceAta,
+          'confirmed',
+          TOKEN_PROGRAM_ID
+        )
+        console.log('buildSwapTransaction: getAccount success')
+      } catch (error: any) {
+        if (
+          error instanceof TokenAccountNotFoundError ||
+          error.message?.includes('Account not found')
+        ) {
+          preInstructions.push(
+            createAssociatedTokenAccountInstruction(
+              new PublicKey(request.walletAddress), // Payer (user)
+              userSseTokenSourceAta,
+              new PublicKey(request.walletAddress), // Owner (user)
+              new PublicKey(JUPITER_CONFIG.SSE_TOKEN_MINT) // Mint
+            )
+          )
+          console.log(
+            'buildSwapTransaction: Adding instruction to create userSseTokenSourceAta:',
+            userSseTokenSourceAta.toString()
+          )
+        } else {
+          await this.logError({
+            operation: 'buildSwapTransaction.getAccount.userSseTokenSourceAta',
+            error: error.message,
+            walletAddress: request.walletAddress,
+            mintAddress: JUPITER_CONFIG.SSE_TOKEN_MINT,
+            details: {
+              ataAddress: userSseTokenSourceAta.toString(),
+              owner: request.walletAddress,
+            },
+          })
+          throw error
+        }
+      }
+    }
+
     try {
       const effectiveSlippageBps =
         request.slippageMode === 'auto'
           ? request.quoteResponse.slippageBps
           : request.slippageBps
 
-      let swapResponse
+      let swapResponse: any // Define swapResponse type more accurately if possible
       try {
         swapResponse = await fetchSwapInstructions({
           quoteResponse: request.quoteResponse,
           userPublicKey: request.walletAddress,
           prioritizationFeeLamports: request.priorityFee,
-          feeAccount: outputAta.toString(),
+          feeAccount: platformFeeOutputAta.toString(), // Use derived platform fee ATA
           slippageBps: effectiveSlippageBps,
+          // destinationTokenAccount is omitted to let Jupiter handle user's output ATA creation
         })
       } catch (error: any) {
         await this.logError({
@@ -166,7 +281,7 @@ export class SwapService {
           walletAddress: request.walletAddress,
           mintAddress: request.mintAddress,
           details: {
-            outputAta: outputAta.toString(),
+            platformFeeOutputAta: platformFeeOutputAta.toString(),
             slippageBps: effectiveSlippageBps,
             priorityFee: request.priorityFee,
           },
@@ -195,19 +310,24 @@ export class SwapService {
 
       const { blockhash } = await this.connection.getLatestBlockhash()
 
-      let sseTransferInstruction = undefined
-      if (request.sseTokenAccount && request.sseFeeAmount) {
+      let sseTransferInstruction: TransactionInstruction | undefined
+      if (
+        request.sseTokenAccount &&
+        request.sseFeeAmount &&
+        request.sseFeeAmount !== '0' &&
+        userSseTokenSourceAta
+      ) {
         try {
-          const sourceTokenAccount = await getAssociatedTokenAddress(
-            new PublicKey(JUPITER_CONFIG.SSE_TOKEN_MINT),
-            new PublicKey(request.walletAddress)
-          )
+          // const sourceTokenAccount = await getAssociatedTokenAddress( // No longer needed here, userSseTokenSourceAta is used
+          //   new PublicKey(JUPITER_CONFIG.SSE_TOKEN_MINT),
+          //   new PublicKey(request.walletAddress)
+          // )
 
           sseTransferInstruction = await createSSETransferInstruction(
             this.connection,
-            sourceTokenAccount,
-            new PublicKey(request.sseTokenAccount),
-            new PublicKey(request.walletAddress),
+            userSseTokenSourceAta, // Use derived (and conditionally created) user SSE source ATA
+            new PublicKey(request.sseTokenAccount), // Destination for SSE fees
+            new PublicKey(request.walletAddress), // Authority for transfer (user)
             request.sseFeeAmount
           )
         } catch (error: any) {
@@ -217,7 +337,8 @@ export class SwapService {
             walletAddress: request.walletAddress,
             mintAddress: JUPITER_CONFIG.SSE_TOKEN_MINT,
             details: {
-              sseTokenAccount: request.sseTokenAccount,
+              userSseTokenSourceAta: userSseTokenSourceAta.toString(),
+              sseTokenAccountDestination: request.sseTokenAccount,
               sseFeeAmount: request.sseFeeAmount,
             },
           })
@@ -225,17 +346,50 @@ export class SwapService {
         }
       }
 
+      // Combine preInstructions with Jupiter's setupInstructions
+      const combinedSetupInstructions = [
+        ...preInstructions,
+        ...(swapResponse.setupInstructions || []),
+      ]
+
+      console.log(
+        'buildSwapTransaction: preInstructions count (includes any ATAs):',
+        preInstructions.length
+      )
+      console.log(
+        'buildSwapTransaction: Jupiter setupInstructions count:',
+        (swapResponse.setupInstructions || []).length
+      )
+      console.log(
+        'buildSwapTransaction: combinedSetupInstructions count:',
+        combinedSetupInstructions.length
+      )
+      if (sseTransferInstruction) {
+        console.log('buildSwapTransaction: Adding sseTransferInstruction')
+      } else {
+        console.log('buildSwapTransaction: No sseTransferInstruction to add')
+      }
+
       const message = buildTransactionMessage(
         new PublicKey(request.walletAddress),
         blockhash,
-        swapResponse,
+        {
+          ...swapResponse,
+          // Ensure buildTransactionMessage uses this combined list.
+          // If buildTransactionMessage internally spreads swapResponse.setupInstructions,
+          // then this modification to swapResponse object is necessary.
+          // Otherwise, we might need to pass instructions array directly.
+          // For now, assuming buildTransactionMessage is flexible or we adapt it.
+          // Let's assume it correctly uses the setupInstructions from the passed object.
+          setupInstructions: combinedSetupInstructions,
+        },
         sseTransferInstruction,
         addressLookupTableAccounts
       )
 
       return {
         transaction: new VersionedTransaction(message),
-        swapResponse,
+        swapResponse, // Return original swapResponse for other data like lastValidBlockHeight
         addressLookupTableAccounts,
       }
     } catch (error: any) {
@@ -245,7 +399,8 @@ export class SwapService {
         walletAddress: request.walletAddress,
         mintAddress: request.mintAddress,
         details: {
-          outputAta: outputAta.toString(),
+          platformFeeOutputAta: platformFeeOutputAta?.toString(),
+          userSseSourceAta: userSseTokenSourceAta?.toString(),
           hasSSEFee: !!request.sseTokenAccount,
         },
       })
@@ -257,24 +412,28 @@ export class SwapService {
     request: SwapRequest
   ): Promise<SwapRouteResponse> {
     try {
-      // Verify output token ATA
-      const outputAta = await this.verifyOrCreateATA(
-        request.mintAddress,
-        JUPITER_CONFIG.FEE_WALLET,
-        3
-      )
+      // Verify output token ATA - REMOVED for JUPITER_CONFIG.FEE_WALLET
+      // const outputAta = await this.verifyOrCreateATA(
+      //   request.mintAddress,
+      //   JUPITER_CONFIG.FEE_WALLET,
+      //   3
+      // )
 
-      // Verify SSE token ATA if needed
-      if (request.sseTokenAccount) {
-        await this.verifyOrCreateATA(
-          JUPITER_CONFIG.SSE_TOKEN_MINT,
-          request.walletAddress
-        )
+      // Verify SSE token ATA if needed - REMOVED for user's SSE source ATA
+      if (
+        request.sseTokenAccount &&
+        request.sseFeeAmount &&
+        request.sseFeeAmount !== '0'
+      ) {
+        // await this.verifyOrCreateATA( // This was for user's source SSE ATA
+        //   JUPITER_CONFIG.SSE_TOKEN_MINT,
+        //   request.walletAddress
+        // )
       }
 
       // Build and simulate transaction
       const { transaction, swapResponse, addressLookupTableAccounts } =
-        await this.buildSwapTransaction(request, outputAta)
+        await this.buildSwapTransaction(request) // outputAta argument removed
 
       try {
         await simulateTransaction(
