@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { wallet: string } }
-) {
-  const { wallet } = params
+export async function GET(req: NextRequest) {
+  const wallet = req.nextUrl.pathname.split('/').pop()
+
+  if (!wallet) {
+    return NextResponse.json(
+      { error: 'Wallet address is missing in the URL' },
+      { status: 400 }
+    )
+  }
 
   try {
     const response = await fetch(
