@@ -15,12 +15,14 @@ interface Props {
   walletAddress: string
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
+  autoFocus?: boolean
 }
 
 export function Pay({
   walletAddress,
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
+  autoFocus = true,
 }: Props) {
   const {
     inputs: { inputMint },
@@ -88,7 +90,7 @@ export function Pay({
           onFocus={() => setSwapMode(ESwapMode.EXACT_IN)}
           onChange={handleInAmountChange}
           value={displayInAmount}
-          autoFocus
+          autoFocus={autoFocus}
         />
         <p className="text-xs text-muted-foreground">{displayInAmountInUsd}</p>
       </div>

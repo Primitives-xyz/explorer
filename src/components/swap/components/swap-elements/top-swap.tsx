@@ -25,6 +25,7 @@ interface Props {
   handleOutAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setShowOutputTokenSearch: (show: boolean) => void
   handleSwapDirection: () => void
+  autoFocus?: boolean
 }
 
 export function TopSwap({
@@ -46,6 +47,7 @@ export function TopSwap({
   handleInputAmountByPercentage,
   handleOutAmountChange,
   setShowOutputTokenSearch,
+  autoFocus,
 }: Props) {
   return (
     <Card className="border-glow-animation">
@@ -54,6 +56,7 @@ export function TopSwap({
           walletAddress={walletAddress}
           setShowInputTokenSearch={setShowInputTokenSearch}
           handleInputAmountByPercentage={handleInputAmountByPercentage}
+          autoFocus={autoFocus}
         />
 
         <div className="flex items-center w-full justify-between text-muted space-x-2">
