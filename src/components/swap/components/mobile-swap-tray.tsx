@@ -57,7 +57,7 @@ export function MobileSwapTray({ isAlwaysOpen = false }: Props) {
       </div>
       <div className="relative h-full px-4 py-2">
         {displaySwap && (
-          <div className="h-full overflow-y-auto">
+          <div className="h-full overflow-y-auto bg-background/80">
             <Swap />
           </div>
         )}
