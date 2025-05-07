@@ -39,10 +39,14 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const inputMint = searchParams.get('inputMint') || DEFAULT_INPUT_MINT
   const outputMint = searchParams.get('outputMint') || DEFAULT_OUTPUT_MINT
-  const useSse = searchParams.get('useSse') === 'true'
+  // Set default amount to 0.01 if not provided
+  const amount = searchParams.get('amount') || '0.01'
+  // Set default useSse to false if not provided
+  const useSse = searchParams.get('useSse') === 'true' ? 'true' : 'false'
   console.log({
     inputMint,
     outputMint,
+    amount,
     useSse,
   })
   // Parallelize token info fetching
@@ -97,7 +101,7 @@ export async function GET(req: NextRequest) {
       actions: [
         {
           type: 'transaction',
-          href: `/api/actions/trade?amount={amount}&useSse={useSse}&inputMint=${inputMint}&outputMint=${outputMint}`,
+          href: `/api/actions/trade?amount=${amount}&useSse=${useSse}&inputMint=${inputMint}&outputMint=${outputMint}`,
           label: `Buy ${outputTokenName}`,
           parameters: [
             {
@@ -121,7 +125,7 @@ export async function GET(req: NextRequest) {
 
   return new Response(JSON.stringify(response), {
     status: 200,
-    headers: ACTIONS_CORS_HEADERS,
+    headers: headers,
   })
 }
 
