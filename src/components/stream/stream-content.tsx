@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MintAggregate } from './stream-types'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { Switch } from '@/components/ui/switch/switch'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export function StreamContent() {
   const { isMobile } = useIsMobile()
@@ -97,56 +98,80 @@ export function StreamContent() {
         {/* Newly Minted */}
         <div className="flex flex-col gap-2">
           <div className="text-lg font-bold mb-2 text-white/80 text-center">Newly Minted</div>
-          {newlyMinted.map((agg) => (
-            <TokenRow
-              key={agg.mint}
-              agg={agg}
-              onClick={(mint, buyAmount = 0.01) => {
-                setOpen(true)
-                setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
-              }}
-              createdAt={(agg as any).tokenCreatedAt}
-              volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
-              currency={currency}
-              solPrice={solPrice}
-            />
-          ))}
+          {newlyMinted.length === 0 && aboutToGraduate.length === 0 && recentlyGraduated.length === 0 ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="w-full">
+                <Skeleton className="w-full h-[120px] rounded-lg bg-neutral-800" />
+              </div>
+            ))
+          ) : (
+            newlyMinted.map((agg) => (
+              <TokenRow
+                key={agg.mint}
+                agg={agg}
+                onClick={(mint, buyAmount = 0.01) => {
+                  setOpen(true)
+                  setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                }}
+                createdAt={(agg as any).tokenCreatedAt}
+                volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
+                currency={currency}
+                solPrice={solPrice}
+              />
+            ))
+          )}
         </div>
         {/* About to Graduate */}
         <div className="flex flex-col gap-2">
           <div className="text-lg font-bold mb-2 text-white/80 text-center">About to Graduate</div>
-          {aboutToGraduate.map((agg) => (
-            <TokenRow
-              key={agg.mint}
-              agg={agg}
-              onClick={(mint, buyAmount = 0.01) => {
-                setOpen(true)
-                setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
-              }}
-              createdAt={(agg as any).tokenCreatedAt}
-              volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
-              currency={currency}
-              solPrice={solPrice}
-            />
-          ))}
+          {newlyMinted.length === 0 && aboutToGraduate.length === 0 && recentlyGraduated.length === 0 ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="w-full">
+                <Skeleton className="w-full h-[120px] rounded-lg bg-neutral-800" />
+              </div>
+            ))
+          ) : (
+            aboutToGraduate.map((agg) => (
+              <TokenRow
+                key={agg.mint}
+                agg={agg}
+                onClick={(mint, buyAmount = 0.01) => {
+                  setOpen(true)
+                  setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                }}
+                createdAt={(agg as any).tokenCreatedAt}
+                volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
+                currency={currency}
+                solPrice={solPrice}
+              />
+            ))
+          )}
         </div>
         {/* Recently Graduated */}
         <div className="flex flex-col gap-2">
           <div className="text-lg font-bold mb-2 text-white/80 text-center">Recently Graduated</div>
-          {recentlyGraduated.map((agg) => (
-            <TokenRow
-              key={agg.mint}
-              agg={agg}
-              onClick={(mint, buyAmount = 0.01) => {
-                setOpen(true)
-                setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
-              }}
-              createdAt={(agg as any).tokenCreatedAt}
-              volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
-              currency={currency}
-              solPrice={solPrice}
-            />
-          ))}
+          {newlyMinted.length === 0 && aboutToGraduate.length === 0 && recentlyGraduated.length === 0 ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="w-full">
+                <Skeleton className="w-full h-[120px] rounded-lg bg-neutral-800" />
+              </div>
+            ))
+          ) : (
+            recentlyGraduated.map((agg) => (
+              <TokenRow
+                key={agg.mint}
+                agg={agg}
+                onClick={(mint, buyAmount = 0.01) => {
+                  setOpen(true)
+                  setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                }}
+                createdAt={(agg as any).tokenCreatedAt}
+                volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
+                currency={currency}
+                solPrice={solPrice}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
