@@ -29,9 +29,56 @@ export function ScoreArc({
   loading: boolean
 }) {
   const radius = 100
+  const centerX = 150
+  const centerY = 150
 
-  const startColor = '#a75a51'
-  const endColor = '#49d77c'
+  const startColor = '#ff9999'
+  const endColor = '#82d89c'
+  const trackColor = 'hsl(var(--muted))'
+
+  const clampedScore = Math.max(0, Math.min(1000, score))
+  const t = clampedScore / 1000
+  const angleDeg = 180 * t
+
+  const describeArc = (startAngle: number, endAngle: number) => {
+    const start = polarToCartesian(centerX, centerY, radius, endAngle)
+    const end = polarToCartesian(centerX, centerY, radius, startAngle)
+
+    const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0
+
+    return [
+      'M',
+      start.x,
+      start.y,
+      'A',
+      radius,
+      radius,
+      0,
+      largeArcFlag,
+      0,
+      end.x,
+      end.y,
+    ].join(' ')
+  }
+
+  function polarToCartesian(
+    cx: number,
+    cy: number,
+    r: number,
+    angleInDegrees: number
+  ) {
+    const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0
+    return {
+      x: cx + r * Math.cos(angleInRadians),
+      y: cy + r * Math.sin(angleInRadians),
+    }
+  }
+
+  const cursorAngle = 180 - angleDeg
+  const cursorRad = (cursorAngle * Math.PI) / 180
+  const cursorX = centerX + radius * Math.cos(cursorRad)
+  const cursorY = centerY - radius * Math.sin(cursorRad)
+  const cursorColor = interpolateColor(startColor, endColor, t)
 
   return (
     <svg viewBox="0 0 300 160">
@@ -51,34 +98,30 @@ export function ScoreArc({
       </defs>
 
       <path
-        d="M 50 150 A 100 100 0 0 1 250 150"
+        d={describeArc(0, 180)}
         fill="none"
-        stroke="url(#scoreGradient)"
-        strokeWidth="8"
+        stroke={trackColor}
+        strokeWidth="13"
+        strokeLinecap="round"
       />
 
-      {!loading &&
-        (() => {
-          const clampedScore = Math.max(0, Math.min(1000, score))
-          const t = clampedScore / 1000
-          const angleDeg = 180 - t * 180
-          const angleRad = (angleDeg * Math.PI) / 180
+      <path
+        d={describeArc(0, angleDeg)}
+        fill="none"
+        stroke="url(#scoreGradient)"
+        strokeWidth="13"
+        strokeLinecap="round"
+      />
 
-          const cursorX = 150 + radius * Math.cos(angleRad)
-          const cursorY = 150 - radius * Math.sin(angleRad)
-
-          const cursorColor = interpolateColor(startColor, endColor, t)
-
-          return (
-            <circle
-              cx={cursorX}
-              cy={cursorY}
-              r="8"
-              fill={cursorColor}
-              filter="url(#glow)"
-            />
-          )
-        })()}
+      {!loading && (
+        <circle
+          cx={cursorX}
+          cy={cursorY}
+          r="10"
+          fill={cursorColor}
+          filter="url(#glow)"
+        />
+      )}
     </svg>
   )
 }
