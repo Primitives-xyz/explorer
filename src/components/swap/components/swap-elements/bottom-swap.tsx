@@ -41,7 +41,7 @@ export function BottomSwap({
   setUseSSEForFees,
 }: Props) {
   return (
-    <Card>
+    <Card className="bg-card">
       <CardHeader className="p-4 pb-0">
         <CardTitle className="flex items-center justify-between text-primary font-semibold">
           <p>Route Information $ Fees</p>
