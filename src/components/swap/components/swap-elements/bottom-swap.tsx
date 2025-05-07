@@ -41,7 +41,7 @@ export function BottomSwap({
   setUseSSEForFees,
 }: Props) {
   return (
-    <Card className="bg-card">
+    <Card>
       <CardHeader className="p-4 pb-0">
         <CardTitle className="flex items-center justify-between text-primary font-semibold">
           <p>Route Information $ Fees</p>
@@ -58,7 +58,7 @@ export function BottomSwap({
               'cursor-pointer'
             )}
           >
-            <CardContent className="flex space-x-3 p-3">
+            <CardContent className="flex space-x-3 p-3 bg-card">
               <Checkbox
                 id="pay_fee_with_sse"
                 checked={useSSEForFees}
