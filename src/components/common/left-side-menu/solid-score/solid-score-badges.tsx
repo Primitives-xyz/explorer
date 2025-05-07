@@ -5,13 +5,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui'
+import { cn } from '@/utils/utils'
 import Image from 'next/image'
 
 interface Props {
   data?: SolidScoreResponse
+  smallView?: boolean
 }
 
-export function SolidScoreBadges({ data }: Props) {
+export function SolidScoreBadges({ data, smallView }: Props) {
   const badges: Record<
     string,
     {
@@ -93,25 +95,33 @@ export function SolidScoreBadges({ data }: Props) {
     },
   }
 
-  //   const userBadges = [
-  //     'SOLANA_OG',
-  //     'SOLANA_POWER_USER',
-  //     'HODLER',
-  //     'DEX_TRADER',
-  //     'RISK_TAKER',
-  //     'DIVERSE_NFT_TRADER',
-  //     'LIQUIDITY_PROVIDER',
-  //     'DIVERSE_LIQUIDITY_PROVIDER',
-  //     'DIVERSE_HODLER',
-  //     'MULTIPLATFORM_DEX_TRADER',
-  //     'NFT_TRADER',
-  //     'MULTIPLATFORM_NFT_TRADER',
-  //     'MULTIPLATFORM_LIQUIDITY_PROVIDER',
-  //     'NATIVE_STAKER',
-  //   ]
+  // const userBadges = [
+  //   'SOLANA_OG',
+  //   'SOLANA_POWER_USER',
+  //   'HODLER',
+  //   'DEX_TRADER',
+  //   'RISK_TAKER',
+  //   'DIVERSE_NFT_TRADER',
+  //   'LIQUIDITY_PROVIDER',
+  //   'DIVERSE_LIQUIDITY_PROVIDER',
+  //   'DIVERSE_HODLER',
+  //   'MULTIPLATFORM_DEX_TRADER',
+  //   'NFT_TRADER',
+  //   'MULTIPLATFORM_NFT_TRADER',
+  //   'MULTIPLATFORM_LIQUIDITY_PROVIDER',
+  //   'NATIVE_STAKER',
+  // ]
 
   return (
-    <div className="flex flex-wrap gap-2 justify-center pt-2">
+    <div
+      className={cn(
+        {
+          'gap-4 px-10': !smallView,
+          'gap-2': smallView,
+        },
+        'flex flex-wrap justify-center pt-2'
+      )}
+    >
       {data?.solidUser.badges.map((key) => {
         const badge = badges[key]
         if (!badge) return null
@@ -122,8 +132,8 @@ export function SolidScoreBadges({ data }: Props) {
                 <Image
                   src={badge.image}
                   alt={key}
-                  width={15}
-                  height={15}
+                  width={smallView ? 15 : 16}
+                  height={smallView ? 15 : 16}
                   className="rounded aspect-square object-contain"
                 />
               </TooltipTrigger>

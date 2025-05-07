@@ -7,6 +7,7 @@ import { SolidScore } from '@/components/common/left-side-menu/solid-score/solid
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
@@ -14,6 +15,7 @@ import { ProfileInfos } from './profile-infos'
 export function LeftSideMenu() {
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
+  const { isLoggedIn } = useCurrentWallet()
 
   return (
     <div className="hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar">
@@ -27,7 +29,7 @@ export function LeftSideMenu() {
         </div>
         <div className="space-y-4 py-4">
           <LowFeeTrades />
-          <SolidScore />
+          {isLoggedIn && <SolidScore />}
         </div>
         <div className="flex flex-col items-center gap-2">
           <Button

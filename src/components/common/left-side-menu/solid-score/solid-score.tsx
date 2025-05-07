@@ -51,9 +51,10 @@ export function SolidScore() {
             <SolidScoreValue
               loading={scoreLoading}
               score={data?.solidUser.solidScore}
+              smallView
             />
           </div>
-          <SolidScoreBadges data={data} />
+          <SolidScoreBadges data={data} smallView />
         </div>
       ) : (
         <SolidScoreRevealButton

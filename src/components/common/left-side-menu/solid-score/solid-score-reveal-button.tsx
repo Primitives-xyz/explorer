@@ -1,13 +1,12 @@
 import { Button, Spinner } from '@/components/ui'
 import { Eye } from 'lucide-react'
 
-export function SolidScoreRevealButton({
-  onClick,
-  loading,
-}: {
+interface Props {
   onClick: () => void
   loading: boolean
-}) {
+}
+
+export function SolidScoreRevealButton({ onClick, loading }: Props) {
   return (
     <Button className="w-full" onClick={onClick} disabled={loading}>
       {loading ? (

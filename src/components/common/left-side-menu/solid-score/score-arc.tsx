@@ -21,13 +21,12 @@ function interpolateColor(
   return `rgb(${r}, ${g}, ${b})`
 }
 
-export function ScoreArc({
-  score,
-  loading,
-}: {
+interface Props {
   score: number
   loading: boolean
-}) {
+}
+
+export function ScoreArc({ score, loading }: Props) {
   const radius = 100
   const centerX = 150
   const centerY = 150
