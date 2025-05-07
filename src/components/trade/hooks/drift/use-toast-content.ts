@@ -13,17 +13,17 @@ export function useToastContent() {
       },
     },
     JUP_QUOTE_API_ERR: {
-      title: 'Jupiter Quote API Error',
+      title: 'Quote API Error',
       content: {
         description:
-          'Failed to fetch Jupiter Quote API. Please try again later',
+          'Failed to fetch Quote API. Please try again later',
         duration: 5000,
       },
     },
     JUP_SWAP_API_ERR: {
-      title: 'Jupiter SWAP API Error',
+      title: 'SWAP API Error',
       content: {
-        description: 'Failed to fetch Jupiter SWAP API. Please try again later',
+        description: 'Failed to fetch SWAP API. Please try again later',
         duration: 5000,
       },
     },
