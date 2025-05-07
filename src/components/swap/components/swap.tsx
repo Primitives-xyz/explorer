@@ -71,9 +71,10 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
 
 interface Props {
   setTokenMint?: (value: string) => void
+  autoFocus?: boolean
 }
 
-export function Swap({ setTokenMint }: Props) {
+export function Swap({ setTokenMint, autoFocus }: Props) {
   // Centralized swap state from store
   const {
     inputs: { inputMint: inputTokenMint, outputMint: outputTokenMint },
@@ -110,7 +111,6 @@ export function Swap({ setTokenMint }: Props) {
   } = useCurrentWallet()
   const { balance: inputBalance, rawBalance: inputRawBalance } =
     useTokenBalance(walletAddress, inputTokenMint)
-
   const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } =
     useTokenUSDCPrice({
       tokenMint: inputTokenMint,
@@ -344,6 +344,7 @@ export function Swap({ setTokenMint }: Props) {
         handleOutAmountChange={handleOutAmountChange}
         setShowOutputTokenSearch={setShowOutputTokenSearch}
         handleSwapDirection={handleSwapDirection}
+        autoFocus={autoFocus}
       />
 
       <CenterButtonSwap
