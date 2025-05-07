@@ -34,14 +34,14 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
         <p>Your [solID] Score was updated. Share with others!</p>
         <div className="w-[400px] h-[400px] relative flex items-center justify-center rounded-lg overflow-hidden">
           <Image
-            src="/images/scan.png"
+            src="/images/menu/solid-score-share-modal-bg.png"
             alt="Background"
             fill
             className="object-cover z-0"
             priority
           />
 
-          <div className="flex w-[300px] h-[300px] relative z-10 rounded-lg bg-background/90 backdrop-blur-xl shadow-xl flex-col justify-center items-center">
+          <div className="flex w-[300px] h-[300px] relative z-10 rounded-lg bg-foreground/5 backdrop-blur-xl shadow-xl flex-col justify-center items-center">
             <p className="text-md">My SOLID Score is...</p>
             <div className="flex items-center gap-2 justify-center">
               {mainProfile?.image && (
@@ -77,7 +77,7 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
         </div>
 
         <Button variant={ButtonVariant.OUTLINE_SOCIAL}>
-          <UserRoundPlus />
+          <UserRoundPlus size={16} />
           Share
         </Button>
       </DialogContent>
