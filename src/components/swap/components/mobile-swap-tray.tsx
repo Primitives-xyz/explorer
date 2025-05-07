@@ -50,7 +50,7 @@ export function MobileSwapTray({ isAlwaysOpen = false }: Props) {
           controls.start({ y: 0 })
         }
       }}
-      className="fixed left-0 right-0 bottom-0 z-50 bg-card border border-foreground/20 text-card-foreground shadow-card rounded-t-2xl backdrop-blur-xl md:hidden touch-pan-y"
+      className="fixed left-0 right-0 bottom-0 z-50 bg-black bg-card border border-foreground text-card-foreground shadow-card rounded-t-2xl backdrop-blur-xl md:hidden touch-pan-y"
     >
       <div className="flex justify-center py-2 cursor-grab active:cursor-grabbing">
         <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
