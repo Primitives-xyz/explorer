@@ -60,7 +60,7 @@ export function TopSwap({
           <div className="bg-muted w-full h-[1px]" />
           <ArrowDownUp
             size={40}
-            className="cursor-pointer"
+            className="cursor-pointer text-primary"
             onClick={handleSwapDirection}
           />
           <div className="bg-muted w-full h-[1px]" />

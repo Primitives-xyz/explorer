@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Sheet, SheetContent } from '@/components/ui/dialog/sheet'
 import { Swap } from '@/components/swap/components/swap'
 import { motion } from 'framer-motion'
+import { MobileSwapTray } from '@/components/swap/components/mobile-swap-tray'
 
 export function StreamContent() {
   const { isMobile } = useIsMobile()
@@ -54,10 +55,6 @@ export function StreamContent() {
     }
   }, [])
 
-  useEffect(() => {
-    console.log('Swap open:', open)
-  }, [open])
-
   // Filtering and sorting logic
   const now = Date.now() / 1000
   let tokens = Object.values(mintMap)
@@ -94,26 +91,7 @@ export function StreamContent() {
 
   return (
     <>
-      {isMobile && (
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetContent side="bottom" className="max-w-full w-full p-0 rounded-t-xl">
-            <motion.div
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              onDragEnd={(_, info) => {
-                if (info.offset.y > 60) setOpen(false)
-              }}
-              className="w-full"
-              style={{ touchAction: 'none' }}
-            >
-              <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto my-2" />
-            </motion.div>
-            <div className="max-h-[75vh] overflow-y-auto touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
-              <Swap />
-            </div>
-          </SheetContent>
-        </Sheet>
-      )}
+      {isMobile && <MobileSwapTray />}
       <div className={`flex flex-col w-full justify-center items-center py-6 gap-4${isMobile ? ' px-2' : ''}`}>
         <div className="flex flex-col items-center gap-2 mb-4 w-full max-w-7xl">
           {/* Controls: Price + Toggle + Disable Animations */}

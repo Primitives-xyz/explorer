@@ -64,7 +64,7 @@ export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', so
               <TokenIdentity agg={agg} symbol={symbol} name={name} image={image} />
               <TokenRealLiquidity realSolReserves={lastTrade?.realSolReserves} currency={currency} solPrice={solPrice} />
               <TokenBadges agg={agg} />
-              <TokenSmallBuy onBuy={(mint, amount) => { console.log('Buy clicked', mint, amount); onClick(mint, amount); }} mint={agg.mint} />
+              <TokenSmallBuy onBuy={(mint, amount) => { onClick(mint, amount); }} mint={agg.mint} />
             </div>
             {/* Right: Price, Top Traders, Created, Volume */}
             <div className="flex flex-col items-end min-w-0 gap-1">
