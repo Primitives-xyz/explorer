@@ -19,6 +19,9 @@ export enum SortOptionsDetails {
   BALANCE = 'balance',
 }
 
+export const BAD_SOL_MINT = 'So11111111111111111111111111111111111111111'
+export const GOOD_INPUT_SOL = 'So11111111111111111111111111111111111111112'
+
 export function useTokenSearch() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<ITokenSearchResult[]>([])
@@ -44,27 +47,36 @@ export function useTokenSearch() {
   const walletTokens = useMemo(() => {
     if (!data?.data?.items?.length) return []
 
-    return data.data.items.map((item) => ({
-      name: item.name,
-      symbol: item.symbol,
-      address: item.address,
-      decimals: item.decimals,
-      logoURI: item.logoURI || item.icon,
-      icon: item.icon,
-      chainId: item.chainId,
-      price: item.priceUsd,
-      priceUsd: item.priceUsd,
-      balance: item.balance,
-      uiAmount: item.uiAmount,
-      valueUsd: item.valueUsd,
-      volume_24h_usd: 0,
-      verified: true,
-      market_cap: 0,
-    }))
+    return data.data.items.map((item) => {
+      let address = item.address
+      if (address === BAD_SOL_MINT) {
+        address = GOOD_INPUT_SOL
+      }
+
+      return {
+        name: item.name,
+        symbol: item.symbol,
+        address: address,
+        decimals: item.decimals,
+        logoURI: item.logoURI || item.icon,
+        icon: item.icon,
+        chainId: item.chainId,
+        price: item.priceUsd,
+        priceUsd: item.priceUsd,
+        balance: item.balance,
+        uiAmount: item.uiAmount,
+        valueUsd: item.valueUsd,
+        volume_24h_usd: 0,
+        verified: true,
+        market_cap: 0,
+      }
+    })
   }, [data]).filter((token) => token.name)
 
   // Process wallet tokens when they're available
   useEffect(() => {
+    // Reset the state when verifiedOnly changes to prevent potential issues
+    // with invalid tokens causing errors
     if (!searchQuery.trim()) {
       const newResults =
         walletAddress && walletTokens.length > 0 ? walletTokens : DEFAULT_TOKENS
@@ -73,9 +85,11 @@ export function useTokenSearch() {
       if (JSON.stringify(newResults) !== JSON.stringify(searchResults)) {
         setSearchResults(newResults)
       }
-      setIsLoading(false)
+    } else {
+      // Re-fetch results when verifiedOnly changes
+      debouncedSearch(searchQuery)
     }
-  }, [walletAddress, walletTokens, searchQuery, searchResults])
+  }, [verifiedOnly])
 
   // Function to prioritize wallet tokens in search results
   const prioritizeWalletTokens = useCallback(
@@ -126,11 +140,17 @@ export function useTokenSearch() {
 
         // If not found by address or not an address, use keyword search
         const results = await searchTokensByKeyword(query, verifiedOnly)
-        setSearchResults(results)
+        if (Array.isArray(results)) {
+          setSearchResults(results)
+        } else {
+          setSearchResults([])
+        }
       } catch (err) {
+        console.error('Error searching tokens:', err)
         setError(
           err instanceof Error ? err.message : t('error.an_error_occurred')
         )
+        setSearchResults([]) // Set empty results on error to prevent UI issues
       } finally {
         setIsLoading(false)
       }

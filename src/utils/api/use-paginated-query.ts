@@ -47,14 +47,13 @@ export function usePaginatedQuery<ResponseType = unknown, InputType = unknown>({
       }),
     {
       revalidateFirstPage: false,
-    },
+    }
   )
 
   const isLoadingMore =
     isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined')
-
   return {
-    data,
+    data: data?.flat() as ResponseType[] | undefined,
     error,
     loading: !!isLoadingMore,
     onLoadMore: () => setSize(size + 1),

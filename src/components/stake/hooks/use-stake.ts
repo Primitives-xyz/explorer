@@ -1,14 +1,13 @@
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
-import { useToast } from '@/components/ui/toast/hooks/use-toast'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export function useStake() {
   const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
 
@@ -46,10 +45,8 @@ export function useStake() {
 
       const txid = await signer.signAndSendTransaction(vtx)
 
-      const confirmToast = toast({
-        title: t('trade.confirming_transaction'),
+      const confirmToastId = toast(t('trade.confirming_transaction'), {
         description: t('trade.waiting_for_confirmation'),
-        variant: 'pending',
         duration: 1000000000,
       })
 
@@ -58,33 +55,24 @@ export function useStake() {
         ...(await connection.getLatestBlockhash()),
       })
 
-      confirmToast.dismiss()
+      toast.dismiss(confirmToastId)
 
       if (confirmation.value.err) {
-        toast({
-          title: t('trade.transaction_failed'),
-          description: t('trade.the_stake_transaction_failed_please_try_again'),
-          variant: 'error',
-          duration: 5000,
+        toast.error(t('trade.transaction_failed'), {
+          description: t('error.the_stake_transaction_failed_please_try_again'),
         })
       } else {
-        toast({
-          title: t('trade.transaction_successful'),
+        toast.success(t('trade.transaction_successful'), {
           description: t(
             'trade.the_stake_transaction_was_successful_creating_shareable_link'
           ),
-          variant: 'success',
-          duration: 5000,
         })
         refreshUserInfo()
       }
     } catch (err) {
       console.error('Stake error:', err)
-      toast({
-        title: t('trade.transaction_failed'),
-        description: t('trade.the_stake_transaction_failed_please_try_again'),
-        variant: 'error',
-        duration: 5000,
+      toast.error(t('trade.transaction_failed'), {
+        description: t('error.the_stake_transaction_failed_please_try_again'),
       })
     } finally {
       setIsLoading(false)

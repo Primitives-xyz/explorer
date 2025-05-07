@@ -19,7 +19,9 @@ export function DisplayStakeData({ label, value, loading }: Props) {
         </div>
       ) : (
         <div className="flex space-x-2">
-          <span className="text-3xl text-primary font-bold">{value}</span>
+          <span className="text-2xl md:text-3xl text-primary font-bold">
+            {value}
+          </span>
           <span className="text-primary">tokens</span>
         </div>
       )}

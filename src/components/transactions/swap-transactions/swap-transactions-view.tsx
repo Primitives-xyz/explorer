@@ -1,20 +1,16 @@
 'use client'
 
+import { MotionCard } from '@/components/motion/components/motion-card'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
-import {
-  Transaction,
-  TransactionEvent,
-} from '@/components/tapestry/models/helius.models'
+import { Transaction } from '@/components/tapestry/models/helius.models'
 import { TokenInfo } from '@/components/tapestry/models/token.models'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
-import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
-import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
-import { SOL_MINT, USDC_MINT } from '@/utils/constants'
+import { Badge, CardContent, CardHeader } from '@/components/ui'
 import { getSourceIcon } from '@/utils/transactions'
-import { useEffect, useState } from 'react'
+import { processSwapTransaction } from '../swap-transaction/swap-transaction-utils'
 
 export type TokenDisplay = {
   mint: string
@@ -30,198 +26,36 @@ interface Props {
 }
 
 export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
-  const [fromToken, setFromToken] = useState<TokenDisplay | null>(null)
-  const [toToken, setToToken] = useState<TokenDisplay | null>(null)
   const { setOpen, setInputs } = useSwapStore()
 
   const { profiles } = useGetProfiles({
     walletAddress: sourceWallet,
   })
 
+  const processedTx = processSwapTransaction(transaction)
+  const fromToken = processedTx.primaryOutgoingToken
+  const toToken = processedTx.primaryIncomingToken
+
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
-    fromToken?.mint === SOL_MINT ? null : fromToken?.mint
+    fromToken?.mint
   )
   const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
-    toToken?.mint === SOL_MINT ? null : toToken?.mint
+    toToken?.mint
   )
-
-  const shouldFetchFromPrice =
-    fromToken?.mint &&
-    (fromToken.mint === SOL_MINT || fromToken.mint === USDC_MINT)
-
-  const shouldFetchToPrice =
-    toToken?.mint && (toToken.mint === SOL_MINT || toToken.mint === USDC_MINT)
-
-  // Always call hooks, but pass null when we don't want to fetch
-  const { price: fromTokenPriceRaw, loading: fromPriceLoadingRaw } =
-    useTokenUSDCPrice({
-      tokenMint: shouldFetchFromPrice ? fromToken?.mint : null,
-      decimals: shouldFetchFromPrice
-        ? fromToken?.mint === SOL_MINT
-          ? 9 // SOL has 9 decimals
-          : fromToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-            fromToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-          ? fromToken.tokenInfo.result.token_info?.decimals ?? 6
-          : 6
-        : 0,
-    })
-
-  const { price: toTokenPriceRaw, loading: toPriceLoadingRaw } =
-    useTokenUSDCPrice({
-      tokenMint: shouldFetchToPrice ? toToken?.mint : null,
-      decimals: shouldFetchToPrice
-        ? toToken?.mint === SOL_MINT
-          ? 9 // SOL has 9 decimals
-          : toToken?.tokenInfo?.result?.interface === 'FungibleToken' ||
-            toToken?.tokenInfo?.result?.interface === 'FungibleAsset'
-          ? toToken.tokenInfo.result.token_info?.decimals ?? 6
-          : 6
-        : 0,
-    })
-
-  const fromTokenPrice = shouldFetchFromPrice ? fromTokenPriceRaw : null
-  const toTokenPrice = shouldFetchToPrice ? toTokenPriceRaw : null
-
-  useEffect(() => {
-    async function loadTokenInfo() {
-      if (!transaction.events) return
-
-      // Handle swap event format
-      const swapEvent = Array.isArray(transaction.events)
-        ? transaction.events.find(
-            (event): event is Extract<TransactionEvent, { type: 'SWAP' }> =>
-              event.type === 'SWAP'
-          )
-        : undefined
-
-      if (swapEvent) {
-        // For token -> token swaps
-        if (
-          swapEvent.swap.tokenInputs?.[0] &&
-          swapEvent.swap.tokenOutputs?.[0]
-        ) {
-          setFromToken({
-            mint: swapEvent.swap.tokenInputs[0].mint,
-            amount: swapEvent.swap.tokenInputs[0].tokenAmount,
-          })
-
-          setToToken({
-            mint: swapEvent.swap.tokenOutputs[0].mint,
-            amount: swapEvent.swap.tokenOutputs[0].tokenAmount,
-          })
-        }
-        // For SOL -> token swaps
-        else if (
-          swapEvent.swap.nativeInput &&
-          swapEvent.swap.tokenOutputs?.[0]
-        ) {
-          setFromToken({
-            mint: SOL_MINT,
-            amount: parseFloat(swapEvent.swap.nativeInput.amount),
-          })
-
-          setToToken({
-            mint: swapEvent.swap.tokenOutputs[0].mint,
-            amount: swapEvent.swap.tokenOutputs[0].tokenAmount,
-          })
-        }
-        // For token -> SOL swaps
-        else if (
-          swapEvent.swap.tokenInputs?.[0] &&
-          swapEvent.swap.nativeOutput
-        ) {
-          setFromToken({
-            mint: swapEvent.swap.tokenInputs[0].mint,
-            amount: swapEvent.swap.tokenInputs[0].tokenAmount,
-          })
-
-          setToToken({
-            mint: SOL_MINT,
-            amount: parseFloat(swapEvent.swap.nativeOutput.amount),
-          })
-        }
-        return
-      }
-
-      // Fallback to description parsing for older format
-      const descParts = transaction.description?.split(' ') || []
-      const fromAmount = parseFloat(descParts[2] || '0')
-      const toAmount = parseFloat(descParts[5] || '0')
-      const fromTokenMint = descParts[3] || ''
-      const toTokenMint = descParts[6] || ''
-
-      // Check if this is a SOL -> Token swap or Token -> SOL swap
-      const isFromSol = fromTokenMint.toLowerCase() === 'sol'
-      const isToSol = toTokenMint.toLowerCase() === 'sol'
-
-      // Handle SOL -> Token swap
-      if (isFromSol) {
-        setFromToken({
-          mint: SOL_MINT,
-          amount: fromAmount,
-        })
-
-        if (toTokenMint) {
-          setToToken({
-            mint: toTokenMint,
-            amount: toAmount,
-          })
-        }
-      }
-      // Handle Token -> SOL swap
-      else if (isToSol) {
-        setToToken({
-          mint: SOL_MINT,
-          amount: toAmount,
-        })
-
-        if (fromTokenMint) {
-          setFromToken({
-            mint: fromTokenMint,
-            amount: fromAmount,
-          })
-        }
-      }
-      // Handle Token -> Token swap (including when mints are provided directly)
-      else {
-        if (fromTokenMint) {
-          setFromToken({
-            mint: fromTokenMint,
-            amount: fromAmount,
-          })
-        }
-        if (toTokenMint) {
-          setToToken({
-            mint: toTokenMint,
-            amount: toAmount,
-          })
-        }
-      }
-    }
-
-    loadTokenInfo()
-  }, [transaction, sourceWallet])
-
-  useEffect(() => {
-    if (fromToken && fromTokenInfo) {
-      setFromToken((prev) =>
-        prev ? { ...prev, tokenInfo: fromTokenInfo } : null
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromTokenInfo])
-
-  useEffect(() => {
-    if (toToken && toTokenInfo) {
-      setToToken((prev) => (prev ? { ...prev, tokenInfo: toTokenInfo } : null))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toTokenInfo])
 
   if (!fromToken || !toToken) return null
 
+  const fromTokenPrice =
+    fromTokenInfo?.result && 'token_info' in fromTokenInfo.result
+      ? fromTokenInfo.result.token_info?.price_info?.price_per_token
+      : null
+  const toTokenPrice =
+    toTokenInfo?.result && 'token_info' in toTokenInfo.result
+      ? toTokenInfo.result.token_info?.price_info?.price_per_token
+      : null
+
   return (
-    <Card>
+    <MotionCard>
       <CardHeader>
         <TransactionsHeader
           transaction={transaction}
@@ -255,19 +89,19 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
 
       <CardContent className="space-y-4">
         <SwapTransactionsViewDetails
-          token={fromToken}
+          token={{ ...fromToken, ...fromTokenInfo }}
           tokenLoading={fromTokenLoading}
-          tokenPrice={fromTokenPrice}
+          tokenPrice={fromTokenPrice ?? null}
           priceLoading={fromTokenLoading}
         />
         <SwapTransactionsViewDetails
-          token={toToken}
+          token={{ ...toToken, ...toTokenInfo }}
           tokenLoading={toTokenLoading}
-          tokenPrice={toTokenPrice}
+          tokenPrice={toTokenPrice ?? null}
           priceLoading={toTokenLoading}
           isReceived
         />
       </CardContent>
-    </Card>
+    </MotionCard>
   )
 }

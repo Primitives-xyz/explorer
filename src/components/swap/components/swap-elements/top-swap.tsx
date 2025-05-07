@@ -9,6 +9,7 @@ import { ESwapMode } from '../../swap.models'
 interface Props {
   walletAddress: string
   inputTokenMint: string
+  outputTokenMint: string
   displayInAmount: string
   displayInAmountInUsd: string
   inputTokenImageUri?: string
@@ -29,6 +30,7 @@ interface Props {
 export function TopSwap({
   walletAddress,
   inputTokenMint,
+  outputTokenMint,
   displayInAmount,
   displayInAmountInUsd,
   inputTokenImageUri,
@@ -46,18 +48,11 @@ export function TopSwap({
   setShowOutputTokenSearch,
 }: Props) {
   return (
-    <Card>
-      <CardContent>
+    <Card className="border-glow-animation">
+      <CardContent className="p-4">
         <Pay
           walletAddress={walletAddress}
-          inputTokenMint={inputTokenMint}
-          setSwapMode={setSwapMode}
-          handleInAmountChange={handleInAmountChange}
-          displayInAmount={displayInAmount}
-          displayInAmountInUsd={displayInAmountInUsd}
           setShowInputTokenSearch={setShowInputTokenSearch}
-          inputTokenImageUri={inputTokenImageUri}
-          inputTokenSymbol={inputTokenSymbol}
           handleInputAmountByPercentage={handleInputAmountByPercentage}
         />
 
@@ -71,15 +66,7 @@ export function TopSwap({
           <div className="bg-muted w-full h-[1px]" />
         </div>
 
-        <Receive
-          setSwapMode={setSwapMode}
-          handleOutAmountChange={handleOutAmountChange}
-          displayOutAmount={displayOutAmount}
-          displayOutAmountInUsd={displayOutAmountInUsd}
-          setShowOutputTokenSearch={setShowOutputTokenSearch}
-          outputTokenImageUri={outputTokenImageUri}
-          outputTokenSymbol={outputTokenSymbol}
-        />
+        <Receive setShowOutputTokenSearch={setShowOutputTokenSearch} />
       </CardContent>
     </Card>
   )

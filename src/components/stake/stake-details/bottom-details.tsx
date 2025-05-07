@@ -21,7 +21,7 @@ export function BottomDetails() {
             ]}
           />
         </div>
-        <div className="flex items-center justify-center gap-6">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <StakingTierCard
             emoji="🥈"
             title={t('trade.staking.silver_tier')}

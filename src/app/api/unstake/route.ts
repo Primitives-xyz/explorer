@@ -1,6 +1,6 @@
 import { SseStake } from '@/sse_stake'
 import stakingProgramIdl from '@/sse_stake.json'
-import { SSE_MINT } from '@/utils/constants'
+import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
 import { getAssociatedTokenAccount } from '@/utils/token'
 import * as anchor from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
@@ -13,10 +13,18 @@ import {
 } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
 
+function convertToBN(value: number, decimals: number) {
+	const wholePart = Math.floor(value)
+  const precision = new anchor.BN(Math.pow(10, decimals))
+	const decimalPart = Math.round((value - wholePart) * precision.toNumber())
+  
+	return new anchor.BN(wholePart).mul(precision).add(new anchor.BN(decimalPart))
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { walletAddy } = await await req.json()
-    const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+    const { walletAddy, amount } = await await req.json()
+    const connection = new Connection(process.env.RPC_URL || '')
     const wallet = new NodeWallet(Keypair.generate())
     const provider = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: 'confirmed',
@@ -43,7 +51,7 @@ export async function POST(req: NextRequest) {
     )
 
     const unstakeTx = await program.methods
-      .unstake()
+      .unstake(convertToBN(Number(amount), SSE_TOKEN_DECIMAL))
       .accounts({
         globalTokenAccount,
         user: new PublicKey(walletAddy),

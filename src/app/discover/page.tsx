@@ -1,3 +1,5 @@
+'use client'
+
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
 import { RightSidebarWrapper } from '@/components/common/right-sidebar-wrapper'
 import { DiscoverContent } from '@/components/discover/discover-content'

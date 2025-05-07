@@ -65,7 +65,7 @@ export function ProfileTableInfo({ walletAddress }: Props) {
           )}
         </div>
       </div>
-      <div className="pb-6">
+      <div className="pb-6 max-h-[calc(100vh-500px)] overflow-auto">
         {selected === FilterTabsProfileTableInfo.TRANSACTIONS && (
           <ProfileTransactions
             walletAddress={walletAddress}

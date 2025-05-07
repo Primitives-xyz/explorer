@@ -3,7 +3,7 @@
   --foreground: 30deg 100% 100%;
 
   /* --muted: 230 7% 75%; */
-  --muted: 0deg 0% 44%;
+  --muted: 0deg 0% 40% / 0.2;
   --muted-foreground: 223deg 3% 75%;
 
   --accent: var(--foreground) / 0.1;
@@ -54,7 +54,6 @@
   --text-3xl: 32px;
 
   /* Radius */
-  --radius: 0.5rem;
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;

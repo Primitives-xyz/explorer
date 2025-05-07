@@ -4,7 +4,7 @@ export interface SwapInstructionsRequest {
   quoteResponse: QuoteResponse
   userPublicKey: string
   prioritizationFeeLamports?: number
-  feeAccount: string
+  feeAccount?: string
   slippageBps: number | 'auto'
 }
 

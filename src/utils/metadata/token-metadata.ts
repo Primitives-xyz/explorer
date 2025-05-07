@@ -18,7 +18,9 @@ export function isNFTToken(token: NonNullable<TokenInfo['result']>): boolean {
     token.interface === 'V1_NFT' ||
     token.interface === 'V2_NFT' ||
     token.interface === 'LEGACY_NFT' ||
-    token.interface === 'ProgrammableNFT'
+    token.interface === 'ProgrammableNFT' ||
+    token.interface === 'MplCoreAsset' ||
+    token.interface === 'MplCoreCollection'
   )
 }
 

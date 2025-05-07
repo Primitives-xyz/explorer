@@ -1,0 +1,27 @@
+.token-bonded-bar-gradient {
+  background: linear-gradient(90deg, hsl(var(--primary)), #f8ffae, hsl(var(--primary)) 90%);
+  background-size: 200% 100%;
+}
+
+.token-buy-bar-gradient {
+  background: linear-gradient(90deg, hsl(var(--primary)), #a8ff78, hsl(var(--primary)) 90%);
+  background-size: 200% 100%;
+}
+
+.token-sell-bar-gradient {
+  background: linear-gradient(90deg, hsl(var(--destructive)), #ff5858, hsl(var(--destructive)) 90%);
+  background-size: 200% 100%;
+}
+
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease-in-out infinite alternate;
+} 

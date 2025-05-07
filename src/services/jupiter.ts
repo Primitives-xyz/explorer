@@ -117,6 +117,7 @@ export const fetchSwapInstructions = async (
         dynamicComputeUnitLimit: true,
         dynamicSlippage: request.slippageBps === 'auto' ? true : false,
         useSharedAccounts: false,
+        priorityLevel: 'medium',
         feeAccount: request.feeAccount,
       }),
     }

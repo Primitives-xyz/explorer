@@ -69,6 +69,10 @@ export async function fetchTapestryServer<T = any>({
       }
     }
 
+    if (response.status === 204) {
+      return {} as T
+    }
+
     const responseData = await response.json()
     return responseData
   } catch (error: any) {

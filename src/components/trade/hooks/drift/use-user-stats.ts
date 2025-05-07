@@ -1,46 +1,37 @@
+import { IUserStats } from '@/components/tapestry/models/drift.model'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   convertToNumber,
-  PerpPosition,
+  PerpMarkets,
+  PositionDirection,
   QUOTE_PRECISION,
-  SpotPosition,
+  TEN_THOUSAND,
 } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { useEffect, useState } from 'react'
 import { useInitializeDrift } from './use-initialize-drift'
+import { useMarketPrice } from './use-market-price'
 
-interface UserStats {
-  // User health
-  health: number
-  healthRatio: number | null
-
-  // Net USD Value
-  netUsdValue: number
-
-  // Leverage
-  leverage: number
-
-  // Positions
-  perpPositions: PerpPosition[]
-  spotPositions: SpotPosition[]
-
-  // Trading limits
-  maxLeverage: number
-  maxTradeSize: number
+interface UseUserStatsProps {
+  subAccountId: number
+  symbol: string
 }
 
-export function useUserStats(subAccountId = 0) {
+export function useUserStats({ subAccountId, symbol }: UseUserStatsProps) {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [userStats, setUserStats] = useState<UserStats>({
+  const [userStats, setUserStats] = useState<IUserStats>({
     health: 0,
     healthRatio: null,
     netUsdValue: 0,
     leverage: 0,
     perpPositions: [],
-    spotPositions: [],
+    orders: [],
     maxLeverage: 0,
     maxTradeSize: 0,
+  })
+  const { price: marketPrice, loading: priceLoading } = useMarketPrice({
+    symbol,
   })
 
   const { driftClient } = useInitializeDrift()
@@ -73,55 +64,56 @@ export function useUserStats(subAccountId = 0) {
           setLoading(false)
           return
         }
-
         // Subscribe to user account updates
         await user.subscribe()
-
         // Get user health and positions
         const health = user.getHealth()
         // The healthRatio is health/maintenance requirement (user.getHealthRatioEntry() is in SDK >= 2.20)
         const healthRatio = health / 100
         const perpPositions = user.getActivePerpPositions()
-        const spotPositions = user.getActiveSpotPositions()
+        const orders = user.getOpenOrders()
+        const currentLeverage = user.getLeverage(true)
 
         // Get net USD value (total account value)
-        const totalAccountValue = convertToNumber(
-          user.getTotalCollateral(),
+        const netUsdValue = convertToNumber(
+          user.getNetUsdValue(),
           QUOTE_PRECISION
         )
 
-        // Estimate leverage from positions and collateral
-        const totalPositionNotionalValue = perpPositions.reduce(
-          (total, position) => {
-            return total + Math.abs(position.baseAssetAmount.toNumber())
-          },
-          0
+        const maxTradeSizeUSDCForPerp = user.getMaxTradeSizeUSDCForPerp(
+          0,
+          PositionDirection.LONG
         )
-        const leverage =
-          totalAccountValue > 0
-            ? totalPositionNotionalValue / totalAccountValue
-            : 0
+        const maxTradeSize = convertToNumber(
+          maxTradeSizeUSDCForPerp.tradeSize,
+          QUOTE_PRECISION
+        )
 
-        // User doesn't have getMaxTradeSize in this SDK version
-        // We'll estimate based on available margin and max leverage
-        // Using a simple estimate - 20x the total collateral minus existing positions
-        const maxTradeSize = totalAccountValue * 20 - totalPositionNotionalValue
+        const marketInfo = PerpMarkets['mainnet-beta'].find(
+          (market) => market.baseAssetSymbol === symbol
+        )
 
+        if (!marketInfo) return
+        console.log("marketIndex:", marketInfo.marketIndex)
+
+        const maxLeverageForPerp = user.getMaxLeverageForPerp(
+          marketInfo.marketIndex
+        )
+        const maxLeverage = convertToNumber(maxLeverageForPerp, TEN_THOUSAND)
         // Update state with fetched data
         setUserStats({
           health,
           healthRatio,
-          netUsdValue: totalAccountValue,
-          leverage: leverage || 0,
+          netUsdValue,
+          leverage: convertToNumber(currentLeverage, TEN_THOUSAND),
           perpPositions,
-          spotPositions,
-          maxLeverage: 20, // Drift max leverage is usually 20x
+          orders,
+          maxLeverage: maxLeverage,
           maxTradeSize: maxTradeSize,
         })
 
         setError(null)
       } catch (error) {
-        console.error('Error fetching user stats:', error)
         setError('Failed to fetch user stats')
       } finally {
         setLoading(false)
@@ -129,12 +121,14 @@ export function useUserStats(subAccountId = 0) {
     }
 
     fetchUserStats()
-
-    // Set up periodic refresh (every 10 seconds)
-    const interval = setInterval(fetchUserStats, 10000)
-
-    return () => clearInterval(interval)
-  }, [driftClient, primaryWallet, walletAddress, subAccountId])
+  }, [
+    driftClient,
+    primaryWallet,
+    walletAddress,
+    subAccountId,
+    marketPrice,
+    symbol,
+  ])
 
   return {
     userStats,

@@ -71,13 +71,14 @@ export function AddProfileImage({
     <>
       <div className="flex-1 flex flex-col">
         <div
-          className={cn({
-            'grid grid-cols-[160px__1fr] gap-8 w-full':
+          className={cn('space-y-4 md:space-y-0', {
+            'grid grid-cols-1 md:grid-cols-[160px__1fr] md:gap-8 w-full':
               !!suggestedImages?.length,
-            'flex justify-center': !suggestedImages?.length,
+            'flex flex-col md:flex-row justify-center':
+              !suggestedImages?.length,
           })}
         >
-          <div>
+          <div className="flex items-center justify-center md:justify-start md:items-start md:block">
             <div className="w-[160px] space-y-2">
               {!!suggestedImages?.length && <Label>Profile Image</Label>}
               {mainProfile.image && (
@@ -118,7 +119,7 @@ export function AddProfileImage({
         <div className="flex justify-between mt-auto">
           <Button
             onClick={() => setStep(EOnboardingSteps.USERNAME)}
-            className="w-[160px]"
+            className="w-[48%] md:w-[160px]"
             disabled={uploadLoading}
             variant={ButtonVariant.OUTLINE}
           >
@@ -128,7 +129,7 @@ export function AddProfileImage({
             onClick={() => {
               setStep(EOnboardingSteps.BIO)
             }}
-            className="w-[160px]"
+            className="w-[48%] md:w-[160px]"
             loading={uploadLoading}
           >
             Next

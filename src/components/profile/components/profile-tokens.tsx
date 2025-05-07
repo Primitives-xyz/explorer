@@ -5,8 +5,9 @@ import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
 import { DataTable } from '@/components/ui/table/data-table'
 import { SOL_MINT } from '@/utils/constants'
 import { formatNumber } from '@/utils/utils'
-import { ColumnDef } from '@tanstack/react-table'
+import { ColumnDef, SortingState } from '@tanstack/react-table'
 import Image from 'next/image'
+import { useState } from 'react'
 import { SortableHeader } from '../../ui/table/sortable-header'
 import { IFungibleToken } from '../fungible-tokens.models'
 import { useGetWalletTokens } from '../hooks/use-get-wallet-tokens'
@@ -21,6 +22,10 @@ export function ProfileTokens({ walletAddress }: Props) {
   })
   const { setOpen, setInputs } = useSwapStore()
 
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'totalPrice', desc: true },
+  ])
+
   const columns: ColumnDef<IFungibleToken>[] = [
     {
       id: 'name',
@@ -33,7 +38,7 @@ export function ProfileTokens({ walletAddress }: Props) {
               {row.original.imageUrl &&
                 !row.original.imageUrl.includes('ipfs://') && (
                   <Image
-                    src={row.original.imageUrl}
+                    src={row.original.imageUrl.trimStart()}
                     alt={row.original.symbol}
                     width={24}
                     height={24}
@@ -41,7 +46,7 @@ export function ProfileTokens({ walletAddress }: Props) {
                   />
                 )}
             </div>
-            <h4>{row.original.name}</h4>
+            <h4 className="max-w-[5rem] truncate">{row.original.name}</h4>
           </div>
         )
       },
@@ -64,9 +69,9 @@ export function ProfileTokens({ walletAddress }: Props) {
       },
     },
     {
-      accessorKey: 'price',
+      accessorKey: 'totalPrice',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="Price" column={column} />,
+      header: ({ column }) => <SortableHeader label="Value" column={column} />,
       cell: ({ getValue }) => {
         const value = getValue<number>()
 
@@ -113,6 +118,8 @@ export function ProfileTokens({ walletAddress }: Props) {
         loading={isLoading}
         tableClassName="h-[300px]"
         isSmall
+        sorting={sorting}
+        onSortingChange={setSorting}
       />
     </div>
   )

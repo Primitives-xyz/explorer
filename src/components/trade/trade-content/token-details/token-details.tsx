@@ -19,7 +19,7 @@ interface TokenDetailsProps {
 
 export function TokenDetails({ id }: TokenDetailsProps) {
   const { walletAddress, setShowAuthFlow } = useCurrentWallet()
-  const { overview, isLoading } = useBirdeyeTokenOverview(id)
+  const { overview } = useBirdeyeTokenOverview(id)
   const [selectedType, setSelectedType] = useState(
     TabsTokenDetails.TOKEN_DETAILS
   )

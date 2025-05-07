@@ -105,7 +105,6 @@
     "sort_followers_descending": "Sort followers descending",
     "followers": "followers",
     "no_profile_found": ">>> NO PROFILES FOUND"
-
   },
   "recent_profiles": {
     "title": "recent_profiles",
@@ -162,13 +161,16 @@
     "platform_total_stake": "Platform Total Stake",
     "unstake_available_in": "Unstake available in",
     "maximum": "Maximum",
+    "available": "Available",
     "decimal_places_allowed": "decimal places allowed",
     "you_receive": "You'll receive",
     "input_value": "Input value",
     "after": "after",
-    "rate": "rate",
+    "staked": "Staked",
+    "rate": "fee",
     "per": "per",
     "route_information_fees": "Route Information & Fees",
+    "available_rewards": "Available Rewards",
     "network_fee": "Network Fee",
     "updating": "Updating",
     "price_impact": "Price Impact",

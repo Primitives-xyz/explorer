@@ -1,3 +1,4 @@
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import { DAS } from 'helius-sdk'
 
 // Common token properties
@@ -104,6 +105,7 @@ export interface NFTTokenInfo extends BaseTokenInfo {
     | 'LEGACY_NFT'
     | 'ProgrammableNFT'
     | 'MplCoreCollection'
+    | 'MplCoreAsset'
 }
 
 // Fungible token-specific properties
@@ -190,4 +192,9 @@ export interface BirdeyeTokenOverview {
   numberMarkets: number
   uniqueWallet24h: number
   trade24h: number
+}
+
+export interface IGetProfileOwnSpecificToken {
+  profiles: IProfile[]
+  totalAmount: number
 }

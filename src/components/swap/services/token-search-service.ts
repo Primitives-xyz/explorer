@@ -72,20 +72,33 @@ export async function searchTokensByKeyword(
     }
 
     return data.data.items[0].result
-      .filter((item: any) => item.symbol && item.name && item.decimals)
+      .filter((item: any) => {
+        // More strict validation to prevent invalid tokens
+        return (
+          item &&
+          typeof item.symbol === 'string' &&
+          typeof item.name === 'string' &&
+          typeof item.decimals === 'number' &&
+          item.decimals >= 0 &&
+          typeof item.address === 'string' &&
+          item.address.length >= 32
+        )
+      })
       .map((item: any) => ({
         address: item.address,
         symbol: item.symbol || 'Unknown',
         name: item.name || 'Unknown Token',
         decimals: item.decimals,
-        logoURI: item.logo_uri,
-        price: item.price,
-        volume_24h_usd: item.volume_24h_usd || 0,
-        verified: item.verified || false,
-        market_cap: item.market_cap || 0,
+        logoURI: item.logo_uri || '',
+        price: typeof item.price === 'number' ? item.price : 0,
+        volume_24h_usd:
+          typeof item.volume_24h_usd === 'number' ? item.volume_24h_usd : 0,
+        verified: Boolean(item.verified),
+        market_cap: typeof item.market_cap === 'number' ? item.market_cap : 0,
       }))
   } catch (error) {
     console.error('Error searching tokens by keyword:', error)
-    throw error
+    // Return empty array instead of throwing to prevent UI errors
+    return []
   }
 }

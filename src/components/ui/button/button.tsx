@@ -49,7 +49,7 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
     size: {
       default: 'h-9 px-4 py-2 text-sm',
       sm: 'h-6 px-2 text-xs',
-      lg: 'h-14 px-12 text-xl uppercase',
+      lg: 'h-11.5 px-12 text-sm font-semibold',
       icon: 'h-10 w-10',
       icon_sm: 'h-6 w-6',
       icon_lg: 'h-11 w-11',
@@ -115,6 +115,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       _className
     )
 
+    // const hoverEffect = disableHoverFeedback ? '' : 'hover:scale-105'
+
     return (
       <Comp
         className={cn(
@@ -122,11 +124,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             ? cn(
                 buttonBase,
                 {
-                  'hover:opacity-80': !disableHoverFeedback,
+                  'hover:opacity-80 hover:scale': !disableHoverFeedback,
                 },
                 className
               )
-            : buttonVariants({ variant, size, className })
+            : buttonVariants({
+                variant,
+                size,
+                // className: cn(hoverEffect, className),
+                className,
+              })
         )}
         ref={ref}
         disabled={disabled}

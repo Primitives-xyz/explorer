@@ -15,7 +15,6 @@ export function NamespaceProfileContent({
   profile: username,
 }: Props) {
   const { mainProfile } = useCurrentWallet()
-
   const { profileData } = useNamespaceProfile({
     username: username,
     mainUsername: mainProfile?.username,

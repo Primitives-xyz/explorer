@@ -46,7 +46,7 @@ export const EXPLORER_NAMESPACE =
 export const X_NAMESPACE = process.env.X_NAMESPACE || 'x'
 
 // Solana Configuration
-export const SOLANA_RPC_URL =
+export const SOLANA_PUBLIC_RPC_URL =
   process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com'
 
 // API Keys (these should be kept in environment variables)
@@ -87,3 +87,5 @@ export const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
 export const DEFAULT_SLIPPAGE_BPS = 'auto' // Default to auto slippage
 export const DEFAULT_SLIPPAGE_VALUE = 50 // 0.5% as base value when needed
 export const DEFAULT_PRIORITY_LEVEL = 'Medium'
+
+export const TWITTER_REDIRECT_URL = '/x/callback'

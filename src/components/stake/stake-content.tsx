@@ -23,8 +23,8 @@ export function StakeContent() {
   )
 
   return (
-    <div className="flex w-full justify-between gap-4 pb-10">
-      <div className="w-1/2">
+    <div className="flex flex-col md:flex-row w-full justify-between gap-4 pb-10">
+      <div className="w-full md:w-1/2">
         <FilterTabs
           options={options}
           selected={selectedType}
@@ -36,7 +36,7 @@ export function StakeContent() {
           </CardContent>
         </Card>
       </div>
-      <div className="w-1/2 pt-[52px]">
+      <div className="w-full md:w-1/2 md:pt-[52px]">
         <StakeDetails />
       </div>
     </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { Glitch } from '@/components/motion/components/glitch'
 import { Button, ButtonSize, ButtonVariant, Spinner } from '@/components/ui'
 
 interface Props {
@@ -18,12 +19,11 @@ export function CenterButtonSwap({
   handleSwap,
 }: Props) {
   return (
-    <div>
+    <div className="w-full">
       {!sdkHasLoaded ? (
         <Button
           variant={ButtonVariant.OUTLINE_WHITE}
           className="text-lg capitalize font-bold w-full"
-          size={ButtonSize.LG}
         >
           <Spinner />
         </Button>
@@ -31,20 +31,28 @@ export function CenterButtonSwap({
         <Button
           variant={ButtonVariant.OUTLINE_WHITE}
           className="text-lg capitalize font-bold w-full"
-          size={ButtonSize.LG}
           onClick={() => setShowAuthFlow(true)}
         >
           Connect Wallet
         </Button>
       ) : (
-        <Button
-          onClick={handleSwap}
-          className="text-lg capitalize font-bold w-full"
-          size={ButtonSize.LG}
-          disabled={loading}
+        <Glitch
+          options={{
+            playMode: 'hover',
+            // pulse: {
+            //   scale: 2,
+            // },
+          }}
         >
-          {loading ? <Spinner /> : <p>Execute Swap</p>}
-        </Button>
+          <Button
+            onClick={handleSwap}
+            size={ButtonSize.LG}
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? <Spinner /> : 'Execute Swap'}
+          </Button>
+        </Glitch>
       )}
     </div>
   )

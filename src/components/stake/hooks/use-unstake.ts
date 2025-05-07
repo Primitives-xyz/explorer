@@ -1,19 +1,18 @@
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
-import { useToast } from '@/components/ui/toast/hooks/use-toast'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export function useUnstake() {
   const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
-  const unstake = async () => {
+  const unstake = async (amount: string) => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
       return
     }
@@ -28,6 +27,7 @@ export function useUnstake() {
         },
         body: JSON.stringify({
           walletAddy: walletAddress,
+          amount,
         }),
       })
 
@@ -46,10 +46,8 @@ export function useUnstake() {
 
       const txid = await signer.signAndSendTransaction(vtx)
 
-      const confirmToast = toast({
-        title: t('trade.confirming_transaction'),
+      const confirmToastId = toast.loading(t('trade.confirming_transaction'), {
         description: t('trade.waiting_for_confirmation'),
-        variant: 'pending',
         duration: 1000000000,
       })
 
@@ -58,25 +56,19 @@ export function useUnstake() {
         ...(await connection.getLatestBlockhash()),
       })
 
-      confirmToast.dismiss()
+      toast.dismiss(confirmToastId)
 
       if (confirmation.value.err) {
-        toast({
-          title: t('trade.transaction_failed'),
+        toast.error(t('trade.transaction_failed'), {
           description: t(
             'error.the_unstake_transaction_failed_please_try_again'
           ),
-          variant: 'error',
-          duration: 5000,
         })
       } else {
-        toast({
-          title: t('trade.transaction_successful'),
+        toast.success(t('trade.transaction_successful'), {
           description: t(
             'trade.the_unstake_transaction_was_successful_creating_shareable_link'
           ),
-          variant: 'success',
-          duration: 5000,
         })
 
         // Refresh user info after successful unstake
@@ -84,10 +76,8 @@ export function useUnstake() {
       }
     } catch (err) {
       console.log('Error in making stake tx:', err)
-      toast({
-        title: t('trade.transaction_failed'),
+      toast.error(t('trade.transaction_failed'), {
         description: t('error.the_unstake_transaction_failed_please_try_again'),
-        variant: 'error',
         duration: 5000,
       })
     } finally {

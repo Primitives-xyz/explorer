@@ -45,6 +45,10 @@ const transformToExtendedTransaction = (
       to: transfer.toUserAccount,
       amount: transfer.amount,
     })) || [],
+  events:
+    transaction.events && transaction.events.nft
+      ? [] // or map to TransactionEvent[] if you want to support specific event types
+      : undefined,
 })
 
 export function NftTransactionsView({ transaction, sourceWallet }: Props) {

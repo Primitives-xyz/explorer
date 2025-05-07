@@ -1,5 +1,5 @@
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
-import TimeAgo from '@/components/trade/trade-content/token-details/time-ago'
+import TimeAgo from './time-ago'
 import { Card, CardContent } from '@/components/ui'
 import { ArrowRight, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
