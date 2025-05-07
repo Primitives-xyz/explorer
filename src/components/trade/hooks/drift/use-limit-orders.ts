@@ -7,10 +7,9 @@ import { useDriftUsers } from './use-drift-users'
 
 interface Props {
   subAccountId: number
-  symbol: string
 }
 
-interface LimitOrderProps {
+export interface LimitOrderProps {
   market: string
   direction: string
   price: number
@@ -19,7 +18,7 @@ interface LimitOrderProps {
   orderId: number
 }
 
-export function useLimitOrders({ subAccountId, symbol }: Props) {
+export function useLimitOrders({ subAccountId }: Props) {
   const [loading, setLoading] = useState<boolean>(false)
   const [cancelLoading, setCancelLoading] = useState<boolean>(false)
   const { driftClient } = useInitializeDrift()
@@ -72,7 +71,7 @@ export function useLimitOrders({ subAccountId, symbol }: Props) {
       if (!accountIds.length) return
       setLoading(true)
 
-      const baseUrl = `/api/drift/limitorders/?wallet=${walletAddress}&&subAccountId=${subAccountId}&&symbol=${symbol}`
+      const baseUrl = `/api/drift/limitorders/?wallet=${walletAddress}&&subAccountId=${subAccountId}`
 
       const res = await fetch(baseUrl, {
         method: 'GET',

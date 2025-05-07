@@ -14,6 +14,14 @@ import {
 import { BN } from 'bn.js'
 import { NextRequest, NextResponse } from 'next/server'
 
+function convertToBN(value: number, decimals: number) {
+  const wholePart = Math.floor(value)
+  const precision = new anchor.BN(Math.pow(10, decimals))
+  const decimalPart = Math.round((value - wholePart) * precision.toNumber())
+  
+  return new anchor.BN(wholePart).mul(precision).add(new anchor.BN(decimalPart))
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { amount, walletAddy } = await req.json()
@@ -36,7 +44,7 @@ export async function POST(req: NextRequest) {
       new PublicKey(walletAddy),
       new PublicKey(SSE_MINT)
     )
-    const stakeAmount = new BN(Number(amount) * Math.pow(10, SSE_TOKEN_DECIMAL))
+    const stakeAmount = convertToBN(Number(amount), SSE_TOKEN_DECIMAL)
     const stakeTx = await program.methods
       .stake(stakeAmount)
       .accounts({

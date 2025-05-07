@@ -38,6 +38,8 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
     ? new Date(profileInfo.profile.created_at).getFullYear()
     : new Date().getFullYear()
 
+  const isSame = profileInfo?.profile.username === profileInfo.walletAddress
+
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between">
       <div className="flex items-center md:items-start gap-2">
@@ -49,8 +51,14 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
         />
         <div className="space-y-2">
           <div className="flex flex-col md:flex-row gap-1 md:items-center">
-            <p className="font-bold">@{profileInfo.profile.username}</p>
-            {profileInfo.walletAddress && (
+            <p className="font-bold">
+              {isSame
+                ? abbreviateWalletAddress({
+                    address: profileInfo.profile.username,
+                  })
+                : `@${profileInfo.profile.username}`}
+            </p>
+            {profileInfo.walletAddress && !isSame && (
               <p className="text-muted-foreground">
                 {abbreviateWalletAddress({
                   address: profileInfo.walletAddress,
