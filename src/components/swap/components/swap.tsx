@@ -110,7 +110,6 @@ export function Swap({ setTokenMint }: Props) {
   } = useCurrentWallet()
   const { balance: inputBalance, rawBalance: inputRawBalance } =
     useTokenBalance(walletAddress, inputTokenMint)
-
   const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } =
     useTokenUSDCPrice({
       tokenMint: inputTokenMint,

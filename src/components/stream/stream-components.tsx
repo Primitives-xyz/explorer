@@ -13,7 +13,7 @@ import { TokenBondedBar } from './token-bonded-bar'
 import { TokenBadges } from './token-badges'
 import { TokenSmallBuy } from './token-small-buy'
 
-export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', solPrice = null }: { agg: MintAggregate, onClick: (mint: string, amount: number) => void, createdAt?: number | null, volume?: number, currency?: 'SOL' | 'USD', solPrice?: number | null }) {
+export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', solPrice = null, disableFlash = false }: { agg: MintAggregate, onClick: (mint: string, amount: number) => void, createdAt?: number | null, volume?: number, currency?: 'SOL' | 'USD', solPrice?: number | null, disableFlash?: boolean }) {
   const symbol = agg.mintSymbol
   const name = agg.mintName
   const image = agg.mintImage
@@ -33,13 +33,18 @@ export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', so
   const lastUpdateRef = useRef<number | undefined>(agg.lastUpdate)
 
   useEffect(() => {
+    if (disableFlash) {
+      setFlash(false)
+      lastUpdateRef.current = agg.lastUpdate
+      return
+    }
     if (agg.lastUpdate && agg.lastUpdate !== lastUpdateRef.current) {
       setFlash(true)
       lastUpdateRef.current = agg.lastUpdate
       const timeout = setTimeout(() => setFlash(false), 500)
       return () => clearTimeout(timeout)
     }
-  }, [agg.lastUpdate])
+  }, [agg.lastUpdate, disableFlash])
 
   // Remove onClick from Card, move buy logic to button
   return (
@@ -59,7 +64,7 @@ export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', so
               <TokenIdentity agg={agg} symbol={symbol} name={name} image={image} />
               <TokenRealLiquidity realSolReserves={lastTrade?.realSolReserves} currency={currency} solPrice={solPrice} />
               <TokenBadges agg={agg} />
-              <TokenSmallBuy onBuy={onClick} mint={agg.mint} />
+              <TokenSmallBuy onBuy={(mint, amount) => { console.log('Buy clicked', mint, amount); onClick(mint, amount); }} mint={agg.mint} />
             </div>
             {/* Right: Price, Top Traders, Created, Volume */}
             <div className="flex flex-col items-end min-w-0 gap-1">

@@ -81,6 +81,8 @@ export function Pay({
 
       <div className="flex justify-between items-center">
         <Input
+          type="number"
+          inputMode="decimal"
           placeholder="0.00"
           className="text-primary placeholder:text-primary text-xl bg-transparent border-none px-0"
           onFocus={() => setSwapMode(ESwapMode.EXACT_IN)}
