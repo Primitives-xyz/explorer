@@ -70,7 +70,7 @@ export default function OrdersTabContent({
                         {limitOrder.triggerPrice
                           ? limitOrder.triggerPrice.toFixed(2)
                           : '-'}{' '}
-                        / {limitOrder.price.toFixed(2)}
+                        / {limitOrder.price ? limitOrder.price.toFixed(2) : '-'}
                       </p>
                     </div>
 
