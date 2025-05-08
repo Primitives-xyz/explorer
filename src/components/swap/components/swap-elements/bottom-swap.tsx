@@ -58,7 +58,7 @@ export function BottomSwap({
               'cursor-pointer'
             )}
           >
-            <CardContent className="flex space-x-3 p-3">
+            <CardContent className="flex space-x-3 p-3 bg-card">
               <Checkbox
                 id="pay_fee_with_sse"
                 checked={useSSEForFees}
