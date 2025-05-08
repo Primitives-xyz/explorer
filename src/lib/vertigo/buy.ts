@@ -206,7 +206,7 @@ async function checkNonSolTokenBalance(
  * @param params - Parameters for buying tokens
  * @returns Serialized transaction as string
  */
-export async function buyTokens(
+export async function createBuyTransactionIX(
   connection: Connection,
   params: Omit<BuyTokensParams, 'userTaA' | 'userTaB'> & { userAddress: string }
 ): Promise<string> {

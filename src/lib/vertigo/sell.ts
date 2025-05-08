@@ -62,7 +62,7 @@ async function createUnwrapSolInstruction(userPublicKey: PublicKey) {
  * Sell tokens to a Vertigo pool
  * Handles ATA creation using backend payer.
  */
-export async function sellTokens(
+export async function createSellTransactionIX(
   connection: Connection,
   params: Omit<SellTokensParams, 'userTaA' | 'userTaB'> & {
     userAddress: string
