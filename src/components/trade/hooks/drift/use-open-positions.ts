@@ -4,7 +4,6 @@ import { toast } from 'sonner'
 import { useDriftUsers } from './use-drift-users'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useToastContent } from './use-toast-content'
-import { useDriftUsers } from './use-drift-users'
 
 interface UseUserStatsProps {
   subAccountId: number

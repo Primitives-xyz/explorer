@@ -4,6 +4,7 @@ import {
   OrderType,
   StopLimitOrderParams,
 } from '@/components/tapestry/models/drift.model'
+import { useOraclePrice } from '@/components/trade/hooks/drift/use-oracle-price'
 import { Card, CardContent, Input, Spinner, Switch } from '@/components/ui'
 import { CircleAlert } from 'lucide-react'
 import Image from 'next/image'
@@ -34,10 +35,10 @@ export default function StopLimit({
   // States
   const [orderAmount, setOrderAmount] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
+  const [symbol, setSymbol] = useState<string>('SOL')
+  const { oraclePrice, loading } = useOraclePrice({ symbol })
   const [limitPrice, setLimitPrice] = useState<string>('')
-  const [triggerOraclePrice, setTriggerOraclePrice] = useState<string>(
-    marketPrice.toString()
-  )
+  const [triggerOraclePrice, setTriggerOraclePrice] = useState<string>('')
   const getMaxTradeAmount = useMemo(() => {
     if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
 
@@ -99,9 +100,7 @@ export default function StopLimit({
     }
   }
 
-  const handleLimitPriceChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
 
     if (
@@ -140,10 +139,17 @@ export default function StopLimit({
     }
   }, [error])
 
+  useEffect(() => {
+    setTriggerOraclePrice(oraclePrice.toString())
+  }, [oraclePrice])
+
   return (
     <div className="space-y-4">
       <div>
-        <p>Trigger Oracle Price</p>
+        <div className="flex items-center gap-2">
+          <p>Trigger Oracle Price</p>
+          {loading && <Spinner size={12} />}
+        </div>
         <div className="relative w-full">
           <Input
             type="text"

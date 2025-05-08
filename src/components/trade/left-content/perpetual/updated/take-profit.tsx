@@ -4,14 +4,8 @@ import {
   OrderType,
   TakeProfitOrderParams,
 } from '@/components/tapestry/models/drift.model'
-import {
-  Card,
-  CardContent,
-  Input,
-  Separator,
-  Spinner,
-  Switch,
-} from '@/components/ui'
+import { useOraclePrice } from '@/components/trade/hooks/drift/use-oracle-price'
+import { Card, CardContent, Input, Spinner, Switch } from '@/components/ui'
 import { CircleAlert } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
@@ -40,10 +34,10 @@ export default function TakeProfit({
 }: Props) {
   // States
   const [orderAmount, setOrderAmount] = useState<string>('')
+  const [symbol, setSymbol] = useState<string>('SOL')
+  const { oraclePrice, loading } = useOraclePrice({ symbol })
   const [error, setError] = useState<string | null>(null)
-  const [triggerOraclePrice, setTriggerOraclePrice] = useState<string>(
-    marketPrice.toString()
-  )
+  const [triggerOraclePrice, setTriggerOraclePrice] = useState<string>("")
   const getMaxTradeAmount = useMemo(() => {
     if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
 
@@ -124,9 +118,16 @@ export default function TakeProfit({
     }
   }, [error])
 
+  useEffect(() => {
+    setTriggerOraclePrice(oraclePrice.toString())
+  }, [oraclePrice])
+
   return (
     <div className="space-y-4">
-      <p>Trigger Oracle Price</p>
+      <div className="flex items-center gap-2">
+        <p>Trigger Oracle Price</p>
+        {loading && <Spinner size={12} />}
+      </div>
       <div>
         <div className="relative w-full">
           <Input

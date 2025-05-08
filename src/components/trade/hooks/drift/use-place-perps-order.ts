@@ -229,20 +229,20 @@ export function usePlacePerpsOrder({
         if (direction === PositionDirection.LONG) {
           orderParams = getTriggerMarketOrderParams({
             marketIndex: perpMarketAccount.marketIndex,
-            direction: PositionDirection.SHORT,
+            direction: PositionDirection.LONG,
             baseAssetAmount,
             triggerPrice: price,
-            triggerCondition: OrderTriggerCondition.ABOVE,
+            triggerCondition: OrderTriggerCondition.BELOW,
           })
         }
 
         if (direction === PositionDirection.SHORT) {
           orderParams = getTriggerMarketOrderParams({
             marketIndex: perpMarketAccount.marketIndex,
-            direction: PositionDirection.LONG,
+            direction: PositionDirection.SHORT,
             baseAssetAmount,
             triggerPrice: price,
-            triggerCondition: OrderTriggerCondition.BELOW,
+            triggerCondition: OrderTriggerCondition.ABOVE,
           })
         }
       }
@@ -255,22 +255,22 @@ export function usePlacePerpsOrder({
         if (direction === PositionDirection.LONG) {
           orderParams = getTriggerLimitOrderParams({
             marketIndex: perpMarketAccount.marketIndex,
-            direction: PositionDirection.SHORT,
+            direction: PositionDirection.LONG,
             baseAssetAmount,
             price: lprice,
             triggerPrice: tprice,
-            triggerCondition: OrderTriggerCondition.BELOW,
+            triggerCondition: OrderTriggerCondition.ABOVE,
           })
         }
 
         if (direction === PositionDirection.SHORT) {
           orderParams = getTriggerMarketOrderParams({
             marketIndex: perpMarketAccount.marketIndex,
-            direction: PositionDirection.LONG,
+            direction: PositionDirection.SHORT,
             baseAssetAmount,
             price: lprice,
             triggerPrice: tprice,
-            triggerCondition: OrderTriggerCondition.ABOVE,
+            triggerCondition: OrderTriggerCondition.BELOW,
           })
         }
       }
