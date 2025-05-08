@@ -100,7 +100,7 @@ export function StreamContent() {
               aria-label="Toggle SOL/USD"
             />
             <span className={currency === 'USD' ? 'font-bold text-white' : ''}>
-              {currency === 'USD' ? solPriceDisplay + ' USD' : 'SOL'}
+              {solPriceDisplay} USD
             </span>
           </div>
           {/* Disable Animations Checkbox */}
