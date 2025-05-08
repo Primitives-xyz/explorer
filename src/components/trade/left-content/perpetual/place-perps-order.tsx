@@ -1,32 +1,31 @@
 'use client'
 
 import { Button, ButtonVariant, Spinner } from '@/components/ui'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 interface Props {
-  sdkHasLoaded: boolean
-  isLoggedIn: boolean
   accountIds: number[]
   loading: boolean
   selectedDirection: string
   amount: string
   symbol: string
-  setShowAuthFlow: (show: boolean) => void
+  isError: boolean
   placePerpsOrder: () => void
   setIsFundsModalOpen: (val: boolean) => void
 }
 
-export function ButtonMiddlePerpetual({
-  sdkHasLoaded,
-  isLoggedIn,
+export function PlacePerpsOrder({
   accountIds,
-  loading,
-  selectedDirection,
-  amount,
   symbol,
-  setShowAuthFlow,
-  placePerpsOrder,
-  setIsFundsModalOpen
+  loading,
+  amount,
+  selectedDirection,
+  isError,
+  setIsFundsModalOpen,
+  placePerpsOrder
 }: Props) {
+  const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
+
   return (
     <div>
       {(() => {
@@ -69,7 +68,7 @@ export function ButtonMiddlePerpetual({
           <Button
             onClick={() => placePerpsOrder()}
             className="capitalize font-bold w-full text-lg"
-            disabled={loading || Number(amount) <= 0}
+            disabled={loading || Number(amount) <= 0 || isError}
           >
             {loading ? (
               <Spinner />
