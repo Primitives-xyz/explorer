@@ -4,7 +4,7 @@ import { Swap } from '@/components/swap/components/swap'
 // import { Perpetual } from '@/components/trade/left-content/perpetual/perpetual'
 import { FilterTabs } from '@/components/ui'
 import { useEffect, useState } from 'react'
-import { Perpetual } from './perpetual/updated/updated-perpetual'
+import { Perpetual } from './perpetual/updated-perpetual'
 
 interface TradeLeftContentProps {
   selectedType: FilterType

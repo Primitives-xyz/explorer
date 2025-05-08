@@ -94,7 +94,6 @@ export function useUserStats({ subAccountId, symbol }: UseUserStatsProps) {
         )
 
         if (!marketInfo) return
-        console.log("marketIndex:", marketInfo.marketIndex)
 
         const maxLeverageForPerp = user.getMaxLeverageForPerp(
           marketInfo.marketIndex
