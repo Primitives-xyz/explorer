@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui'
 import { useEffect, useRef, useState } from 'react'
-import { MintAggregate } from './stream-types'
+import { MintAggregate } from './trenches-types'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { TokenIdentity } from './token-identity'
 import { TokenPrice } from './token-price'

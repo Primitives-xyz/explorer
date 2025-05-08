@@ -9,9 +9,9 @@ import {
   ArrowRightLeft,
   Beef,
   Compass,
+  PocketKnife,
   House,
   LucideIcon,
-  TrendingUp,
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
@@ -29,9 +29,9 @@ export function Menu({ setOpen }: Props) {
       <Entry title="Home" icon={House} href={route('home')} setOpen={setOpen} />
 
       <Entry
-        title="Stream"
-        icon={TrendingUp}
-        href={route('stream')}
+        title="Trenches"
+        icon={PocketKnife}
+        href={route('trenches')}
         setOpen={setOpen}
       />
 
