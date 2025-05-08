@@ -439,7 +439,7 @@ export class SwapService {
         sseTransferInstruction,
         addressLookupTableAccounts
       )
-
+      console.log('TRANSACTION MESSAGE BUILT')
       return {
         transaction: new VersionedTransaction(message),
         swapResponse,
@@ -486,7 +486,7 @@ export class SwapService {
       // Build and simulate transaction
       const { transaction, swapResponse, addressLookupTableAccounts } =
         await this.buildSwapTransaction(request) // outputAta argument removed
-
+      console.log('TRANSACTION BUILT')
       try {
         await simulateTransaction(
           this.connection,
