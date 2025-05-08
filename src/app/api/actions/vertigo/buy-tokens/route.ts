@@ -1,5 +1,5 @@
-import { buyTokens, createConnection } from '@/lib/vertigo'
-import { SwapService } from '@/services/swap'
+import { createConnection } from '@/lib/vertigo'
+import { createBuyTransactionIX } from '@/lib/vertigo/buy'
 import {
   ActionGetResponse,
   ActionPostResponse,
@@ -109,25 +109,12 @@ export async function POST(req: NextRequest) {
     // Initialize Vertigo service
     const connection = await createConnection()
 
-    // We need to look up the user's token accounts for SOL and the target token
-    // For a real implementation, you'd need to fetch these or create them if they don't exist
-    // Here we're simulating this part
-
-    const swapService = new SwapService(connection)
-    const userTaA = await swapService.verifyOrCreateATA(
-      NATIVE_MINT.toString(),
-      userAddress
-    )
-    const userTaB = await swapService.verifyOrCreateATA(mintB, userAddress)
-
     // Execute the buy transaction
-    const signature = await buyTokens(connection, {
+    const signature = await createBuyTransactionIX(connection, {
       poolOwner,
       mintA: NATIVE_MINT.toString(),
       mintB,
       userAddress,
-      userTaA: userTaA.toString(),
-      userTaB: userTaB.toString(),
       amount: Number(amount),
       slippageBps,
     })

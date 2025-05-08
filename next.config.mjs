@@ -4,6 +4,7 @@ const withNextIntl = createNextIntlPlugin()
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ["@coral-xyz/anchor"],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -39,10 +40,10 @@ const nextConfig = {
   },
   experimental: {
     webpackMemoryOptimizations: true,
-    turbo: {
-      resolveAlias: {
-        fs: { browser: './node-browser-compatibility/index.js' },
-      },
+  },
+  turbopack: {
+    resolveAlias: {
+      fs: { browser: './node-browser-compatibility/index.js' },
     },
   },
 }

@@ -11,6 +11,7 @@ import {
   Compass,
   House,
   LucideIcon,
+  Rocket,
   TrendingUp,
   User,
 } from 'lucide-react'
@@ -71,6 +72,8 @@ export function Menu({ setOpen }: Props) {
       {process.env.NODE_ENV === 'production' && (
         <DialectNotificationsComponent />
       )}
+
+      <Entry title="Launch" icon={Rocket} href={route('launch')} />
 
       {/* <Entry
         title="Design System"

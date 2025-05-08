@@ -1,3 +1,5 @@
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes'
+import { Keypair } from '@solana/web3.js'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -191,4 +193,19 @@ export function formatLargeNumber(
     minimumFractionDigits: 2,
     maximumFractionDigits: decimals,
   })
+}
+
+// Configuration
+const VERTIGO_CONFIG = {
+  FEE_WALLET: process.env.FEE_WALLET || '',
+  PAYER_PRIVATE_KEY: process.env.PAYER_PRIVATE_KEY || '',
+}
+
+// Helper function to get payer keypair
+export function getPayerKeypair(): Keypair {
+  if (!VERTIGO_CONFIG.PAYER_PRIVATE_KEY) {
+    throw new Error('PAYER_PRIVATE_KEY is not set')
+  }
+  const secretKey = bs58.decode(VERTIGO_CONFIG.PAYER_PRIVATE_KEY)
+  return Keypair.fromSecretKey(secretKey)
 }

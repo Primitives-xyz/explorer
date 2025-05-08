@@ -1,0 +1,744 @@
+{
+    "address": "FAcTgvrF2jAiPnWEZGLCV3PTQJrypa8GXLFowBv8T4Vs",
+    "metadata": {
+      "name": "token_2022_factory",
+      "version": "0.1.0",
+      "spec": "0.1.0",
+      "description": "Created with Anchor"
+    },
+    "instructions": [
+      {
+        "name": "initialize",
+        "discriminator": [
+          175,
+          175,
+          109,
+          31,
+          13,
+          152,
+          155,
+          237
+        ],
+        "accounts": [
+          {
+            "name": "payer",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "owner",
+            "docs": [
+              "The user who pays for creation and owns the owner signature."
+            ],
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "factory",
+            "docs": [
+              "The PDA that holds the `Pool` state.",
+              "We use the seed = [POOL_SEED, mint.key()] and store the `bump` automatically.",
+              "We allocate enough space for Pool::LEN + 8 (discriminator)."
+            ],
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    102,
+                    97,
+                    99,
+                    116,
+                    111,
+                    114,
+                    121
+                  ]
+                },
+                {
+                  "kind": "account",
+                  "path": "owner"
+                },
+                {
+                  "kind": "account",
+                  "path": "mint_a"
+                },
+                {
+                  "kind": "arg",
+                  "path": "params.nonce"
+                }
+              ]
+            }
+          },
+          {
+            "name": "mint_a",
+            "writable": true
+          },
+          {
+            "name": "system_program",
+            "docs": [
+              "Required programs and sysvars"
+            ],
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "params",
+            "type": {
+              "defined": {
+                "name": "InitializeParams"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "launch",
+        "discriminator": [
+          153,
+          241,
+          93,
+          225,
+          22,
+          69,
+          74,
+          61
+        ],
+        "accounts": [
+          {
+            "name": "payer",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "owner",
+            "docs": [
+              "The user who pays for creation and owns the owner signature."
+            ],
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "amm",
+            "docs": [
+              "The Vertigo program."
+            ],
+            "address": "vrTGoBuy5rYSxAfV3jaRJWHH6nN9WK4NRExGxsk1bCJ"
+          },
+          {
+            "name": "factory",
+            "docs": [
+              "The factory state account."
+            ],
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    102,
+                    97,
+                    99,
+                    116,
+                    111,
+                    114,
+                    121
+                  ]
+                },
+                {
+                  "kind": "account",
+                  "path": "owner"
+                },
+                {
+                  "kind": "account",
+                  "path": "mint_a"
+                },
+                {
+                  "kind": "arg",
+                  "path": "params.nonce"
+                }
+              ]
+            }
+          },
+          {
+            "name": "mint_b_authority",
+            "docs": [
+              "The authority allowed to mint tokens from `mint`."
+            ],
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "mint_b",
+            "writable": true,
+            "signer": true
+          },
+          {
+            "name": "mint_a"
+          },
+          {
+            "name": "pool",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "const",
+                  "value": [
+                    112,
+                    111,
+                    111,
+                    108
+                  ]
+                },
+                {
+                  "kind": "account",
+                  "path": "owner"
+                },
+                {
+                  "kind": "account",
+                  "path": "mint_a"
+                },
+                {
+                  "kind": "account",
+                  "path": "mint_b"
+                }
+              ],
+              "program": {
+                "kind": "const",
+                "value": [
+                  13,
+                  203,
+                  179,
+                  20,
+                  172,
+                  60,
+                  167,
+                  140,
+                  165,
+                  103,
+                  213,
+                  134,
+                  29,
+                  33,
+                  40,
+                  214,
+                  192,
+                  178,
+                  98,
+                  232,
+                  190,
+                  131,
+                  38,
+                  221,
+                  171,
+                  228,
+                  122,
+                  172,
+                  65,
+                  242,
+                  162,
+                  135
+                ]
+              }
+            }
+          },
+          {
+            "name": "vault_a",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "account",
+                  "path": "pool"
+                },
+                {
+                  "kind": "account",
+                  "path": "mint_a"
+                }
+              ],
+              "program": {
+                "kind": "const",
+                "value": [
+                  13,
+                  203,
+                  179,
+                  20,
+                  172,
+                  60,
+                  167,
+                  140,
+                  165,
+                  103,
+                  213,
+                  134,
+                  29,
+                  33,
+                  40,
+                  214,
+                  192,
+                  178,
+                  98,
+                  232,
+                  190,
+                  131,
+                  38,
+                  221,
+                  171,
+                  228,
+                  122,
+                  172,
+                  65,
+                  242,
+                  162,
+                  135
+                ]
+              }
+            }
+          },
+          {
+            "name": "vault_b",
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "account",
+                  "path": "pool"
+                },
+                {
+                  "kind": "account",
+                  "path": "mint_b"
+                }
+              ],
+              "program": {
+                "kind": "const",
+                "value": [
+                  13,
+                  203,
+                  179,
+                  20,
+                  172,
+                  60,
+                  167,
+                  140,
+                  165,
+                  103,
+                  213,
+                  134,
+                  29,
+                  33,
+                  40,
+                  214,
+                  192,
+                  178,
+                  98,
+                  232,
+                  190,
+                  131,
+                  38,
+                  221,
+                  171,
+                  228,
+                  122,
+                  172,
+                  65,
+                  242,
+                  162,
+                  135
+                ]
+              }
+            }
+          },
+          {
+            "name": "token_wallet_b",
+            "docs": [
+              "Token wallet where the initial token reserves come from"
+            ],
+            "writable": true,
+            "pda": {
+              "seeds": [
+                {
+                  "kind": "account",
+                  "path": "mint_b_authority"
+                },
+                {
+                  "kind": "account",
+                  "path": "token_program_b"
+                },
+                {
+                  "kind": "account",
+                  "path": "mint_b"
+                }
+              ],
+              "program": {
+                "kind": "const",
+                "value": [
+                  140,
+                  151,
+                  37,
+                  143,
+                  78,
+                  36,
+                  137,
+                  241,
+                  187,
+                  61,
+                  16,
+                  41,
+                  20,
+                  142,
+                  13,
+                  131,
+                  11,
+                  90,
+                  19,
+                  153,
+                  218,
+                  255,
+                  16,
+                  132,
+                  4,
+                  142,
+                  123,
+                  216,
+                  219,
+                  233,
+                  248,
+                  89
+                ]
+              }
+            }
+          },
+          {
+            "name": "token_program_a"
+          },
+          {
+            "name": "token_program_b",
+            "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+          },
+          {
+            "name": "associated_token_program",
+            "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+          },
+          {
+            "name": "system_program",
+            "address": "11111111111111111111111111111111"
+          },
+          {
+            "name": "rent",
+            "address": "SysvarRent111111111111111111111111111111111"
+          }
+        ],
+        "args": [
+          {
+            "name": "params",
+            "type": {
+              "defined": {
+                "name": "LaunchParams"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "accounts": [
+      {
+        "name": "Factory",
+        "discriminator": [
+          159,
+          68,
+          192,
+          61,
+          48,
+          249,
+          216,
+          202
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "FactoryInitialized",
+        "discriminator": [
+          20,
+          86,
+          103,
+          75,
+          20,
+          220,
+          162,
+          63
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "code": 6000,
+        "name": "InvalidMint",
+        "msg": "Invalid base mint"
+      },
+      {
+        "code": 6001,
+        "name": "InvalidTokenAccount",
+        "msg": "Invalid Token Account"
+      },
+      {
+        "code": 6002,
+        "name": "InvalidMetadataAddress",
+        "msg": "Invalid metadata address"
+      },
+      {
+        "code": 6003,
+        "name": "InvalidOwner",
+        "msg": "Invalid factory owner"
+      },
+      {
+        "code": 6004,
+        "name": "InvalidInitialTokenReserves",
+        "msg": "Initial token reserves must be greater than 0"
+      },
+      {
+        "code": 6005,
+        "name": "InvalidShift",
+        "msg": "Shift must be greater than 0"
+      },
+      {
+        "code": 6006,
+        "name": "InvalidFees",
+        "msg": "Fees must be between 0 and 10000 basis points"
+      },
+      {
+        "code": 6007,
+        "name": "MathOverflow",
+        "msg": "MathOverflow"
+      },
+      {
+        "code": 6008,
+        "name": "InsufficientOutput",
+        "msg": "Insufficient output"
+      },
+      {
+        "code": 6009,
+        "name": "InsufficientInput",
+        "msg": "Insufficient input"
+      },
+      {
+        "code": 6010,
+        "name": "IllegalClaimant",
+        "msg": "Illegal Claimant"
+      },
+      {
+        "code": 6011,
+        "name": "PoolEmpty",
+        "msg": "Pool Empty"
+      },
+      {
+        "code": 6012,
+        "name": "InvalidName",
+        "msg": "Invalid name"
+      },
+      {
+        "code": 6013,
+        "name": "InvalidSymbol",
+        "msg": "Invalid symbol"
+      }
+    ],
+    "types": [
+      {
+        "name": "Factory",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "owner",
+              "type": "pubkey"
+            },
+            {
+              "name": "shift",
+              "type": "u128"
+            },
+            {
+              "name": "initial_token_reserves",
+              "type": "u64"
+            },
+            {
+              "name": "fee_params",
+              "type": {
+                "defined": {
+                  "name": "FeeParams"
+                }
+              }
+            },
+            {
+              "name": "token_params",
+              "type": {
+                "defined": {
+                  "name": "TokenParams"
+                }
+              }
+            },
+            {
+              "name": "bump",
+              "type": "u8"
+            },
+            {
+              "name": "mint_a",
+              "type": "pubkey"
+            }
+          ]
+        }
+      },
+      {
+        "name": "FactoryInitialized",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "owner",
+              "type": "pubkey"
+            },
+            {
+              "name": "mint_a",
+              "type": "pubkey"
+            }
+          ]
+        }
+      },
+      {
+        "name": "FeeParams",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "normalization_period",
+              "docs": [
+                "The normalization period in slots.",
+                "During this period, the fee will decay from 100% to the base fee."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "decay",
+              "docs": [
+                "Normalization period fee decay rate.",
+                "Higher values decay faster."
+              ],
+              "type": "f64"
+            },
+            {
+              "name": "royalties_bps",
+              "docs": [
+                "Royalties in basis points."
+              ],
+              "type": "u16"
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitializeParams",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "shift",
+              "type": "u128"
+            },
+            {
+              "name": "initial_token_reserves",
+              "type": "u64"
+            },
+            {
+              "name": "fee_params",
+              "type": {
+                "defined": {
+                  "name": "FeeParams"
+                }
+              }
+            },
+            {
+              "name": "token_params",
+              "type": {
+                "defined": {
+                  "name": "TokenParams"
+                }
+              }
+            },
+            {
+              "name": "nonce",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "LaunchParams",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "token_config",
+              "type": {
+                "defined": {
+                  "name": "TokenMetaData"
+                }
+              }
+            },
+            {
+              "name": "reference",
+              "type": "u64"
+            },
+            {
+              "name": "privileged_swapper",
+              "type": {
+                "option": "pubkey"
+              }
+            },
+            {
+              "name": "nonce",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "TokenMetaData",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "name": "uri",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      {
+        "name": "TokenParams",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "decimals",
+              "type": "u8"
+            },
+            {
+              "name": "mutable",
+              "type": "bool"
+            }
+          ]
+        }
+      }
+    ]
+  }
