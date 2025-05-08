@@ -132,7 +132,9 @@ export function StreamContent() {
                 agg={agg}
                 onClick={(mint, buyAmount = 0.01) => {
                   setOpen(true)
-                  setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                  setTimeout(() => {
+                    setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                  }, 0)
                 }}
                 createdAt={(agg as any).tokenCreatedAt}
                 volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
@@ -159,7 +161,9 @@ export function StreamContent() {
                 agg={agg}
                 onClick={(mint, buyAmount = 0.01) => {
                   setOpen(true)
-                  setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                  setTimeout(() => {
+                    setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                  }, 0)
                 }}
                 createdAt={(agg as any).tokenCreatedAt}
                 volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
@@ -186,7 +190,9 @@ export function StreamContent() {
                 agg={agg}
                 onClick={(mint, buyAmount = 0.01) => {
                   setOpen(true)
-                  setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                  setTimeout(() => {
+                    setInputs({ inputMint: SOL_MINT, outputMint: mint, inputAmount: buyAmount })
+                  }, 0)
                 }}
                 createdAt={(agg as any).tokenCreatedAt}
                 volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
