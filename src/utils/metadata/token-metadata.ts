@@ -1,4 +1,4 @@
-import type { TokenInfo } from '@/types/token'
+import type { TokenInfo } from '@/types/Token'
 import type { Metadata } from 'next'
 
 interface TokenMetadataParams {

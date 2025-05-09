@@ -1,4 +1,4 @@
-import type { FungibleTokenInfo } from '@/types/token'
+import type { FungibleTokenInfo } from '@/types/Token'
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
