@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogHeader,
 } from '@/components/ui'
+import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { DialogTitle } from '@radix-ui/react-dialog'
 import { UserRoundPlus } from 'lucide-react'
@@ -76,7 +77,21 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
           </div>
         </div>
 
-        <Button variant={ButtonVariant.OUTLINE_SOCIAL}>
+        <Button
+          variant={ButtonVariant.OUTLINE_SOCIAL}
+          onClick={() => setOpen(false)}
+          href={`https://x.com/intent/tweet?text=${encodeURIComponent(
+            `My SOLID Score is ${formatSmartNumber(
+              data?.solidUser.solidScore || 1,
+              {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }
+            )} Check yours at https://www.sse.gg/!`
+          )}`}
+          newTab
+          rel="noopener noreferrer"
+        >
           <UserRoundPlus size={16} />
           Share
         </Button>

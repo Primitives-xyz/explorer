@@ -1,20 +1,23 @@
-import { Button, Spinner } from '@/components/ui'
+import { Button, ButtonSize, Spinner } from '@/components/ui'
+import { cn } from '@/utils/utils'
 import { Eye } from 'lucide-react'
 
 interface Props {
   onClick: () => void
   loading: boolean
+  smallView?: boolean
 }
 
-export function SolidScoreRevealButton({ onClick, loading }: Props) {
+export function SolidScoreRevealButton({ onClick, loading, smallView }: Props) {
   return (
-    <Button className="w-full" onClick={onClick} disabled={loading}>
-      {loading ? (
-        <Spinner className="mr-2 h-4 w-4" />
-      ) : (
-        <Eye size={16} className="mr-2" />
-      )}
-      Reveal
+    <Button
+      className={cn({ 'w-full': !smallView })}
+      onClick={onClick}
+      disabled={loading}
+      size={smallView ? ButtonSize.SM : ButtonSize.DEFAULT}
+    >
+      {loading ? <Spinner size={16} /> : <Eye size={16} />}
+      Reveal score
     </Button>
   )
 }

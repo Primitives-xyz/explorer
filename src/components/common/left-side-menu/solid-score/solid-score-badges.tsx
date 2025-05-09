@@ -11,9 +11,10 @@ import Image from 'next/image'
 interface Props {
   data?: SolidScoreResponse
   smallView?: boolean
+  compactLimit?: number
 }
 
-export function SolidScoreBadges({ data, smallView }: Props) {
+export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
   const badges: Record<
     string,
     {
@@ -95,34 +96,46 @@ export function SolidScoreBadges({ data, smallView }: Props) {
     },
   }
 
-  // const userBadges = [
-  //   'SOLANA_OG',
-  //   'SOLANA_POWER_USER',
-  //   'HODLER',
-  //   'DEX_TRADER',
-  //   'RISK_TAKER',
-  //   'DIVERSE_NFT_TRADER',
-  //   'LIQUIDITY_PROVIDER',
-  //   'DIVERSE_LIQUIDITY_PROVIDER',
-  //   'DIVERSE_HODLER',
-  //   'MULTIPLATFORM_DEX_TRADER',
-  //   'NFT_TRADER',
-  //   'MULTIPLATFORM_NFT_TRADER',
-  //   'MULTIPLATFORM_LIQUIDITY_PROVIDER',
-  //   'NATIVE_STAKER',
-  // ]
+  const userBadgesMock = [
+    'SOLANA_OG',
+    'SOLANA_POWER_USER',
+    'HODLER',
+    'DEX_TRADER',
+    'RISK_TAKER',
+    'DIVERSE_NFT_TRADER',
+    'LIQUIDITY_PROVIDER',
+    'DIVERSE_LIQUIDITY_PROVIDER',
+    'DIVERSE_HODLER',
+    'MULTIPLATFORM_DEX_TRADER',
+    'NFT_TRADER',
+    'MULTIPLATFORM_NFT_TRADER',
+    'MULTIPLATFORM_LIQUIDITY_PROVIDER',
+    'NATIVE_STAKER',
+  ]
+
+  const userBadges = data?.solidUser.badges ?? []
+
+  //  const userBadges = userBadgesMock
+
+  const showCompact = typeof compactLimit === 'number'
+
+  const displayedBadges = showCompact
+    ? userBadges.slice(0, compactLimit)
+    : userBadges
+  const hiddenCount = showCompact ? userBadges.length - compactLimit : 0
 
   return (
     <div
       className={cn(
         {
-          'gap-4 px-10': !smallView,
-          'gap-2': smallView,
+          'gap-4 px-10': !smallView && !showCompact,
+          'gap-2': smallView || showCompact,
+          'pt-2': !showCompact,
         },
-        'flex flex-wrap justify-center pt-2'
+        'flex flex-wrap justify-center'
       )}
     >
-      {data?.solidUser.badges.map((key) => {
+      {displayedBadges.map((key) => {
         const badge = badges[key]
         if (!badge) return null
         return (
@@ -132,21 +145,27 @@ export function SolidScoreBadges({ data, smallView }: Props) {
                 <Image
                   src={badge.image}
                   alt={key}
-                  width={smallView ? 15 : 16}
-                  height={smallView ? 15 : 16}
+                  width={showCompact ? 14 : smallView ? 15 : 16}
+                  height={showCompact ? 14 : smallView ? 15 : 16}
                   className="rounded aspect-square object-contain"
                 />
               </TooltipTrigger>
               <TooltipContent>
                 <div>
-                  <p className="font-bold">{badge.name}</p>
-                  <p>{badge.description}</p>
+                  <p className="font-bold text-sm">{badge.name}</p>
+                  <p className="text-xs">{badge.description}</p>
                 </div>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )
       })}
+
+      {showCompact && hiddenCount > 0 && (
+        <span className="text-xs text-muted-foreground font-bold">
+          + {hiddenCount} more
+        </span>
+      )}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
-import { ProfileHeader } from './profile-header'
+import { ProfileHeader } from './profile-header/profile-header'
 import { ProfileSocial } from './profile-social'
 import { ProfileWallets } from './profile-wallets'
 
