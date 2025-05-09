@@ -5,6 +5,7 @@ import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import Link from 'next/link'
 import * as React from 'react'
+import { UrlObject } from 'url'
 import { Spinner } from '../spinner'
 
 const focus =
@@ -70,7 +71,7 @@ interface ButtonProps
   disableHoverFeedback?: boolean
   disableActiveFeedback?: boolean
   newTab?: boolean
-  href?: string
+  href?: string | UrlObject
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

@@ -7,6 +7,7 @@ import {
 import { useLeverageSize } from '@/components/trade/hooks/drift/use-leverage-size'
 import { useLiquidationPrice } from '@/components/trade/hooks/drift/use-liquidation-price'
 import { Input, Separator, Spinner } from '@/components/ui'
+import { SOL_MINT } from '@/utils/constants'
 import { formatUsdValue } from '@/utils/utils'
 import LeverageSelector from '@components/trade/left-content/perpetual/leverage-selector'
 import { Slippage } from '@components/trade/left-content/perpetual/slippage'
@@ -14,8 +15,7 @@ import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 
-const SOL_IMG_URI =
-  'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+const SOL_IMG_URI = `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${SOL_MINT}/logo.png`
 const USDC_IMG_URI =
   'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
 

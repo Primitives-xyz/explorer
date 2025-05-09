@@ -1,5 +1,6 @@
 import { PLATFORM_FEE_BPS, SSE_TOKEN_MINT } from '@/constants/jupiter'
 import { SwapService } from '@/services/swap'
+import { SOL_MINT } from '@/utils/constants'
 import { fetchTokenInfo } from '@/utils/helius/das-api'
 import {
   ActionGetResponse,
@@ -9,7 +10,7 @@ import {
 } from '@solana/actions'
 import { NextRequest } from 'next/server'
 
-const DEFAULT_INPUT_MINT = 'So11111111111111111111111111111111111111112' // SOL
+const DEFAULT_INPUT_MINT = SOL_MINT // SOL
 const DEFAULT_OUTPUT_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump' // PUMP
 const DEFAULT_SLIPPAGE_BPS = 50 // 0.5%
 const PLATFORM_FEE_ACCOUNT = process.env.PLATFORM_FEE_ACCOUNT || ''

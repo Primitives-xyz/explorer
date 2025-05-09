@@ -6,12 +6,12 @@ import {
 } from '@/components/tapestry/models/drift.model'
 import { useOraclePrice } from '@/components/trade/hooks/drift/use-oracle-price'
 import { Card, CardContent, Input, Spinner, Switch } from '@/components/ui'
+import { SOL_MINT } from '@/utils/constants'
 import { CircleAlert } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 
-const SOL_IMG_URI =
-  'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+const SOL_IMG_URI = `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${SOL_MINT}/logo.png`
 const USDC_IMG_URI =
   'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
 
@@ -37,7 +37,7 @@ export default function TakeProfit({
   const [symbol, setSymbol] = useState<string>('SOL')
   const { oraclePrice, loading } = useOraclePrice({ symbol })
   const [error, setError] = useState<string | null>(null)
-  const [triggerOraclePrice, setTriggerOraclePrice] = useState<string>("")
+  const [triggerOraclePrice, setTriggerOraclePrice] = useState<string>('')
   const getMaxTradeAmount = useMemo(() => {
     if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
 
@@ -196,8 +196,8 @@ export default function TakeProfit({
       {error && (
         <Card>
           <CardContent className="flex items-center gap-4 p-3">
-            <CircleAlert className="text-red-500" size={40} />
-            <p className="text-red-500 font-medium">{error}</p>
+            <CircleAlert className="destructive" size={40} />
+            <p className="destructive">{error}</p>
           </CardContent>
         </Card>
       )}
