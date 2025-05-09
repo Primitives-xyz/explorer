@@ -40,10 +40,8 @@ export function ProfileTokens({ walletAddress }: Props) {
             <Button
               variant={ButtonVariant.LINK}
               href={route('trade', {
-                query: {
-                  inputMint: SOL_MINT,
-                  outputMint: row.original.id,
-                },
+                inputMint: SOL_MINT,
+                outputMint: row.original.id,
               })}
             >
               <div className="w-6 aspect-square rounded-full bg-muted overflow-hidden shrink-0">

@@ -1,12 +1,22 @@
+function toQueryString(
+  params: Record<string, string | number | boolean | undefined>
+) {
+  return Object.entries(params)
+    .filter(([, value]) => value !== undefined)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+    )
+    .join('&')
+}
+
 const routes = {
   home: () => '/',
   discover: () => '/discover',
   entity: ({ id }: { id: string }) => `/${id}`,
   designSystem: () => '/design-system',
-  trade: (options?: { query?: Record<string, string | number | boolean> }) => ({
-    pathname: '/trade',
-    query: options?.query ?? {},
-  }),
+  trade: (query?: Record<string, string | number | boolean>) =>
+    `/trade${query ? `?${toQueryString(query)}` : ''}`,
   stake: () => '/stake',
   trenches: () => '/trenches',
   namespace: ({ id }: { id: string }) => `/namespace/${id}`,
