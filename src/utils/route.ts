@@ -6,7 +6,7 @@ const routes = {
   trade: (query?: string) => `/trade${query ? `?${query}` : ''}`,
   tokens: () => '/tokens',
   stake: () => '/stake',
-  stream: () => '/stream',
+  trenches: () => '/trenches',
   namespace: ({ id }: { id: string }) => `/namespace/${id}`,
   namespaceProfile: ({ id, profile }: { id: string; profile: string }) =>
     `/namespace/${id}/${profile}`,

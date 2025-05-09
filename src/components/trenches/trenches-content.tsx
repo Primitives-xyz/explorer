@@ -1,17 +1,17 @@
 'use client'
 
-import { TokenRow } from '@/components/stream/stream-components'
+import { TokenRow } from '@/components/trenches/trenches-components'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { SOL_MINT } from '@/utils/constants'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useEffect, useRef, useState } from 'react'
-import { MintAggregate } from './stream-types'
+import { MintAggregate } from './trenches-types'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { Switch } from '@/components/ui/switch/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export function StreamContent() {
+export function TrenchesContent() {
   const { isMobile } = useIsMobile()
   const { setOpen, setInputs, open } = useSwapStore()
   const [mintMap, setMintMap] = useState<Record<string, MintAggregate>>({})
