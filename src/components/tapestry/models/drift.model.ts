@@ -20,15 +20,43 @@ export interface IUserStats {
   maxTradeSize: number
 }
 
+export interface NeccessaryOrderParams {
+  orderType: string
+  amount: string
+}
+
+export interface MarketOrderParams extends NeccessaryOrderParams {
+  slippage: string
+}
+
+export interface LimitOrderParams extends NeccessaryOrderParams {
+  slippage: string
+  limitPrice: string
+  reduceOnly: boolean
+}
+
+export interface TakeProfitOrderParams extends NeccessaryOrderParams {
+  triggerPrice: string
+  reduceOnly: boolean
+}
+
+export interface StopLimitOrderParams extends NeccessaryOrderParams {
+  triggerPrice: string
+  limitPrice: string
+  reduceOnly: boolean
+}
+
 export enum MarketType {
   SPOT = 'spot',
   PERP = 'perp',
 }
 
 export enum OrderType {
-  MARKET = 'market',
-  LIMIT = 'limit',
-  PRO = 'pro',
+  MARKET = 'Market_Order',
+  LIMIT = 'Limit_Order',
+  TP = 'Take_Profit',
+  PRO = 'Pro_Orders',
+  SL = 'Stop_Limit',
 }
 
 export enum ProOrderType {
@@ -49,4 +77,3 @@ export enum DirectionFilterType {
   LONG = 'long',
   SHORT = 'short',
 }
-

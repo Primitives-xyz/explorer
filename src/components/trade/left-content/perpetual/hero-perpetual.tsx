@@ -16,7 +16,10 @@ interface Props {
   statsLoading: boolean
   blur: boolean
   setSelectedDirection: (type: DirectionFilterType) => void
-  formatLeverage: (leverage: number) => string
+}
+
+const formatLeverage = (leverage: number) => {
+  return leverage.toFixed(2) + 'x'
 }
 
 export function HeroPerpetual({
@@ -25,7 +28,6 @@ export function HeroPerpetual({
   statsLoading,
   blur,
   setSelectedDirection,
-  formatLeverage,
 }: Props) {
   const options = [
     { label: 'Long', value: DirectionFilterType.LONG },
@@ -38,12 +40,14 @@ export function HeroPerpetual({
 
   return (
     <>
-      <Card className={`${blur ? "blur-xs" : ""}`}>
+      <Card className={`${blur ? 'blur-xs' : ''}`}>
         <CardContent className="flex justify-between items-center">
           <div className="flex flex-col">
             <p className="text-xs">Net USD Value</p>
             <div className="flex items-center gap-2">
-              <p className="text-primary">{formatUsdValue(userStats.netUsdValue)}</p>
+              <p className="text-primary">
+                {formatUsdValue(userStats.netUsdValue)}
+              </p>
               {statsLoading && <Spinner size={12} />}
             </div>
           </div>
@@ -51,7 +55,9 @@ export function HeroPerpetual({
           <div className="flex flex-col">
             <p className="text-xs">Acct. Leverage</p>
             <div className="flex items-center gap-2">
-              <p className="text-primary">{formatLeverage(userStats.leverage)}</p>
+              <p className="text-primary">
+                {formatLeverage(userStats.leverage)}
+              </p>
               {statsLoading && <Spinner size={12} />}
             </div>
           </div>
@@ -67,10 +73,7 @@ export function HeroPerpetual({
       </Card>
 
       <FilterTabs
-        className={cn(
-          "flex items-center justify-between",
-          blur && "blur-xs"
-        )}
+        className={cn('flex items-center justify-between', blur && 'blur-xs')}
         buttonClassName="w-1/2"
         options={options}
         selected={selectedDirection}

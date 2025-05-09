@@ -1,4 +1,4 @@
-import { MintAggregate } from './stream-types'
+import { MintAggregate } from './trenches-types'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
 
 export function TokenIdentity({ agg, symbol, name, image }: { agg: MintAggregate, symbol?: string, name?: string, image?: string }) {

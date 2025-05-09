@@ -1,5 +1,5 @@
 import { TokenBadge } from './token-badge'
-import { MintAggregate } from './stream-types'
+import { MintAggregate } from './trenches-types'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 
 export function TokenBadges({ agg }: { agg?: MintAggregate }) {

@@ -1,9 +1,9 @@
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { useDriftUsers } from './use-drift-users'
 import { useInitializeDrift } from './use-initialize-drift'
 import { useToastContent } from './use-toast-content'
-import { useDriftUsers } from './use-drift-users'
 
 interface Props {
   subAccountId: number
@@ -66,7 +66,6 @@ export function useLimitOrders({ subAccountId }: Props) {
 
   const fetchLimitOrders = useCallback(async () => {
     try {
-
       if (!isLoggedIn || !driftClient) return
       if (!accountIds.length) return
       setLoading(true)
@@ -87,7 +86,7 @@ export function useLimitOrders({ subAccountId }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [driftClient, subAccountId])
+  }, [driftClient, isLoggedIn, walletAddress, accountIds, subAccountId])
 
   const refreshFetchLimitOrders = () => {
     if (!loading) {
@@ -96,10 +95,12 @@ export function useLimitOrders({ subAccountId }: Props) {
   }
 
   useEffect(() => {
-    const interval = setInterval(fetchLimitOrders, 5000)
+    const interval = setInterval(() => {
+      fetchLimitOrders()
+    }, 5000)
 
     return () => clearInterval(interval)
-  }, [driftClient, subAccountId])
+  }, [driftClient, isLoggedIn, walletAddress, accountIds, subAccountId])
 
   return {
     limitOrders,
