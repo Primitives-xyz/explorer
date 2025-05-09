@@ -7,9 +7,9 @@ import { useGetProfilesOwnSpecificToken } from '@/components/tapestry/hooks/use-
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
+import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
-import Image from 'next/image'
 import { ESwapMode } from '../../swap.models'
 
 interface Props {
@@ -93,7 +93,7 @@ export function Receive({ setShowOutputTokenSearch }: Props) {
           <div className="flex items-center gap-3">
             <div>
               {outputTokenImageUri ? (
-                <Image
+                <ValidatedImage
                   src={outputTokenImageUri}
                   alt={`${outputTokenSymbol || 'Token'} logo`}
                   width={32}

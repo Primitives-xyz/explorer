@@ -4,6 +4,7 @@ import { ProfileWithUsername } from '@/components/profile/components/profile-wit
 import { ProfileWithWallet } from '@/components/profile/components/profile-with-wallet'
 import { SwapTray } from '@/components/swap/components/swap-tray'
 import TransactionDetails from '@/components/transactions/transaction-view'
+import { SOL_MINT } from '@/utils/constants'
 import { determineRouteType, RouteType } from '@/utils/entity'
 import { Connection } from '@solana/web3.js'
 import { redirect } from 'next/navigation'
@@ -22,9 +23,7 @@ export default async function Entity({
   const routeType = await determineRouteType(id, connection)
 
   if (routeType === RouteType.TOKEN) {
-    redirect(
-      `/trade?inputMint=So11111111111111111111111111111111111111112&outputMint=${cleanId}`
-    )
+    redirect(`/trade?inputMint=${SOL_MINT}&outputMint=${cleanId}`)
   }
 
   function renderContent(routeType: RouteType, cleanId: string) {

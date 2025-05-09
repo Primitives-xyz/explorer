@@ -8,6 +8,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
+import { SOL_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   formatLargeNumber,
@@ -22,7 +23,7 @@ const isStable = (token: string) => {
   const STABLE_TOKENS = [
     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // usdc
     'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // usdt
-    'So11111111111111111111111111111111111111112', // sol
+    SOL_MINT, // sol
   ]
   return STABLE_TOKENS.includes(token)
 }
@@ -314,6 +315,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     } else {
       setInAmount(isNaN(parseFloat(expectedOutput)) ? '' : expectedOutput)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expectedOutput])
 
   // Inform parent (chart) of token for display
@@ -327,21 +329,8 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     <div className="space-y-4">
       <TopSwap
         walletAddress={walletAddress}
-        inputTokenMint={inputTokenMint}
-        outputTokenMint={outputTokenMint}
-        displayInAmount={displayInAmount}
-        displayInAmountInUsd={displayInAmountInUsd}
-        inputTokenImageUri={inputTokenImageUri}
-        inputTokenSymbol={inputTokenSymbol}
-        displayOutAmount={displayOutAmount}
-        displayOutAmountInUsd={displayOutAmountInUsd}
-        outputTokenImageUri={outputTokenImageUri}
-        outputTokenSymbol={outputTokenSymbol}
-        setSwapMode={setSwapMode}
-        handleInAmountChange={handleInAmountChange}
         setShowInputTokenSearch={setShowInputTokenSearch}
         handleInputAmountByPercentage={handleInputAmountByPercentage}
-        handleOutAmountChange={handleOutAmountChange}
         setShowOutputTokenSearch={setShowOutputTokenSearch}
         handleSwapDirection={handleSwapDirection}
         autoFocus={autoFocus}

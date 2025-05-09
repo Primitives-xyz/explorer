@@ -1,15 +1,22 @@
-import { Transaction } from '@/components/tapestry/models/helius.models'
-import { Card, CardContent, CardHeader, CardTitle, Button, ButtonSize, ButtonVariant } from '@/components/ui'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
+import { Transaction } from '@/components/tapestry/models/helius.models'
 import TokenTransferGraph from '@/components/transactions/common/token-transfer-graph'
 import { TransferLine } from '@/components/transactions/common/transfer-line'
-import { TokenLine } from '@/components/transactions/common/token-line'
-import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import {
+  Button,
+  ButtonSize,
+  ButtonVariant,
+  Card,
+  CardContent,
+  CardTitle,
+} from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { abbreviateWalletAddress, formatTimeAgo } from '@/utils/utils'
-import { route } from '@/utils/route'
-import { ArrowRightLeft, Share } from 'lucide-react'
 import { CopyToClipboardButton } from '@/components/ui/button/copy-to-clipboard-button'
+import { SOL_MINT } from '@/utils/constants'
+import { route } from '@/utils/route'
+import { formatTimeAgo } from '@/utils/utils'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { Share } from 'lucide-react'
 
 interface TransferTransactionViewProps {
   transaction: Transaction
@@ -22,33 +29,37 @@ function getProfileFromTransaction(transaction: Transaction): any {
 
 function getSentToken(transfers: any[], feePayer: string) {
   // Find the first outgoing transfer
-  return transfers.find(t => t.fromUserAccount === feePayer)
+  return transfers.find((t) => t.fromUserAccount === feePayer)
 }
 function getReceivedToken(transfers: any[], feePayer: string) {
   // Find the first incoming transfer
-  return transfers.find(t => t.toUserAccount === feePayer)
+  return transfers.find((t) => t.toUserAccount === feePayer)
 }
 
 function getAllTransfers(transaction: Transaction) {
   return [
-    ...(transaction.nativeTransfers?.map(nt => ({
+    ...(transaction.nativeTransfers?.map((nt) => ({
       fromUserAccount: nt.fromUserAccount,
       toUserAccount: nt.toUserAccount,
-      mint: 'So11111111111111111111111111111111111111112', // SOL mint
+      mint: SOL_MINT, // SOL mint
       tokenAmount: nt.amount / LAMPORTS_PER_SOL,
       isNative: true,
     })) || []),
-    ...(transaction.tokenTransfers?.map(tt => ({
+    ...(transaction.tokenTransfers?.map((tt) => ({
       fromUserAccount: tt.fromUserAccount,
       toUserAccount: tt.toUserAccount,
       mint: tt.mint || tt.tokenMint,
       tokenAmount: tt.tokenAmount,
       isNative: false,
-    })) || [])
+    })) || []),
   ]
 }
 
-function TransferTransactionSummary({ transaction }: { transaction: Transaction }) {
+function TransferTransactionSummary({
+  transaction,
+}: {
+  transaction: Transaction
+}) {
   const feePayer = transaction.feePayer
   const profile = getProfileFromTransaction(transaction)
   // No sent/received token display, no copy trade button
@@ -88,7 +99,8 @@ function TransferTransactionSummary({ transaction }: { transaction: Transaction 
                   variant={ButtonVariant.BADGE}
                   size={ButtonSize.SM}
                 >
-                  {transaction.signature.slice(0, 4)}...{transaction.signature.slice(-4)}
+                  {transaction.signature.slice(0, 4)}...
+                  {transaction.signature.slice(-4)}
                 </Button>
                 <span className="text-muted-foreground text-xs">
                   • {formatTimeAgo(new Date(transaction.timestamp * 1000))}
@@ -105,7 +117,9 @@ function TransferTransactionSummary({ transaction }: { transaction: Transaction 
           </div>
           <div className="flex gap-2 ml-4">
             <CopyToClipboardButton
-              textToCopy={typeof window !== 'undefined' ? window.location.href : ''}
+              textToCopy={
+                typeof window !== 'undefined' ? window.location.href : ''
+              }
               variant={ButtonVariant.OUTLINE}
               className="min-w-[56px] px-4 text-base font-semibold"
             >
@@ -119,13 +133,15 @@ function TransferTransactionSummary({ transaction }: { transaction: Transaction 
   )
 }
 
-export const TransferTransactionView = ({ transaction }: TransferTransactionViewProps) => {
+export const TransferTransactionView = ({
+  transaction,
+}: TransferTransactionViewProps) => {
   console.log('transaction', transaction)
   const feePayer = transaction.feePayer
   const allTransfers = getAllTransfers(transaction)
 
   // Map allTransfers to the full tokenTransfer shape expected by TokenTransferGraph
-  const tokenTransfersForGraph = allTransfers.map(tt => ({
+  const tokenTransfersForGraph = allTransfers.map((tt) => ({
     fromTokenAccount: '',
     toTokenAccount: '',
     tokenMint: tt.mint,
@@ -164,7 +180,9 @@ export const TransferTransactionView = ({ transaction }: TransferTransactionView
         {/* Fee Payer Card */}
         <Card className="overflow-visible w-[45%]">
           <CardContent className="p-4 overflow-visible flex flex-row justify-between">
-            <p className="text-sm font-medium text-muted-foreground">Fee Payer</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Fee Payer
+            </p>
             <div className="text-sm overflow-visible">
               <SolanaAddressDisplay
                 address={feePayer}
@@ -184,7 +202,12 @@ export const TransferTransactionView = ({ transaction }: TransferTransactionView
       {/* Token Transfer Graph */}
       <Card className="overflow-visible;">
         <CardContent className="overflow-visible p-0">
-          <TokenTransferGraph transaction={{ ...transaction, tokenTransfers: tokenTransfersForGraph }} />
+          <TokenTransferGraph
+            transaction={{
+              ...transaction,
+              tokenTransfers: tokenTransfersForGraph,
+            }}
+          />
         </CardContent>
       </Card>
       {/* Transaction Lines Section */}
@@ -199,12 +222,20 @@ export const TransferTransactionView = ({ transaction }: TransferTransactionView
                 mint={tt.mint}
                 amount={tt.tokenAmount}
                 timestamp={transaction.timestamp}
-                direction={tt.fromUserAccount === feePayer ? 'out' : tt.toUserAccount === feePayer ? 'in' : undefined}
+                direction={
+                  tt.fromUserAccount === feePayer
+                    ? 'out'
+                    : tt.toUserAccount === feePayer
+                    ? 'in'
+                    : undefined
+                }
                 className="bg-[#97EF830D] rounded"
               />
             ))
           ) : (
-            <div className="text-center text-muted-foreground p-3">No transfers found for this transaction</div>
+            <div className="text-center text-muted-foreground p-3">
+              No transfers found for this transaction
+            </div>
           )}
         </div>
       </div>

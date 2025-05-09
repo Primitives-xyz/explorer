@@ -6,23 +6,23 @@ import { DEFAULT_INPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
+import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
-import Image from 'next/image'
 import { ESwapMode } from '../../swap.models'
 
 interface Props {
   walletAddress: string
+  autoFocus?: boolean
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
-  autoFocus?: boolean
 }
 
 export function Pay({
   walletAddress,
+  autoFocus = true,
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
-  autoFocus = true,
 }: Props) {
   const {
     inputs: { inputMint },
@@ -104,7 +104,7 @@ export function Pay({
         <div className="flex items-center gap-3">
           <div>
             {inputTokenImageUri ? (
-              <Image
+              <ValidatedImage
                 src={inputTokenImageUri}
                 alt={`${inputTokenSymbol || 'Token'} logo`}
                 width={32}

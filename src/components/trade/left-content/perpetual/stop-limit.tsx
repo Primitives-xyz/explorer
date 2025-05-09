@@ -6,12 +6,12 @@ import {
 } from '@/components/tapestry/models/drift.model'
 import { useOraclePrice } from '@/components/trade/hooks/drift/use-oracle-price'
 import { Card, CardContent, Input, Spinner, Switch } from '@/components/ui'
+import { SOL_MINT } from '@/utils/constants'
 import { CircleAlert } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 
-const SOL_IMG_URI =
-  'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+const SOL_IMG_URI = `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${SOL_MINT}/logo.png`
 const USDC_IMG_URI =
   'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
 
@@ -127,6 +127,7 @@ export default function StopLimit({
       limitPrice,
       reduceOnly,
     } as StopLimitOrderParams)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderAmount, triggerOraclePrice, reduceOnly])
 
   useEffect(() => {
@@ -137,6 +138,7 @@ export default function StopLimit({
     if (!error) {
       setIsError(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
   useEffect(() => {

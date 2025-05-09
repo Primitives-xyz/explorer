@@ -7,6 +7,7 @@ import {
 } from '@/components/swap/services/token-search-service'
 import { ITokenSearchResult } from '@/components/swap/swap.models'
 import { DEFAULT_TOKENS } from '@/components/swap/utils/token-utils'
+import { SOL_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { debounce } from 'lodash'
 import { useTranslations } from 'next-intl'
@@ -20,7 +21,7 @@ export enum SortOptionsDetails {
 }
 
 export const BAD_SOL_MINT = 'So11111111111111111111111111111111111111111'
-export const GOOD_INPUT_SOL = 'So11111111111111111111111111111111111111112'
+export const GOOD_INPUT_SOL = SOL_MINT
 
 export function useTokenSearch() {
   const [searchQuery, setSearchQuery] = useState('')

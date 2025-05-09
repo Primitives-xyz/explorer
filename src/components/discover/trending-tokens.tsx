@@ -7,12 +7,12 @@ import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { Button, ButtonVariant } from '@/components/ui'
 import { DataTable } from '@/components/ui/table/data-table'
 import { SortableHeader } from '@/components/ui/table/sortable-header'
+import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { SOL_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { cn, formatNumber } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
-import Image from 'next/image'
 
 export function TrendingTokens() {
   const { tokens, loading } = useGetTrendingTokens()
@@ -35,7 +35,7 @@ export function TrendingTokens() {
               <div className="relative">
                 <div className="w-8 aspect-square rounded-full bg-muted overflow-hidden">
                   {row.original.logoURI && (
-                    <Image
+                    <ValidatedImage
                       src={row.original.logoURI}
                       alt={row.original.symbol}
                       width={32}
