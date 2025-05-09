@@ -13,7 +13,17 @@ import { TokenBondedBar } from './token-bonded-bar'
 import { TokenBadges } from './token-badges'
 import { TokenSmallBuy } from './token-small-buy'
 
-export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', solPrice = null, disableFlash = false }: { agg: MintAggregate, onClick: (mint: string, amount: number) => void, createdAt?: number | null, volume?: number, currency?: 'SOL' | 'USD', solPrice?: number | null, disableFlash?: boolean }) {
+export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', solPrice = null, disableFlash = false, variant, className }: {
+  agg: MintAggregate,
+  onClick: (mint: string, amount: number) => void,
+  createdAt?: number | null,
+  volume?: number,
+  currency?: 'SOL' | 'USD',
+  solPrice?: number | null,
+  disableFlash?: boolean,
+  variant?: 'default' | 'accent' | 'accent-social',
+  className?: string
+}) {
   const symbol = agg.mintSymbol
   const name = agg.mintName
   const image = agg.mintImage
@@ -49,7 +59,8 @@ export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', so
   // Remove onClick from Card, move buy logic to button
   return (
     <Card
-      className={`w-full overflow-visible transition-all mb-2 ${flash ? 'flash-shake-row flash-shake-row-text-black' : 'bg-neutral-900'} hover:bg-neutral-800`}
+      variant={variant}
+      className={`w-full overflow-visible transition-all mb-2 ${flash ? 'flash-shake-row flash-shake-row-text-black' : 'bg-neutral-900'} hover:bg-neutral-800 ${className || ''}`}
       style={{ border: flash ? '2px solid #fff700' : '2px solid transparent' }}
     >
       <CardContent className="w-full px-2 py-2">
@@ -66,10 +77,10 @@ export function TokenRow({ agg, onClick, createdAt, volume, currency = 'SOL', so
               <TokenBadges agg={agg} />
               <TokenSmallBuy onBuy={(mint, amount) => { onClick(mint, amount); }} mint={agg.mint} />
             </div>
-            {/* Right: Price, Top Traders, Created, Volume */}
+            {/* Right: Price, Top Ruggers, Created, Volume */}
             <div className="flex flex-col items-end min-w-0 gap-1">
               <TokenPrice lastTradePriceSol={lastTradePriceSol} currency={currency} solPrice={solPrice} />
-              <TokenLiquidityProviders topWallets={topWallets} totalVolume={totalVolume} />
+              <TokenLiquidityProviders walletRugIncentive={agg.walletRugIncentive} />
               <TokenCreatedTime createdAt={createdAt} />
               <TokenVolume volume={volume} currency={currency} solPrice={solPrice} />
             </div>

@@ -56,6 +56,7 @@ export interface MintAggregate {
   bondingProgress?: number
   aboutToGraduate?: boolean
   fullyBonded?: boolean
+  walletRuggingPower?: Record<string, number>
 }
 
 export interface TokenModalState {
