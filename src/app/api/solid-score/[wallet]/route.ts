@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { wallet: string } }
-) {
-  const { wallet } = params
+type RouteContext = {
+  params: Promise<{ wallet: string }>
+}
+
+export async function GET(_req: NextRequest, context: RouteContext) {
+  const { wallet } = await context.params
 
   if (!wallet) {
     return NextResponse.json(
