@@ -22,8 +22,8 @@ interface Props {
 }
 
 export function ProfileTableInfo({ walletAddress }: Props) {
-  const [selected, setSelected] = useState(FilterTabsProfileTableInfo.ASSETS)
   const [transactionTypes, setTransactionTypes] = useState<string[]>([])
+  const [selected, setSelected] = useState(FilterTabsProfileTableInfo.ASSETS)
   const [transactionTypeSelected, setTransactionTypeSelected] =
     useState<string>(transactionTypes[0] || 'all')
 
