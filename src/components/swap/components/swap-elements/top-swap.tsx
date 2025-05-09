@@ -4,50 +4,23 @@ import { Pay } from '@/components/swap/components/swap-elements/pay'
 import { Receive } from '@/components/swap/components/swap-elements/received'
 import { Card, CardContent } from '@/components/ui/card'
 import { ArrowDownUp } from 'lucide-react'
-import { ESwapMode } from '../../swap.models'
 
 interface Props {
   walletAddress: string
-  inputTokenMint: string
-  outputTokenMint: string
-  displayInAmount: string
-  displayInAmountInUsd: string
-  inputTokenImageUri?: string
-  inputTokenSymbol?: string
-  displayOutAmount: string
-  displayOutAmountInUsd: string
-  outputTokenImageUri?: string
-  outputTokenSymbol?: string
-  setSwapMode: (mode: ESwapMode) => void
-  handleInAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  autoFocus?: boolean
+  handleSwapDirection: () => void
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
-  handleOutAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   setShowOutputTokenSearch: (show: boolean) => void
-  handleSwapDirection: () => void
-  autoFocus?: boolean
 }
 
 export function TopSwap({
   walletAddress,
-  inputTokenMint,
-  outputTokenMint,
-  displayInAmount,
-  displayInAmountInUsd,
-  inputTokenImageUri,
-  inputTokenSymbol,
-  displayOutAmount,
-  displayOutAmountInUsd,
-  outputTokenImageUri,
-  outputTokenSymbol,
+  autoFocus,
   handleSwapDirection,
-  setSwapMode,
-  handleInAmountChange,
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
-  handleOutAmountChange,
   setShowOutputTokenSearch,
-  autoFocus,
 }: Props) {
   return (
     <Card className="border-glow-animation">

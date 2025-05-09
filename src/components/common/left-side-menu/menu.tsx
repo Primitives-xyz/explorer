@@ -9,12 +9,13 @@ import {
   ArrowRightLeft,
   Beef,
   Compass,
-  PocketKnife,
   House,
   LucideIcon,
+  PocketKnife,
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { UrlObject } from 'url'
 import { SearchButton } from '../../search/components/search-button'
 
 interface Props {
@@ -51,8 +52,6 @@ export function Menu({ setOpen }: Props) {
         setOpen={setOpen}
       />
 
-      {/* <Entry title="Tokens" icon={CircleDollarSign} href={route('tokens')} /> */}
-
       <Entry
         title="Profile"
         icon={User}
@@ -84,7 +83,7 @@ export function Menu({ setOpen }: Props) {
 interface IEntry {
   title: string
   icon: LucideIcon
-  href: string
+  href: string | UrlObject
   disabled?: boolean
   onlyDesktop?: boolean
   setOpen?: (open: boolean) => void
@@ -94,6 +93,8 @@ function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
+  console.log('pathname', href)
+
   return (
     <Button
       disabled={disabled}
@@ -101,7 +102,9 @@ function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
       className={cn(
         'justify-start w-full gap-4 hover:bg-primary hover:text-background text-lg md:text-sm h-12 md:h-9',
         {
-          'bg-primary text-background': pathname === href,
+          'bg-primary text-background':
+            pathname === href ||
+            (typeof href !== 'string' && pathname === href.pathname),
           'hidden md:flex': onlyDesktop,
         }
       )}

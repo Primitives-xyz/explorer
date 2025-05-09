@@ -3,8 +3,10 @@ const routes = {
   discover: () => '/discover',
   entity: ({ id }: { id: string }) => `/${id}`,
   designSystem: () => '/design-system',
-  trade: (query?: string) => `/trade${query ? `?${query}` : ''}`,
-  tokens: () => '/tokens',
+  trade: (options?: { query?: Record<string, string | number | boolean> }) => ({
+    pathname: '/trade',
+    query: options?.query ?? {},
+  }),
   stake: () => '/stake',
   trenches: () => '/trenches',
   namespace: ({ id }: { id: string }) => `/namespace/${id}`,

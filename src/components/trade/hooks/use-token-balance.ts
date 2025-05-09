@@ -1,8 +1,8 @@
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import { SOL_MINT } from '@/utils/constants'
 import { useTranslations } from 'next-intl'
 import useSWR from 'swr'
 
-const SOL_MINT = 'So11111111111111111111111111111111111111112'
 const LAMPORTS_PER_SOL = 1000000000
 
 // Fetcher function for SWR
@@ -134,7 +134,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
   let error = null
   let loading = false
   let isRefreshing = false
-  let mutate = () => { }
+  let mutate = () => {}
 
   if (mintAddress === SOL_MINT) {
     if (solData !== undefined) {
@@ -147,7 +147,7 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     mutate = mutateSolBalance
   } else {
     if (tokenData) {
-      console.log("tokenData:", tokenData.balance.uiAmountString)
+      console.log('tokenData:', tokenData.balance.uiAmountString)
       balance = formatBalance(tokenData.balance.uiAmountString)
     }
     error = tokenError ? t('error.failed_to_fetch_balance') : null

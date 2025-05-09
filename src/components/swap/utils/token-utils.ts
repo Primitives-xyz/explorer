@@ -1,4 +1,5 @@
 import { ITokenSearchResult } from '@/components/swap/swap.models'
+import { SOL_MINT } from '@/utils/constants'
 
 export const DEFAULT_TOKENS: ITokenSearchResult[] = [
   {
@@ -28,10 +29,9 @@ export const DEFAULT_TOKENS: ITokenSearchResult[] = [
   {
     name: 'Wrapped SOL',
     symbol: 'SOL',
-    address: 'So11111111111111111111111111111111111111112',
+    address: SOL_MINT,
     decimals: 9,
-    logoURI:
-      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+    logoURI: `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${SOL_MINT}/logo.png`,
     verified: true,
     market_cap: 47835674523.34,
     price: 109.23,
