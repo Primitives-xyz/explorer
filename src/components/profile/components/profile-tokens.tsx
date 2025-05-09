@@ -7,7 +7,7 @@ import { SOL_MINT } from '@/utils/constants'
 import { formatNumber } from '@/utils/utils'
 import { ColumnDef, SortingState } from '@tanstack/react-table'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SortableHeader } from '../../ui/table/sortable-header'
 import { IFungibleToken } from '../fungible-tokens.models'
 import { useGetWalletTokens } from '../hooks/use-get-wallet-tokens'
@@ -32,19 +32,19 @@ export function ProfileTokens({ walletAddress }: Props) {
       header: 'Token',
       enableSorting: false,
       cell: ({ row }) => {
+        const imageUrl = row.original.imageUrl?.trimStart()
         return (
           <div className="flex items-center gap-2">
             <div className="w-6 aspect-square rounded-full bg-muted overflow-hidden shrink-0">
-              {row.original.imageUrl &&
-                !row.original.imageUrl.includes('ipfs://') && (
-                  <Image
-                    src={row.original.imageUrl.trimStart()}
-                    alt={row.original.symbol}
-                    width={24}
-                    height={24}
-                    className="object-cover w-full h-full"
-                  />
-                )}
+              {imageUrl && (
+                <ValidatedImage
+                  src={imageUrl}
+                  alt={row.original.symbol}
+                  width={24}
+                  height={24}
+                  className="object-cover w-full h-full"
+                />
+              )}
             </div>
             <h4 className="max-w-[5rem] truncate">{row.original.name}</h4>
           </div>
@@ -122,5 +122,47 @@ export function ProfileTokens({ walletAddress }: Props) {
         onSortingChange={setSorting}
       />
     </div>
+  )
+}
+
+interface ValidatedImageProps {
+  src: string
+  alt: string
+  className?: string
+  width: number
+  height: number
+}
+
+export function ValidatedImage({
+  src,
+  alt,
+  className,
+  width,
+  height,
+}: ValidatedImageProps) {
+  const [isValid, setIsValid] = useState(true)
+
+  useEffect(() => {
+    if (!src || src.includes('ipfs://')) {
+      setIsValid(false)
+      return
+    }
+
+    const img = new window.Image()
+    img.src = src
+    img.onload = () => setIsValid(true)
+    img.onerror = () => setIsValid(false)
+  }, [src])
+
+  if (!isValid) return null
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      className={className}
+    />
   )
 }
