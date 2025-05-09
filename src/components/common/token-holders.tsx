@@ -36,6 +36,7 @@ export function TokenHolders({ data }: Props) {
                 src={profile.image}
                 alt="profile"
                 fill
+                sizes="100%"
                 className="rounded-full object-cover"
               />
             )}

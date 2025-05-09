@@ -50,11 +50,10 @@ export function TokenSearch({
 
   return (
     <Dialog open={openModal} onOpenChange={onClose}>
+      <VisuallyHidden>
+        <DialogTitle>Token Search</DialogTitle>
+      </VisuallyHidden>
       <DialogContent className="max-w-lg flex flex-col">
-        <VisuallyHidden>
-          <DialogTitle>Token Search</DialogTitle>
-        </VisuallyHidden>
-
         <DialogHeader>
           <TokenSearchHeader
             searchQuery={searchQuery}
@@ -66,7 +65,6 @@ export function TokenSearch({
             setSortBy={setSortBy}
           />
         </DialogHeader>
-
         <div className="max-h-[400px] overflow-y-auto">
           <TokenList
             isLoading={isLoading}

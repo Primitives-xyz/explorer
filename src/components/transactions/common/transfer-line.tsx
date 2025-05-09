@@ -1,11 +1,7 @@
-import { useTokenInfo } from '@/components/token/hooks/use-token-info'
-import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
-import { abbreviateWalletAddress, formatNumber } from '@/utils/utils'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
+import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import { abbreviateWalletAddress, cn, formatNumber } from '@/utils/utils'
 import Image from 'next/image'
-import { cn } from '@/utils/utils'
-import { Card } from '@/components/ui'
-import { FungibleTokenInfo } from '@/types/Token'
 
 interface TransferLineProps {
   from: string
@@ -37,11 +33,11 @@ export function TransferLine({
     tokenData?.result && 'token_info' in tokenData.result
       ? tokenData.result.token_info?.price_info?.price_per_token
       : null
-  const tokenResult = tokenData?.result && 'token_info' in tokenData.result
-    ? tokenData.result
-    : undefined
+  const tokenResult =
+    tokenData?.result && 'token_info' in tokenData.result
+      ? tokenData.result
+      : undefined
 
-    
   const symbol = tokenResult?.content?.metadata?.symbol
   const image = tokenResult?.content?.links?.image
   const decimals = tokenResult?.token_info?.decimals
@@ -67,7 +63,7 @@ export function TransferLine({
               : direction === 'in'
               ? 'text-primary'
               : 'text-muted-foreground',
-            'font-medium mr-1',
+            'font-medium mr-1'
           )}
         >
           Transfer
@@ -126,4 +122,4 @@ export function TransferLine({
       </div>
     </div>
   )
-} 
+}

@@ -50,7 +50,7 @@ export function TokenLine({
       alt="solana icon"
       width={iconSize}
       height={iconSize}
-      className="rounded-full object-cover"
+      className="rounded-full object-cover aspect-square"
     />
   ) : image ? (
     <Image
@@ -58,7 +58,7 @@ export function TokenLine({
       alt={displaySymbol || 'Token'}
       width={iconSize}
       height={iconSize}
-      className="rounded-full object-cover"
+      className="rounded-full object-cover aspect-square"
     />
   ) : (
     <span className="font-mono text-xs">{mint.slice(0, 2)}</span>

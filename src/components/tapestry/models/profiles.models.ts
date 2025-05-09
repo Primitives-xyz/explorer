@@ -29,6 +29,7 @@ export interface IProfile {
   blockchain: BLOCKCHAIN
   wallet: IWallet
   hasSeenProfileSetupModal?: boolean
+  userRevealedTheSolidScore?: boolean
 }
 
 // POST /profiles/findOrCreate

@@ -9,9 +9,9 @@ import {
   ArrowRightLeft,
   Beef,
   Compass,
-  PocketKnife,
   House,
   LucideIcon,
+  PocketKnife,
   User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'

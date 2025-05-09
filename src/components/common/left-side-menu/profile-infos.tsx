@@ -19,6 +19,7 @@ export function ProfileInfos() {
   const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
+
   // const { enableMotion, setEnableMotion } = useMotionStore()
 
   return (
