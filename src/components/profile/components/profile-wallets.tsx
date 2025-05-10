@@ -22,10 +22,11 @@ interface Props {
 }
 
 export function ProfileWallets({ walletAddress }: Props) {
+  console.log('walletAddress', walletAddress)
   const { identities, loading } = useGetIdentities({
     walletAddress,
   })
-
+  console.log('identities', identities)
   const displayedWallets = identities
     ?.filter((identity) => !!identity?.wallet?.address)
     .filter(
@@ -44,13 +45,15 @@ export function ProfileWallets({ walletAddress }: Props) {
     }
   })[]
 
+  const shouldShowTabs = !!displayedWallets?.length
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Connected Wallets</CardTitle>
       </CardHeader>
       <CardContent>
-        {!!displayedWallets?.length && (
+        {shouldShowTabs ? (
           <Tabs defaultValue={displayedWallets?.[0]?.wallet?.address}>
             <TabsList className="w-full">
               {displayedWallets?.map((identity) => (
@@ -75,6 +78,8 @@ export function ProfileWallets({ walletAddress }: Props) {
               </TabsContent>
             ))}
           </Tabs>
+        ) : (
+          <ProfileWalletContent walletAddress={walletAddress} />
         )}
         {loading && (
           <div className="h-20 flex items-center justify-center">
