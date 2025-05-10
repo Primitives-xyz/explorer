@@ -18,7 +18,13 @@ async function fetchWalletTransactions(
 ): Promise<Transaction[]> {
   const url = new URL('/api/transactions', window.location.origin)
   url.searchParams.set('address', walletId)
-  url.searchParams.set('limit', '7')
+
+  // Use a higher limit for KOL transactions
+  if (type === FilterType.KOL) {
+    url.searchParams.set('limit', '20')
+  } else {
+    url.searchParams.set('limit', '7')
+  }
 
   if (type && type !== FilterType.KOL) {
     const apiType =
@@ -99,12 +105,47 @@ export const useFollowingTransactions = ({ following, kolData }: Props) => {
 
         if (isCancelled) return
 
-        const allTransactions = results
-          .flat()
-          .sort(
-            (a, b) =>
-              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        let allTransactions: ITransactionWithProfile[]
+
+        if (selectedType === FilterType.KOL) {
+          // For KOL feed, interleave transactions from different wallets for more variety
+          // First sort each wallet's transactions by timestamp
+          const sortedWalletTransactions = results.map((transactions) =>
+            transactions.sort(
+              (a, b) =>
+                new Date(b.timestamp).getTime() -
+                new Date(a.timestamp).getTime()
+            )
           )
+
+          // Then interleave transactions (take one from each wallet, then next, etc.)
+          allTransactions = []
+          let hasMoreTransactions = true
+          let index = 0
+
+          while (hasMoreTransactions) {
+            hasMoreTransactions = false
+            for (const walletTransactions of sortedWalletTransactions) {
+              if (index < walletTransactions.length) {
+                allTransactions.push(walletTransactions[index])
+                hasMoreTransactions = true
+              }
+            }
+            index++
+
+            // Safety check to prevent infinite loop
+            if (index > 100) break
+          }
+        } else {
+          // For regular feed, just sort all transactions by timestamp
+          allTransactions = results
+            .flat()
+            .sort(
+              (a, b) =>
+                new Date(b.timestamp).getTime() -
+                new Date(a.timestamp).getTime()
+            )
+        }
 
         setAggregatedTransactions(allTransactions)
       } catch (error) {
