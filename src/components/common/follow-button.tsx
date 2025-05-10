@@ -8,6 +8,14 @@ import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { UserCheck, UserPlus } from 'lucide-react'
 import { useState } from 'react'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+} from '@/components/ui/dialog/alert-dialog'
 
 interface Props extends Omit<ButtonProps, 'children'> {
   followerUsername: string
@@ -45,6 +53,7 @@ export function FollowButton({
   const [isFollowingOptimistic, setIsFollowingOptimistic] = useState(
     data?.isFollowing
   )
+  const [showFollowError, setShowFollowError] = useState(false)
 
   const loading = followUserLoading || refetchLoading || loadingCurrentUser // || unfollowUserLoading
 
@@ -76,6 +85,7 @@ export function FollowButton({
     } catch (error) {
       console.error('Failed to follow:', error)
       setIsFollowingOptimistic(false)
+      setShowFollowError(true)
     } finally {
       refetchFollowersState()
     }
@@ -111,46 +121,61 @@ export function FollowButton({
       : 14
 
   return (
-    <div className="flex flex-col items-center gap-1">
-      <Button
-        {...props}
-        onClick={handleFollow}
-        loading={loadingFollowersState}
-        disabled={loading || isFollowing}
-        variant={ButtonVariant.SECONDARY_SOCIAL}
-      >
-        {!!children ? (
-          children(!!isFollowing)
-        ) : (
-          <>
-            {isFollowing ? (
-              isIcon ? (
-                <UserCheck size={iconSize} />
+    <>
+      <div className="flex flex-col items-center gap-1">
+        <Button
+          {...props}
+          onClick={handleFollow}
+          loading={loadingFollowersState}
+          disabled={loading || isFollowing}
+          variant={ButtonVariant.SECONDARY_SOCIAL}
+        >
+          {!!children ? (
+            children(!!isFollowing)
+          ) : (
+            <>
+              {isFollowing ? (
+                isIcon ? (
+                  <UserCheck size={iconSize} />
+                ) : (
+                  <>
+                    <UserCheck size={iconSize} /> Following
+                  </>
+                )
+              ) : isIcon ? (
+                <UserPlus size={iconSize} />
               ) : (
                 <>
-                  <UserCheck size={iconSize} /> Following
+                  <UserPlus size={iconSize} /> Follow
                 </>
-              )
-            ) : isIcon ? (
-              <UserPlus size={iconSize} />
-            ) : (
-              <>
-                <UserPlus size={iconSize} /> Follow
-              </>
-            )}
-          </>
-        )}
-      </Button>
-      {/* {isFollowing && (
-        <Button
-          variant={ButtonVariant.LINK}
-          onClick={handleUnfollow}
-          className="text-xs"
-          disabled={loading}
-        >
-          Unfollow
+              )}
+            </>
+          )}
         </Button>
-      )} */}
-    </div>
+        {/* {isFollowing && (
+          <Button
+            variant={ButtonVariant.LINK}
+            onClick={handleUnfollow}
+            className="text-xs"
+            disabled={loading}
+          >
+            Unfollow
+          </Button>
+        )} */}
+      </div>
+      <AlertDialog open={showFollowError} onOpenChange={setShowFollowError}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unable to follow</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription>
+            This wallet likely does not have an associated profile.
+          </AlertDialogDescription>
+          <AlertDialogAction onClick={() => setShowFollowError(false)}>
+            OK
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

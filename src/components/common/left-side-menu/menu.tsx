@@ -93,8 +93,6 @@ function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
-  console.log('pathname', href)
-
   return (
     <Button
       disabled={disabled}

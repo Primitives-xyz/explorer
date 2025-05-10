@@ -16,20 +16,36 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   if (!profileInfo) {
     // Only wallet address is available
     return (
-      <div className="flex items-center gap-2">
-        <Avatar
-          username={walletAddress || 'unknown'}
-          className="w-10 md:w-18"
-          size={72}
-        />
-        <div className="space-y-2">
-          <div className="flex gap-1 items-center">
-            {walletAddress && (
-              <p className="text-muted-foreground">
-                {abbreviateWalletAddress({ address: walletAddress })}
+      <div className="flex flex-col md:flex-row md:items-center justify-between">
+        <div className="flex items-center md:items-start gap-2">
+          <Avatar
+            username={walletAddress || 'unknown'}
+            className="w-10 md:w-18"
+            size={72}
+          />
+          <div className="space-y-2">
+            <div className="flex flex-col md:flex-row gap-1 md:items-center">
+              <p className="font-bold">
+                {walletAddress ? abbreviateWalletAddress({ address: walletAddress }) : 'Unknown'}
               </p>
-            )}
+            </div>
+            <p className="text-muted-foreground text-sm desktop">No description</p>
           </div>
+        </div>
+        <div className="space-y-2">
+          {!!mainProfile?.username && walletAddress && (
+            <FollowButton
+              className="my-4 md:my-0 w-full"
+              followerUsername={mainProfile.username}
+              followeeUsername={walletAddress}
+            />
+          )}
+          <p className="text-muted-foreground text-sm mobile mb-6">No description</p>
+          <p className="flex items-center space-x-2 text-xs text-muted-foreground">
+            <span>0 Followers</span>
+            <span>|</span>
+            <span>0 Following</span>
+          </p>
         </div>
       </div>
     )
@@ -87,9 +103,9 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
           {profileInfo.profile.bio || 'No description'}
         </p>
         <p className="flex items-center space-x-2 text-xs text-muted-foreground">
-          <span>{profileInfo?.socialCounts?.followers} Followers</span>
+          <span>{profileInfo?.socialCounts?.followers ?? 0} Followers</span>
           <span>|</span>
-          <span>{profileInfo?.socialCounts?.following} Following</span>
+          <span>{profileInfo?.socialCounts?.following ?? 0} Following</span>
         </p>
       </div>
     </div>
