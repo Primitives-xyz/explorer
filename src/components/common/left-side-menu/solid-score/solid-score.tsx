@@ -15,7 +15,14 @@ export function SolidScore() {
     refetch,
     loading: currentWalletLoading,
   } = useCurrentWallet()
-  const { data, loading: scoreLoading } = useSolidScore({ walletAddress })
+
+  const {
+    data,
+    loading: scoreLoading,
+    error,
+  } = useSolidScore({ walletAddress })
+
+  console.log({ error })
 
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
     username: mainProfile?.username || '',
@@ -35,6 +42,10 @@ export function SolidScore() {
 
   const hasRevealed = !!mainProfile?.userRevealedTheSolidScore
 
+  if (error) {
+    return null
+  }
+
   return (
     <SolidScoreCardWrapper displayScore={hasRevealed}>
       {currentWalletLoading ? (
@@ -43,10 +54,12 @@ export function SolidScore() {
         <div className="flex flex-col justify-center">
           <div className="h-[100px] w-full">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full">
-              <ScoreArc
-                score={Number(data?.solidUser.solidScore || 1)}
-                loading={scoreLoading}
-              />
+              {!scoreLoading && (
+                <ScoreArc
+                  score={Number(data?.solidUser.solidScore || 1)}
+                  loading={scoreLoading}
+                />
+              )}
             </div>
             <SolidScoreValue
               loading={scoreLoading}

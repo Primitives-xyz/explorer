@@ -26,96 +26,95 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
     SOLANA_OG: {
       name: 'Solana OG',
       description: 'Early adopter with a long history of engagement',
-      image: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+      image: '/images/solid-score-badges/solana-og.svg',
     },
     SOLANA_POWER_USER: {
       name: 'Solana Power User',
       description: 'High-volume transactor with consistent, frequent activity',
-      image: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+      image: '/images/solid-score-badges/solana-power-user.svg',
     },
     HODLER: {
       name: 'Hodler',
       description: 'Consistently holds assets without frequent trading',
-      image: 'https://cdn-icons-png.flaticon.com/512/1828/1828817.png',
+      image: '/images/solid-score-badges/hodler.svg',
     },
     DEX_TRADER: {
       name: 'DEX Trader',
       description: 'Actively trades on decentralized exchanges',
-      image: 'https://cdn-icons-png.flaticon.com/512/2203/2203183.png',
+      image: '/images/solid-score-badges/dex-trader.svg',
     },
     RISK_TAKER: {
       name: 'Risk Taker',
       description:
         'High-volatility trader with a history of significant PnL swings',
-      image: 'https://cdn-icons-png.flaticon.com/512/1040/1040230.png',
+      image: '/images/solid-score-badges/risk-taker.svg',
     },
     DIVERSE_NFT_TRADER: {
       name: 'Diverse NFT Trader',
       description: 'Holds NFTs from a variety of collections',
-      image: 'https://cdn-icons-png.flaticon.com/512/1256/1256650.png',
+      image: '/images/solid-score-badges/diverse-nft-trader.svg',
     },
     LIQUIDITY_PROVIDER: {
       name: 'Liquidity Provider',
       description: 'Supplies liquidity to DeFi protocols or DEX pools',
-      image: 'https://cdn-icons-png.flaticon.com/512/833/833314.png',
+      image: '/images/solid-score-badges/liquidity-provider.svg',
     },
     DIVERSE_LIQUIDITY_PROVIDER: {
       name: 'Diverse Liquidity Provider',
       description: 'Provides liquidity positions across multiple asset pairs',
-      image: 'https://cdn-icons-png.flaticon.com/512/2278/2278992.png',
+      image: '/images/solid-score-badges/diverse-liquidity-provider.svg',
     },
     DIVERSE_HODLER: {
       name: 'Diverse Hodler',
       description: 'Holds a wide variety of tokens across different categories',
-      image: 'https://cdn-icons-png.flaticon.com/512/3039/3039435.png',
+      image: '/images/solid-score-badges/diverse-hodler.svg',
     },
     MULTIPLATFORM_DEX_TRADER: {
       name: 'Multiplatform DEX Trader',
       description: 'Trades across multiple DEXs',
-      image: 'https://cdn-icons-png.flaticon.com/512/1828/1828919.png',
+      image: '/images/solid-score-badges/multiplatform-dex-trader.svg',
     },
     NFT_TRADER: {
       name: 'NFT Trader',
       description: 'Buys and sells NFTs actively on Solana',
-      image: 'https://cdn-icons-png.flaticon.com/512/2933/2933245.png',
+      image: '/images/solid-score-badges/nft-trader.svg',
     },
     MULTIPLATFORM_NFT_TRADER: {
       name: 'Multiplatform NFT Trader',
       description: 'Trades NFTs across multiple marketplaces',
-      image: 'https://cdn-icons-png.flaticon.com/512/3103/3103446.png',
+      image: '/images/solid-score-badges/multiplatform-nft-trader.svg',
     },
     MULTIPLATFORM_LIQUIDITY_PROVIDER: {
       name: 'Multiplatform Liquidity Provider',
       description: 'Provides liquidity across multiple platforms',
-      image: 'https://cdn-icons-png.flaticon.com/512/1023/1023593.png',
+      image: '/images/solid-score-badges/multiplatform-liquidity-provider.svg',
     },
     NATIVE_STAKER: {
       name: 'Native Staker',
       description: 'Stakes SOL directly with validators',
-      image: 'https://cdn-icons-png.flaticon.com/512/456/456141.png',
+      image: '/images/solid-score-badges/native-staker.svg',
     },
   }
 
-  const userBadgesMock = [
-    'SOLANA_OG',
-    'SOLANA_POWER_USER',
-    'HODLER',
-    'DEX_TRADER',
-    'RISK_TAKER',
-    'DIVERSE_NFT_TRADER',
-    'LIQUIDITY_PROVIDER',
-    'DIVERSE_LIQUIDITY_PROVIDER',
-    'DIVERSE_HODLER',
-    'MULTIPLATFORM_DEX_TRADER',
-    'NFT_TRADER',
-    'MULTIPLATFORM_NFT_TRADER',
-    'MULTIPLATFORM_LIQUIDITY_PROVIDER',
-    'NATIVE_STAKER',
-  ]
+  // const userBadgesMock = [
+  //   'SOLANA_OG',
+  //   'SOLANA_POWER_USER',
+  //   'HODLER',
+  //   'DEX_TRADER',
+  //   'RISK_TAKER',
+  //   'DIVERSE_NFT_TRADER',
+  //   'LIQUIDITY_PROVIDER',
+  //   'DIVERSE_LIQUIDITY_PROVIDER',
+  //   'DIVERSE_HODLER',
+  //   'MULTIPLATFORM_DEX_TRADER',
+  //   'NFT_TRADER',
+  //   'MULTIPLATFORM_NFT_TRADER',
+  //   'MULTIPLATFORM_LIQUIDITY_PROVIDER',
+  //   'NATIVE_STAKER',
+  // ]
+  // //const userBadges = userBadgesMock
 
   const userBadges = data?.solidUser.badges ?? []
-
-  //  const userBadges = userBadgesMock
 
   const showCompact = typeof compactLimit === 'number'
 
