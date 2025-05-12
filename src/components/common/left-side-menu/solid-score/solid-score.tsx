@@ -22,8 +22,6 @@ export function SolidScore() {
     error,
   } = useSolidScore({ walletAddress })
 
-  console.log({ error })
-
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
     username: mainProfile?.username || '',
   })
