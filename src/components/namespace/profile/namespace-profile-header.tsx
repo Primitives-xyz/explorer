@@ -15,15 +15,6 @@ export function NamespaceProfileHeader({
   username,
   namespace,
 }: Props) {
-  let namespaceLink = profileData?.namespace?.userProfileURL
-    ? profileData?.namespace?.userProfileURL
-    : null
-  if (namespaceLink != null && namespace != null) {
-    namespaceLink = ['kolscan', 'tribe.run'].includes(namespace)
-      ? `${namespaceLink}${profileData?.walletAddress}`
-      : `${namespaceLink}${username}`
-  }
-
   return (
     <div className="flex w-full justify-between items-start">
       <div className="flex flex-col space-y-2">
@@ -43,10 +34,10 @@ export function NamespaceProfileHeader({
         )}
 
         <div>
-          {namespaceLink && namespaceLink !== '' && (
+          {profileData?.namespace?.externalProfileURLKey && profileData.namespace.externalProfileURLKey  !== '' && (
             <Button
               newTab
-              href={namespaceLink}
+              href={profileData.namespace.externalProfileURLKey}
               variant={ButtonVariant.BADGE}
               size={ButtonSize.SM}
             >
