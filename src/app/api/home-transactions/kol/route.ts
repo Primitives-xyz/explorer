@@ -66,14 +66,26 @@ export async function GET(request: NextRequest) {
         .sort(
           (a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        )
+        ),
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=30, s-maxage=30',
+          'CDN-Cache-Control': 'public, max-age=30',
+          'Vercel-CDN-Cache-Control': 'public, max-age=30',
+        },
+      }
     )
   } catch (error) {
     console.error('Error fetching transactions:', error)
 
     return NextResponse.json(
       { error: 'Failed to fetch transactions' },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, must-revalidate',
+        },
+      }
     )
   }
 }
