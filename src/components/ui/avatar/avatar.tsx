@@ -1,6 +1,6 @@
+import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { getDicebearUrl } from '@/utils/constants'
 import { cn } from '@/utils/utils'
-import Image from 'next/image'
 import { useState } from 'react'
 
 interface AvatarProps {
@@ -50,7 +50,7 @@ export function Avatar({
         className
       )}
     >
-      <Image
+      <ValidatedImage
         src={finalImageUrl}
         alt={`Avatar for ${username}`}
         width={size}

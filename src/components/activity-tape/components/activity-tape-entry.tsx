@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui'
 import { cn, formatTimeAgo } from '@/utils/utils'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { IActivityTapeEntry } from '../activity-tape.models'
 
 interface Props {
@@ -10,7 +11,12 @@ interface Props {
 }
 
 export function ActivityTapeEntry({ activity }: Props) {
-  const timeago = formatTimeAgo(new Date(activity.timestamp))
+  const [timeago, setTimeago] = useState<string | null>(null)
+
+  useEffect(() => {
+    setTimeago(formatTimeAgo(new Date(activity.timestamp)))
+  }, [activity.timestamp])
+
   return (
     <Button
       isInvisible
@@ -47,7 +53,7 @@ export function ActivityTapeEntry({ activity }: Props) {
           </span>
         )}
         <span>•</span>
-        <span>{timeago}</span>
+        {timeago && <span>{timeago}</span>}
       </div>
     </Button>
   )

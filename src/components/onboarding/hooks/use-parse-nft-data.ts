@@ -173,6 +173,7 @@ export function useParseNFTData(
     setAssets([])
     setNextCursor(undefined)
     fetchAssets(1, false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     address,
     showFungible,
