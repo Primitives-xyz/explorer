@@ -36,7 +36,12 @@ export function ProfileInfos() {
       {!!mainProfile && (
         <div className="space-y-2 text-lg md:text-sm">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <Button
+              className="flex items-center gap-2 p-0 hover:bg-transparent"
+              variant={ButtonVariant.GHOST}
+              href={route('entity', { id: mainProfile.username })}
+              style={{ boxShadow: 'none' }}
+            >
               <Avatar
                 className="w-8 md:w-6"
                 username={mainProfile.username}
@@ -49,7 +54,7 @@ export function ProfileInfos() {
                   {mainProfile.username}
                 </p>
               </span>
-            </div>
+            </Button>
             <div className="desktop">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

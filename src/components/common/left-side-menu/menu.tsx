@@ -53,14 +53,6 @@ export function Menu({ setOpen }: Props) {
       />
 
       <Entry
-        title="Profile"
-        icon={User}
-        href={route('entity', { id: mainProfile?.username || '' })}
-        disabled={!mainProfile?.username}
-        setOpen={setOpen}
-      />
-
-      <Entry
         title="Stake"
         icon={Beef}
         href={route('stake')}
