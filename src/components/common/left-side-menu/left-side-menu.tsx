@@ -15,7 +15,7 @@ import { ProfileInfos } from './profile-infos'
 export function LeftSideMenu() {
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
-  const { isLoggedIn } = useCurrentWallet()
+  const { isLoggedIn, mainProfile } = useCurrentWallet()
 
   return (
     <div className="hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar">
@@ -29,7 +29,10 @@ export function LeftSideMenu() {
         </div>
         <div className="space-y-4 py-4">
           <LowFeeTrades />
-          {isLoggedIn && <SolidScore />}
+          {isLoggedIn &&
+            (mainProfile?.username === 'nehemiah' ||
+              mainProfile?.username === 'nemoblackburn' ||
+              mainProfile?.username === 'cedrick') && <SolidScore />}
         </div>
         <div className="flex flex-col items-center gap-2">
           <Button

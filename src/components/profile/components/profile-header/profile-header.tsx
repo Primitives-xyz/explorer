@@ -72,7 +72,11 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             <p className="text-muted-foreground mobile">since {creationYear}</p>
           </div>
 
-          <SolidScoreProfileHeader walletAddress={walletAddress} />
+          {(profileInfo.profile.username === 'nehemiah' ||
+            profileInfo.profile.username === 'nemoblackburn' ||
+            profileInfo.profile.username === 'cedrick') && (
+            <SolidScoreProfileHeader walletAddress={walletAddress} />
+          )}
 
           <p className="text-muted-foreground text-sm desktop">
             {profileInfo.profile.bio || 'No description'}

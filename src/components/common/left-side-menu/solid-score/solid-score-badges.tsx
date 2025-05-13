@@ -112,7 +112,7 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
   //   'MULTIPLATFORM_LIQUIDITY_PROVIDER',
   //   'NATIVE_STAKER',
   // ]
-  // //const userBadges = userBadgesMock
+  // const userBadges = userBadgesMock
 
   const userBadges = data?.solidUser.badges ?? []
 
