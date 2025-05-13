@@ -1,10 +1,10 @@
 'use client'
 
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
-import { SwapTray } from '@/components/swap/components/swap-tray'
 import { MobileSwapTray } from '@/components/swap/components/mobile-swap-tray'
-import { useIsMobile } from '@/utils/use-is-mobile'
+import { SwapTray } from '@/components/swap/components/swap-tray'
 import { TrenchesContent } from '@/components/trenches/trenches-content'
+import { useIsMobile } from '@/utils/use-is-mobile'
 
 export default function Trenches() {
   const { isMobile } = useIsMobile()
@@ -14,4 +14,4 @@ export default function Trenches() {
       {isMobile ? <MobileSwapTray /> : <SwapTray />}
     </MainContentWrapper>
   )
-} 
+}

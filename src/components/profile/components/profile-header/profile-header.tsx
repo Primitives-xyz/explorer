@@ -1,6 +1,7 @@
 'use client'
 
 import { FollowButton } from '@/components/common/follow-button'
+import { SolidScoreProfileHeader } from '@/components/profile/components/profile-header/solid-score-profile-header'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -41,15 +42,15 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const isSame = profileInfo?.profile.username === profileInfo.walletAddress
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between">
-      <div className="flex items-center md:items-start gap-2">
+    <div className="flex flex-col md:flex-row justify-between">
+      <div className="flex items-center md:items-start gap-2 md:gap-4">
         <Avatar
           username={profileInfo.profile.username}
           imageUrl={profileInfo.profile.image}
           className="w-18 h-18 aspect-square"
           size={72}
         />
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="flex flex-col md:flex-row gap-1 md:items-center">
             <p className="font-bold">
               {isSame
@@ -70,6 +71,13 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             </p>
             <p className="text-muted-foreground mobile">since {creationYear}</p>
           </div>
+
+          {(profileInfo.profile.username === 'nehemiah' ||
+            profileInfo.profile.username === 'nemoblackburn' ||
+            profileInfo.profile.username === 'cedrick') && (
+            <SolidScoreProfileHeader walletAddress={walletAddress} />
+          )}
+
           <p className="text-muted-foreground text-sm desktop">
             {profileInfo.profile.bio || 'No description'}
           </p>
