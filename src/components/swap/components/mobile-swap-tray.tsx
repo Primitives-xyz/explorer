@@ -27,7 +27,6 @@ export function MobileSwapTray({ isAlwaysOpen = false }: Props) {
     } else {
       controls.start({ y: FIXED_TRAY_HEIGHT }).then(() => setDisplaySwap(false))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, controls])
 
   useEffect(() => {

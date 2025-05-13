@@ -107,6 +107,7 @@ export function useWithdraw({ subAccountId, tokenSymbol }: UseWithdrawProps) {
 
   useEffect(() => {
     fetchWithdrawalLimit()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subAccountId, driftClient, tokenSymbol])
 
   return {

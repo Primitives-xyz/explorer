@@ -90,6 +90,7 @@ export function useTokenSearch() {
       // Re-fetch results when verifiedOnly changes
       debouncedSearch(searchQuery)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verifiedOnly])
 
   // Function to prioritize wallet tokens in search results

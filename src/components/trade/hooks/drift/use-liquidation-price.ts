@@ -1,7 +1,7 @@
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
-import { useInitializeDrift } from './use-initialize-drift'
 import { useDriftUsers } from './use-drift-users'
+import { useInitializeDrift } from './use-initialize-drift'
 
 interface UseLiquidationPriceProps {
   symbol: string
@@ -26,7 +26,7 @@ export function useLiquidationPrice({
       try {
         if (!isLoggedIn || !driftClient) return
         if (!accountIds.length) return
-        
+
         setLoading(true)
 
         const baseurl = `api/drift/liqprice/?wallet=${walletAddress}&subAccountId=0&symbol=SOL&direction=${direction}&amount=${Number(
@@ -51,6 +51,7 @@ export function useLiquidationPrice({
     }
 
     fetchLiquidationPrice()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress, symbol, amount, direction])
 
   return {

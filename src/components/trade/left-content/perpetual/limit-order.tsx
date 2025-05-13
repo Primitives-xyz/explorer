@@ -160,6 +160,7 @@ export default function LimitOrder({
       limitPrice,
       reduceOnly,
     } as LimitOrderParams)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderAmount, slippageOption, limitPrice, reduceOnly])
 
   return (

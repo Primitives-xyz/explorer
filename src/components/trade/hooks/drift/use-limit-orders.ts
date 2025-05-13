@@ -100,6 +100,7 @@ export function useLimitOrders({ subAccountId }: Props) {
     }, 5000)
 
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [driftClient, isLoggedIn, walletAddress, accountIds, subAccountId])
 
   return {

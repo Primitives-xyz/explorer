@@ -133,6 +133,7 @@ export function Perpetual({ setTokenMint }: Props) {
           : PositionDirection.SHORT,
       orderType,
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderParams])
 
   // Market

@@ -142,6 +142,7 @@ export default function MarketOrder({
       amount: orderAmount,
       slippage: slippageOption,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderAmount, slippageOption])
 
   return (

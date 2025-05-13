@@ -37,6 +37,7 @@ export default function TradePage() {
         inputAmount: inputAmountParam,
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const updateUrlFromStore = useCallback(() => {
