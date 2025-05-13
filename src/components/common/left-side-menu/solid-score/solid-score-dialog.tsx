@@ -30,9 +30,9 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-xl flex flex-col items-center justify-center">
         <DialogHeader>
-          <DialogTitle>Share Your [solID] Score</DialogTitle>
+          <DialogTitle>Share Your SOLID Score</DialogTitle>
         </DialogHeader>
-        <p>Your [solID] Score was updated. Share with others!</p>
+        <p>Your SOLID Score was updated. Share with others!</p>
         <div className="w-[400px] h-[400px] relative flex items-center justify-center rounded-lg overflow-hidden">
           <Image
             src="/images/menu/solid-score-share-modal-bg.png"
