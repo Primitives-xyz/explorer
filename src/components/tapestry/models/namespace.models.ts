@@ -42,6 +42,7 @@ export interface INamespaceProfileInfos {
     userProfileURL?: string
     readableName?: string
     faviconURL?: string
+    externalProfileURLKey?: string
   }
   walletAddress: string
 }

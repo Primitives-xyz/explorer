@@ -21,6 +21,7 @@ function processWalletRelatedProfile(identity: any, elem: any) {
       readableName: elem.namespace?.readableName,
       userProfileURL: elem.namespace?.userProfileURL,
       faviconURL: elem.namespace?.faviconURL,
+      externalProfileURL: elem.namespace?.externalProfileURL,
     },
     socialCounts: {
       followers: elem.socialCounts?.followers || 0,
@@ -44,6 +45,7 @@ function processContactRelatedProfile(elem: any) {
       readableName: elem.namespace?.readableName,
       userProfileURL: elem.namespace?.userProfileURL,
       faviconURL: elem.namespace?.faviconURL,
+      externalProfileURL: elem.namespace?.externalProfileURL,
     },
     socialCounts: {
       followers: elem.socialCounts?.followers || 0,
