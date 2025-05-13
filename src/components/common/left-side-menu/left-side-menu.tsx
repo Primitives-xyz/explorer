@@ -30,6 +30,7 @@ export function LeftSideMenu() {
         <div className="space-y-4 py-4">
           <LowFeeTrades />
           {isLoggedIn &&
+            mainProfile?.username &&
             (mainProfile?.username === 'nehemiah' ||
               mainProfile?.username === 'nemoblackburn' ||
               mainProfile?.username === 'cedrick') && <SolidScore />}
