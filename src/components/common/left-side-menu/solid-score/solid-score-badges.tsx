@@ -128,8 +128,9 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
       className={cn(
         {
           'gap-4 px-10': !smallView && !showCompact,
-          'gap-2': smallView || showCompact,
+          'gap-2': smallView,
           'pt-2': !showCompact,
+          'gap-1': showCompact,
         },
         'flex flex-wrap justify-center'
       )}
@@ -144,15 +145,24 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
                 <Image
                   src={badge.image}
                   alt={key}
-                  width={showCompact ? 14 : smallView ? 15 : 16}
-                  height={showCompact ? 14 : smallView ? 15 : 16}
-                  className="rounded aspect-square object-contain"
+                  width={showCompact ? 18 : smallView ? 15 : 16}
+                  height={showCompact ? 18 : smallView ? 15 : 16}
+                  className="rounded-full aspect-square object-contain"
                 />
               </TooltipTrigger>
               <TooltipContent>
-                <div>
-                  <p className="font-bold text-sm">{badge.name}</p>
-                  <p className="text-xs">{badge.description}</p>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={badge.image}
+                    alt={key}
+                    width={40}
+                    height={40}
+                    className="rounded-full aspect-square object-contain"
+                  />
+                  <div className="flex-col">
+                    <p className="font-bold text-sm">{badge.name}</p>
+                    <p className="text-xs">{badge.description}</p>
+                  </div>
                 </div>
               </TooltipContent>
             </Tooltip>
