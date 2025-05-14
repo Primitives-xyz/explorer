@@ -24,8 +24,9 @@ export interface UsePlacePerpsOrderParams {
   amount: string
   symbol: string
   direction: PositionDirection
-  slippage?: string
   orderType: OrderType
+  currentPositionDirection?: string
+  slippage?: string
   limitPrice?: string
   triggerPrice?: string
   reduceOnly?: boolean
@@ -37,6 +38,7 @@ export function usePlacePerpsOrder({
   amount,
   symbol,
   direction,
+  currentPositionDirection,
   slippage = '0.1',
   orderType,
   limitPrice,
@@ -247,6 +249,31 @@ export function usePlacePerpsOrder({
         }
       }
 
+      if (orderType === OrderType.ADD_TP) {
+        console.log("OrderType:", orderType)
+        const price = driftClient.convertToPricePrecision(Number(triggerPrice))
+
+        if (direction === PositionDirection.SHORT) {
+          orderParams = getTriggerMarketOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.LONG,
+            baseAssetAmount,
+            triggerPrice: price,
+            triggerCondition: OrderTriggerCondition.BELOW,
+          })
+        }
+
+        if (direction === PositionDirection.LONG) {
+          orderParams = getTriggerMarketOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.SHORT,
+            baseAssetAmount,
+            triggerPrice: price,
+            triggerCondition: OrderTriggerCondition.ABOVE,
+          })
+        }
+      }
+
       if (orderType === OrderType.SL) {
         console.log("OrderType:", orderType)
         const tprice = driftClient.convertToPricePrecision(Number(triggerPrice))
@@ -264,6 +291,34 @@ export function usePlacePerpsOrder({
         }
 
         if (direction === PositionDirection.SHORT) {
+          orderParams = getTriggerMarketOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.SHORT,
+            baseAssetAmount,
+            price: lprice,
+            triggerPrice: tprice,
+            triggerCondition: OrderTriggerCondition.BELOW,
+          })
+        }
+      }
+
+      if (orderType === OrderType.ADD_SL) {
+        console.log("OrderType:", orderType)
+        const tprice = driftClient.convertToPricePrecision(Number(triggerPrice))
+        const lprice = driftClient.convertToPricePrecision(Number(limitPrice))
+
+        if (direction === PositionDirection.SHORT) {
+          orderParams = getTriggerLimitOrderParams({
+            marketIndex: perpMarketAccount.marketIndex,
+            direction: PositionDirection.LONG,
+            baseAssetAmount,
+            price: lprice,
+            triggerPrice: tprice,
+            triggerCondition: OrderTriggerCondition.ABOVE,
+          })
+        }
+
+        if (direction === PositionDirection.LONG) {
           orderParams = getTriggerMarketOrderParams({
             marketIndex: perpMarketAccount.marketIndex,
             direction: PositionDirection.SHORT,
