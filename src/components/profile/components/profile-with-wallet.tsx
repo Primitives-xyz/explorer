@@ -3,7 +3,9 @@
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import { FullPageSpinner } from '@/components/ui'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
-import { useMemo } from 'react'
+import { route } from '@/utils/route'
+import { useRouter } from 'next/navigation'
+import { useEffect, useMemo } from 'react'
 import { ProfileContent } from './profile-content'
 
 interface Props {
@@ -11,9 +13,15 @@ interface Props {
 }
 
 export function ProfileWithWallet({ walletAddress }: Props) {
-  const { profiles, loading } = useGetProfiles({
+  const router = useRouter()
+  const { profiles, loading, error } = useGetProfiles({
     walletAddress,
   })
+  useEffect(() => {
+    if (error) {
+      router.push(route('home'))
+    }
+  }, [error, router])
 
   const profileInfo = useMemo(() => {
     return (

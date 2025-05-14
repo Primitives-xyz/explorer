@@ -98,7 +98,7 @@ export function Receive({ setShowOutputTokenSearch }: Props) {
                   alt={`${outputTokenSymbol || 'Token'} logo`}
                   width={32}
                   height={32}
-                  className="rounded-full aspect-square object-cover"
+                  className="rounded-full aspect-square object-cover max-w-[32px] max-h-[32px]"
                 />
               ) : (
                 <span className="rounded-full h-[32px] w-[32px] bg-background" />

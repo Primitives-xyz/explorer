@@ -1,40 +1,32 @@
-import { socialfi } from '@/utils/socialfi'
+import { IFollowersAddRemoveInput } from '@/app/api/followers/add/route'
+import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
+import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
-
-interface UnfollowRequestBody {
-  followerUser: { username: string }
-  followeeUser: { username: string }
-}
-
-interface TapestryResponse {
-  error?: string
-  [key: string]: any
-}
 
 export async function POST(req: NextRequest) {
   try {
-    const { followerUser, followeeUser }: UnfollowRequestBody = await req.json()
+    const { followerUsername, followeeUsername }: IFollowersAddRemoveInput =
+      await req.json()
 
-    if (!followerUser || !followeeUser) {
+    if (!followerUsername || !followeeUsername) {
       return NextResponse.json(
-        { error: 'followerUser and followeeUser are required' },
+        { error: 'followerUsername and followeeUsername are required' },
         { status: 400 }
       )
     }
 
-    const bodyData = {
-      startId: followerUser.username,
-      endId: followeeUser.username,
-    }
-
-    const response = await socialfi.unfollowUser(
-      bodyData.startId,
-      bodyData.endId
-    )
+    const response = await fetchTapestry({
+      endpoint: 'followers/remove',
+      method: FetchMethod.POST,
+      body: {
+        startId: followerUsername,
+        endId: followeeUsername,
+      },
+    })
 
     return NextResponse.json(response)
   } catch (error: any) {
-    console.error('Error processing unfollow request:', error)
+    console.error('Error processing follow request:', error)
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },
       { status: 500 }

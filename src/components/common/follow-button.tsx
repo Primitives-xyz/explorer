@@ -4,6 +4,7 @@ import { useFollowUser } from '@/components/tapestry/hooks/use-follow-user'
 import { useGetFollowers } from '@/components/tapestry/hooks/use-get-followers'
 import { useGetFollowersState } from '@/components/tapestry/hooks/use-get-followers-state'
 import { useGetFollowing } from '@/components/tapestry/hooks/use-get-following'
+import { useUnfollowUser } from '@/components/tapestry/hooks/use-unfollow-user'
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { UserCheck, UserPlus } from 'lucide-react'
@@ -24,7 +25,7 @@ export function FollowButton({
   ...props
 }: Props) {
   const { followUser, loading: followUserLoading } = useFollowUser()
-  //  const { unfollowUser, loading: unfollowUserLoading } = useUnfollowUser()
+  const { unfollowUser, loading: unfollowUserLoading } = useUnfollowUser()
   const { refetch: refetchCurrentUser, loading: loadingCurrentUser } =
     useCurrentWallet()
   const { refetch: refetchGetFollowing } = useGetFollowing({
@@ -34,6 +35,7 @@ export function FollowButton({
     username: followeeUsername,
   })
   const [refetchLoading, setRefetchLoading] = useState(false)
+
   const {
     data,
     loading: loadingFollowersState,
@@ -42,17 +44,22 @@ export function FollowButton({
     followeeUsername,
     followerUsername,
   })
+
   const [isFollowingOptimistic, setIsFollowingOptimistic] = useState(
     data?.isFollowing
   )
 
-  const loading = followUserLoading || refetchLoading || loadingCurrentUser // || unfollowUserLoading
+  const loading =
+    followUserLoading ||
+    refetchLoading ||
+    loadingCurrentUser ||
+    unfollowUserLoading
 
   const refetch = async () => {
     setRefetchLoading(true)
 
-    // revalidateServerCache(`/api/profiles/${followerUsername}/following`)
-    // revalidateServerCache(`/api/profiles/${followeeUsername}/followers`)
+    //revalidateServerCache(`/api/profiles/${followerUsername}/following`)
+    //revalidateServerCache(`/api/profiles/${followeeUsername}/followers`)
 
     await Promise.all([
       refetchCurrentUser(),
@@ -68,8 +75,8 @@ export function FollowButton({
 
     try {
       await followUser({
-        followerUser: { username: followerUsername },
-        followeeUser: { username: followeeUsername },
+        followerUsername,
+        followeeUsername,
       })
       await refetch()
       onFollowSuccess?.()
@@ -81,22 +88,22 @@ export function FollowButton({
     }
   }
 
-  //   const handleUnfollow = async () => {
-  //     setIsFollowingOptimistic(false)
+  const handleUnfollow = async () => {
+    setIsFollowingOptimistic(false)
 
-  //     try {
-  //       await unfollowUser({
-  //         followerUsername,
-  //         followeeUsername,
-  //       })
-  //       await refetch()
-  //     } catch (error) {
-  //       console.error('Failed to unfollow:', error)
-  //       setIsFollowingOptimistic(true)
-  //     } finally {
-  //       refetchFollowersState()
-  //     }
-  //   }
+    try {
+      await unfollowUser({
+        followerUsername,
+        followeeUsername,
+      })
+      await refetch()
+    } catch (error) {
+      console.error('Failed to unfollow:', error)
+      setIsFollowingOptimistic(true)
+    } finally {
+      refetchFollowersState()
+    }
+  }
 
   if (followerUsername === followeeUsername) {
     return null
