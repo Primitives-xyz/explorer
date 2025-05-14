@@ -62,6 +62,11 @@ interface FetchParams<InputType> {
   tags?: string[]
   credentials?: RequestCredentials
   headers?: Record<string, string>
+  cache?: RequestCache
+  next?: {
+    revalidate?: number
+    tags?: string[]
+  }
 }
 
 export const fetchWrapper = async <
@@ -79,6 +84,8 @@ export const fetchWrapper = async <
   tags,
   credentials,
   headers: _headers,
+  cache,
+  next,
 }: FetchParams<InputType>): Promise<ResponseType> => {
   if (queryParams) {
     endpoint = getUrlWithQueryParameters<Record<string, string | number>>(
@@ -107,10 +114,12 @@ export const fetchWrapper = async <
     method,
     headers,
     ...(bypassCache ? { cache: 'no-store' } : {}),
-    // @ts-ignore
+    ...(cache ? { cache } : {}),
+    // @ts-ignore - Next.js specific options
     next: {
-      revalidate,
-      tags,
+      ...(revalidate !== undefined ? { revalidate } : {}),
+      ...(tags ? { tags } : {}),
+      ...(next || {}),
     },
     // mode: 'no-cors',
     credentials,
