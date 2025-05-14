@@ -1,11 +1,7 @@
 import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
+import { IFollowersAddRemoveInput } from '@/components/tapestry/models/profiles.models'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
-
-export interface IFollowersAddRemoveInput {
-  followerUsername: string
-  followeeUsername: string
-}
 
 export async function POST(req: NextRequest) {
   try {

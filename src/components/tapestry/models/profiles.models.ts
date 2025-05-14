@@ -135,3 +135,8 @@ export interface IExternalNamespace {
   namespace: INameSpace
   profiles: IGetProfilesResponseEntry[]
 }
+
+export interface IFollowersAddRemoveInput {
+  followerUsername: string
+  followeeUsername: string
+}

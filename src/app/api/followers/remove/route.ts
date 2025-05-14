@@ -1,5 +1,5 @@
-import { IFollowersAddRemoveInput } from '@/app/api/followers/add/route'
 import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
+import { IFollowersAddRemoveInput } from '@/components/tapestry/models/profiles.models'
 import { FetchMethod } from '@/utils/api'
 import { NextRequest, NextResponse } from 'next/server'
 
