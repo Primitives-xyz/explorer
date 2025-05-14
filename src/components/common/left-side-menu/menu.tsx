@@ -3,7 +3,6 @@
 import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import {
   ArrowRightLeft,
@@ -12,7 +11,6 @@ import {
   House,
   LucideIcon,
   PocketKnife,
-  User,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { UrlObject } from 'url'
@@ -23,8 +21,6 @@ interface Props {
 }
 
 export function Menu({ setOpen }: Props) {
-  const { mainProfile } = useCurrentWallet()
-
   return (
     <div className="space-y-4 md:space-y-2">
       <Entry title="Home" icon={House} href={route('home')} setOpen={setOpen} />
