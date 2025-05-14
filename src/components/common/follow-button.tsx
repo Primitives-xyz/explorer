@@ -7,7 +7,7 @@ import { useGetFollowing } from '@/components/tapestry/hooks/use-get-following'
 import { useUnfollowUser } from '@/components/tapestry/hooks/use-unfollow-user'
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { UserCheck, UserPlus } from 'lucide-react'
+import { UserMinus, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 
 interface Props extends Omit<ButtonProps, 'children'> {
@@ -121,9 +121,9 @@ export function FollowButton({
     <div className="flex flex-col items-center gap-1">
       <Button
         {...props}
-        onClick={handleFollow}
+        onClick={isFollowing ? handleUnfollow : handleFollow}
         loading={loadingFollowersState}
-        disabled={loading || isFollowing}
+        disabled={loading}
         variant={ButtonVariant.SECONDARY_SOCIAL}
       >
         {!!children ? (
@@ -132,10 +132,10 @@ export function FollowButton({
           <>
             {isFollowing ? (
               isIcon ? (
-                <UserCheck size={iconSize} />
+                <UserMinus size={iconSize} />
               ) : (
                 <>
-                  <UserCheck size={iconSize} /> Following
+                  <UserMinus size={iconSize} /> Unfollow
                 </>
               )
             ) : isIcon ? (
@@ -148,16 +148,6 @@ export function FollowButton({
           </>
         )}
       </Button>
-      {/* {isFollowing && (
-        <Button
-          variant={ButtonVariant.LINK}
-          onClick={handleUnfollow}
-          className="text-xs"
-          disabled={loading}
-        >
-          Unfollow
-        </Button>
-      )} */}
     </div>
   )
 }

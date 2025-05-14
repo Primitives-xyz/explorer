@@ -1,11 +1,10 @@
 'use client'
 
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
-import { FullPageSpinner } from '@/components/ui'
+import { Button, ButtonVariant, FullPageSpinner } from '@/components/ui'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/route'
-import { useRouter } from 'next/navigation'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { ProfileContent } from './profile-content'
 
 interface Props {
@@ -13,15 +12,9 @@ interface Props {
 }
 
 export function ProfileWithWallet({ walletAddress }: Props) {
-  const router = useRouter()
   const { profiles, loading, error } = useGetProfiles({
     walletAddress,
   })
-  useEffect(() => {
-    if (error) {
-      router.push(route('home'))
-    }
-  }, [error, router])
 
   const profileInfo = useMemo(() => {
     return (
@@ -33,6 +26,17 @@ export function ProfileWithWallet({ walletAddress }: Props) {
 
   if (loading) {
     return <FullPageSpinner />
+  }
+
+  if (error) {
+    return (
+      <div className="w-full flex items-center justify-center pt-[200px] text-lg flex-col gap-4">
+        Profile not found
+        <Button variant={ButtonVariant.OUTLINE} href={route('home')}>
+          go back home
+        </Button>
+      </div>
+    )
   }
 
   return (
