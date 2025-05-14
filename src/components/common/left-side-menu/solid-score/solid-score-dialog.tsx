@@ -4,17 +4,11 @@ import { useSolidScore } from '@/components/common/hooks/use-solid-score'
 import { ScoreArc } from '@/components/common/left-side-menu/solid-score/score-arc'
 import { SolidScoreBadges } from '@/components/common/left-side-menu/solid-score/solid-score-badges'
 import { SolidScoreValue } from '@/components/common/left-side-menu/solid-score/solid-score-value'
-import {
-  Button,
-  ButtonVariant,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from '@/components/ui'
+import { Button, Dialog, DialogContent, DialogHeader } from '@/components/ui'
+import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { DialogTitle } from '@radix-ui/react-dialog'
-import { UserRoundPlus } from 'lucide-react'
 import Image from 'next/image'
 
 export interface Props {
@@ -46,7 +40,7 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
             <p className="text-md">My SOLID Score is...</p>
             <div className="flex items-center gap-2 justify-center">
               {mainProfile?.image && (
-                <Image
+                <ValidatedImage
                   src={mainProfile?.image}
                   alt="profile image"
                   width={20}
@@ -78,7 +72,6 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
         </div>
 
         <Button
-          variant={ButtonVariant.OUTLINE_SOCIAL}
           onClick={() => setOpen(false)}
           href={`https://x.com/intent/tweet?text=${encodeURIComponent(
             `My SOLID Score is ${formatSmartNumber(
@@ -92,7 +85,6 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
           newTab
           rel="noopener noreferrer"
         >
-          <UserRoundPlus size={16} />
           Share
         </Button>
       </DialogContent>

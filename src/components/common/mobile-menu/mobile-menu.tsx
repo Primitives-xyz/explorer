@@ -42,7 +42,7 @@ export function MobileMenu({ open, setOpen }: Props) {
           </h1>
         </div>
         <div className="px-6 pb-6 w-full flex flex-col flex-1">
-          <ProfileInfos />
+          <ProfileInfos setOpen={setOpen} />
           <Separator className="mt-4" />
           <div className="flex-1">
             <Menu setOpen={setOpen} />

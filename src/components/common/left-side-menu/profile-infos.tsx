@@ -15,7 +15,11 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { EllipsisVerticalIcon, LogOutIcon } from 'lucide-react'
 import Image from 'next/image'
 
-export function ProfileInfos() {
+interface Props {
+  setOpen?: (open: boolean) => void
+}
+
+export function ProfileInfos({ setOpen }: Props) {
   const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
@@ -40,7 +44,9 @@ export function ProfileInfos() {
               className="flex items-center gap-2 p-0 hover:bg-transparent"
               variant={ButtonVariant.GHOST}
               href={route('entity', { id: mainProfile.username })}
-              style={{ boxShadow: 'none' }}
+              onClick={() => {
+                setOpen && setOpen(false)
+              }}
             >
               <Avatar
                 className="w-8 md:w-6"
@@ -48,12 +54,10 @@ export function ProfileInfos() {
                 imageUrl={mainProfile.image}
                 size={40}
               />
-              <span className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-lg md:text-sm">
                 <p>hi</p>
-                <p className="font-medium max-w-[8rem] truncate">
-                  {mainProfile.username}
-                </p>
-              </span>
+                <p className="max-w-[8rem] truncate">{mainProfile.username}</p>
+              </div>
             </Button>
             <div className="desktop">
               <DropdownMenu>
@@ -83,6 +87,9 @@ export function ProfileInfos() {
           <div className="flex items-center gap-1">
             <Button
               isInvisible
+              onClick={() => {
+                setOpen && setOpen(false)
+              }}
               href={route('entity', {
                 id: SSE_TOKEN_MINT,
               })}

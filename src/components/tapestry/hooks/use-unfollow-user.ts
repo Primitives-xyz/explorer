@@ -2,9 +2,9 @@
 
 import { useMutation } from '@/utils/api'
 
-export const useFollowUser = () => {
+export const useUnfollowUser = () => {
   const {
-    mutate: followUser,
+    mutate: unfollowUser,
     loading,
     error,
     data,
@@ -15,11 +15,11 @@ export const useFollowUser = () => {
       followeeUsername: string
     }
   >({
-    endpoint: 'followers/add',
+    endpoint: 'followers/remove',
   })
 
   return {
-    followUser,
+    unfollowUser,
     loading,
     error,
     data,

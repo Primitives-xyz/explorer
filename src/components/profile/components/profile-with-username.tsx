@@ -1,6 +1,7 @@
 'use client'
 
-import { FullPageSpinner } from '@/components/ui'
+import { Button, ButtonVariant, FullPageSpinner } from '@/components/ui'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useGetProfileInfo } from '../hooks/use-get-profile-info'
 import { ProfileContent } from './profile-content'
@@ -11,7 +12,7 @@ interface Props {
 
 export function ProfileWithUsername({ username }: Props) {
   const { mainProfile } = useCurrentWallet()
-  const { profileInfo, loading } = useGetProfileInfo({
+  const { profileInfo, loading, error } = useGetProfileInfo({
     username,
     mainUsername: mainProfile?.username,
   })
@@ -20,8 +21,15 @@ export function ProfileWithUsername({ username }: Props) {
     return <FullPageSpinner />
   }
 
-  if (!profileInfo) {
-    return null
+  if (error || !profileInfo) {
+    return (
+      <div className="w-full flex items-center justify-center pt-[200px] text-lg flex-col gap-4">
+        Profile not found
+        <Button variant={ButtonVariant.OUTLINE} href={route('home')}>
+          go back home
+        </Button>
+      </div>
+    )
   }
 
   return (

@@ -40,23 +40,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('[API] Error fetching profile:', error)
+    console.warn('[API] Profile not found or error fetching:', error)
 
-    // Handle 404 specifically
-    if (
-      error instanceof Error &&
-      error.message.includes('API endpoint not found')
-    ) {
-      return NextResponse.json(
-        { error: `Profile not found: ${username}` },
-        { status: 404 }
-      )
-    }
-
-    // Handle other errors
     return NextResponse.json(
-      { error: 'Failed to fetch profile' },
-      { status: 500 }
+      { error: `Profile not found: ${username}` },
+      { status: 404 }
     )
   }
 }

@@ -2,9 +2,9 @@
 
 import { IGetProfileOwnSpecificToken } from '@/components/tapestry/models/token.models'
 import { Button, ButtonVariant } from '@/components/ui'
+import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
-import Image from 'next/image'
 
 interface Props {
   data: IGetProfileOwnSpecificToken
@@ -32,7 +32,7 @@ export function TokenHolders({ data }: Props) {
             )}
           >
             {profile.image && (
-              <Image
+              <ValidatedImage
                 src={profile.image}
                 alt="profile"
                 fill
