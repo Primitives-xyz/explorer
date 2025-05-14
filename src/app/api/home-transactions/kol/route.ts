@@ -69,9 +69,9 @@ export async function GET(request: NextRequest) {
         ),
       {
         headers: {
-          'Cache-Control': 'public, max-age=30, s-maxage=30',
-          'CDN-Cache-Control': 'public, max-age=30',
-          'Vercel-CDN-Cache-Control': 'public, max-age=30',
+          'Cache-Control': 'public, max-age=60, s-maxage=60',
+          'CDN-Cache-Control': 'public, max-age=60',
+          'Vercel-CDN-Cache-Control': 'public, max-age=60',
         },
       }
     )
