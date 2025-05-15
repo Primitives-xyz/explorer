@@ -12,6 +12,7 @@ interface Props {
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
   setShowOutputTokenSearch: (show: boolean) => void
+  notEnoughInput?: boolean
 }
 
 export function TopSwap({
@@ -21,6 +22,7 @@ export function TopSwap({
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
   setShowOutputTokenSearch,
+  notEnoughInput,
 }: Props) {
   return (
     <Card className="border-glow-animation">
@@ -30,6 +32,7 @@ export function TopSwap({
           setShowInputTokenSearch={setShowInputTokenSearch}
           handleInputAmountByPercentage={handleInputAmountByPercentage}
           autoFocus={autoFocus}
+          notEnoughInput={notEnoughInput}
         />
 
         <div className="flex items-center w-full justify-between text-muted space-x-2">

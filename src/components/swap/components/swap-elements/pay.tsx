@@ -16,6 +16,7 @@ interface Props {
   autoFocus?: boolean
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
+  notEnoughInput?: boolean
 }
 
 export function Pay({
@@ -23,6 +24,7 @@ export function Pay({
   autoFocus = true,
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
+  notEnoughInput,
 }: Props) {
   const {
     inputs: { inputMint },
@@ -83,7 +85,7 @@ export function Pay({
 
       <div className="flex justify-between items-center">
         <Input
-          type="number"
+          type="text"
           inputMode="decimal"
           placeholder="0.00"
           className="text-primary placeholder:text-primary text-xl bg-transparent border-none px-0"

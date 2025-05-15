@@ -8,7 +8,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
-import { SOL_MINT } from '@/utils/constants'
+import { SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   formatLargeNumber,
@@ -88,7 +88,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     setOutAmount,
   } = useSwapStore()
 
-  const [useSSEForFees, setUseSSEForFees] = useState(false)
+  const [useSSEForFees, setUseSSEForFeesState] = useState(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
 
@@ -122,6 +122,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
       tokenMint: outputTokenMint,
       decimals: outputTokenDecimals,
     })
+  const { balance: sseBalance, rawBalance: sseRawBalance } = useTokenBalance(walletAddress, SSE_MINT)
 
   const {
     loading,
@@ -205,6 +206,19 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
 
     return formatLargeNumber(parseFloat(fee), 6)
   }, [sseFeeAmount])
+
+  const sseFeeRaw = useMemo(() => {
+    return BigInt(Math.floor(Number(sseFeeAmount)))
+  }, [sseFeeAmount])
+
+  const notEnoughSSE = useSSEForFees && sseRawBalance < sseFeeRaw
+
+  const inputAmountRaw = useMemo(() => {
+    if (!inAmount || isNaN(Number(inAmount)) || !inputTokenDecimals) return 0n
+    return BigInt(Math.floor(Number(inAmount) * Math.pow(10, inputTokenDecimals)))
+  }, [inAmount, inputTokenDecimals])
+
+  const notEnoughInput = inputAmountRaw > inputRawBalance
 
   const handleInputAmountByPercentage = (percent: number) => {
     if (
@@ -325,6 +339,31 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, setTokenMint])
 
+  useEffect(() => {
+    const hasUsed = localStorage.getItem('hasUsedSSEFee')
+    if (hasUsed === 'true' && !notEnoughSSE) {
+      setUseSSEForFeesState(true)
+    } else {
+      setUseSSEForFeesState(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (useSSEForFees) {
+      localStorage.setItem('hasUsedSSEFee', 'true')
+    }
+  }, [useSSEForFees])
+
+  // Determine if the user has used SSE before
+  const hasUsedSSEBefore = typeof window !== 'undefined' && localStorage.getItem('hasUsedSSEFee') === 'true'
+
+  let executeButtonText = 'Execute Swap'
+  if (notEnoughSSE) {
+    executeButtonText = 'Insufficient SSE'
+  } else if (notEnoughInput) {
+    executeButtonText = `Insufficient ${inputTokenSymbol || 'Balance'}`
+  }
+
   return (
     <div className="space-y-4">
       <TopSwap
@@ -334,6 +373,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         setShowOutputTokenSearch={setShowOutputTokenSearch}
         handleSwapDirection={handleSwapDirection}
         autoFocus={autoFocus}
+        notEnoughInput={notEnoughInput}
       />
 
       <CenterButtonSwap
@@ -342,12 +382,15 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
         handleSwap={async () => {
+          if (notEnoughSSE || notEnoughInput) return
           await handleSwap()
           setShowInputTokenSearch(false)
           setShowOutputTokenSearch(false)
           setInAmount('')
           setOutAmount('')
         }}
+        buttonText={executeButtonText}
+        notReady={notEnoughSSE || notEnoughInput}
       />
 
       <BottomSwap
@@ -358,7 +401,9 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         outputTokenDecimals={outputTokenDecimals}
         expectedOutput={expectedOutput}
         isQuoteRefreshing={isQuoteRefreshing}
-        setUseSSEForFees={setUseSSEForFees}
+        setUseSSEForFees={setUseSSEForFeesState}
+        notEnoughSSE={notEnoughSSE}
+        hasUsedSSEBefore={hasUsedSSEBefore}
       />
 
       {(showInputTokenSearch || showOutputTokenSearch) && (

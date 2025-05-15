@@ -7,6 +7,8 @@ interface Props {
   isLoggedIn: boolean
   setShowAuthFlow: (show: boolean) => void
   handleSwap: () => void
+  buttonText?: string
+  notReady?: boolean
 }
 
 export function CenterButtonSwap({
@@ -15,6 +17,8 @@ export function CenterButtonSwap({
   isLoggedIn,
   setShowAuthFlow,
   handleSwap,
+  buttonText = 'Execute Swap',
+  notReady = false,
 }: Props) {
   return (
     <div className="w-full">
@@ -38,9 +42,9 @@ export function CenterButtonSwap({
             onClick={handleSwap}
             size={ButtonSize.LG}
             disabled={loading}
-            className="w-full"
+            className={['w-full', notReady && !loading ? 'opacity-60 pointer-events-auto' : ''].join(' ')}
           >
-            {loading ? <Spinner /> : 'Execute Swap'}
+            {loading ? <Spinner /> : buttonText}
           </Button>
       )}
     </div>
