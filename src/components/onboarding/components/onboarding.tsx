@@ -3,6 +3,7 @@
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { isValidSolanaAddress } from '@/utils/validation'
 import { useEffect, useState } from 'react'
 import { mutate } from 'swr'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
@@ -56,12 +57,32 @@ export function Onboarding() {
   const loading =
     getCurrentUserLoading || getIdentitiesLoading || getSuggestedProfilesLoading
 
+  const shouldShowOnboarding = () => {
+    // Not logged in or profiles undefined
+    if (!isLoggedIn || typeof profiles === 'undefined') {
+      return false
+    }
+
+    // No profile
+    if (!mainProfile) {
+      return true
+    }
+
+    // Has not seen the setup modal
+    if (!mainProfile.hasSeenProfileSetupModal) {
+      return true
+    }
+
+    // No username or username is a wallet address
+    if (!mainProfile.username || isValidSolanaAddress(mainProfile.username)) {
+      return true
+    }
+
+    return false
+  }
+
   useEffect(() => {
-    if (
-      isLoggedIn &&
-      typeof profiles !== 'undefined' &&
-      (!mainProfile || (mainProfile && !mainProfile.hasSeenProfileSetupModal))
-    ) {
+    if (shouldShowOnboarding()) {
       setOpen(true)
     }
   }, [mainProfile, profiles, isLoggedIn])
