@@ -10,7 +10,6 @@ import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import { ESwapMode } from '../../swap.models'
-import Warning from '@/components/ui/warning'
 
 interface Props {
   walletAddress: string
@@ -76,11 +75,6 @@ export function Pay({
 
   return (
     <div>
-      {notEnoughInput && (
-        <div className="mb-2">
-          <Warning variant="quiet">Insufficient balance</Warning>
-        </div>
-      )}
       <div className="flex justify-between items-center">
         <p>Selling</p>
         <p className="text-xs text-muted-foreground">
@@ -91,7 +85,7 @@ export function Pay({
 
       <div className="flex justify-between items-center">
         <Input
-          type="number"
+          type="text"
           inputMode="decimal"
           placeholder="0.00"
           className="text-primary placeholder:text-primary text-xl bg-transparent border-none px-0"

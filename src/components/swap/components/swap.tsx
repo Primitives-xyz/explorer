@@ -359,6 +359,13 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
   // Determine if the user has used SSE before
   const hasUsedSSEBefore = typeof window !== 'undefined' && localStorage.getItem('hasUsedSSEFee') === 'true'
 
+  let executeButtonText = 'Execute Swap'
+  if (notEnoughSSE) {
+    executeButtonText = 'Insufficient SSE'
+  } else if (notEnoughInput) {
+    executeButtonText = `Insufficient ${inputTokenSymbol || 'Balance'}`
+  }
+
   return (
     <div className="space-y-4">
       <TopSwap
@@ -377,7 +384,6 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
         handleSwap={async () => {
-          // Prevent swap if not enough SSE for fees or not enough input
           if (notEnoughSSE || notEnoughInput) return
           await handleSwap()
           setShowInputTokenSearch(false)
@@ -385,6 +391,8 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
           setInAmount('')
           setOutAmount('')
         }}
+        buttonText={executeButtonText}
+        notReady={notEnoughSSE || notEnoughInput}
       />
 
       <BottomSwap
