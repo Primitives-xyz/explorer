@@ -213,6 +213,13 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
 
   const notEnoughSSE = useSSEForFees && sseRawBalance < sseFeeRaw
 
+  const inputAmountRaw = useMemo(() => {
+    if (!inAmount || isNaN(Number(inAmount)) || !inputTokenDecimals) return 0n
+    return BigInt(Math.floor(Number(inAmount) * Math.pow(10, inputTokenDecimals)))
+  }, [inAmount, inputTokenDecimals])
+
+  const notEnoughInput = inputAmountRaw > inputRawBalance
+
   const handleInputAmountByPercentage = (percent: number) => {
     if (
       !inputBalance ||
@@ -361,6 +368,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         setShowOutputTokenSearch={setShowOutputTokenSearch}
         handleSwapDirection={handleSwapDirection}
         autoFocus={autoFocus}
+        notEnoughInput={notEnoughInput}
       />
 
       <CenterButtonSwap
@@ -369,8 +377,8 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
         handleSwap={async () => {
-          // Prevent swap if not enough SSE for fees
-          if (notEnoughSSE) return
+          // Prevent swap if not enough SSE for fees or not enough input
+          if (notEnoughSSE || notEnoughInput) return
           await handleSwap()
           setShowInputTokenSearch(false)
           setShowOutputTokenSearch(false)

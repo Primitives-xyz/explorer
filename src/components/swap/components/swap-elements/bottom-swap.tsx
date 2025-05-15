@@ -54,7 +54,7 @@ export function BottomSwap({
         </CardTitle>
         {notEnoughSSE && (
           <div className="mb-2 mt-3">
-            <Warning>
+            <Warning variant="loud">
               {hasUsedSSEBefore
                 ? 'Transaction fee exceeds your SSE balance.'
                 : 'You do not have enough SSE to pay for transaction fees.'}

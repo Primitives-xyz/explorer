@@ -10,12 +10,14 @@ import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import { ESwapMode } from '../../swap.models'
+import Warning from '@/components/ui/warning'
 
 interface Props {
   walletAddress: string
   autoFocus?: boolean
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
+  notEnoughInput?: boolean
 }
 
 export function Pay({
@@ -23,6 +25,7 @@ export function Pay({
   autoFocus = true,
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
+  notEnoughInput,
 }: Props) {
   const {
     inputs: { inputMint },
@@ -73,6 +76,11 @@ export function Pay({
 
   return (
     <div>
+      {notEnoughInput && (
+        <div className="mb-2">
+          <Warning variant="quiet">Insufficient balance</Warning>
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <p>Selling</p>
         <p className="text-xs text-muted-foreground">
