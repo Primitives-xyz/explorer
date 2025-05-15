@@ -21,6 +21,16 @@ function interpolateColor(
   return `rgb(${r}, ${g}, ${b})`
 }
 
+function getScorePercentage(score: number): number {
+  const clampedScore = Math.max(0, Math.min(1000, score))
+  
+  if (clampedScore >= 1000) return 1
+  if (clampedScore >= 450) return 0.95 + (clampedScore - 450) * (0.05 / 550)
+  if (clampedScore >= 300) return 0.85 + (clampedScore - 300) * (0.10 / 150)
+  if (clampedScore >= 200) return 0.60 + (clampedScore - 200) * (0.25 / 100)
+  return clampedScore * (0.60 / 200)
+}
+
 interface Props {
   score: number
   loading: boolean
@@ -35,8 +45,7 @@ export function ScoreArc({ score, loading }: Props) {
   const endColor = '#82d89c'
   const trackColor = 'hsl(var(--muted))'
 
-  const clampedScore = Math.max(0, Math.min(1000, score))
-  const t = clampedScore / 1000
+  const t = getScorePercentage(score)
   const angleDeg = 180 * t
 
   const describeArc = (startAngle: number, endAngle: number) => {
