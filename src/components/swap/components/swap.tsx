@@ -8,7 +8,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
-import { SOL_MINT } from '@/utils/constants'
+import { SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   formatLargeNumber,
@@ -88,7 +88,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     setOutAmount,
   } = useSwapStore()
 
-  const [useSSEForFees, setUseSSEForFees] = useState(false)
+  const [useSSEForFees, setUseSSEForFeesState] = useState(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
 
@@ -122,6 +122,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
       tokenMint: outputTokenMint,
       decimals: outputTokenDecimals,
     })
+  const { balance: sseBalance, rawBalance: sseRawBalance } = useTokenBalance(walletAddress, SSE_MINT)
 
   const {
     loading,
@@ -205,6 +206,12 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
 
     return formatLargeNumber(parseFloat(fee), 6)
   }, [sseFeeAmount])
+
+  const sseFeeRaw = useMemo(() => {
+    return BigInt(Math.floor(Number(sseFeeAmount)))
+  }, [sseFeeAmount])
+
+  const notEnoughSSE = useSSEForFees && sseRawBalance < sseFeeRaw
 
   const handleInputAmountByPercentage = (percent: number) => {
     if (
@@ -325,6 +332,26 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, setTokenMint])
 
+  useEffect(() => {
+    const hasUsed = localStorage.getItem('hasUsedSSEFee')
+    if (hasUsed === 'true' && !notEnoughSSE) {
+      setUseSSEForFeesState(true)
+    } else {
+      setUseSSEForFeesState(false)
+    }
+  }, [])
+
+  const setUseSSEForFees = (value: boolean) => {
+    if (notEnoughSSE && value) return
+    setUseSSEForFeesState(value)
+    if (value) {
+      localStorage.setItem('hasUsedSSEFee', 'true')
+    }
+  }
+
+  // Determine if the user has used SSE before
+  const hasUsedSSEBefore = typeof window !== 'undefined' && localStorage.getItem('hasUsedSSEFee') === 'true'
+
   return (
     <div className="space-y-4">
       <TopSwap
@@ -342,6 +369,8 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
         handleSwap={async () => {
+          // Prevent swap if not enough SSE for fees
+          if (notEnoughSSE) return
           await handleSwap()
           setShowInputTokenSearch(false)
           setShowOutputTokenSearch(false)
@@ -359,6 +388,8 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         expectedOutput={expectedOutput}
         isQuoteRefreshing={isQuoteRefreshing}
         setUseSSEForFees={setUseSSEForFees}
+        notEnoughSSE={notEnoughSSE}
+        hasUsedSSEBefore={hasUsedSSEBefore}
       />
 
       {(showInputTokenSearch || showOutputTokenSearch) && (

@@ -15,6 +15,7 @@ import {
   Spinner,
 } from '@/components/ui'
 import { CheckboxSize } from '@/components/ui/switch/checkbox.models'
+import Warning from '@/components/ui/warning'
 
 import { cn } from '@/utils/utils'
 import { CircleAlertIcon } from 'lucide-react'
@@ -28,6 +29,8 @@ interface Props {
   expectedOutput: string
   isQuoteRefreshing: boolean
   setUseSSEForFees: (useSSEForFees: boolean) => void
+  notEnoughSSE?: boolean
+  hasUsedSSEBefore?: boolean
 }
 
 export function BottomSwap({
@@ -39,6 +42,8 @@ export function BottomSwap({
   expectedOutput,
   isQuoteRefreshing,
   setUseSSEForFees,
+  notEnoughSSE,
+  hasUsedSSEBefore,
 }: Props) {
   return (
     <Card>
@@ -47,6 +52,15 @@ export function BottomSwap({
           <p>Route Information $ Fees</p>
           <CircleAlertIcon size={20} />
         </CardTitle>
+        {notEnoughSSE && (
+          <div className="mb-2 mt-3">
+            <Warning>
+              {hasUsedSSEBefore
+                ? 'Transaction fee exceeds your SSE balance.'
+                : 'You do not have enough SSE to pay for transaction fees.'}
+            </Warning>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4 p-4">
         <label htmlFor="pay_fee_with_sse" className="block">
