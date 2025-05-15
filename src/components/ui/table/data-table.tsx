@@ -17,9 +17,9 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  OnChangeFn,
   SortingState,
   useReactTable,
-  OnChangeFn,
 } from '@tanstack/react-table'
 import { useState } from 'react'
 

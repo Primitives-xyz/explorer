@@ -52,8 +52,8 @@ export function useGetTopTraders({ timeFrame, limit = 10 }: Props) {
                 )
               )}`
             : item.pnl !== 0
-            ? t('top_traders.unrealized')
-            : t('top_traders.no_trades')
+            ? t('discover.unrealized')
+            : t('discover.no_trades')
         }`,
         formattedTradeCount: `${
           item.trade_count > 0

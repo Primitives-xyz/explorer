@@ -13,6 +13,7 @@ import { SSE_TOKEN_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { EllipsisVerticalIcon, LogOutIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function ProfileInfos({ setOpen }: Props) {
+  const t = useTranslations()
   const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
@@ -34,7 +36,7 @@ export function ProfileInfos({ setOpen }: Props) {
           variant={ButtonVariant.OUTLINE_WHITE}
           onClick={() => setShowAuthFlow(true)}
         >
-          Connect Wallet
+          {t('common.connect_wallet')}
         </Button>
       )}
       {!!mainProfile && (
@@ -55,7 +57,7 @@ export function ProfileInfos({ setOpen }: Props) {
                 size={40}
               />
               <div className="flex items-center gap-1 text-lg md:text-sm">
-                <p>hi</p>
+                <p>{t('menu.profile.greeting')}</p>
                 <p className="max-w-[8rem] truncate">{mainProfile.username}</p>
               </div>
             </Button>
@@ -78,7 +80,7 @@ export function ProfileInfos({ setOpen }: Props) {
                 </DropdownMenuItem> */}
                   <DropdownMenuItem onClick={logout}>
                     <LogOutIcon size={18} />
-                    Logout
+                    {t('menu.profile.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -103,7 +105,7 @@ export function ProfileInfos({ setOpen }: Props) {
               />
               <span className="text-primary">$SSE</span>
             </Button>
-            <span>Bal: {balance}</span>
+            <span>{`${t('common.balance')}: ${balance}`}</span>
           </div>
         </div>
       )}

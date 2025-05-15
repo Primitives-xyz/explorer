@@ -9,10 +9,12 @@ import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-m
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Lock, MessageCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
 
 export function LeftSideMenu() {
+  const t = useTranslations()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
   const { isLoggedIn, mainProfile } = useCurrentWallet()
@@ -22,7 +24,7 @@ export function LeftSideMenu() {
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
           <h1 className="font-bold text-primary leading-none">
-            solana_social_explorer
+            {t('menu.title')}
           </h1>
           <ProfileInfos />
           <Menu />
@@ -42,7 +44,9 @@ export function LeftSideMenu() {
             onClick={() => setIsFundsModalOpen(true)}
           >
             <Lock size={16} />
-            {!accountIds.length ? 'Unlock Perpetuals' : 'Deposit/Withdraw'}
+            {!accountIds.length
+              ? t('menu.actions.unlock_perpetuals')
+              : t('menu.actions.deposit_withdraw')}
           </Button>
           <LanguageSwitcher />
           <Button
@@ -52,7 +56,7 @@ export function LeftSideMenu() {
             className="w-full"
           >
             <MessageCircle size={16} />
-            Give Feedback
+            {t('menu.actions.give_feedback')}
           </Button>
         </div>
         <AddFundsModal

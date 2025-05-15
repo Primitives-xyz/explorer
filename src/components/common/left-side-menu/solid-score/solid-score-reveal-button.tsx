@@ -1,6 +1,7 @@
 import { Button, ButtonSize, Spinner } from '@/components/ui'
 import { cn } from '@/utils/utils'
 import { Eye } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   onClick: () => void
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function SolidScoreRevealButton({ onClick, loading, smallView }: Props) {
+  const t = useTranslations('menu.solid_score')
+
   return (
     <Button
       className={cn({ 'w-full': !smallView })}
@@ -17,7 +20,7 @@ export function SolidScoreRevealButton({ onClick, loading, smallView }: Props) {
       size={smallView ? ButtonSize.SM : ButtonSize.DEFAULT}
     >
       {loading ? <Spinner size={16} /> : <Eye size={16} />}
-      Reveal score
+      {t('reveal_button')}
     </Button>
   )
 }

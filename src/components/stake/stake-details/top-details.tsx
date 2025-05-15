@@ -3,62 +3,53 @@ import { CheckCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export function TopDetails() {
-  const t = useTranslations()
+  const t = useTranslations('stake')
   return (
     <Card>
       <CardHeader>
-        <p className="text-lg">{t('trade.staking.benefits_title')}</p>
+        <p className="text-lg">{t('details.benefits.title')}</p>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <p className="text-primary font-bold">
-            {t('trade.staking.fee_sharing')}
+            {t('details.benefits.fee_sharing.title')}
           </p>
           <p className="text-sm">
-            Earn rewards that dynamically adjust based on platform activity. The
-            more you stake, the greater your share of the rewards pool.
+            {t('details.benefits.fee_sharing.description')}
           </p>
         </div>
 
         <div className="space-y-2">
           <p className="text-primary font-bold">
-            {t('trade.staking.flexible_staking')}
+            {t('details.benefits.flexible_staking.title')}
           </p>
           <p className="text-sm">
-            Stake to unlock platform benefits and fee discounts. Your rewards
-            grow based on your engagement in the ecosystem.
+            {t('details.benefits.flexible_staking.description')}
           </p>
         </div>
 
         <div className="space-y-2">
-          <p className="text-primary font-bold">How It Works</p>
+          <p className="text-primary font-bold">
+            {t('details.benefits.how_it_works.title')}
+          </p>
           <ul className="text-sm space-y-2">
             <li className="flex gap-2 items-center">
               <div>
                 <CheckCircle size={14} className="text-primary" />
               </div>
-              <span>
-                Stake once every 24 hours to increase your position and boost
-                your eligibility for rewards
-              </span>
+              <span>{t('details.benefits.how_it_works.point1')}</span>
             </li>
             <li className="flex gap-2 items-center">
               <div>
                 <CheckCircle size={14} className="text-primary" />
               </div>
-              <span>
-                Rewards adjust based on your participation level and overall
-                network activity
-              </span>
+              <span>{t('details.benefits.how_it_works.point2')}</span>
             </li>
             <li className="flex gap-2 items-center">
               <div>
                 <CheckCircle size={14} className="text-primary" />
               </div>
-              <span>
-                No fixed APY - incentives grow with ecosystem usage and your
-                stake amount
-              </span>
+              <span>{t('details.benefits.how_it_works.point3')}</span>
             </li>
           </ul>
         </div>

@@ -5,6 +5,7 @@ import { DataTable } from '@/components/ui/table/data-table'
 import { route } from '@/utils/route'
 import { abbreviateWalletAddress, cn, formatNumber } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { ETimeFrame, ITopTrader } from '../birdeye/birdeye-top-traders.models'
 import { useGetTopTraders } from '../birdeye/hooks/use-get-top-traders'
 import { SortableHeader } from '../ui/table/sortable-header'
@@ -17,11 +18,12 @@ export function TopTraders({ timeFrame }: Props) {
   const { traders, loading } = useGetTopTraders({
     timeFrame,
   })
+  const t = useTranslations('discover.top_traders')
 
   const columns: ColumnDef<ITopTrader>[] = [
     {
-      id: 'trade_count',
-      header: 'Trader',
+      id: 'trader',
+      header: t('trader'),
       enableSorting: false,
       cell: ({ row }) => {
         const traders = row.original
@@ -37,7 +39,7 @@ export function TopTraders({ timeFrame }: Props) {
                 }
               )}
             >
-              <p className="text-xs">#{row.index + 1}</p>
+              <p className="text-xs">{t('rank', { number: row.index + 1 })}</p>
             </div>
             <Button
               href={route('entity', { id: traders.address })}
@@ -53,9 +55,12 @@ export function TopTraders({ timeFrame }: Props) {
       },
     },
     {
+      id: 'pnl',
       accessorKey: 'pnl',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="PNL" column={column} />,
+      header: ({ column }) => (
+        <SortableHeader label={t('pnl')} column={column} />
+      ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
 
@@ -67,10 +72,11 @@ export function TopTraders({ timeFrame }: Props) {
       },
     },
     {
+      id: 'pnl_trade',
       accessorKey: 'pnl-trade',
       enableSorting: true,
       header: ({ column }) => (
-        <SortableHeader label="PNL/Trade" column={column} />
+        <SortableHeader label={t('pnl_trade')} column={column} />
       ),
       cell: ({ row }) => {
         const trader = row.original
@@ -83,16 +89,19 @@ export function TopTraders({ timeFrame }: Props) {
             {trader.trade_count > 0
               ? `$${formatNumber(Math.abs(pnlPerTrade))}`
               : trader.pnl !== 0
-              ? 'Unrealized'
-              : 'No trades'}
+              ? t('unrealized')
+              : t('no_trades')}
           </div>
         )
       },
     },
     {
+      id: 'volume',
       accessorKey: 'volume',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="Volume" column={column} />,
+      header: ({ column }) => (
+        <SortableHeader label={t('volume')} column={column} />
+      ),
       cell: ({ getValue, row }) => {
         const value = getValue<number>()
 
@@ -101,16 +110,19 @@ export function TopTraders({ timeFrame }: Props) {
             {value > 0
               ? `$${formatNumber(value)}`
               : row.original.pnl !== 0
-              ? 'Holding'
-              : 'No volume'}
+              ? t('holding')
+              : t('no_volume')}
           </div>
         )
       },
     },
     {
+      id: 'trade_count',
       accessorKey: 'trade_count',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="Trades" column={column} />,
+      header: ({ column }) => (
+        <SortableHeader label={t('trades')} column={column} />
+      ),
       cell: ({ getValue, row }) => {
         const value = getValue<number>()
 
@@ -119,26 +131,12 @@ export function TopTraders({ timeFrame }: Props) {
             {value > 0
               ? formatNumber(value)
               : row.original.pnl !== 0
-              ? 'Holding'
+              ? t('holding')
               : '0'}
           </div>
         )
       },
     },
-    // {
-    //   accessorKey: 'trade_count',
-    //   header: '',
-    //   enableSorting: false,
-    //   cell: ({ getValue }) => {
-    //     return (
-    //       <div>
-    //         <FollowButton  variant={ButtonVariant.SECONDARY}>
-    //           Follow
-    //         </FollowButton>
-    //       </div>
-    //     )
-    //   },
-    // },
   ]
 
   return (

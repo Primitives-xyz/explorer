@@ -73,9 +73,7 @@ export function FollowingTransactions() {
         {(!isLoggedIn || !mainProfile) && selectedType === FilterType.SWAP ? (
           <Card>
             <CardContent className="flex flex-col space-y-10 items-center justify-center">
-              <Paragraph>
-                {t('following_transaction.create_a_profile_to_follow')}
-              </Paragraph>
+              <Paragraph>{t('home.create_a_profile_to_follow')}</Paragraph>
               <Button onClick={() => setShowAuthFlow(true)}>
                 Connect Wallet
               </Button>

@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 export function useStake() {
   const [isLoading, setIsLoading] = useState(false)
-  const t = useTranslations()
+  const t = useTranslations('stake')
   const { refreshUserInfo } = useStakeInfo({})
 
   const { primaryWallet, walletAddress } = useCurrentWallet()
@@ -45,8 +45,8 @@ export function useStake() {
 
       const txid = await signer.signAndSendTransaction(vtx)
 
-      const confirmToastId = toast(t('trade.confirming_transaction'), {
-        description: t('trade.waiting_for_confirmation'),
+      const confirmToastId = toast(t('transaction.confirming'), {
+        description: t('transaction.waiting_confirmation'),
         duration: 1000000000,
       })
 
@@ -58,21 +58,19 @@ export function useStake() {
       toast.dismiss(confirmToastId)
 
       if (confirmation.value.err) {
-        toast.error(t('trade.transaction_failed'), {
-          description: t('error.the_stake_transaction_failed_please_try_again'),
+        toast.error(t('transaction.failed'), {
+          description: t('transaction.stake_failed_try_again'),
         })
       } else {
-        toast.success(t('trade.transaction_successful'), {
-          description: t(
-            'trade.the_stake_transaction_was_successful_creating_shareable_link'
-          ),
+        toast.success(t('transaction.successful'), {
+          description: t('transaction.stake_successful'),
         })
         refreshUserInfo()
       }
     } catch (err) {
       console.error('Stake error:', err)
-      toast.error(t('trade.transaction_failed'), {
-        description: t('error.the_stake_transaction_failed_please_try_again'),
+      toast.error(t('transaction.failed'), {
+        description: t('transaction.stake_failed_try_again'),
       })
     } finally {
       setIsLoading(false)
