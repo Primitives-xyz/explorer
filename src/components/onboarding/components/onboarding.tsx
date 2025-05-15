@@ -67,14 +67,13 @@ export function Onboarding() {
     if (!mainProfile) {
       return true
     }
-
-    // Has not seen the setup modal
-    if (!mainProfile.hasSeenProfileSetupModal) {
+    // No username or username is a wallet address
+    if (!mainProfile.username || isValidSolanaAddress(mainProfile.username)) {
       return true
     }
 
-    // No username or username is a wallet address
-    if (!mainProfile.username || isValidSolanaAddress(mainProfile.username)) {
+    // Has not seen the setup modal
+    if (!mainProfile.hasSeenProfileSetupModal) {
       return true
     }
 
