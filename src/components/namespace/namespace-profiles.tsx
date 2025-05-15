@@ -9,6 +9,7 @@ import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { abbreviateWalletAddress } from '@/utils/utils'
 import { ColumnDef, SortingState } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 interface Props {
@@ -16,14 +17,13 @@ interface Props {
 }
 
 export function NamespaceProfiles({ profiles }: Props) {
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'followers', desc: true },
-  ])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const t = useTranslations('namespace.profiles')
 
   const columns: ColumnDef<INamespaceProfile>[] = [
     {
       id: 'profile',
-      header: 'Namespace profiles',
+      header: t('title'),
       enableSorting: false,
       cell: ({ row }) => {
         const elem = row.original
@@ -57,18 +57,20 @@ export function NamespaceProfiles({ profiles }: Props) {
       },
     },
     {
-      accessorKey: 'socialCounts.followers',
+      id: 'followers',
       header: ({ column }) => (
-        <SortableHeader label="Followers" column={column} />
+        <SortableHeader label={t('followers')} column={column} />
       ),
+      accessorFn: (row) => row.socialCounts?.followers ?? 0,
       enableSorting: true,
       cell: ({ getValue }) => <div>{getValue<number>()}</div>,
     },
     {
-      accessorKey: 'socialCounts.following',
+      id: 'following',
       header: ({ column }) => (
-        <SortableHeader label="Followings" column={column} />
+        <SortableHeader label={t('followings')} column={column} />
       ),
+      accessorFn: (row) => row.socialCounts?.following ?? 0,
       enableSorting: true,
       cell: ({ getValue }) => <div>{getValue<number>()}</div>,
     },

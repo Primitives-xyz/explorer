@@ -13,6 +13,7 @@ import { route } from '@/utils/route'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { cn, formatNumber } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 
 export function TrendingTokens() {
   const { tokens, loading } = useGetTrendingTokens()
@@ -22,10 +23,12 @@ export function TrendingTokens() {
 
   const { isMobile } = useIsMobile()
 
+  const t = useTranslations('discover.trending_tokens')
+
   const baseColumns: ColumnDef<ITrendingTokenWidthHolders>[] = [
     {
       id: 'name',
-      header: 'Token',
+      header: t('token'),
       enableSorting: false,
       accessorFn: (row) => row.name,
       cell: ({ row }) => {
@@ -54,7 +57,7 @@ export function TrendingTokens() {
                     }
                   )}
                 >
-                  #{row.index + 1}
+                  {t('rank', { number: row.index + 1 })}
                 </div>
               </div>
               <Button
@@ -76,7 +79,9 @@ export function TrendingTokens() {
     {
       accessorKey: 'price',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="Price" column={column} />,
+      header: ({ column }) => (
+        <SortableHeader label={t('price')} column={column} />
+      ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
 
@@ -86,7 +91,9 @@ export function TrendingTokens() {
     {
       accessorKey: 'volume24hUSD',
       enableSorting: true,
-      header: ({ column }) => <SortableHeader label="Vol" column={column} />,
+      header: ({ column }) => (
+        <SortableHeader label={t('volume')} column={column} />
+      ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
 
@@ -97,7 +104,7 @@ export function TrendingTokens() {
       accessorKey: 'liquidity',
       enableSorting: true,
       header: ({ column }) => (
-        <SortableHeader label="Liquidity" column={column} />
+        <SortableHeader label={t('liquidity')} column={column} />
       ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
@@ -108,7 +115,7 @@ export function TrendingTokens() {
   ]
 
   const buyColumn: ColumnDef<ITrendingTokenWidthHolders> = {
-    header: 'Buy',
+    header: t('buy'),
     enableSorting: false,
     cell: ({ row }) => (
       <Button
@@ -122,7 +129,7 @@ export function TrendingTokens() {
           })
         }}
       >
-        Buy
+        {t('buy')}
       </Button>
     ),
   }

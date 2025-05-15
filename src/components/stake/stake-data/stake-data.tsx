@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function StakeData({ selectedType }: Props) {
-  const t = useTranslations()
+  const t = useTranslations('stake')
   const {
     stakeAmount,
     rewardsAmount,
@@ -62,10 +62,9 @@ export function StakeData({ selectedType }: Props) {
           <>
             {!hasStaked && (
               <div className="mb-4">
-                <p className="font-bold">No Staking Found</p>
+                <p className="font-bold">{t('errors.no_staking_found')}</p>
                 <p className="text-xs text-muted-foreground">
-                  You haven't staked any tokens yet. Please use the Stake tab to
-                  stake tokens before attempting to unstake.
+                  {t('errors.no_staking_description')}
                 </p>
               </div>
             )}
@@ -86,13 +85,13 @@ export function StakeData({ selectedType }: Props) {
     <div className="flex flex-col space-y-10">
       <div className="flex flex-col md:flex-row justify-between md:items-center space-y-6 md:space-y-0">
         <DisplayStakeData
-          label={t('trade.platform_total_stake')}
+          label={t('platform_stats.platform_total_stake')}
           value={formattedTotalStake}
           loading={showUserInfoLoading}
         />
 
         <DisplayStakeData
-          label={t('trade.total_reward_amount')}
+          label={t('platform_stats.total_reward_amount')}
           value={formattedRewardsAmount}
           loading={showUserInfoLoading}
         />
@@ -100,7 +99,7 @@ export function StakeData({ selectedType }: Props) {
 
       <div>
         <DisplayStakeData
-          label={t('trade.total_staking_amount')}
+          label={t('platform_stats.total_staking_amount')}
           value={formattedStakeAmount}
           loading={showUserInfoLoading}
         />
@@ -108,8 +107,8 @@ export function StakeData({ selectedType }: Props) {
           (selectedType === StakeFilterType.UNSTAKE ||
             selectedType === StakeFilterType.CLAIM_REWARDS) && (
             <p className="text-xs text-destructive mt-1">
-              You haven't staked yet.
-              <br /> Stake tokens first to see your balance here.
+              {t('errors.no_stake_warning')}
+              <br /> {t('errors.stake_first')}
             </p>
           )}
       </div>

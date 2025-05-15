@@ -12,6 +12,7 @@ import {
   LucideIcon,
   PocketKnife,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { UrlObject } from 'url'
 import { SearchButton } from '../../search/components/search-button'
@@ -21,12 +22,19 @@ interface Props {
 }
 
 export function Menu({ setOpen }: Props) {
+  const t = useTranslations()
+
   return (
     <div className="space-y-4 md:space-y-2">
-      <Entry title="Home" icon={House} href={route('home')} setOpen={setOpen} />
+      <Entry
+        title={t('menu.home')}
+        icon={House}
+        href={route('home')}
+        setOpen={setOpen}
+      />
 
       <Entry
-        title="Trenches"
+        title={t('menu.trenches')}
         icon={PocketKnife}
         href={route('trenches')}
         setOpen={setOpen}
@@ -35,21 +43,21 @@ export function Menu({ setOpen }: Props) {
       <SearchButton />
 
       <Entry
-        title="Trade"
+        title={t('menu.trade')}
         icon={ArrowRightLeft}
         href={route('trade')}
         setOpen={setOpen}
       />
 
       <Entry
-        title="Discover"
+        title={t('menu.discover')}
         icon={Compass}
         href={route('discover')}
         setOpen={setOpen}
       />
 
       <Entry
-        title="Stake"
+        title={t('menu.stake')}
         icon={Beef}
         href={route('stake')}
         setOpen={setOpen}

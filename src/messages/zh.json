@@ -1,332 +1,411 @@
 {
   "common": {
-    "followers": "关注者",
-    "following": "正在关注",
-    "follow": "关注",
-    "unfollow": "取消关注",
-    "unfollowing": "正在取消关注",
-    "confirm": "确认",
-    "loading": "加载中",
-    "wallet": "钱包",
-    "wallets": "钱包",
-    "no": "没有",
-    "found": "找到",
-    "count": "总数",
-    "address": "地址",
-    "all": "全部",
-    "copied": "已复制",
-    "copy": "复制",
-    "error": "错误",
-    "success": "成功",
-    "volume": "交易量",
     "m_cap": "市值",
-    "liquidity": "流动性",
-    "price": "价格",
-    "connect_wallet": "连接钱包",
-    "cancel": "取消",
-    "follow_wallet": "关注钱包",
-    "k": "千",
-    "m": "百万",
-    "amount": "数量",
-    "half": "一半",
-    "max": "最大",
-    "balance": "余额",
-    "close": "关闭",
-    "total": "总计",
-    "tokens": "代币",
-    "available": "可用",
-    "load_more": "加载更多",
-    "unknown": "未知",
-    "transfer": "转账",
-    "nfts": "NFTs",
-    "pnl": "盈亏",
     "vol": "交易量",
-    "w_l": "胜/负",
-    "best_and_worst": "最佳/最差"
-  },
-  "header": {
-    "title": "Solana社交探索者",
-    "search": "搜索",
-    "play": "播放",
-    "trade": "交易",
-    "portfolio": "投资组合",
+    "m": "百万",
+    "k": "千",
+    "amount": "数量",
+    "balance": "余额",
+    "max": "最大",
     "connect_wallet": "连接钱包",
-    "logout": "登出",
-    "terminal": {
-      "title": "状态: 在线 | 网络: SOLANA",
-      "user": "用户",
-      "sse": "SSE",
-      "balance": "余额"
+    "loading": "加载中",
+    "on": "on",
+    "swap": "交换",
+    "follow": {
+      "follow": "Follow",
+      "unfollow": "Unfollow"
     }
   },
-  "search_bar": {
-    "all": "全部",
-    "profiles": "个人资料",
-    "recent": "最近",
-    "profile_matches": "个人资料匹配",
-    "more": "更多",
-    "token_matches": "代币匹配",
-    "recent_searches": "最近搜索",
-    "system": "系统",
-    "search_username": "搜索用户名或钱包地址...",
-    "navigating_to": "正在导航至",
-    "ready_to_analyze": "准备分析",
-    "awaiting_input": "等待输入",
-    "execute": "执行"
+  "menu": {
+    "home": "首页",
+    "trenches": "Trenches",
+    "trade": "交易",
+    "discover": "探索",
+    "stake": "Stake",
+    "title": "solana_social_explorer",
+    "profile": {
+      "greeting": "hi",
+      "logout": "登出"
+    },
+    "low_fee_trades": {
+      "title": "Low Fee Trades with SSE",
+      "description": "SSE offers the lowest fees across all current platforms.",
+      "trade_button": "Trade"
+    },
+    "actions": {
+      "unlock_perpetuals": "Unlock Perpetuals",
+      "deposit_withdraw": "Deposit/Withdraw",
+      "give_feedback": "Give Feedback",
+      "perpetuals": "Perpetuals",
+      "feedback": "Feedback"
+    },
+    "solid_score": {
+      "reveal_button": "Reveal score",
+      "your_score": "Your SOLID Score",
+      "reveal_your_score": "Reveal Your SOLID Score",
+      "share_dialog": {
+        "title": "Share Your SOLID Score",
+        "description": "Your SOLID Score was updated. Share with others!",
+        "my_score_is": "My SOLID Score is...",
+        "claim_yours": "Claim yours at SSE.gg",
+        "share_button": "Share",
+        "tweet_text": "My SOLID Score is {score} Check yours at https://www.sse.gg/!"
+      },
+      "badges": {
+        "solana_og": {
+          "name": "Solana OG",
+          "description": "Early adopter with a long history of engagement"
+        },
+        "solana_power_user": {
+          "name": "Solana Power User",
+          "description": "High-volume transactor with consistent, frequent activity"
+        },
+        "hodler": {
+          "name": "Hodler",
+          "description": "Consistently holds assets without frequent trading"
+        },
+        "dex_trader": {
+          "name": "DEX Trader",
+          "description": "Actively trades on decentralized exchanges"
+        },
+        "risk_taker": {
+          "name": "Risk Taker",
+          "description": "High-volatility trader with a history of significant PnL swings"
+        },
+        "diverse_nft_trader": {
+          "name": "Diverse NFT Trader",
+          "description": "Holds NFTs from a variety of collections"
+        },
+        "liquidity_provider": {
+          "name": "Liquidity Provider",
+          "description": "Supplies liquidity to DeFi protocols or DEX pools"
+        },
+        "diverse_liquidity_provider": {
+          "name": "Diverse Liquidity Provider",
+          "description": "Provides liquidity positions across multiple asset pairs"
+        },
+        "diverse_hodler": {
+          "name": "Diverse Hodler",
+          "description": "Holds a wide variety of tokens across different categories"
+        },
+        "multiplatform_dex_trader": {
+          "name": "Multiplatform DEX Trader",
+          "description": "Trades across multiple DEXs"
+        },
+        "nft_trader": {
+          "name": "NFT Trader",
+          "description": "Buys and sells NFTs actively on Solana"
+        },
+        "multiplatform_nft_trader": {
+          "name": "Multiplatform NFT Trader",
+          "description": "Trades NFTs across multiple marketplaces"
+        },
+        "multiplatform_liquidity_provider": {
+          "name": "Multiplatform Liquidity Provider",
+          "description": "Provides liquidity across multiple platforms"
+        },
+        "native_staker": {
+          "name": "Native Staker",
+          "description": "Stakes SOL directly with validators"
+        },
+        "more_badges": "+ {count} more"
+      }
+    }
   },
-  "following_transaction": {
-    "all": "全部",
-    "swap": "交换",
-    "transfer": "转账",
-    "compressed_nft_mint": "压缩NFT铸造",
+  "home": {
     "create_a_profile_to_follow": "创建一个个人资料以关注链上钱包并实时查看他们的交换！",
-    "create_profile": "创建个人资料",
-    "transactions": "交易",
-    "swap_transactions": "交换交易",
-    "transfers": "转账",
-    "cnft_mints": "压缩NFT铸造"
-  },
-  "following_activity": {
-    "title": "关注活动",
-    "no_activity": "暂无活动",
-    "view_all": "查看全部",
-    "recent_activity": "最近活动"
-  },
-  "profile_info": {
-    "title": "个人资料信息",
-    "create_new_profile": "创建新个人资料",
-    "create_a_blink_profile": "创建.Blink个人资料",
-    "create_a_sol_profile": "创建.Sol个人资料",
-    "explore_all_domains": "探索所有域名",
-    "create_a_nimbus_app": "创建Nimbus应用",
-    "fetching_profiles": "正在获取个人资料...",
-    "no_profile_found": "未找到个人资料"
-  },
-  "recent_profiles": {
-    "title": "最近个人资料",
-    "view_all": "查看全部",
-    "no_recent_profiles": "暂无最近个人资料"
-  },
-  "trending_tokens": {
-    "title": "热门代币",
-    "volume_24h": "24小时交易量",
-    "rank": "排名",
-    "liquidity": "流动性",
-    "fetching_trending_tokens": "正在获取热门代币...",
-    "no_tokens_found": "未找到代币",
-    "view_all": "查看全部",
-    "top_tokens": "顶级代币",
-    "price_change": "价格变化"
-  },
-  "top_traders": {
-    "title": "顶级交易者",
-    "most_active": "最活跃交易者",
-    "analyzing_trader_activity": "正在分析交易者活动",
-    "analyzing_trader_performance": "正在分析交易者表现",
-    "pnl_trade": "每笔交易盈亏",
-    "unrealized": "未实现",
-    "no_trades": "无交易",
-    "average_profit_per_trade": "平均每笔交易利润",
-    "no_trading_activity": "无交易活动",
-    "volume": "交易量",
-    "holding": "持有中",
-    "no_volume": "无交易量",
-    "total_trading_volume": "总交易量",
-    "position_value_change": "持仓价值变化",
-    "trades": "交易",
-    "avg_size": "平均规模",
-    "avg_trade": "平均交易",
-    "average_trade_size": "平均交易规模",
-    "position_based_pnl": "基于持仓的盈亏",
-    "no_trades_yet": "暂无交易",
-    "today": "今天",
-    "yesterday": "昨天",
-    "1w": "1周",
-    "7d": "7天"
+    "tabs": {
+      "twitter_kol": "Twitter KOL",
+      "following": "正在关注"
+    },
+    "transactions": {
+      "swap_on": "on",
+      "trade_button": "Copy Trade",
+      "received": "收到"
+    }
   },
   "trade": {
-    "swap_tokens": "交换代币",
-    "maximum": "最大",
-    "decimal_places_allowed": "允许的小数位数",
-    "you_receive": "你将收到",
-    "after": "之后",
-    "rate": "费用",
-    "per": "每",
-    "route_information_fees": "路由信息与费用",
-    "network_fee": "网络费用",
-    "updating": "更新中",
-    "price_impact": "价格影响",
-    "minimum_received": "最小接收量",
-    "pay_fees_with_sse": "使用SSE支付费用",
-    "get_50_off_on_transaction_fees": "获得50%的交易费用折扣",
     "checking_wallet_status": "正在检查钱包状态",
-    "connect_wallet_to_swap": "连接钱包以进行交换",
-    "confirming_transaction": "正在确认交易",
-    "executing_swap": "正在执行交换",
-    "execute_swap": "执行交换",
-    "creating_token_account": "正在创建代币账户",
-    "setting_up_required_token_account_for_fees": "正在设置所需的代币账户以支付费用...",
-    "token_account_created": "代币账户已创建",
-    "successfully_set_up_the_required_token_account": "成功设置所需的代币账户。",
-    "token_account_error": "代币账户错误",
-    "failed_to_set_up_required_token_account": "未能设置所需的代币账户。请重试。",
-    "preparing_swap": "正在准备交换",
-    "setting_up_sse_fee_accounts": "正在设置SSE费用账户...",
-    "setting_up_fee_accounts": "正在设置费用账户...",
-    "fee_accounts_ready": "费用账户已准备就绪",
-    "sse_fee_accounts_are_set_up_and_ready": "SSE费用账户已设置并准备就绪",
-    "fee_accounts_are_set_up_and_ready": "费用账户已设置并准备就绪",
     "building_transaction": "正在构建交易",
-    "preparing_your_swap_transaction": "正在准备你的交换交易...",
     "sending_transaction": "正在发送交易",
-    "please_approve_the_transaction_in_your_wallet": "请在钱包中批准交易...",
-    "waiting_for_confirmation": "等待确认...",
-    "transaction_failed": "交易失败",
-    "the_swap_transaction_failed_please_try_again": "交换交易失败。请重试。",
+    "waiting_for_confirmation": "等待确认",
     "transaction_successful": "交易成功",
-    "the_swap_transaction_was_successful_creating_shareable_link": "交换交易成功。正在创建可分享的链接..",
-    "swap_successful": "交换成功！",
-    "your_transaction_is_confirmed": "你的交易已确认",
-    "share_your_trade": "分享你的交易",
-    "copy_link": "复制链接",
-    "share_on_twitter": "在Twitter上分享",
-    "share_on_telegram": "在Telegram上分享",
-    "swap_again": "再次交换",
-    "slippage": "滑点",
-    "priority": "优先级",
-    "platform_fee": "平台费用",
-    "maximum_slippage": "最大滑点",
-    "route": "路由",
-    "marketcap": "市值",
-    "name": "名称",
-    "no_m_cap": "无市值",
-    "no_price": "无价格",
+    "transaction_failed": "交易失败",
     "search_tokens": "搜索代币...",
     "verified_tokens_only": "仅已验证代币",
     "no_tokens_found": "未找到代币",
     "start_typing_to_search_for_tokens": "开始输入以搜索代币",
-    "1d": "1天",
-    "yesterday": "昨天",
-    "7d": "7天",
-    "trading_stats": "交易统计",
-    "most_traded": "交易最多",
-    "no_trades_found_for_selected_period": "未找到选定期间的交易"
+    "maximum": "最大",
+    "decimal_places_allowed": "decimal places allowed"
   },
-  "priority_levels": {
-    "minimum": "最低",
-    "minimum_description": "最低费用，可能在拥堵时失败",
-    "low": "低",
-    "low_description": "较低费用，适合非紧急交换",
-    "medium": "中等",
-    "medium_description": "平衡的费用和成功率",
-    "high": "高",
-    "high_description": "较高费用，更好的成功率",
-    "very_high": "非常高",
-    "very_high_description": "非常高的费用，最适合紧急交换",
-    "maximum": "最高",
-    "maximum_description": "最高费用，请谨慎使用"
-  },
-  "portfolio": {
-    "fungible_tokens": "可互换代币",
-    "regular_nfts": "常规NFTs",
-    "compressed_nfts": "压缩NFTs",
-    "programmable_nfts": "可编程NFTs",
-    "all_tokens": "所有代币",
-    "fetching_tokens": "正在获取代币...",
-    "no_tokens_found": "未找到代币",
-    "no_nfts_found": "未找到NFTs",
-    "no_tokens_found_2": "未找到代币",
-    "this_wallet_doesnt_have_any_nfts_yet": "此钱包尚未拥有任何NFTs",
-    "this_wallet_doesnt_have_any_tokens_yet": "此钱包尚未拥有任何代币"
-  },
-  "portfolio_balance": {
-    "title": "投资组合余额"
-  },
-  "transaction_log": {
-    "title": "交易日志",
-    "new_transaction": "新交易",
-    "loading_transactions": "正在加载交易",
-    "no_transactions_found": "未找到交易",
-    "loading_more_transactions": "正在加载更多交易",
-    "no_description_available": "无描述可用",
-    "loading_transaction_details": "正在加载交易详情...",
-    "transaction_details": "交易详情",
-    "timestamp": "时间戳",
-    "type": "类型",
-    "fee": "费用",
-    "description": "描述",
-    "account_changes": "账户变更",
-    "received": "收到",
-    "sent": "发送",
-    "from": "来自",
-    "to": "至"
-  },
-  "portfolio_assets": {
-    "title": "投资组合资产"
-  },
-  "tapestry_social": {
-    "title": "Tapestry社交",
-    "are_you_a_solana_builder": "你是Solana开发者吗？",
-    "solana_need_you": "Solana需要你为你的应用添加社交功能！开始使用Tapestry强大的社交工具包。",
-    "start_building": "开始构建"
-  },
-  "success": {
-    "followed_successfully": "关注成功！",
-    "successfully_followed_wallet": "成功关注钱包！",
-    "successfully_unfollowed_wallet": "成功取消关注钱包！",
-    "link_copied": "链接已复制",
-    "trade_link_copied_to_clipboard": "交易链接已复制到剪贴板"
+  "discover": {
+    "filters": {
+      "trending_tokens": "Trending Tokens",
+      "top_traders": "Top Traders",
+      "time_frames": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "one_week": "1W"
+      }
+    },
+    "trending_tokens": {
+      "token": "Token",
+      "price": "Price",
+      "volume": "Vol",
+      "liquidity": "Liquidity",
+      "buy": "Buy",
+      "rank": "#{number}"
+    },
+    "top_traders": {
+      "trader": "Trader",
+      "pnl": "PNL",
+      "pnl_trade": "PNL/Trade",
+      "volume": "Volume",
+      "trades": "Trades",
+      "rank": "#{number}",
+      "unrealized": "未实现",
+      "no_trades": "无交易",
+      "holding": "Holding",
+      "no_volume": "No volume"
+    }
   },
   "error": {
-    "error_navigating_to_profile": "导航到个人资料时出错",
-    "error_navigating_to_namespace": "导航到命名空间时出错",
-    "failed_to_fetch_profiles": "未能获取个人资料",
-    "stats_error": "统计错误",
-    "failed_to_revalidate_after_follow": "关注后重新验证失败",
-    "failed_to_follow": "关注失败",
-    "failed_to_revalidate_after_unfollow": "取消关注后重新验证失败",
-    "failed_to_unfollow": "取消关注失败",
-    "error_fetching_trending_tokens": "获取热门代币时出错",
-    "failed_to_fetch_tokens": "未能获取代币",
-    "api_request_failed": "API请求失败",
-    "failed_to_fetch_trending_tokens": "未能获取热门代币",
-    "failed_to_fetch_top_traders": "未能获取顶级交易者",
-    "unknown_error": "未知错误",
-    "error_fetching_top_traders": "获取顶级交易者时出错",
-    "failed_to_fetch_traders": "未能获取交易者",
-    "failed_to_follow_wallet_please_try_again": "关注钱包失败。请重试。",
-    "failed_to_unfollow_wallet_please_try_again": "取消关注钱包失败。请重试。",
+    "http_error_status": "HTTP错误！状态",
     "please_enter_a_valid_number": "请输入有效数字",
     "amount_must_be_greater_than_0": "数量必须大于0",
-    "amount_cannot_be_parsed": "无法解析数量",
-    "please_enter_a_valid_amount": "请输入有效数量",
-    "error_reading_from_indexed_db": "从IndexedDB读取时出错",
-    "failed_to_fetch_token_info": "未能获取代币信息",
-    "failed_to_load_token_data": "未能加载代币数据",
-    "error_caching_token_error": "缓存代币错误时出错",
-    "error_fetching_token_balance": "获取代币余额时出错",
-    "failed_to_fetch_balance": "未能获取余额",
-    "wallet_not_connected": "钱包未连接",
-    "error_checking_token_account": "检查/创建代币账户时出错",
-    "error_calculating_sse_fee_during_quote": "在报价期间计算SSE费用时出错",
-    "failed_to_fetch_quote": "未能获取报价",
-    "unable_to_calculate_sse_fee": "无法计算SSE费用。请重试",
-    "error_calculating_sse_fee": "计算SSE费用时出错",
-    "transaction_failed_please_try_again": "交易失败。请重试。",
-    "swap_failed": "交换失败",
-    "the_swap_transaction_failed_please_try_again": "交换交易失败。请重试。",
-    "sdk_load_timeout_reached_forcing_loaded_state": "SDK加载超时，强制加载状态",
-    "an_error_occurred": "发生错误",
-    "invalid_solana_wallet_address": "无效的Solana钱包地址",
-    "http_error_status": "HTTP错误！状态",
-    "portfolio_http_error_status": "投资组合HTTP错误！状态",
-    "failed_to_fetch_data": "未能获取数据",
-    "invalid_wallet_address": "无效的钱包地址",
+    "amount_exceeds_your_balance": "余额不足以进行此交易",
+    "amount_exceeds_your_staked_balance": "Amount exceeds your staked balance",
+    "error_fetching_tokens": "获取代币时出错",
+    "failed_to_fetch_tokens": "未能获取代币",
     "error_fetching_transactions": "获取交易时出错",
     "error_checking_for_new_transactions": "检查新交易时出错",
-    "error_fetching_tokens": "获取代币时出错",
-    "failed_to_fetch_trades": "未能获取交易",
-    "failed_to_fetch_transaction": "未能获取交易",
-    "transaction_not_found": "未找到交易"
+    "an_error_occurred": "发生错误",
+    "sdk_load_timeout_reached_forcing_loaded_state": "SDK加载超时，强制加载状态",
+    "fee_calculation": {
+      "title": "Fee Calculation Error",
+      "description": "Failed to calculate SSE fees. Please try again or check your inputs."
+    },
+    "jup_quote_api": {
+      "title": "Quote API Error",
+      "description": "Failed to fetch Quote API. Please try again later"
+    },
+    "jup_swap_api": {
+      "title": "SWAP API Error",
+      "description": "Failed to fetch SWAP API. Please try again later"
+    },
+    "wallet_connection": {
+      "title": "钱包错误",
+      "description": "请连接Solana钱包"
+    },
+    "transaction_failed": {
+      "title": "交易失败",
+      "description": "交换交易失败。请重试。"
+    },
+    "perps_order": {
+      "title": "Transaction Failed",
+      "description": "Failed to Place Perps Order. Please try again later."
+    },
+    "deposit_collateral": {
+      "title": "Transaction Failed",
+      "description": "Failed to deposit collateral"
+    },
+    "order_size": {
+      "title": "Order Size Error",
+      "description": "Order size must be at least 0.01 SOL"
+    },
+    "drift_client": {
+      "title": "Drift Client Error",
+      "description": "Drift client not initialized"
+    },
+    "perps_market": {
+      "title": "Perpetual Market Error",
+      "description": "Perpetual Market Not Found"
+    },
+    "perps_market_account": {
+      "title": "Perpetual Market Account Error",
+      "description": "Perpetual Market Account Not Found"
+    },
+    "limit_price_long": {
+      "title": "Limit Price Error",
+      "description": "The limit price is above or equal to the current orderbook ask price"
+    },
+    "limit_price_short": {
+      "title": "Limit Price Error",
+      "description": "The limit price is below the current ask price"
+    },
+    "close_position": {
+      "title": "Close Position Error",
+      "description": "Failed close position. Please try again later"
+    },
+    "perps_user": {
+      "title": "Drift User Account Error",
+      "description": "Drift User Not Found"
+    },
+    "fetch_perps_position": {
+      "title": "Fetch Open Positions Error",
+      "description": "Failed Fetching Open Positions. Please try again later"
+    },
+    "cancel_order": {
+      "title": "Transaction Failed",
+      "description": "Failed Cancel Order, Please try again later"
+    },
+    "withdraw_deposit": {
+      "title": "Transaction Failed",
+      "description": "Failed to withdraw deposit, Please try again later"
+    }
+  },
+  "loading": {
+    "preparing_swap": {
+      "title": "正在准备交换",
+      "description": "正在准备你的交换交易"
+    },
+    "sending_transaction": {
+      "title": "正在发送交易",
+      "description": "请在钱包中批准交易"
+    },
+    "confirming_transaction": {
+      "title": "正在确认交易",
+      "description": "等待确认"
+    }
+  },
+  "success": {
+    "transaction": {
+      "title": "交易成功",
+      "description": "交换交易成功。正在创建可分享的链接"
+    },
+    "place_perps_order": {
+      "title": "交易成功",
+      "description": "Place Perps Order Transaction Success"
+    },
+    "deposit_collateral": {
+      "title": "交易成功",
+      "description": "Deposite Collateral Success"
+    },
+    "close_position": {
+      "title": "交易成功",
+      "description": "Close Postion Success"
+    },
+    "cancel_order": {
+      "title": "交易成功",
+      "description": "Cancel Order Success"
+    },
+    "perps_withdraw": {
+      "title": "交易成功",
+      "description": "Withdraw deposit Success"
+    }
+  },
+  "namespace": {
+    "profiles": {
+      "title": "Namespace profiles",
+      "followers": "Followers",
+      "followings": "Followings"
+    },
+    "profile": {
+      "see_original": "See original",
+      "followers_count": "{count} Followers",
+      "following_count": "{count} Following",
+      "no_description": "No description",
+      "owned_by": "owned by",
+      "created": "Created"
+    }
+  },
+  "stake": {
+    "form": {
+      "amount": "Amount",
+      "balance": "Balance",
+      "staked_balance": "Staked Balance",
+      "max": "Max",
+      "errors": {
+        "invalid_number": "Please enter a valid number",
+        "amount_greater_than_zero": "Amount must be greater than 0",
+        "decimal_places": "Maximum {decimals} decimal places allowed",
+        "exceeds_balance": "Insufficient balance for this transaction",
+        "exceeds_staked_balance": "Amount exceeds your staked balance"
+      }
+    },
+    "transaction": {
+      "checking_wallet": "Checking wallet status",
+      "building": "Building Transaction",
+      "sending": "Sending Transaction",
+      "waiting_confirmation": "Waiting for confirmation",
+      "successful": "Transaction Successful",
+      "failed": "Transaction Failed",
+      "stake_failed_try_again": "The stake transaction failed. Please try again",
+      "stake_successful": "The stake transaction was successful. Creating shareable link"
+    },
+    "tabs": {
+      "stake": "Stake",
+      "unstake": "Unstake",
+      "claim_rewards": "Claim Rewards"
+    },
+    "details": {
+      "benefits": {
+        "title": "Staking Benefits",
+        "fee_sharing": {
+          "title": "Fee Sharing",
+          "description": "Earn rewards that dynamically adjust based on platform activity. The more you stake, the greater your share of the rewards pool."
+        },
+        "flexible_staking": {
+          "title": "Flexible Staking",
+          "description": "Stake to unlock platform benefits and fee discounts. Your rewards grow based on your engagement in the ecosystem."
+        },
+        "how_it_works": {
+          "title": "How It Works",
+          "point1": "Stake once every 24 hours to increase your position and boost your eligibility for rewards",
+          "point2": "Rewards adjust based on your participation level and overall network activity",
+          "point3": "No fixed APY - incentives grow with ecosystem usage and your stake amount"
+        }
+      },
+      "tiers": {
+        "title": "Staking Tiers & Benefits",
+        "gold": {
+          "title": "Gold",
+          "requirement": "500,000+ SSE",
+          "benefits": {
+            "swap_fee": "50% off swap fees",
+            "comment_fee": "60% off comment fees"
+          }
+        },
+        "silver": {
+          "title": "Silver",
+          "requirement": "200,000+ SSE",
+          "benefits": {
+            "swap_fee": "25% off swap fees",
+            "comment_fee": "40% off comment fees"
+          }
+        },
+        "bronze": {
+          "title": "Bronze",
+          "requirement": "50,000+ SSE",
+          "benefits": {
+            "swap_fee": "10% off swap fees",
+            "comment_fee": "30% off comment fees"
+          }
+        },
+        "disclaimer": "Crypto involves risk. Rewards vary and are not guaranteed based on platform usage."
+      }
+    },
+    "errors": {
+      "no_staking_found": "No Staking Found",
+      "no_staking_description": "You haven't staked any tokens yet. Please use the Stake tab to stake tokens before attempting to unstake.",
+      "no_stake_warning": "You haven't staked yet.",
+      "stake_first": "Stake tokens first to see your balance here.",
+      "transaction_failed": "The stake transaction failed. Please try again",
+      "unstake_transaction_failed": "The unstake transaction failed. Please try again"
+    },
+    "platform_stats": {
+      "platform_total_stake": "Platform Total Stake",
+      "total_reward_amount": "Total Reward Amount",
+      "total_staking_amount": "Total Staking Amount",
+      "token_unit": "tokens"
+    },
+    "claim": {
+      "title": "Claim Rewards",
+      "available_rewards": "Available Rewards",
+      "no_rewards": "No rewards available",
+      "no_rewards_description": "You don't have any rewards to claim at this time",
+      "description": "Claim your accumulated rewards from staking",
+      "connect_wallet_description": "Connect your wallet to view and claim your accumulated rewards"
+    }
   }
 }

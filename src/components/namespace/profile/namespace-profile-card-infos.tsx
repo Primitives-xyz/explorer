@@ -4,6 +4,7 @@ import { INamespaceProfileInfos } from '@/components/tapestry/models/namespace.m
 import { Card, CardContent } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { abbreviateWalletAddress } from '@/utils/utils'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   profileData: INamespaceProfileInfos
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export function NamespaceProfileCardInfos({ profileData, username }: Props) {
+  const t = useTranslations('namespace.profile')
+
   return (
     <Card className="w-full md:w-1/2">
       <CardContent className="w-full flex flex-col space-y-6">
@@ -22,13 +25,13 @@ export function NamespaceProfileCardInfos({ profileData, username }: Props) {
             <p className="font-bold">@{username}</p>
 
             <p className="text-muted-foreground text-sm">
-              {profileData?.profile.bio || 'No description'}
+              {profileData?.profile.bio || t('no_description')}
             </p>
           </div>
         </div>
 
         <div className="w-full flex justify-between items-center">
-          <p>owned by</p>
+          <p>{t('owned_by')}</p>
 
           {abbreviateWalletAddress({
             address: profileData?.walletAddress,
@@ -36,7 +39,7 @@ export function NamespaceProfileCardInfos({ profileData, username }: Props) {
         </div>
 
         <div className="w-full flex justify-between items-center">
-          <p>Created</p>
+          <p>{t('created')}</p>
           <p>{new Date(profileData.profile?.created_at).getFullYear()}</p>
         </div>
       </CardContent>

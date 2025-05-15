@@ -3,46 +3,46 @@ import { CheckCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export function BottomDetails() {
-  const t = useTranslations()
+  const t = useTranslations('stake')
   return (
     <Card>
       <CardHeader>
-        <p className="text-lg">{t('trade.staking.tiers_title')}</p>
+        <p className="text-lg">{t('details.tiers.title')}</p>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-center">
           <StakingTierCard
             emoji="🥇"
-            title={t('trade.staking.gold_tier')}
-            requirement={t('trade.staking.gold_requirement')}
+            title={t('details.tiers.gold.title')}
+            requirement={t('details.tiers.gold.requirement')}
             benefits={[
-              `50% ${t('trade.staking.swap_fee_discount').substring(1)}`,
-              `60% ${t('trade.staking.comment_fee_discount').substring(1)}`,
+              t('details.tiers.gold.benefits.swap_fee'),
+              t('details.tiers.gold.benefits.comment_fee'),
             ]}
           />
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <StakingTierCard
             emoji="🥈"
-            title={t('trade.staking.silver_tier')}
-            requirement={t('trade.staking.silver_requirement')}
+            title={t('details.tiers.silver.title')}
+            requirement={t('details.tiers.silver.requirement')}
             benefits={[
-              `25% ${t('trade.staking.swap_fee_discount').substring(1)}`,
-              `40% ${t('trade.staking.comment_fee_discount').substring(1)}`,
+              t('details.tiers.silver.benefits.swap_fee'),
+              t('details.tiers.silver.benefits.comment_fee'),
             ]}
           />
           <StakingTierCard
             emoji="🥉"
-            title={t('trade.staking.bronze_tier')}
-            requirement={t('trade.staking.bronze_requirement')}
+            title={t('details.tiers.bronze.title')}
+            requirement={t('details.tiers.bronze.requirement')}
             benefits={[
-              `10% ${t('trade.staking.swap_fee_discount').substring(1)}`,
-              `30% ${t('trade.staking.comment_fee_discount').substring(1)}`,
+              t('details.tiers.bronze.benefits.swap_fee'),
+              t('details.tiers.bronze.benefits.comment_fee'),
             ]}
           />
         </div>
         <div className="my-4 text-xs text-muted-foreground italic text-center">
-          {t('trade.staking.disclaimer')}
+          {t('details.tiers.disclaimer')}
         </div>
       </CardContent>
     </Card>

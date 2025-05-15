@@ -8,6 +8,7 @@ import { useUnfollowUser } from '@/components/tapestry/hooks/use-unfollow-user'
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { UserMinus, UserPlus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 interface Props extends Omit<ButtonProps, 'children'> {
@@ -35,6 +36,7 @@ export function FollowButton({
     username: followeeUsername,
   })
   const [refetchLoading, setRefetchLoading] = useState(false)
+  const t = useTranslations()
 
   const {
     data,
@@ -57,9 +59,6 @@ export function FollowButton({
 
   const refetch = async () => {
     setRefetchLoading(true)
-
-    //revalidateServerCache(`/api/profiles/${followerUsername}/following`)
-    //revalidateServerCache(`/api/profiles/${followeeUsername}/followers`)
 
     await Promise.all([
       refetchCurrentUser(),
@@ -135,14 +134,14 @@ export function FollowButton({
                 <UserMinus size={iconSize} />
               ) : (
                 <>
-                  <UserMinus size={iconSize} /> Unfollow
+                  <UserMinus size={iconSize} /> {t('common.follow.unfollow')}
                 </>
               )
             ) : isIcon ? (
               <UserPlus size={iconSize} />
             ) : (
               <>
-                <UserPlus size={iconSize} /> Follow
+                <UserPlus size={iconSize} /> {t('common.follow.follow')}
               </>
             )}
           </>

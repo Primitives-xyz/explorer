@@ -6,6 +6,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
 import { getSourceIcon } from '@/utils/transactions'
+import { useTranslations } from 'next-intl'
 import { IHomeTransaction } from '../home-transactions.models'
 import { processSwapTransaction } from '../utils/swap-transaction.utils'
 import { TransactionsHeader } from './transactions-header'
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
+  const t = useTranslations()
   const { setOpen, setInputs } = useSwapStore()
 
   const processedTx = processSwapTransaction(transaction)
@@ -65,11 +67,11 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
         >
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="rounded-md">
-              Swap
+              {t('common.swap')}
             </Badge>
             {transaction.source && (
               <>
-                <p>on</p>
+                <p>{t('common.on')}</p>
                 <Badge className="rounded-md" variant="outline">
                   {getSourceIcon(transaction.source)}
                   <span>{transaction.source}</span>

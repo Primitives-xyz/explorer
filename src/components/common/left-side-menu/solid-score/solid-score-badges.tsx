@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui'
 import { cn } from '@/utils/utils'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 interface Props {
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
+  const t = useTranslations('menu.solid_score.badges')
+
   const badges: Record<
     string,
     {
@@ -24,74 +27,73 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
     }
   > = {
     SOLANA_OG: {
-      name: 'Solana OG',
-      description: 'Early adopter with a long history of engagement',
+      name: t('solana_og.name'),
+      description: t('solana_og.description'),
       image: '/images/solid-score-badges/solana-og.svg',
     },
     SOLANA_POWER_USER: {
-      name: 'Solana Power User',
-      description: 'High-volume transactor with consistent, frequent activity',
+      name: t('solana_power_user.name'),
+      description: t('solana_power_user.description'),
       image: '/images/solid-score-badges/solana-power-user.svg',
     },
     HODLER: {
-      name: 'Hodler',
-      description: 'Consistently holds assets without frequent trading',
+      name: t('hodler.name'),
+      description: t('hodler.description'),
       image: '/images/solid-score-badges/hodler.svg',
     },
     DEX_TRADER: {
-      name: 'DEX Trader',
-      description: 'Actively trades on decentralized exchanges',
+      name: t('dex_trader.name'),
+      description: t('dex_trader.description'),
       image: '/images/solid-score-badges/dex-trader.svg',
     },
     RISK_TAKER: {
-      name: 'Risk Taker',
-      description:
-        'High-volatility trader with a history of significant PnL swings',
+      name: t('risk_taker.name'),
+      description: t('risk_taker.description'),
       image: '/images/solid-score-badges/risk-taker.svg',
     },
     DIVERSE_NFT_TRADER: {
-      name: 'Diverse NFT Trader',
-      description: 'Holds NFTs from a variety of collections',
+      name: t('diverse_nft_trader.name'),
+      description: t('diverse_nft_trader.description'),
       image: '/images/solid-score-badges/diverse-nft-trader.svg',
     },
     LIQUIDITY_PROVIDER: {
-      name: 'Liquidity Provider',
-      description: 'Supplies liquidity to DeFi protocols or DEX pools',
+      name: t('liquidity_provider.name'),
+      description: t('liquidity_provider.description'),
       image: '/images/solid-score-badges/liquidity-provider.svg',
     },
     DIVERSE_LIQUIDITY_PROVIDER: {
-      name: 'Diverse Liquidity Provider',
-      description: 'Provides liquidity positions across multiple asset pairs',
+      name: t('diverse_liquidity_provider.name'),
+      description: t('diverse_liquidity_provider.description'),
       image: '/images/solid-score-badges/diverse-liquidity-provider.svg',
     },
     DIVERSE_HODLER: {
-      name: 'Diverse Hodler',
-      description: 'Holds a wide variety of tokens across different categories',
+      name: t('diverse_hodler.name'),
+      description: t('diverse_hodler.description'),
       image: '/images/solid-score-badges/diverse-hodler.svg',
     },
     MULTIPLATFORM_DEX_TRADER: {
-      name: 'Multiplatform DEX Trader',
-      description: 'Trades across multiple DEXs',
+      name: t('multiplatform_dex_trader.name'),
+      description: t('multiplatform_dex_trader.description'),
       image: '/images/solid-score-badges/multiplatform-dex-trader.svg',
     },
     NFT_TRADER: {
-      name: 'NFT Trader',
-      description: 'Buys and sells NFTs actively on Solana',
+      name: t('nft_trader.name'),
+      description: t('nft_trader.description'),
       image: '/images/solid-score-badges/nft-trader.svg',
     },
     MULTIPLATFORM_NFT_TRADER: {
-      name: 'Multiplatform NFT Trader',
-      description: 'Trades NFTs across multiple marketplaces',
+      name: t('multiplatform_nft_trader.name'),
+      description: t('multiplatform_nft_trader.description'),
       image: '/images/solid-score-badges/multiplatform-nft-trader.svg',
     },
     MULTIPLATFORM_LIQUIDITY_PROVIDER: {
-      name: 'Multiplatform Liquidity Provider',
-      description: 'Provides liquidity across multiple platforms',
+      name: t('multiplatform_liquidity_provider.name'),
+      description: t('multiplatform_liquidity_provider.description'),
       image: '/images/solid-score-badges/multiplatform-liquidity-provider.svg',
     },
     NATIVE_STAKER: {
-      name: 'Native Staker',
-      description: 'Stakes SOL directly with validators',
+      name: t('native_staker.name'),
+      description: t('native_staker.description'),
       image: '/images/solid-score-badges/native-staker.svg',
     },
   }
@@ -172,7 +174,7 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
 
       {showCompact && hiddenCount > 0 && (
         <span className="text-xs text-muted-foreground font-bold">
-          + {hiddenCount} more
+          {t('more_badges', { count: hiddenCount })}
         </span>
       )}
     </div>

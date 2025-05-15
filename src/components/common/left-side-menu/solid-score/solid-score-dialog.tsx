@@ -9,6 +9,7 @@ import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { DialogTitle } from '@radix-ui/react-dialog'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 export interface Props {
@@ -19,14 +20,20 @@ export interface Props {
 export function SolidScoreDialog({ open, setOpen }: Props) {
   const { walletAddress, mainProfile } = useCurrentWallet()
   const { data, loading: scoreLoading } = useSolidScore({ walletAddress })
+  const t = useTranslations('menu.solid_score')
+
+  const score = formatSmartNumber(data?.solidUser.solidScore || 1, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-xl flex flex-col items-center justify-center">
         <DialogHeader>
-          <DialogTitle>Share Your SOLID Score</DialogTitle>
+          <DialogTitle>{t('share_dialog.title')}</DialogTitle>
         </DialogHeader>
-        <p>Your SOLID Score was updated. Share with others!</p>
+        <p>{t('share_dialog.description')}</p>
         <div className="w-[400px] h-[400px] relative flex items-center justify-center rounded-lg overflow-hidden">
           <Image
             src="/images/menu/solid-score-share-modal-bg.png"
@@ -37,7 +44,7 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
           />
 
           <div className="flex w-[300px] h-[300px] relative z-10 rounded-lg bg-foreground/5 backdrop-blur-xl shadow-xl flex-col justify-center items-center">
-            <p className="text-md">My SOLID Score is...</p>
+            <p className="text-md">{t('share_dialog.my_score_is')}</p>
             <div className="flex items-center gap-2 justify-center">
               {mainProfile?.image && (
                 <ValidatedImage
@@ -65,7 +72,7 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
             <div className="flex items-center justify-center space-y-4 flex-col pt-2">
               <SolidScoreBadges data={data} />
               <p className="self-center text-muted-foreground text-xs">
-                Claim yours at SSE.gg
+                {t('share_dialog.claim_yours')}
               </p>
             </div>
           </div>
@@ -74,18 +81,12 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
         <Button
           onClick={() => setOpen(false)}
           href={`https://x.com/intent/tweet?text=${encodeURIComponent(
-            `My SOLID Score is ${formatSmartNumber(
-              data?.solidUser.solidScore || 1,
-              {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }
-            )} Check yours at https://www.sse.gg/!`
+            t('share_dialog.tweet_text', { score })
           )}`}
           newTab
           rel="noopener noreferrer"
         >
-          Share
+          {t('share_dialog.share_button')}
         </Button>
       </DialogContent>
     </Dialog>

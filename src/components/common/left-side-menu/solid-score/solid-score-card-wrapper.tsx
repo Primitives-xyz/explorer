@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui'
 import { Share } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReactNode, useState } from 'react'
 
 interface Props {
@@ -18,13 +19,14 @@ interface Props {
 
 export function SolidScoreCardWrapper({ children, displayScore }: Props) {
   const [openShareDialog, setOpenShareDialog] = useState(false)
+  const t = useTranslations('menu.solid_score')
 
   return (
     <>
       <Card className="border-primary">
         <CardHeader>
           <CardTitle className="text-primary font-bold flex items-center justify-between">
-            {displayScore ? 'Your SOLID Score' : 'Reveal Your SOLID Score'}
+            {displayScore ? t('your_score') : t('reveal_your_score')}
             {displayScore && (
               <Button
                 variant={ButtonVariant.GHOST}

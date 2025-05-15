@@ -17,8 +17,11 @@ export function HomeTransactions() {
   )
 
   const options = [
-    { label: 'Twitter KOL', value: EHomeTransactionFilter.KOL },
-    { label: 'Following', value: EHomeTransactionFilter.FOLLOWING },
+    { label: t('home.tabs.twitter_kol'), value: EHomeTransactionFilter.KOL },
+    {
+      label: t('home.tabs.following'),
+      value: EHomeTransactionFilter.FOLLOWING,
+    },
   ]
 
   return (
@@ -37,11 +40,9 @@ export function HomeTransactions() {
             ) : (
               <Card>
                 <CardContent className="flex flex-col space-y-10 items-center justify-center">
-                  <Paragraph>
-                    {t('following_transaction.create_a_profile_to_follow')}
-                  </Paragraph>
+                  <Paragraph>{t('home.create_a_profile_to_follow')}</Paragraph>
                   <Button onClick={() => setShowAuthFlow(true)}>
-                    Connect Wallet
+                    {t('common.connect_wallet')}
                   </Button>
                 </CardContent>
               </Card>

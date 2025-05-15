@@ -1,401 +1,411 @@
 {
   "common": {
-    "followers": "followers",
-    "following": "following",
-    "follow": "follow",
-    "unfollow": "unfollow",
-    "unfollowing": "unfollowing",
-    "confirm": "Confirm",
-    "loading": "loading",
-    "wallet": "wallet",
-    "wallets": "wallets",
-    "no": "no",
-    "found": "found",
-    "count": "count",
-    "address": "address",
-    "all": "all",
-    "copied": "copied",
-    "copy": "copy",
-    "error": "Error",
-    "success": "Success",
-    "volume": "Volume",
     "m_cap": "MCap",
-    "liquidity": "Liq",
-    "price": "price",
-    "connect_wallet": "Connect Wallet",
-    "cancel": "cancel",
-    "follow_wallet": "Follow Wallet",
-    "k": "K",
-    "m": "M",
-    "amount": "Amount",
-    "half": "half",
-    "max": "max",
-    "balance": "Balance",
-    "close": "Close",
-    "total": "Total",
-    "tokens": "tokens",
-    "available": "available",
-    "load_more": "load more",
-    "unknown": "unknown",
-    "transfer": "transfer",
-    "nfts": "NFTs",
-    "pnl": "pnl",
     "vol": "Vol",
-    "w_l": "W/L",
-    "best_and_worst": "best/worst"
-  },
-  "header": {
-    "title": "solana_social_explorer",
-    "search": "search",
-    "play": "play",
-    "trade": "trade",
-    "portfolio": "portfolio",
-    "connect_wallet": "connect wallet",
-    "logout": "logout",
-    "terminal": {
-      "title": "STATUS: ONLINE | NETWORK: SOLANA",
-      "user": "USER",
-      "sse": "sse",
-      "balance": "Bal"
+    "m": "M",
+    "k": "K",
+    "amount": "Amount",
+    "balance": "Balance",
+    "max": "max",
+    "connect_wallet": "Connect Wallet",
+    "loading": "loading",
+    "on": "on",
+    "swap": "Swap",
+    "follow": {
+      "follow": "Follow",
+      "unfollow": "Unfollow"
     }
   },
-  "search_bar": {
-    "all": "all",
-    "profiles": "profiles",
-    "recent": "recent",
-    "profile_matches": "profile matches",
-    "more": "more",
-    "token_matches": "token matches",
-    "recent_searches": "recent searches",
-    "system": "system",
-    "search_username": "Search a username or wallet address...",
-    "navigating_to": "NAVIGATING TO",
-    "ready_to_analyze": "READY TO ANALYZE",
-    "awaiting_input": "AWAITING INPUT",
-    "execute": "execute"
+  "menu": {
+    "home": "Home",
+    "trenches": "Trenches",
+    "trade": "Trade",
+    "discover": "Discover",
+    "stake": "Stake",
+    "title": "solana_social_explorer",
+    "profile": {
+      "greeting": "hi",
+      "logout": "Logout"
+    },
+    "low_fee_trades": {
+      "title": "Low Fee Trades with SSE",
+      "description": "SSE offers the lowest fees across all current platforms.",
+      "trade_button": "Trade"
+    },
+    "actions": {
+      "unlock_perpetuals": "Unlock Perpetuals",
+      "deposit_withdraw": "Deposit/Withdraw",
+      "give_feedback": "Give Feedback",
+      "perpetuals": "Perpetuals",
+      "feedback": "Feedback"
+    },
+    "solid_score": {
+      "reveal_button": "Reveal score",
+      "your_score": "Your SOLID Score",
+      "reveal_your_score": "Reveal Your SOLID Score",
+      "share_dialog": {
+        "title": "Share Your SOLID Score",
+        "description": "Your SOLID Score was updated. Share with others!",
+        "my_score_is": "My SOLID Score is...",
+        "claim_yours": "Claim yours at SSE.gg",
+        "share_button": "Share",
+        "tweet_text": "My SOLID Score is {score} Check yours at https://www.sse.gg/!"
+      },
+      "badges": {
+        "solana_og": {
+          "name": "Solana OG",
+          "description": "Early adopter with a long history of engagement"
+        },
+        "solana_power_user": {
+          "name": "Solana Power User",
+          "description": "High-volume transactor with consistent, frequent activity"
+        },
+        "hodler": {
+          "name": "Hodler",
+          "description": "Consistently holds assets without frequent trading"
+        },
+        "dex_trader": {
+          "name": "DEX Trader",
+          "description": "Actively trades on decentralized exchanges"
+        },
+        "risk_taker": {
+          "name": "Risk Taker",
+          "description": "High-volatility trader with a history of significant PnL swings"
+        },
+        "diverse_nft_trader": {
+          "name": "Diverse NFT Trader",
+          "description": "Holds NFTs from a variety of collections"
+        },
+        "liquidity_provider": {
+          "name": "Liquidity Provider",
+          "description": "Supplies liquidity to DeFi protocols or DEX pools"
+        },
+        "diverse_liquidity_provider": {
+          "name": "Diverse Liquidity Provider",
+          "description": "Provides liquidity positions across multiple asset pairs"
+        },
+        "diverse_hodler": {
+          "name": "Diverse Hodler",
+          "description": "Holds a wide variety of tokens across different categories"
+        },
+        "multiplatform_dex_trader": {
+          "name": "Multiplatform DEX Trader",
+          "description": "Trades across multiple DEXs"
+        },
+        "nft_trader": {
+          "name": "NFT Trader",
+          "description": "Buys and sells NFTs actively on Solana"
+        },
+        "multiplatform_nft_trader": {
+          "name": "Multiplatform NFT Trader",
+          "description": "Trades NFTs across multiple marketplaces"
+        },
+        "multiplatform_liquidity_provider": {
+          "name": "Multiplatform Liquidity Provider",
+          "description": "Provides liquidity across multiple platforms"
+        },
+        "native_staker": {
+          "name": "Native Staker",
+          "description": "Stakes SOL directly with validators"
+        },
+        "more_badges": "+ {count} more"
+      }
+    }
   },
-  "following_transaction": {
-    "all": "All",
-    "swap": "Swaps",
-    "transfer": "Transfers",
-    "compressed_nft_mint": "cNFT Mints",
+  "home": {
     "create_a_profile_to_follow": "Create a profile to follow wallets onchain and see their swaps in real time!",
-    "create_profile": "Create Profile",
-    "transactions": "transactions",
-    "swap_transactions": "swap transactions",
-    "transfers": "transfers",
-    "cnft_mints": "cnft mints"
-  },
-  "following_activity": {
-    "title": "following_activity",
-    "no_activity": "No activity",
-    "view_all": "View all",
-    "recent_activity": "Recent Activity"
-  },
-  "profile_info": {
-    "title": "profile_information",
-    "create_new_profile": "Create New Profile",
-    "create_a_blink_profile": "Create A .Blink Profile",
-    "create_a_sol_profile": "Create a .Sol Profile",
-    "explore_all_domains": "Explore All Domains",
-    "create_a_nimbus_app": "Create a Nimbus App",
-    "fetching_profiles": ">>> FETCHING PROFILES...",
-    "sort_by_followers": "Sort by followers",
-    "sort_followers_ascending": "Sort followers ascending",
-    "sort_followers_descending": "Sort followers descending",
-    "followers": "followers",
-    "no_profile_found": ">>> NO PROFILES FOUND"
-  },
-  "recent_profiles": {
-    "title": "recent_profiles",
-    "view_all": "view_all",
-    "no_recent_profiles": "no_recent_profiles"
-  },
-  "trending_tokens": {
-    "title": "trending_tokens",
-    "volume_24h": "volume_24h",
-    "rank": "rank",
-    "liquidity": "liquidity",
-    "fetching_trending_tokens": ">>> FETCHING TRENDING TOKENS...",
-    "no_tokens_found": ">>> NO TOKENS FOUND",
-    "view_all": "view_all",
-    "top_tokens": "top_tokens",
-    "price_change": "price_change"
-  },
-  "top_traders": {
-    "title": "top_traders",
-    "most_active": "most_active",
-    "analyzing_trader_activity": "analyzing_trader_activity",
-    "analyzing_trader_performance": "analyzing_trader_performance",
-    "pnl_trade": "pnl_trade",
-    "unrealized": "unrealized",
-    "no_trades": "no_trades",
-    "average_profit_per_trade": "Average Profit per Trade",
-    "no_trading_activity": "No trading activity",
-    "volume": "Volume",
-    "holding": "Holding",
-    "no_volume": "No volume",
-    "total_trading_volume": "Total Trading Volume",
-    "position_value_change": "Position value change",
-    "trades": "Trades",
-    "avg_size": "Avg. Size",
-    "avg_trade": "Avg Trade",
-    "average_trade_size": "Average Trade Size",
-    "position_based_pnl": "Position-based PNL",
-    "no_trades_yet": "No trades yet",
-    "today": "today",
-    "yesterday": "yesterday",
-    "1w": "1W",
-    "7d": "7D"
+    "tabs": {
+      "twitter_kol": "Twitter KOL",
+      "following": "Following"
+    },
+    "transactions": {
+      "swap_on": "on",
+      "trade_button": "Copy Trade",
+      "received": "Received"
+    }
   },
   "trade": {
-    "the_cancel_transaction_was_successful": "The Nft Cancel transaction was successful",
-    "the_cancel_transaction_failed_please_try_again": "The Nft Cancel transaction failed. Please try again.",
-    "refresh_quote_and_balances": "Refresh Quote and Balances",
-    "swap_tokens": "Swap",
-    "unstake_sse": "UnStake SSE",
-    "refresh_quote": "Refresh Quote",
-    "your_info": "Your Info",
-    "total_staking_amount": "Total Stake Amount",
-    "total_reward_amount": "Total Reward Amount",
-    "platform_total_stake": "Platform Total Stake",
-    "unstake_available_in": "Unstake available in",
-    "maximum": "Maximum",
-    "available": "Available",
-    "decimal_places_allowed": "decimal places allowed",
-    "you_receive": "You'll receive",
-    "input_value": "Input value",
-    "after": "after",
-    "staked": "Staked",
-    "rate": "fee",
-    "per": "per",
-    "route_information_fees": "Route Information & Fees",
-    "available_rewards": "Available Rewards",
-    "network_fee": "Network Fee",
-    "updating": "Updating",
-    "price_impact": "Price Impact",
-    "minimum_received": "Minimum Received",
-    "pay_fees_with_sse": "Pay fees with SSE",
-    "get_50_off_on_transaction_fees": "Get 50% off on transaction fees",
     "checking_wallet_status": "Checking wallet status",
-    "connect_wallet_to_swap": "Connect Wallet to Swap",
-    "connect_wallet_to_stake": "Connect Wallet to Stake",
-    "copy_swap_link": "Copy Swap Link",
-    "share": "Share",
-    "confirming_transaction": "Confirming Transaction",
-    "executing_swap": "Executing Swap",
-    "execute_swap": "Execute Swap",
-    "creating_token_account": "Creating Token Account",
-    "setting_up_required_token_account_for_fees": "Setting up required token account for fees...",
-    "token_account_created": "Token Account Created",
-    "successfully_set_up_the_required_token_account": "Successfully set up the required token account.",
-    "token_account_error": "Token Account Error",
-    "failed_to_set_up_required_token_account": "Failed to set up required token account. Please try again.",
-    "preparing_swap": "Preparing Swap",
-    "setting_up_sse_fee_accounts": "Setting up SSE fee accounts...",
-    "setting_up_fee_accounts": "Setting up fee accounts...",
-    "fee_accounts_ready": "Fee Accounts Ready",
-    "sse_fee_accounts_are_set_up_and_ready": "SSE fee accounts are set up and ready",
-    "fee_accounts_are_set_up_and_ready": "Fee accounts are set up and ready",
     "building_transaction": "Building Transaction",
-    "preparing_your_swap_transaction": "Preparing your swap transaction...",
     "sending_transaction": "Sending Transaction",
-    "please_approve_the_transaction_in_your_wallet": "Please approve the transaction in your wallet...",
-    "waiting_for_confirmation": "Waiting for confirmation...",
-    "transaction_failed": "Transaction Failed",
-    "the_swap_transaction_failed_please_try_again": "The swap transaction failed. Please try again.",
+    "waiting_for_confirmation": "Waiting for confirmation",
     "transaction_successful": "Transaction Successful",
-    "the_swap_transaction_was_successful_creating_shareable_link": "The swap transaction was successful. Creating Shareable link..",
-    "the_stake_transaction_was_successful_creating_shareable_link": "The stake transaction was successful. Creating Shareable link..",
-    "the_unstake_transaction_was_successful_creating_shareable_link": "The Unstake transaction was successful. Creating Shareable link..",
-    "swap_successful": "Swap Successful!",
-    "your_transaction_is_confirmed": "Your transaction is confirmed",
-    "share_your_trade": "Share your trade",
-    "copy_link": "Copy Link",
-    "share_on_twitter": "Share on Twitter",
-    "share_on_telegram": "Share on Telegram",
-    "swap_again": "Swap Again",
-    "slippage": "Slippage",
-    "priority": "Priority",
-    "platform_fee": "Platform Fee",
-    "maximum_slippage": "Maximum Slippage",
-    "route": "Route",
-    "marketcap": "Market Cap",
-    "name": "name",
-    "no_m_cap": "No MCap",
-    "no_price": "No Price",
+    "transaction_failed": "Transaction Failed",
     "search_tokens": "Search tokens...",
     "verified_tokens_only": "Verified tokens only",
     "no_tokens_found": "No tokens found",
     "start_typing_to_search_for_tokens": "Start typing to search for tokens",
-    "1d": "1D",
-    "yesterday": "YD",
-    "7d": "7d",
-    "trading_stats": "Trading Stats",
-    "most_traded": "Most traded",
-    "no_trades_found_for_selected_period": ">>> NO TRADES FOUND FOR SELECTED PERIOD",
-    "auto": "Auto",
-    "stake": "Stake",
-    "unstake": "UnStake",
-    "unstake_and_claim_rewards": "Unstake and Claim Rewards",
-    "claim_rewards": "Claim Rewards",
-    "claim_available_rewards": "Claim Available Rewards",
-    "the_claim_transaction_failed_please_try_again": "The claim transaction failed. Please try again.",
-    "the_claim_transaction_was_successful_creating_shareable_link": "The claim transaction was successful. Creating Shareable link..",
-    "about_title": "About Staking",
-    "about_content": "Stake your SSE tokens to earn platform fees and unlock exclusive benefits. Stakers receive 10% of all platform fees, distributed proportionally based on stake amount. No lock-up period required - stake and unstake anytime.",
-    "stake_date": "Stake Date",
-    "interest_period": "Interest Period",
-    "apy": "APY",
-    "stake_end_period": "Stake End Period",
-    "staking": {
-      "benefits_title": "Staking Benefits",
-      "fee_sharing": "Fee Sharing",
-      "fee_sharing_desc": "Earn 10% of all platform fees, distributed proportionally to your stake amount",
-      "flexible_staking": "Flexible Staking",
-      "flexible_staking_desc": "No lock-up period - stake and unstake whenever you want",
-      "tiers_title": "Staking Tiers & Benefits",
-      "bronze_tier": "Bronze",
-      "silver_tier": "Silver",
-      "gold_tier": "Gold",
-      "bronze_requirement": "50,000+ SSE",
-      "silver_requirement": "200,000+ SSE",
-      "gold_requirement": "500,000+ SSE",
-      "swap_fee_discount": "% off swap fees",
-      "comment_fee_discount": "% off comment fees",
-      "disclaimer": "Crypto involves risk. Rewards vary and are not guaranteed based on platform usage."
-    },
-    "the_sell_transaction_failed_please_try_again": "Nft Sell Transaction Failed. Please try again later",
-    "the_sell_transaction_was_successful_creating_shareable_link": "The Nft sell transaction was successful",
-    "the_buy_transaction_failed_please_try_again": "Nft Buy Transaction Failed. Please try again later",
-    "the_list_transaction_failed_please_try_again": "List Nft Transaction Failed. Please try again later",
-    "the_buy_transaction_was_successful_creating_shareable_link": "The Nft Buy transaction was successful",
-    "the_list_transaction_was_successful_creating_shareable_link": "The Nft List transaction was successful"
-  },
-  "priority_levels": {
-    "minimum": "Minimum",
-    "minimum_description": "Lowest fees, may fail during congestion",
-    "low": "Low",
-    "low_description": "Lower fees, suitable for non-urgent swaps",
-    "medium": "Medium",
-    "medium_description": "Balanced fees and success rate",
-    "high": "High",
-    "high_description": "Higher fees, better success rate",
-    "very_high": "Very High",
-    "very_high_description": "Very high fees, best for urgent swaps",
     "maximum": "Maximum",
-    "maximum_description": "Highest fees, use with caution"
+    "decimal_places_allowed": "decimal places allowed"
   },
-  "portfolio": {
-    "fungible_tokens": "fungible_tokens",
-    "regular_nfts": "regular_nfts",
-    "compressed_nfts": "compressed_nfts",
-    "programmable_nfts": "programmable_nfts",
-    "all_tokens": "all_tokens",
-    "fetching_tokens": ">>> FETCHING TOKENS...",
-    "no_tokens_found": ">>> NO TOKENS FOUND",
-    "no_nfts_found": "No NFTs found",
-    "no_tokens_found_2": "No tokens found",
-    "this_wallet_doesnt_have_any_nfts_yet": "This wallet doesn't have any NFTs yet",
-    "this_wallet_doesnt_have_any_tokens_yet": "This wallet doesn't have any tokens yet"
-  },
-  "portfolio_balance": {
-    "title": "Portfolio Balance"
-  },
-  "transaction_log": {
-    "title": "Transaction Log",
-    "new_transaction": "new transaction",
-    "loading_transactions": "loading transactions",
-    "no_transactions_found": "no transactions found",
-    "loading_more_transactions": "LOADING MORE TRANSACTIONS",
-    "loading_transaction_explanation": "Loading transaction explanation...",
-    "unable_get_response_llm": "Unable to explain the transaction. Please try again later.",
-    "no_description_available": "No description available",
-    "loading_transaction_details": "Loading transaction details...",
-    "transaction_details": "Transaction Details",
-    "timestamp": "Timestamp",
-    "type": "Type",
-    "fee": "Fee",
-    "description": "Description",
-    "account_changes": "Account Changes",
-    "received": "Received",
-    "sent": "Sent",
-    "from": "From",
-    "to": "To",
-    "explain_transaction": "Explain this transaction"
-  },
-  "portfolio_assets": {
-    "title": "portfolio_assets",
-    "name": "name",
-    "mint": "mint",
-    "create": "creator"
-  },
-  "tapestry_social": {
-    "title": "Tapestry Social",
-    "are_you_a_solana_builder": "Are you a Solana builder?",
-    "solana_need_you": "Solana needs YOU to add social features to your app! Get started with Tapestry's powerful social toolkit.",
-    "start_building": "Start Building"
-  },
-  "success": {
-    "followed_successfully": "Followed successfully!",
-    "successfully_followed_wallet": "Successfully followed wallet!",
-    "successfully_unfollowed_wallet": "Successfully unfollowed wallet!",
-    "link_copied": "Link Copied",
-    "trade_link_copied_to_clipboard": "Trade link copied to clipboard"
+  "discover": {
+    "filters": {
+      "trending_tokens": "Trending Tokens",
+      "top_traders": "Top Traders",
+      "time_frames": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "one_week": "1W"
+      }
+    },
+    "trending_tokens": {
+      "token": "Token",
+      "price": "Price",
+      "volume": "Vol",
+      "liquidity": "Liquidity",
+      "buy": "Buy",
+      "rank": "#{number}"
+    },
+    "top_traders": {
+      "trader": "Trader",
+      "pnl": "PNL",
+      "pnl_trade": "PNL/Trade",
+      "volume": "Volume",
+      "trades": "Trades",
+      "rank": "#{number}",
+      "unrealized": "Unrealized",
+      "no_trades": "No trades",
+      "holding": "Holding",
+      "no_volume": "No volume"
+    }
   },
   "error": {
-    "error_navigating_to_profile": "Error navigating to profile",
-    "error_navigating_to_namespace": "Error navigating to namespace",
-    "failed_to_fetch_profiles": "Failed to fetch profiles",
-    "stats_error": "Stats error",
-    "failed_to_revalidate_after_follow": "Failed to revalidate after follow",
-    "failed_to_follow": "Failed to follow",
-    "failed_to_revalidate_after_unfollow": "Failed to revalidate after unfollow",
-    "failed_to_unfollow": "Failed to unfollow",
-    "error_fetching_trending_tokens": "Error fetching trending tokens",
-    "failed_to_fetch_tokens": "Failed to fetch tokens",
-    "api_request_failed": "API request failed",
-    "failed_to_fetch_trending_tokens": "Failed to fetch trending tokens",
-    "failed_to_fetch_top_traders": "Failed to fetch top traders",
-    "unknown_error": "Unknown error",
-    "error_fetching_top_traders": "Error fetching top traders",
-    "failed_to_fetch_traders": "Failed to fetch traders",
-    "failed_to_follow_wallet_please_try_again": "Failed to follow wallet. Please try again.",
-    "failed_to_unfollow_wallet_please_try_again": "Failed to unfollow wallet. Please try again.",
+    "http_error_status": "HTTP error! status",
     "please_enter_a_valid_number": "Please enter a valid number",
     "amount_must_be_greater_than_0": "Amount must be greater than 0",
-    "amount_cannot_be_parsed": "amount cannot be parsed",
-    "please_enter_a_valid_amount": "Please enter a valid amount",
-    "error_reading_from_indexed_db": "Error reading from IndexedDB",
-    "failed_to_fetch_token_info": "Failed to fetch token info",
-    "failed_to_load_token_data": "Failed to load token data",
-    "error_caching_token_error": "Error caching token error",
-    "error_fetching_token_balance": "Error fetching token balance",
-    "failed_to_fetch_balance": "Failed to fetch balance",
-    "wallet_not_connected": "Wallet not connected",
-    "error_checking_token_account": "Error checking/creating token account",
-    "error_calculating_sse_fee_during_quote": "Error calculating SSE fee during quote",
-    "failed_to_fetch_quote": "Failed to fetch quote",
-    "unable_to_calculate_sse_fee": "Unable to calculate SSE fee. Please try again",
-    "error_calculating_sse_fee": "Error calculating SSE fee",
-    "transaction_failed_please_try_again": "Transaction failed. Please try again.",
-    "swap_failed": "Swap failed",
-    "the_swap_transaction_failed_please_try_again": "The swap transaction failed. Please try again.",
-    "the_stake_transaction_failed_please_try_again": "The stake transaction failed. Please try again.",
-    "the_unstake_transaction_failed_please_try_again": "The unstake transaction failed. Please try again.",
-    "sdk_load_timeout_reached_forcing_loaded_state": "SDK load timeout reached, forcing loaded state",
-    "an_error_occurred": "An error occurred",
-    "invalid_solana_wallet_address": "Invalid Solana wallet address",
-    "http_error_status": "HTTP error! status",
-    "portfolio_http_error_status": "Portfolio HTTP error! status",
-    "failed_to_fetch_data": "Failed to fetch data",
-    "invalid_wallet_address": "Invalid wallet address",
+    "amount_exceeds_your_balance": "Insufficient balance for this transaction",
+    "amount_exceeds_your_staked_balance": "Amount exceeds your staked balance",
+    "error_fetching_tokens": "Error fetching tokens",
+    "failed_to_fetch_tokens": "Failed to fetch tokens",
     "error_fetching_transactions": "Error fetching transactions",
     "error_checking_for_new_transactions": "Error checking for new transactions",
-    "error_fetching_tokens": "Error fetching tokens",
-    "failed_to_fetch_trades": "Failed to fetch trades",
-    "failed_to_fetch_transaction": "Failed to fetch transaction",
-    "transaction_not_found": "Transaction not found",
-    "amount_exceeds_your_balance": "Insufficient balance for this transaction"
+    "an_error_occurred": "An error occurred",
+    "sdk_load_timeout_reached_forcing_loaded_state": "SDK load timeout reached, forcing loaded state",
+    "fee_calculation": {
+      "title": "Fee Calculation Error",
+      "description": "Failed to calculate SSE fees. Please try again or check your inputs."
+    },
+    "jup_quote_api": {
+      "title": "Quote API Error",
+      "description": "Failed to fetch Quote API. Please try again later"
+    },
+    "jup_swap_api": {
+      "title": "SWAP API Error",
+      "description": "Failed to fetch SWAP API. Please try again later"
+    },
+    "wallet_connection": {
+      "title": "WALLET ERROR",
+      "description": "Please connect the solana wallet"
+    },
+    "transaction_failed": {
+      "title": "Transaction Failed",
+      "description": "The swap transaction failed. Please try again"
+    },
+    "perps_order": {
+      "title": "Transaction Failed",
+      "description": "Failed to Place Perps Order. Please try again later."
+    },
+    "deposit_collateral": {
+      "title": "Transaction Failed",
+      "description": "Failed to deposit collateral"
+    },
+    "order_size": {
+      "title": "Order Size Error",
+      "description": "Order size must be at least 0.01 SOL"
+    },
+    "drift_client": {
+      "title": "Drift Client Error",
+      "description": "Drift client not initialized"
+    },
+    "perps_market": {
+      "title": "Perpetual Market Error",
+      "description": "Perpetual Market Not Found"
+    },
+    "perps_market_account": {
+      "title": "Perpetual Market Account Error",
+      "description": "Perpetual Market Account Not Found"
+    },
+    "limit_price_long": {
+      "title": "Limit Price Error",
+      "description": "The limit price is above or equal to the current orderbook ask price"
+    },
+    "limit_price_short": {
+      "title": "Limit Price Error",
+      "description": "The limit price is below the current ask price"
+    },
+    "close_position": {
+      "title": "Close Position Error",
+      "description": "Failed close position. Please try again later"
+    },
+    "perps_user": {
+      "title": "Drift User Account Error",
+      "description": "Drift User Not Found"
+    },
+    "fetch_perps_position": {
+      "title": "Fetch Open Positions Error",
+      "description": "Failed Fetching Open Positions. Please try again later"
+    },
+    "cancel_order": {
+      "title": "Transaction Failed",
+      "description": "Failed Cancel Order, Please try again later"
+    },
+    "withdraw_deposit": {
+      "title": "Transaction Failed",
+      "description": "Failed to withdraw deposit, Please try again later"
+    }
+  },
+  "loading": {
+    "preparing_swap": {
+      "title": "Preparing Swap",
+      "description": "Preparing your swap transaction"
+    },
+    "sending_transaction": {
+      "title": "Sending Transaction",
+      "description": "Please approve the transaction in your wallet"
+    },
+    "confirming_transaction": {
+      "title": "Confirming Transaction",
+      "description": "Waiting for confirmation"
+    }
+  },
+  "success": {
+    "transaction": {
+      "title": "Transaction Successful",
+      "description": "The swap transaction was successful. Creating shareable link"
+    },
+    "place_perps_order": {
+      "title": "Transaction Successful",
+      "description": "Place Perps Order Transaction Success"
+    },
+    "deposit_collateral": {
+      "title": "Transaction Successful",
+      "description": "Deposite Collateral Success"
+    },
+    "close_position": {
+      "title": "Transaction Successful",
+      "description": "Close Postion Success"
+    },
+    "cancel_order": {
+      "title": "Transaction Successful",
+      "description": "Cancel Order Success"
+    },
+    "perps_withdraw": {
+      "title": "Transaction Successful",
+      "description": "Withdraw deposit Success"
+    }
+  },
+  "namespace": {
+    "profiles": {
+      "title": "Namespace profiles",
+      "followers": "Followers",
+      "followings": "Followings"
+    },
+    "profile": {
+      "see_original": "See original",
+      "followers_count": "{count} Followers",
+      "following_count": "{count} Following",
+      "no_description": "No description",
+      "owned_by": "owned by",
+      "created": "Created"
+    }
+  },
+  "stake": {
+    "form": {
+      "amount": "Amount",
+      "balance": "Balance",
+      "staked_balance": "Staked Balance",
+      "max": "Max",
+      "errors": {
+        "invalid_number": "Please enter a valid number",
+        "amount_greater_than_zero": "Amount must be greater than 0",
+        "decimal_places": "Maximum {decimals} decimal places allowed",
+        "exceeds_balance": "Insufficient balance for this transaction",
+        "exceeds_staked_balance": "Amount exceeds your staked balance"
+      }
+    },
+    "transaction": {
+      "checking_wallet": "Checking wallet status",
+      "building": "Building Transaction",
+      "sending": "Sending Transaction",
+      "waiting_confirmation": "Waiting for confirmation",
+      "successful": "Transaction Successful",
+      "failed": "Transaction Failed",
+      "stake_failed_try_again": "The stake transaction failed. Please try again",
+      "stake_successful": "The stake transaction was successful. Creating shareable link"
+    },
+    "tabs": {
+      "stake": "Stake",
+      "unstake": "Unstake",
+      "claim_rewards": "Claim Rewards"
+    },
+    "details": {
+      "benefits": {
+        "title": "Staking Benefits",
+        "fee_sharing": {
+          "title": "Fee Sharing",
+          "description": "Earn rewards that dynamically adjust based on platform activity. The more you stake, the greater your share of the rewards pool."
+        },
+        "flexible_staking": {
+          "title": "Flexible Staking",
+          "description": "Stake to unlock platform benefits and fee discounts. Your rewards grow based on your engagement in the ecosystem."
+        },
+        "how_it_works": {
+          "title": "How It Works",
+          "point1": "Stake once every 24 hours to increase your position and boost your eligibility for rewards",
+          "point2": "Rewards adjust based on your participation level and overall network activity",
+          "point3": "No fixed APY - incentives grow with ecosystem usage and your stake amount"
+        }
+      },
+      "tiers": {
+        "title": "Staking Tiers & Benefits",
+        "gold": {
+          "title": "Gold",
+          "requirement": "500,000+ SSE",
+          "benefits": {
+            "swap_fee": "50% off swap fees",
+            "comment_fee": "60% off comment fees"
+          }
+        },
+        "silver": {
+          "title": "Silver",
+          "requirement": "200,000+ SSE",
+          "benefits": {
+            "swap_fee": "25% off swap fees",
+            "comment_fee": "40% off comment fees"
+          }
+        },
+        "bronze": {
+          "title": "Bronze",
+          "requirement": "50,000+ SSE",
+          "benefits": {
+            "swap_fee": "10% off swap fees",
+            "comment_fee": "30% off comment fees"
+          }
+        },
+        "disclaimer": "Crypto involves risk. Rewards vary and are not guaranteed based on platform usage."
+      }
+    },
+    "errors": {
+      "no_staking_found": "No Staking Found",
+      "no_staking_description": "You haven't staked any tokens yet. Please use the Stake tab to stake tokens before attempting to unstake.",
+      "no_stake_warning": "You haven't staked yet.",
+      "stake_first": "Stake tokens first to see your balance here.",
+      "transaction_failed": "The stake transaction failed. Please try again",
+      "unstake_transaction_failed": "The unstake transaction failed. Please try again"
+    },
+    "platform_stats": {
+      "platform_total_stake": "Platform Total Stake",
+      "total_reward_amount": "Total Reward Amount",
+      "total_staking_amount": "Total Staking Amount",
+      "token_unit": "tokens"
+    },
+    "claim": {
+      "title": "Claim Rewards",
+      "available_rewards": "Available Rewards",
+      "no_rewards": "No rewards available",
+      "no_rewards_description": "You don't have any rewards to claim at this time",
+      "description": "Claim your accumulated rewards from staking",
+      "connect_wallet_description": "Connect your wallet to view and claim your accumulated rewards"
+    }
   }
 }
