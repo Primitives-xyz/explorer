@@ -348,13 +348,11 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     }
   }, [])
 
-  const setUseSSEForFees = (value: boolean) => {
-    if (notEnoughSSE && value) return
-    setUseSSEForFeesState(value)
-    if (value) {
+  useEffect(() => {
+    if (useSSEForFees) {
       localStorage.setItem('hasUsedSSEFee', 'true')
     }
-  }
+  }, [useSSEForFees])
 
   // Determine if the user has used SSE before
   const hasUsedSSEBefore = typeof window !== 'undefined' && localStorage.getItem('hasUsedSSEFee') === 'true'
@@ -403,7 +401,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
         outputTokenDecimals={outputTokenDecimals}
         expectedOutput={expectedOutput}
         isQuoteRefreshing={isQuoteRefreshing}
-        setUseSSEForFees={setUseSSEForFees}
+        setUseSSEForFees={setUseSSEForFeesState}
         notEnoughSSE={notEnoughSSE}
         hasUsedSSEBefore={hasUsedSSEBefore}
       />
