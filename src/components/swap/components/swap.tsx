@@ -15,6 +15,7 @@ import {
   formatRawAmount,
   formatUsdValue,
 } from '@/utils/utils'
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
@@ -76,6 +77,7 @@ interface Props {
 }
 
 export function Swap({ setTokenMint, autoFocus }: Props) {
+  const t = useTranslations()
   // Centralized swap state from store
   const {
     inputs: { inputMint: inputTokenMint, outputMint: outputTokenMint },
@@ -122,7 +124,10 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
       tokenMint: outputTokenMint,
       decimals: outputTokenDecimals,
     })
-  const { balance: sseBalance, rawBalance: sseRawBalance } = useTokenBalance(walletAddress, SSE_MINT)
+  const { balance: sseBalance, rawBalance: sseRawBalance } = useTokenBalance(
+    walletAddress,
+    SSE_MINT
+  )
 
   const {
     loading,
@@ -215,7 +220,9 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
 
   const inputAmountRaw = useMemo(() => {
     if (!inAmount || isNaN(Number(inAmount)) || !inputTokenDecimals) return 0n
-    return BigInt(Math.floor(Number(inAmount) * Math.pow(10, inputTokenDecimals)))
+    return BigInt(
+      Math.floor(Number(inAmount) * Math.pow(10, inputTokenDecimals))
+    )
   }, [inAmount, inputTokenDecimals])
 
   const notEnoughInput = inputAmountRaw > inputRawBalance
@@ -346,6 +353,7 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     } else {
       setUseSSEForFeesState(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -355,13 +363,17 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
   }, [useSSEForFees])
 
   // Determine if the user has used SSE before
-  const hasUsedSSEBefore = typeof window !== 'undefined' && localStorage.getItem('hasUsedSSEFee') === 'true'
+  const hasUsedSSEBefore =
+    typeof window !== 'undefined' &&
+    localStorage.getItem('hasUsedSSEFee') === 'true'
 
-  let executeButtonText = 'Execute Swap'
+  let executeButtonText = t('swap.execute_swap')
   if (notEnoughSSE) {
-    executeButtonText = 'Insufficient SSE'
+    executeButtonText = t('swap.insufficient_sse')
   } else if (notEnoughInput) {
-    executeButtonText = `Insufficient ${inputTokenSymbol || 'Balance'}`
+    executeButtonText = t('swap.insufficient_balance', {
+      token: inputTokenSymbol || 'Balance',
+    })
   }
 
   return (

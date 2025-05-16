@@ -16,6 +16,7 @@ import {
 } from '@/components/ui'
 import { CheckboxSize } from '@/components/ui/switch/checkbox.models'
 import Warning from '@/components/ui/warning'
+import { useTranslations } from 'next-intl'
 
 import { cn } from '@/utils/utils'
 import { CircleAlertIcon } from 'lucide-react'
@@ -45,19 +46,21 @@ export function BottomSwap({
   notEnoughSSE,
   hasUsedSSEBefore,
 }: Props) {
+  const t = useTranslations()
+
   return (
     <Card>
       <CardHeader className="p-4 pb-0">
         <CardTitle className="flex items-center justify-between text-primary font-semibold">
-          <p>Route Information $ Fees</p>
+          <p>{t('swap.token.route_info')}</p>
           <CircleAlertIcon size={20} />
         </CardTitle>
         {notEnoughSSE && (
           <div className="mb-2 mt-3">
             <Warning variant="loud">
               {hasUsedSSEBefore
-                ? 'Transaction fee exceeds your SSE balance.'
-                : 'You do not have enough SSE to pay for transaction fees.'}
+                ? t('swap.token.fee_exceeds_balance')
+                : t('swap.token.not_enough_sse_for_fees')}
             </Warning>
           </div>
         )}
@@ -82,9 +85,9 @@ export function BottomSwap({
                 size={CheckboxSize.LG}
               />
               <div className="flex flex-col">
-                <span className="text-sm">Pay fee with SSE</span>
+                <span className="text-sm">{t('swap.token.pay_with_sse')}</span>
                 <span className="text-muted-foreground text-xs">
-                  Get 50% off on transaction fees
+                  {t('swap.token.get_discount')}
                 </span>
               </div>
             </CardContent>
@@ -93,7 +96,7 @@ export function BottomSwap({
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <p>Fee</p>
+            <p>{t('swap.fee.amount')}</p>
             <p>{displaySseFeeAmount} SSE</p>
           </div>
 
@@ -108,13 +111,15 @@ export function BottomSwap({
                 className="text-muted-foreground text-left p-3"
                 chevronSize={20}
               >
-                SSE offers the lowest fees across all trading platforms
+                {t('swap.fee.description')}
               </AccordionTrigger>
               <AccordionContent className="p-3 pb-2">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <p className="uppercase">Platform</p>
-                    <p className="text-muted-foreground">You'll get</p>
+                    <p className="text-muted-foreground">
+                      {t('swap.price.minimum_received')}
+                    </p>
                   </div>
                   <>
                     {isQuoteRefreshing ? (
