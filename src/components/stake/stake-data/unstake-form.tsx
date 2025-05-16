@@ -19,7 +19,7 @@ interface Props {
 }
 
 export function UnstakeForm({ initialAmount = '' }: Props) {
-  const t = useTranslations('stake')
+  const t = useTranslations()
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
   const [inputError, setInputError] = useState<string | null>(null)
   const [debouncedUpdate, setDebouncedUpdate] = useState<NodeJS.Timeout | null>(
@@ -43,13 +43,13 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     // Check if the value is a valid number
     const numericValue = Number(value)
     if (isNaN(numericValue)) {
-      setInputError(t('form.errors.invalid_number'))
+      setInputError(t('stake.form.errors.invalid_number'))
       return false
     }
 
     // Check if the value is positive
     if (numericValue <= 0) {
-      setInputError(t('form.errors.amount_greater_than_zero'))
+      setInputError(t('stake.form.errors.amount_greater_than_zero'))
       return false
     }
 
@@ -61,14 +61,14 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
       decimalParts[1]?.length > SSE_TOKEN_DECIMAL
     ) {
       setInputError(
-        t('form.errors.decimal_places', { decimals: SSE_TOKEN_DECIMAL })
+        t('stake.form.errors.decimal_places', { decimals: SSE_TOKEN_DECIMAL })
       )
       return false
     }
 
     // Check if the value exceeds the staked amount
     if (stakeAmount && numericValue > Number(stakeAmount)) {
-      setInputError(t('form.errors.exceeds_staked_balance'))
+      setInputError(t('stake.form.errors.exceeds_staked_balance'))
       return false
     }
 
@@ -172,7 +172,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     return (
       <Button variant={ButtonVariant.OUTLINE} className="w-full">
         <Spinner />
-        <p>{t('transaction.checking_wallet')}</p>
+        <p>{t('stake.transaction.checking_wallet')}</p>
       </Button>
     )
   }
@@ -193,11 +193,11 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     <div>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-start md:items-center">
-          <p>{t('form.amount')}</p>
+          <p>{t('stake.form.amount')}</p>
           {!showUserInfoLoading && stakeAmount && (
             <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
-                {t('form.staked_balance')}: {formattedStakeAmount}
+                {t('stake.form.staked_balance')}: {formattedStakeAmount}
               </p>
               <div className="flex items-center justify-end space-x-2">
                 <Button
@@ -227,7 +227,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
                   onClick={handleMaxAmount}
                   disabled={showUnstakeLoading || !stakeAmount}
                 >
-                  {t('form.max')}
+                  {t('stake.form.max')}
                 </Button>
               </div>
             </div>
@@ -250,7 +250,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
         onClick={handleUnstake}
         disabled={showUnstakeLoading || !displayAmount || !!inputError}
       >
-        {showUnstakeLoading ? <Spinner /> : t('tabs.unstake')}
+        {showUnstakeLoading ? <Spinner /> : t('stake.tabs.unstake')}
       </Button>
     </div>
   )
