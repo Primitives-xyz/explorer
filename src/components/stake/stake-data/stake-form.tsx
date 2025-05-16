@@ -19,7 +19,7 @@ interface Props {
 }
 
 export function StakeForm({ initialAmount = '' }: Props) {
-  const t = useTranslations('stake')
+  const t = useTranslations()
   const [displayAmount, setDisplayAmount] = useState(initialAmount)
   const [inputError, setInputError] = useState<string | null>(null)
   const [debouncedUpdate, setDebouncedUpdate] = useState<NodeJS.Timeout | null>(
@@ -51,13 +51,13 @@ export function StakeForm({ initialAmount = '' }: Props) {
     // Check if the value is a valid number
     const numericValue = Number(value)
     if (isNaN(numericValue)) {
-      setInputError(t('form.errors.invalid_number'))
+      setInputError(t('stake.form.errors.invalid_number'))
       return false
     }
 
     // Check if the value is positive
     if (numericValue <= 0) {
-      setInputError(t('form.errors.amount_greater_than_zero'))
+      setInputError(t('stake.form.errors.amount_greater_than_zero'))
       return false
     }
 
@@ -69,7 +69,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
       decimalParts[1]?.length > SSE_TOKEN_DECIMAL
     ) {
       setInputError(
-        t('form.errors.decimal_places', { decimals: SSE_TOKEN_DECIMAL })
+        t('stake.form.errors.decimal_places', { decimals: SSE_TOKEN_DECIMAL })
       )
       return false
     }
@@ -80,7 +80,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
         Math.floor(10 ** SSE_TOKEN_DECIMAL * numericValue)
       )
       if (rawAmount > inputRawBalance) {
-        setInputError(t('form.errors.exceeds_balance'))
+        setInputError(t('stake.form.errors.exceeds_balance'))
         return false
       }
     }
@@ -201,7 +201,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
     return (
       <Button variant={ButtonVariant.OUTLINE} className="w-full">
         <Spinner />
-        <p>{t('transaction.checking_wallet')}</p>
+        <p>{t('stake.transaction.checking_wallet')}</p>
       </Button>
     )
   }
@@ -222,11 +222,11 @@ export function StakeForm({ initialAmount = '' }: Props) {
     <div>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-start md:items-center">
-          <p>{t('form.amount')}</p>
+          <p>{t('stake.form.amount')}</p>
           {!inputBalanceLoading && inputBalance && (
             <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
-                {t('form.balance')}: {formatNumber(inputBalance)}
+                {t('stake.form.balance')}: {formatNumber(inputBalance)}
               </p>
               <div className="flex items-center justify-end space-x-2">
                 <Button
@@ -256,7 +256,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
                   onClick={handleMaxAmount}
                   disabled={showStakeLoading || !inputBalance}
                 >
-                  {t('form.max')}
+                  {t('stake.form.max')}
                 </Button>
               </div>
             </div>
@@ -279,7 +279,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
         onClick={handleStake}
         disabled={showStakeLoading || !displayAmount || !!inputError}
       >
-        {showStakeLoading ? <Spinner /> : t('tabs.stake')}
+        {showStakeLoading ? <Spinner /> : t('stake.tabs.stake')}
       </Button>
     </div>
   )

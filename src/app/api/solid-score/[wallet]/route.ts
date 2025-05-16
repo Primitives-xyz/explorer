@@ -42,3 +42,40 @@ export async function GET(_req: NextRequest, context: RouteContext) {
     )
   }
 }
+
+// import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
+// import { FetchMethod } from '@/utils/api'
+// import { NextRequest, NextResponse } from 'next/server'
+
+// type RouteContext = {
+//   params: Promise<{ wallet: string }>
+// }
+
+// export async function GET(_req: NextRequest, context: RouteContext) {
+//   try {
+//     const params = await context.params
+//     const { wallet } = params
+
+//     if (!wallet) {
+//       return NextResponse.json(
+//         { error: 'Wallet address is required' },
+//         { status: 400 }
+//       )
+//     }
+
+//     const response = await fetchTapestry({
+//       endpoint: `profiles/${wallet}/solid-score`,
+//       method: FetchMethod.GET,
+//     })
+
+//     console.log({ response })
+
+//     return NextResponse.json(response)
+//   } catch (err) {
+//     console.error('[SOLID SCORE ERROR]', err)
+//     return NextResponse.json(
+//       { error: 'Internal server error' },
+//       { status: 500 }
+//     )
+//   }
+// }
