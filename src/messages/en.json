@@ -136,7 +136,8 @@
     "no_tokens_found": "No tokens found",
     "start_typing_to_search_for_tokens": "Start typing to search for tokens",
     "maximum": "Maximum",
-    "decimal_places_allowed": "decimal places allowed"
+    "decimal_places_allowed": "decimal places allowed",
+    "no_m_cap": "N/A"
   },
   "discover": {
     "filters": {
@@ -407,5 +408,52 @@
       "description": "Claim your accumulated rewards from staking",
       "connect_wallet_description": "Connect your wallet to view and claim your accumulated rewards"
     }
+  },
+  "swap": {
+    "execute_swap": "Execute Swap",
+    "insufficient_sse": "Insufficient SSE",
+    "insufficient_balance": "Insufficient {token}",
+    "error": {
+      "invalid_token": "Invalid token selected",
+      "calculating_amount": "Error calculating amount:"
+    },
+    "fee": {
+      "title": "Low Fee Trades with SSE",
+      "description": "SSE offers the lowest fees across all current platforms.",
+      "amount": "SSE Fee Amount",
+      "use_sse": "Use SSE for lower fees",
+      "not_enough_sse": "Not enough SSE for fees"
+    },
+    "input": {
+      "pay": "Pay",
+      "receive": "Receive",
+      "balance_label": "Balance:",
+      "max": "MAX"
+    },
+    "token": {
+      "select": "Select a token",
+      "search": "Search tokens",
+      "no_verified_tokens": "No verified tokens found",
+      "route_info": "Route Information $ Fees",
+      "fee_exceeds_balance": "Transaction fee exceeds your SSE balance.",
+      "not_enough_sse_for_fees": "You do not have enough SSE to pay for transaction fees.",
+      "pay_with_sse": "Pay fee with SSE",
+      "get_discount": "Get 50% off on transaction fees"
+    },
+    "price": {
+      "price_impact": "Price Impact",
+      "minimum_received": "Minimum Received",
+      "rate": "Rate"
+    },
+    "loading": {
+      "fetching_quote": "Fetching quote..."
+    },
+    "buttons": {
+      "swap_tokens": "Swap Tokens"
+    }
+  },
+  "token_holders": {
+    "others_own": "and +{count} others own this",
+    "own_this": "own this"
   }
 }
