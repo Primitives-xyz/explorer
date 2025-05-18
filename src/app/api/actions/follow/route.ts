@@ -4,6 +4,7 @@ import {
   ACTIONS_CORS_HEADERS,
   ActionGetResponse,
   ActionPostResponse,
+  BLOCKCHAIN_IDS,
 } from '@solana/actions'
 import { NextRequest } from 'next/server'
 
@@ -19,10 +20,20 @@ function extractUsername(url: URL): string | null {
   }
   return null
 }
+const blockchain =
+  process.env.NEXT_PUBLIC_NETWORK === 'devnet'
+    ? BLOCKCHAIN_IDS.devnet
+    : BLOCKCHAIN_IDS.mainnet
+    
+const headers = {
+  ...ACTIONS_CORS_HEADERS,
+  'x-blockchain-ids': blockchain,
+  'x-action-version': '2.4',
+}
 
 // OPTIONS endpoint for CORS preflight
 export const OPTIONS = async () => {
-  return new Response(null, { headers: ACTIONS_CORS_HEADERS })
+  return new Response(null, { headers: headers })
 }
 
 // GET: Return metadata for the follow blink
@@ -33,7 +44,7 @@ export async function GET(req: NextRequest) {
   if (!username) {
     return new Response(
       JSON.stringify({ error: 'username query parameter is required' }),
-      { status: 400, headers: ACTIONS_CORS_HEADERS }
+      { status: 400, headers: headers }
     )
   }
 
@@ -43,11 +54,28 @@ export async function GET(req: NextRequest) {
     title: `Follow @${username}`,
     description: `Sign a message to follow @${username} on Tapestry`,
     label: `Follow @${username}`,
+    links: {
+      actions: [
+        {
+          type: 'post',
+          href: `/api/actions/follow?username=${username}`,
+          label: `Follow @${username}`,
+          parameters: [
+            {
+              name: 'account',
+              label: 'Your Wallet Address',
+              type: 'text',
+              required: true,
+            },
+          ],
+        },
+      ],
+    },
   }
 
   return new Response(JSON.stringify(response), {
     status: 200,
-    headers: ACTIONS_CORS_HEADERS,
+    headers: headers,
   })
 }
 
@@ -60,7 +88,7 @@ export async function POST(req: NextRequest) {
   if (!usernameToFollow || !account) {
     return new Response(
       JSON.stringify({ error: 'username and account are required' }),
-      { status: 400, headers: ACTIONS_CORS_HEADERS }
+      { status: 400, headers: headers }
     )
   }
 
@@ -125,13 +153,13 @@ export async function POST(req: NextRequest) {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: ACTIONS_CORS_HEADERS,
+      headers: headers,
     })
   } catch (error: any) {
     console.error('Error processing follow request:', error)
     return new Response(
       JSON.stringify({ error: error.message || 'Internal Server Error' }),
-      { status: 500, headers: ACTIONS_CORS_HEADERS }
+      { status: 500, headers: headers }
     )
   }
 }

@@ -8,10 +8,10 @@ export const GET = async () => {
         pathPattern: '/trade',
         apiPath: '/api/actions/trade',
       },
-      // map all root level routes to an action
+      // map /follow to an action using query parameters
       {
-        pathPattern: '/follow/*',
-        apiPath: '/api/actions/follow/*',
+        pathPattern: '/follow',
+        apiPath: '/api/actions/follow',
       },
       {
         pathPattern: '/*',
