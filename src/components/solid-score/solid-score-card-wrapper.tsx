@@ -1,4 +1,4 @@
-import { SolidScoreDialog } from '@/components/common/left-side-menu/solid-score/solid-score-dialog'
+import { SolidScoreDialog } from '@/components/solid-score/solid-score-dialog'
 import {
   Button,
   ButtonSize,

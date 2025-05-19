@@ -1,9 +1,9 @@
 'use client'
 
-import { useSolidScore } from '@/components/common/hooks/use-solid-score'
-import { ScoreArc } from '@/components/common/left-side-menu/solid-score/score-arc'
-import { SolidScoreBadges } from '@/components/common/left-side-menu/solid-score/solid-score-badges'
-import { SolidScoreValue } from '@/components/common/left-side-menu/solid-score/solid-score-value'
+import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
+import { ScoreArc } from '@/components/solid-score/score-arc'
+import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
+import { SolidScoreValue } from '@/components/solid-score/solid-score-value'
 import { Button, Dialog, DialogContent, DialogHeader } from '@/components/ui'
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
@@ -18,11 +18,11 @@ export interface Props {
 }
 
 export function SolidScoreDialog({ open, setOpen }: Props) {
-  const { walletAddress, mainProfile } = useCurrentWallet()
-  const { data, loading: scoreLoading } = useSolidScore({ walletAddress })
+  const { mainProfile } = useCurrentWallet()
+  const { data, loading: scoreLoading } = useSolidScore({ id: mainProfile?.id })
   const t = useTranslations('menu.solid_score')
 
-  const score = formatSmartNumber(data?.solidUser.solidScore || 1, {
+  const score = formatSmartNumber(data?.score || 1, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })
@@ -60,14 +60,11 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
             <div className="h-[115px] relative w-full">
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%]">
                 <ScoreArc
-                  score={Number(data?.solidUser.solidScore || 1)}
+                  score={Number(data?.score || 1)}
                   loading={scoreLoading}
                 />
               </div>
-              <SolidScoreValue
-                loading={scoreLoading}
-                score={data?.solidUser.solidScore}
-              />
+              <SolidScoreValue loading={scoreLoading} score={data?.score} />
             </div>
             <div className="flex items-center justify-center space-y-4 flex-col pt-2">
               <SolidScoreBadges data={data} />

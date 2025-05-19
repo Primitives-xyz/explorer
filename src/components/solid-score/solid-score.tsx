@@ -1,16 +1,15 @@
-import { useSolidScore } from '@/components/common/hooks/use-solid-score'
-import { ScoreArc } from '@/components/common/left-side-menu/solid-score/score-arc'
-import { SolidScoreBadges } from '@/components/common/left-side-menu/solid-score/solid-score-badges'
-import { SolidScoreCardWrapper } from '@/components/common/left-side-menu/solid-score/solid-score-card-wrapper'
-import { SolidScoreRevealButton } from '@/components/common/left-side-menu/solid-score/solid-score-reveal-button'
-import { SolidScoreValue } from '@/components/common/left-side-menu/solid-score/solid-score-value'
+import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
+import { ScoreArc } from '@/components/solid-score/score-arc'
+import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
+import { SolidScoreCardWrapper } from '@/components/solid-score/solid-score-card-wrapper'
+import { SolidScoreRevealButton } from '@/components/solid-score/solid-score-reveal-button'
+import { SolidScoreValue } from '@/components/solid-score/solid-score-value'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 export function SolidScore() {
   const {
-    walletAddress,
     mainProfile,
     refetch,
     loading: currentWalletLoading,
@@ -20,7 +19,7 @@ export function SolidScore() {
     data,
     loading: scoreLoading,
     error,
-  } = useSolidScore({ walletAddress })
+  } = useSolidScore({ id: mainProfile?.id })
 
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
     username: mainProfile?.username || '',
@@ -54,14 +53,14 @@ export function SolidScore() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full">
               {!scoreLoading && (
                 <ScoreArc
-                  score={Number(data?.solidUser.solidScore || 1)}
+                  score={Number(data?.score || 1)}
                   loading={scoreLoading}
                 />
               )}
             </div>
             <SolidScoreValue
               loading={scoreLoading}
-              score={data?.solidUser.solidScore}
+              score={data?.score}
               smallView
             />
           </div>
