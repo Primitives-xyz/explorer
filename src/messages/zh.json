@@ -44,14 +44,7 @@
       "reveal_button": "Reveal score",
       "your_score": "Your SOLID Score",
       "reveal_your_score": "Reveal Your SOLID Score",
-      "share_dialog": {
-        "title": "Share Your SOLID Score",
-        "description": "Your SOLID Score was updated. Share with others!",
-        "my_score_is": "My SOLID Score is...",
-        "claim_yours": "Claim yours at SSE.gg",
-        "share_button": "Share",
-        "tweet_text": "My SOLID Score is {score} Check yours at https://www.sse.gg/!"
-      },
+      "see_your_rank": "See your rank",
       "badges": {
         "solana_og": {
           "name": "Solana OG",

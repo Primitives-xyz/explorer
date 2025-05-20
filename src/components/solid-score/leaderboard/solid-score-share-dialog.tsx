@@ -4,6 +4,7 @@ import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
 import { ScoreArc } from '@/components/solid-score/score-arc'
 import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
 import { SolidScoreValue } from '@/components/solid-score/solid-score-value'
+import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { Button, Dialog, DialogContent, DialogHeader } from '@/components/ui'
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
@@ -17,24 +18,54 @@ export interface Props {
   setOpen: (open: boolean) => void
 }
 
-export function SolidScoreDialog({ open, setOpen }: Props) {
-  const { mainProfile } = useCurrentWallet()
+export function SolidScoreShareDialog({ open, setOpen }: Props) {
+  const { mainProfile, refetch } = useCurrentWallet()
   const { data, loading: scoreLoading } = useSolidScore({ id: mainProfile?.id })
   const t = useTranslations('menu.solid_score')
+
+  const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
+    username: mainProfile?.username || '',
+  })
 
   const score = formatSmartNumber(data?.score || 1, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })
 
+  const handleShare = async () => {
+    await updateProfile({
+      properties: [
+        {
+          key: 'userHasClickedOnShareHisSolidScore',
+          value: true,
+        },
+      ],
+    })
+    refetch()
+    setOpen(false)
+    window.open(
+      `https://x.com/intent/tweet?text=${encodeURIComponent(
+        t('share_dialog.tweet_text', { score })
+      )}`,
+      '_blank',
+      'noopener,noreferrer'
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-xl flex flex-col items-center justify-center">
         <DialogHeader>
-          <DialogTitle>{t('share_dialog.title')}</DialogTitle>
+          <DialogTitle>🚀 You're on the board, but it's locked</DialogTitle>
+          <div className="mt-4 text-xs md:text-md">
+            <p>
+              Your score ranks you in the Top {data?.percentile}% of SSE users!
+            </p>
+            <p>Share your score to unlock your rank and see how you stack up</p>
+          </div>
         </DialogHeader>
-        <p>{t('share_dialog.description')}</p>
-        <div className="w-[400px] h-[400px] relative flex items-center justify-center rounded-lg overflow-hidden">
+
+        <div className="md:w-[400px] md:h-[400px] relative flex items-center justify-center rounded-lg overflow-hidden">
           <Image
             src="/images/menu/solid-score-share-modal-bg.png"
             alt="Background"
@@ -44,7 +75,7 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
           />
 
           <div className="flex w-[300px] h-[300px] relative z-10 rounded-lg bg-foreground/5 backdrop-blur-xl shadow-xl flex-col justify-center items-center">
-            <p className="text-md">{t('share_dialog.my_score_is')}</p>
+            <p className="text-md">My SOLID Score is...</p>
             <div className="flex items-center gap-2 justify-center">
               {mainProfile?.image && (
                 <ValidatedImage
@@ -69,22 +100,19 @@ export function SolidScoreDialog({ open, setOpen }: Props) {
             <div className="flex items-center justify-center space-y-4 flex-col pt-2">
               <SolidScoreBadges data={data} />
               <p className="self-center text-muted-foreground text-xs">
-                {t('share_dialog.claim_yours')}
+                Claim yours at SSE.gg
               </p>
             </div>
           </div>
         </div>
 
-        <Button
-          onClick={() => setOpen(false)}
-          href={`https://x.com/intent/tweet?text=${encodeURIComponent(
-            t('share_dialog.tweet_text', { score })
-          )}`}
-          newTab
-          rel="noopener noreferrer"
-        >
-          {t('share_dialog.share_button')}
-        </Button>
+        <div className="flex items-center gap-6">
+          <Button>Copy Image</Button>
+          <p>then</p>
+          <Button onClick={handleShare} disabled loading={updateProfileLoading}>
+            Share on X
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   )

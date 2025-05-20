@@ -3,6 +3,7 @@
 import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import {
   AlignJustify,
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function Menu({ setOpen }: Props) {
+  const { isLoggedIn, mainProfile } = useCurrentWallet()
   const t = useTranslations()
 
   return (
@@ -64,12 +66,19 @@ export function Menu({ setOpen }: Props) {
         setOpen={setOpen}
       />
 
-      <Entry
-        title={t('menu.leaderboard')}
-        icon={AlignJustify}
-        href={route('leaderboard')}
-        setOpen={setOpen}
-      />
+      {isLoggedIn &&
+        mainProfile?.username &&
+        (mainProfile?.username === 'nehemiah' ||
+          mainProfile?.username === 'nemoblackburn' ||
+          mainProfile?.username === 'cedrick') && (
+          <Entry
+            title={t('menu.leaderboard')}
+            icon={AlignJustify}
+            href={route('leaderboard')}
+            setOpen={setOpen}
+            onlyMobile
+          />
+        )}
 
       {process.env.NODE_ENV === 'production' && (
         <DialectNotificationsComponent />
@@ -90,10 +99,19 @@ interface IEntry {
   href: string | UrlObject
   disabled?: boolean
   onlyDesktop?: boolean
+  onlyMobile?: boolean
   setOpen?: (open: boolean) => void
 }
 
-function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
+function Entry({
+  title,
+  icon,
+  href,
+  disabled,
+  onlyDesktop,
+  onlyMobile,
+  setOpen,
+}: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
@@ -106,6 +124,7 @@ function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
         {
           'bg-primary text-background': pathname === href,
           'hidden md:flex': onlyDesktop,
+          'flex md:hidden': onlyMobile,
         }
       )}
       href={href}

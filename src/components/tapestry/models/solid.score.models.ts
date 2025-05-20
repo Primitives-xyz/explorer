@@ -2,6 +2,8 @@ export interface SolidScoreResponse {
   walletAddress: string
   score: number
   badges: string[]
+  position: number
+  percentile: number
 }
 
 export interface SolidScoreLeaderboardResponse {
@@ -10,4 +12,5 @@ export interface SolidScoreLeaderboardResponse {
   position: number
   walletAddress: string
   score: number
+  percentile: number
 }

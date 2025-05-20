@@ -4,9 +4,10 @@ import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
 import { SolidScoreCardWrapper } from '@/components/solid-score/solid-score-card-wrapper'
 import { SolidScoreRevealButton } from '@/components/solid-score/solid-score-reveal-button'
 import { SolidScoreValue } from '@/components/solid-score/solid-score-value'
-import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
-import { Spinner } from '@/components/ui'
+import { Button, ButtonVariant, Spinner } from '@/components/ui'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { useTranslations } from 'next-intl'
 
 export function SolidScore() {
   const {
@@ -15,27 +16,13 @@ export function SolidScore() {
     loading: currentWalletLoading,
   } = useCurrentWallet()
 
+  const t = useTranslations('menu')
+
   const {
     data,
     loading: scoreLoading,
     error,
   } = useSolidScore({ id: mainProfile?.id })
-
-  const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
-    username: mainProfile?.username || '',
-  })
-
-  const handleRevealClick = async () => {
-    await updateProfile({
-      properties: [
-        {
-          key: 'userRevealedTheSolidScore',
-          value: true,
-        },
-      ],
-    })
-    refetch()
-  }
 
   const hasRevealed = !!mainProfile?.userRevealedTheSolidScore
 
@@ -65,12 +52,16 @@ export function SolidScore() {
             />
           </div>
           <SolidScoreBadges data={data} smallView />
+          <Button
+            variant={ButtonVariant.BADGE}
+            href={route('leaderboard')}
+            className="mt-4"
+          >
+            {t('solid_score.see_your_rank')}
+          </Button>
         </div>
       ) : (
-        <SolidScoreRevealButton
-          onClick={handleRevealClick}
-          loading={updateProfileLoading}
-        />
+        <SolidScoreRevealButton onRevealComplete={refetch} />
       )}
     </SolidScoreCardWrapper>
   )
