@@ -1,12 +1,11 @@
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
-import { SolidScoreLeaderboardDialog } from '@/components/solid-score/leaderboard-dialog'
 import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
 import { SolidScoreRevealButton } from '@/components/solid-score/solid-score-reveal-button'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { Button, ButtonVariant } from '@/components/ui'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { useState } from 'react'
 
 interface Props {
   id?: string
@@ -15,7 +14,6 @@ interface Props {
 export function SolidScoreProfileHeader({ id }: Props) {
   const { isLoggedIn, mainProfile, refetch } = useCurrentWallet()
   const { data, loading: scoreLoading } = useSolidScore({ id })
-  const [open, setOpen] = useState(false)
   const solidScore = formatSmartNumber(data?.score || 1, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -61,14 +59,9 @@ export function SolidScoreProfileHeader({ id }: Props) {
       <span className="desktop">
         <SolidScoreBadges data={data} compactLimit={3} />
       </span>
-      <Button variant={ButtonVariant.BADGE} onClick={() => setOpen(true)}>
+      <Button variant={ButtonVariant.BADGE} href={route('leaderboard')}>
         leaderboard
       </Button>
-      <SolidScoreLeaderboardDialog
-        open={open}
-        setOpen={setOpen}
-        solidScore={data}
-      />
     </div>
   )
 }

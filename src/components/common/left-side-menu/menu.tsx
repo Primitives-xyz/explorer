@@ -5,6 +5,7 @@ import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
 import {
+  AlignJustify,
   ArrowRightLeft,
   Beef,
   Compass,
@@ -60,6 +61,13 @@ export function Menu({ setOpen }: Props) {
         title={t('menu.stake')}
         icon={Beef}
         href={route('stake')}
+        setOpen={setOpen}
+      />
+
+      <Entry
+        title={t('menu.leaderboard')}
+        icon={AlignJustify}
+        href={route('leaderboard')}
         setOpen={setOpen}
       />
 
