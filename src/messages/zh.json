@@ -115,6 +115,7 @@
   "home": {
     "create_a_profile_to_follow": "创建一个个人资料以关注链上钱包并实时查看他们的交换！",
     "tabs": {
+      "all": "全部",
       "twitter_kol": "Twitter KOL",
       "following": "正在关注"
     },

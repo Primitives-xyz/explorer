@@ -115,6 +115,7 @@
   "home": {
     "create_a_profile_to_follow": "Create a profile to follow wallets onchain and see their swaps in real time!",
     "tabs": {
+      "all": "All",
       "twitter_kol": "Twitter KOL",
       "following": "Following"
     },
