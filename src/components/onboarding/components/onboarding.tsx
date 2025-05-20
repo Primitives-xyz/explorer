@@ -84,6 +84,7 @@ export function Onboarding() {
     if (shouldShowOnboarding()) {
       setOpen(true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainProfile, profiles, isLoggedIn])
 
   const getModalTitle = () => {

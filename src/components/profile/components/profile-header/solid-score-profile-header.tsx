@@ -44,13 +44,7 @@ export function SolidScoreProfileHeader({ id }: Props) {
     !mainProfile?.userRevealedTheSolidScore &&
     id === mainProfile?.id
   ) {
-    return (
-      <SolidScoreRevealButton
-        onClick={handleRevealClick}
-        loading={updateProfileLoading}
-        smallView
-      />
-    )
+    return <SolidScoreRevealButton smallView />
   }
 
   return (

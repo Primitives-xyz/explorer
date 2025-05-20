@@ -131,6 +131,7 @@ export default function AddStopLimit({
       triggerPrice: triggerOraclePrice,
       limitPrice,
     } as AddStopLimitOrderParams)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderAmount, triggerOraclePrice, direction, limitPrice])
 
   useEffect(() => {
@@ -145,6 +146,7 @@ export default function AddStopLimit({
     if (!error) {
       setIsError(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
   return (
