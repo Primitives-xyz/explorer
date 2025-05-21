@@ -125,7 +125,7 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
                   alt="profile image"
                   width={20}
                   height={20}
-                  className="object-cover rounded-full aspect-square"
+                  className="object-cover rounded-full aspect-square max-w-[20px] max-h-[20px]"
                 />
               )}
               <p className="text-md pt-1">{mainProfile?.username}</p>

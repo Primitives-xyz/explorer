@@ -5,15 +5,27 @@ import { SolidScoreShareDialog } from '@/components/solid-score/leaderboard/soli
 import { Button, ButtonSize, Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { DataTableLeaderboard } from './data-table-leaderboard'
 import { DataTableUserPosition } from './data-table-user-position'
 
+const AUTHORIZED_USERNAMES = ['nehemiah', 'nemoblackburn', 'cedrick']
+
 export function LeaderboardContent() {
   const { data, loading } = useSolidScoreLeaderboard()
-  const { mainProfile, isLoggedIn, loading: walletLoading } = useCurrentWallet()
+  const { mainProfile, loading: walletLoading } = useCurrentWallet()
   const [open, setOpen] = useState(false)
   const t = useTranslations('menu.solid_score.leaderboard')
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!walletLoading && mainProfile?.username) {
+      if (!AUTHORIZED_USERNAMES.includes(mainProfile.username)) {
+        router.push('/')
+      }
+    }
+  }, [walletLoading, mainProfile?.username, router])
 
   const hasRevealedShare = !!mainProfile?.userHasClickedOnShareHisSolidScore
 
@@ -29,6 +41,13 @@ export function LeaderboardContent() {
     )
   }
 
+  if (
+    !mainProfile?.username ||
+    !AUTHORIZED_USERNAMES.includes(mainProfile.username)
+  ) {
+    return null
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
@@ -41,14 +60,14 @@ export function LeaderboardContent() {
           />
           {mainProfile && !isUserInTopList && <DataTableUserPosition />}
         </div>
-        {!hasRevealedShare && isLoggedIn && (
+        {!hasRevealedShare && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Button onClick={() => setOpen(true)} size={ButtonSize.LG}>
               {t('share_button')}
             </Button>
           </div>
         )}
-        {hasRevealedShare && isLoggedIn && (
+        {hasRevealedShare && (
           <Button
             onClick={() => setOpen(true)}
             className="w-full"

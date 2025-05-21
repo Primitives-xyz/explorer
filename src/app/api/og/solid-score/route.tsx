@@ -11,13 +11,25 @@ function formatSmartNumber(value: number): string {
   }).format(value)
 }
 
+async function getImageData(url: string) {
+  try {
+    const response = await fetch(url)
+    const contentType = response.headers.get('content-type') || ''
+    const buffer = await response.arrayBuffer()
+    const base64 = Buffer.from(buffer).toString('base64')
+    return `data:${contentType};base64,${base64}`
+  } catch (error) {
+    console.error('Error fetching image:', error)
+    return null
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
     const username = searchParams.get('username')
     const rawScore = searchParams.get('score')
     const profileImage = searchParams.get('profileImage')
-    const percentile = searchParams.get('percentile') || '0'
     const badges = searchParams.get('badges')
       ? JSON.parse(searchParams.get('badges') || '[]')
       : []
@@ -31,6 +43,11 @@ export async function GET(req: NextRequest) {
     const decodedProfileImage = profileImage
       ? decodeURIComponent(profileImage)
       : null
+
+    let imageDataUrl = null
+    if (decodedProfileImage) {
+      imageDataUrl = await getImageData(decodedProfileImage)
+    }
 
     const url = new URL(req.url)
     const backgroundImageUrl = `${url.protocol}//${url.host}/images/menu/solid-score-share-modal-bg.png`
@@ -107,9 +124,9 @@ export async function GET(req: NextRequest) {
                 marginBottom: '40px',
               }}
             >
-              {decodedProfileImage && (
+              {imageDataUrl && (
                 <img
-                  src={decodedProfileImage}
+                  src={imageDataUrl}
                   alt={username || 'Profile'}
                   width="48"
                   height="48"
