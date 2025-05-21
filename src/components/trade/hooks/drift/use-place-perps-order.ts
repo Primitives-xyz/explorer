@@ -1,3 +1,5 @@
+'use client'
+
 import { OrderType } from '@/components/tapestry/models/drift.model'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
@@ -14,6 +16,7 @@ import {
   PRICE_PRECISION,
 } from '@drift-labs/sdk-browser'
 import { isSolanaWallet } from '@dynamic-labs/solana'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useCreatePerpTradeContent } from '../use-create-perp-trade-content'
@@ -50,6 +53,7 @@ export function usePlacePerpsOrder({
   const { primaryWallet, walletAddress } = useCurrentWallet()
   const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
   const { createPerpTradeContentNode } = useCreatePerpTradeContent()
+  const pathname = usePathname()
 
   const placePerpsOrder = async () => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -134,7 +138,7 @@ export function usePlacePerpsOrder({
 
       let orderParams
       if (orderType === OrderType.MARKET) {
-        console.log("OrderType:", orderType)
+        console.log('OrderType:', orderType)
         orderParams = getMarketOrderParams({
           baseAssetAmount,
           direction,
@@ -166,7 +170,7 @@ export function usePlacePerpsOrder({
       }
 
       if (orderType === OrderType.LIMIT) {
-        console.log("OrderType:", orderType)
+        console.log('OrderType:', orderType)
         const price = driftClient.convertToPricePrecision(Number(limitPrice))
         const formatedPrice = convertToNumber(price, PRICE_PRECISION)
 
@@ -225,7 +229,7 @@ export function usePlacePerpsOrder({
       }
 
       if (orderType === OrderType.TP) {
-        console.log("OrderType:", orderType)
+        console.log('OrderType:', orderType)
         const price = driftClient.convertToPricePrecision(Number(triggerPrice))
 
         if (direction === PositionDirection.LONG) {
@@ -250,7 +254,7 @@ export function usePlacePerpsOrder({
       }
 
       if (orderType === OrderType.ADD_TP) {
-        console.log("OrderType:", orderType)
+        console.log('OrderType:', orderType)
         const price = driftClient.convertToPricePrecision(Number(triggerPrice))
 
         if (direction === PositionDirection.SHORT) {
@@ -275,7 +279,7 @@ export function usePlacePerpsOrder({
       }
 
       if (orderType === OrderType.SL) {
-        console.log("OrderType:", orderType)
+        console.log('OrderType:', orderType)
         const tprice = driftClient.convertToPricePrecision(Number(triggerPrice))
         const lprice = driftClient.convertToPricePrecision(Number(limitPrice))
 
@@ -303,7 +307,7 @@ export function usePlacePerpsOrder({
       }
 
       if (orderType === OrderType.ADD_SL) {
-        console.log("OrderType:", orderType)
+        console.log('OrderType:', orderType)
         const tprice = driftClient.convertToPricePrecision(Number(triggerPrice))
         const lprice = driftClient.convertToPricePrecision(Number(limitPrice))
 
@@ -354,6 +358,12 @@ export function usePlacePerpsOrder({
 
       // --- Create Content Node ---
       if (txSig) {
+        const route = (() => {
+          const path = pathname
+          if (path.includes('/trenches')) return 'trenches'
+          if (path.includes('/trade')) return 'trade'
+          return 'home'
+        })()
         createPerpTradeContentNode({
           signature: txSig,
           marketSymbol: symbol,
@@ -365,6 +375,7 @@ export function usePlacePerpsOrder({
           reduceOnly: reduceOnly,
           slippage: slippage,
           walletAddress: walletAddress,
+          route,
         })
       }
       // --- End Content Node Creation ---
