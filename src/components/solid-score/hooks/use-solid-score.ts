@@ -4,14 +4,14 @@ import { SolidScoreResponse } from '@/components/tapestry/models/solid.score.mod
 import { useQuery } from '@/utils/api'
 
 interface Props {
-  walletAddress?: string
+  id?: string
 }
 
-export function useSolidScore({ walletAddress }: Props) {
-  const shouldFetch = !!walletAddress
+export function useSolidScore({ id }: Props) {
+  const shouldFetch = !!id
 
   const { data, error, loading, refetch } = useQuery<SolidScoreResponse>({
-    endpoint: `/solid-score/${walletAddress}`,
+    endpoint: `solid-score/${id}`,
     skip: !shouldFetch,
     toBackend: true,
   })

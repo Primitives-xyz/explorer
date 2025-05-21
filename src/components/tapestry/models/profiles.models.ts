@@ -30,6 +30,7 @@ export interface IProfile {
   wallet: IWallet
   hasSeenProfileSetupModal?: boolean
   userRevealedTheSolidScore?: boolean
+  userHasClickedOnShareHisSolidScore?: boolean
 }
 
 // POST /profiles/findOrCreate

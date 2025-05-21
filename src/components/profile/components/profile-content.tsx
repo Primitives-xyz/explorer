@@ -18,6 +18,7 @@ export function ProfileContent({ profileInfo, walletAddress }: Props) {
       </div>
     )
   }
+
   return (
     <div className="flex flex-col w-full space-y-6 pb-6">
       <ProfileHeader profileInfo={profileInfo} walletAddress={walletAddress} />

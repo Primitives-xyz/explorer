@@ -112,6 +112,7 @@ export default function AddTakeProfit({
         triggerPrice: triggerOraclePrice,
       } as AddTakeProfitOrderParams)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderAmount, triggerOraclePrice, direction])
 
   useEffect(() => {
@@ -126,6 +127,7 @@ export default function AddTakeProfit({
     if (!error) {
       setIsError(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
   return (

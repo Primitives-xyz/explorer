@@ -22,6 +22,7 @@
     "trade": "Trade",
     "discover": "Discover",
     "stake": "Stake",
+    "leaderboard": "Leaderboard",
     "title": "solana_social_explorer",
     "profile": {
       "greeting": "hi",
@@ -43,13 +44,43 @@
       "reveal_button": "Reveal score",
       "your_score": "Your SOLID Score",
       "reveal_your_score": "Reveal Your SOLID Score",
-      "share_dialog": {
-        "title": "Share Your SOLID Score",
-        "description": "Your SOLID Score was updated. Share with others!",
-        "my_score_is": "My SOLID Score is...",
-        "claim_yours": "Claim yours at SSE.gg",
-        "share_button": "Share",
-        "tweet_text": "My SOLID Score is {score} Check yours at https://www.sse.gg/!"
+      "see_your_rank": "See your rank",
+      "leaderboard": {
+        "title": "Leaderboard",
+        "share_button": "Share your SOLID score",
+        "share_dialog": {
+          "title": "🚀 You're on the board, but it's locked",
+          "percentile_text": "Your score ranks you in the Top {percentile}% of SSE users!",
+          "unlock_text": "Share your score to unlock your rank and see how you stack up",
+          "score_intro": "My SOLID Score is...",
+          "claim_text": "Claim yours at SSE.gg",
+          "copy_image": {
+            "generating": "Generating...",
+            "no_image": "No image",
+            "copy_again": "Copy again",
+            "default": "Copy Image"
+          },
+          "then": "then",
+          "share_x": "Share on X",
+          "tweet_text": "Just revealed my SOLID Score on SSE: {score}",
+          "copy_success": {
+            "title": "Image copied!",
+            "description": "You can now paste it in your X post."
+          },
+          "download_success": {
+            "title": "Image downloaded!",
+            "description": "You can now upload it to your X post."
+          }
+        },
+        "table": {
+          "columns": {
+            "rank": "Rank",
+            "username": "Username",
+            "score": "Score",
+            "percentile": "Percentile"
+          },
+          "position_prefix": "#"
+        }
       },
       "badges": {
         "solana_og": {

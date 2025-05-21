@@ -73,7 +73,9 @@ export default function AddTPAndSL({
       orderType: OrderType.ADD_TP,
       triggerPrice: (orderParams as AddTakeProfitOrderParams).triggerPrice,
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderParams])
+
   const { placePerpsOrder, loading } = usePlacePerpsOrder(placeOrderParams)
 
   const handlePlaceOrder = async () => {

@@ -23,12 +23,12 @@ function interpolateColor(
 
 function getScorePercentage(score: number): number {
   const clampedScore = Math.max(0, Math.min(1000, score))
-  
+
   if (clampedScore >= 1000) return 1
   if (clampedScore >= 450) return 0.95 + (clampedScore - 450) * (0.05 / 550)
-  if (clampedScore >= 300) return 0.85 + (clampedScore - 300) * (0.10 / 150)
-  if (clampedScore >= 200) return 0.60 + (clampedScore - 200) * (0.25 / 100)
-  return clampedScore * (0.60 / 200)
+  if (clampedScore >= 300) return 0.85 + (clampedScore - 300) * (0.1 / 150)
+  if (clampedScore >= 200) return 0.6 + (clampedScore - 200) * (0.25 / 100)
+  return clampedScore * (0.6 / 200)
 }
 
 interface Props {

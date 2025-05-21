@@ -76,7 +76,7 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             (profileInfo.profile.username === 'nehemiah' ||
               profileInfo.profile.username === 'nemoblackburn' ||
               profileInfo.profile.username === 'cedrick') && (
-              <SolidScoreProfileHeader walletAddress={walletAddress} />
+              <SolidScoreProfileHeader id={profileInfo.profile.id} />
             )}
 
           <p className="text-muted-foreground text-sm desktop">

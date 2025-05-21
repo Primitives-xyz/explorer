@@ -1,5 +1,6 @@
 'use client'
 
+import { SolidScoreRevealButton } from '@/components/solid-score/solid-score-reveal-button'
 import { Button, FilterTabs, Paragraph } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -17,6 +18,8 @@ export function HomeTransactions() {
     EHomeTransactionFilter.ALL
   )
 
+  const hasRevealed = !!mainProfile?.userRevealedTheSolidScore
+
   const options = [
     { label: t('home.tabs.all'), value: EHomeTransactionFilter.ALL },
     { label: t('home.tabs.twitter_kol'), value: EHomeTransactionFilter.KOL },
@@ -28,11 +31,23 @@ export function HomeTransactions() {
 
   return (
     <div className="w-full">
-      <FilterTabs
-        options={options}
-        selected={selectedType}
-        onSelect={setSelectedType}
-      />
+      <div className="flex items-start justify-between">
+        <FilterTabs
+          options={options}
+          selected={selectedType}
+          onSelect={setSelectedType}
+        />
+
+        {mainProfile?.username &&
+          !hasRevealed &&
+          (mainProfile.username === 'nehemiah' ||
+            mainProfile.username === 'nemoblackburn' ||
+            mainProfile.username === 'cedrick') && (
+            <div className="h-[36px] flex items-center">
+              <SolidScoreRevealButton smallView />
+            </div>
+          )}
+      </div>
       <div className="space-y-4">
         {selectedType === EHomeTransactionFilter.ALL && <HomeAllTransactions />}
         {selectedType === EHomeTransactionFilter.KOL && <HomeKolTransactions />}

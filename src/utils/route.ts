@@ -22,6 +22,7 @@ const routes = {
   namespace: ({ id }: { id: string }) => `/namespace/${id}`,
   namespaceProfile: ({ id, profile }: { id: string; profile: string }) =>
     `/namespace/${id}/${profile}`,
+  leaderboard: () => '/leaderboard',
 }
 
 export function route<T extends keyof typeof routes>(

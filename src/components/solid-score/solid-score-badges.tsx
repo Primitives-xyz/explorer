@@ -116,7 +116,7 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
   // ]
   // const userBadges = userBadgesMock
 
-  const userBadges = data?.solidUser.badges ?? []
+  const userBadges = data?.badges ?? []
 
   const showCompact = typeof compactLimit === 'number'
 
