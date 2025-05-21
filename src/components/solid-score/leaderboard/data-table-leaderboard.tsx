@@ -8,6 +8,7 @@ import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
 import { ColumnDef, SortingState } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 const baseColumnStyles = {
@@ -28,6 +29,7 @@ export function DataTableLeaderboard({
   loading,
   currentUsername,
 }: DataTableLeaderboardProps) {
+  const t = useTranslations('menu.solid_score.leaderboard.table')
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'position', desc: false },
   ])
@@ -38,7 +40,7 @@ export function DataTableLeaderboard({
       enableSorting: true,
       header: ({ column }) => (
         <div className={baseColumnStyles.rank}>
-          <SortableHeader label="Rank" column={column} />
+          <SortableHeader label={t('columns.rank')} column={column} />
         </div>
       ),
       cell: ({ getValue, row }) => {
@@ -50,7 +52,8 @@ export function DataTableLeaderboard({
               'text-primary font-bold': isCurrentUser,
             })}
           >
-            #{value}
+            {t('position_prefix')}
+            {value}
           </div>
         )
       },
@@ -60,7 +63,7 @@ export function DataTableLeaderboard({
       enableSorting: true,
       header: ({ column }) => (
         <div className={baseColumnStyles.username}>
-          <SortableHeader label="Username" column={column} />
+          <SortableHeader label={t('columns.username')} column={column} />
         </div>
       ),
       cell: ({ getValue, row }) => {
@@ -86,7 +89,7 @@ export function DataTableLeaderboard({
       enableSorting: true,
       header: ({ column }) => (
         <div className={baseColumnStyles.score}>
-          <SortableHeader label="Score" column={column} />
+          <SortableHeader label={t('columns.score')} column={column} />
         </div>
       ),
       cell: ({ getValue, row }) => {
@@ -111,7 +114,7 @@ export function DataTableLeaderboard({
       enableSorting: true,
       header: ({ column }) => (
         <div className={baseColumnStyles.percentile}>
-          <SortableHeader label="Percentile" column={column} />
+          <SortableHeader label={t('columns.percentile')} column={column} />
         </div>
       ),
       cell: ({ getValue, row }) => {

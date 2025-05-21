@@ -8,6 +8,7 @@ import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 
 const baseColumnStyles = {
   rank: 'md:w-[100px]',
@@ -26,6 +27,7 @@ interface UserPosition {
 export function DataTableUserPosition() {
   const { mainProfile } = useCurrentWallet()
   const { data: solidScoreUserData } = useSolidScore({ id: mainProfile?.id })
+  const t = useTranslations('menu.solid_score.leaderboard.table')
 
   const userPosition = {
     position: solidScoreUserData?.position,
@@ -37,19 +39,24 @@ export function DataTableUserPosition() {
   const columns: ColumnDef<UserPosition>[] = [
     {
       accessorKey: 'position',
-      header: () => <div className={baseColumnStyles.rank}>Rank</div>,
+      header: () => (
+        <div className={baseColumnStyles.rank}>{t('columns.rank')}</div>
+      ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
         return (
           <div className={cn(baseColumnStyles.rank, 'text-muted-foreground')}>
-            #{value}
+            {t('position_prefix')}
+            {value}
           </div>
         )
       },
     },
     {
       accessorKey: 'username',
-      header: () => <div className={baseColumnStyles.username}>Username</div>,
+      header: () => (
+        <div className={baseColumnStyles.username}>{t('columns.username')}</div>
+      ),
       cell: ({ getValue }) => {
         const value = getValue<string>()
         return (
@@ -67,7 +74,9 @@ export function DataTableUserPosition() {
     },
     {
       accessorKey: 'score',
-      header: () => <div className={baseColumnStyles.score}>Score</div>,
+      header: () => (
+        <div className={baseColumnStyles.score}>{t('columns.score')}</div>
+      ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
         return (
@@ -83,7 +92,9 @@ export function DataTableUserPosition() {
     {
       accessorKey: 'percentile',
       header: () => (
-        <div className={baseColumnStyles.percentile}>Percentile</div>
+        <div className={baseColumnStyles.percentile}>
+          {t('columns.percentile')}
+        </div>
       ),
       cell: ({ getValue }) => {
         const value = getValue<number>()
@@ -103,7 +114,7 @@ export function DataTableUserPosition() {
   ]
 
   return (
-    <div className="border-t pt-4">
+    <div className="pt-4">
       <DataTable
         data={[userPosition]}
         columns={columns}

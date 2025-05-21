@@ -36,9 +36,15 @@ export function HomeTransactions() {
           onSelect={setSelectedType}
         />
 
-        <div className="h-[36px] flex items-center">
-          <SolidScoreRevealButton smallView />
-        </div>
+        {mainProfile?.username &&
+          !hasRevealed &&
+          (mainProfile.username === 'nehemiah' ||
+            mainProfile.username === 'nemoblackburn' ||
+            mainProfile.username === 'cedrick') && (
+            <div className="h-[36px] flex items-center">
+              <SolidScoreRevealButton smallView />
+            </div>
+          )}
       </div>
       <div className="space-y-4">
         {selectedType === EHomeTransactionFilter.KOL && <HomeKolTransactions />}
