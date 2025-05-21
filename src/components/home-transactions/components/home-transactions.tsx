@@ -6,6 +6,7 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { EHomeTransactionFilter } from '../home-transactions.models'
+import { HomeAllTransactions } from './home-all-transactions'
 import { HomeFollowingTransactions } from './home-following-transactions'
 import { HomeKolTransactions } from './home-kol-transactions'
 
@@ -13,10 +14,11 @@ export function HomeTransactions() {
   const t = useTranslations()
   const { mainProfile, setShowAuthFlow } = useCurrentWallet()
   const [selectedType, setSelectedType] = useState<EHomeTransactionFilter>(
-    EHomeTransactionFilter.KOL
+    EHomeTransactionFilter.ALL
   )
 
   const options = [
+    { label: t('home.tabs.all'), value: EHomeTransactionFilter.ALL },
     { label: t('home.tabs.twitter_kol'), value: EHomeTransactionFilter.KOL },
     {
       label: t('home.tabs.following'),
@@ -32,6 +34,7 @@ export function HomeTransactions() {
         onSelect={setSelectedType}
       />
       <div className="space-y-4">
+        {selectedType === EHomeTransactionFilter.ALL && <HomeAllTransactions />}
         {selectedType === EHomeTransactionFilter.KOL && <HomeKolTransactions />}
         {selectedType === EHomeTransactionFilter.FOLLOWING && (
           <>
