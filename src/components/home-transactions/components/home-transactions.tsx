@@ -1,6 +1,6 @@
 'use client'
 
-import { SolidScoreRevealButton } from '@/components/solid-score/solid-score-reveal-button'
+import { SolidScoreSmartCta } from '@/components/solid-score/solid-score-smart-cta'
 import { Button, FilterTabs, Paragraph } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -13,12 +13,10 @@ import { HomeKolTransactions } from './home-kol-transactions'
 
 export function HomeTransactions() {
   const t = useTranslations()
-  const { mainProfile, setShowAuthFlow } = useCurrentWallet()
+  const { mainProfile, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
   const [selectedType, setSelectedType] = useState<EHomeTransactionFilter>(
     EHomeTransactionFilter.ALL
   )
-
-  const hasRevealed = !!mainProfile?.userRevealedTheSolidScore
 
   const options = [
     { label: t('home.tabs.all'), value: EHomeTransactionFilter.ALL },
@@ -31,22 +29,19 @@ export function HomeTransactions() {
 
   return (
     <div className="w-full">
+      <div className="flex items-center justify-center">
+        {isLoggedIn &&
+          mainProfile?.username &&
+          (mainProfile?.username === 'nehemiah' ||
+            mainProfile?.username === 'nemoblackburn' ||
+            mainProfile?.username === 'cedrick') && <SolidScoreSmartCta />}
+      </div>
       <div className="flex items-start justify-between">
         <FilterTabs
           options={options}
           selected={selectedType}
           onSelect={setSelectedType}
         />
-
-        {mainProfile?.username &&
-          !hasRevealed &&
-          (mainProfile.username === 'nehemiah' ||
-            mainProfile.username === 'nemoblackburn' ||
-            mainProfile.username === 'cedrick') && (
-            <div className="h-[36px] flex items-center">
-              <SolidScoreRevealButton smallView />
-            </div>
-          )}
       </div>
       <div className="space-y-4">
         {selectedType === EHomeTransactionFilter.ALL && <HomeAllTransactions />}

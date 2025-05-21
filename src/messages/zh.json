@@ -12,9 +12,13 @@
     "on": "on",
     "swap": "交换",
     "follow": {
-      "follow": "Follow",
-      "unfollow": "Unfollow"
-    }
+      "follow": "关注",
+      "unfollow": "取消关注",
+      "followers": "关注者",
+      "following": "正在关注"
+    },
+    "no_description": "暂无描述",
+    "since": "注册于"
   },
   "menu": {
     "home": "首页",
@@ -46,8 +50,8 @@
       "reveal_your_score": "揭晓你的SOLID分数",
       "see_your_rank": "查看你的排名",
       "leaderboard": {
-        "title": "Leaderboard",
-        "share_button": "Share your SOLID score",
+        "title": "排行榜",
+        "share_button": "分享你的SOLID分数",
         "share_dialog": {
           "title": "🚀 You're on the board, but it's locked",
           "percentile_text": "Your score ranks you in the Top {percentile}% of SSE users!",
@@ -80,6 +84,11 @@
             "percentile": "Percentile"
           },
           "position_prefix": "#"
+        },
+        "locked": {
+          "title": "🚀 你已上榜，但排名已锁定",
+          "description": "分享你的分数来解锁排名，看看你的表现如何。",
+          "unlock_button": "解锁我的排名"
         }
       },
       "badges": {
@@ -140,6 +149,18 @@
           "description": "Stakes SOL directly with validators"
         },
         "more_badges": "+ {count} more"
+      },
+      "smart_cta": {
+        "reveal": {
+          "title": "🧠 你的钱包有多强大？",
+          "description": "解锁你的SOLID分数并在排行榜上展示。",
+          "button": "显示我的分数"
+        },
+        "unlock": {
+          "title": "🔓 查看你在排行榜上的排名",
+          "description": "顶级钱包已经在展示中。",
+          "button": "解锁我的排名"
+        }
       }
     }
   },
@@ -334,12 +355,12 @@
       "followings": "Followings"
     },
     "profile": {
-      "see_original": "See original",
-      "followers_count": "{count} Followers",
-      "following_count": "{count} Following",
-      "no_description": "No description",
-      "owned_by": "owned by",
-      "created": "Created"
+      "see_original": "查看原始",
+      "followers_count": "{count} 关注者",
+      "following_count": "{count} 正在关注",
+      "no_description": "{common.no_description}",
+      "owned_by": "拥有者",
+      "created": "创建于"
     }
   },
   "stake": {
@@ -487,5 +508,13 @@
   "token_holders": {
     "others_own": "and +{count} others own this",
     "own_this": "own this"
+  },
+  "profile": {
+    "header": {
+      "since": "{common.since}",
+      "no_description": "{common.no_description}",
+      "followers": "{common.follow.followers}",
+      "following": "{common.follow.following}"
+    }
   }
 }

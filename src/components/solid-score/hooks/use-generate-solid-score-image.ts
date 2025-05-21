@@ -2,41 +2,42 @@
 
 import { useEffect, useState } from 'react'
 
-interface GenerateImageParams {
+interface UseGenerateSolidScoreImageParams {
   username: string
   score: number
   profileImage: string
   badges: string[]
 }
 
-export function useGenerateSolidScoreImage(params: GenerateImageParams | null) {
+export function useGenerateSolidScoreImage(
+  params: UseGenerateSolidScoreImageParams
+) {
   const [data, setData] = useState<Blob | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
     const generateImage = async () => {
-      if (!params || !params.score || !params.username) {
-        return
-      }
-
       try {
         setLoading(true)
         setError(null)
 
-        const searchParams = new URLSearchParams({
-          username: params.username,
-          score: params.score.toString(),
-          profileImage: params.profileImage,
-          badges: JSON.stringify(params.badges),
-        })
-
-        const response = await fetch(`/api/og/solid-score?${searchParams}`)
-
-        if (!response.ok) {
-          throw new Error('Failed to generate image')
+        const searchParams = new URLSearchParams()
+        searchParams.set('username', params.username)
+        searchParams.set('score', params.score.toString())
+        if (params.profileImage) {
+          searchParams.set(
+            'profileImage',
+            encodeURIComponent(params.profileImage)
+          )
+        }
+        if (params.badges.length > 0) {
+          searchParams.set('badges', JSON.stringify(params.badges))
         }
 
+        const response = await fetch(
+          `/api/og/solid-score?${searchParams.toString()}`
+        )
         const blob = await response.blob()
         setData(blob)
       } catch (err) {
@@ -48,8 +49,7 @@ export function useGenerateSolidScoreImage(params: GenerateImageParams | null) {
     }
 
     generateImage()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params?.username, params?.score, params?.profileImage, params?.badges])
+  }, [params.username, params.score, params.profileImage, params.badges])
 
   return { data, loading, error }
 }

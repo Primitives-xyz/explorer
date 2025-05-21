@@ -2,10 +2,12 @@
 
 import { FollowButton } from '@/components/common/follow-button'
 import { SolidScoreProfileHeader } from '@/components/profile/components/profile-header/solid-score-profile-header'
+import { SolidScoreSmartCta } from '@/components/solid-score/solid-score-smart-cta'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/utils/utils'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   profileInfo?: IGetProfileResponse
@@ -13,9 +15,11 @@ interface Props {
 }
 
 export function ProfileHeader({ profileInfo, walletAddress }: Props) {
-  const { mainProfile } = useCurrentWallet()
+  const { mainProfile, isLoggedIn } = useCurrentWallet()
+  const t = useTranslations('profile.header')
+  const commonT = useTranslations('common')
+
   if (!profileInfo) {
-    // Only wallet address is available
     return (
       <div className="flex items-center gap-2">
         <Avatar
@@ -67,9 +71,11 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
               </p>
             )}
             <p className="text-muted-foreground desktop">
-              • since {creationYear}
+              • {t('since')} {creationYear}
             </p>
-            <p className="text-muted-foreground mobile">since {creationYear}</p>
+            <p className="text-muted-foreground mobile">
+              {t('since')} {creationYear}
+            </p>
           </div>
 
           {profileInfo.profile.username &&
@@ -80,10 +86,17 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             )}
 
           <p className="text-muted-foreground text-sm desktop">
-            {profileInfo.profile.bio || 'No description'}
+            {profileInfo.profile.bio || t('no_description')}
           </p>
         </div>
       </div>
+
+      {isLoggedIn &&
+        mainProfile?.username &&
+        (mainProfile?.username === 'nehemiah' ||
+          mainProfile?.username === 'nemoblackburn' ||
+          mainProfile?.username === 'cedrick') && <SolidScoreSmartCta />}
+
       <div className="space-y-2">
         {!!profileInfo?.profile.username && !!mainProfile?.username && (
           <FollowButton
@@ -93,12 +106,16 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
           />
         )}
         <p className="text-muted-foreground text-sm mobile mb-6">
-          {profileInfo.profile.bio || 'No description'}
+          {profileInfo.profile.bio || t('no_description')}
         </p>
         <p className="flex items-center space-x-2 text-xs text-muted-foreground">
-          <span>{profileInfo?.socialCounts?.followers} Followers</span>
+          <span>
+            {profileInfo?.socialCounts?.followers} {t('followers')}
+          </span>
           <span>|</span>
-          <span>{profileInfo?.socialCounts?.following} Following</span>
+          <span>
+            {profileInfo?.socialCounts?.following} {t('following')}
+          </span>
         </p>
       </div>
     </div>
