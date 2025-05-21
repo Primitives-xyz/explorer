@@ -1,3 +1,5 @@
+'use client'
+
 import { useSSEPrice } from '@/components/trade/hooks/use-sse-price'
 import {
   DEFAULT_SLIPPAGE_BPS,
@@ -10,6 +12,7 @@ import { isSolanaWallet } from '@dynamic-labs/solana'
 import { getAssociatedTokenAddressSync } from '@solana/spl-token'
 import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
+import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useToastContent } from './drift/use-toast-content'
@@ -87,6 +90,7 @@ export function useJupiterSwap({
   const [error, setError] = useState<string | null>(null)
   const { ssePrice } = useSSEPrice()
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const pathname = usePathname()
 
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
@@ -361,6 +365,12 @@ export function useJupiterSwap({
                 : PLATFORM_FEE_BPS / 10000)
             ).toString()
           : '0',
+        route: (() => {
+          const path = pathname
+          if (path.includes('/trenches')) return 'trenches'
+          if (path.includes('/trade')) return 'trade'
+          return 'home'
+        })(),
       })
 
       if (tx.value.err) {

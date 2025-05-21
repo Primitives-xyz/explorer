@@ -15,6 +15,7 @@ interface CreateContentNodeParams {
   walletAddress?: string
   inputDecimals: number
   usdcFeeAmount?: string
+  route?: 'trenches' | 'trade' | 'home'
 }
 
 export function useCreateTradeContentNode() {
@@ -33,6 +34,7 @@ export function useCreateTradeContentNode() {
     walletAddress,
     inputDecimals,
     usdcFeeAmount,
+    route,
   }: CreateContentNodeParams) => {
     try {
       // Fetch profiles for both wallets
@@ -85,6 +87,7 @@ export function useCreateTradeContentNode() {
         walletUsername: walletProfile?.username || '',
         walletImage: walletProfile?.image || '',
         usdcFeeAmount: usdcFeeAmount || '0',
+        route: route || '',
 
         // Token information
         inputTokenSymbol:
@@ -145,6 +148,7 @@ export function useCreateTradeContentNode() {
           sourceWallet,
           inputTokenName,
           outputTokenName,
+          route,
           properties: contentToProperties(content),
         }),
       })
