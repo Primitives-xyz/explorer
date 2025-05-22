@@ -4,6 +4,7 @@ import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isValidSolanaAddress } from '@/utils/validation'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { mutate } from 'swr'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
@@ -23,6 +24,7 @@ import { StepsWrapper } from './steps-wrapper'
 import { SuggestedFollow } from './suggested-follow'
 
 export function Onboarding() {
+  const t = useTranslations()
   const [open, setOpen] = useState(false)
 
   const {
@@ -89,9 +91,11 @@ export function Onboarding() {
 
   const getModalTitle = () => {
     if (step === EOnboardingSteps.FOLLOW) {
-      return `Welcome @${mainProfile?.username}! Your profile has been successfully created!`
+      return t('onboarding.welcome_success', {
+        username: mainProfile?.username,
+      })
     } else {
-      return 'Create Your Profile'
+      return t('onboarding.create_profile')
     }
   }
 

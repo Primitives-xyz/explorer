@@ -10,6 +10,7 @@ import { createURL, FetchMethod, fetchWrapper } from '@/utils/api'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { UploadIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useState } from 'react'
 import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
@@ -27,8 +28,9 @@ export function AddProfileImage({
   suggestedImages,
   setStep,
 }: Props) {
-  const { refetch: refetchCurrentUser } = useCurrentWallet()
+  const t = useTranslations()
   const [uploadLoading, setUploadLoading] = useState(false)
+  const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { updateProfile } = useUpdateProfile({
     username: mainProfile.username,
   })
@@ -80,12 +82,14 @@ export function AddProfileImage({
         >
           <div className="flex items-center justify-center md:justify-start md:items-start md:block">
             <div className="w-[160px] space-y-2">
-              {!!suggestedImages?.length && <Label>Profile Image</Label>}
+              {!!suggestedImages?.length && (
+                <Label>{t('onboarding.form.profile_image.label')}</Label>
+              )}
               {mainProfile.image && (
                 <div className="bg-muted rounded-lg w-full aspect-square overflow-hidden">
                   <Image
                     src={mainProfile.image}
-                    alt="Profile Image"
+                    alt={t('onboarding.form.profile_image.alt')}
                     width={200}
                     height={200}
                     className="w-full h-full object-cover"
@@ -98,7 +102,8 @@ export function AddProfileImage({
                 variant={ButtonVariant.OUTLINE}
                 containerClassName="mt-3!"
               >
-                <UploadIcon size={18} /> Upload Image
+                <UploadIcon size={18} />{' '}
+                {t('onboarding.form.profile_image.upload_button')}
               </ButtonInputFile>
             </div>
           </div>
@@ -123,7 +128,7 @@ export function AddProfileImage({
             disabled={uploadLoading}
             variant={ButtonVariant.OUTLINE}
           >
-            Back
+            {t('onboarding.buttons.back')}
           </Button>
           <Button
             onClick={() => {
@@ -132,7 +137,7 @@ export function AddProfileImage({
             className="w-[48%] md:w-[160px]"
             loading={uploadLoading}
           >
-            Next
+            {t('onboarding.buttons.next')}
           </Button>
         </div>
       </div>
