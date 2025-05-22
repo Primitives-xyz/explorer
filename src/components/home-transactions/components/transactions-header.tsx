@@ -47,7 +47,7 @@ export function TransactionsHeader({
         <Button
           variant={ButtonVariant.GHOST}
           href={route('entity', {
-            id: profile?.username || sourceWallet,
+            id: sourceWallet || profile?.username || '',
           })}
           className="p-0 hover:bg-transparent"
         >
@@ -140,7 +140,7 @@ function Username({
     <Button
       variant={ButtonVariant.GHOST}
       href={route('entity', {
-        id: sourceWallet,
+        id: sourceWallet || sourceProfile?.username || '',
       })}
       className="p-0 hover:bg-transparent"
     >
