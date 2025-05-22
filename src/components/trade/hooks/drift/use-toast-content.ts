@@ -130,6 +130,13 @@ export function useToastContent() {
         duration: 5000,
       },
     },
+    INCREASE_POSITION_TX_ERR: {
+      title: 'Failed to increase position',
+      content: {
+        description: 'Failed to increase position',
+        duration: 5000,
+      },
+    },
   }
 
   const LOADINGS = {
@@ -196,6 +203,13 @@ export function useToastContent() {
       title: t('success.perps_withdraw.title'),
       content: {
         description: t('success.perps_withdraw.description'),
+        duration: 2000,
+      },
+    },
+    INCREASE_POSITION_TX_SUCCESS: {
+      title: 'Successfully increased position',
+      content: {
+        description: 'Successfully increased position',
         duration: 2000,
       },
     },

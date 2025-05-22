@@ -1,9 +1,9 @@
 'use client'
 
 import { IUserStats } from '@/components/tapestry/models/drift.model'
-import { FilterTabs, Spinner } from '@/components/ui'
+import { Button, ButtonVariant, Spinner } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
-import { cn, formatUsdValue } from '@/utils/utils'
+import { formatUsdValue } from '@/utils/utils'
 
 export enum DirectionFilterType {
   LONG = 'long',
@@ -29,11 +29,6 @@ export function HeroPerpetual({
   blur,
   setSelectedDirection,
 }: Props) {
-  const options = [
-    { label: 'Long', value: DirectionFilterType.LONG },
-    { label: 'Short', value: DirectionFilterType.SHORT },
-  ]
-
   const formatHealth = (health: number) => {
     return Math.min(100, Math.max(0, health)).toFixed(0) + '%'
   }
@@ -41,7 +36,7 @@ export function HeroPerpetual({
   return (
     <>
       <Card className={`${blur ? 'blur-xs' : ''}`}>
-        <CardContent className="flex justify-between items-center">
+        <CardContent className="flex justify-between items-center p-4">
           <div className="flex flex-col">
             <p className="text-xs">Net USD Value</p>
             <div className="flex items-center gap-2">
@@ -72,13 +67,21 @@ export function HeroPerpetual({
         </CardContent>
       </Card>
 
-      <FilterTabs
-        className={cn('flex items-center justify-between', blur && 'blur-xs')}
-        buttonClassName="w-1/2"
-        options={options}
-        selected={selectedDirection}
-        onSelect={setSelectedDirection}
-      />
+      <div className="w-full grid grid-cols-2 gap-2">
+        <Button
+          variant={selectedDirection === DirectionFilterType.LONG ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
+          onClick={() => setSelectedDirection(DirectionFilterType.LONG)}
+        >
+          Long
+        </Button>
+
+        <Button
+          variant={selectedDirection === DirectionFilterType.SHORT ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
+          onClick={() => setSelectedDirection(DirectionFilterType.SHORT)}
+        >
+          Short
+        </Button>
+      </div>
     </>
   )
 }

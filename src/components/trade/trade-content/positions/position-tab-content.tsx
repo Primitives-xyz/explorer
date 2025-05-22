@@ -69,8 +69,8 @@ export default function PositionTabContent({
   }
 
   return (
-    <div className="px-2 pb-2">
-      <div className="grid grid-cols-6 gap-2 px-2 py-4">
+    <div className="pb-2">
+      <div className="grid grid-cols-6 gap-2 px-2 py-2">
         <div className="text-primary">Market</div>
         <div className="text-primary">Size</div>
         <div className="text-primary">Entry/Mark</div>

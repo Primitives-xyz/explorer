@@ -46,7 +46,8 @@ export function PerpsPositions() {
           />
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      
+      <CardContent className="pt-0">
         {selectedType === Tabs.PERPS_POSITIONS && (
           <PositionTabContent
             perpsPositionsInfo={perpsPositionsInfo}
