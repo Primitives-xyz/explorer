@@ -7,6 +7,7 @@ import {
 } from '@/components/tapestry/models/drift.model'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useIncreasePosition } from '@/components/trade/hooks/jup-perps/use-increase'
+import { useLimitOrders } from '@/components/trade/hooks/jup-perps/use-limit-orders'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
 import {
   Button,
@@ -28,7 +29,7 @@ import { SOL_MINT, USDC_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { formatRawAmount } from '@/utils/utils'
 import Image from 'next/image'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Slippage } from '../slippage'
 
 interface Props {
@@ -63,97 +64,22 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
   return true
 }
 
-// Extracted components
-const DirectionSelector = ({
-  selectedDirection,
-  onDirectionChange,
-}: {
-  selectedDirection: DirectionFilterType
-  onDirectionChange: (direction: DirectionFilterType) => void
-}) => (
-  <div className="w-full grid grid-cols-2 gap-2">
-    <Button
-      variant={
-        selectedDirection === DirectionFilterType.LONG
-          ? ButtonVariant.DEFAULT
-          : ButtonVariant.GHOST
-      }
-      onClick={() => onDirectionChange(DirectionFilterType.LONG)}
-    >
-      Long/Buy
-    </Button>
-    <Button
-      variant={
-        selectedDirection === DirectionFilterType.SHORT
-          ? ButtonVariant.DEFAULT
-          : ButtonVariant.GHOST
-      }
-      onClick={() => onDirectionChange(DirectionFilterType.SHORT)}
-    >
-      Short/Sell
-    </Button>
-  </div>
-)
-
-const OrderTypeSelector = ({
-  orderType,
-  onOrderTypeChange,
-  limitPrice,
-  onLimitPriceChange,
-}: {
-  orderType: OrderType
-  onOrderTypeChange: (type: OrderType) => void
-  limitPrice: string
-  onLimitPriceChange: (price: string) => void
-}) => (
-  <div className="flex items-center justify-between gap-1">
-    <div className="p-1 space-x-2">
-      <Button
-        variant={
-          orderType === OrderType.MARKET
-            ? ButtonVariant.DEFAULT
-            : ButtonVariant.GHOST
-        }
-        className="w-[50px] p-1"
-        onClick={() => onOrderTypeChange(OrderType.MARKET)}
-      >
-        Market
-      </Button>
-      <Button
-        variant={
-          orderType === OrderType.LIMIT
-            ? ButtonVariant.DEFAULT
-            : ButtonVariant.GHOST
-        }
-        className="w-[50px] p-1"
-        onClick={() => onOrderTypeChange(OrderType.LIMIT)}
-      >
-        Limit
-      </Button>
-    </div>
-    <Input
-      placeholder="Amount"
-      value={limitPrice}
-      disabled={orderType !== OrderType.LIMIT}
-      className="w-[150px]"
-      onChange={(e) => onLimitPriceChange(e.target.value)}
-    />
-  </div>
-)
-
 export function JupiterPerps({ setTokenMint }: Props) {
   // Individual state variables
   const [direction, setDirection] = useState<DirectionFilterType>(
     DirectionFilterType.LONG
   )
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
-  const [limitPrice, setLimitPrice] = useState<string>('173.12')
+  const [limitPrice, setLimitPrice] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
-  const [assetSymbol, setAssetSymbol] = useState<string>('SOL')
+  const [assetMint, setAssetMint] = useState<string>(SOL_MINT)
   const [leverageValue, setLeverageValue] = useState<number>(1.1)
   const [slippageOption, setSlippageOption] = useState<string>('0.1')
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [isMarketOrderTxLoading, setIsMarketOrderTxLoading] =
+    useState<boolean>(false)
+  const [isLimitOrderTxLoading, setIsLimitOrderTxLoading] =
+    useState<boolean>(false)
 
   const { isLoggedIn, sdkHasLoaded, setShowAuthFlow, walletAddress } =
     useCurrentWallet()
@@ -163,7 +89,7 @@ export function JupiterPerps({ setTokenMint }: Props) {
     symbol: assetTokenSymbol,
     decimals: assetTokenDecimals,
     image: assetTokenImg,
-  } = useTokenInfo(SOL_MINT)
+  } = useTokenInfo(assetMint)
 
   const {
     isLoading: isIncreaseLoading,
@@ -171,7 +97,8 @@ export function JupiterPerps({ setTokenMint }: Props) {
     error: increaseError,
     placeIncreasePosition,
   } = useIncreasePosition({
-    collateralMint: direction === DirectionFilterType.SHORT ? USDC_MINT : SOL_MINT,
+    collateralMint:
+      direction === DirectionFilterType.SHORT ? USDC_MINT : SOL_MINT,
     collateralTokenDelta: amount
       ? (Number(amount) * Math.pow(10, assetTokenDecimals || 9)).toString()
       : '0',
@@ -184,27 +111,42 @@ export function JupiterPerps({ setTokenMint }: Props) {
     walletAddress: walletAddress || '',
   })
 
+  const {
+    isLoading: isLimitLoading,
+    response: limitResponse,
+    error: limitError,
+    placeLimitOrder,
+  } = useLimitOrders({
+    collateralMint:
+      direction === DirectionFilterType.SHORT ? USDC_MINT : SOL_MINT,
+    collateralTokenDelta: amount
+      ? (Number(amount) * Math.pow(10, assetTokenDecimals || 9)).toString()
+      : '0',
+    includeSerializedTx: true,
+    inputMint: SOL_MINT,
+    leverage: leverageValue.toString(),
+    marketMint: SOL_MINT,
+    side: direction.toLowerCase() as 'long' | 'short',
+    triggerPrice: (Number(limitPrice) * Math.pow(10, 6)).toString(),
+    walletAddress: walletAddress || '',
+  })
+
   // Memoized handlers
   const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (
+      e: React.ChangeEvent<HTMLInputElement>,
+      changeType: 'amount' | 'limit' | 'slippage'
+    ) => {
       const val = e.target.value
       if (validateNumericInput(val)) {
-        setAmount(val)
-        const cursorPosition = e.target.selectionStart
-        window.setTimeout(() => {
-          e.target.focus()
-          e.target.setSelectionRange(cursorPosition, cursorPosition)
-        }, 0)
-      }
-    },
-    []
-  )
+        if (changeType === 'amount') {
+          setAmount(val)
+        } else if (changeType === 'limit') {
+          setLimitPrice(val)
+        } else if (changeType === 'slippage') {
+          setSlippageOption(Number(val) < 100 ? val : '99')
+        }
 
-  const handleDynamicSlippage = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const val = e.target.value
-      if (validateNumericInput(val)) {
-        setSlippageOption(Number(val) < 100 ? val : '99')
         const cursorPosition = e.target.selectionStart
         window.setTimeout(() => {
           e.target.focus()
@@ -242,58 +184,91 @@ export function JupiterPerps({ setTokenMint }: Props) {
   )
 
   const handlePlaceOrder = useCallback(async () => {
-    if (!isLoggedIn || !sdkHasLoaded || loading) return
+    if (!isLoggedIn || !sdkHasLoaded || isMarketOrderTxLoading) return
 
     try {
-      setLoading(true)
+      setIsMarketOrderTxLoading(true)
       await placeIncreasePosition()
     } catch (err) {
       console.error('Failed to place order:', err)
     } finally {
-      setLoading(false)
+      setIsMarketOrderTxLoading(false)
     }
-  }, [isLoggedIn, sdkHasLoaded, loading, placeIncreasePosition])
+  }, [isLoggedIn, sdkHasLoaded, isMarketOrderTxLoading, placeIncreasePosition])
 
-  // Memoized values
-  const buttonContent = useMemo(() => {
-    if (!sdkHasLoaded) {
-      return <Spinner />
+  const handleLimitOrder = useCallback(async () => {
+    if (!isLoggedIn || !sdkHasLoaded || isLimitOrderTxLoading) return
+
+    try {
+      setIsLimitOrderTxLoading(true)
+      await placeLimitOrder()
+    } catch (err) {
+      console.error('Failed to place order:', err)
+    } finally {
+      setIsLimitOrderTxLoading(false)
     }
-    if (!isLoggedIn) {
-      return 'Connect Wallet'
-    }
-    if (loading || isIncreaseLoading) {
-      return <Spinner />
-    }
-    if (Number(amount) > 0) {
-      return `${direction} ~${amount} ${assetSymbol}-Perp`
-    }
-    return 'Enter an amount'
-  }, [
-    sdkHasLoaded,
-    isLoggedIn,
-    loading,
-    isIncreaseLoading,
-    direction,
-    amount,
-    assetSymbol,
-  ])
+  }, [isLoggedIn, sdkHasLoaded, isLimitOrderTxLoading, placeLimitOrder])
 
   return (
     <Card>
       <CardContent className="p-4">
         <div className="space-y-4">
-          <DirectionSelector
-            selectedDirection={direction}
-            onDirectionChange={setDirection}
-          />
+          <div className="w-full grid grid-cols-2 gap-2">
+            <Button
+              variant={
+                direction === DirectionFilterType.LONG
+                  ? ButtonVariant.DEFAULT
+                  : ButtonVariant.GHOST
+              }
+              onClick={() => setDirection(DirectionFilterType.LONG)}
+            >
+              Long/Buy
+            </Button>
+            <Button
+              variant={
+                direction === DirectionFilterType.SHORT
+                  ? ButtonVariant.DEFAULT
+                  : ButtonVariant.GHOST
+              }
+              onClick={() => setDirection(DirectionFilterType.SHORT)}
+            >
+              Short/Sell
+            </Button>
+          </div>
 
-          <OrderTypeSelector
-            orderType={orderType}
-            onOrderTypeChange={setOrderType}
-            limitPrice={limitPrice}
-            onLimitPriceChange={setLimitPrice}
-          />
+          <div className="flex items-center justify-between gap-1">
+            <div className="p-1 space-x-2">
+              <Button
+                variant={
+                  orderType === OrderType.MARKET
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.GHOST
+                }
+                className="w-[50px] p-1"
+                onClick={() => setOrderType(OrderType.MARKET)}
+              >
+                Market
+              </Button>
+              <Button
+                variant={
+                  orderType === OrderType.LIMIT
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.GHOST
+                }
+                className="w-[50px] p-1"
+                onClick={() => setOrderType(OrderType.LIMIT)}
+              >
+                Limit
+              </Button>
+            </div>
+            <Input
+              placeholder="Amount"
+              value={limitPrice}
+              disabled={orderType !== OrderType.LIMIT}
+              className="w-[150px]"
+              onChange={(e) => handleAmountChange(e, 'limit')}
+            />
+          </div>
 
           <Separator />
 
@@ -330,7 +305,7 @@ export function JupiterPerps({ setTokenMint }: Props) {
 
             <div className="flex justify-between items-center gap-2">
               <div className="flex items-center">
-                <Select value={assetSymbol} onValueChange={setAssetSymbol}>
+                <Select value={assetMint} onValueChange={setAssetMint}>
                   <SelectTrigger className="bg-transparent h-12 rounded-input">
                     <SelectValue placeholder="Symbol">
                       <div className="flex items-center gap-2 w-[70px]">
@@ -341,12 +316,12 @@ export function JupiterPerps({ setTokenMint }: Props) {
                           height={20}
                           className="rounded-full"
                         />
-                        {assetSymbol}
+                        {assetTokenSymbol}
                       </div>
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="border border-primary text-primary">
-                    <SelectItem value={'SOL'}>SOL</SelectItem>
+                    <SelectItem value={SOL_MINT}>SOL</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -354,7 +329,7 @@ export function JupiterPerps({ setTokenMint }: Props) {
                 <Input
                   placeholder="0.00"
                   value={amount}
-                  onChange={handleAmountChange}
+                  onChange={(e) => handleAmountChange(e, 'amount')}
                   className="w-full text-white border-none"
                 />
               </div>
@@ -377,7 +352,7 @@ export function JupiterPerps({ setTokenMint }: Props) {
           </div>
 
           <Slippage
-            handleDynamicSlippage={handleDynamicSlippage}
+            handleDynamicSlippage={(e) => handleAmountChange(e, 'slippage')}
             setSlippageExpanded={setSlippageExpanded}
             setSlippageOption={setSlippageOption}
             slippageExpanded={slippageExpanded}
@@ -423,24 +398,73 @@ export function JupiterPerps({ setTokenMint }: Props) {
 
               return (
                 <div>
-                <Button
-                  onClick={() => handlePlaceOrder()}
-                  className="capitalize font-bold w-full text-lg"
-                  disabled={loading || isIncreaseLoading || increaseError !== null}
-                >
-                  {loading || isIncreaseLoading ? (
-                    <Spinner />
-                  ) : Number(amount) > 0 ? (
-                    <p>
-                      {direction} {(Number(increaseResponse?.quote.sizeTokenDelta) / Math.pow(10, assetTokenDecimals || 9)).toFixed(4)} {assetSymbol}
-                    </p>
-                  ) : (
-                    <p>Enter an amount</p>
+                  {orderType === OrderType.MARKET && (
+                    <>
+                      <Button
+                        onClick={() => handlePlaceOrder()}
+                        className="capitalize font-bold w-full text-lg"
+                        disabled={
+                          isMarketOrderTxLoading ||
+                          isIncreaseLoading ||
+                          increaseError !== null
+                        }
+                      >
+                        {isMarketOrderTxLoading || isIncreaseLoading ? (
+                          <Spinner />
+                        ) : increaseResponse ? (
+                          <p>
+                            {direction}{' '}
+                            {(
+                              Number(increaseResponse.quote.sizeTokenDelta) /
+                              Math.pow(10, assetTokenDecimals || 9)
+                            ).toFixed(4)}{' '}
+                            {assetTokenSymbol}
+                          </p>
+                        ) : (
+                          <p>Enter an amount</p>
+                        )}
+                      </Button>
+                      {increaseError && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {increaseError}
+                        </p>
+                      )}
+                    </>
                   )}
-                </Button>
-                {increaseError && (
-                  <p className="text-red-500 text-sm mt-2">{increaseError}</p>
-                )}
+
+                  {orderType === OrderType.LIMIT && (
+                    <>
+                      <Button
+                        onClick={() => handleLimitOrder()}
+                        className="capitalize font-bold w-full text-lg"
+                        disabled={
+                          isLimitOrderTxLoading ||
+                          isLimitLoading ||
+                          limitError !== null
+                        }
+                      >
+                        {isLimitOrderTxLoading || isLimitLoading ? (
+                          <Spinner />
+                        ) : limitResponse ? (
+                          <p>
+                            {direction}{' '}
+                            {(
+                              Number(limitResponse.quote.sizeTokenDelta) /
+                              Math.pow(10, assetTokenDecimals || 9)
+                            ).toFixed(4)}{' '}
+                            {assetTokenSymbol}
+                          </p>
+                        ) : (
+                          <p>Enter an amount</p>
+                        )}
+                      </Button>
+                      {limitError && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {limitError}
+                        </p>
+                      )}
+                    </>
+                  )}
                 </div>
               )
             })()}

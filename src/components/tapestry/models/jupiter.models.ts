@@ -56,3 +56,64 @@ export interface PriorityLevelOption {
 }
 
 export type SlippageValue = number | 'auto'
+
+export interface IncreasePositionResponse {
+  quote: {
+    collateralLessThanFees: boolean
+    entryPriceUsd: string
+    leverage: string
+    liquidationPriceUsd: string
+    openFeeUsd: string
+    outstandingBorrowFeeUsd: string
+    priceImpactFeeUsd: string
+    priceImpactFeeBps: string
+    positionCollateralSizeUsd: string
+    positionSizeUsd: string
+    positionSizeTokenAmount: string
+    quoteOutAmount: string | null
+    quotePriceSlippagePct: string | null
+    quoteSlippageBps: string | null
+    side: 'long' | 'short'
+    sizeUsdDelta: string
+    sizeTokenDelta: string
+  }
+  serializedTxBase64: string
+  positionPubkey: string
+  positionRequestPubkey: string | null
+  txMetadata: {
+    blockhash: string
+    lastValidBlockHeight: string
+    transactionFeeLamports: string
+    accountRentLamports: string
+  }
+  requireKeeperSignature: boolean
+}
+
+export interface LimitOrderResponse {
+  quote: {
+    entryPriceUsd: string
+    leverage: string
+    liquidationPriceUsd: string
+    openFeeUsd: string
+    outstandingBorrowFeeUsd: string
+    priceImpactFeeUsd: string
+    priceImpactFeeBps: string
+    positionCollateralSizeUsdAfterFees: string
+    positionCollateralSizeUsdBeforeFees: string
+    positionSizeUsd: string
+    positionSizeTokenAmount: string
+    sizeUsdDelta: string
+    sizeTokenDelta: string
+    triggerToLiquidationPercent: string
+  }
+  serializedTxBase64: string
+  txMetadata: {
+    blockhash: string
+    lastValidBlockHeight: string
+    transactionFeeLamports: string
+    accountRentLamports: string
+  }
+  positionPubkey: string
+  positionRequestPubkey: string
+  requireKeeperSignature: boolean
+}
