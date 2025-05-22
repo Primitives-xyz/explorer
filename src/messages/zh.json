@@ -74,6 +74,12 @@
           "download_success": {
             "title": "Image downloaded!",
             "description": "You can now upload it to your X post."
+          },
+          "instructions": {
+            "title": "如何分享你的分数：",
+            "copy_image": "复制图片",
+            "share_x": "点击 \"分享到 X\"",
+            "paste_image": "将图片粘贴到推文中"
           }
         },
         "table": {
