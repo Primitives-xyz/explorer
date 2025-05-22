@@ -51,7 +51,6 @@ export function useCreateTradeContentNode() {
           : Promise.resolve({ profiles: [] }),
       ])
 
-      // Get main profiles (nemoapp namespace) for both wallets
       const sourceProfile = sourceWalletProfiles.profiles?.find(
         (p: any) => p.namespace.name === EXPLORER_NAMESPACE
       )?.profile

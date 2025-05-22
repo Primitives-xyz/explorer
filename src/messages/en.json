@@ -13,8 +13,12 @@
     "swap": "Swap",
     "follow": {
       "follow": "Follow",
-      "unfollow": "Unfollow"
-    }
+      "unfollow": "Unfollow",
+      "followers": "Followers",
+      "following": "Following"
+    },
+    "no_description": "No description",
+    "since": "since"
   },
   "menu": {
     "home": "Home",
@@ -80,6 +84,11 @@
             "percentile": "Percentile"
           },
           "position_prefix": "#"
+        },
+        "locked": {
+          "title": "🚀 You're on the board, but it's locked",
+          "description": "Share your score to unlock your rank + see how you stack up.",
+          "unlock_button": "Unlock My Rank"
         }
       },
       "badges": {
@@ -140,6 +149,18 @@
           "description": "Stakes SOL directly with validators"
         },
         "more_badges": "+ {count} more"
+      },
+      "smart_cta": {
+        "reveal": {
+          "title": "🧠 How powerful is your wallet?",
+          "description": "Unlock your SOLID Score & flex on the leaderboard.",
+          "button": "Reveal My Score"
+        },
+        "unlock": {
+          "title": "🔓 See where you rank on the leaderboard",
+          "description": "Top wallets are already flexing.",
+          "button": "Unlock My Rank"
+        }
       }
     }
   },
@@ -337,7 +358,6 @@
       "see_original": "See original",
       "followers_count": "{count} Followers",
       "following_count": "{count} Following",
-      "no_description": "No description",
       "owned_by": "owned by",
       "created": "Created"
     }

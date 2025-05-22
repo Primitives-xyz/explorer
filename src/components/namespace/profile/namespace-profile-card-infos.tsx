@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function NamespaceProfileCardInfos({ profileData, username }: Props) {
-  const t = useTranslations('namespace.profile')
+  const t = useTranslations()
 
   return (
     <Card className="w-full md:w-1/2">
@@ -25,13 +25,13 @@ export function NamespaceProfileCardInfos({ profileData, username }: Props) {
             <p className="font-bold">@{username}</p>
 
             <p className="text-muted-foreground text-sm">
-              {profileData?.profile.bio || t('no_description')}
+              {profileData?.profile.bio || t('common.no_description')}
             </p>
           </div>
         </div>
 
         <div className="w-full flex justify-between items-center">
-          <p>{t('owned_by')}</p>
+          <p>{t('namespace.profile.owned_by')}</p>
 
           {abbreviateWalletAddress({
             address: profileData?.walletAddress,
@@ -39,7 +39,7 @@ export function NamespaceProfileCardInfos({ profileData, username }: Props) {
         </div>
 
         <div className="w-full flex justify-between items-center">
-          <p>{t('created')}</p>
+          <p>{t('namespace.profile.created')}</p>
           <p>{new Date(profileData.profile?.created_at).getFullYear()}</p>
         </div>
       </CardContent>

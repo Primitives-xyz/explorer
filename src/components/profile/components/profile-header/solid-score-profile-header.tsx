@@ -1,50 +1,20 @@
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
 import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
-import { SolidScoreRevealButton } from '@/components/solid-score/solid-score-reveal-button'
-import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
-import { Button, ButtonVariant } from '@/components/ui'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
-import { route } from '@/utils/route'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 interface Props {
   id?: string
 }
 
 export function SolidScoreProfileHeader({ id }: Props) {
-  const { isLoggedIn, mainProfile, refetch } = useCurrentWallet()
   const { data, loading: scoreLoading } = useSolidScore({ id })
-  const solidScore = formatSmartNumber(data?.score || 1, {
+  const solidScore = formatSmartNumber(data?.score || '0', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })
 
-  const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
-    username: mainProfile?.username || '',
-  })
-
-  const handleRevealClick = async () => {
-    await updateProfile({
-      properties: [
-        {
-          key: 'userRevealedTheSolidScore',
-          value: true,
-        },
-      ],
-    })
-    refetch()
-  }
-
   if (!data || scoreLoading) {
     return null
-  }
-
-  if (
-    isLoggedIn &&
-    !mainProfile?.userRevealedTheSolidScore &&
-    id === mainProfile?.id
-  ) {
-    return <SolidScoreRevealButton smallView />
   }
 
   return (
@@ -53,9 +23,6 @@ export function SolidScoreProfileHeader({ id }: Props) {
       <span className="desktop">
         <SolidScoreBadges data={data} compactLimit={3} />
       </span>
-      <Button variant={ButtonVariant.BADGE} href={route('leaderboard')}>
-        leaderboard
-      </Button>
     </div>
   )
 }

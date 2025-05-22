@@ -33,7 +33,7 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
 
   const params = {
     username: mainProfile?.username || '',
-    score: data?.score || 1,
+    score: data?.score || 0,
     profileImage: mainProfile?.image || '',
     badges: data?.badges || [],
   }
@@ -102,7 +102,11 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
         <DialogHeader>
           <DialogTitle>{t('title')}</DialogTitle>
           <div className="mt-4 text-xs md:text-sm">
-            <p>{t('percentile_text', { percentile: data?.percentile })}</p>
+            <p>
+              {t('percentile_text', {
+                percentile: data?.percentile.toFixed(0),
+              })}
+            </p>
             <p>{t('unlock_text')}</p>
           </div>
         </DialogHeader>
