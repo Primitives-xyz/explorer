@@ -13,16 +13,12 @@ import {
   Spinner,
 } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useGetLeaderboard } from '../../tapestry/hooks/use-get-leaderboard'
 import { useGetSuggestedProfiles } from '../hooks/use-get-suggested-profiles'
 import { EFollowUsersType, EOnboardingSteps } from '../onboarding.models'
 import { FollowUserEntry } from './follow-user-entry'
-
-const options = [
-  { label: 'Top Traders', value: EFollowUsersType.TOP_TRADERS },
-  { label: 'Recently Created', value: EFollowUsersType.RECENT },
-]
 
 interface Props {
   mainProfile: IProfile
@@ -31,6 +27,7 @@ interface Props {
 }
 
 export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
+  const t = useTranslations()
   const [selectedType, setSelectedType] = useState(EFollowUsersType.TOP_TRADERS)
   const { traders, loading: loadingLeaderboard } = useGetLeaderboard({
     skip: selectedType !== EFollowUsersType.TOP_TRADERS,
@@ -55,10 +52,22 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
     getRecentProfilesLoading ||
     getSuggestedProfilesLoading
 
+  const options = [
+    {
+      label: t('onboarding.suggested.follow.tabs.top_traders'),
+      value: EFollowUsersType.TOP_TRADERS,
+    },
+    {
+      label: t('onboarding.suggested.follow.tabs.recently_created'),
+      value: EFollowUsersType.RECENT,
+    },
+  ]
+
   useEffect(() => {
     if (!!suggestedProfiles) {
       options.push({ label: 'Your Friends', value: EFollowUsersType.FRIENDS })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [suggestedProfiles])
 
   if (!mainProfile?.username) {
@@ -69,8 +78,8 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
     <>
       <div className="space-y-6 md:space-y-8">
         <Paragraph>
-          Follow at least 3 other profiles to finish onboarding and populate
-          your feed. <br /> Here are some people you may know.
+          {t('onboarding.suggested.follow.title')} <br />{' '}
+          {t('onboarding.suggested.follow.subtitle')}
         </Paragraph>
         <div className="flex flex-col md:px-6">
           <FilterTabs
@@ -85,7 +94,12 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
                 key={user.profile.username}
                 username={user.profile.username}
                 image={user.profile.image}
-                info={`${user.score} trade${user.score === 1 ? '' : 's'}`}
+                info={t(
+                  user.score === 1
+                    ? 'onboarding.suggested.follow.trades_count'
+                    : 'onboarding.suggested.follow.trades_count_plural',
+                  { count: user.score }
+                )}
                 mainUsername={mainProfile.username}
               />
             ))}
@@ -124,7 +138,7 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
         </div>
       </div>
       <p className="flex md:hidden text-primary self-center">
-        {socialCounts?.following ?? 0}/3
+        {t('onboarding.progress', { count: socialCounts?.following ?? 0 })}
       </p>
       <div className="flex justify-between mt-auto">
         <Button
@@ -132,23 +146,25 @@ export function SuggestedFollow({ mainProfile, closeModal, setStep }: Props) {
           className="w-[48%] md:w-[160px]"
           variant={ButtonVariant.OUTLINE}
         >
-          Back
+          {t('onboarding.buttons.back')}
         </Button>
         <Button
           onClick={closeModal}
           className="w-[48%] flex md:hidden"
           disabled={(socialCounts?.following ?? 0) < 3}
         >
-          Complete
+          {t('onboarding.buttons.complete')}
         </Button>
         <div className="hidden items-center gap-3 md:flex">
-          <p className="text-primary">{socialCounts?.following ?? 0}/3</p>
+          <p className="text-primary">
+            {t('onboarding.progress', { count: socialCounts?.following ?? 0 })}
+          </p>
           <Button
             onClick={closeModal}
             className="w-[160px]"
             disabled={(socialCounts?.following ?? 0) < 3}
           >
-            Complete
+            {t('onboarding.buttons.complete')}
           </Button>
         </div>
       </div>

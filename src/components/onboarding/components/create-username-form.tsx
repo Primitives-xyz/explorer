@@ -16,22 +16,13 @@ import {
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useCreateProfile } from '../../tapestry/hooks/use-create-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedUsernames } from './suggested-usernames'
-
-const formSchema = z.object({
-  username: z
-    .string()
-    .min(3, { message: 'Username must be at least 3 characters long' })
-    .max(30, { message: 'Username must not exceed 30 characters' })
-    .regex(/^[a-zA-Z0-9_]+$/, {
-      message: 'Username can only contain letters, numbers, and underscores',
-    }),
-})
 
 interface Props {
   walletAddress: string
@@ -46,6 +37,7 @@ export function CreateUsernameForm({
   setStep,
   closeModal,
 }: Props) {
+  const t = useTranslations()
   const [suggestedUsername, setSuggestedUsername] =
     useState<ISuggestedUsername>()
   const { createProfile, loading } = useCreateProfile()
@@ -54,6 +46,17 @@ export function CreateUsernameForm({
     refetch: refetchCurrentUser,
     logout,
   } = useCurrentWallet()
+
+  const formSchema = z.object({
+    username: z
+      .string()
+      .min(3, { message: t('onboarding.form.username.validation.min_length') })
+      .max(30, { message: t('onboarding.form.username.validation.max_length') })
+      .regex(/^[a-zA-Z0-9_]+$/, {
+        message: t('onboarding.form.username.validation.format'),
+      }),
+  })
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -112,12 +115,15 @@ export function CreateUsernameForm({
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Username</Label>
+                  <Label>{t('onboarding.form.username.label')}</Label>
                   <FormControl>
-                    <Input placeholder="Please add a title" {...field} />
+                    <Input
+                      placeholder={t('onboarding.form.username.placeholder')}
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
-                    Username can only contain letters, numbers, and underscores
+                    {t('onboarding.form.username.description')}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -144,14 +150,14 @@ export function CreateUsernameForm({
             }}
             variant={ButtonVariant.OUTLINE}
           >
-            Cancel
+            {t('onboarding.buttons.cancel')}
           </Button>
           <Button
             type="submit"
             className="w-[48%] md:w-[160px]"
             loading={loading}
           >
-            Next
+            {t('onboarding.buttons.next')}
           </Button>
         </div>
       </form>

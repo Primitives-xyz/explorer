@@ -1,6 +1,7 @@
 'use client'
 
 import { Button, ButtonVariant, Label } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   suggestedBios: string[]
@@ -8,13 +9,17 @@ interface Props {
 }
 
 export function SuggestedBios({ suggestedBios, onClickSuggestedBio }: Props) {
+  const t = useTranslations()
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <Label>Suggested Bios</Label>
+        <Label>{t('onboarding.suggested.bios.title')}</Label>
         {!!suggestedBios?.length && (
           <div className="text-muted-foreground">
-            ({suggestedBios.length} available)
+            {t('onboarding.suggested.bios.available', {
+              count: suggestedBios.length,
+            })}
           </div>
         )}
       </div>

@@ -507,5 +507,74 @@
   "token_holders": {
     "others_own": "and +{count} others own this",
     "own_this": "own this"
+  },
+  "onboarding": {
+    "create_profile": "Create Your Profile",
+    "welcome_success": "Welcome @{username}! Your profile has been successfully created!",
+    "steps": {
+      "username": "Username",
+      "profile_image": "Profile Image",
+      "bio": "Bio",
+      "follow": "Follow",
+      "titles": {
+        "add_username": "Add Username",
+        "add_profile_image": "Add Profile Image",
+        "add_bio": "Add Bio"
+      },
+      "descriptions": {
+        "username": "Type in your own username or use one from your imported identities.",
+        "profile_image": "We've generated a profile image for you! Don't love it? Customize your profile image from what you already own or by uploading.",
+        "bio": "Stand out from the crowd—describe yourself!"
+      }
+    },
+    "form": {
+      "bio": {
+        "label": "Bio (optional)",
+        "placeholder": "Tell us about yourself",
+        "error": "Bio must not exceed 300 characters"
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "Please add a title",
+        "description": "Username can only contain letters, numbers, and underscores",
+        "validation": {
+          "min_length": "Username must be at least 3 characters long",
+          "max_length": "Username must not exceed 30 characters",
+          "format": "Username can only contain letters, numbers, and underscores"
+        }
+      },
+      "profile_image": {
+        "label": "Profile Image",
+        "alt": "Profile Image",
+        "upload_button": "Upload Image"
+      }
+    },
+    "suggested": {
+      "bios": {
+        "title": "Suggested Bios",
+        "available": "({count} available)"
+      },
+      "usernames": {
+        "title": "Suggested Usernames",
+        "available": "({count} available)"
+      },
+      "follow": {
+        "title": "Follow at least 3 other profiles to finish onboarding and populate your feed.",
+        "subtitle": "Here are some people you may know.",
+        "tabs": {
+          "top_traders": "Top Traders",
+          "recently_created": "Recently Created"
+        },
+        "trades_count": "{count} trade",
+        "trades_count_plural": "{count} trades"
+      }
+    },
+    "buttons": {
+      "back": "Back",
+      "next": "Next",
+      "cancel": "Cancel",
+      "complete": "Complete"
+    },
+    "progress": "{count}/3"
   }
 }

@@ -2,6 +2,7 @@
 
 import { ISuggestedUsername } from '@/components/tapestry/models/profiles.models'
 import { cn } from '@/utils/utils'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Button, ButtonVariant, Label } from '../../ui'
 
@@ -16,13 +17,17 @@ export function SuggestedUsernames({
   suggestedUsername,
   setSuggestedUsername,
 }: Props) {
+  const t = useTranslations()
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <Label>Suggested Usernames</Label>
+        <Label>{t('onboarding.suggested.usernames.title')}</Label>
         {!!suggestedUsernames?.length && (
           <div className="text-muted-foreground">
-            ({suggestedUsernames.length} available)
+            {t('onboarding.suggested.usernames.available', {
+              count: suggestedUsernames.length,
+            })}
           </div>
         )}
       </div>
