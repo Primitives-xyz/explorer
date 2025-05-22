@@ -11,14 +11,6 @@ interface Props {
 }
 
 export function ProfileContent({ profileInfo, walletAddress }: Props) {
-  if (!profileInfo) {
-    return (
-      <div className="flex flex-col w-full space-y-6 pb-6">
-        <ProfileHeader walletAddress={walletAddress} />
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col w-full space-y-6 pb-6">
       <ProfileHeader
