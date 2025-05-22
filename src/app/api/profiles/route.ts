@@ -6,13 +6,14 @@ const BASE_URL = process.env.TAPESTRY_URL
 const API_KEY = process.env.TAPESTRY_API_KEY
 
 export async function GET(request: Request) {
+  console.log('--- /api/profiles HIT ---');
+  console.log('request.url:', request.url);
   const { searchParams } = new URL(request.url)
   const walletAddress = searchParams.get('walletAddress')
   const useIdentities = searchParams.get('useIdentities') === 'true'
   const namespace = searchParams.get('namespace')
   const sortBy = searchParams.get('sortBy')
   const pageSize = searchParams.get('pageSize')
-
   try {
     if (useIdentities) {
       // For related profiles, use identities endpoint
@@ -88,6 +89,8 @@ export async function GET(request: Request) {
       if (!!pageSize) {
         url = `${url}&pageSize=${pageSize}`
       }
+
+      console.log('url', url)
 
       const response = await fetch(url, {
         method: 'GET',
