@@ -1,4 +1,4 @@
-import { IncreasePositionResponse } from '@/components/tapestry/models/jupiter.models'
+import { LimitOrderResponse } from '@/components/tapestry/models/jupiter.models'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
@@ -6,40 +6,37 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useToastContent } from '../drift/use-toast-content'
 
-interface IncreasePositionParams {
+interface LimitOrderParams {
   collateralMint: string
   collateralTokenDelta: string
   includeSerializedTx: boolean
   inputMint: string
   leverage: string
   marketMint: string
-  maxSlippageBps: string
-  triggerPrice?: string
-  side: 'long' | 'short'
+  side: string
+  triggerPrice: string
   walletAddress: string
 }
 
-export const useIncreasePosition = ({
+export const useLimitOrders = ({
   collateralMint,
   collateralTokenDelta,
   includeSerializedTx,
   inputMint,
   leverage,
   marketMint,
-  maxSlippageBps,
   side,
+  triggerPrice,
   walletAddress,
-}: IncreasePositionParams) => {
+}: LimitOrderParams) => {
   const { LOADINGS, ERRORS, SUCCESS } = useToastContent()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [serializedTx, setSerializedTx] = useState<string | null>(null)
-  const [response, setResponse] = useState<IncreasePositionResponse | null>(
-    null
-  )
   const { primaryWallet } = useCurrentWallet()
+  const [response, setResponse] = useState<LimitOrderResponse | null>(null)
 
-  const placeIncreasePosition = async () => {
+  const placeLimitOrder = async () => {
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
       throw new Error('Wallet not connected')
     }
@@ -96,10 +93,11 @@ export const useIncreasePosition = ({
   }
 
   useEffect(() => {
-    const increasePosition = async () => {
+    const placeLimitOrder = async () => {
+      const counter = Math.floor(Math.random() * 1e6).toString()
       try {
         setIsLoading(true)
-        const response = await fetch('/api/jupiter/perps/increase', {
+        const response = await fetch('/api/jupiter/perps/limit', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -107,22 +105,23 @@ export const useIncreasePosition = ({
           body: JSON.stringify({
             collateralMint,
             collateralTokenDelta,
+            counter,
             includeSerializedTx,
             inputMint,
             leverage,
             marketMint,
-            maxSlippageBps,
             side,
+            triggerPrice,
             walletAddress,
           }),
         })
 
         if (!response.ok) {
           const errorData = await response.json()
-          throw new Error(errorData.error || 'Failed to increase position')
+          throw new Error(errorData.error || 'Failed to place limit order')
         }
 
-        const data: IncreasePositionResponse = await response.json()
+        const data: LimitOrderResponse = await response.json()
         console.log('data', data)
         setSerializedTx(data.serializedTxBase64)
         setResponse(data)
@@ -141,7 +140,7 @@ export const useIncreasePosition = ({
     }
 
     // Set up interval to run every 5 seconds
-    const intervalId = setInterval(increasePosition, 5000)
+    const intervalId = setInterval(placeLimitOrder, 5000)
 
     // Cleanup interval on unmount
     return () => clearInterval(intervalId)
@@ -152,8 +151,8 @@ export const useIncreasePosition = ({
     inputMint,
     leverage,
     marketMint,
-    maxSlippageBps,
     side,
+    triggerPrice,
     walletAddress,
   ])
 
@@ -161,6 +160,6 @@ export const useIncreasePosition = ({
     isLoading,
     error,
     response,
-    placeIncreasePosition,
+    placeLimitOrder,
   }
 }
