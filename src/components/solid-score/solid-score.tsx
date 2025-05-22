@@ -1,8 +1,8 @@
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
 import { ScoreArc } from '@/components/solid-score/score-arc'
+import { SolidScoreSmartCta } from '@/components/solid-score/smart-cta/solid-score-smart-cta'
 import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
 import { SolidScoreCardWrapper } from '@/components/solid-score/solid-score-card-wrapper'
-import { SolidScoreRevealButton } from '@/components/solid-score/solid-score-reveal-button'
 import { SolidScoreValue } from '@/components/solid-score/solid-score-value'
 import { Button, ButtonVariant, Spinner } from '@/components/ui'
 import { route } from '@/utils/route'
@@ -61,7 +61,7 @@ export function SolidScore() {
           </Button>
         </div>
       ) : (
-        <SolidScoreRevealButton onRevealComplete={refetch} />
+        <SolidScoreSmartCta simpleRevealButton />
       )}
     </SolidScoreCardWrapper>
   )

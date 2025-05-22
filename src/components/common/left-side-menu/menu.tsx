@@ -4,6 +4,7 @@ import { DialectNotificationsComponent } from '@/components/notifications/dialec
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { isLoggedInSpecialUser } from '@/utils/user-permissions'
 import { cn } from '@/utils/utils'
 import {
   AlignJustify,
@@ -66,19 +67,15 @@ export function Menu({ setOpen }: Props) {
         setOpen={setOpen}
       />
 
-      {isLoggedIn &&
-        mainProfile?.username &&
-        (mainProfile?.username === 'nehemiah' ||
-          mainProfile?.username === 'nemoblackburn' ||
-          mainProfile?.username === 'cedrick') && (
-          <Entry
-            title={t('menu.leaderboard')}
-            icon={AlignJustify}
-            href={route('leaderboard')}
-            setOpen={setOpen}
-            onlyMobile
-          />
-        )}
+      {isLoggedInSpecialUser(isLoggedIn, mainProfile) && (
+        <Entry
+          title={t('menu.leaderboard')}
+          icon={AlignJustify}
+          href={route('leaderboard')}
+          setOpen={setOpen}
+          onlyMobile
+        />
+      )}
 
       {process.env.NODE_ENV === 'production' && (
         <DialectNotificationsComponent />

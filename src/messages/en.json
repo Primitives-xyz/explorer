@@ -358,7 +358,6 @@
       "see_original": "See original",
       "followers_count": "{count} Followers",
       "following_count": "{count} Following",
-      "no_description": "{common.no_description}",
       "owned_by": "owned by",
       "created": "Created"
     }
@@ -508,13 +507,5 @@
   "token_holders": {
     "others_own": "and +{count} others own this",
     "own_this": "own this"
-  },
-  "profile": {
-    "header": {
-      "since": "{common.since}",
-      "no_description": "{common.no_description}",
-      "followers": "{common.follow.followers}",
-      "following": "{common.follow.following}"
-    }
   }
 }

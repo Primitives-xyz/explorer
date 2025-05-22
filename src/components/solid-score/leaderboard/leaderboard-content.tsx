@@ -4,13 +4,12 @@ import { useSolidScoreLeaderboard } from '@/components/solid-score/hooks/use-sol
 import { SolidScoreShareDialog } from '@/components/solid-score/leaderboard/solid-score-share-dialog'
 import { Button, ButtonSize, Card, CardContent, Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { isSpecialUser } from '@/utils/user-permissions'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { DataTableLeaderboard } from './data-table-leaderboard'
 import { DataTableUserPosition } from './data-table-user-position'
-
-const AUTHORIZED_USERNAMES = ['nehemiah', 'nemoblackburn', 'cedrick']
 
 export function LeaderboardContent() {
   const { data, loading } = useSolidScoreLeaderboard()
@@ -21,11 +20,11 @@ export function LeaderboardContent() {
 
   useEffect(() => {
     if (!walletLoading && mainProfile?.username) {
-      if (!AUTHORIZED_USERNAMES.includes(mainProfile.username)) {
+      if (!isSpecialUser(mainProfile)) {
         router.push('/')
       }
     }
-  }, [walletLoading, mainProfile?.username, router])
+  }, [walletLoading, mainProfile, router])
 
   const hasRevealedShare = !!mainProfile?.userHasClickedOnShareHisSolidScore
 
@@ -41,10 +40,7 @@ export function LeaderboardContent() {
     )
   }
 
-  if (
-    !mainProfile?.username ||
-    !AUTHORIZED_USERNAMES.includes(mainProfile.username)
-  ) {
+  if (!mainProfile?.username || !isSpecialUser(mainProfile)) {
     return null
   }
 

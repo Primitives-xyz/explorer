@@ -1,9 +1,10 @@
 'use client'
 
-import { SolidScoreSmartCta } from '@/components/solid-score/solid-score-smart-cta'
+import { SolidScoreSmartCta } from '@/components/solid-score/smart-cta/solid-score-smart-cta'
 import { Button, FilterTabs, Paragraph } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { isLoggedInSpecialUser } from '@/utils/user-permissions'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { EHomeTransactionFilter } from '../home-transactions.models'
@@ -30,11 +31,9 @@ export function HomeTransactions() {
   return (
     <div className="w-full">
       <div className="flex items-center justify-center">
-        {isLoggedIn &&
-          mainProfile?.username &&
-          (mainProfile?.username === 'nehemiah' ||
-            mainProfile?.username === 'nemoblackburn' ||
-            mainProfile?.username === 'cedrick') && <SolidScoreSmartCta />}
+        {isLoggedInSpecialUser(isLoggedIn, mainProfile) && (
+          <SolidScoreSmartCta />
+        )}
       </div>
       <div className="flex items-start justify-between">
         <FilterTabs
