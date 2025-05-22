@@ -4,7 +4,7 @@ import { DialectNotificationsComponent } from '@/components/notifications/dialec
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isLoggedInSpecialUser } from '@/utils/user-permissions'
+import { isSpecialUser } from '@/utils/user-permissions'
 import { cn } from '@/utils/utils'
 import {
   AlignJustify,
@@ -67,7 +67,7 @@ export function Menu({ setOpen }: Props) {
         setOpen={setOpen}
       />
 
-      {isLoggedInSpecialUser(isLoggedIn, mainProfile) && (
+      {isLoggedIn && isSpecialUser(mainProfile) && (
         <Entry
           title={t('menu.leaderboard')}
           icon={AlignJustify}

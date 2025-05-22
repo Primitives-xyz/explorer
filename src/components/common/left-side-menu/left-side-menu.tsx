@@ -8,7 +8,7 @@ import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isLoggedInSpecialUser } from '@/utils/user-permissions'
+import { isSpecialUser } from '@/utils/user-permissions'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -32,7 +32,7 @@ export function LeftSideMenu() {
         </div>
         <div className="space-y-4 py-4">
           <LowFeeTrades />
-          {isLoggedInSpecialUser(isLoggedIn, mainProfile) && <SolidScore />}
+          {isSpecialUser(mainProfile) && <SolidScore />}
         </div>
         <div className="flex flex-col items-center gap-2">
           <Button

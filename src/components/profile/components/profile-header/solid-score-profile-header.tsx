@@ -8,7 +8,7 @@ interface Props {
 
 export function SolidScoreProfileHeader({ id }: Props) {
   const { data, loading: scoreLoading } = useSolidScore({ id })
-  const solidScore = formatSmartNumber(data?.score || 1, {
+  const solidScore = formatSmartNumber(data?.score || '0', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })

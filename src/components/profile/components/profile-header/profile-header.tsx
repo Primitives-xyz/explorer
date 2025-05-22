@@ -6,10 +6,7 @@ import { SolidScoreSmartCta } from '@/components/solid-score/smart-cta/solid-sco
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import {
-  isLoggedInSpecialUser,
-  isSpecialUsername,
-} from '@/utils/user-permissions'
+import { isSpecialUser } from '@/utils/user-permissions'
 import { abbreviateWalletAddress } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 
@@ -19,7 +16,7 @@ interface Props {
 }
 
 export function ProfileHeader({ profileInfo, walletAddress }: Props) {
-  const { mainProfile, isLoggedIn } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
   const t = useTranslations()
 
   if (!profileInfo) {
@@ -81,10 +78,9 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             </p>
           </div>
 
-          {profileInfo.profile.username &&
-            isSpecialUsername(profileInfo.profile.username) && (
-              <SolidScoreProfileHeader id={profileInfo.profile.id} />
-            )}
+          {isSpecialUser(mainProfile) && (
+            <SolidScoreProfileHeader id={profileInfo.profile.id} />
+          )}
 
           <p className="text-muted-foreground text-sm desktop">
             {profileInfo.profile.bio || t('common.no_description')}
@@ -92,7 +88,7 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
         </div>
       </div>
 
-      {isLoggedInSpecialUser(isLoggedIn, mainProfile) && <SolidScoreSmartCta />}
+      {isSpecialUser(mainProfile) && <SolidScoreSmartCta />}
 
       <div className="space-y-2">
         {!!profileInfo?.profile.username && !!mainProfile?.username && (
