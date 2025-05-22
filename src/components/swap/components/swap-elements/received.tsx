@@ -10,6 +10,7 @@ import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ESwapMode } from '../../swap.models'
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function Receive({ setShowOutputTokenSearch }: Props) {
+  const t = useTranslations()
   const {
     inputs: { outputMint },
     outAmount,
@@ -66,7 +68,7 @@ export function Receive({ setShowOutputTokenSearch }: Props) {
     <>
       <div>
         <div className="flex justify-between items-center">
-          <p>Buying</p>
+          <p>{t('swap.input.receive')}</p>
         </div>
 
         <div className="flex justify-between items-center">
@@ -95,10 +97,10 @@ export function Receive({ setShowOutputTokenSearch }: Props) {
               {outputTokenImageUri ? (
                 <ValidatedImage
                   src={outputTokenImageUri}
-                  alt={`${outputTokenSymbol || 'Token'} logo`}
+                  alt={`${outputTokenSymbol || t('swap.token.select')} logo`}
                   width={32}
                   height={32}
-                  className="rounded-full aspect-square object-cover"
+                  className="rounded-full aspect-square object-cover max-w-[32px] max-h-[32px]"
                 />
               ) : (
                 <span className="rounded-full h-[32px] w-[32px] bg-background" />

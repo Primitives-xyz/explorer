@@ -51,6 +51,11 @@ export async function fetchTokenInfo(
 
     // Check for RPC error response
     if (data.error) {
+      // Ignore silently if asset not found
+      if (data.error.message.includes('Asset Not Found')) {
+        return null
+      }
+
       console.error(`RPC error: ${data.error.message}`)
       return null
     }

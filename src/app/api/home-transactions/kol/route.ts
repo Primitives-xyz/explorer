@@ -5,7 +5,11 @@ import {
 } from '@/components/home-transactions/home-transactions.models'
 import { IGetProfilesResponse } from '@/components/tapestry/models/profiles.models'
 import { fetchWrapper } from '@/utils/api'
+import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
+
+// Add a unique cache tag
+const KOL_CACHE_TAG = 'kol-transactions'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,6 +21,12 @@ export async function GET(request: NextRequest) {
       queryParams: {
         namespace: 'kolscan',
         // pageSize: 50,
+      },
+      // Add cache tag and force caching
+      cache: 'force-cache',
+      next: {
+        tags: [KOL_CACHE_TAG],
+        revalidate: 60, // Revalidate every 60 seconds
       },
     })
 
@@ -44,6 +54,12 @@ export async function GET(request: NextRequest) {
           limit: 10,
           // before: allTransactions[allTransactions.length - 1]?.signature,
         },
+        // Add cache tag and force caching
+        cache: 'force-cache',
+        next: {
+          tags: [KOL_CACHE_TAG, `wallet-${walletId}`],
+          revalidate: 60, // Revalidate every 60 seconds
+        },
       })
 
       // Add profile information to each transaction
@@ -66,14 +82,32 @@ export async function GET(request: NextRequest) {
         .sort(
           (a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        )
+        ),
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=60, s-maxage=60',
+          'CDN-Cache-Control': 'public, max-age=60',
+          'Vercel-CDN-Cache-Control': 'public, max-age=60',
+        },
+      }
     )
   } catch (error) {
     console.error('Error fetching transactions:', error)
 
     return NextResponse.json(
       { error: 'Failed to fetch transactions' },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, must-revalidate',
+        },
+      }
     )
   }
+}
+
+// Optional: Add a POST method to manually revalidate the cache when needed
+export async function POST() {
+  revalidateTag(KOL_CACHE_TAG)
+  return NextResponse.json({ revalidated: true, now: Date.now() })
 }

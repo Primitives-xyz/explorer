@@ -13,12 +13,19 @@ import { SSE_TOKEN_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { EllipsisVerticalIcon, LogOutIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
-export function ProfileInfos() {
+interface Props {
+  setOpen?: (open: boolean) => void
+}
+
+export function ProfileInfos({ setOpen }: Props) {
+  const t = useTranslations()
   const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
     useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
+
   // const { enableMotion, setEnableMotion } = useMotionStore()
 
   return (
@@ -29,26 +36,31 @@ export function ProfileInfos() {
           variant={ButtonVariant.OUTLINE_WHITE}
           onClick={() => setShowAuthFlow(true)}
         >
-          Connect Wallet
+          {t('common.connect_wallet')}
         </Button>
       )}
       {!!mainProfile && (
         <div className="space-y-2 text-lg md:text-sm">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <Button
+              className="flex items-center gap-2 p-0 hover:bg-transparent"
+              variant={ButtonVariant.GHOST}
+              href={route('entity', { id: mainProfile.username })}
+              onClick={() => {
+                setOpen && setOpen(false)
+              }}
+            >
               <Avatar
                 className="w-8 md:w-6"
                 username={mainProfile.username}
                 imageUrl={mainProfile.image}
                 size={40}
               />
-              <span className="flex items-center gap-1">
-                <p>hi</p>
-                <p className="font-medium max-w-[8rem] truncate">
-                  {mainProfile.username}
-                </p>
-              </span>
-            </div>
+              <div className="flex items-center gap-1 text-lg md:text-sm">
+                <p>{t('menu.profile.greeting')}</p>
+                <p className="max-w-[8rem] truncate">{mainProfile.username}</p>
+              </div>
+            </Button>
             <div className="desktop">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -68,7 +80,7 @@ export function ProfileInfos() {
                 </DropdownMenuItem> */}
                   <DropdownMenuItem onClick={logout}>
                     <LogOutIcon size={18} />
-                    Logout
+                    {t('menu.profile.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -77,6 +89,9 @@ export function ProfileInfos() {
           <div className="flex items-center gap-1">
             <Button
               isInvisible
+              onClick={() => {
+                setOpen && setOpen(false)
+              }}
               href={route('entity', {
                 id: SSE_TOKEN_MINT,
               })}
@@ -90,7 +105,7 @@ export function ProfileInfos() {
               />
               <span className="text-primary">$SSE</span>
             </Button>
-            <span>Bal: {balance}</span>
+            <span>{`${t('common.balance')}: ${balance}`}</span>
           </div>
         </div>
       )}

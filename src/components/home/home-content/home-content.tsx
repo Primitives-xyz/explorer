@@ -4,6 +4,7 @@ export function HomeContent() {
   return (
     <div className="w-full pb-6">
       {/* <FollowingTransactions /> */}
+
       <HomeTransactions />
     </div>
   )

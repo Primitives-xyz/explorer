@@ -5,6 +5,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { SOL_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { abbreviateWalletAddress, cn, formatNumber } from '@/utils/utils'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
@@ -23,6 +24,7 @@ export function TokenLine({
   showUsd = true,
   compact = false,
 }: TokenLineProps) {
+  const t = useTranslations()
   const isSol = mint === SOL_MINT
   const {
     data: tokenData,
@@ -50,7 +52,7 @@ export function TokenLine({
       alt="solana icon"
       width={iconSize}
       height={iconSize}
-      className="rounded-full object-cover"
+      className="rounded-full object-cover aspect-square"
     />
   ) : image ? (
     <Image
@@ -58,7 +60,7 @@ export function TokenLine({
       alt={displaySymbol || 'Token'}
       width={iconSize}
       height={iconSize}
-      className="rounded-full object-cover"
+      className="rounded-full object-cover aspect-square"
     />
   ) : (
     <span className="font-mono text-xs">{mint.slice(0, 2)}</span>
@@ -152,7 +154,7 @@ export function TokenLine({
         {showUsd && !compact && (
           <span className="text-xs text-muted-foreground block">
             {tokenLoading
-              ? 'Loading...'
+              ? t('common.loading')
               : usdValue !== null
               ? `$${formatNumber(usdValue)}`
               : ''}

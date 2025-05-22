@@ -15,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Lock, LogOutIcon, MessageCircle, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 interface Props {
@@ -26,23 +27,24 @@ export function MobileMenu({ open, setOpen }: Props) {
   const { logout, isLoggedIn } = useCurrentWallet()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
+  const t = useTranslations()
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent side="left" className="flex flex-col gap-0" hideCloseButton>
         <DialogHeader className="hidden">
-          <DialogTitle>solana_social_explorer</DialogTitle>
+          <DialogTitle>{t('menu.title')}</DialogTitle>
         </DialogHeader>
         <div className="flex items-center gap-5 h-14 px-3">
           <Button isInvisible onClick={() => setOpen(false)}>
             <X className="text-primary" />
           </Button>
           <h1 className="font-medium text-primary leading-none text-lg">
-            solana_social_explorer
+            {t('menu.title')}
           </h1>
         </div>
         <div className="px-6 pb-6 w-full flex flex-col flex-1">
-          <ProfileInfos />
+          <ProfileInfos setOpen={setOpen} />
           <Separator className="mt-4" />
           <div className="flex-1">
             <Menu setOpen={setOpen} />
@@ -57,7 +59,7 @@ export function MobileMenu({ open, setOpen }: Props) {
                 newTab
               >
                 <MessageCircle size={16} />
-                Feedback
+                {t('menu.actions.feedback')}
               </Button>
               <Button
                 variant={ButtonVariant.OUTLINE}
@@ -65,7 +67,9 @@ export function MobileMenu({ open, setOpen }: Props) {
                 className="flex-1"
               >
                 <Lock size={16} />
-                {!accountIds.length ? 'Perpetuals' : 'Deposit/Withdraw'}
+                {!accountIds.length
+                  ? t('menu.actions.perpetuals')
+                  : t('menu.actions.deposit_withdraw')}
               </Button>
             </div>
             {!!isLoggedIn && (
@@ -75,10 +79,9 @@ export function MobileMenu({ open, setOpen }: Props) {
                 className="w-full"
               >
                 <LogOutIcon size={18} />
-                Logout
+                {t('menu.profile.logout')}
               </Button>
             )}
-
             {/* <div className="flex items-center w-full justify-center">
               <LanguageSwitcher />
             </div> */}

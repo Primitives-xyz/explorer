@@ -11,8 +11,8 @@ export const useFollowUser = () => {
   } = useMutation<
     null,
     {
-      followerUser: { username: string }
-      followeeUser: { username: string }
+      followerUsername: string
+      followeeUsername: string
     }
   >({
     endpoint: 'followers/add',

@@ -2,6 +2,7 @@
 
 import { INamespaceProfileInfos } from '@/components/tapestry/models/namespace.models'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 interface Props {
@@ -15,14 +16,7 @@ export function NamespaceProfileHeader({
   username,
   namespace,
 }: Props) {
-  let namespaceLink = profileData?.namespace?.userProfileURL
-    ? profileData?.namespace?.userProfileURL
-    : null
-  if (namespaceLink != null && namespace != null) {
-    namespaceLink = ['kolscan', 'tribe.run'].includes(namespace)
-      ? `${namespaceLink}${profileData?.walletAddress}`
-      : `${namespaceLink}${username}`
-  }
+  const t = useTranslations('namespace.profile')
 
   return (
     <div className="flex w-full justify-between items-start">
@@ -43,24 +37,33 @@ export function NamespaceProfileHeader({
         )}
 
         <div>
-          {namespaceLink && namespaceLink !== '' && (
-            <Button
-              newTab
-              href={namespaceLink}
-              variant={ButtonVariant.BADGE}
-              size={ButtonSize.SM}
-            >
-              See original
-            </Button>
-          )}
+          {profileData?.namespace?.externalProfileURLKey &&
+            profileData.namespace.externalProfileURLKey !== '' && (
+              <Button
+                newTab
+                href={profileData.namespace.externalProfileURLKey}
+                variant={ButtonVariant.BADGE}
+                size={ButtonSize.SM}
+              >
+                {t('see_original')}
+              </Button>
+            )}
         </div>
       </div>
 
       <div className="flex flex-col space-y-2">
         <p className="flex items-center space-x-2 text-xs text-muted-foreground">
-          <span>{profileData?.socialCounts?.followers} Followers</span>
+          <span>
+            {t('followers_count', {
+              count: profileData?.socialCounts?.followers,
+            })}
+          </span>
           <span>|</span>
-          <span>{profileData?.socialCounts?.following} Following</span>
+          <span>
+            {t('following_count', {
+              count: profileData?.socialCounts?.following,
+            })}
+          </span>
         </p>
       </div>
     </div>

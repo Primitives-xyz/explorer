@@ -104,9 +104,10 @@ export function useOpenPositions({ subAccountId }: UseUserStatsProps) {
       if (!loading) {
         fetchOpenPositions()
       }
-    }, 10000)
+    }, 5000)
 
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [driftClient, subAccountId, accountIds])
 
   return {

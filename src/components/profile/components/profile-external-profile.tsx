@@ -13,8 +13,8 @@ interface Props {
 export function ProfileExternalProfile({ profile }: Props) {
   const disabled =
     profile.namespace.name !== EXPLORER_NAMESPACE &&
-    (!profile.namespace.userProfileURL ||
-      (profile.namespace.name === 'tribe.run' && !profile.wallet?.address))
+    profile.namespace.name === 'tribe.run' &&
+    !profile.wallet?.address
 
   const isSame = profile.profile.username === profile.wallet?.address
 
@@ -33,10 +33,16 @@ export function ProfileExternalProfile({ profile }: Props) {
                 ? route('entity', {
                     id: profile.profile.username,
                   })
-                : profile.namespace.name === 'tribe.run' &&
-                  profile.wallet?.address
-                ? `${profile.namespace.userProfileURL}${profile.wallet.address}`
-                : `${profile.namespace.userProfileURL}${profile.profile.username}`
+                : profile.namespace.userProfileURL
+                ? route('namespaceProfile', {
+                    id: profile.namespace.name,
+                    profile:
+                      profile.namespace.name === 'tribe.run' &&
+                      profile.wallet?.address
+                        ? profile.wallet.address
+                        : profile.profile.username,
+                  })
+                : `/${profile.namespace.name}/${profile.profile.username}`
             }
             newTab={profile.namespace.name !== EXPLORER_NAMESPACE}
           >

@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react'
-import { motion, useMotionValue, useAnimation } from 'framer-motion'
+import { motion, useAnimation, useMotionValue } from 'framer-motion'
+import { usePathname } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { Swap } from './swap'
-import { usePathname } from 'next/navigation'
 
 interface Props {
   isAlwaysOpen?: boolean
@@ -27,7 +27,6 @@ export function MobileSwapTray({ isAlwaysOpen = false }: Props) {
     } else {
       controls.start({ y: FIXED_TRAY_HEIGHT }).then(() => setDisplaySwap(false))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, controls])
 
   useEffect(() => {
@@ -69,4 +68,4 @@ export function MobileSwapTray({ isAlwaysOpen = false }: Props) {
       </motion.div>
     </>
   )
-} 
+}

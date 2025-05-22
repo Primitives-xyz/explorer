@@ -15,15 +15,17 @@ import {
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useUpdateProfile } from '../../tapestry/hooks/use-update-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedBios } from './suggested-bios'
 
-const formSchema = z.object({
-  bio: z.string().max(300, { message: 'Bio must not exceed 300 characters' }),
-})
+const formSchema = (t: (key: string) => string) =>
+  z.object({
+    bio: z.string().max(300, { message: t('onboarding.form.bio.error') }),
+  })
 
 interface Props {
   suggestedBios: string[]
@@ -32,18 +34,19 @@ interface Props {
 }
 
 export function AddBioForm({ suggestedBios, mainProfile, setStep }: Props) {
+  const t = useTranslations()
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { updateProfile, loading } = useUpdateProfile({
     username: mainProfile.username,
   })
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<ReturnType<typeof formSchema>>>({
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       bio: mainProfile.bio ?? '',
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<ReturnType<typeof formSchema>>) => {
     try {
       await updateProfile({
         bio: values.bio,
@@ -91,10 +94,10 @@ export function AddBioForm({ suggestedBios, mainProfile, setStep }: Props) {
               name="bio"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Bio (optional)</Label>
+                  <Label>{t('onboarding.form.bio.label')}</Label>
                   <FormControl>
                     <Textarea
-                      placeholder="Tell us about yourself"
+                      placeholder={t('onboarding.form.bio.placeholder')}
                       className="resize-none h-[150px]"
                       {...field}
                     />
@@ -120,14 +123,14 @@ export function AddBioForm({ suggestedBios, mainProfile, setStep }: Props) {
             disabled={loading}
             variant={ButtonVariant.OUTLINE}
           >
-            Back
+            {t('onboarding.buttons.back')}
           </Button>
           <Button
             type="submit"
             className="w-[48%] md:w-[160px]"
             loading={loading}
           >
-            Next
+            {t('onboarding.buttons.next')}
           </Button>
         </div>
       </form>

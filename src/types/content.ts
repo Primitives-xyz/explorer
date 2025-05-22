@@ -10,6 +10,7 @@ interface BaseTransactionContent {
   priorityLevel: string
   txSignature: string
   timestamp: string
+  route?: string // Where the swap was executed from: 'trenches', 'trade', or 'home'
 
   // Token information
   inputTokenSymbol: string
@@ -48,6 +49,7 @@ interface BasePerpTradeContent {
   leverage?: string
   fees?: string
   pnl?: string // Typically relevant for closing trades
+  route?: string // Where the trade was executed from: 'trenches', 'trade', or 'home'
 
   // Wallet that executed the transaction
   walletAddress: string

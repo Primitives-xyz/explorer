@@ -9,6 +9,7 @@ import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ESwapMode } from '../../swap.models'
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
   autoFocus?: boolean
   setShowInputTokenSearch: (show: boolean) => void
   handleInputAmountByPercentage: (percent: number) => void
+  notEnoughInput?: boolean
 }
 
 export function Pay({
@@ -23,7 +25,9 @@ export function Pay({
   autoFocus = true,
   setShowInputTokenSearch,
   handleInputAmountByPercentage,
+  notEnoughInput,
 }: Props) {
+  const t = useTranslations()
   const {
     inputs: { inputMint },
     inAmount,
@@ -68,22 +72,22 @@ export function Pay({
   const percentageButtons = [
     { label: '25%', value: 25 },
     { label: '50%', value: 50 },
-    { label: 'max', value: 100 },
+    { label: t('common.max'), value: 100 },
   ]
 
   return (
     <div>
       <div className="flex justify-between items-center">
-        <p>Selling</p>
+        <p>{t('swap.input.pay')}</p>
         <p className="text-xs text-muted-foreground">
-          Balance:{' '}
+          {t('swap.input.balance_label')}{' '}
           <TokenBalance walletAddress={walletAddress} tokenMint={inputMint} />
         </p>
       </div>
 
       <div className="flex justify-between items-center">
         <Input
-          type="number"
+          type="text"
           inputMode="decimal"
           placeholder="0.00"
           className="text-primary placeholder:text-primary text-xl bg-transparent border-none px-0"
@@ -106,10 +110,10 @@ export function Pay({
             {inputTokenImageUri ? (
               <ValidatedImage
                 src={inputTokenImageUri}
-                alt={`${inputTokenSymbol || 'Token'} logo`}
+                alt={`${inputTokenSymbol || t('swap.token.select')} logo`}
                 width={32}
                 height={32}
-                className="rounded-full aspect-square object-cover"
+                className="rounded-full aspect-square object-cover max-w-[32px] max-h-[32px]"
               />
             ) : (
               <span className="rounded-full h-[32px] w-[32px] bg-background" />

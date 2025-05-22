@@ -1,41 +1,45 @@
 import {
-  DirectionFilterType,
-  IUserStats,
+  AddTakeProfitOrderParams,
   OrderType,
-  TakeProfitOrderParams,
 } from '@/components/tapestry/models/drift.model'
+import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
+import { useMarketPrice } from '@/components/trade/hooks/drift/use-market-price'
 import { useOraclePrice } from '@/components/trade/hooks/drift/use-oracle-price'
-import { Card, CardContent, Input, Spinner, Switch } from '@/components/ui'
-import { SOL_MINT } from '@/utils/constants'
+import { useUserStats } from '@/components/trade/hooks/drift/use-user-stats'
+import { CardContent, Input, Spinner } from '@/components/ui'
 import { CircleAlert } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 
-const SOL_IMG_URI = `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${SOL_MINT}/logo.png`
+const SOL_IMG_URI =
+  'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
 const USDC_IMG_URI =
   'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
 
 interface Props {
-  marketPrice: number
-  priceLoading: boolean
-  direction: DirectionFilterType
-  userStats: IUserStats
-  setOrderParams: (params: TakeProfitOrderParams) => void
-  setIsError: (val: boolean) => void
+  symbol: string
+  direction: string | null
+  setOrderParams: (params: AddTakeProfitOrderParams) => void
+  setIsError: (arg: boolean) => void
 }
 
-export default function TakeProfit({
-  marketPrice,
-  priceLoading,
+export default function AddTakeProfit({
+  symbol,
   direction,
-  userStats,
   setOrderParams,
   setIsError,
 }: Props) {
   // States
-  const [orderAmount, setOrderAmount] = useState<string>('')
-  const [symbol, setSymbol] = useState<string>('SOL')
+  const { price: marketPrice, loading: priceLoading } = useMarketPrice({
+    symbol,
+  })
+  const { accountIds } = useDriftUsers()
+  const { userStats, loading: statsLoading } = useUserStats({
+    subAccountId: accountIds[0] || 0,
+    symbol,
+  })
   const { oraclePrice, loading } = useOraclePrice({ symbol })
+  const [orderAmount, setOrderAmount] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [triggerOraclePrice, setTriggerOraclePrice] = useState<string>('')
   const getMaxTradeAmount = useMemo(() => {
@@ -43,7 +47,6 @@ export default function TakeProfit({
 
     return userStats.maxTradeSize.toFixed(2)
   }, [userStats])
-  const [reduceOnly, setReduceOnly] = useState<boolean>(false)
 
   // handlers
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,13 +103,21 @@ export default function TakeProfit({
   }
 
   useEffect(() => {
-    setOrderParams({
-      orderType: OrderType.TP,
-      amount: orderAmount,
-      triggerPrice: triggerOraclePrice,
-      reduceOnly,
-    } as TakeProfitOrderParams)
-  }, [orderAmount, triggerOraclePrice, reduceOnly])
+    if (Number(orderAmount) > 0.01) {
+      setOrderParams({
+        orderType: OrderType.ADD_TP,
+        amount: orderAmount,
+        symbol,
+        currentPositionDirection: direction,
+        triggerPrice: triggerOraclePrice,
+      } as AddTakeProfitOrderParams)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderAmount, triggerOraclePrice, direction])
+
+  useEffect(() => {
+    setTriggerOraclePrice(oraclePrice.toString())
+  }, [oraclePrice])
 
   useEffect(() => {
     if (error) {
@@ -116,14 +127,11 @@ export default function TakeProfit({
     if (!error) {
       setIsError(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
-  useEffect(() => {
-    setTriggerOraclePrice(oraclePrice.toString())
-  }, [oraclePrice])
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-center gap-2">
         <p>Trigger Oracle Price</p>
         {loading && <Spinner size={12} />}
@@ -143,8 +151,7 @@ export default function TakeProfit({
         </div>
       </div>
 
-      <div className="flex justify-between items-center">
-        <p>Size</p>
+      <div className="flex justify-end items-center">
         <div className="flex items-center gap-2">
           <p>Max: {getMaxTradeAmount} USDC</p>
           {priceLoading && <Spinner size={12} />}
@@ -188,18 +195,11 @@ export default function TakeProfit({
         </div>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <p>Reduce Only</p>
-        <Switch checked={reduceOnly} onCheckedChange={setReduceOnly} />
-      </div>
-
       {error && (
-        <Card>
-          <CardContent className="flex items-center gap-4 p-3">
-            <CircleAlert className="destructive" size={40} />
-            <p className="destructive">{error}</p>
-          </CardContent>
-        </Card>
+        <CardContent className="flex items-center gap-4 p-1">
+          <CircleAlert className="text-red-500" size={20} />
+          <p className="text-red-500 font-medium">{error}</p>
+        </CardContent>
       )}
     </div>
   )

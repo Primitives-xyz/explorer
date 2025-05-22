@@ -8,6 +8,7 @@ import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { abbreviateWalletAddress, formatTimeAgo } from '@/utils/utils'
 import { ArrowRightLeft } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ReactNode } from 'react'
 import { IHomeTransaction } from '../home-transactions.models'
 
@@ -24,6 +25,7 @@ export function TransactionsHeader({
   children,
   onClickTradeButton,
 }: Props) {
+  const t = useTranslations()
   const { profiles } = useGetProfiles({
     walletAddress: sourceWallet,
     skip: !!transaction.profile,
@@ -117,7 +119,7 @@ export function TransactionsHeader({
               className="desktop"
             >
               <ArrowRightLeft size={16} />
-              Copy Trade
+              {t('home.transactions.trade_button')}
             </Button>
           )}
         </div>

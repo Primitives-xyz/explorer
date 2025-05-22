@@ -1,25 +1,28 @@
 import { Paragraph } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import { EOnboardingSteps } from '../onboarding.models'
 import { Steps } from './steps'
 
 export function StepsWrapper({ step }: { step: EOnboardingSteps }) {
+  const t = useTranslations()
+
   const getTitle = () => {
     if (step === EOnboardingSteps.USERNAME) {
-      return 'Add Username'
+      return t('onboarding.steps.titles.add_username')
     } else if (step === EOnboardingSteps.IMAGE) {
-      return 'Add Profile Image'
+      return t('onboarding.steps.titles.add_profile_image')
     } else {
-      return 'Add Bio'
+      return t('onboarding.steps.titles.add_bio')
     }
   }
 
   const getDescription = () => {
     if (step === EOnboardingSteps.USERNAME) {
-      return 'Type in your own username or use one from your imported identities.'
+      return t('onboarding.steps.descriptions.username')
     } else if (step === EOnboardingSteps.IMAGE) {
-      return 'We’ve generated a profile image for you! Don’t love it? Customize your profile image from what you already own or by uploading.'
+      return t('onboarding.steps.descriptions.profile_image')
     } else {
-      return 'Stand out from the crowd—describe yourself!'
+      return t('onboarding.steps.descriptions.bio')
     }
   }
 

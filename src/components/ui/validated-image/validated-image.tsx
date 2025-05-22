@@ -1,17 +1,25 @@
 'use client'
 
-import Image from 'next/image'
+import Image, { ImageProps } from 'next/image'
 import { useEffect, useState } from 'react'
 
-interface props {
+interface ValidatedImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   src: string
   alt: string
-  className?: string
-  width: number
-  height: number
+  fallbackClassName?: string
+  unoptimized?: boolean
 }
 
-export function ValidatedImage({ src, alt, className, width, height }: props) {
+export function ValidatedImage({
+  src,
+  alt,
+  className = '',
+  fallbackClassName = '',
+  width,
+  height,
+  unoptimized = false,
+  ...rest
+}: ValidatedImageProps) {
   const [isValid, setIsValid] = useState(true)
 
   useEffect(() => {
@@ -30,7 +38,9 @@ export function ValidatedImage({ src, alt, className, width, height }: props) {
     return (
       <div
         style={{ width, height }}
-        className={`rounded-full bg-muted shrink-0 ${className ?? ''}`}
+        className={`bg-muted rounded-full shrink-0 ${
+          fallbackClassName || className
+        }`}
       />
     )
   }
@@ -41,7 +51,9 @@ export function ValidatedImage({ src, alt, className, width, height }: props) {
       alt={alt}
       width={width}
       height={height}
-      className={className}
+      className={`object-cover w-full h-full rounded-full ${className}`}
+      unoptimized={unoptimized}
+      {...rest}
     />
   )
 }

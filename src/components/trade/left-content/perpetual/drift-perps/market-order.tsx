@@ -1,19 +1,19 @@
 import {
   DirectionFilterType,
   IUserStats,
-  LimitOrderParams,
+  MarketOrderParams,
   OrderType,
 } from '@/components/tapestry/models/drift.model'
 import { useLeverageSize } from '@/components/trade/hooks/drift/use-leverage-size'
 import { useLiquidationPrice } from '@/components/trade/hooks/drift/use-liquidation-price'
-import { Input, Separator, Spinner, Switch } from '@/components/ui'
+import { Input, Separator, Spinner } from '@/components/ui'
 import { SOL_MINT } from '@/utils/constants'
 import { formatUsdValue } from '@/utils/utils'
 import LeverageSelector from '@components/trade/left-content/perpetual/leverage-selector'
 import { Slippage } from '@components/trade/left-content/perpetual/slippage'
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const SOL_IMG_URI = `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${SOL_MINT}/logo.png`
 const USDC_IMG_URI =
@@ -25,10 +25,10 @@ interface Props {
   marketPrice: number
   userStats: IUserStats
   direction: DirectionFilterType
-  setOrderParams: (params: LimitOrderParams) => void
+  setOrderParams: (params: MarketOrderParams) => void
 }
 
-export default function LimitOrder({
+export default function MarketOrder({
   symbol,
   direction,
   priceLoading,
@@ -43,9 +43,12 @@ export default function LimitOrder({
   const [slippageOption, setSlippageOption] = useState<string>('0.1')
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
   const [orderAmount, setOrderAmount] = useState<string>('')
-  const [limitPrice, setLimitPrice] = useState<string>('')
-  const [reduceOnly, setReduceOnly] = useState<boolean>(false)
 
+  const getMaxTradeAmount = useMemo(() => {
+    if (!userStats || userStats.maxTradeSize <= 0) return '0.00'
+
+    return userStats.maxTradeSize.toFixed(2)
+  }, [userStats])
   const { selectedLeverageSizeUsd, selectedLeverageSizeToken } =
     useLeverageSize({
       userStats,
@@ -81,25 +84,6 @@ export default function LimitOrder({
           : val
 
       setAmount(newVal)
-
-      const cursorPosition = e.target.selectionStart
-      window.setTimeout(() => {
-        e.target.focus()
-        e.target.setSelectionRange(cursorPosition, cursorPosition)
-      }, 0)
-    }
-  }
-
-  const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-
-    if (
-      val === '' ||
-      val === '.' ||
-      /^[0]?\.[0-9]*$/.test(val) ||
-      /^[0-9]*\.?[0-9]*$/.test(val)
-    ) {
-      setLimitPrice(val)
 
       const cursorPosition = e.target.selectionStart
       window.setTimeout(() => {
@@ -154,37 +138,20 @@ export default function LimitOrder({
 
   useEffect(() => {
     setOrderParams({
-      orderType: OrderType.LIMIT,
+      orderType: OrderType.MARKET,
       amount: orderAmount,
       slippage: slippageOption,
-      limitPrice,
-      reduceOnly,
-    } as LimitOrderParams)
-  }, [orderAmount, slippageOption, limitPrice, reduceOnly])
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderAmount, slippageOption])
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <span>Market Price</span>
+        <p>Size</p>
         <div className="flex items-center gap-2">
-          <p className="text-primary">{marketPrice.toFixed(4)} USD</p>
+          <p>Max: {getMaxTradeAmount} USDC</p>
           {priceLoading && <Spinner size={12} />}
-        </div>
-      </div>
-
-      <p>Limit Price</p>
-      <div>
-        <div className="relative w-full">
-          <Input
-            type="text"
-            placeholder="0.00"
-            className="pr-12 text-primary text-xl"
-            value={limitPrice}
-            onChange={(e) => handleLimitPriceChange(e)}
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full">
-            USD
-          </span>
         </div>
       </div>
 
@@ -247,11 +214,6 @@ export default function LimitOrder({
         slippageExpanded={slippageExpanded}
         slippageOption={slippageOption}
       />
-
-      <div className="flex items-center space-x-2">
-        <p>Reduce Only</p>
-        <Switch checked={reduceOnly} onCheckedChange={setReduceOnly} />
-      </div>
 
       <Separator />
 

@@ -51,13 +51,13 @@ export function StakeForm({ initialAmount = '' }: Props) {
     // Check if the value is a valid number
     const numericValue = Number(value)
     if (isNaN(numericValue)) {
-      setInputError(t('error.please_enter_a_valid_number'))
+      setInputError(t('stake.form.errors.invalid_number'))
       return false
     }
 
     // Check if the value is positive
     if (numericValue <= 0) {
-      setInputError(t('error.amount_must_be_greater_than_0'))
+      setInputError(t('stake.form.errors.amount_greater_than_zero'))
       return false
     }
 
@@ -69,9 +69,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
       decimalParts[1]?.length > SSE_TOKEN_DECIMAL
     ) {
       setInputError(
-        `${t('trade.maximum')} ${SSE_TOKEN_DECIMAL} ${t(
-          'trade.decimal_places_allowed'
-        )}`
+        t('stake.form.errors.decimal_places', { decimals: SSE_TOKEN_DECIMAL })
       )
       return false
     }
@@ -82,7 +80,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
         Math.floor(10 ** SSE_TOKEN_DECIMAL * numericValue)
       )
       if (rawAmount > inputRawBalance) {
-        setInputError(t('error.amount_exceeds_your_balance'))
+        setInputError(t('stake.form.errors.exceeds_balance'))
         return false
       }
     }
@@ -199,15 +197,36 @@ export function StakeForm({ initialAmount = '' }: Props) {
     stake(displayAmount)
   }
 
+  if (!sdkHasLoaded) {
+    return (
+      <Button variant={ButtonVariant.OUTLINE} className="w-full">
+        <Spinner />
+        <p>{t('stake.transaction.checking_wallet')}</p>
+      </Button>
+    )
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <Button
+        variant={ButtonVariant.OUTLINE}
+        className="w-full"
+        onClick={() => setShowAuthFlow(true)}
+      >
+        {t('common.connect_wallet')}
+      </Button>
+    )
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-start md:items-center">
-          <p>{t('common.amount')}</p>
+          <p>{t('stake.form.amount')}</p>
           {!inputBalanceLoading && inputBalance && (
             <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
-                {t('common.balance')}: {formatNumber(inputBalance)}
+                {t('stake.form.balance')}: {formatNumber(inputBalance)}
               </p>
               <div className="flex items-center justify-end space-x-2">
                 <Button
@@ -237,7 +256,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
                   onClick={handleMaxAmount}
                   disabled={showStakeLoading || !inputBalance}
                 >
-                  {t('common.max')}
+                  {t('stake.form.max')}
                 </Button>
               </div>
             </div>
@@ -255,28 +274,13 @@ export function StakeForm({ initialAmount = '' }: Props) {
         {inputError && <p className="text-destructive">{inputError}</p>}
       </div>
 
-      {!sdkHasLoaded ? (
-        <Button variant={ButtonVariant.OUTLINE} className="mt-4 w-full">
-          <Spinner />
-          <p>{t('trade.checking_wallet_status')}</p>
-        </Button>
-      ) : !isLoggedIn ? (
-        <Button
-          variant={ButtonVariant.OUTLINE}
-          className="mt-4 w-full"
-          onClick={() => setShowAuthFlow(true)}
-        >
-          {t('common.connect_wallet')}
-        </Button>
-      ) : (
-        <Button
-          className="mt-4 w-full"
-          onClick={handleStake}
-          disabled={showStakeLoading || !displayAmount || !!inputError}
-        >
-          {showStakeLoading ? <Spinner /> : t('trade.stake')}
-        </Button>
-      )}
+      <Button
+        className="mt-4 w-full"
+        onClick={handleStake}
+        disabled={showStakeLoading || !displayAmount || !!inputError}
+      >
+        {showStakeLoading ? <Spinner /> : t('stake.tabs.stake')}
+      </Button>
     </div>
   )
 }

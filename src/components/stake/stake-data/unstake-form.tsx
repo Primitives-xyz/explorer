@@ -8,11 +8,11 @@ import {
 import { SSE_TOKEN_DECIMAL } from '@/utils/constants'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { formatRawAmount } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useStakeInfo } from '../hooks/use-stake-info'
 import { useUnstake } from '../hooks/use-unstake'
-import { formatRawAmount } from '@/utils/utils'
 
 interface Props {
   initialAmount?: string
@@ -43,13 +43,13 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     // Check if the value is a valid number
     const numericValue = Number(value)
     if (isNaN(numericValue)) {
-      setInputError(t('error.please_enter_a_valid_number'))
+      setInputError(t('stake.form.errors.invalid_number'))
       return false
     }
 
     // Check if the value is positive
     if (numericValue <= 0) {
-      setInputError(t('error.amount_must_be_greater_than_0'))
+      setInputError(t('stake.form.errors.amount_greater_than_zero'))
       return false
     }
 
@@ -61,16 +61,14 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
       decimalParts[1]?.length > SSE_TOKEN_DECIMAL
     ) {
       setInputError(
-        `${t('trade.maximum')} ${SSE_TOKEN_DECIMAL} ${t(
-          'trade.decimal_places_allowed'
-        )}`
+        t('stake.form.errors.decimal_places', { decimals: SSE_TOKEN_DECIMAL })
       )
       return false
     }
 
     // Check if the value exceeds the staked amount
     if (stakeAmount && numericValue > Number(stakeAmount)) {
-      setInputError(t('error.amount_exceeds_your_staked_balance'))
+      setInputError(t('stake.form.errors.exceeds_staked_balance'))
       return false
     }
 
@@ -90,7 +88,10 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     try {
       const stakedAmount = Number(stakeAmount)
       const quarterAmount = stakedAmount * 0.25
-      const formattedAmount = formatRawAmount(BigInt(quarterAmount), BigInt(SSE_TOKEN_DECIMAL))
+      const formattedAmount = formatRawAmount(
+        BigInt(quarterAmount),
+        BigInt(SSE_TOKEN_DECIMAL)
+      )
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -107,7 +108,10 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     try {
       const stakedAmount = Number(stakeAmount)
       const halfAmount = stakedAmount * 0.5
-      const formattedAmount = formatRawAmount(BigInt(halfAmount), BigInt(SSE_TOKEN_DECIMAL))
+      const formattedAmount = formatRawAmount(
+        BigInt(halfAmount),
+        BigInt(SSE_TOKEN_DECIMAL)
+      )
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -121,7 +125,10 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
   const handleMaxAmount = () => {
     if (!stakeAmount) return
 
-    const formattedAmount = formatRawAmount(BigInt(stakeAmount), BigInt(SSE_TOKEN_DECIMAL))
+    const formattedAmount = formatRawAmount(
+      BigInt(stakeAmount),
+      BigInt(SSE_TOKEN_DECIMAL)
+    )
 
     try {
       if (validateAmount(formattedAmount)) {
@@ -165,7 +172,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     return (
       <Button variant={ButtonVariant.OUTLINE} className="w-full">
         <Spinner />
-        <p>{t('trade.checking_wallet_status')}</p>
+        <p>{t('stake.transaction.checking_wallet')}</p>
       </Button>
     )
   }
@@ -186,11 +193,11 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     <div>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-start md:items-center">
-          <p>{t('common.amount')}</p>
+          <p>{t('stake.form.amount')}</p>
           {!showUserInfoLoading && stakeAmount && (
             <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
               <p className="text-muted-foreground text-xs">
-                {t('common.balance')}: {formattedStakeAmount}
+                {t('stake.form.staked_balance')}: {formattedStakeAmount}
               </p>
               <div className="flex items-center justify-end space-x-2">
                 <Button
@@ -220,7 +227,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
                   onClick={handleMaxAmount}
                   disabled={showUnstakeLoading || !stakeAmount}
                 >
-                  {t('common.max')}
+                  {t('stake.form.max')}
                 </Button>
               </div>
             </div>
@@ -243,7 +250,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
         onClick={handleUnstake}
         disabled={showUnstakeLoading || !displayAmount || !!inputError}
       >
-        {showUnstakeLoading ? <Spinner /> : t('trade.unstake')}
+        {showUnstakeLoading ? <Spinner /> : t('stake.tabs.unstake')}
       </Button>
     </div>
   )

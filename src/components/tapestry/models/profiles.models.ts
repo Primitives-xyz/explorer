@@ -29,6 +29,8 @@ export interface IProfile {
   blockchain: BLOCKCHAIN
   wallet: IWallet
   hasSeenProfileSetupModal?: boolean
+  userRevealedTheSolidScore?: boolean
+  userHasClickedOnShareHisSolidScore?: boolean
 }
 
 // POST /profiles/findOrCreate
@@ -133,4 +135,9 @@ export interface ISuggestedUsername {
 export interface IExternalNamespace {
   namespace: INameSpace
   profiles: IGetProfilesResponseEntry[]
+}
+
+export interface IFollowersAddRemoveInput {
+  followerUsername: string
+  followeeUsername: string
 }

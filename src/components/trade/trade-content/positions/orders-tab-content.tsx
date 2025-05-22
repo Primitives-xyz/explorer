@@ -8,7 +8,6 @@ import {
 } from '@/components/ui'
 import Tooltip from '@/components/ui/tooltip'
 import { cn } from '@/utils/utils'
-import { X } from 'lucide-react'
 import { LimitOrderProps } from '../../hooks/drift/use-limit-orders'
 
 interface OrdersTabContentProps {
@@ -31,8 +30,8 @@ export default function OrdersTabContent({
   }
 
   return (
-    <div className="px-2 pb-2">
-      <div className="grid grid-cols-5 gap-2 mb-2 text-center">
+    <div className="pb-2">
+      <div className="grid grid-cols-5 gap-2 px-2 py-2">
         <div className="text-primary">Market</div>
         <div className="text-primary">Type</div>
         <div className="text-primary">Size</div>
@@ -46,7 +45,7 @@ export default function OrdersTabContent({
             {limitOrders.map((limitOrder, index) => {
               return (
                 <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
-                  <CardContent className="px-2 py-4 grid grid-cols-5 gap-2 items-center text-center">
+                  <CardContent className="px-2 py-2 grid grid-cols-5 gap-2 items-center">
                     <div>
                       <p>{limitOrder.market}</p>
                       <p
@@ -74,7 +73,7 @@ export default function OrdersTabContent({
                       </p>
                     </div>
 
-                    <div className="flex justify-center items-center">
+                    <div className="flex items-center">
                       <Tooltip content="Cancel Order">
                         <Button
                           variant={ButtonVariant.OUTLINE}
@@ -86,7 +85,9 @@ export default function OrdersTabContent({
                           {cancelLoading ? (
                             <Spinner />
                           ) : (
-                            <X size={16} className="font-bold" />
+                            <span className="text-center leading-main-content">
+                              Close
+                            </span>
                           )}
                         </Button>
                       </Tooltip>

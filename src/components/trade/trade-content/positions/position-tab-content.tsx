@@ -6,17 +6,27 @@ import {
   CardVariant,
   Spinner,
 } from '@/components/ui'
-import Tooltip from '@/components/ui/tooltip'
 import { cn } from '@/utils/utils'
-import { X } from 'lucide-react'
+import { PerpMarkets } from '@drift-labs/sdk-browser'
 import { useState } from 'react'
 import { PerpsPositionInfoProps } from '../../hooks/drift/use-open-positions'
+import AddTPAndSL from '../../left-content/perpetual/add-pro-orders/add-pro-orders'
 
 interface PositionTabContentProps {
   perpsPositionsInfo: PerpsPositionInfoProps[]
   positionsLoading: boolean
   closePosition: (value: number) => void
   refreshFetchOpenPositions: () => void
+}
+
+const getAssetSymbol = (marketIndex: number) => {
+  const marketInfo = PerpMarkets['mainnet-beta'].find(
+    (market) => market.marketIndex === marketIndex
+  )
+
+  if (!marketInfo) return ''
+
+  return marketInfo?.baseAssetSymbol
 }
 
 export default function PositionTabContent({
@@ -27,6 +37,12 @@ export default function PositionTabContent({
 }: PositionTabContentProps) {
   const symbol = 'SOL'
   const [loading, setLoading] = useState<boolean>(false)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [currentPositionDirection, setCurrentPositionDirection] = useState<
+    string | null
+  >(null)
+  const [currentPositionBaseAssetSymbol, setCurrentPositionBaseAssetSymbol] =
+    useState<string>('')
 
   const handleClose = async (marketIndex: number) => {
     try {
@@ -40,9 +56,21 @@ export default function PositionTabContent({
     }
   }
 
+  const handleAddTPAndSL = (
+    currentPosition: string,
+    currentPositionMarketIndex: number
+  ) => {
+    setIsModalOpen(true)
+    setCurrentPositionDirection(currentPosition)
+
+    const baseAssetSymbol = getAssetSymbol(currentPositionMarketIndex)
+
+    setCurrentPositionBaseAssetSymbol(baseAssetSymbol)
+  }
+
   return (
-    <div className="px-2 pb-2">
-      <div className="grid grid-cols-6 gap-2 mb-2">
+    <div className="pb-2">
+      <div className="grid grid-cols-6 gap-2 px-2 py-2">
         <div className="text-primary">Market</div>
         <div className="text-primary">Size</div>
         <div className="text-primary">Entry/Mark</div>
@@ -57,7 +85,7 @@ export default function PositionTabContent({
             {perpsPositionsInfo.map((position, index) => {
               return (
                 <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
-                  <CardContent className="px-2 py-4 grid grid-cols-6 gap-2 items-center">
+                  <CardContent className="px-2 py-2 grid grid-cols-6 gap-2 items-center">
                     <div>
                       <p>{position.market}</p>
                       <p
@@ -107,22 +135,39 @@ export default function PositionTabContent({
 
                     <p>${position.liqPrice.toFixed(2)}</p>
 
-                    <div className="flex justify-center items-center">
-                      <Tooltip content="Close position">
-                        <Button
-                          variant={ButtonVariant.OUTLINE}
-                          disabled={loading}
-                          onClick={async () =>
-                            await handleClose(position.marketIndex)
-                          }
-                        >
-                          {loading ? (
-                            <Spinner />
-                          ) : (
-                            <X size={16} className="font-bold" />
-                          )}
-                        </Button>
-                      </Tooltip>
+                    <div className="grid grid-cols-2 gap-1 items-center">
+                      <Button
+                        variant={ButtonVariant.OUTLINE}
+                        disabled={loading}
+                        onClick={async () =>
+                          await handleClose(position.marketIndex)
+                        }
+                        className="w-[42px] p-1"
+                      >
+                        {loading ? (
+                          <Spinner />
+                        ) : (
+                          <span className="text-center leading-main-content">
+                            Close
+                          </span>
+                        )}
+                      </Button>
+
+                      <Button
+                        variant={ButtonVariant.OUTLINE}
+                        disabled={loading}
+                        onClick={() =>
+                          handleAddTPAndSL(
+                            position.direction,
+                            position.marketIndex
+                          )
+                        }
+                        className="w-[42px] p-1"
+                      >
+                        <span className="text-center leading-main-content">
+                          ADD
+                        </span>
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -137,6 +182,13 @@ export default function PositionTabContent({
               </div>
             )}
           </>
+        )}
+        {isModalOpen && (
+          <AddTPAndSL
+            currentPositionDirection={currentPositionDirection}
+            currentPositionBaseAssetSymbol={currentPositionBaseAssetSymbol}
+            setIsModalOpen={setIsModalOpen}
+          />
         )}
       </div>
     </div>

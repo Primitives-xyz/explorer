@@ -18,6 +18,7 @@ interface CreatePerpTradeContentNodeParams {
   entryPrice?: string // Estimated or actual entry price
   leverage?: number
   fees?: string
+  route?: 'trenches' | 'trade' | 'home' // Where the trade was executed from
   // TODO: Add sourceWallet, sourceWalletUsername, sourceWalletImage for copied trades later
 }
 
@@ -38,6 +39,7 @@ export function useCreatePerpTradeContent() {
     entryPrice, // Optional for now
     leverage, // Optional for now
     fees, // Optional for now
+    route, // Optional - where the trade was executed from
   }: CreatePerpTradeContentNodeParams) => {
     try {
       // Fetch wallet profile
@@ -71,6 +73,7 @@ export function useCreatePerpTradeContent() {
         walletAddress: walletAddress,
         walletUsername: walletProfile?.username || '',
         walletImage: walletProfile?.image || '',
+        route: route || '',
         // Include optional fields if provided
         ...(entryPrice && { entryPrice }),
         ...(leverage && { leverage: String(leverage) }),
@@ -112,6 +115,7 @@ export function useCreatePerpTradeContent() {
           // TODO: Add sourceWallet if it's a copied trade
           // sourceWallet: fullContent.sourceWallet,
           marketSymbol: marketSymbol, // Add relevant top-level fields for easier querying if needed
+          route: route || '',
           properties: contentToProperties(fullContent),
         }),
       })

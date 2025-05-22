@@ -4,16 +4,18 @@ import { DialectNotificationsComponent } from '@/components/notifications/dialec
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { isSpecialUser } from '@/utils/user-permissions'
 import { cn } from '@/utils/utils'
 import {
+  AlignJustify,
   ArrowRightLeft,
   Beef,
   Compass,
   House,
   LucideIcon,
   PocketKnife,
-  User,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { UrlObject } from 'url'
 import { SearchButton } from '../../search/components/search-button'
@@ -23,14 +25,20 @@ interface Props {
 }
 
 export function Menu({ setOpen }: Props) {
-  const { mainProfile } = useCurrentWallet()
+  const { isLoggedIn, mainProfile } = useCurrentWallet()
+  const t = useTranslations()
 
   return (
     <div className="space-y-4 md:space-y-2">
-      <Entry title="Home" icon={House} href={route('home')} setOpen={setOpen} />
+      <Entry
+        title={t('menu.home')}
+        icon={House}
+        href={route('home')}
+        setOpen={setOpen}
+      />
 
       <Entry
-        title="Trenches"
+        title={t('menu.trenches')}
         icon={PocketKnife}
         href={route('trenches')}
         setOpen={setOpen}
@@ -39,33 +47,35 @@ export function Menu({ setOpen }: Props) {
       <SearchButton />
 
       <Entry
-        title="Trade"
+        title={t('menu.trade')}
         icon={ArrowRightLeft}
         href={route('trade')}
         setOpen={setOpen}
       />
 
       <Entry
-        title="Discover"
+        title={t('menu.discover')}
         icon={Compass}
         href={route('discover')}
         setOpen={setOpen}
       />
 
       <Entry
-        title="Profile"
-        icon={User}
-        href={route('entity', { id: mainProfile?.username || '' })}
-        disabled={!mainProfile?.username}
-        setOpen={setOpen}
-      />
-
-      <Entry
-        title="Stake"
+        title={t('menu.stake')}
         icon={Beef}
         href={route('stake')}
         setOpen={setOpen}
       />
+
+      {isLoggedIn && isSpecialUser(mainProfile) && (
+        <Entry
+          title={t('menu.leaderboard')}
+          icon={AlignJustify}
+          href={route('leaderboard')}
+          setOpen={setOpen}
+          onlyMobile
+        />
+      )}
 
       {process.env.NODE_ENV === 'production' && (
         <DialectNotificationsComponent />
@@ -86,10 +96,19 @@ interface IEntry {
   href: string | UrlObject
   disabled?: boolean
   onlyDesktop?: boolean
+  onlyMobile?: boolean
   setOpen?: (open: boolean) => void
 }
 
-function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
+function Entry({
+  title,
+  icon,
+  href,
+  disabled,
+  onlyDesktop,
+  onlyMobile,
+  setOpen,
+}: IEntry) {
   const pathname = usePathname()
   const Icon = icon
 
@@ -102,6 +121,7 @@ function Entry({ title, icon, href, disabled, onlyDesktop, setOpen }: IEntry) {
         {
           'bg-primary text-background': pathname === href,
           'hidden md:flex': onlyDesktop,
+          'flex md:hidden': onlyMobile,
         }
       )}
       href={href}

@@ -1,34 +1,47 @@
 'use client'
 
+import { SolidScoreSmartCta } from '@/components/solid-score/smart-cta/solid-score-smart-cta'
 import { Button, FilterTabs, Paragraph } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { isSpecialUser } from '@/utils/user-permissions'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { EHomeTransactionFilter } from '../home-transactions.models'
+import { HomeAllTransactions } from './home-all-transactions'
 import { HomeFollowingTransactions } from './home-following-transactions'
 import { HomeKolTransactions } from './home-kol-transactions'
 
 export function HomeTransactions() {
   const t = useTranslations()
-  const { mainProfile, setShowAuthFlow } = useCurrentWallet()
+  const { mainProfile, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
   const [selectedType, setSelectedType] = useState<EHomeTransactionFilter>(
-    EHomeTransactionFilter.KOL
+    EHomeTransactionFilter.ALL
   )
 
   const options = [
-    { label: 'Twitter KOL', value: EHomeTransactionFilter.KOL },
-    { label: 'Following', value: EHomeTransactionFilter.FOLLOWING },
+    { label: t('home.tabs.all'), value: EHomeTransactionFilter.ALL },
+    { label: t('home.tabs.twitter_kol'), value: EHomeTransactionFilter.KOL },
+    {
+      label: t('home.tabs.following'),
+      value: EHomeTransactionFilter.FOLLOWING,
+    },
   ]
 
   return (
     <div className="w-full">
-      <FilterTabs
-        options={options}
-        selected={selectedType}
-        onSelect={setSelectedType}
-      />
+      <div className="flex items-center justify-center">
+        {isSpecialUser(mainProfile) && <SolidScoreSmartCta />}
+      </div>
+      <div className="flex items-start justify-between">
+        <FilterTabs
+          options={options}
+          selected={selectedType}
+          onSelect={setSelectedType}
+        />
+      </div>
       <div className="space-y-4">
+        {selectedType === EHomeTransactionFilter.ALL && <HomeAllTransactions />}
         {selectedType === EHomeTransactionFilter.KOL && <HomeKolTransactions />}
         {selectedType === EHomeTransactionFilter.FOLLOWING && (
           <>
@@ -37,11 +50,9 @@ export function HomeTransactions() {
             ) : (
               <Card>
                 <CardContent className="flex flex-col space-y-10 items-center justify-center">
-                  <Paragraph>
-                    {t('following_transaction.create_a_profile_to_follow')}
-                  </Paragraph>
+                  <Paragraph>{t('home.create_a_profile_to_follow')}</Paragraph>
                   <Button onClick={() => setShowAuthFlow(true)}>
-                    Connect Wallet
+                    {t('common.connect_wallet')}
                   </Button>
                 </CardContent>
               </Card>

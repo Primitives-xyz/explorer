@@ -41,6 +41,7 @@ export function useDriftUsers() {
 
   useEffect(() => {
     getUserAccountIds()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress, driftClient])
 
   return {

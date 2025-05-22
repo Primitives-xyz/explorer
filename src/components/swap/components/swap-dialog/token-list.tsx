@@ -62,7 +62,11 @@ export function TokenList({
   )
 
   if (filteredResults.length === 0) {
-    return <div className="p-4 text-center">No verified tokens found</div>
+    return (
+      <div className="p-4 text-center">
+        {t('swap.token.no_verified_tokens')}
+      </div>
+    )
   }
 
   return (

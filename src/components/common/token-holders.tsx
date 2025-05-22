@@ -2,15 +2,18 @@
 
 import { IGetProfileOwnSpecificToken } from '@/components/tapestry/models/token.models'
 import { Button, ButtonVariant } from '@/components/ui'
+import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
-import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   data: IGetProfileOwnSpecificToken
 }
 
 export function TokenHolders({ data }: Props) {
+  const t = useTranslations()
+
   if (data.totalAmount === 0) {
     return null
   }
@@ -32,10 +35,11 @@ export function TokenHolders({ data }: Props) {
             )}
           >
             {profile.image && (
-              <Image
+              <ValidatedImage
                 src={profile.image}
                 alt="profile"
                 fill
+                sizes="100%"
                 className="rounded-full object-cover"
               />
             )}
@@ -56,10 +60,14 @@ export function TokenHolders({ data }: Props) {
           </span>
         ))}
         {data?.totalAmount && data.totalAmount > 2 && (
-          <span>and +{data.totalAmount - 2} others own this</span>
+          <span>
+            {t('token_holders.others_own', { count: data.totalAmount - 2 })}
+          </span>
         )}
 
-        {data?.totalAmount && data.totalAmount <= 2 && <span>own this</span>}
+        {data?.totalAmount && data.totalAmount <= 2 && (
+          <span>{t('token_holders.own_this')}</span>
+        )}
       </div>
     </div>
   )

@@ -4,18 +4,12 @@ import { useFollowUser } from '@/components/tapestry/hooks/use-follow-user'
 import { useGetFollowers } from '@/components/tapestry/hooks/use-get-followers'
 import { useGetFollowersState } from '@/components/tapestry/hooks/use-get-followers-state'
 import { useGetFollowing } from '@/components/tapestry/hooks/use-get-following'
+import { useUnfollowUser } from '@/components/tapestry/hooks/use-unfollow-user'
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { UserCheck, UserPlus } from 'lucide-react'
+import { UserMinus, UserPlus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-} from '@/components/ui/dialog/alert-dialog'
 
 interface Props extends Omit<ButtonProps, 'children'> {
   followerUsername: string
@@ -32,7 +26,7 @@ export function FollowButton({
   ...props
 }: Props) {
   const { followUser, loading: followUserLoading } = useFollowUser()
-  //  const { unfollowUser, loading: unfollowUserLoading } = useUnfollowUser()
+  const { unfollowUser, loading: unfollowUserLoading } = useUnfollowUser()
   const { refetch: refetchCurrentUser, loading: loadingCurrentUser } =
     useCurrentWallet()
   const { refetch: refetchGetFollowing } = useGetFollowing({
@@ -42,6 +36,8 @@ export function FollowButton({
     username: followeeUsername,
   })
   const [refetchLoading, setRefetchLoading] = useState(false)
+  const t = useTranslations()
+
   const {
     data,
     loading: loadingFollowersState,
@@ -50,18 +46,20 @@ export function FollowButton({
     followeeUsername,
     followerUsername,
   })
+
   const [isFollowingOptimistic, setIsFollowingOptimistic] = useState(
     data?.isFollowing
   )
   const [showFollowError, setShowFollowError] = useState(false)
 
-  const loading = followUserLoading || refetchLoading || loadingCurrentUser // || unfollowUserLoading
+  const loading =
+    followUserLoading ||
+    refetchLoading ||
+    loadingCurrentUser ||
+    unfollowUserLoading
 
   const refetch = async () => {
     setRefetchLoading(true)
-
-    // revalidateServerCache(`/api/profiles/${followerUsername}/following`)
-    // revalidateServerCache(`/api/profiles/${followeeUsername}/followers`)
 
     await Promise.all([
       refetchCurrentUser(),
@@ -77,8 +75,8 @@ export function FollowButton({
 
     try {
       await followUser({
-        followerUser: { username: followerUsername },
-        followeeUser: { username: followeeUsername },
+        followerUsername,
+        followeeUsername,
       })
       await refetch()
       onFollowSuccess?.()
@@ -91,22 +89,22 @@ export function FollowButton({
     }
   }
 
-  //   const handleUnfollow = async () => {
-  //     setIsFollowingOptimistic(false)
+  const handleUnfollow = async () => {
+    setIsFollowingOptimistic(false)
 
-  //     try {
-  //       await unfollowUser({
-  //         followerUsername,
-  //         followeeUsername,
-  //       })
-  //       await refetch()
-  //     } catch (error) {
-  //       console.error('Failed to unfollow:', error)
-  //       setIsFollowingOptimistic(true)
-  //     } finally {
-  //       refetchFollowersState()
-  //     }
-  //   }
+    try {
+      await unfollowUser({
+        followerUsername,
+        followeeUsername,
+      })
+      await refetch()
+    } catch (error) {
+      console.error('Failed to unfollow:', error)
+      setIsFollowingOptimistic(true)
+    } finally {
+      refetchFollowersState()
+    }
+  }
 
   if (followerUsername === followeeUsername) {
     return null
@@ -121,61 +119,36 @@ export function FollowButton({
       : 14
 
   return (
-    <>
-      <div className="flex flex-col items-center gap-1">
-        <Button
-          {...props}
-          onClick={handleFollow}
-          loading={loadingFollowersState}
-          disabled={loading || isFollowing}
-          variant={ButtonVariant.SECONDARY_SOCIAL}
-        >
-          {!!children ? (
-            children(!!isFollowing)
-          ) : (
-            <>
-              {isFollowing ? (
-                isIcon ? (
-                  <UserCheck size={iconSize} />
-                ) : (
-                  <>
-                    <UserCheck size={iconSize} /> Following
-                  </>
-                )
-              ) : isIcon ? (
-                <UserPlus size={iconSize} />
+    <div className="flex flex-col items-center gap-1">
+      <Button
+        {...props}
+        onClick={isFollowing ? handleUnfollow : handleFollow}
+        loading={loadingFollowersState}
+        disabled={loading}
+        variant={ButtonVariant.SECONDARY_SOCIAL}
+      >
+        {!!children ? (
+          children(!!isFollowing)
+        ) : (
+          <>
+            {isFollowing ? (
+              isIcon ? (
+                <UserMinus size={iconSize} />
               ) : (
                 <>
-                  <UserPlus size={iconSize} /> Follow
+                  <UserMinus size={iconSize} /> {t('common.follow.unfollow')}
                 </>
-              )}
-            </>
-          )}
-        </Button>
-        {/* {isFollowing && (
-          <Button
-            variant={ButtonVariant.LINK}
-            onClick={handleUnfollow}
-            className="text-xs"
-            disabled={loading}
-          >
-            Unfollow
-          </Button>
-        )} */}
-      </div>
-      <AlertDialog open={showFollowError} onOpenChange={setShowFollowError}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unable to follow</AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogDescription>
-            This wallet likely does not have an associated profile.
-          </AlertDialogDescription>
-          <AlertDialogAction onClick={() => setShowFollowError(false)}>
-            OK
-          </AlertDialogAction>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+              )
+            ) : isIcon ? (
+              <UserPlus size={iconSize} />
+            ) : (
+              <>
+                <UserPlus size={iconSize} /> {t('common.follow.follow')}
+              </>
+            )}
+          </>
+        )}
+      </Button>
+    </div>
   )
 }

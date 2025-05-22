@@ -46,6 +46,19 @@ export interface StopLimitOrderParams extends NeccessaryOrderParams {
   reduceOnly: boolean
 }
 
+export interface AddTakeProfitOrderParams extends NeccessaryOrderParams {
+  symbol: string
+  currentPositionDirection: string
+  triggerPrice: string
+}
+
+export interface AddStopLimitOrderParams extends NeccessaryOrderParams {
+  symbol: string
+  currentPositionDirection: string
+  triggerPrice: string
+  limitPrice: string
+}
+
 export enum MarketType {
   SPOT = 'spot',
   PERP = 'perp',
@@ -57,6 +70,8 @@ export enum OrderType {
   TP = 'Take_Profit',
   PRO = 'Pro_Orders',
   SL = 'Stop_Limit',
+  ADD_TP = 'Add_Take_Profit',
+  ADD_SL = 'Add_Stop_limit'
 }
 
 export enum ProOrderType {

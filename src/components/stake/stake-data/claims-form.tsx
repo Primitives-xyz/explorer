@@ -11,8 +11,7 @@ interface Props {
 
 export function ClaimsForm({ className }: Props) {
   const t = useTranslations()
-  const { isLoggedIn, sdkHasLoaded, walletAddress, setShowAuthFlow } =
-    useCurrentWallet()
+  const { isLoggedIn, sdkHasLoaded, setShowAuthFlow } = useCurrentWallet()
   const { rewardsAmount, showUserInfoLoading } = useStakeInfo({})
 
   // Ensure rewards amount is never negative
@@ -37,17 +36,17 @@ export function ClaimsForm({ className }: Props) {
   const getClaimButtonText = () => {
     if (isLoading) {
       if (currentStep === 'building_transaction')
-        return t('trade.building_transaction')
+        return t('stake.transaction.building')
       if (currentStep === 'sending_transaction')
-        return t('trade.sending_transaction')
+        return t('stake.transaction.sending')
       if (currentStep === 'waiting_for_confirmation')
-        return t('trade.waiting_for_confirmation')
+        return t('stake.transaction.waiting_confirmation')
       if (currentStep === 'transaction_successful')
-        return t('trade.transaction_successful')
+        return t('stake.transaction.successful')
       return t('common.loading')
     }
 
-    return t('trade.claim_available_rewards')
+    return t('stake.claim.available_rewards')
   }
 
   // Render wallet connection states
@@ -55,7 +54,7 @@ export function ClaimsForm({ className }: Props) {
     return (
       <Button variant={ButtonVariant.OUTLINE} className="w-full">
         <Spinner />
-        <p>{t('trade.checking_wallet_status')}</p>
+        <p>{t('stake.transaction.checking_wallet')}</p>
       </Button>
     )
   }
@@ -63,7 +62,7 @@ export function ClaimsForm({ className }: Props) {
   if (!isLoggedIn) {
     return (
       <div className={className}>
-        <h3 className="text-lg mb-4">{t('trade.claim_rewards')}</h3>
+        <h3 className="text-lg mb-4">{t('stake.claim.title')}</h3>
         <Button
           variant={ButtonVariant.OUTLINE}
           className="w-full"
@@ -72,7 +71,7 @@ export function ClaimsForm({ className }: Props) {
           {t('common.connect_wallet')}
         </Button>
         <div className="mt-4 text-sm text-muted-foreground">
-          <p>Connect your wallet to view and claim your accumulated rewards.</p>
+          <p>{t('stake.claim.connect_wallet_description')}</p>
         </div>
       </div>
     )
@@ -80,12 +79,12 @@ export function ClaimsForm({ className }: Props) {
 
   return (
     <div className={className}>
-      <h3 className="text-lg mb-4">{t('trade.claim_rewards')}</h3>
+      <h3 className="text-lg mb-4">{t('stake.claim.title')}</h3>
 
       <Card className="p-4 mb-6 bg-card/40">
         <div className="flex justify-between items-center">
           <span className="text-muted-foreground">
-            {t('trade.available_rewards')}
+            {t('stake.claim.available_rewards')}
           </span>
           {showUserInfoLoading ? (
             <Spinner className="w-4 h-4" />
@@ -99,9 +98,9 @@ export function ClaimsForm({ className }: Props) {
 
       {!hasRewards && (
         <div className="bg-card/40 p-4 rounded-md mb-6">
-          <p className="font-medium">{t('trade.no_rewards_available')}</p>
+          <p className="font-medium">{t('stake.claim.no_rewards')}</p>
           <p className="text-sm text-muted-foreground mt-1">
-            {t('trade.no_rewards_description')}
+            {t('stake.claim.no_rewards_description')}
           </p>
         </div>
       )}
@@ -116,7 +115,7 @@ export function ClaimsForm({ className }: Props) {
       </Button>
 
       <div className="mt-4 text-sm text-muted-foreground">
-        <p>{t('trade.claim_rewards_description')}</p>
+        <p>{t('stake.claim.description')}</p>
       </div>
     </div>
   )
