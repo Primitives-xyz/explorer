@@ -5,14 +5,13 @@ import { SwapTransactionsView } from './swap-transactions-view'
 
 interface Props {
   transaction: IHomeTransaction
-  walletAddress?: string
 }
 
-export function HomeTransactionEntry({ transaction, walletAddress }: Props) {
+export function HomeTransactionEntry({ transaction }: Props) {
   return (
     <SwapTransactionsView
       transaction={transaction}
-      sourceWallet={transaction.sourceWallet || walletAddress || ''}
+      sourceWallet={transaction.sourceWallet || ''}
     />
   )
 }
