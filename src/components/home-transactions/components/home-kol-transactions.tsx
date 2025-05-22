@@ -8,7 +8,6 @@ import { HomeTransactionEntry } from './home-transaction-entry'
 
 export function HomeKolTransactions() {
   const { walletAddress } = useCurrentWallet()
-  // const { transactions, loading, onLoadMore } = useGetHomeKolTransactions()
   const { transactions, loading } = useGetHomeKolTransactions()
 
   return (
