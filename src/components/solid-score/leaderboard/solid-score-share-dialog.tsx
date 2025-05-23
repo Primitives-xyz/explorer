@@ -87,14 +87,21 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
     })
     refetch()
     setOpen(false)
-    setIsShared(true)
-    const formattedScore = formatSmartNumber(data?.score || 1, {
+
+    const formattedScore = formatSmartNumber(data?.score || 0, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+    const formattedPercentile = formatSmartNumber(data?.percentile || 0, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     })
     window.open(
       `https://x.com/intent/tweet?text=${encodeURIComponent(
-        t('tweet_text', { score: formattedScore })
+        t('tweet_text', {
+          score: formattedScore,
+          percentile: formattedPercentile,
+        })
       )}`,
       '_blank',
       'noopener,noreferrer'
