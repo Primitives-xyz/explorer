@@ -10,8 +10,8 @@ import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Rethink_Sans } from 'next/font/google'
-import './globals.css'
 import Script from 'next/script'
+import './globals.css'
 
 const rethinkSans = Rethink_Sans({
   subsets: ['latin'],
@@ -153,8 +153,6 @@ export default async function RootLayout({
           <WalletProvider>
             <AddressHighlightProvider>
               <div className="fixed inset-0 z-0 background-gradient" />
-
-              {/* <ScreenEffects /> */}
 
               <div className="relative z-20">
                 <Toaster />

@@ -26,8 +26,6 @@ export function ProfileInfos({ setOpen }: Props) {
     useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
 
-  // const { enableMotion, setEnableMotion } = useMotionStore()
-
   return (
     <div>
       {!isLoggedIn && (
@@ -72,12 +70,6 @@ export function ProfileInfos({ setOpen }: Props) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-46">
-                  {/* <DropdownMenuItem
-                  onClick={() => setEnableMotion(!enableMotion)}
-                >
-                  <Checkbox checked={enableMotion} />
-                  Enable animation
-                </DropdownMenuItem> */}
                   <DropdownMenuItem onClick={logout}>
                     <LogOutIcon size={18} />
                     {t('menu.profile.logout')}
