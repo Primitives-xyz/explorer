@@ -47,29 +47,15 @@ export function RevealScoreText({ open, closeModal }: Props) {
   return (
     <Animate
       isVisible={open}
-      // initial={{
-      //   opacity: 0,
-      //   x: -80,
-      // }}
-      // animate={{
-      //   opacity: 1,
-      //   x: 0,
-      //   transition: {
-      //     duration: 0.4,
-      //     delay: 0.7,
-      //     ease: [0.34, 1.56, 0.64, 1],
-      //   },
-      // }}
-      // exit={{
-      //   opacity: 0,
-      //   x: 50,
-      // }}
       variants={containerAnimationVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
       className="flex flex-col items-start justify-center gap-2 relative"
     >
+      {/* <motion.div variants={itemAnimationVariants}>
+        <RocketIcon size={62} className="text-black" />
+      </motion.div> */}
       <motion.div variants={itemAnimationVariants}>
         <div className="text-black/60 text-6xl font-semibold">
           Solid Score Unlocked!

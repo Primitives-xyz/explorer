@@ -47,11 +47,11 @@ export function RevealScoreAnimation() {
           <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center">
             <RevealScoreBackgroundAnimation
               phase={getPhase()}
-              color="#F0E68C"
+              color="#272626"
             />
             <RevealScoreBackgroundAnimation
               phase={getPhase()}
-              color="#E8D574"
+              color="#171717"
               delay={0.2}
             />
             <RevealScoreBackgroundAnimation
