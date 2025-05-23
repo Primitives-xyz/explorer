@@ -22,11 +22,10 @@ interface Props {
 }
 
 export function ProfileWallets({ walletAddress }: Props) {
-  console.log('walletAddress', walletAddress)
   const { identities, loading } = useGetIdentities({
     walletAddress,
   })
-  console.log('identities', identities)
+
   const displayedWallets = identities
     ?.filter((identity) => !!identity?.wallet?.address)
     .filter(

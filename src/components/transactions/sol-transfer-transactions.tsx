@@ -26,7 +26,7 @@ export function SolTransferTransactions({ transaction, sourceWallet }: Props) {
           sourceWallet={sourceWallet}
           profiles={profiles}
         >
-          <div className="flex flex-col md-flex-row md:items-center gap-2 text-xs">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 text-xs">
             <Badge variant="outline" className="rounded-md">
               transferred SOL
             </Badge>
