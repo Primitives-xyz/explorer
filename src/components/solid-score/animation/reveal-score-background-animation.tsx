@@ -1,9 +1,10 @@
 'use client'
 
+import { cn } from '@/utils/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
-export enum ECelebrationDialogBackgroundAnimationPhase {
+export enum ERevealScoreBackgroundAnimationPhase {
   IDLE = 'idle',
   EXPANDING = 'expanding',
   HOLDING = 'holding',
@@ -14,7 +15,8 @@ interface Props {
   color?: string
   duration?: number
   delay?: number
-  phase?: ECelebrationDialogBackgroundAnimationPhase
+  phase?: ERevealScoreBackgroundAnimationPhase
+  className?: string
 }
 
 export function RevealScoreBackgroundAnimation({
@@ -22,9 +24,10 @@ export function RevealScoreBackgroundAnimation({
   duration = 0.4,
   delay = 0,
   phase,
+  className,
 }: Props) {
   const [animationPhase, setAnimationPhase] = useState(
-    ECelebrationDialogBackgroundAnimationPhase.IDLE
+    ERevealScoreBackgroundAnimationPhase.IDLE
   )
 
   useEffect(() => {
@@ -52,19 +55,18 @@ export function RevealScoreBackgroundAnimation({
   }
 
   const getTransformOrigin = () => {
-    return animationPhase ===
-      ECelebrationDialogBackgroundAnimationPhase.CONTRACTING
+    return animationPhase === ERevealScoreBackgroundAnimationPhase.CONTRACTING
       ? 'right center'
       : 'left center'
   }
 
   const getCurrentAnimation = () => {
     switch (animationPhase) {
-      case ECelebrationDialogBackgroundAnimationPhase.EXPANDING:
+      case ERevealScoreBackgroundAnimationPhase.EXPANDING:
         return getFullCoverageTransform()
-      case ECelebrationDialogBackgroundAnimationPhase.HOLDING:
+      case ERevealScoreBackgroundAnimationPhase.HOLDING:
         return getFullCoverageTransform()
-      case ECelebrationDialogBackgroundAnimationPhase.CONTRACTING:
+      case ERevealScoreBackgroundAnimationPhase.CONTRACTING:
         return getExitTransform()
       default:
         return getInitialTransform()
@@ -72,23 +74,23 @@ export function RevealScoreBackgroundAnimation({
   }
 
   const handleAnimationComplete = () => {
-    if (
-      animationPhase === ECelebrationDialogBackgroundAnimationPhase.EXPANDING
-    ) {
-      setAnimationPhase(ECelebrationDialogBackgroundAnimationPhase.HOLDING)
+    if (animationPhase === ERevealScoreBackgroundAnimationPhase.EXPANDING) {
+      setAnimationPhase(ERevealScoreBackgroundAnimationPhase.HOLDING)
     } else if (
-      animationPhase === ECelebrationDialogBackgroundAnimationPhase.CONTRACTING
+      animationPhase === ERevealScoreBackgroundAnimationPhase.CONTRACTING
     ) {
-      setAnimationPhase(ECelebrationDialogBackgroundAnimationPhase.IDLE)
+      setAnimationPhase(ERevealScoreBackgroundAnimationPhase.IDLE)
     }
   }
 
   return (
     <AnimatePresence>
-      {animationPhase !== ECelebrationDialogBackgroundAnimationPhase.IDLE && (
+      {animationPhase !== ERevealScoreBackgroundAnimationPhase.IDLE && (
         <motion.div
-          // className="fixed inset-0 z-[9998] pointer-events-none"
-          className="absolute inset-0 pointer-events-none"
+          className={cn(
+            'absolute w-[110%] h-full left-1/2 -translate-x-1/2 pointer-events-none',
+            className
+          )}
           style={{
             backgroundColor: color,
             transformOrigin: getTransformOrigin(),
@@ -96,16 +98,12 @@ export function RevealScoreBackgroundAnimation({
           initial={getInitialTransform()}
           animate={getCurrentAnimation()}
           transition={{
-            duration:
-              animationPhase ===
-              ECelebrationDialogBackgroundAnimationPhase.HOLDING
-                ? 0
-                : duration,
+            duration,
             delay:
-              animationPhase ===
-              ECelebrationDialogBackgroundAnimationPhase.EXPANDING
+              animationPhase === ERevealScoreBackgroundAnimationPhase.EXPANDING
                 ? delay
                 : 0,
+            // delay,
             ease: [0.4, 0, 0.2, 1],
           }}
           onAnimationComplete={handleAnimationComplete}

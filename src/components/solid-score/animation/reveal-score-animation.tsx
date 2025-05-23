@@ -3,12 +3,13 @@ import {
   Button,
   ButtonSize,
   Dialog,
+  DialogOverlay,
   DialogPortal,
 } from '@/components/ui'
 import { XIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
-  ECelebrationDialogBackgroundAnimationPhase,
+  ERevealScoreBackgroundAnimationPhase,
   RevealScoreBackgroundAnimation,
 } from './reveal-score-background-animation'
 import { RevealScoreText } from './reveal-score-text'
@@ -24,9 +25,9 @@ export function RevealScoreAnimation() {
 
   const getPhase = () => {
     if (animationOpen) {
-      return ECelebrationDialogBackgroundAnimationPhase.EXPANDING
+      return ERevealScoreBackgroundAnimationPhase.EXPANDING
     }
-    return ECelebrationDialogBackgroundAnimationPhase.CONTRACTING
+    return ERevealScoreBackgroundAnimationPhase.CONTRACTING
   }
 
   const closeModal = () => {
@@ -44,34 +45,41 @@ export function RevealScoreAnimation() {
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogPortal>
-          <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center">
-            <RevealScoreBackgroundAnimation
-              phase={getPhase()}
-              color="#272626"
-            />
-            <RevealScoreBackgroundAnimation
-              phase={getPhase()}
-              color="#171717"
-              delay={0.2}
-            />
-            <RevealScoreBackgroundAnimation
-              phase={getPhase()}
-              color="#fff700"
-              delay={0.4}
-            />
-            <RevealScoreText open={animationOpen} closeModal={closeModal} />
-            <Animate
-              isVisible={animationOpen}
-              className="absolute top-5 right-5"
-            >
-              <Button
-                className="bg-black/70 hover:bg-black/80 text-white rounded-full"
-                size={ButtonSize.ICON}
-                onClick={closeModal}
-              >
-                <XIcon />
-              </Button>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+            <Animate isVisible={animationOpen}>
+              <DialogOverlay className="z-0" />
             </Animate>
+            <div className="relative w-full h-[70vh] -rotate-3 flex flex-col items-center justify-center">
+              <RevealScoreBackgroundAnimation
+                phase={getPhase()}
+                color="#272626"
+                className="top-[-10%]"
+              />
+              <RevealScoreBackgroundAnimation
+                phase={getPhase()}
+                color="#171717"
+                delay={0.2}
+                className="top-[5%]"
+              />
+              <RevealScoreBackgroundAnimation
+                phase={getPhase()}
+                color="#fff700"
+                delay={0.4}
+              />
+              <RevealScoreText open={animationOpen} closeModal={closeModal} />
+              <Animate
+                isVisible={animationOpen}
+                className="absolute top-5 right-5"
+              >
+                <Button
+                  className="bg-black/70 hover:bg-black/80 text-white rounded-full"
+                  size={ButtonSize.ICON}
+                  onClick={closeModal}
+                >
+                  <XIcon />
+                </Button>
+              </Animate>
+            </div>
           </div>
         </DialogPortal>
       </Dialog>
