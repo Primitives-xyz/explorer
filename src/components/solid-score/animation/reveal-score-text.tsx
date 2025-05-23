@@ -3,9 +3,10 @@ import { ArrowRightIcon } from 'lucide-react'
 
 interface Props {
   open: boolean
+  closeModal: () => void
 }
 
-export function RevealScoreText({ open }: Props) {
+export function RevealScoreText({ open, closeModal }: Props) {
   return (
     <Animate
       isVisible={open}
@@ -33,7 +34,11 @@ export function RevealScoreText({ open }: Props) {
           Solid Score Unlocked!
         </div>
         <div className="text-black/80 text-9xl font-bold">2,000</div>
-        <Button size={ButtonSize.LG} className="bg-black/80 text-white mt-5">
+        <Button
+          size={ButtonSize.LG}
+          className="bg-black/80 hover:bg-black/90 text-white mt-5"
+          onClick={closeModal}
+        >
           Go To Leaderboard <ArrowRightIcon />
         </Button>
       </div>

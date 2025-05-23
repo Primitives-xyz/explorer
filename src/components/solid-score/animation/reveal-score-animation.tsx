@@ -29,12 +29,12 @@ export function RevealScoreAnimation() {
     return ECelebrationDialogBackgroundAnimationPhase.CONTRACTING
   }
 
-  const onClickClose = () => {
+  const closeModal = () => {
     setAnimationOpen(false)
 
     setTimeout(() => {
       setOpen(false)
-    }, 1000)
+    }, 800)
   }
 
   return (
@@ -62,7 +62,7 @@ export function RevealScoreAnimation() {
               delay={0.4}
               duration={0.4}
             />
-            <RevealScoreText open={animationOpen} />
+            <RevealScoreText open={animationOpen} closeModal={closeModal} />
             <Animate
               isVisible={animationOpen}
               className="absolute top-5 right-5"
@@ -70,7 +70,7 @@ export function RevealScoreAnimation() {
               <Button
                 className="bg-black/70 hover:bg-black/80 text-white rounded-full"
                 size={ButtonSize.ICON}
-                onClick={onClickClose}
+                onClick={closeModal}
               >
                 <XIcon />
               </Button>
