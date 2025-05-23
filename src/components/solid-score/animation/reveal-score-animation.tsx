@@ -70,6 +70,12 @@ export function RevealScoreAnimation() {
               <Animate
                 isVisible={animationOpen}
                 className="absolute top-5 right-5"
+                animate={{
+                  opacity: 1,
+                  transition: {
+                    delay: 0.7,
+                  },
+                }}
               >
                 <Button
                   className="bg-black/70 hover:bg-black/80 text-white rounded-full"
