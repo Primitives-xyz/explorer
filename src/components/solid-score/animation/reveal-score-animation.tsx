@@ -8,9 +8,9 @@ import {
 import { XIcon } from 'lucide-react'
 import { useState } from 'react'
 import {
-  CelebrationDialogBackgroundAnimation,
   ECelebrationDialogBackgroundAnimationPhase,
-} from './celebration-dialog-background-animation'
+  RevealScoreBackgroundAnimation,
+} from './reveal-score-background-animation'
 import { RevealScoreText } from './reveal-score-text'
 
 export function RevealScoreAnimation() {
@@ -45,22 +45,19 @@ export function RevealScoreAnimation() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogPortal>
           <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center">
-            <CelebrationDialogBackgroundAnimation
+            <RevealScoreBackgroundAnimation
               phase={getPhase()}
               color="#F0E68C"
-              duration={0.3}
             />
-            <CelebrationDialogBackgroundAnimation
+            <RevealScoreBackgroundAnimation
               phase={getPhase()}
               color="#E8D574"
               delay={0.2}
-              duration={0.4}
             />
-            <CelebrationDialogBackgroundAnimation
+            <RevealScoreBackgroundAnimation
               phase={getPhase()}
               color="#fff700"
               delay={0.4}
-              duration={0.4}
             />
             <RevealScoreText open={animationOpen} closeModal={closeModal} />
             <Animate

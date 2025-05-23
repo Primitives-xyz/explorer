@@ -17,9 +17,9 @@ interface Props {
   phase?: ECelebrationDialogBackgroundAnimationPhase
 }
 
-export function CelebrationDialogBackgroundAnimation({
+export function RevealScoreBackgroundAnimation({
   color = '#000000',
-  duration = 0.8,
+  duration = 0.4,
   delay = 0,
   phase,
 }: Props) {

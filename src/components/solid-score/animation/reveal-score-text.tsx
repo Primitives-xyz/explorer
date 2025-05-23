@@ -12,7 +12,7 @@ export function RevealScoreText({ open, closeModal }: Props) {
     visible: {
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.7,
+        delayChildren: 0.6,
       },
     },
   }
@@ -31,9 +31,11 @@ export function RevealScoreText({ open, closeModal }: Props) {
       //   damping: 10,
       // },
       transition: {
-        duration: 0.4,
-        // delay: 0.7,
+        duration: 0.6,
         ease: [0.34, 1.56, 0.64, 1],
+        type: 'spring',
+        stiffness: 100,
+        damping: 10,
       },
     },
     exit: {
