@@ -74,7 +74,7 @@ export function ShareImage({
               {t('claim_text')}
             </p>
             <Image
-              src="/images/solid-score/solana-id.avif"
+              src="/images/solid-score/solana-id.png"
               width={100}
               height={50}
               alt="solana id logo"

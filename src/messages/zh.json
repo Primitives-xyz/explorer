@@ -72,8 +72,20 @@
             "description": "You can now paste it in your X post."
           },
           "download_success": {
-            "title": "Image downloaded!",
-            "description": "You can now upload it to your X post."
+            "title": "图片已下载！",
+            "description": "您现在可以将其上传到您的 X 帖子中。"
+          },
+          "share_x_instructions": {
+            "title": "Share your SOLID Score on X",
+            "desktop": {
+              "instruction": "Press {shortcut} to paste your SOLID Score image"
+            },
+            "mobile": {
+              "step_1": "Tap and hold in the tweet composer",
+              "step_2": "Select 'Paste' from the menu",
+              "step_3": "Your SOLID Score image will be added to your tweet"
+            },
+            "ready_button": "Ok, I'm ready"
           },
           "instructions": {
             "title": "如何分享你的分数：",
