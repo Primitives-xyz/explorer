@@ -1,13 +1,14 @@
-import { Animate } from '@/components/ui'
+import { Animate, Button, ButtonSize } from '@/components/ui'
+import { ArrowRightIcon } from 'lucide-react'
 
 interface Props {
-  show: boolean
+  open: boolean
 }
 
-export function RevealScoreText({ show }: Props) {
+export function RevealScoreText({ open }: Props) {
   return (
     <Animate
-      isVisible={show}
+      isVisible={open}
       initial={{
         opacity: 0,
         x: -80,
@@ -15,20 +16,27 @@ export function RevealScoreText({ show }: Props) {
       animate={{
         opacity: 1,
         x: 0,
+        transition: {
+          duration: 0.4,
+          delay: 0.7,
+          ease: [0.34, 1.56, 0.64, 1],
+        },
       }}
       exit={{
         opacity: 0,
         x: 50,
       }}
-      transition={{
-        duration: 0.2,
-        // delay: 0.3,
-        delay: 0.7,
-        ease: [0.34, 1.56, 0.64, 1],
-      }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
+      className="flex flex-col items-center justify-center relative"
     >
-      <div className="text-black text-9xl font-bold">200</div>
+      <div className="flex flex-col justify-center items-start gap-2">
+        <div className="text-black/60 text-6xl font-semibold">
+          Solid Score Unlocked!
+        </div>
+        <div className="text-black/80 text-9xl font-bold">2,000</div>
+        <Button size={ButtonSize.LG} className="bg-black/80 text-white mt-5">
+          Go To Leaderboard <ArrowRightIcon />
+        </Button>
+      </div>
     </Animate>
   )
 }

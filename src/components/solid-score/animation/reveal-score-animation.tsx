@@ -1,57 +1,83 @@
-import { MangaPageTransition } from '@/components/solid-score/animation/manga-page-transition'
-import { Button } from '@/components/ui'
+import {
+  Animate,
+  Button,
+  ButtonSize,
+  Dialog,
+  DialogPortal,
+} from '@/components/ui'
+import { XIcon } from 'lucide-react'
 import { useState } from 'react'
+import {
+  CelebrationDialogBackgroundAnimation,
+  ECelebrationDialogBackgroundAnimationPhase,
+} from './celebration-dialog-background-animation'
 import { RevealScoreText } from './reveal-score-text'
 
-const holdDuration = 1
-
 export function RevealScoreAnimation() {
-  const [show, setShow] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [animationOpen, setAnimationOpen] = useState(false)
 
   const handleClick = () => {
-    setShow(true)
+    setOpen(true)
+    setAnimationOpen(true)
+  }
+
+  const getPhase = () => {
+    if (animationOpen) {
+      return ECelebrationDialogBackgroundAnimationPhase.EXPANDING
+    }
+    return ECelebrationDialogBackgroundAnimationPhase.CONTRACTING
+  }
+
+  const onClickClose = () => {
+    setAnimationOpen(false)
 
     setTimeout(() => {
-      setShow(false)
-    }, holdDuration * 1000)
+      setOpen(false)
+    }, 1000)
   }
 
   return (
     <div>
-      <Button onClick={handleClick}>Trigger Animation</Button>
-      <MangaPageTransition
-        triggerAnimation={handleClick}
-        // color="#242F40"
-        color="#69626D"
-        duration={0.3}
-        // holdDuration={0.5}
-        direction="left-to-right"
-      />
-      <MangaPageTransition
-        triggerAnimation={handleClick}
-        // color="#363636"
-        color="#ADD2C2"
-        delay={0.2}
-        duration={0.4}
-        // holdDuration={0.5}
-        direction="left-to-right"
-      />
-      <MangaPageTransition
-        triggerAnimation={handleClick}
-        color="#fff700"
-        delay={0.4}
-        duration={0.4}
-        holdDuration={0.5}
-        direction="left-to-right"
-      />
-      {/* <MangaPageTransition
-        triggerAnimation={handleClick}
-        color="#fff700"
-        duration={0.4}
-        holdDuration={holdDuration}
-        direction="left-to-right"
-      /> */}
-      <RevealScoreText show={show} />
+      <Button onClick={handleClick} className="mb-5">
+        Trigger Animation
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogPortal>
+          <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center">
+            <CelebrationDialogBackgroundAnimation
+              phase={getPhase()}
+              color="#F0E68C"
+              duration={0.3}
+            />
+            <CelebrationDialogBackgroundAnimation
+              phase={getPhase()}
+              color="#E8D574"
+              delay={0.2}
+              duration={0.4}
+            />
+            <CelebrationDialogBackgroundAnimation
+              phase={getPhase()}
+              color="#fff700"
+              delay={0.4}
+              duration={0.4}
+            />
+            <RevealScoreText open={animationOpen} />
+            <Animate
+              isVisible={animationOpen}
+              className="absolute top-5 right-5"
+            >
+              <Button
+                className="bg-black/70 hover:bg-black/80 text-white rounded-full"
+                size={ButtonSize.ICON}
+                onClick={onClickClose}
+              >
+                <XIcon />
+              </Button>
+            </Animate>
+          </div>
+        </DialogPortal>
+      </Dialog>
     </div>
   )
 }
