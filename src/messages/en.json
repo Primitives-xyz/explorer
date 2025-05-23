@@ -74,6 +74,12 @@
           "download_success": {
             "title": "Image downloaded!",
             "description": "You can now upload it to your X post."
+          },
+          "instructions": {
+            "title": "How to share your score:",
+            "copy_image": "Copy the image",
+            "share_x": "Click \"Share on X\"",
+            "paste_image": "Paste the image in your tweet"
           }
         },
         "table": {

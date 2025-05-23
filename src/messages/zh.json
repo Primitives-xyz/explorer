@@ -66,7 +66,7 @@
           },
           "then": "then",
           "share_x": "Share on X",
-          "tweet_text": "Just revealed my SOLID Score on SSE: {score}",
+          "tweet_text": "My SOLID Score is {score} — in the top {percentile} on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
           "copy_success": {
             "title": "Image copied!",
             "description": "You can now paste it in your X post."
@@ -74,6 +74,12 @@
           "download_success": {
             "title": "Image downloaded!",
             "description": "You can now upload it to your X post."
+          },
+          "instructions": {
+            "title": "如何分享你的分数：",
+            "copy_image": "复制图片",
+            "share_x": "点击 \"分享到 X\"",
+            "paste_image": "将图片粘贴到推文中"
           }
         },
         "table": {

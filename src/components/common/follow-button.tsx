@@ -50,6 +50,7 @@ export function FollowButton({
   const [isFollowingOptimistic, setIsFollowingOptimistic] = useState(
     data?.isFollowing
   )
+  const [showFollowError, setShowFollowError] = useState(false)
 
   const loading =
     followUserLoading ||
@@ -82,6 +83,7 @@ export function FollowButton({
     } catch (error) {
       console.error('Failed to follow:', error)
       setIsFollowingOptimistic(false)
+      setShowFollowError(true)
     } finally {
       refetchFollowersState()
     }

@@ -1,7 +1,6 @@
 'use client'
 
 import { Animate, Skeleton } from '@/components/ui'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { mapEmpty } from '@/utils/utils'
 import { useGetHomeFollowingTransactions } from '../hooks/use-get-home-following-transactions'
 import { HomeTransactionEntry } from './home-transaction-entry'
@@ -11,7 +10,6 @@ interface Props {
 }
 
 export function HomeFollowingTransactions({ username }: Props) {
-  const { walletAddress } = useCurrentWallet()
   const { transactions, loading } = useGetHomeFollowingTransactions({
     username,
   })
@@ -35,10 +33,7 @@ export function HomeFollowingTransactions({ username }: Props) {
           }}
           key={transaction.signature + index}
         >
-          <HomeTransactionEntry
-            transaction={transaction}
-            walletAddress={walletAddress}
-          />
+          <HomeTransactionEntry transaction={transaction} />
         </Animate>
       ))}
 

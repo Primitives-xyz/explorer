@@ -1,13 +1,11 @@
 'use client'
 
 import { Animate, Skeleton } from '@/components/ui'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { mapEmpty } from '@/utils/utils'
 import { useGetHomeAllTransactions } from '../hooks/use-get-home-all-transactions'
 import { HomeTransactionEntry } from './home-transaction-entry'
 
 export function HomeAllTransactions() {
-  const { walletAddress } = useCurrentWallet()
   const { transactions, loading } = useGetHomeAllTransactions({})
 
   return (
@@ -29,10 +27,7 @@ export function HomeAllTransactions() {
           }}
           key={transaction.signature + index}
         >
-          <HomeTransactionEntry
-            transaction={transaction}
-            walletAddress={walletAddress}
-          />
+          <HomeTransactionEntry transaction={transaction} />
         </Animate>
       ))}
 

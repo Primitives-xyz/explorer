@@ -28,7 +28,7 @@ export function useTokenSearch() {
   const [searchResults, setSearchResults] = useState<ITokenSearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [verifiedOnly, setVerifiedOnly] = useState(true)
+  const [verifiedOnly, setVerifiedOnly] = useState(false)
   const t = useTranslations()
   const { walletAddress } = useCurrentWallet()
   const { data, loading: getProfilePortfolioLoading } = useGetProfilePortfolio({
