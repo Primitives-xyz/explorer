@@ -33,7 +33,9 @@ export default async function Entity({
       case RouteType.PROFILE:
         return <ProfileWithUsername username={cleanId} />
       case RouteType.WALLET:
-        throw new Error('WALLET routeType should be handled in the main function, not here.')
+        throw new Error(
+          'WALLET routeType should be handled in the main function, not here.'
+        )
       case RouteType.NFT:
         return <NFTContent id={cleanId} />
       default:
@@ -42,7 +44,9 @@ export default async function Entity({
   }
 
   if (routeType === RouteType.WALLET) {
-    const url = `${process.env.NEXT_PUBLIC_APP_URL || ''}/api/profiles?walletAddress=${cleanId}`
+    const url = `${
+      process.env.NEXT_PUBLIC_APP_URL || ''
+    }/api/profiles?walletAddress=${cleanId}`
     const res = await fetch(url)
     const data = await res.json()
     const profile = data?.profiles?.[0]

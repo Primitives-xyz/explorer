@@ -74,11 +74,11 @@ export function DataTableLeaderboard({
             <Button
               variant={ButtonVariant.LINK}
               href={route('entity', { id: value })}
-              className={cn('p-0 h-auto', {
+              className={cn('p-0 h-auto max-w-[100px] md:max-w-[200px]', {
                 'text-primary font-bold': isCurrentUser,
               })}
             >
-              {value}
+              <p className="truncate">{value}</p>
             </Button>
           </div>
         )

@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { ShareImage } from './share-image'
 import { ShareInstructions } from './share-instructions'
+import { ShareXInstructionsDialog } from './share-x-instructions-dialog'
 
 export interface Props {
   open: boolean
@@ -24,6 +25,7 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
   const t = useTranslations('menu.solid_score.leaderboard.share_dialog')
   const [isImageCopied, setIsImageCopied] = useState(false)
   const [isShared, setIsShared] = useState(false)
+  const [isXInstructionsOpen, setIsXInstructionsOpen] = useState(false)
 
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
     username: mainProfile?.username || '',
@@ -87,7 +89,14 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
     })
     refetch()
     setOpen(false)
+    setIsShared(true)
+  }
 
+  const handleOpenX = () => {
+    setIsXInstructionsOpen(true)
+  }
+
+  const handleXShare = () => {
     const formattedScore = formatSmartNumber(data?.score || 0, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
@@ -106,60 +115,70 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
       '_blank',
       'noopener,noreferrer'
     )
+    setIsXInstructionsOpen(false)
+    handleShare()
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-[750px] max-h-[90dvh] md:h-auto flex flex-col items-center justify-start md:justify-center gap-4 md:gap-6 overflow-y-auto md:overflow-visible p-4 md:p-6">
-        <DialogHeader className="w-full">
-          <DialogTitle>{t('title')}</DialogTitle>
-          <div className="mt-4 text-xs md:text-sm">
-            <p>
-              {t('percentile_text', {
-                percentile: data?.percentile.toFixed(0),
-              })}
-            </p>
-            <p>{t('unlock_text')}</p>
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-[750px] max-h-[90dvh] md:h-auto flex flex-col items-center justify-start md:justify-center gap-4 md:gap-6 overflow-y-auto md:overflow-visible p-4 md:p-6">
+          <DialogHeader className="w-full">
+            <DialogTitle>{t('title')}</DialogTitle>
+            <div className="mt-4 text-xs md:text-sm">
+              <p>
+                {t('percentile_text', {
+                  percentile: data?.percentile.toFixed(0),
+                })}
+              </p>
+              <p>{t('unlock_text')}</p>
+            </div>
+          </DialogHeader>
+
+          <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4 md:flex-auto">
+            <ShareInstructions
+              isImageCopied={isImageCopied}
+              isShared={isShared}
+            />
+            <ShareImage
+              imageData={imageData}
+              isGeneratingImage={isGeneratingImage}
+              mainProfile={mainProfile}
+              handleDownloadImage={handleDownloadImage}
+              data={data}
+              scoreLoading={scoreLoading}
+            />
           </div>
-        </DialogHeader>
 
-        <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4 md:flex-auto">
-          <ShareInstructions
-            isImageCopied={isImageCopied}
-            isShared={isShared}
-          />
-          <ShareImage
-            imageData={imageData}
-            isGeneratingImage={isGeneratingImage}
-            mainProfile={mainProfile}
-            handleDownloadImage={handleDownloadImage}
-            data={data}
-            scoreLoading={scoreLoading}
-          />
-        </div>
+          <div className="w-full flex items-center justify-center gap-4">
+            <Button
+              onClick={handleCopyImage}
+              disabled={!imageData || isGeneratingImage}
+            >
+              {isGeneratingImage
+                ? t('copy_image.generating')
+                : !imageData
+                ? t('copy_image.no_image')
+                : isImageCopied
+                ? t('copy_image.copy_again')
+                : t('copy_image.default')}
+            </Button>
+            <p>{t('then')}</p>
+            <Button
+              onClick={handleOpenX}
+              disabled={updateProfileLoading || !isImageCopied}
+            >
+              {t('share_x')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-        <div className="w-full flex items-center justify-center gap-4">
-          <Button
-            onClick={handleCopyImage}
-            disabled={!imageData || isGeneratingImage}
-          >
-            {isGeneratingImage
-              ? t('copy_image.generating')
-              : !imageData
-              ? t('copy_image.no_image')
-              : isImageCopied
-              ? t('copy_image.copy_again')
-              : t('copy_image.default')}
-          </Button>
-          <p>{t('then')}</p>
-          <Button
-            onClick={handleShare}
-            disabled={updateProfileLoading || !isImageCopied}
-          >
-            {t('share_x')}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      <ShareXInstructionsDialog
+        open={isXInstructionsOpen}
+        setOpen={setIsXInstructionsOpen}
+        onShare={handleXShare}
+      />
+    </>
   )
 }
