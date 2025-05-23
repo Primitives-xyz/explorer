@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
 
     const url = new URL(req.url)
     const backgroundImageUrl = `${url.protocol}//${url.host}/images/menu/solid-score-share-modal-bg.png`
+    const solanaIdLogoUrl = `${url.protocol}//${url.host}/images/solid-score/solana-id.png`
 
     const response = new ImageResponse(
       (
@@ -163,7 +164,7 @@ export async function GET(req: NextRequest) {
                 style={{
                   fontSize: '144px',
                   fontWeight: 'bold',
-                  color: '#4ade80',
+                  color: '#ffffff',
                   textAlign: 'center',
                   lineHeight: '1',
                 }}
@@ -216,6 +217,15 @@ export async function GET(req: NextRequest) {
               >
                 Claim yours at SSE.gg
               </p>
+              <img
+                src={solanaIdLogoUrl}
+                alt="Background"
+                style={{
+                  width: '200px',
+                  height: '100px',
+                  objectFit: 'contain',
+                }}
+              />
             </div>
           </div>
         </div>

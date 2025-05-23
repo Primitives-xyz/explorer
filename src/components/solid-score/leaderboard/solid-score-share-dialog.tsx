@@ -87,6 +87,7 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
     })
     refetch()
     setOpen(false)
+    setIsShared(true)
 
     const formattedScore = formatSmartNumber(data?.score || 0, {
       minimumFractionDigits: 0,

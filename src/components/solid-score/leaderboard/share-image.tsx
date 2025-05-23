@@ -69,9 +69,17 @@ export function ShareImage({
         </div>
         <div className="flex items-center justify-center space-y-4 flex-col pt-2">
           <SolidScoreBadges data={data} />
-          <p className="self-center text-muted-foreground text-xs">
-            {t('claim_text')}
-          </p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="self-center text-muted-foreground text-xs">
+              {t('claim_text')}
+            </p>
+            <Image
+              src="/images/solid-score/solana-id.avif"
+              width={100}
+              height={50}
+              alt="solana id logo"
+            />
+          </div>
         </div>
       </div>
     </div>

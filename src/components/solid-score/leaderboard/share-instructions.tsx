@@ -37,7 +37,7 @@ export function ShareInstructions({ isImageCopied, isShared }: Props) {
             <span className="font-bold">{t('instructions.paste_image')}</span>
           </p>
           <Image
-            src="/images/solid-score-tweet/solid-score.png"
+            src="/images/solid-score/solid-score-tweet.png"
             alt="Copy the image below"
             width={200}
             height={50}
