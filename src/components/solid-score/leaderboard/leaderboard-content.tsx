@@ -58,10 +58,10 @@ export function LeaderboardContent() {
         </div>
         {!hasRevealedShare && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex items-center justify-center gap-4 h-[104px]">
+            <div className="flex items-center justify-center gap-2 md:gap-4 h-[192px]">
               <Card>
                 <CardContent className="p-2 max-w-40">
-                  <div className="flex flex-col gap-2 text-xs text-center">
+                  <div className="flex flex-col gap-2 text-md text-center">
                     <p className="font-bold">{t('locked.title')}</p>
                     <p>{t('locked.description')}</p>
                   </div>

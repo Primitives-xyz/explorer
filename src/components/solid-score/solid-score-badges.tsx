@@ -29,72 +29,76 @@ export function SolidScoreBadges({ data, smallView, compactLimit }: Props) {
     SOLANA_OG: {
       name: t('solana_og.name'),
       description: t('solana_og.description'),
-      image: '/images/solid-score-badges/solana-og.svg',
+      image: '/images/solid-score/solid-score-badges/solana-og.svg',
     },
     SOLANA_POWER_USER: {
       name: t('solana_power_user.name'),
       description: t('solana_power_user.description'),
-      image: '/images/solid-score-badges/solana-power-user.svg',
+      image: '/images/solid-score/solid-score-badges/solana-power-user.svg',
     },
     HODLER: {
       name: t('hodler.name'),
       description: t('hodler.description'),
-      image: '/images/solid-score-badges/hodler.svg',
+      image: '/images/solid-score/solid-score-badges/hodler.svg',
     },
     DEX_TRADER: {
       name: t('dex_trader.name'),
       description: t('dex_trader.description'),
-      image: '/images/solid-score-badges/dex-trader.svg',
+      image: '/images/solid-score/solid-score-badges/dex-trader.svg',
     },
     RISK_TAKER: {
       name: t('risk_taker.name'),
       description: t('risk_taker.description'),
-      image: '/images/solid-score-badges/risk-taker.svg',
+      image: '/images/solid-score/solid-score-badges/risk-taker.svg',
     },
     DIVERSE_NFT_TRADER: {
       name: t('diverse_nft_trader.name'),
       description: t('diverse_nft_trader.description'),
-      image: '/images/solid-score-badges/diverse-nft-trader.svg',
+      image: '/images/solid-score/solid-score-badges/diverse-nft-trader.svg',
     },
     LIQUIDITY_PROVIDER: {
       name: t('liquidity_provider.name'),
       description: t('liquidity_provider.description'),
-      image: '/images/solid-score-badges/liquidity-provider.svg',
+      image: '/images/solid-score/solid-score-badges/liquidity-provider.svg',
     },
     DIVERSE_LIQUIDITY_PROVIDER: {
       name: t('diverse_liquidity_provider.name'),
       description: t('diverse_liquidity_provider.description'),
-      image: '/images/solid-score-badges/diverse-liquidity-provider.svg',
+      image:
+        '/images/solid-score/solid-score-badges/diverse-liquidity-provider.svg',
     },
     DIVERSE_HODLER: {
       name: t('diverse_hodler.name'),
       description: t('diverse_hodler.description'),
-      image: '/images/solid-score-badges/diverse-hodler.svg',
+      image: '/images/solid-score/solid-score-badges/diverse-hodler.svg',
     },
     MULTIPLATFORM_DEX_TRADER: {
       name: t('multiplatform_dex_trader.name'),
       description: t('multiplatform_dex_trader.description'),
-      image: '/images/solid-score-badges/multiplatform-dex-trader.svg',
+      image:
+        '/images/solid-score/solid-score-badges/multiplatform-dex-trader.svg',
     },
     NFT_TRADER: {
       name: t('nft_trader.name'),
       description: t('nft_trader.description'),
-      image: '/images/solid-score-badges/nft-trader.svg',
+      image: '/images/solid-score/solid-score-badges/nft-trader.svg',
     },
     MULTIPLATFORM_NFT_TRADER: {
       name: t('multiplatform_nft_trader.name'),
       description: t('multiplatform_nft_trader.description'),
-      image: '/images/solid-score-badges/multiplatform-nft-trader.svg',
+      image:
+        '/images/solid-score/solid-score-badges/multiplatform-nft-trader.svg',
     },
     MULTIPLATFORM_LIQUIDITY_PROVIDER: {
       name: t('multiplatform_liquidity_provider.name'),
       description: t('multiplatform_liquidity_provider.description'),
-      image: '/images/solid-score-badges/multiplatform-liquidity-provider.svg',
+      image:
+        '/images/solid-score/solid-score-badges/multiplatform-liquidity-provider.svg',
     },
     NATIVE_STAKER: {
       name: t('native_staker.name'),
       description: t('native_staker.description'),
-      image: '/images/solid-score-badges/native-staker.svg',
+      image: '/images/solid-score/solid-score-badges/native-staker.svg',
     },
   }
 
