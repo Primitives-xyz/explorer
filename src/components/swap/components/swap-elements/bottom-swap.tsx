@@ -18,6 +18,7 @@ import { CheckboxSize } from '@/components/ui/switch/checkbox.models'
 import Warning from '@/components/ui/warning'
 import { useTranslations } from 'next-intl'
 
+import { useIsMobile } from '@/utils/use-is-mobile'
 import { cn } from '@/utils/utils'
 import { CircleAlertIcon } from 'lucide-react'
 
@@ -47,6 +48,7 @@ export function BottomSwap({
   hasUsedSSEBefore,
 }: Props) {
   const t = useTranslations()
+  const { isMobile } = useIsMobile()
 
   return (
     <Card>
@@ -104,7 +106,7 @@ export function BottomSwap({
             type="single"
             collapsible
             className="w-full"
-            defaultValue="item-1"
+            defaultValue={isMobile ? '' : 'item-1'}
           >
             <AccordionItem value="item-1">
               <AccordionTrigger

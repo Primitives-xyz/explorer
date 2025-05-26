@@ -11,9 +11,6 @@ import { MarketsTabContent } from '@/components/trade/trade-content/token-detail
 import { TokenHoldersTabContent } from '@/components/trade/trade-content/token-details/token-holders-tab-content'
 import {
   Badge,
-  Button,
-  ButtonSize,
-  ButtonVariant,
   Card,
   CardContent,
   CardHeader,
@@ -25,7 +22,6 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn, formatCurrency, formatNumber } from '@/utils/utils'
 import {
   Activity,
-  ArrowUpDown,
   DollarSign,
   Droplets,
   TrendingDown,
@@ -134,10 +130,6 @@ export function TokenDetails({ id }: TokenDetailsProps) {
     // Priority 2: Calculate from price × circulating supply
     else if (overview.price > 0 && overview.circulatingSupply > 0) {
       displayMarketCap = overview.price * overview.circulatingSupply
-      console.log(
-        'Calculated MC from price × circulating supply:',
-        displayMarketCap
-      )
     }
     // Priority 3: If total supply is 0 but we have circulating supply, use that for FDV
     else if (
@@ -204,16 +196,6 @@ export function TokenDetails({ id }: TokenDetailsProps) {
                 {overview?.symbol || 'Token'} Price
               </p>
             </div>
-
-            <Button
-              variant={ButtonVariant.DEFAULT}
-              size={ButtonSize.DEFAULT}
-              onClick={handleSwapClick}
-              className="min-w-[100px] font-semibold"
-            >
-              <ArrowUpDown size={16} className="mr-1" />
-              Swap
-            </Button>
           </div>
 
           {/* Key Metrics Grid - Only showing non-duplicate info */}
