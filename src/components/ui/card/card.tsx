@@ -3,13 +3,14 @@ import { cva, VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
 const cardVariants = cva(
-  'rounded-card border text-card-foreground shadow-card overflow-hidden backdrop-blur-xl',
+  'rounded-card text-card-foreground shadow-card overflow-hidden backdrop-blur-lg border border-border',
   {
     variants: {
       variant: {
-        default: 'bg-card border-foreground/20',
-        accent: 'bg-primary/10 border-foreground/20',
-        'accent-social': 'bg-secondary/10 border-foreground/20',
+        default: 'bg-card',
+        // default: 'card-background',
+        accent: 'bg-primary/10',
+        'accent-social': 'bg-secondary/10',
       },
     },
     defaultVariants: {
@@ -39,7 +40,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex flex-col space-y-2 p-6 pb-0', className)}
+    className={cn('flex flex-col space-y-2 p-4 pb-0', className)}
     {...props}
   />
 ))
@@ -73,7 +74,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('p-6', className)} {...props} />
+  <div ref={ref} className={cn('p-4', className)} {...props} />
 ))
 CardContent.displayName = 'CardContent'
 

@@ -4,6 +4,7 @@ import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { WalletProvider } from '@/components/common/wallet-provider'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
+import { BackgroundTheme } from '@/components/pudgy/components/background-theme'
 import { RevealScoreAnimation } from '@/components/solid-score/components/animation/reveal-score-animation'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils/utils'
@@ -93,7 +94,30 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <head>
+      <body className={cn('relative min-h-screen', rethinkSans.className)}>
+        <NextIntlClientProvider messages={messages}>
+          <WalletProvider>
+            <AddressHighlightProvider>
+              <BackgroundTheme />
+
+              <div className="relative z-20">
+                <Toaster />
+                <Onboarding />
+                <ActivityTape />
+                <MobileHeader />
+                <RevealScoreAnimation />
+
+                <main className="w-full md:flex md:justify-between md:pt-topbar">
+                  <LeftSideMenu />
+                  <div className="flex-1 flex justify-between pt-5">
+                    {children}
+                  </div>
+                </main>
+              </div>
+            </AddressHighlightProvider>
+          </WalletProvider>
+        </NextIntlClientProvider>
+
         <Script id="heap-analytics" strategy="afterInteractive">
           {`
             window.heapReadyCb = window.heapReadyCb || [];
@@ -148,30 +172,6 @@ export default async function RootLayout({
             heap.load('3854626676');
           `}
         </Script>
-      </head>
-      <body className={cn('relative min-h-screen', rethinkSans.className)}>
-        <NextIntlClientProvider messages={messages}>
-          <WalletProvider>
-            <AddressHighlightProvider>
-              <div className="fixed inset-0 z-0 background-gradient" />
-
-              <div className="relative z-20">
-                <Toaster />
-                <Onboarding />
-                <ActivityTape />
-                <MobileHeader />
-                <RevealScoreAnimation />
-
-                <main className="w-full md:flex md:justify-between md:pt-topbar">
-                  <LeftSideMenu />
-                  <div className="flex-1 flex justify-between pt-5">
-                    {children}
-                  </div>
-                </main>
-              </div>
-            </AddressHighlightProvider>
-          </WalletProvider>
-        </NextIntlClientProvider>
       </body>
     </html>
   )

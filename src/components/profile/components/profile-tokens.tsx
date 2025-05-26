@@ -35,6 +35,7 @@ export function ProfileTokens({ walletAddress }: Props) {
       enableSorting: false,
       cell: ({ row }) => {
         const imageUrl = row.original.imageUrl?.trimStart()
+
         return (
           <div className="flex items-center gap-2">
             <Button
@@ -127,7 +128,7 @@ export function ProfileTokens({ walletAddress }: Props) {
         data={fungibleTokens}
         columns={columns}
         loading={isLoading}
-        tableClassName="h-[300px]"
+        tableClassName="max-h-[300px]"
         isSmall
         sorting={sorting}
         onSortingChange={setSorting}
@@ -135,5 +136,3 @@ export function ProfileTokens({ walletAddress }: Props) {
     </div>
   )
 }
-
-//Agi25qJyTe2dPNcGavDs53h1dSxsV5LPBzuqY6kKFx5T

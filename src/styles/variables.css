@@ -1,10 +1,9 @@
 :root {
   --background: 30deg 0% 20%;
-  --foreground: 30deg 100% 100%;
+  --foreground: 220deg 30% 96%;
 
-  /* --muted: 230 7% 75%; */
   --muted: 0deg 0% 40% / 0.2;
-  --muted-foreground: 223deg 3% 75%;
+  --muted-foreground: 0deg 0% 100% / 0.7;
 
   --accent: var(--foreground) / 0.1;
   --accent-foreground: var(--foreground);
@@ -12,7 +11,8 @@
   --popover: var(--foreground) / 0.1;
   --popover-foreground: 220 50% 97%;
 
-  --border: 360deg 1% 39%;
+  /* --border: 360deg 1% 39%; */
+  --border: 218deg 67% 98% / 0.2;
 
   --input: var(--foreground) / 0.2;
   --input-foreground: var(--foreground);

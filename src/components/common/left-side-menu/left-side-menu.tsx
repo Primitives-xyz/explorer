@@ -3,12 +3,15 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
+import { TestButton } from '@/components/pudgy/components/test-button'
+import { usePudgyStore } from '@/components/pudgy/stores/use-pudgy-store'
 import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSpecialUser } from '@/utils/user-permissions'
+import { cn } from '@/utils/utils'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -18,10 +21,18 @@ export function LeftSideMenu() {
   const t = useTranslations()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
-  const { isLoggedIn, mainProfile } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
+  const { theme } = usePudgyStore()
 
   return (
-    <div className="hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar">
+    <div
+      className={cn(
+        'hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar',
+        {
+          'left-sidebar-theme-background': !!theme,
+        }
+      )}
+    >
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
           <h1 className="font-bold text-primary leading-none">
@@ -29,6 +40,7 @@ export function LeftSideMenu() {
           </h1>
           <ProfileInfos />
           <Menu />
+          <TestButton />
         </div>
         <div className="space-y-4 py-4">
           <LowFeeTrades />
