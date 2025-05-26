@@ -6,23 +6,10 @@ import {
   Card,
   CardContent,
   CardVariant,
-  Spinner,
 } from '@/components/ui'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import isFungibleToken from '@/utils/helper'
-import { cn, formatCurrency, formatNumber } from '@/utils/utils'
-import {
-  Activity,
-  BarChart3,
-  Coins,
-  DollarSign,
-  Globe,
-  Info,
-  TrendingDown,
-  TrendingUp,
-  Twitter,
-  Users,
-} from 'lucide-react'
+import { Coins, ExternalLink, Globe, Info, Twitter } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 interface AboutTabContentProps {
@@ -60,60 +47,6 @@ function calculatePercentage(
   return `${result.toFixed(2)}%`
 }
 
-interface MetricCardProps {
-  icon: React.ReactNode
-  label: string
-  value: string | React.ReactNode
-  subValue?: string
-  trend?: number
-  loading?: boolean
-}
-
-function MetricCard({
-  icon,
-  label,
-  value,
-  subValue,
-  trend,
-  loading,
-}: MetricCardProps) {
-  return (
-    <Card variant={CardVariant.ACCENT} className="h-full">
-      <CardContent className="p-3 md:p-4">
-        <div className="flex items-start justify-between mb-2">
-          <div className="text-muted-foreground">{icon}</div>
-          {trend !== undefined && (
-            <div
-              className={cn(
-                'flex items-center gap-1 text-xs font-medium',
-                trend >= 0 ? 'text-green-500' : 'text-red-500'
-              )}
-            >
-              {trend >= 0 ? (
-                <TrendingUp size={12} />
-              ) : (
-                <TrendingDown size={12} />
-              )}
-              {Math.abs(trend).toFixed(2)}%
-            </div>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground mb-1">{label}</p>
-        {loading ? (
-          <Spinner size={16} />
-        ) : (
-          <>
-            <p className="text-sm md:text-base font-semibold">{value}</p>
-            {subValue && (
-              <p className="text-xs text-muted-foreground mt-1">{subValue}</p>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
 export function AboutTabContent({ id, overview }: AboutTabContentProps) {
   const { decimals: outputTokenDecimals, data: outputTokenData } =
     useTokenInfo(id)
@@ -131,130 +64,64 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
     }
   }, [outputTokenDecimals, outputTokenData])
 
-  const priceChangeColor = overview?.priceChange24hPercent
-    ? overview.priceChange24hPercent >= 0
-      ? 'text-green-500'
-      : 'text-red-500'
-    : 'text-muted-foreground'
-
   return (
     <div className="space-y-4">
-      {/* Header with price and social links */}
-      <div className="flex flex-col md:flex-row justify-between gap-4">
-        <div className="space-y-2">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <h2 className="text-2xl md:text-3xl font-bold">
-              {overview ? formatCurrency(overview.price) : '...'}
-            </h2>
-            <span
-              className={cn(
-                'text-sm md:text-base font-medium',
-                priceChangeColor
-              )}
-            >
-              {overview ? (
-                <>
-                  {overview.priceChange24hPercent >= 0 ? '+' : ''}
-                  {overview.priceChange24hPercent.toFixed(2)}%
-                </>
-              ) : (
-                '...'
-              )}
-            </span>
-          </div>
+      {/* Description and Social Links */}
+      {(about.description || overview?.extensions) && (
+        <div className="space-y-3">
           {about.description && (
-            <p className="text-sm text-muted-foreground max-w-2xl">
-              {about.description}
-            </p>
+            <p className="text-sm text-muted-foreground">{about.description}</p>
+          )}
+
+          {overview?.extensions && (
+            <div className="flex flex-wrap gap-2">
+              {overview.extensions.twitter && (
+                <Button
+                  variant={ButtonVariant.BADGE}
+                  href={overview.extensions.twitter}
+                  newTab
+                  className="h-8"
+                >
+                  <Twitter size={14} />
+                  <span className="text-xs">Twitter</span>
+                </Button>
+              )}
+              {overview.extensions.website && (
+                <Button
+                  variant={ButtonVariant.BADGE}
+                  href={overview.extensions.website}
+                  newTab
+                  className="h-8"
+                >
+                  <Globe size={14} />
+                  <span className="text-xs">Website</span>
+                </Button>
+              )}
+              {overview.extensions.telegram && (
+                <Button
+                  variant={ButtonVariant.BADGE}
+                  href={overview.extensions.telegram}
+                  newTab
+                  className="h-8"
+                >
+                  <ExternalLink size={14} />
+                  <span className="text-xs">Telegram</span>
+                </Button>
+              )}
+            </div>
           )}
         </div>
+      )}
 
-        {overview?.extensions && (
-          <div className="flex flex-row md:flex-col gap-2">
-            {overview.extensions.twitter && (
-              <Button
-                variant={ButtonVariant.BADGE}
-                href={overview.extensions.twitter}
-                newTab
-                className="h-8"
-              >
-                <Twitter size={14} />
-                <span className="hidden md:inline text-xs">Twitter</span>
-              </Button>
-            )}
-            {overview.extensions.website && (
-              <Button
-                variant={ButtonVariant.BADGE}
-                href={overview.extensions.website}
-                newTab
-                className="h-8"
-              >
-                <Globe size={14} />
-                <span className="hidden md:inline text-xs">Website</span>
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Key Trading Metrics Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <MetricCard
-          icon={<DollarSign size={16} />}
-          label="Market Cap"
-          value={
-            overview ? formatSmartNumber(overview.mc, { compact: true }) : '...'
-          }
-          subValue={
-            overview
-              ? `FDV: ${formatSmartNumber(overview.realMc, { compact: true })}`
-              : undefined
-          }
-        />
-
-        <MetricCard
-          icon={<Activity size={16} />}
-          label="24h Volume"
-          value={overview ? formatCurrency(overview.v24hUSD) : '...'}
-          trend={overview?.priceChange24hPercent}
-        />
-
-        <MetricCard
-          icon={<Users size={16} />}
-          label="Holders"
-          value={overview ? formatNumber(overview.holder) : '...'}
-          subValue={
-            overview
-              ? `${formatNumber(overview.uniqueWallet24h)} active (24h)`
-              : undefined
-          }
-        />
-
-        <MetricCard
-          icon={<BarChart3 size={16} />}
-          label="24h Trades"
-          value={overview ? formatNumber(overview.trade24h) : '...'}
-          subValue={overview ? `${overview.numberMarkets} markets` : undefined}
-        />
-      </div>
-
-      {/* Liquidity and Supply Info */}
+      {/* Supply and Token Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <Card variant={CardVariant.ACCENT}>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Coins size={16} className="text-muted-foreground" />
-              <h3 className="font-semibold">Liquidity & Supply</h3>
+              <h3 className="font-semibold">Supply Info</h3>
             </div>
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Total Liquidity
-                </span>
-                <span className="text-sm font-medium">
-                  {overview ? formatCurrency(overview.liquidity) : '...'}
-                </span>
-              </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Circulating Supply
@@ -286,7 +153,35 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
                 </span>
                 <span className="text-sm font-medium">
                   {overview
-                    ? formatSmartNumber(overview.supply, { compact: true })
+                    ? overview.supply > 0
+                      ? formatSmartNumber(overview.supply, { compact: true })
+                      : overview.circulatingSupply > 0
+                      ? formatSmartNumber(overview.circulatingSupply, {
+                          compact: true,
+                        })
+                      : 'N/A'
+                    : '...'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">FDV</span>
+                <span className="text-sm font-medium">
+                  {overview
+                    ? overview.realMc > 0
+                      ? `$${formatSmartNumber(overview.realMc, {
+                          compact: true,
+                        })}`
+                      : overview.price > 0 && overview.supply > 0
+                      ? `$${formatSmartNumber(
+                          overview.price * overview.supply,
+                          { compact: true }
+                        )}`
+                      : overview.price > 0 && overview.circulatingSupply > 0
+                      ? `$${formatSmartNumber(
+                          overview.price * overview.circulatingSupply,
+                          { compact: true }
+                        )}`
+                      : 'N/A'
                     : '...'}
                 </span>
               </div>
@@ -301,6 +196,12 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
               <h3 className="font-semibold">Token Info</h3>
             </div>
             <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Symbol</span>
+                <span className="text-sm font-medium">
+                  {overview?.symbol || 'N/A'}
+                </span>
+              </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Decimals</span>
                 <span className="text-sm font-medium">{about.decimals}</span>
@@ -331,6 +232,37 @@ export function AboutTabContent({ id, overview }: AboutTabContentProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Additional Trading Info */}
+      {overview && (
+        <Card variant={CardVariant.ACCENT}>
+          <CardContent className="p-4">
+            <h3 className="font-semibold mb-3">Trading Activity</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground">24h Trades</p>
+                <p className="text-sm font-medium">
+                  {formatSmartNumber(overview.trade24h, { compact: true })}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Active Markets</p>
+                <p className="text-sm font-medium">{overview.numberMarkets}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  24h Active Wallets
+                </p>
+                <p className="text-sm font-medium">
+                  {formatSmartNumber(overview.uniqueWallet24h, {
+                    compact: true,
+                  })}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
