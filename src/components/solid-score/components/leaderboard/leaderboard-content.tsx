@@ -1,7 +1,6 @@
 'use client'
 
 import { useSolidScoreLeaderboard } from '@/components/solid-score/hooks/use-solid-score-leaderboard'
-import { SolidScoreShareDialog } from '@/components/solid-score/leaderboard/solid-score-share-dialog'
 import { Button, ButtonSize, Card, CardContent, Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSpecialUser } from '@/utils/user-permissions'
@@ -10,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { DataTableLeaderboard } from './data-table-leaderboard'
 import { DataTableUserPosition } from './data-table-user-position'
+import { SolidScoreShareDialog } from './solid-score-share-dialog'
 
 export function LeaderboardContent() {
   const { data, loading } = useSolidScoreLeaderboard()

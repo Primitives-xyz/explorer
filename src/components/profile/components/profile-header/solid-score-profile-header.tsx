@@ -1,5 +1,5 @@
+import { SolidScoreBadges } from '@/components/solid-score/components/solid-score-badges'
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
-import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 
 interface Props {

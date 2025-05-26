@@ -10,7 +10,8 @@ export const SPECIAL_USERNAMES = [
   'johncenapt',
   'poloqweqwe',
   'marcusmth',
-] as const
+  'polo2',
+]
 
 export type SpecialUsername = (typeof SPECIAL_USERNAMES)[number]
 

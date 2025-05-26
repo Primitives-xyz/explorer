@@ -2,7 +2,7 @@
 
 import { FollowButton } from '@/components/common/follow-button'
 import { SolidScoreProfileHeader } from '@/components/profile/components/profile-header/solid-score-profile-header'
-import { SolidScoreSmartCta } from '@/components/solid-score/smart-cta/solid-score-smart-cta'
+import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -80,7 +80,9 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
         </div>
       </div>
 
-      {hasProfile && isSpecialUser(mainProfile) && <SolidScoreSmartCta />}
+      {hasProfile && isSpecialUser(mainProfile) && (
+        <SolidScoreSmartCtaWrapper />
+      )}
 
       <div className="space-y-2">
         {!!mainProfile?.username &&

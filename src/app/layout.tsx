@@ -4,14 +4,15 @@ import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { WalletProvider } from '@/components/common/wallet-provider'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
+import { RevealScoreAnimation } from '@/components/solid-score/components/animation/reveal-score-animation'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils/utils'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Rethink_Sans } from 'next/font/google'
-import './globals.css'
 import Script from 'next/script'
+import './globals.css'
 
 const rethinkSans = Rethink_Sans({
   subsets: ['latin'],
@@ -154,15 +155,13 @@ export default async function RootLayout({
             <AddressHighlightProvider>
               <div className="fixed inset-0 z-0 background-gradient" />
 
-              {/* <ScreenEffects /> */}
-
               <div className="relative z-20">
                 <Toaster />
-
                 <Onboarding />
-
                 <ActivityTape />
                 <MobileHeader />
+                <RevealScoreAnimation />
+
                 <main className="w-full md:flex md:justify-between md:pt-topbar">
                   <LeftSideMenu />
                   <div className="flex-1 flex justify-between pt-5">

@@ -1,29 +1,31 @@
 'use client'
 
-import { SolidScoreCard } from '@/components/solid-score/smart-cta/solid-score-card'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import { Button, Spinner } from '@/components/ui'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Eye } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
+import { useSolidScoreStore } from '../../stores/use-solid-score-store'
+import { SolidScoreCard } from './solid-score-card'
 
 interface Props {
   simpleRevealButton?: boolean
+  mainProfile: IProfile
 }
 
-export function SolidScoreSmartCta({ simpleRevealButton }: Props) {
-  const { mainProfile, refetch } = useCurrentWallet()
+export function SolidScoreSmartCta({ simpleRevealButton, mainProfile }: Props) {
+  const { refetch } = useCurrentWallet()
   const pathname = usePathname()
-  const isOnProfilePage = mainProfile?.username
-    ? pathname === `/${mainProfile.username}`
-    : false
   const t = useTranslations()
-
   const { updateProfile, loading } = useUpdateProfile({
-    username: mainProfile?.username || '',
+    username: mainProfile.username,
   })
+  const { setOpenRevealScoreAnimation } = useSolidScoreStore()
+
+  const isOnProfilePage = pathname === `/${mainProfile.username}`
 
   const handleRevealClick = async () => {
     await updateProfile({
@@ -35,10 +37,8 @@ export function SolidScoreSmartCta({ simpleRevealButton }: Props) {
       ],
     })
     await refetch()
-  }
-
-  if (!mainProfile?.username) {
-    return null
+    console.log('setOpenRevealScoreAnimation')
+    setOpenRevealScoreAnimation(true)
   }
 
   if (simpleRevealButton) {
@@ -57,11 +57,11 @@ export function SolidScoreSmartCta({ simpleRevealButton }: Props) {
         description={t('menu.solid_score.smart_cta.reveal.description')}
         buttonText={t('menu.solid_score.smart_cta.reveal.button')}
         buttonAction={handleRevealClick}
-        buttonHref={
-          !isOnProfilePage
-            ? route('entity', { id: mainProfile.username })
-            : undefined
-        }
+        // buttonHref={
+        //   !isOnProfilePage
+        //     ? route('entity', { id: mainProfile.username })
+        //     : undefined
+        // }
         loading={loading}
         isOnProfilePage={isOnProfilePage}
       />

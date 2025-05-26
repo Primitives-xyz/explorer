@@ -8,11 +8,9 @@ interface Props {
 }
 
 export function useSolidScore({ id }: Props) {
-  const shouldFetch = !!id
-
   const { data, error, loading, refetch } = useQuery<SolidScoreResponse>({
     endpoint: `solid-score/${id}`,
-    skip: !shouldFetch,
+    skip: !id,
     toBackend: true,
   })
 
