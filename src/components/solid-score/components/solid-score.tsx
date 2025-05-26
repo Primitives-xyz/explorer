@@ -1,23 +1,17 @@
+import { ScoreArc } from '@/components/solid-score/components/score-arc'
+import { SolidScoreBadges } from '@/components/solid-score/components/solid-score-badges'
+import { SolidScoreCardWrapper } from '@/components/solid-score/components/solid-score-card-wrapper'
+import { SolidScoreValue } from '@/components/solid-score/components/solid-score-value'
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
-import { ScoreArc } from '@/components/solid-score/score-arc'
-import { SolidScoreSmartCta } from '@/components/solid-score/smart-cta/solid-score-smart-cta'
-import { SolidScoreBadges } from '@/components/solid-score/solid-score-badges'
-import { SolidScoreCardWrapper } from '@/components/solid-score/solid-score-card-wrapper'
-import { SolidScoreValue } from '@/components/solid-score/solid-score-value'
 import { Button, ButtonVariant, Spinner } from '@/components/ui'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
+import { SolidScoreSmartCtaWrapper } from './smart-cta/solid-score-smart-cta-wrapper'
 
 export function SolidScore() {
-  const {
-    mainProfile,
-    refetch,
-    loading: currentWalletLoading,
-  } = useCurrentWallet()
-
+  const { mainProfile, loading: currentWalletLoading } = useCurrentWallet()
   const t = useTranslations('menu')
-
   const {
     data,
     loading: scoreLoading,
@@ -61,7 +55,7 @@ export function SolidScore() {
           </Button>
         </div>
       ) : (
-        <SolidScoreSmartCta simpleRevealButton />
+        <SolidScoreSmartCtaWrapper simpleRevealButton />
       )}
     </SolidScoreCardWrapper>
   )
