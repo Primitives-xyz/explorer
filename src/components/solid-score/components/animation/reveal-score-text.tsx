@@ -60,7 +60,7 @@ export function RevealScoreText({ open, closeModal, profileId }: Props) {
     >
       <motion.div variants={itemAnimationVariants}>
         <div className="text-black/60 text-6xl font-semibold">
-          Solid Score Unlocked!
+          SOLID Score Unlocked!
         </div>
       </motion.div>
       <motion.div variants={itemAnimationVariants}>

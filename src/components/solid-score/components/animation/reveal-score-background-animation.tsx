@@ -12,7 +12,6 @@ export enum ERevealScoreBackgroundAnimationPhase {
 }
 
 interface Props {
-  color?: string
   duration?: number
   delay?: number
   phase?: ERevealScoreBackgroundAnimationPhase
@@ -20,7 +19,6 @@ interface Props {
 }
 
 export function RevealScoreBackgroundAnimation({
-  color = '#000000',
   duration = 0.4,
   delay = 0,
   phase,
@@ -92,7 +90,6 @@ export function RevealScoreBackgroundAnimation({
             className
           )}
           style={{
-            backgroundColor: color,
             transformOrigin: getTransformOrigin(),
           }}
           initial={getInitialTransform()}

@@ -62,18 +62,16 @@ export function RevealScoreAnimation() {
           <div className="relative w-full h-[70vh] -rotate-3 flex flex-col items-center justify-center">
             <RevealScoreBackgroundAnimation
               phase={getPhase()}
-              color="#272626"
-              className="top-[-10%]"
+              className="bg-green-950 top-[-10%]"
             />
             <RevealScoreBackgroundAnimation
               phase={getPhase()}
-              color="#171717"
+              className="bg-green-900 top-[5%]"
               delay={0.2}
-              className="top-[5%]"
             />
             <RevealScoreBackgroundAnimation
               phase={getPhase()}
-              color="#fff700"
+              className="bg-primary"
               delay={0.4}
             />
             <RevealScoreText
