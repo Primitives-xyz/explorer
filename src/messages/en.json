@@ -72,7 +72,7 @@
           },
           "then": "then",
           "share_x": "Share on X",
-          "tweet_text": "My SOLID Score is {score} — in the top {percentile} on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
+          "tweet_text": "My SOLID Score is {score} — in the top {percentile}% on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
           "copy_success": {
             "title": "Image copied!",
             "description": "You can now paste it in your X post."
