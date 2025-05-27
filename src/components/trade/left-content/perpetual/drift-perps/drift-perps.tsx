@@ -32,24 +32,22 @@ import { Card, CardContent } from '@/components/ui/card'
 import { SOL_MINT } from '@/utils/constants'
 import { PositionDirection } from '@drift-labs/sdk-browser'
 import { useEffect, useMemo, useState } from 'react'
+import AddFundsModal from '../add-funds-modal'
+import { PlacePerpsOrder } from '../place-perps-order'
 import LimitOrder from './limit-order'
 import MarketOrder from './market-order'
 import StopLimit from './stop-limit'
 import TakeProfit from './take-profit'
-import { PlacePerpsOrder } from '../place-perps-order'
-import AddFundsModal from '../add-funds-modal'
-
-interface Props {
-  setTokenMint?: (value: string) => void
-}
+import { useTrade } from '@/components/trade/context/trade-context'
 
 const options = [
   { label: 'Market', value: OrderType.MARKET },
   { label: 'Limit', value: OrderType.LIMIT },
 ]
 
-export function DriftPerps({ setTokenMint }: Props) {
+export function DriftPerps() {
   // State
+  const { setTokenMint } = useTrade()
   const { accountIds } = useDriftUsers()
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
@@ -177,7 +175,7 @@ export function DriftPerps({ setTokenMint }: Props) {
   return (
     <div className="w-full">
       <Card className={`${!accountIds.length ? 'blur-xs' : ''}`}>
-        <CardContent className='p-4'>
+        <CardContent className="p-4">
           <div className="space-y-4">
             <HeroPerpetual
               selectedDirection={selectedDirection}
@@ -189,14 +187,22 @@ export function DriftPerps({ setTokenMint }: Props) {
 
             <div className="grid grid-cols-3 items-center justify-center gap-2">
               <Button
-                variant={orderType === OrderType.MARKET ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
+                variant={
+                  orderType === OrderType.MARKET
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.GHOST
+                }
                 onClick={() => setOrderType(OrderType.MARKET)}
               >
                 Market
               </Button>
 
               <Button
-                variant={orderType === OrderType.LIMIT ? ButtonVariant.DEFAULT : ButtonVariant.GHOST}
+                variant={
+                  orderType === OrderType.LIMIT
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.GHOST
+                }
                 onClick={() => setOrderType(OrderType.LIMIT)}
               >
                 Limit
@@ -205,7 +211,7 @@ export function DriftPerps({ setTokenMint }: Props) {
               <Select
                 value={
                   orderType === OrderType.MARKET ||
-                    orderType === OrderType.LIMIT
+                  orderType === OrderType.LIMIT
                     ? OrderType.PRO
                     : orderType
                 }

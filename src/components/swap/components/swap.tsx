@@ -21,6 +21,7 @@ import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
 import { TransactionLink } from './transaction-link'
 import { TransactionStatus } from './transaction-status'
+import { useTrade } from '@/components/trade/context/trade-context'
 
 const isStable = (token: string) => {
   const STABLE_TOKENS = [
@@ -74,12 +75,12 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
 }
 
 interface Props {
-  setTokenMint?: (value: string) => void
   autoFocus?: boolean
 }
 
-export function Swap({ setTokenMint, autoFocus }: Props) {
+export function Swap({ autoFocus }: Props) {
   const t = useTranslations()
+  const { setTokenMint } = useTrade()
   // Centralized swap state from store
   const {
     inputs: { inputMint: inputTokenMint, outputMint: outputTokenMint },

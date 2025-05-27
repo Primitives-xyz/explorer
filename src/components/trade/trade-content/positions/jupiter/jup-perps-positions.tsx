@@ -1,40 +1,19 @@
-'use client'
+import { Spinner } from '@/components/ui/spinner'
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Spinner,
-} from '@/components/ui'
+import { useJupOpenOrders } from '@/components/trade/hooks/jup-perps/use-open-orders'
+import { useJupPerpsPositions } from '@/components/trade/hooks/jup-perps/use-positions'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useState } from 'react'
-import { useDriftUsers } from '../../hooks/drift/use-drift-users'
-import { useLimitOrders } from '../../hooks/drift/use-limit-orders'
-import { useOpenPositions } from '../../hooks/drift/use-open-positions'
-import { FilterPerpsPositions, Tabs } from './filter-perps-positions'
-import OrdersTabContent from './orders-tab-content'
-import PositionTabContent from './position-tab-content'
+import { FilterPerpsPositions, Tabs } from '../filter-perps-positions'
+import JupOrdersTabContent from './jup-orders-tab-content'
+import JupPositionTabContent from './jup-position-tab-content'
 
-export function PerpsPositions() {
+export function JupPerpsPositions() {
   const [selectedType, setSelectedType] = useState(Tabs.PERPS_POSITIONS)
-  const { accountIds } = useDriftUsers()
-  const {
-    perpsPositionsInfo,
-    loading: positionsLoading,
-    closePosition,
-    refreshFetchOpenPositions,
-  } = useOpenPositions({
-    subAccountId: accountIds[0] || 0,
-  })
-
-  const {
-    limitOrders,
-    cancelLoading,
-    loading: ordersLoading,
-    cancelOrder,
-  } = useLimitOrders({
-    subAccountId: accountIds[0] || 0,
-  })
+  const { positions: perpsPositionsInfo, isLoading: positionsLoading } =
+    useJupPerpsPositions()
+  const { openOrders: limitOrders, isLoading: ordersLoading } =
+    useJupOpenOrders()
 
   return (
     <Card>
@@ -46,23 +25,18 @@ export function PerpsPositions() {
           />
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         {selectedType === Tabs.PERPS_POSITIONS && (
-          <PositionTabContent
+          <JupPositionTabContent
             perpsPositionsInfo={perpsPositionsInfo}
             positionsLoading={positionsLoading}
-            closePosition={closePosition}
-            refreshFetchOpenPositions={refreshFetchOpenPositions}
           />
         )}
         {selectedType === Tabs.PERPS_ORDERS && (
-          <OrdersTabContent
-            subAccountId={accountIds[0] || 0}
+          <JupOrdersTabContent
             limitOrders={limitOrders}
             ordersLoading={ordersLoading}
-            cancelOrder={cancelOrder}
-            cancelLoading={cancelLoading}
           />
         )}
         <div className="h-6">

@@ -9,8 +9,8 @@ import {
 import { cn } from '@/utils/utils'
 import { PerpMarkets } from '@drift-labs/sdk-browser'
 import { useState } from 'react'
-import { PerpsPositionInfoProps } from '../../hooks/drift/use-open-positions'
-import AddTPAndSL from '../../left-content/perpetual/add-pro-orders/add-pro-orders'
+import { PerpsPositionInfoProps } from '../../../hooks/drift/use-open-positions'
+import AddTPAndSL from '../../../left-content/perpetual/add-pro-orders/add-pro-orders'
 
 interface PositionTabContentProps {
   perpsPositionsInfo: PerpsPositionInfoProps[]
