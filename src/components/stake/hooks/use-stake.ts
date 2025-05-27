@@ -1,3 +1,4 @@
+import { useCreateStakeContentNode } from '@/components/stake/hooks/use-create-stake-content'
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
@@ -10,6 +11,7 @@ export function useStake() {
   const [isLoading, setIsLoading] = useState(false)
   const t = useTranslations('stake')
   const { refreshUserInfo } = useStakeInfo({})
+  const { createContentNode } = useCreateStakeContentNode()
 
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
@@ -66,6 +68,14 @@ export function useStake() {
           description: t('transaction.stake_successful'),
         })
         refreshUserInfo()
+
+        // Create content node for the stake transaction
+        await createContentNode({
+          signature: txid.signature,
+          stakeAmount: amount,
+          walletAddress,
+          route: 'stake',
+        })
       }
     } catch (err) {
       console.error('Stake error:', err)

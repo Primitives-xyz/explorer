@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
       return {
         ...transaction,
         profile: content?.authorProfile,
+        content: content?.content,
       }
     })
 
