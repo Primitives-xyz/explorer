@@ -9,10 +9,19 @@
 @config "../../tailwind.config.ts";
 
 @theme inline {
+  /* Fonts */
   --font-sans: var(--font-rethink-sans);
   --font-pudgy-heading: var(--font-tt-trailers-extra-bold);
   --font-pudgy-body: var(--font-menco-medium);
   --font-pudgy-highlight: var(--font-fobble-regular);
+
+  /* Pudgy Colors */
+  --color-pudgy-background: hsl(var(--pudgy-background));
+  --color-pudgy-primary: hsl(var(--pudgy-primary));
+  --color-pudgy-primary-foreground: hsl(var(--pudgy-primary-foreground));
+  --color-pudgy-secondary: hsl(var(--pudgy-secondary));
+  --color-pudgy-secondary-foreground: hsl(var(--pudgy-secondary-foreground));
+  --color-pudgy-border: hsl(var(--pudgy-border));
 }
 
 /*

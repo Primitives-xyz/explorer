@@ -108,18 +108,6 @@ module.exports = {
           },
         },
 
-        pudgy: {
-          primary: {
-            DEFAULT: 'hsl(var(--pudgy-primary))',
-            foreground: 'hsl(var(--pudgy-primary-foreground))',
-          },
-          secondary: {
-            DEFAULT: 'hsl(var(--pudgy-secondary))',
-            foreground: 'hsl(var(--pudgy-secondary-foreground))',
-          },
-          border: 'hsl(var(--pudgy-border))',
-        },
-
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',

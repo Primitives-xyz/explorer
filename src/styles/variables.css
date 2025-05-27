@@ -53,6 +53,7 @@
   --pudgy-secondary: 192deg 100% 98%;
   --pudgy-secondary-foreground: 213deg 100% 9%;
   --pudgy-border: 213deg 100% 9%;
+  --pudgy-background: 222deg 98% 64%;
 
   /* Fonts */
   --text-lg: 20px;
@@ -83,7 +84,7 @@
   --topbar-height: 48px;
   --sidebar-left-width: 270px;
   --sidebar-right-width: 300px;
-  --main-content-width: 600px;
+  --main-content-width: 642px;
 }
 
 /* .dark {
