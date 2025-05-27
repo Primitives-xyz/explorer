@@ -4,7 +4,6 @@ import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
 import { WalletProvider } from '@/components/common/wallet-provider'
 import { Onboarding } from '@/components/onboarding/components/onboarding'
-import { BackgroundTheme } from '@/components/pudgy/components/background-theme'
 import { RevealScoreAnimation } from '@/components/solid-score/components/animation/reveal-score-animation'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils/utils'
@@ -125,7 +124,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <WalletProvider>
             <AddressHighlightProvider>
-              <BackgroundTheme />
+              <div className="fixed inset-0 z-0 background-gradient" />
 
               <div className="relative z-20">
                 <Toaster />

@@ -50,9 +50,9 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
           size={72}
         />
         <div>
-          <div className="flex flex-col md:flex-row gap-1 md:items-center">
+          <div className="flex flex-col md:flex-row gap-1 md:items-center mb-1">
             <p
-              className={cn('mb-1', {
+              className={cn({
                 'font-bold': !isPudgy,
                 'font-pudgy-heading text-xl': isPudgy,
               })}

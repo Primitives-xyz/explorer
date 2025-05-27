@@ -42,9 +42,9 @@ export function LeftSideMenu() {
               {t('menu.title')}
             </h1>
           </Link>
-          <ResetProfileButton />
           <ProfileInfos />
           <Menu />
+          <ResetProfileButton />
           <TestButton />
         </div>
         <div className="space-y-4 py-4">
