@@ -12,6 +12,7 @@ import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Rethink_Sans } from 'next/font/google'
+import localFont from 'next/font/local'
 import Script from 'next/script'
 import './globals.css'
 
@@ -19,6 +20,24 @@ const rethinkSans = Rethink_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   display: 'swap',
+  variable: '--font-rethink-sans',
+})
+
+// Pudgy fonts
+const ttTrailersExtraBold = localFont({
+  src: '../../public/fonts/tt-trailers-extrabold.otf',
+  variable: '--font-tt-trailers-extra-bold',
+  weight: '800',
+})
+const fobbleRegular = localFont({
+  src: '../../public/fonts/fobble-regular.otf',
+  variable: '--font-fobble-regular',
+  weight: '400',
+})
+const mencoMedium = localFont({
+  src: '../../public/fonts/menco-medium.otf',
+  variable: '--font-menco-medium',
+  weight: '500',
 })
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -94,7 +113,15 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={cn('relative min-h-screen', rethinkSans.className)}>
+      <body
+        className={cn(
+          'relative min-h-screen antialiased font-sans',
+          rethinkSans.variable,
+          ttTrailersExtraBold.variable,
+          fobbleRegular.variable,
+          mencoMedium.variable
+        )}
+      >
         <NextIntlClientProvider messages={messages}>
           <WalletProvider>
             <AddressHighlightProvider>

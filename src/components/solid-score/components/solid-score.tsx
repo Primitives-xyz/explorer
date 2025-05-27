@@ -16,7 +16,7 @@ export function SolidScore() {
     data,
     loading: scoreLoading,
     error,
-  } = useSolidScore({ id: mainProfile?.id })
+  } = useSolidScore({ profileId: mainProfile?.id })
 
   const hasRevealed = !!mainProfile?.userRevealedTheSolidScore
 

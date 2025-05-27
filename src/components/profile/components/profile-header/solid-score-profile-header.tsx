@@ -1,19 +1,25 @@
 import { SolidScoreBadges } from '@/components/solid-score/components/solid-score-badges'
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 
 interface Props {
-  id?: string
+  profileId: string
 }
 
-export function SolidScoreProfileHeader({ id }: Props) {
-  const { data, loading: scoreLoading } = useSolidScore({ id })
+export function SolidScoreProfileHeader({ profileId }: Props) {
+  const { mainProfile, loading: currentWalletLoading } = useCurrentWallet()
+  const { data, loading: scoreLoading } = useSolidScore({
+    profileId,
+  })
   const solidScore = formatSmartNumber(data?.score || '0', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })
 
-  if (!data || scoreLoading) {
+  const loading = currentWalletLoading || scoreLoading
+
+  if (!data || loading || !mainProfile?.userRevealedTheSolidScore) {
     return null
   }
 

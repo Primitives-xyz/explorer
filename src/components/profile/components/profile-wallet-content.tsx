@@ -21,10 +21,10 @@ export function ProfileWalletContent({ walletAddress }: Props) {
         variant={ButtonVariant.BADGE_SOCIAL}
         size={ButtonSize.SM}
       >
-        <CopyIcon size={12} />
         {abbreviateWalletAddress({
           address: walletAddress,
         })}
+        <CopyIcon size={12} />
       </CopyToClipboardButton>
       <ProfileWalletInfo walletAddress={walletAddress} />
       <Separator className="my-4" />

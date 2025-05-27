@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function RevealScoreText({ open, closeModal, profileId }: Props) {
-  const { data, loading } = useSolidScore({ id: profileId })
+  const { data, loading } = useSolidScore({ profileId: profileId })
   const solidScore = formatSmartNumber(data?.score || '0', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,

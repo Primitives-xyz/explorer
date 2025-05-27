@@ -46,6 +46,11 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
       'selectable-active':
         'bg-primary text-primary-foreground border border-primary rounded-full',
       link: 'underline-offset-4 hover:opacity-80 h-auto! p-0! rounded-sm',
+
+      'pudgy-default':
+        'bg-pudgy-primary text-pudgy-primary-foreground hover:bg-pudgy-primary/80 border-2 border-pudgy-border uppercase font-pudgy-heading text-xl!',
+      'pudgy-secondary':
+        'bg-pudgy-secondary text-pudgy-secondary-foreground hover:bg-pudgy-secondary/80 border-2 border-pudgy-border uppercase font-pudgy-heading text-xl!',
     },
     size: {
       default: 'h-9 px-4 py-2 text-sm',

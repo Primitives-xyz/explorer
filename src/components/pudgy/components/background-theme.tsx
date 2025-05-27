@@ -20,7 +20,7 @@ export function BackgroundTheme() {
       <Image
         src="/images/pudgy/mountains-desktop.webp"
         alt="Background Theme"
-        className="absolute bottom-0 left-0 w-full z-0"
+        className="absolute bottom-0 left-0 w-full z-0 opacity-60"
         width={2070}
         height={734}
       />

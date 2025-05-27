@@ -4,10 +4,14 @@ import { FollowButton } from '@/components/common/follow-button'
 import { SolidScoreProfileHeader } from '@/components/profile/components/profile-header/solid-score-profile-header'
 import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
+import { Button, ButtonVariant } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
+import { createURL } from '@/utils/api'
+import { share } from '@/utils/share'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSpecialUser } from '@/utils/user-permissions'
-import { abbreviateWalletAddress } from '@/utils/utils'
+import { abbreviateWalletAddress, cn } from '@/utils/utils'
+import { ShareIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface Props {
@@ -33,6 +37,9 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const followers = hasProfile ? profileInfo.socialCounts?.followers ?? 0 : 0
   const following = hasProfile ? profileInfo.socialCounts?.following ?? 0 : 0
 
+  const isPudgy = false
+  // const isPudgy = true
+
   return (
     <div className="flex flex-col md:flex-row justify-between">
       <div className="flex items-center md:items-start gap-2 md:gap-4">
@@ -42,9 +49,14 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
           className={hasProfile ? 'w-18 h-18 aspect-square' : 'w-10 md:w-18'}
           size={72}
         />
-        <div className="space-y-1">
+        <div>
           <div className="flex flex-col md:flex-row gap-1 md:items-center">
-            <p className="font-bold">
+            <p
+              className={cn('mb-1', {
+                'font-bold': !isPudgy,
+                'font-pudgy-heading text-xl': isPudgy,
+              })}
+            >
               {hasProfile
                 ? isSame
                   ? abbreviateWalletAddress({
@@ -62,36 +74,69 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
                 })}
               </p>
             )}
-            <p className="text-muted-foreground desktop">
-              • {t('common.since')} {creationYear}
-            </p>
-            <p className="text-muted-foreground mobile">
+            <span className="desktop">•</span>
+            <p
+              className={cn('text-sm', {
+                'text-muted-foreground': !isPudgy,
+                'font-pudgy-body uppercase': isPudgy,
+              })}
+            >
               {t('common.since')} {creationYear}
             </p>
           </div>
 
-          {hasProfile && isSpecialUser(mainProfile) && (
-            <SolidScoreProfileHeader id={profileInfo.profile.id} />
-          )}
-
-          <p className="text-muted-foreground text-sm desktop">
+          <p
+            className={cn('text-sm desktop', {
+              'text-muted-foreground': !isPudgy,
+              'font-pudgy-body uppercase': isPudgy,
+            })}
+          >
             {bio || t('common.no_description')}
           </p>
+
+          {hasProfile && isSpecialUser(mainProfile) && (
+            <SolidScoreProfileHeader profileId={profileInfo.profile.id} />
+          )}
         </div>
       </div>
 
       {hasProfile && isSpecialUser(mainProfile) && (
-        <SolidScoreSmartCtaWrapper />
+        <div className="my-3 md:my-0">
+          <SolidScoreSmartCtaWrapper />
+        </div>
       )}
 
       <div className="space-y-2">
+        {!!mainProfile?.username && (
+          <Button
+            className="w-full"
+            // variant={ButtonVariant.DEFAULT_SOCIAL}
+            variant={
+              isPudgy
+                ? ButtonVariant.PUDGY_SECONDARY
+                : ButtonVariant.DEFAULT_SOCIAL
+            }
+            onClick={() =>
+              share({
+                title: 'Check out this profile on SSE!',
+                url: createURL({
+                  domain: window.location.origin,
+                  endpoint: mainProfile.username,
+                }),
+              })
+            }
+          >
+            {!isPudgy && <ShareIcon size={16} />} Share
+          </Button>
+        )}
         {!!mainProfile?.username &&
           !!username &&
           mainProfile.username !== username && (
             <FollowButton
-              className="my-4 md:my-0 w-full"
+              className="w-full"
               followerUsername={mainProfile.username}
               followeeUsername={username}
+              isPudgy={isPudgy}
             />
           )}
         <p className="text-muted-foreground text-sm mobile mb-6">

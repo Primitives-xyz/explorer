@@ -5,6 +5,7 @@ import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
 import { TestButton } from '@/components/pudgy/components/test-button'
 import { usePudgyStore } from '@/components/pudgy/stores/use-pudgy-store'
+import { ResetProfileButton } from '@/components/solid-score/components/smart-cta/reset-profile-button'
 import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
@@ -14,6 +15,7 @@ import { isSpecialUser } from '@/utils/user-permissions'
 import { cn } from '@/utils/utils'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
 
@@ -29,15 +31,18 @@ export function LeftSideMenu() {
       className={cn(
         'hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar',
         {
-          'left-sidebar-theme-background': !!theme,
+          'left-sidebar-theme-background backdrop-blur-md': !!theme,
         }
       )}
     >
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
-          <h1 className="font-bold text-primary leading-none">
-            {t('menu.title')}
-          </h1>
+          <Link href="/">
+            <h1 className="font-bold text-primary leading-none">
+              {t('menu.title')}
+            </h1>
+          </Link>
+          <ResetProfileButton />
           <ProfileInfos />
           <Menu />
           <TestButton />

@@ -8,6 +8,13 @@
 
 @config "../../tailwind.config.ts";
 
+@theme inline {
+  --font-sans: var(--font-rethink-sans);
+  --font-pudgy-heading: var(--font-tt-trailers-extra-bold);
+  --font-pudgy-body: var(--font-menco-medium);
+  --font-pudgy-highlight: var(--font-fobble-regular);
+}
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still

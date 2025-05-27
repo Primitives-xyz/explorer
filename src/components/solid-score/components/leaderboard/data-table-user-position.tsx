@@ -26,7 +26,9 @@ interface UserPosition {
 
 export function DataTableUserPosition() {
   const { mainProfile } = useCurrentWallet()
-  const { data: solidScoreUserData } = useSolidScore({ id: mainProfile?.id })
+  const { data: solidScoreUserData } = useSolidScore({
+    profileId: mainProfile?.id,
+  })
   const t = useTranslations('menu.solid_score.leaderboard.table')
 
   const userPosition = {

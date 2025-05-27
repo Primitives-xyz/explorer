@@ -47,6 +47,13 @@
   --progress: var(--foreground) / 0.2;
   --progress-foreground: var(--foreground) / 0.6;
 
+  /* Pudgy colors */
+  --pudgy-primary: 220deg 100% 75%;
+  --pudgy-primary-foreground: 192deg 100% 98%;
+  --pudgy-secondary: 192deg 100% 98%;
+  --pudgy-secondary-foreground: 213deg 100% 9%;
+  --pudgy-border: 213deg 100% 9%;
+
   /* Fonts */
   --text-lg: 20px;
   --text-xl: 24px;
