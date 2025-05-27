@@ -31,10 +31,7 @@ import { formatRawAmount } from '@/utils/utils'
 import Image from 'next/image'
 import { useCallback, useState } from 'react'
 import { Slippage } from '../slippage'
-
-interface Props {
-  setTokenMint?: (value: string) => void
-}
+import { useTrade } from '@/components/trade/context/trade-context'
 
 // Extracted validation functions
 const validateNumericInput = (value: string): boolean => {
@@ -64,8 +61,9 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
   return true
 }
 
-export function JupiterPerps({ setTokenMint }: Props) {
+export function JupiterPerps() {
   // Individual state variables
+  const { setTokenMint } = useTrade()
   const [direction, setDirection] = useState<DirectionFilterType>(
     DirectionFilterType.LONG
   )

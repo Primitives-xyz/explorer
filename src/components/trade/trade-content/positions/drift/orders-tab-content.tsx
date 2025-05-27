@@ -8,7 +8,7 @@ import {
 } from '@/components/ui'
 import Tooltip from '@/components/ui/tooltip'
 import { cn } from '@/utils/utils'
-import { LimitOrderProps } from '../../hooks/drift/use-limit-orders'
+import { LimitOrderProps } from '../../../hooks/drift/use-limit-orders'
 
 interface OrdersTabContentProps {
   subAccountId: number

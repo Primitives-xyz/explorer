@@ -1,30 +1,19 @@
-'use client'
-
 import { Swap } from '@/components/swap/components/swap'
-// import { Perpetual } from '@/components/trade/left-content/perpetual/perpetual'
 import { FilterTabs } from '@/components/ui'
-import { useEffect, useState } from 'react'
+import { useTrade } from '../context/trade-context'
 import { Perpetual } from './perpetual/updated-perpetual'
-
-interface TradeLeftContentProps {
-  selectedType: FilterType
-  setTokenMint: (value: string) => void
-  setSelectedType: (value: FilterType) => void
-}
 
 export enum FilterType {
   SWAP = 'swap',
-  PERPETUAL = 'perpetual',
+  PERPS = 'perps',
 }
 
-export function TradeLeftContent({
-  selectedType,
-  setTokenMint,
-  setSelectedType,
-}: TradeLeftContentProps) {
+export function TradeLeftContent() {
+  const { selectedType, setSelectedType } = useTrade()
+
   const options = [
     { label: 'Swap', value: FilterType.SWAP },
-    { label: 'Perpetual', value: FilterType.PERPETUAL },
+    { label: 'Perpetual', value: FilterType.PERPS },
   ]
 
   return (
@@ -35,10 +24,8 @@ export function TradeLeftContent({
         onSelect={setSelectedType}
         buttonClassName="flex-1 md:flex-none"
       />
-      {selectedType === FilterType.SWAP && <Swap setTokenMint={setTokenMint} />}
-      {selectedType === FilterType.PERPETUAL && (
-        <Perpetual setTokenMint={setTokenMint} />
-      )}
+      {selectedType === FilterType.SWAP && <Swap />}
+      {selectedType === FilterType.PERPS && <Perpetual />}
     </div>
   )
 }
