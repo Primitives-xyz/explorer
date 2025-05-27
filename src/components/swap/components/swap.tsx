@@ -6,6 +6,7 @@ import { CenterButtonSwap } from '@/components/swap/components/swap-elements/cen
 import { TopSwap } from '@/components/swap/components/swap-elements/top-swap'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
+import { useTrade } from '@/components/trade/context/trade-context'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/utils/constants'
@@ -21,7 +22,6 @@ import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
 import { TransactionLink } from './transaction-link'
 import { TransactionStatus } from './transaction-status'
-import { useTrade } from '@/components/trade/context/trade-context'
 
 const isStable = (token: string) => {
   const STABLE_TOKENS = [
@@ -80,7 +80,17 @@ interface Props {
 
 export function Swap({ autoFocus }: Props) {
   const t = useTranslations()
-  const { setTokenMint } = useTrade()
+
+  // Try to use the trade context, but make it optional
+  let setTokenMint: ((mint: string) => void) | undefined
+  try {
+    const tradeContext = useTrade()
+    setTokenMint = tradeContext.setTokenMint
+  } catch (error) {
+    // If we're outside TradeProvider, that's fine - setTokenMint will be undefined
+    setTokenMint = undefined
+  }
+
   // Centralized swap state from store
   const {
     inputs: { inputMint: inputTokenMint, outputMint: outputTokenMint },
