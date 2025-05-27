@@ -1,3 +1,4 @@
+import { useCreateUnstakeContentNode } from '@/components/stake/hooks/use-create-unstake-content'
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
@@ -10,6 +11,7 @@ export function useUnstake() {
   const [isLoading, setIsLoading] = useState(false)
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
+  const { createContentNode } = useCreateUnstakeContentNode()
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
   const unstake = async (amount: string) => {
@@ -73,6 +75,14 @@ export function useUnstake() {
 
         // Refresh user info after successful unstake
         refreshUserInfo()
+
+        // Create content node for the unstake transaction
+        await createContentNode({
+          signature: txid.signature,
+          unstakeAmount: amount,
+          walletAddress,
+          route: 'stake',
+        })
       }
     } catch (err) {
       console.log('Error in making stake tx:', err)
