@@ -11,6 +11,12 @@
     "loading": "loading",
     "on": "on",
     "swap": "Swap",
+    "stake": "Stake",
+    "unstake": "Unstake",
+    "staked": "Staked",
+    "unstaked": "Unstaked",
+    "action": "Action",
+    "value": "Value",
     "follow": {
       "follow": "Follow",
       "unfollow": "Unfollow",

@@ -11,6 +11,12 @@
     "loading": "加载中",
     "on": "on",
     "swap": "交换",
+    "stake": "质押",
+    "unstake": "取消质押",
+    "staked": "已质押",
+    "unstaked": "已取消质押",
+    "action": "操作",
+    "value": "价值",
     "follow": {
       "follow": "关注",
       "unfollow": "取消关注",

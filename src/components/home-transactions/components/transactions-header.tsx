@@ -17,6 +17,7 @@ interface Props {
   sourceWallet: string
   children?: ReactNode
   onClickTradeButton?: () => void
+  tradeButtonText?: string
 }
 
 export function TransactionsHeader({
@@ -24,6 +25,7 @@ export function TransactionsHeader({
   sourceWallet,
   children,
   onClickTradeButton,
+  tradeButtonText,
 }: Props) {
   const t = useTranslations()
   const { profiles } = useGetProfiles({
@@ -119,7 +121,7 @@ export function TransactionsHeader({
               className="desktop"
             >
               <ArrowRightLeft size={16} />
-              {t('home.transactions.trade_button')}
+              {tradeButtonText || t('home.transactions.trade_button')}
             </Button>
           )}
         </div>

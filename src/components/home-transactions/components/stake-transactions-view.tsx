@@ -51,6 +51,7 @@ export function StakeTransactionsView({ transaction, sourceWallet }: Props) {
             // Navigate to stake page
             window.location.href = '/stake'
           }}
+          tradeButtonText="Stake SSE"
         >
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="rounded-md">
