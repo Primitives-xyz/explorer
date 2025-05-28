@@ -34,14 +34,12 @@ export function ProfileExternalProfile({ profile }: Props) {
                     id: profile.profile.username,
                   })
                 : profile.namespace.userProfileURL
-                ? route('namespaceProfile', {
-                    id: profile.namespace.name,
-                    profile:
-                      profile.namespace.name === 'tribe.run' &&
-                      profile.wallet?.address
-                        ? profile.wallet.address
-                        : profile.profile.username,
-                  })
+                ? `${profile.namespace.userProfileURL}/${
+                    profile.namespace.name === 'tribe.run' &&
+                    profile.wallet?.address
+                      ? profile.wallet.address
+                      : profile.profile.username
+                  }`
                 : `/${profile.namespace.name}/${profile.profile.username}`
             }
             newTab={profile.namespace.name !== EXPLORER_NAMESPACE}
