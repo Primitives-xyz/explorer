@@ -10,6 +10,7 @@ interface Props {
   subtitle: ReactNode
   rightContent?: ReactNode
   closePopover: () => void
+  newTab?: boolean
 }
 
 export function SearchResultsEntry({
@@ -19,6 +20,7 @@ export function SearchResultsEntry({
   subtitle,
   rightContent,
   closePopover,
+  newTab,
 }: Props) {
   return (
     <Button
@@ -26,6 +28,7 @@ export function SearchResultsEntry({
       href={href}
       isInvisible
       onClick={closePopover}
+      newTab={newTab}
     >
       <div>{image}</div>
       <div className="flex justify-between w-full">
