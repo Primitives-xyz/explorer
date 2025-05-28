@@ -18,7 +18,7 @@ export function LeftSideMenu() {
   const t = useTranslations()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
-  const { isLoggedIn, mainProfile } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
 
   return (
     <div className="hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar">
