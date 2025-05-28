@@ -59,19 +59,19 @@ export function RevealScoreText({ open, closeModal, profileId }: Props) {
       className="flex flex-col items-start justify-center gap-2 relative"
     >
       <motion.div variants={itemAnimationVariants}>
-        <div className="text-black/60 text-6xl font-semibold">
-          Solid Score Unlocked!
+        <div className="text-black/90 text-6xl font-semibold">
+          SOLID Score Unlocked!
         </div>
       </motion.div>
       <motion.div variants={itemAnimationVariants}>
-        <div className="text-black/80 text-9xl font-bold">
+        <div className="text-black/90 text-9xl font-bold">
           {loading ? <Spinner /> : solidScore}
         </div>
       </motion.div>
       <motion.div variants={itemAnimationVariants}>
         <Button
           size={ButtonSize.LG}
-          className="bg-black/80 hover:bg-black/90 text-white mt-5"
+          className="bg-black/90 hover:bg-black/95 text-primary mt-5"
           onClick={closeModal}
           href={route('leaderboard')}
         >

@@ -6,6 +6,7 @@ import { CenterButtonSwap } from '@/components/swap/components/swap-elements/cen
 import { TopSwap } from '@/components/swap/components/swap-elements/top-swap'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
+import { useTrade } from '@/components/trade/context/trade-context'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
 import { SOL_MINT, SSE_MINT } from '@/utils/constants'
@@ -19,6 +20,8 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
 import { ESwapMode } from '../swap.models'
+import { TransactionLink } from './transaction-link'
+import { TransactionStatus } from './transaction-status'
 
 const isStable = (token: string) => {
   const STABLE_TOKENS = [
@@ -72,12 +75,22 @@ const validateAmount = (value: string, decimals: number = 6): boolean => {
 }
 
 interface Props {
-  setTokenMint?: (value: string) => void
   autoFocus?: boolean
 }
 
-export function Swap({ setTokenMint, autoFocus }: Props) {
+export function Swap({ autoFocus }: Props) {
   const t = useTranslations()
+
+  // Try to use the trade context, but make it optional
+  let setTokenMint: ((mint: string) => void) | undefined
+  try {
+    const tradeContext = useTrade()
+    setTokenMint = tradeContext.setTokenMint
+  } catch (error) {
+    // If we're outside TradeProvider, that's fine - setTokenMint will be undefined
+    setTokenMint = undefined
+  }
+
   // Centralized swap state from store
   const {
     inputs: { inputMint: inputTokenMint, outputMint: outputTokenMint },
@@ -136,6 +149,12 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     isQuoteRefreshing,
     sseFeeAmount,
     handleSwap,
+    txStatus,
+    error: swapError,
+    txSignature,
+    isFullyConfirmed,
+    resetQuoteState,
+    refreshQuote,
   } = useJupiterSwap({
     inputMint: inputTokenMint,
     outputMint: outputTokenMint,
@@ -155,8 +174,13 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
   })
 
   const displayInAmount = useMemo(() => {
-    if (isQuoteRefreshing && swapMode === ESwapMode.EXACT_OUT) {
-      return '...'
+    // When refreshing quote in EXACT_OUT mode, keep showing the previous value
+    if (
+      isQuoteRefreshing &&
+      swapMode === ESwapMode.EXACT_OUT &&
+      inAmount !== ''
+    ) {
+      return inAmount
     }
     if (inAmount == '') {
       return ''
@@ -170,8 +194,12 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
   }, [inAmount, inputTokenDecimals, isQuoteRefreshing, swapMode])
 
   const displayOutAmount = useMemo(() => {
-    if (isQuoteRefreshing && swapMode === ESwapMode.EXACT_IN) {
-      return '...'
+    if (
+      isQuoteRefreshing &&
+      swapMode === ESwapMode.EXACT_IN &&
+      outAmount !== ''
+    ) {
+      return outAmount
     }
     if (outAmount == '') {
       return ''
@@ -185,26 +213,18 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
   }, [isQuoteRefreshing, swapMode, outAmount, outputTokenDecimals])
 
   const displayInAmountInUsd = useMemo(() => {
-    if (
-      isQuoteRefreshing ||
-      !inputTokenUsdPrice ||
-      isNaN(parseFloat(inAmount))
-    ) {
+    if (!inputTokenUsdPrice || isNaN(parseFloat(inAmount))) {
       return '...'
     }
     return formatUsdValue(inputTokenUsdPrice * parseFloat(inAmount))
-  }, [isQuoteRefreshing, inputTokenUsdPrice, inAmount])
+  }, [inputTokenUsdPrice, inAmount])
 
   const displayOutAmountInUsd = useMemo(() => {
-    if (
-      isQuoteRefreshing ||
-      !outputTokenUsdPrice ||
-      isNaN(parseFloat(outAmount))
-    ) {
+    if (!outputTokenUsdPrice || isNaN(parseFloat(outAmount))) {
       return '...'
     }
     return formatUsdValue(outputTokenUsdPrice * parseFloat(outAmount))
-  }, [isQuoteRefreshing, outputTokenUsdPrice, outAmount])
+  }, [outputTokenUsdPrice, outAmount])
 
   const displaySseFeeAmount = useMemo(() => {
     const fee = (Number(sseFeeAmount) / Math.pow(10, 6)).toString()
@@ -332,9 +352,13 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
   // Update amounts when quote changes
   useEffect(() => {
     if (swapMode === ESwapMode.EXACT_IN) {
-      setOutAmount(isNaN(parseFloat(expectedOutput)) ? '' : expectedOutput)
+      if (expectedOutput !== '') {
+        setOutAmount(expectedOutput)
+      }
     } else {
-      setInAmount(isNaN(parseFloat(expectedOutput)) ? '' : expectedOutput)
+      if (expectedOutput !== '') {
+        setInAmount(expectedOutput)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expectedOutput])
@@ -362,18 +386,69 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
     }
   }, [useSSEForFees])
 
+  // Track confirmed transactions
+  const [confirmedTransactions, setConfirmedTransactions] = useState<string[]>(
+    []
+  )
+
+  // Auto-reset transaction state after success and refetch quote
+  useEffect(() => {
+    if (isFullyConfirmed && txStatus?.status === 'confirmed' && txSignature) {
+      // Add to confirmed transactions list only if it doesn't already exist
+      setConfirmedTransactions((prev) => {
+        if (!prev.includes(txSignature)) {
+          return [...prev, txSignature]
+        }
+        return prev
+      })
+
+      // Immediately reset state and fetch new quote
+      setTimeout(() => {
+        resetQuoteState()
+        // Force immediate quote refresh
+        refreshQuote()
+      }, 100) // Small delay to ensure state updates properly
+    }
+  }, [isFullyConfirmed, txStatus, txSignature, resetQuoteState, refreshQuote])
+
+  const dismissTransaction = (signature: string) => {
+    setConfirmedTransactions((prev) => prev.filter((sig) => sig !== signature))
+  }
+
   // Determine if the user has used SSE before
   const hasUsedSSEBefore =
     typeof window !== 'undefined' &&
     localStorage.getItem('hasUsedSSEFee') === 'true'
 
   let executeButtonText = t('swap.execute_swap')
-  if (notEnoughSSE) {
+  let buttonDisabled = false
+
+  // Handle transaction status in button
+  if (txStatus) {
+    switch (txStatus.status) {
+      case 'sending':
+        executeButtonText = 'Signing...'
+        buttonDisabled = true
+        break
+      case 'sent':
+      case 'confirming':
+        executeButtonText = 'Confirming...'
+        buttonDisabled = true
+        break
+      case 'failed':
+      case 'timeout':
+        executeButtonText = 'Failed - Try again'
+        buttonDisabled = false
+        break
+    }
+  } else if (notEnoughSSE) {
     executeButtonText = t('swap.insufficient_sse')
+    buttonDisabled = true
   } else if (notEnoughInput) {
     executeButtonText = t('swap.insufficient_balance', {
       token: inputTokenSymbol || 'Balance',
     })
+    buttonDisabled = true
   }
 
   return (
@@ -390,20 +465,44 @@ export function Swap({ setTokenMint, autoFocus }: Props) {
 
       <CenterButtonSwap
         sdkHasLoaded={sdkHasLoaded}
-        loading={loading}
+        loading={
+          loading ||
+          txStatus?.status === 'sending' ||
+          txStatus?.status === 'sent' ||
+          txStatus?.status === 'confirming'
+        }
         isLoggedIn={isLoggedIn}
         setShowAuthFlow={setShowAuthFlow}
         handleSwap={async () => {
-          if (notEnoughSSE || notEnoughInput) return
+          if (buttonDisabled) return
+
+          // If we just completed a swap, allow immediate re-swap
+          if (isFullyConfirmed) {
+            resetQuoteState()
+            // Don't clear amounts - user likely wants to swap again
+          }
+
           await handleSwap()
-          setShowInputTokenSearch(false)
-          setShowOutputTokenSearch(false)
-          setInAmount('')
-          setOutAmount('')
         }}
         buttonText={executeButtonText}
-        notReady={notEnoughSSE || notEnoughInput}
+        notReady={buttonDisabled}
       />
+
+      {/* Transaction Status - shows during processing */}
+      <TransactionStatus status={txStatus} />
+
+      {/* Confirmed Transactions */}
+      {confirmedTransactions.length > 0 && (
+        <div className="space-y-2">
+          {confirmedTransactions.map((sig) => (
+            <TransactionLink
+              key={sig}
+              signature={sig}
+              onDismiss={dismissTransaction}
+            />
+          ))}
+        </div>
+      )}
 
       <BottomSwap
         useSSEForFees={useSSEForFees}

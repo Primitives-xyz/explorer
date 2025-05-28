@@ -11,6 +11,12 @@
     "loading": "loading",
     "on": "on",
     "swap": "Swap",
+    "stake": "Stake",
+    "unstake": "Unstake",
+    "staked": "Staked",
+    "unstaked": "Unstaked",
+    "action": "Action",
+    "value": "Value",
     "follow": {
       "follow": "Follow",
       "unfollow": "Unfollow",
@@ -66,7 +72,7 @@
           },
           "then": "then",
           "share_x": "Share on X",
-          "tweet_text": "My SOLID Score is {score} — in the top {percentile} on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
+          "tweet_text": "My SOLID Score is {score} — in the top {percentile}% on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
           "copy_success": {
             "title": "Image copied!",
             "description": "You can now paste it in your X post."
@@ -554,11 +560,11 @@
       "username": {
         "label": "Username",
         "placeholder": "Please add a title",
-        "description": "Username can only contain letters, numbers, and underscores",
+        "description": "Username can only contain letters, numbers, underscores, and periods (for SNS names like .sol)",
         "validation": {
           "min_length": "Username must be at least 3 characters long",
           "max_length": "Username must not exceed 30 characters",
-          "format": "Username can only contain letters, numbers, and underscores"
+          "format": "Username can only contain letters, numbers, underscores, and periods. SNS names (.sol) are supported"
         }
       },
       "profile_image": {

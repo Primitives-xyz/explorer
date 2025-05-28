@@ -52,6 +52,11 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url)
     const backgroundImageUrl = `${url.protocol}//${url.host}/images/menu/solid-score-share-modal-bg.png`
     const solanaIdLogoUrl = `${url.protocol}//${url.host}/images/solid-score/solana-id.png`
+    const tapestryLogoUrl = `${url.protocol}//${url.host}/images/solid-score/tapestry-logo-white.svg`
+
+    const font = await fetch(
+      new URL('./fonts/RethinkSans-Bold.ttf', import.meta.url)
+    ).then((res) => res.arrayBuffer())
 
     const response = new ImageResponse(
       (
@@ -109,8 +114,9 @@ export async function GET(req: NextRequest) {
             <p
               style={{
                 fontSize: '32px',
-                color: '#ffffff',
+                color: 'white',
                 margin: '0 0 40px 0',
+                fontWeight: 'bold',
               }}
             >
               My SOLID Score is...
@@ -209,23 +215,48 @@ export async function GET(req: NextRequest) {
 
               <p
                 style={{
-                  fontSize: '24px',
-                  color: '#6b7280',
+                  fontSize: '26px',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   margin: 0,
                   alignSelf: 'center',
                 }}
               >
                 Claim yours at SSE.gg
               </p>
-              <img
-                src={solanaIdLogoUrl}
-                alt="Background"
+              <div
                 style={{
-                  width: '200px',
-                  height: '100px',
-                  objectFit: 'contain',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
                 }}
-              />
+              >
+                <img
+                  src={tapestryLogoUrl}
+                  alt="Tapestry Logo"
+                  style={{
+                    width: '180px',
+                    height: '100px',
+                    objectFit: 'contain',
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: '32px',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                  }}
+                >
+                  x
+                </span>
+                <img
+                  src={solanaIdLogoUrl}
+                  alt="Background"
+                  style={{
+                    width: '200px',
+                    height: '100px',
+                    objectFit: 'contain',
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -237,6 +268,14 @@ export async function GET(req: NextRequest) {
           'content-type': 'image/png',
           'cache-control': 'public, max-age=300, s-maxage=300',
         },
+        fonts: [
+          {
+            name: 'Rethink Sans',
+            data: font,
+            style: 'normal',
+            weight: 700,
+          },
+        ],
       }
     )
 

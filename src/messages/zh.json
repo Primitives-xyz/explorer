@@ -11,6 +11,12 @@
     "loading": "加载中",
     "on": "on",
     "swap": "交换",
+    "stake": "质押",
+    "unstake": "取消质押",
+    "staked": "已质押",
+    "unstaked": "已取消质押",
+    "action": "操作",
+    "value": "价值",
     "follow": {
       "follow": "关注",
       "unfollow": "取消关注",
@@ -66,7 +72,7 @@
           },
           "then": "then",
           "share_x": "Share on X",
-          "tweet_text": "My SOLID Score is {score} — in the top {percentile} on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
+          "tweet_text": "My SOLID Score is {score} — in the top {percentile}% on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
           "copy_success": {
             "title": "Image copied!",
             "description": "You can now paste it in your X post."
@@ -554,11 +560,11 @@
       "username": {
         "label": "Username",
         "placeholder": "Please add a title",
-        "description": "Username can only contain letters, numbers, and underscores",
+        "description": "用户名只能包含字母、数字、下划线和句点（用于SNS名称，如.sol）",
         "validation": {
           "min_length": "Username must be at least 3 characters long",
           "max_length": "Username must not exceed 30 characters",
-          "format": "Username can only contain letters, numbers, and underscores"
+          "format": "用户名只能包含字母、数字、下划线和句点。支持SNS名称（.sol）"
         }
       },
       "profile_image": {

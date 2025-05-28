@@ -10,13 +10,13 @@ import {
 } from '@/utils/constants'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { getAssociatedTokenAddressSync } from '@solana/spl-token'
-import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js'
+import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
-import { useToastContent } from './drift/use-toast-content'
 import { useCreateTradeContentNode } from './use-create-trade-content'
+import { useJupiterTransaction } from './use-jupiter-transaction'
+import { useJupiterTransactionSSE } from './use-jupiter-transaction-sse'
 
 interface UseJupiterSwapParams {
   inputMint: string
@@ -28,6 +28,7 @@ interface UseJupiterSwapParams {
   primaryWallet: any
   walletAddress: string
   swapMode?: string
+  useSSE?: boolean // Enable Server-Sent Events for real-time updates
 }
 
 interface QuoteResponse {
@@ -72,9 +73,9 @@ export function useJupiterSwap({
   primaryWallet,
   walletAddress,
   swapMode = 'ExactIn',
+  useSSE = true, // Default to using SSE for better performance
 }: UseJupiterSwapParams) {
   const t = useTranslations()
-  const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [txSignature, setTxSignature] = useState<string>('')
@@ -91,6 +92,90 @@ export function useJupiterSwap({
   const { ssePrice } = useSSEPrice()
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const pathname = usePathname()
+
+  // Store the last transaction for retry
+  const lastTransactionRef = useRef<{
+    transaction: VersionedTransaction
+    metadata: any
+  } | null>(null)
+
+  // Common callbacks for both transaction hooks
+  const onStatusUpdate = useCallback((status: any) => {
+    // Just update the signature when sent
+    if (status.status === 'sent' && status.signature) {
+      setTxSignature(status.signature)
+    } else if (status.status === 'confirmed' && status.signature) {
+      setIsFullyConfirmed(true)
+    }
+  }, [])
+
+  const onSuccess = useCallback(
+    async (signature: string) => {
+      // Create content node on success
+      await createContentNode({
+        signature,
+        inputMint,
+        outputMint,
+        inputAmount,
+        expectedOutput,
+        priceImpact,
+        slippageBps:
+          slippageBps === 'auto'
+            ? calculateAutoSlippage(priceImpact)
+            : Number(slippageBps),
+        priorityLevel: 'low',
+        inputDecimals: inputDecimals || 6,
+        walletAddress,
+        usdcFeeAmount: quoteResponse?.swapUsdValue
+          ? (
+              Number(quoteResponse.swapUsdValue) *
+              (platformFeeBps === 1
+                ? PLATFORM_FEE_BPS / 20000
+                : PLATFORM_FEE_BPS / 10000)
+            ).toString()
+          : '0',
+        route: (() => {
+          const path = pathname
+          if (path.includes('/trenches')) return 'trenches'
+          if (path.includes('/trade')) return 'trade'
+          return 'home'
+        })(),
+      })
+    },
+    [
+      createContentNode,
+      inputMint,
+      outputMint,
+      inputAmount,
+      expectedOutput,
+      priceImpact,
+      slippageBps,
+      inputDecimals,
+      walletAddress,
+      quoteResponse?.swapUsdValue,
+      platformFeeBps,
+      pathname,
+    ]
+  )
+
+  // Initialize the regular transaction hook
+  const regularTxHook = useJupiterTransaction({
+    onStatusUpdate,
+    onSuccess,
+  })
+
+  // Initialize the SSE transaction hook
+  const sseTxHook = useJupiterTransactionSSE({
+    onStatusUpdate,
+    onSuccess,
+  })
+
+  // Select which hook to use based on useSSE flag
+  const {
+    sendAndConfirmTransaction,
+    status: txStatus,
+    error: txError,
+  } = useSSE ? sseTxHook : regularTxHook
 
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
@@ -204,28 +289,19 @@ export function useJupiterSwap({
     setIsFullyConfirmed(false)
 
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-      toast.error(
-        ERRORS.WALLET_CONNETION_ERR.title,
-        ERRORS.WALLET_CONNETION_ERR.content
-      )
+      setError('Wallet not connected')
       setLoading(false)
       return
     }
 
     if (platformFeeBps === 1 && !ssePrice) {
-      toast.error(
-        ERRORS.FEE_CALCULATION_ERR.title,
-        ERRORS.FEE_CALCULATION_ERR.content
-      )
+      setError('Unable to calculate SSE fee')
       setLoading(false)
       return
     }
 
     if (!quoteResponse) {
-      toast.error(
-        ERRORS.JUP_QUOTE_API_ERR.title,
-        ERRORS.JUP_QUOTE_API_ERR.content
-      )
+      setError('No quote available')
       setLoading(false)
       return
     }
@@ -249,20 +325,12 @@ export function useJupiterSwap({
         setSseFeeAmount(currentSseFeeAmount)
       }
     } catch (error) {
-      toast.error(
-        ERRORS.FEE_CALCULATION_ERR.title,
-        ERRORS.FEE_CALCULATION_ERR.content
-      )
+      setError('Failed to calculate fees')
       currentSseFeeAmount = '0'
       setLoading(false)
       setSseFeeAmount('0')
       return
     }
-
-    const preparingToastId = toast.loading(
-      LOADINGS.PREPARING_LOADING.title,
-      LOADINGS.PREPARING_LOADING.content
-    )
 
     try {
       // Derive SSE Fee Destination ATA if needed
@@ -276,9 +344,7 @@ export function useJupiterSwap({
           sseFeeDestinationAtaString = sseFeeDestinationAta.toBase58()
         } catch (e) {
           console.error('Failed to derive SSE fee destination ATA:', e)
-          toast.error(ERRORS.FEE_CALCULATION_ERR.title, {
-            description: 'Failed to determine SSE fee account.',
-          })
+          setError('Failed to determine SSE fee account')
           setLoading(false)
           return
         }
@@ -305,11 +371,8 @@ export function useJupiterSwap({
       }).then((res) => res.json())
 
       if (response.error) {
-        toast.dismiss(preparingToastId)
-        toast.error(
-          ERRORS.JUP_SWAP_API_ERR.title,
-          ERRORS.JUP_SWAP_API_ERR.content
-        )
+        setError('Failed to prepare swap transaction')
+        setLoading(false)
         return
       }
 
@@ -317,34 +380,12 @@ export function useJupiterSwap({
         Buffer.from(response.transaction, 'base64')
       )
 
-      toast.dismiss(preparingToastId)
-
-      const sendingToastId = toast.loading(
-        LOADINGS.SEND_LOADING.title,
-        LOADINGS.SEND_LOADING.content
-      )
-
+      // Sign the transaction
       const signer = await primaryWallet.getSigner()
-      const txid = await signer.signAndSendTransaction(transaction)
-      setTxSignature(txid.signature)
+      const signedTransaction = await signer.signTransaction(transaction)
 
-      toast.dismiss(sendingToastId)
-      const confirmToastId = toast.loading(
-        LOADINGS.CONFIRM_LOADING.title,
-        LOADINGS.CONFIRM_LOADING.content
-      )
-
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-      const tx = await connection.confirmTransaction(
-        {
-          signature: txid.signature,
-          ...(await connection.getLatestBlockhash()),
-        },
-        'confirmed'
-      )
-
-      await createContentNode({
-        signature: txid.signature,
+      // Prepare metadata for the transaction
+      const metadata = {
         inputMint,
         outputMint,
         inputAmount,
@@ -352,11 +393,8 @@ export function useJupiterSwap({
         priceImpact,
         slippageBps:
           slippageBps === 'auto'
-            ? calculateAutoSlippage(priceImpact)
-            : Number(slippageBps),
-        priorityLevel: 'low',
-        inputDecimals: inputDecimals || 6,
-        walletAddress,
+            ? calculateAutoSlippage(priceImpact).toString()
+            : slippageBps.toString(),
         usdcFeeAmount: quoteResponse.swapUsdValue
           ? (
               Number(quoteResponse.swapUsdValue) *
@@ -371,19 +409,22 @@ export function useJupiterSwap({
           if (path.includes('/trade')) return 'trade'
           return 'home'
         })(),
-      })
-
-      if (tx.value.err) {
-        toast.dismiss(confirmToastId)
-        toast.error(ERRORS.TX_FAILED_ERR.title, ERRORS.TX_FAILED_ERR.content)
-      } else {
-        toast.dismiss(confirmToastId)
-        toast.success(SUCCESS.TX_SUCCESS.title, SUCCESS.TX_SUCCESS.content)
-        setIsFullyConfirmed(true)
       }
-    } catch (error) {
-      toast.dismiss()
-      toast.error(ERRORS.TX_FAILED_ERR.title, ERRORS.TX_FAILED_ERR.content)
+
+      // Store for retry
+      lastTransactionRef.current = {
+        transaction: signedTransaction,
+        metadata,
+      }
+
+      // Send and confirm using the new system
+      await sendAndConfirmTransaction(
+        signedTransaction,
+        walletAddress,
+        metadata
+      )
+    } catch (error: any) {
+      setError(error.message || 'Transaction failed')
     } finally {
       setLoading(false)
     }
@@ -458,6 +499,9 @@ export function useJupiterSwap({
     sseFeeAmount,
     handleSwap,
     refreshQuote,
+    txStatus,
+    txError,
+    resetQuoteState,
   }
 }
 
