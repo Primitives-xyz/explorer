@@ -61,9 +61,11 @@ export default async function EntityPage({
     }
   }
 
+  const isPudgy = false
+
   return (
     <>
-      <BackgroundTheme />
+      {isPudgy && <BackgroundTheme />}
       <MainContentWrapper className="relative">
         <div className="md:pr-[36px]">{renderContent(routeType, cleanId)}</div>
       </MainContentWrapper>

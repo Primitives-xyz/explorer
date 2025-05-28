@@ -1,5 +1,6 @@
 'use client'
 
+import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { ISuggestedUsername } from '@/components/tapestry/models/profiles.models'
 import {
   Button,
@@ -13,14 +14,15 @@ import {
   Input,
   Label,
 } from '@/components/ui'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useCreateProfile } from '../../tapestry/hooks/use-create-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedUsernames } from './suggested-usernames'
 
@@ -30,25 +32,26 @@ const ACCEPTABLE_SUFFIXES = ['.sol']
 interface Props {
   walletAddress: string
   suggestedUsernames: ISuggestedUsername[]
+  username: string
   setStep: (step: EOnboardingSteps) => void
   closeModal: () => void
 }
 
-export function CreateUsernameForm({
+export function UpdateUsernameForm({
   walletAddress,
   suggestedUsernames,
+  username,
   setStep,
   closeModal,
 }: Props) {
   const t = useTranslations()
   const [suggestedUsername, setSuggestedUsername] =
     useState<ISuggestedUsername>()
-  const { createProfile, loading } = useCreateProfile()
-  const {
-    mainProfile,
-    refetch: refetchCurrentUser,
-    logout,
-  } = useCurrentWallet()
+  const { updateProfile, loading } = useUpdateProfile({
+    username,
+  })
+  const { mainProfile, refetch: refetchCurrentUser } = useCurrentWallet()
+  const { push } = useRouter()
 
   const formSchema = z.object({
     username: z
@@ -104,13 +107,13 @@ export function CreateUsernameForm({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await createProfile({
+      await updateProfile({
         username: values.username,
-        ownerWalletAddress: walletAddress,
       })
 
       refetchCurrentUser()
       setStep(EOnboardingSteps.IMAGE)
+      push(route('entity', { id: values.username }))
 
       // form.reset()
     } catch (error: any) {
@@ -182,8 +185,6 @@ export function CreateUsernameForm({
           <Button
             className="w-[48%] md:w-[160px]"
             onClick={() => {
-              logout()
-              refetchCurrentUser()
               closeModal()
             }}
             variant={ButtonVariant.OUTLINE}

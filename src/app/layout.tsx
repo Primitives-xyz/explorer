@@ -1,9 +1,9 @@
 import { ActivityTape } from '@/components/activity-tape/components/activity-tape'
+import { SignupHandler } from '@/components/auth/components/signup-handler'
+import { WalletProvider } from '@/components/auth/components/wallet-provider'
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
-import { WalletProvider } from '@/components/common/wallet-provider'
-import { Onboarding } from '@/components/onboarding/components/onboarding'
 import { RevealScoreAnimation } from '@/components/solid-score/components/animation/reveal-score-animation'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils/utils'
@@ -128,7 +128,7 @@ export default async function RootLayout({
 
               <div className="relative z-20">
                 <Toaster />
-                <Onboarding />
+                <SignupHandler />
                 <ActivityTape />
                 <MobileHeader />
                 <RevealScoreAnimation />

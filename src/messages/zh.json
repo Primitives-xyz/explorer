@@ -534,7 +534,7 @@
   },
   "onboarding": {
     "create_profile": "Create Your Profile",
-    "welcome_success": "Welcome @{username}! Your profile has been successfully created!",
+    "onboarding_success": "Your profile has been successfully updated!",
     "steps": {
       "username": "Username",
       "profile_image": "Profile Image",

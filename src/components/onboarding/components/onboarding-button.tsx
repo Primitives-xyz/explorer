@@ -3,48 +3,48 @@
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isValidSolanaAddress } from '@/utils/validation'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
-import { mutate } from 'swr'
+import { useState } from 'react'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
 import {
+  Button,
+  ButtonVariant,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
   Spinner,
 } from '../../ui'
 import { useGetSuggestions } from '../hooks/use-get-suggestions'
 import { EOnboardingSteps } from '../onboarding.models'
 import { AddBioForm } from './add-bio-form'
 import { AddProfileImage } from './add-profile-image'
-import { CreateUsernameForm } from './create-username-form'
 import { StepsWrapper } from './steps-wrapper'
 import { SuggestedFollow } from './suggested-follow'
+import { UpdateUsernameForm } from './update-username-form'
 
-export function Onboarding() {
+interface Props {
+  username: string
+}
+
+export function OnboardingButton({ username }: Props) {
   const t = useTranslations()
   const [open, setOpen] = useState(false)
-
   const {
-    isLoggedIn,
-    profiles,
     mainProfile,
     walletAddress,
     loading: getCurrentUserLoading,
     socialCounts,
+    refetch: refetchCurrentUser,
   } = useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
-  const [lockModal, setLockModal] = useState(true)
   const { updateProfile } = useUpdateProfile({
-    username: mainProfile?.username ?? '',
+    username,
   })
-
   const { identities, loading: getIdentitiesLoading } = useGetIdentities({
     walletAddress,
   })
-
   const {
     suggestedUsernames,
     suggestedImages,
@@ -59,72 +59,43 @@ export function Onboarding() {
   const loading =
     getCurrentUserLoading || getIdentitiesLoading || getSuggestedProfilesLoading
 
-  const shouldShowOnboarding = () => {
-    // Not logged in or profiles undefined
-    if (!isLoggedIn || typeof profiles === 'undefined') {
-      return false
-    }
-
-    // No profile
-    if (!mainProfile) {
-      return true
-    }
-    // No username or username is a wallet address
-    if (!mainProfile.username || isValidSolanaAddress(mainProfile.username)) {
-      return true
-    }
-
-    // Has not seen the setup modal
-    if (!mainProfile.hasSeenProfileSetupModal) {
-      return true
-    }
-
-    return false
-  }
-
-  useEffect(() => {
-    if (shouldShowOnboarding()) {
-      setOpen(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mainProfile, profiles, isLoggedIn])
-
   const getModalTitle = () => {
     if (step === EOnboardingSteps.FOLLOW) {
-      return t('onboarding.welcome_success', {
-        username: mainProfile?.username,
-      })
+      return t('onboarding.onboarding_success')
     } else {
       return t('onboarding.create_profile')
     }
   }
 
-  useEffect(() => {
-    const finishOnboarding = async () => {
-      setLockModal(false)
-      await updateProfile({
-        properties: [
-          {
-            key: 'hasSeenProfileSetupModal',
-            value: true,
-          },
-        ],
-      })
-      // Refetch profiles api (current user and profile page)
-      mutate((key) => typeof key === 'string' && key.includes('profiles'))
-    }
+  const finishOnboarding = async () => {
+    await updateProfile({
+      properties: [
+        {
+          key: 'hasSeenProfileSetupModal',
+          value: true,
+        },
+      ],
+    })
+    refetchCurrentUser()
+  }
 
+  const onClose = () => {
     if (socialCounts?.following && socialCounts.following >= 3) {
+      setOpen(false)
       finishOnboarding()
     }
-  }, [socialCounts, mainProfile, updateProfile])
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant={ButtonVariant.SECONDARY_SOCIAL} className="w-full">
+          Complete Profile
+        </Button>
+      </DialogTrigger>
       <DialogContent
-        isStatic={lockModal}
-        hideCloseButton={lockModal}
         className="max-w-full md:max-w-3xl min-h-[90%] md:min-h-[600px] flex flex-col"
+        onClose={onClose}
       >
         <DialogHeader>
           <DialogTitle>{getModalTitle()}</DialogTitle>
@@ -139,10 +110,11 @@ export function Onboarding() {
             <div className="flex flex-col gap-10 flex-1 w-full">
               {step !== EOnboardingSteps.FOLLOW && <StepsWrapper step={step} />}
 
-              {step === EOnboardingSteps.USERNAME && (
-                <CreateUsernameForm
+              {step === EOnboardingSteps.USERNAME && mainProfile?.username && (
+                <UpdateUsernameForm
                   walletAddress={walletAddress}
                   suggestedUsernames={suggestedUsernames}
+                  username={mainProfile.username}
                   setStep={setStep}
                   closeModal={() => setOpen(false)}
                 />
