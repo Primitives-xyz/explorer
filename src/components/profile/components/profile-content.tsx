@@ -8,9 +8,10 @@ import { ProfileWallets } from './profile-wallets'
 interface Props {
   profileInfo: IGetProfileResponse | null
   walletAddress: string
+  namespace?: string
 }
 
-export function ProfileContent({ profileInfo, walletAddress }: Props) {
+export function ProfileContent({ profileInfo, walletAddress, namespace }: Props) {
   return (
     <div className="flex flex-col w-full space-y-6 pb-6">
       <ProfileHeader
@@ -19,7 +20,7 @@ export function ProfileContent({ profileInfo, walletAddress }: Props) {
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ProfileWallets walletAddress={walletAddress} />
-        <ProfileSocial walletAddress={walletAddress} />
+        <ProfileSocial walletAddress={walletAddress} namespace={namespace} />
       </div>
     </div>
   )

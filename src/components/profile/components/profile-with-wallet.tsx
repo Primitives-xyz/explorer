@@ -9,9 +9,10 @@ import { ProfileContent } from './profile-content'
 
 interface Props {
   walletAddress: string
+  namespace?: string
 }
 
-export function ProfileWithWallet({ walletAddress }: Props) {
+export function ProfileWithWallet({ walletAddress, namespace }: Props) {
   const { profiles, loading, error } = useGetProfiles({
     walletAddress,
   })
@@ -50,6 +51,7 @@ export function ProfileWithWallet({ walletAddress }: Props) {
           : null
       }
       walletAddress={walletAddress}
+      namespace={namespace}
     />
   )
 }

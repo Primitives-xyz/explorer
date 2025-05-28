@@ -8,13 +8,17 @@ import { SOL_MINT } from '@/utils/constants'
 import { determineRouteType, RouteType } from '@/utils/entity'
 import { Connection } from '@solana/web3.js'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 
 export default async function Entity({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { id } = await params
+  const { namespace } = await searchParams
 
   const cleanId = id.startsWith('@') ? id.slice(1) : id
   const connection = new Connection(
@@ -31,7 +35,7 @@ export default async function Entity({
       case RouteType.TRANSACTION:
         return <TransactionDetails signature={cleanId} />
       case RouteType.PROFILE:
-        return <ProfileWithUsername username={cleanId} />
+        return <ProfileWithUsername username={cleanId} namespace={namespace as string} />
       case RouteType.WALLET:
         throw new Error(
           'WALLET routeType should be handled in the main function, not here.'
@@ -44,9 +48,13 @@ export default async function Entity({
   }
 
   if (routeType === RouteType.WALLET) {
-    const url = `${
-      process.env.NEXT_PUBLIC_APP_URL || ''
-    }/api/profiles?walletAddress=${cleanId}`
+    // Get the host from headers for server-side fetch
+    const headersList = await headers()
+    const host = headersList.get('host') || 'localhost:3000'
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`
+    
+    const url = `${baseUrl}/api/profiles?walletAddress=${cleanId}`
     const res = await fetch(url)
     const data = await res.json()
     const profile = data?.profiles?.[0]
@@ -55,7 +63,7 @@ export default async function Entity({
         <>
           <MainContentWrapper>
             <div className="md:pr-[36px]">
-              <ProfileWithUsername username={profile.profile.username} />
+              <ProfileWithUsername username={profile.profile.username} namespace={namespace as string} />
             </div>
           </MainContentWrapper>
           <SwapTray />
@@ -66,7 +74,7 @@ export default async function Entity({
         <>
           <MainContentWrapper>
             <div className="md:pr-[36px]">
-              <ProfileWithWallet walletAddress={cleanId} />
+              <ProfileWithWallet walletAddress={cleanId} namespace={namespace as string} />
             </div>
           </MainContentWrapper>
           <SwapTray />

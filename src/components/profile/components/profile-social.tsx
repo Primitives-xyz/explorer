@@ -22,9 +22,10 @@ import { ProfileExternalProfile } from './profile-external-profile'
 
 interface Props {
   walletAddress: string
+  namespace?: string
 }
 
-export function ProfileSocial({ walletAddress }: Props) {
+export function ProfileSocial({ walletAddress, namespace }: Props) {
   const { namespaces, hasXIdentity, explorerProfile, loading } =
     useGetProfileExternalNamespaces({ walletAddress })
 
@@ -43,7 +44,7 @@ export function ProfileSocial({ walletAddress }: Props) {
 
   const fallbackTab = namespaces?.[hasXIdentity ? 1 : 0]?.namespace?.name ?? ''
 
-  const defaultTabValue = showXTab ? xTabValue : fallbackTab
+  const defaultTabValue = namespace || (showXTab ? xTabValue : fallbackTab)
 
   const xTabProfile = namespaces?.[0]?.profiles?.[0]
 

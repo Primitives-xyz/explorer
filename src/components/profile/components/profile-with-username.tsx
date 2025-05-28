@@ -8,9 +8,10 @@ import { ProfileContent } from './profile-content'
 
 interface Props {
   username: string
+  namespace?: string
 }
 
-export function ProfileWithUsername({ username }: Props) {
+export function ProfileWithUsername({ username, namespace }: Props) {
   const { mainProfile } = useCurrentWallet()
   const { profileInfo, loading, error } = useGetProfileInfo({
     username,
@@ -36,6 +37,7 @@ export function ProfileWithUsername({ username }: Props) {
     <ProfileContent
       profileInfo={profileInfo}
       walletAddress={profileInfo.walletAddress}
+      namespace={namespace}
     />
   )
 }

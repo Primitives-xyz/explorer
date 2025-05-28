@@ -1,8 +1,5 @@
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
-import { NamespaceProfileContent } from '@/components/namespace/profile/namespace-profile-content'
-import { Button, ButtonVariant } from '@/components/ui'
-import { route } from '@/utils/route'
-import { ChevronLeft } from 'lucide-react'
+import { NamespaceProfileRedirect } from '@/components/namespace/profile/namespace-profile-redirect'
 
 export default async function NamespaceProfile({
   params,
@@ -13,14 +10,7 @@ export default async function NamespaceProfile({
 
   return (
     <MainContentWrapper className="w-full mx-auto flex justify-center">
-      <div className="w-full flex flex-col items-start space-y-6">
-        <Button href={route('namespace', { id })} variant={ButtonVariant.LINK}>
-          <ChevronLeft size={14} />
-          go back
-        </Button>
-
-        <NamespaceProfileContent namespace={id} profile={profile} />
-      </div>
+      <NamespaceProfileRedirect namespace={id} profile={profile} />
     </MainContentWrapper>
   )
 }

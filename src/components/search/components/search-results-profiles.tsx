@@ -4,6 +4,7 @@ import { Avatar } from '@/components/ui/avatar/avatar'
 import { route } from '@/utils/route'
 import { useGetSearchProfiles } from '../hooks/use-get-search-profiles'
 import { SearchResultsEntry } from './search-results-entry'
+import { EXPLORER_NAMESPACE } from '@/utils/constants'
 
 interface Props {
   query: string
@@ -51,9 +52,16 @@ export function SearchResultsProfiles({ query, closePopover }: Props) {
               </>
             }
             rightContent={entry.namespace.readableName}
-            href={route('entity', {
-              id: entry.profile.id,
-            })}
+            href={
+              entry.namespace.name === EXPLORER_NAMESPACE
+                ? route('entity', {
+                    id: entry.profile.id,
+                  })
+                : route('namespaceProfile', {
+                    id: entry.namespace.name,
+                    profile: entry.profile.id,
+                  })
+            }
             closePopover={closePopover}
           />
         ))}

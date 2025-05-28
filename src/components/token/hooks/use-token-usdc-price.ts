@@ -25,17 +25,15 @@ export function useTokenUSDCPrice({ tokenMint, decimals }: Props) {
     },
   })
 
-  const processedPrice =
-    data && !error ? Number(data.outAmount) / Math.pow(10, 6) : null
+  const hasValidResponse = data && data.outAmount && !error
+  const processedPrice = hasValidResponse
+    ? Number(data.outAmount) / Math.pow(10, 6)
+    : null
   const isValidPrice =
     processedPrice !== null && !isNaN(processedPrice) && processedPrice > 0
 
   if (tokenMint === USDC_MINT) {
     return { price: 1, loading: false, error: null }
-  }
-
-  if (data && !isValidPrice) {
-    console.error(`Invalid price for ${tokenMint}:`, { processedPrice, data })
   }
 
   return {
