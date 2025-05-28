@@ -1,28 +1,40 @@
 'use client'
 
-import { Transaction } from '@/components/tapestry/models/helius.models'
-import { Badge, Card, CardContent, CardHeader, CardTitle, Separator } from '@/components/ui'
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
-import { Fuel } from 'lucide-react'
-import { processSwapTransaction } from './swap-transaction-utils'
-import { SwapTransactionSummary } from './swap-transaction-summary'
-import TokenTransferGraph from "@/components/transactions/common/token-transfer-graph"
-import { useState } from 'react'
-import { TransferLine } from '@/components/transactions/common/transfer-line'
-import { getSwapPairsFromTokenTransfers, getTokenFeeTransfers } from './swap-transaction-utils'
-import { SwapLine } from '@/components/transactions/common/swap-line'
-import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
+import { Transaction } from '@/components/tapestry/models/helius.models'
+import { SwapLine } from '@/components/transactions/common/swap-line'
+import TokenTransferGraph from '@/components/transactions/common/token-transfer-graph'
+import { TransferLine } from '@/components/transactions/common/transfer-line'
+import { Card, CardContent, CardTitle } from '@/components/ui'
+import { isCopiedSwap } from '@/types/content'
+import { useState } from 'react'
+import { CopyTradingInfo } from '../enhanced/copy-trading-info'
+import { useTransactionWithContent } from '../hooks/use-transaction-with-content'
+import { SwapTransactionSummary } from './swap-transaction-summary'
+import {
+  getSwapPairsFromTokenTransfers,
+  getTokenFeeTransfers,
+  processSwapTransaction,
+} from './swap-transaction-utils'
 
 interface SwapTransactionViewProps {
-  transaction: Transaction;
+  transaction: Transaction
+  signature?: string
 }
 
-export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) => {
+export const SwapTransactionView = ({
+  transaction,
+  signature,
+}: SwapTransactionViewProps) => {
   // Process transaction using utility function
   const processedTx = processSwapTransaction(transaction)
   const { setOpen, setInputs } = useSwapStore()
-  const [showDetails, setShowDetails] = useState(false)
+  const [showDetails, setShowDetails] = useState(true)
+
+  // Always call the hook, but pass undefined if no signature
+  const { content } = useTransactionWithContent(signature)
+  const isCopiedTrade = content && isCopiedSwap(content)
 
   // Get the primary swap tokens
   const fromToken = processedTx.primaryOutgoingToken
@@ -30,9 +42,14 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
 
   return (
     <div className="space-y-4">
+      {/* Copy Trading Information (if applicable) */}
+      {isCopiedTrade && content && (
+        <CopyTradingInfo content={content} transaction={transaction} />
+      )}
+
       {/* Transaction Summary */}
-      <SwapTransactionSummary 
-        transaction={transaction} 
+      <SwapTransactionSummary
+        transaction={transaction}
         onCopyTrade={() => {
           if (fromToken && toToken) {
             setOpen(true)
@@ -42,7 +59,7 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
               inputAmount: fromToken.amount,
             })
           }
-        }} 
+        }}
       />
 
       {/* Signer and Fee Payer Section */}
@@ -62,11 +79,13 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
             </div>
           </CardContent>
         </Card>
-        
+
         {/* Fee Payer Card */}
         <Card className="overflow-visible w-[45%]">
           <CardContent className="p-4 overflow-visible flex flex-row justify-between">
-            <p className="text-sm font-medium text-muted-foreground">Fee Payer</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Fee Payer
+            </p>
             <div className="text-sm overflow-visible">
               <SolanaAddressDisplay
                 address={processedTx.feePayer}
@@ -76,13 +95,10 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
                 className="text-xs"
               />
             </div>
-            {/* <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Fuel size={14} />
-              <span>{processedTx.fee.toString()} SOL</span>
-            </div> */}
           </CardContent>
         </Card>
       </div>
+
       {/* Summary Title and Details Toggle */}
       <div className="flex items-center justify-between mb-2">
         <CardTitle>Summary</CardTitle>
@@ -93,6 +109,7 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
           {showDetails ? 'Less details' : 'More details'}
         </button>
       </div>
+
       {/* Token Transfer Graph */}
       <Card className="overflow-visible;">
         <CardContent className="overflow-visible p-0">
@@ -105,7 +122,8 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
         <div className="space-y-2">
           {showDetails ? (
             // More details: show each token transfer
-            transaction.tokenTransfers && transaction.tokenTransfers.length > 0 ? (
+            transaction.tokenTransfers &&
+            transaction.tokenTransfers.length > 0 ? (
               transaction.tokenTransfers.map((tt, i) => (
                 <TransferLine
                   key={i}
@@ -114,12 +132,20 @@ export const SwapTransactionView = ({ transaction }: SwapTransactionViewProps) =
                   mint={tt.mint || tt.tokenMint}
                   amount={tt.tokenAmount}
                   timestamp={transaction.timestamp}
-                  direction={tt.fromUserAccount === transaction.feePayer ? 'out' : tt.toUserAccount === transaction.feePayer ? 'in' : undefined}
+                  direction={
+                    tt.fromUserAccount === transaction.feePayer
+                      ? 'out'
+                      : tt.toUserAccount === transaction.feePayer
+                      ? 'in'
+                      : undefined
+                  }
                   className="bg-[#97EF830D] rounded"
                 />
               ))
             ) : (
-              <div className="text-center text-muted-foreground p-3">No token transfers found for this transaction</div>
+              <div className="text-center text-muted-foreground p-3">
+                No token transfers found for this transaction
+              </div>
             )
           ) : (
             // Less details: show swap pairs and fee payments

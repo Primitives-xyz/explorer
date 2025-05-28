@@ -24,7 +24,7 @@ export async function GET(
     }
 
     const response = await fetch(
-      `https://api.helius.xyz/v0/transactions/?api-key=${HELIUS_API_KEY}`,
+      `https://api.helius.xyz/v0/transactions/?api-key=${HELIUS_API_KEY}&commitment=confirmed`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
