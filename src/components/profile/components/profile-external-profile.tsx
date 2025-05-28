@@ -10,6 +10,33 @@ interface Props {
   profile: IGetProfilesResponseEntry
 }
 
+function getProfileUrl(profile: IGetProfilesResponseEntry): string {
+  // Explorer namespace uses internal routing
+  if (profile.namespace.name === EXPLORER_NAMESPACE) {
+    return route('entity', {
+      id: profile.profile.username,
+    })
+  }
+
+  // If namespace has a custom profile URL
+  if (profile.namespace.userProfileURL) {
+    const identifier =
+      profile.namespace.name === 'tribe.run' && profile.wallet?.address
+        ? profile.wallet.address
+        : profile.profile.username
+
+    return `${profile.namespace.userProfileURL}/${identifier}`
+  }
+
+  // Default URL construction
+  if (profile.namespace.name) {
+    return `/${profile.namespace.name}/${profile.profile.username}`
+  }
+
+  // Fallback when namespace name is empty
+  return `/${profile.profile.username}`
+}
+
 export function ProfileExternalProfile({ profile }: Props) {
   const disabled =
     profile.namespace.name !== EXPLORER_NAMESPACE &&
@@ -28,20 +55,7 @@ export function ProfileExternalProfile({ profile }: Props) {
             })}
             isInvisible
             disabled={disabled}
-            href={
-              profile.namespace.name === EXPLORER_NAMESPACE
-                ? route('entity', {
-                    id: profile.profile.username,
-                  })
-                : profile.namespace.userProfileURL
-                ? `${profile.namespace.userProfileURL}/${
-                    profile.namespace.name === 'tribe.run' &&
-                    profile.wallet?.address
-                      ? profile.wallet.address
-                      : profile.profile.username
-                  }`
-                : `${profile.namespace.name}/${profile.profile.username}`
-            }
+            href={getProfileUrl(profile)}
             newTab={profile.namespace.name !== EXPLORER_NAMESPACE}
           >
             <div>
