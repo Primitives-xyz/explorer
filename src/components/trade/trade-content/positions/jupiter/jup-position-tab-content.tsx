@@ -1,5 +1,14 @@
 import { Position } from '@/components/trade/hooks/jup-perps/use-positions'
-import { Card, CardContent, CardVariant } from '@/components/ui'
+import {
+  Button,
+  ButtonVariant,
+  Card,
+  CardContent,
+  CardVariant,
+  Separator,
+} from '@/components/ui'
+import { useState } from 'react'
+import TPSLModal from './tpsl-modal'
 
 interface PositionTabContentProps {
   perpsPositionsInfo: Position[]
@@ -10,57 +19,122 @@ export default function JupPositionTabContent({
   perpsPositionsInfo,
   positionsLoading,
 }: PositionTabContentProps) {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [size, setSize] = useState<string>('')
+  const [positionPubkey, setPositionPubkey] = useState<string>('')
   const symbol = 'SOL'
+
+  const handleAddTPAndSL = (size: string, positionPubkey: string) => {
+    setIsModalOpen(true)
+    setSize(size)
+    setPositionPubkey(positionPubkey)
+  }
+
   return (
     <div className="pb-2">
-      <div className="grid grid-cols-6 gap-2 px-2 py-2">
-        <div className="text-primary">Position</div>
-        <div className="text-primary">Value</div>
-        <div className="text-primary">Entry/Mark</div>
-        <div className="text-primary">Liq</div>
-        <div className="text-primary">Size</div>
-        <div className="text-primary">Collateral</div>
-      </div>
-
       <div className="h-[250px] overflow-auto space-y-2">
         {perpsPositionsInfo.length ? (
           <>
             {perpsPositionsInfo.map((position, index) => {
               return (
                 <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
-                  <CardContent className="px-2 py-2 grid grid-cols-6 gap-2 items-center">
-                    <div>
-                      <p className="text-md">
-                        {symbol}({position.side.toUpperCase()})
-                      </p>
-                      <p className="text-sm">
+                  <CardContent className="px-2 py-2 space-y-2">
+                    <div className="flex flex-row items-center gap-2">
+                      <p className="text-md">{symbol}</p>
+                      <p className="text-md text-primary">
                         {position.leverage}
                         {'x '}
+                        {position.side.toUpperCase()}
                       </p>
                     </div>
 
-                    <div>
-                      <p className="text-sm">{position.value}</p>
+                    <Separator className="my-1" />
+
+                    <div className="flex flex-row justify-between gap-2">
+                      <div className="flex flex-col space-y-1">
+                        <span className="text-sm text-primary">
+                          PNL (EX. open/close/borrow fees)
+                        </span>
+                        <span className="text-sm">0.37</span>
+                      </div>
+
+                      <div className="flex flex-col space-y-1 text-end">
+                        <span className="text-sm text-primary">Value</span>
+                        <span className="text-sm">${position.value}</span>
+                      </div>
                     </div>
 
-                    <div>
-                      <p className="text-sm">${position.entryPrice}</p>
-                      <p className="text-sm">${position.markPrice}</p>
+                    <Separator className="my-1" />
+
+                    <div className="flex flex-row justify-between gap-2">
+                      <div className="flex flex-col space-y-1">
+                        <span className="text-sm text-primary">
+                          Entry Price
+                        </span>
+                        <span className="text-sm">${position.entryPrice}</span>
+                      </div>
+
+                      <div className="flex flex-col space-y-1">
+                        <span className="text-sm text-primary">Mark Price</span>
+                        <span className="text-sm">${position.markPrice}</span>
+                      </div>
+
+                      <div className="flex flex-col space-y-1 text-end">
+                        <span className="text-sm text-primary">Liq.Price</span>
+                        <span className="text-sm">
+                          ${position.liquidationPrice}
+                        </span>
+                      </div>
                     </div>
 
-                    <p className="text-sm">${position.liquidationPrice}</p>
+                    <Separator className="my-1" />
 
-                    <div>
-                      <p className="text-sm">${position.size}</p>
-                      <p className="text-sm">
-                        {(
-                          Number(position.sizeTokenAmount) / Math.pow(10, 9)
-                        ).toFixed(4)}{' '}
-                        {symbol}
-                      </p>
+                    <div className="flex flex-row justify-between gap-2">
+                      <div className="flex flex-col space-y-1">
+                        <span className="text-sm text-primary">Size</span>
+                        <span className="text-sm">${position.size}</span>
+                        <span className="text-sm">
+                          {Number(position.sizeTokenAmount) / Math.pow(10, 9)}{' '}
+                          {symbol}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col space-y-1 text-end">
+                        <span className="text-sm text-primary">Collateral</span>
+                        <span className="text-sm">${position.collateral}</span>
+                      </div>
                     </div>
 
-                    <p className="text-sm">${position.collateral}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant={ButtonVariant.OUTLINE}
+                        onClick={() =>
+                          handleAddTPAndSL(
+                            position.size,
+                            position.positionPubkey
+                          )
+                        }
+                        className="w-full p-1"
+                      >
+                        <span className="text-center">
+                          Take Profit/Stop Loss
+                        </span>
+                      </Button>
+
+                      <Button
+                        variant={ButtonVariant.OUTLINE}
+                        // disabled={loading}
+                        // onClick={() =>
+                        //   handleAddTPAndSL(
+                        //     position.direction,
+                        //     position.marketIndex
+                        //   )
+                        // }
+                        className="w-full p-1"
+                      >
+                        <span className="text-center">CLOSE</span>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               )
@@ -74,6 +148,13 @@ export default function JupPositionTabContent({
               </div>
             )}
           </>
+        )}
+        {isModalOpen && (
+          <TPSLModal
+            setIsModalOpen={setIsModalOpen}
+            size={size}
+            positionPubkey={positionPubkey}
+          />
         )}
       </div>
     </div>
