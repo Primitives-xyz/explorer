@@ -4,3 +4,8 @@ export enum EPudgyTheme {
   GREEN = 'GREEN',
   PINK = 'PINK',
 }
+
+export enum EPudgyOnboardingStep {
+  INTRO = 'INTRO',
+  CLAIM = 'CLAIM',
+}

@@ -1,15 +1,28 @@
 'use client'
 
-import { useEffect, useMemo, useState } from "react"
-import { Button, ButtonSize, ButtonVariant, Card, CardContent, Checkbox, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui";
-import { SpotMarkets } from "@drift-labs/sdk-browser";
-import { CircleAlert } from "lucide-react";
-import { CheckboxSize } from "@/components/ui/switch/checkbox.models";
-import Confirm from "./confirm";
-import { useDeposit } from "@/components/trade/hooks/drift/use-deposit";
-import { useTokenBalance } from "@/components/trade/hooks/use-token-balance";
-import { useCurrentWallet } from "@/utils/use-current-wallet";
-import { formatRawAmount } from "@/utils/utils";
+import { useDeposit } from '@/components/trade/hooks/drift/use-deposit'
+import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
+import {
+  Button,
+  ButtonSize,
+  ButtonVariant,
+  Card,
+  CardContent,
+  Checkbox,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui'
+import { CheckboxSize } from '@/components/ui/switch/checkbox.models'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { formatRawAmount } from '@/utils/utils'
+import { SpotMarkets } from '@drift-labs/sdk-browser'
+import { CircleAlert } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import Confirm from './confirm'
 
 interface InitAndDepositeProps {
   open: boolean
@@ -27,7 +40,7 @@ export default function InitAndDeposite({
   open,
   validateAmount,
   refreshGetUserAccountIds,
-  setIsOpen
+  setIsOpen,
 }: InitAndDepositeProps) {
   const { walletAddress } = useCurrentWallet()
   const [depositTokenSymbol, setDepositTokenSymbol] = useState<string>('SOL')
@@ -44,10 +57,7 @@ export default function InitAndDeposite({
     }
   }, [depositTokenSymbol])
 
-  const {
-    depositCollateral,
-    loading: depositCollateralLoading,
-  } = useDeposit({
+  const { depositCollateral, loading: depositCollateralLoading } = useDeposit({
     amount: depositAmount,
     depositToken: depositTokenSpotMarketInfo.mint ?? '',
     depositTokenSymbol: depositTokenSymbol,
@@ -114,7 +124,7 @@ export default function InitAndDeposite({
   useEffect(() => {
     if (!open) {
       setIsChecked(false)
-      setDepositAmount("")
+      setDepositAmount('')
     }
   }, [open])
 
@@ -149,13 +159,11 @@ export default function InitAndDeposite({
                 <SelectValue placeholder="Select Token" />
               </SelectTrigger>
               <SelectContent className="border border-primary text-primary">
-                {
-                  SpotMarkets['mainnet-beta'].map((market, index) => (
-                    <SelectItem value={market.symbol} key={index}>
-                      {market.symbol}
-                    </SelectItem>
-                  ))
-                }
+                {SpotMarkets['mainnet-beta'].map((market, index) => (
+                  <SelectItem value={market.symbol} key={index}>
+                    {market.symbol}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -211,14 +219,12 @@ export default function InitAndDeposite({
                 onClick={() => {
                   setIsChecked(!isChecked)
                 }}
-                onChange={() => { }}
-                // className="pointer-events-none"
                 size={CheckboxSize.DEFAULT}
               />
               <span className="text-sm">
-                I understand that dynamic fees are in place as a safe
-                guard and that rent can be reclaimed upon account
-                deletion, other than the 0.0001 SOL New Account Fee.
+                I understand that dynamic fees are in place as a safe guard and
+                that rent can be reclaimed upon account deletion, other than the
+                0.0001 SOL New Account Fee.
               </span>
             </label>
           </div>

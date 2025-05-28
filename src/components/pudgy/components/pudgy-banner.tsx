@@ -1,5 +1,5 @@
-import { Button, ButtonVariant } from '@/components/ui'
 import Image from 'next/image'
+import { PudgyOnboardingButton } from './pudgy-onboarding-button'
 
 export function PudgyBanner() {
   return (
@@ -20,9 +20,9 @@ export function PudgyBanner() {
             level up to a Pudgy profile — exclusively on sse
           </p>
         </div>
-        <Button variant={ButtonVariant.PUDGY_DEFAULT} className="mr-9">
-          Claim Profile
-        </Button>
+        <div className="mr-9">
+          <PudgyOnboardingButton />
+        </div>
       </div>
       <Image
         src="/images/pudgy/pudgy-banner.webp"
