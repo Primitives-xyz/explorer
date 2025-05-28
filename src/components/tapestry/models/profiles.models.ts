@@ -29,6 +29,7 @@ export interface IProfile {
   blockchain: BLOCKCHAIN
   wallet: IWallet
   hasSeenProfileSetupModal?: boolean
+  hasSeenPudgyOnboardingModal?: boolean
   userRevealedTheSolidScore?: boolean
   userHasClickedOnShareHisSolidScore?: boolean
 }

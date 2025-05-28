@@ -19,6 +19,10 @@ export function ResetProfileButton() {
               key: 'userRevealedTheSolidScore',
               value: false,
             },
+            {
+              key: 'hasSeenPudgyOnboardingModal',
+              value: false,
+            },
           ],
         }).then(() => {
           refetch()

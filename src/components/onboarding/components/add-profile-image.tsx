@@ -86,7 +86,7 @@ export function AddProfileImage({
                 <Label>{t('onboarding.form.profile_image.label')}</Label>
               )}
               {mainProfile.image && (
-                <div className="bg-muted rounded-lg w-full aspect-square overflow-hidden">
+                <div className="bg-muted rounded-full w-full overflow-hidden">
                   <Image
                     src={mainProfile.image}
                     alt={t('onboarding.form.profile_image.alt')}

@@ -2,6 +2,7 @@
 
 import { OnboardingButton } from '@/components/onboarding/components/onboarding-button'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
+import { Skeleton } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
 import {
@@ -23,9 +24,19 @@ interface Props {
 
 export function ProfileInfos({ setOpen }: Props) {
   const t = useTranslations()
-  const { mainProfile, isLoggedIn, walletAddress, logout, setShowAuthFlow } =
-    useCurrentWallet()
+  const {
+    mainProfile,
+    isLoggedIn,
+    walletAddress,
+    loading,
+    logout,
+    setShowAuthFlow,
+  } = useCurrentWallet()
   const { balance } = useGetBalance({ walletAddress })
+
+  if (loading) {
+    return <Skeleton className="w-full h-[64px]" />
+  }
 
   return (
     <div>

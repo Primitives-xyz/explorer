@@ -2,6 +2,7 @@
 
 import { FetchMethod, fetchWrapper } from '@/utils/api'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { abbreviateWalletAddress } from '@/utils/utils'
 import { useEffect, useMemo } from 'react'
 
 export function SignupHandler() {
@@ -29,7 +30,9 @@ export function SignupHandler() {
           endpoint: 'profiles/create',
           method: FetchMethod.POST,
           body: {
-            username: walletAddress.slice(0, 30),
+            username: abbreviateWalletAddress({
+              address: walletAddress,
+            }),
             ownerWalletAddress: walletAddress,
           },
         })
