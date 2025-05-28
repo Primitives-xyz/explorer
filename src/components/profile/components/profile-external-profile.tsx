@@ -40,7 +40,7 @@ export function ProfileExternalProfile({ profile }: Props) {
                       ? profile.wallet.address
                       : profile.profile.username
                   }`
-                : `/${profile.namespace.name}/${profile.profile.username}`
+                : `${profile.namespace.name}/${profile.profile.username}`
             }
             newTab={profile.namespace.name !== EXPLORER_NAMESPACE}
           >
