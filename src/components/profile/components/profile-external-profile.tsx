@@ -11,6 +11,8 @@ interface Props {
 }
 
 function getProfileUrl(profile: IGetProfilesResponseEntry): string {
+  let url: string
+
   // Explorer namespace uses internal routing
   if (profile.namespace.name === EXPLORER_NAMESPACE) {
     return route('entity', {
@@ -25,16 +27,21 @@ function getProfileUrl(profile: IGetProfilesResponseEntry): string {
         ? profile.wallet.address
         : profile.profile.username
 
-    return `${profile.namespace.userProfileURL}/${identifier}`
+    // Ensure no double slashes by removing trailing slash from base URL
+    const baseUrl = profile.namespace.userProfileURL.replace(/\/$/, '')
+    url = `${baseUrl}/${identifier}`
   }
-
   // Default URL construction
-  if (profile.namespace.name) {
-    return `/${profile.namespace.name}/${profile.profile.username}`
+  else if (profile.namespace.name) {
+    url = `/${profile.namespace.name}/${profile.profile.username}`
+  }
+  // Fallback when namespace name is empty
+  else {
+    url = `/${profile.profile.username}`
   }
 
-  // Fallback when namespace name is empty
-  return `/${profile.profile.username}`
+  // Clean up any double slashes (except after protocol like https://)
+  return url.replace(/([^:]\/)\/+/g, '$1')
 }
 
 export function ProfileExternalProfile({ profile }: Props) {
