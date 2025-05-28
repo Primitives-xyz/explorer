@@ -73,7 +73,7 @@ export function RevealScoreAnimation() {
             />
             <RevealScoreBackgroundAnimation
               phase={getPhase()}
-              color="#fff700"
+              color="#8cdc7a"
               delay={0.4}
             />
             <RevealScoreText
@@ -92,7 +92,7 @@ export function RevealScoreAnimation() {
               }}
             >
               <Button
-                className="bg-black/70 hover:bg-black/80 text-white rounded-full"
+                className="bg-black/80 hover:bg-black/90 text-primary rounded-full"
                 size={ButtonSize.ICON}
                 onClick={closeModal}
               >

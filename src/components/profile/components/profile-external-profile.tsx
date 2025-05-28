@@ -2,7 +2,7 @@ import { IGetProfilesResponseEntry } from '@/components/tapestry/models/profiles
 import { Button, Card, CardContent, CardVariant } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
-import { route } from '@/utils/route'
+import { getProfileUrl, isExternalProfile } from '@/utils/profile-utils'
 import { abbreviateWalletAddress, cn } from '@/utils/utils'
 import { ExternalLinkIcon } from 'lucide-react'
 
@@ -28,23 +28,8 @@ export function ProfileExternalProfile({ profile }: Props) {
             })}
             isInvisible
             disabled={disabled}
-            href={
-              profile.namespace.name === EXPLORER_NAMESPACE
-                ? route('entity', {
-                    id: profile.profile.username,
-                  })
-                : profile.namespace.userProfileURL
-                ? route('namespaceProfile', {
-                    id: profile.namespace.name,
-                    profile:
-                      profile.namespace.name === 'tribe.run' &&
-                      profile.wallet?.address
-                        ? profile.wallet.address
-                        : profile.profile.username,
-                  })
-                : `/${profile.namespace.name}/${profile.profile.username}`
-            }
-            newTab={profile.namespace.name !== EXPLORER_NAMESPACE}
+            href={getProfileUrl(profile)}
+            newTab={isExternalProfile(profile.namespace.name)}
           >
             <div>
               <Avatar

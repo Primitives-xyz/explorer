@@ -1,71 +1,101 @@
-import { Button, ButtonVariant, Card, CardContent, CardHeader, CardTitle, Badge, Separator } from '@/components/ui'
+import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
+import { Transaction } from '@/components/tapestry/models/helius.models'
+import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import TokenTransferGraph from '@/components/transactions/common/token-transfer-graph'
 import { TransferLine } from '@/components/transactions/common/transfer-line'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
-import TokenTransferGraph from '@/components/transactions/common/token-transfer-graph'
-import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
-import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import {
+  Badge,
+  Button,
+  ButtonVariant,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui'
 import Image from 'next/image'
-import { Transaction } from '@/components/tapestry/models/helius.models'
 import React from 'react'
 
 interface AmbiguousTransactionViewProps {
-  transaction: Transaction; // Replace with proper transaction type
+  transaction: Transaction // Replace with proper transaction type
 }
 
 // Enhanced NFT preview component
-const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price?: number, owner?: string, tokenStandard?: string }) => {
+const NFTPreview = ({
+  mint,
+  price,
+  owner,
+  tokenStandard,
+}: {
+  mint: string
+  price?: number
+  owner?: string
+  tokenStandard?: string
+}) => {
   const tokenInfo = useTokenInfo(mint)
   const { image, name, loading } = tokenInfo
   const [expanded, setExpanded] = React.useState(false)
 
   // Format price to be more user-friendly
   const formattedPrice = React.useMemo(() => {
-    if (typeof price !== 'number') return null;
-    const solPrice = price / 1e9;
+    if (typeof price !== 'number') return null
+    const solPrice = price / 1e9
     if (solPrice >= 1000) {
-      return `${(solPrice / 1000).toLocaleString(undefined, { maximumFractionDigits: 2 })}k SOL`;
+      return `${(solPrice / 1000).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}k SOL`
     }
-    return `${solPrice.toLocaleString(undefined, { maximumFractionDigits: 3 })} SOL`;
-  }, [price]);
+    return `${solPrice.toLocaleString(undefined, {
+      maximumFractionDigits: 3,
+    })} SOL`
+  }, [price])
 
   // Sort creators by share percentage (descending)
   const creators = React.useMemo(() => {
-    const creatorsList = tokenInfo?.data?.result?.creators || [];
-    return [...creatorsList].sort((a, b) => (b.share ?? 0) - (a.share ?? 0));
-  }, [tokenInfo?.data?.result?.creators]);
+    const creatorsList = tokenInfo?.data?.result?.creators || []
+    return [...creatorsList].sort((a, b) => (b.share ?? 0) - (a.share ?? 0))
+  }, [tokenInfo?.data?.result?.creators])
 
   // Get collection info from grouping
   const collection = React.useMemo(() => {
     return tokenInfo?.data?.result?.grouping?.find(
-      (g) => g.group_key === "collection"
-    )?.group_value;
-  }, [tokenInfo?.data?.result?.grouping]);
+      (g) => g.group_key === 'collection'
+    )?.group_value
+  }, [tokenInfo?.data?.result?.grouping])
 
   // Get authorities and their scopes
-  const authorities = tokenInfo?.data?.result?.authorities || [];
-  
+  const authorities = tokenInfo?.data?.result?.authorities || []
+
   // Get attributes (if they exist)
-  const attributes = tokenInfo?.data?.result?.content?.metadata?.attributes || [];
-  
+  const attributes =
+    tokenInfo?.data?.result?.content?.metadata?.attributes || []
+
   // Get royalty info
-  const royalty = tokenInfo?.data?.result?.royalty;
-  
+  const royalty = tokenInfo?.data?.result?.royalty
+
   // Get description
-  const description = tokenInfo?.data?.result?.content?.metadata?.description;
+  const description = tokenInfo?.data?.result?.content?.metadata?.description
 
   // Filter attributes to show (excluding Attributes Count)
-  const displayAttributes = attributes.filter(attr => attr.trait_type !== "Attributes Count");
+  const displayAttributes = attributes.filter(
+    (attr) => attr.trait_type !== 'Attributes Count'
+  )
 
   // Get ownership model and frozen status
-  const ownership = tokenInfo?.data?.result?.ownership;
+  const ownership = tokenInfo?.data?.result?.ownership
 
   return (
     <Card className="w-full h-full max-w-none overflow-visible border-muted">
       <CardHeader className="pb-0 flex flex-row items-start justify-between">
         <div className="flex flex-col">
-          <CardTitle className="text-sm font-semibold truncate">{name || 'Loading...'}</CardTitle>
+          <CardTitle className="text-sm font-semibold truncate">
+            {name || 'Loading...'}
+          </CardTitle>
           {formattedPrice && (
-            <Badge variant="outline" className="mt-1 w-fit bg-green-100 text-green-700 border-green-300">
+            <Badge
+              variant="outline"
+              className="mt-1 w-fit bg-green-100 text-green-700 border-green-300"
+            >
               {formattedPrice}
             </Badge>
           )}
@@ -90,7 +120,12 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
                   <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : image ? (
-                <Image src={image} alt={name || mint} fill className="object-cover" />
+                <Image
+                  src={image}
+                  alt={name || mint}
+                  fill
+                  className="object-cover"
+                />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
                   No Image
@@ -132,7 +167,9 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             {/* Collection */}
             {collection && (
               <div>
-                <div className="text-xs text-muted-foreground mb-0.5">Collection</div>
+                <div className="text-xs text-muted-foreground mb-0.5">
+                  Collection
+                </div>
                 <SolanaAddressDisplay
                   address={collection}
                   displayAbbreviatedAddress
@@ -145,7 +182,9 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             {/* Owner */}
             {owner && (
               <div>
-                <div className="text-xs text-muted-foreground mb-0.5">Owner</div>
+                <div className="text-xs text-muted-foreground mb-0.5">
+                  Owner
+                </div>
                 <SolanaAddressDisplay
                   address={owner}
                   displayAbbreviatedAddress
@@ -158,12 +197,22 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             {/* Attributes (if they exist) */}
             {displayAttributes.length > 0 && (
               <div>
-                <div className="text-xs text-muted-foreground mb-1">Attributes</div>
+                <div className="text-xs text-muted-foreground mb-1">
+                  Attributes
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
                   {displayAttributes.map((attr, i) => (
-                    <div key={i} className="bg-muted/30 p-2 rounded text-center min-w-0">
-                      <div className="text-xs text-muted-foreground truncate">{attr.trait_type}</div>
-                      <div className="text-xs font-medium truncate" title={attr.value?.toString()}>
+                    <div
+                      key={i}
+                      className="bg-muted/30 p-2 rounded text-center min-w-0"
+                    >
+                      <div className="text-xs text-muted-foreground truncate">
+                        {attr.trait_type}
+                      </div>
+                      <div
+                        className="text-xs font-medium truncate"
+                        title={attr.value?.toString()}
+                      >
                         {attr.value?.toString()}
                       </div>
                     </div>
@@ -179,10 +228,15 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             {/* Authorities */}
             {authorities.length > 0 && (
               <div>
-                <div className="text-xs text-muted-foreground mb-1">Authorities</div>
+                <div className="text-xs text-muted-foreground mb-1">
+                  Authorities
+                </div>
                 <div className="space-y-1">
                   {authorities.map((auth, i) => (
-                    <div key={i} className="flex items-center justify-between bg-muted/30 p-2 rounded">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between bg-muted/30 p-2 rounded"
+                    >
                       <SolanaAddressDisplay
                         address={auth.address}
                         displayAbbreviatedAddress
@@ -205,7 +259,9 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             {/* Description */}
             {description && (
               <div>
-                <div className="text-xs text-muted-foreground mb-1">Description</div>
+                <div className="text-xs text-muted-foreground mb-1">
+                  Description
+                </div>
                 <div className="text-xs bg-muted/30 p-2 rounded text-foreground/80">
                   {description}
                 </div>
@@ -214,10 +270,15 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             {/* Creators */}
             {creators.length > 0 && (
               <div>
-                <div className="text-xs text-muted-foreground mb-2">Creators</div>
+                <div className="text-xs text-muted-foreground mb-2">
+                  Creators
+                </div>
                 <div className="space-y-2">
                   {creators.map((creator, i) => (
-                    <div key={i} className="flex items-center justify-between bg-muted/30 p-2 rounded">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between bg-muted/30 p-2 rounded"
+                    >
                       <SolanaAddressDisplay
                         address={creator.address}
                         displayAbbreviatedAddress
@@ -226,7 +287,10 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
                         className="text-xs"
                       />
                       <div className="flex items-center gap-2">
-                        <Badge variant={creator.verified ? "default" : "outline"} className="text-xs">
+                        <Badge
+                          variant={creator.verified ? 'default' : 'outline'}
+                          className="text-xs"
+                        >
                           {creator.share}%
                         </Badge>
                         {creator.verified && (
@@ -243,7 +307,9 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             {/* Royalty info */}
             {royalty && (
               <div>
-                <div className="text-xs text-muted-foreground mb-1">Royalty</div>
+                <div className="text-xs text-muted-foreground mb-1">
+                  Royalty
+                </div>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="outline" className="text-xs">
                     {royalty.percent || royalty.basis_points / 100}% Royalty
@@ -251,11 +317,7 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
                   <Badge variant="outline" className="text-xs">
                     {royalty.royalty_model} model
                   </Badge>
-                  {royalty.locked && (
-                    <Badge className="text-xs">
-                      Locked
-                    </Badge>
-                  )}
+                  {royalty.locked && <Badge className="text-xs">Locked</Badge>}
                 </div>
               </div>
             )}
@@ -263,22 +325,6 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
             <div className="pt-2">
               <div className="text-xs text-muted-foreground mb-2">Links</div>
               <div className="flex gap-2 flex-wrap">
-                <Button
-                  variant={ButtonVariant.OUTLINE}
-                  href={`https://explorer.solana.com/address/${mint}`}
-                  newTab
-                  className="text-xs py-1 h-auto"
-                >
-                  Explorer
-                </Button>
-                <Button
-                  variant={ButtonVariant.OUTLINE}
-                  href={`https://magiceden.io/item-details/${mint}`}
-                  newTab
-                  className="text-xs py-1 h-auto"
-                >
-                  Magic Eden
-                </Button>
                 {tokenInfo?.data?.result?.content?.links?.external_url && (
                   <Button
                     variant={ButtonVariant.OUTLINE}
@@ -298,7 +344,9 @@ const NFTPreview = ({ mint, price, owner, tokenStandard }: { mint: string, price
   )
 }
 
-export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionViewProps) => {
+export const AmbiguousTransactionView = ({
+  transaction,
+}: AmbiguousTransactionViewProps) => {
   console.log(transaction)
   const nftEvent = transaction?.events?.nft
 
@@ -326,15 +374,29 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
         {/* Header */}
         <Card>
           <CardHeader>
-            <TransactionsHeader transaction={transaction} sourceWallet={feePayer} />
+            <TransactionsHeader
+              transaction={transaction}
+              sourceWallet={feePayer}
+            />
             <div className="mt-2 flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-base font-semibold px-2 py-1">
+                <Badge
+                  variant="outline"
+                  className="text-base font-semibold px-2 py-1"
+                >
                   {eventType}
                 </Badge>
-                {source && <span className="text-xs text-muted-foreground">on <span className="font-semibold">{source}</span></span>}
+                {source && (
+                  <span className="text-xs text-muted-foreground">
+                    on <span className="font-semibold">{source}</span>
+                  </span>
+                )}
               </div>
-              {description && <div className="text-sm text-muted-foreground">{description}</div>}
+              {description && (
+                <div className="text-sm text-muted-foreground">
+                  {description}
+                </div>
+              )}
             </div>
           </CardHeader>
         </Card>
@@ -343,44 +405,58 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
         <Card className="w-full h-full max-w-none overflow-visible border-muted">
           <CardHeader className="pb-0" />
           <CardContent className="pt-2">
-              {/* Left column: NFT Image, Mint, Token Standard, Price, Owner */}
-              <div className="md:w-3/3 space-y-3">
-                {/* NFT Image */}
-                <NFTPreview
-                  mint={nfts[0]?.mint ?? ''}
-                  price={amount}
-                  owner={transaction?.accountData?.find(a => a.nativeBalanceChange > 0)?.account || seller || buyer || ''}
-                  tokenStandard={nfts[0]?.tokenStandard}
-                />
-              </div>
+            {/* Left column: NFT Image, Mint, Token Standard, Price, Owner */}
+            <div className="md:w-3/3 space-y-3">
+              {/* NFT Image */}
+              <NFTPreview
+                mint={nfts[0]?.mint ?? ''}
+                price={amount}
+                owner={
+                  transaction?.accountData?.find(
+                    (a) => a.nativeBalanceChange > 0
+                  )?.account ||
+                  seller ||
+                  buyer ||
+                  ''
+                }
+                tokenStandard={nfts[0]?.tokenStandard}
+              />
+            </div>
           </CardContent>
         </Card>
         {/* Token Transfer Graph */}
         <TokenTransferGraph transaction={transaction} />
         {/* Token Transfers Section */}
-        {transaction.tokenTransfers && transaction.tokenTransfers.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Token Transfers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {transaction.tokenTransfers.map((tt: any, i: number) => (
-                  <TransferLine
-                    key={i}
-                    from={tt.fromUserAccount}
-                    to={tt.toUserAccount}
-                    mint={tt.mint || tt.tokenMint}
-                    amount={tt.tokenAmount}
-                    timestamp={transaction.timestamp}
-                    direction={tt.fromUserAccount === transaction.feePayer ? 'out' : tt.toUserAccount === transaction.feePayer ? 'in' : undefined}
-                    className="bg-[#97EF830D] rounded"
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {transaction.tokenTransfers &&
+          transaction.tokenTransfers.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Token Transfers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {transaction.tokenTransfers.map((tt: any, i: number) => (
+                    <TransferLine
+                      key={i}
+                      from={tt.fromUserAccount}
+                      to={tt.toUserAccount}
+                      mint={tt.mint || tt.tokenMint}
+                      amount={tt.tokenAmount}
+                      timestamp={transaction.timestamp}
+                      direction={
+                        tt.fromUserAccount === transaction.feePayer
+                          ? 'out'
+                          : tt.toUserAccount === transaction.feePayer
+                          ? 'in'
+                          : undefined
+                      }
+                      className="bg-[#97EF830D] rounded"
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
       </div>
     )
   }
@@ -390,7 +466,10 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
     <div className="space-y-4">
       <Card>
         {/* Header */}
-        <TransactionsHeader transaction={transaction} sourceWallet={transaction.feePayer} />
+        <TransactionsHeader
+          transaction={transaction}
+          sourceWallet={transaction.feePayer}
+        />
       </Card>
       {/* Transaction Summary */}
       <Card>
@@ -401,22 +480,6 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
           <div>Type: {transaction?.type || 'Unknown'}</div>
           <div className="text-sm text-muted-foreground">
             This type of transaction is not yet supported.
-          </div>
-          <div className="flex gap-2 mt-2">
-            <Button
-              variant={ButtonVariant.DEFAULT}
-              href={transaction?.signature ? `https://solscan.io/tx/${transaction.signature}` : undefined}
-              newTab
-            >
-              View on Solscan
-            </Button>
-            <Button
-              variant={ButtonVariant.SECONDARY}
-              href={transaction?.signature ? `https://solana.fm/tx/${transaction.signature}` : undefined}
-              newTab
-            >
-              View on Solana.fm
-            </Button>
           </div>
         </CardContent>
       </Card>
@@ -438,7 +501,13 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
                   mint={tt.mint || tt.tokenMint}
                   amount={tt.tokenAmount}
                   timestamp={transaction.timestamp}
-                  direction={tt.fromUserAccount === transaction.feePayer ? 'out' : tt.toUserAccount === transaction.feePayer ? 'in' : undefined}
+                  direction={
+                    tt.fromUserAccount === transaction.feePayer
+                      ? 'out'
+                      : tt.toUserAccount === transaction.feePayer
+                      ? 'in'
+                      : undefined
+                  }
                   className="bg-[#97EF830D] rounded"
                 />
               ))}
@@ -448,4 +517,4 @@ export const AmbiguousTransactionView = ({ transaction }: AmbiguousTransactionVi
       )}
     </div>
   )
-} 
+}

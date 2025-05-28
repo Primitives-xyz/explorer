@@ -123,7 +123,6 @@ export const useIncreasePosition = ({
         }
 
         const data: IncreasePositionResponse = await response.json()
-        console.log('data', data)
         setSerializedTx(data.serializedTxBase64)
         setResponse(data)
         setError(null)

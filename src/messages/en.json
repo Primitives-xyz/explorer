@@ -560,11 +560,11 @@
       "username": {
         "label": "Username",
         "placeholder": "Please add a title",
-        "description": "Username can only contain letters, numbers, and underscores",
+        "description": "Username can only contain letters, numbers, underscores, and periods (for SNS names like .sol)",
         "validation": {
           "min_length": "Username must be at least 3 characters long",
           "max_length": "Username must not exceed 30 characters",
-          "format": "Username can only contain letters, numbers, and underscores"
+          "format": "Username can only contain letters, numbers, underscores, and periods. SNS names (.sol) are supported"
         }
       },
       "profile_image": {
