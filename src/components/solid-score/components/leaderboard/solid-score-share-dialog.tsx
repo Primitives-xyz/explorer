@@ -26,7 +26,6 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
   const [isImageCopied, setIsImageCopied] = useState(false)
   const [isShared, setIsShared] = useState(false)
   const [isXInstructionsOpen, setIsXInstructionsOpen] = useState(false)
-
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
     username: mainProfile?.username || '',
   })
@@ -143,10 +142,7 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
             <ShareImage
               imageData={imageData}
               isGeneratingImage={isGeneratingImage}
-              mainProfile={mainProfile}
               handleDownloadImage={handleDownloadImage}
-              data={data}
-              scoreLoading={scoreLoading}
             />
           </div>
 
