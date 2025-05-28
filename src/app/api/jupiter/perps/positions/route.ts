@@ -5,8 +5,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const walletAddress = searchParams.get('walletAddress')
 
-    console.log('walletAddress', walletAddress)
-
     if (!walletAddress) {
       return NextResponse.json(
         { error: 'Wallet address is required' },
