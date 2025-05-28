@@ -11,7 +11,6 @@ import { Button, ButtonVariant } from '@/components/ui/button'
 import { cn } from '@/utils/utils'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
 
@@ -32,11 +31,11 @@ export function LeftSideMenu() {
     >
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
-          <Link href="/">
+          <Button href="/" isInvisible>
             <h1 className="font-bold text-primary leading-none">
               {t('menu.title')}
             </h1>
-          </Link>
+          </Button>
           <ProfileInfos />
           <Menu />
           {/* <ResetProfileButton />

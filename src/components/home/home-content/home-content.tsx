@@ -4,7 +4,7 @@ import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/s
 
 export function HomeContent() {
   return (
-    <div className="w-full pb-6">
+    <div className="w-full pb-6 space-y-4">
       <PudgyBanner />
       <SolidScoreSmartCtaWrapper />
       <HomeTransactions />
