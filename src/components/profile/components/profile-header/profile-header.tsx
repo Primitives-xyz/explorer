@@ -9,7 +9,6 @@ import { Avatar } from '@/components/ui/avatar/avatar'
 import { createURL } from '@/utils/api'
 import { share } from '@/utils/share'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
 import { abbreviateWalletAddress, cn } from '@/utils/utils'
 import { ShareIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -94,13 +93,13 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             {bio || t('common.no_description')}
           </p>
 
-          {hasProfile && isSpecialUser(mainProfile) && (
+          {hasProfile && (
             <SolidScoreProfileHeader profileId={profileInfo.profile.id} />
           )}
         </div>
       </div>
 
-      {hasProfile && isSpecialUser(mainProfile) && (
+      {hasProfile && (
         <div className="my-3 md:my-0">
           <SolidScoreSmartCtaWrapper />
         </div>

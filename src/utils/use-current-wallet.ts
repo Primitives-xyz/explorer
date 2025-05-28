@@ -7,6 +7,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { EXPLORER_NAMESPACE } from './constants'
+import { ADMIN_USERS } from './user-permissions'
 
 export function useCurrentWallet() {
   const {
@@ -15,7 +16,6 @@ export function useCurrentWallet() {
     handleLogOut,
     setShowAuthFlow,
   } = useDynamicContext()
-
   const t = useTranslations()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
@@ -62,6 +62,10 @@ export function useCurrentWallet() {
     }
   }, [profiles, walletAddress])
 
+  const isAdmin = !!mainProfile?.profile?.username
+    ? ADMIN_USERS.includes(mainProfile.profile.username)
+    : false
+
   return {
     profiles,
     walletAddress,
@@ -71,6 +75,7 @@ export function useCurrentWallet() {
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,
+    isAdmin,
     logout: handleLogOut,
     setShowAuthFlow,
     refetch: refetchGetProfiles,

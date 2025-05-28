@@ -1,10 +1,8 @@
 'use client'
 
-import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
 import { Button, FilterTabs, Paragraph } from '@/components/ui'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { EHomeTransactionFilter } from '../home-transactions.models'
@@ -14,7 +12,7 @@ import { HomeKolTransactions } from './home-kol-transactions'
 
 export function HomeTransactions() {
   const t = useTranslations()
-  const { mainProfile, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
+  const { mainProfile, setShowAuthFlow } = useCurrentWallet()
   const [selectedType, setSelectedType] = useState<EHomeTransactionFilter>(
     EHomeTransactionFilter.ALL
   )
@@ -30,9 +28,6 @@ export function HomeTransactions() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-center">
-        {isSpecialUser(mainProfile) && <SolidScoreSmartCtaWrapper />}
-      </div>
       <div className="flex items-start justify-between">
         <FilterTabs
           options={options}

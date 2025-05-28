@@ -10,7 +10,11 @@ import { useTranslations } from 'next-intl'
 import { SolidScoreSmartCtaWrapper } from './smart-cta/solid-score-smart-cta-wrapper'
 
 export function SolidScore() {
-  const { mainProfile, loading: currentWalletLoading } = useCurrentWallet()
+  const {
+    mainProfile,
+    loading: currentWalletLoading,
+    isAdmin,
+  } = useCurrentWallet()
   const t = useTranslations('menu')
   const {
     data,
@@ -20,7 +24,7 @@ export function SolidScore() {
 
   const hasRevealed = !!mainProfile?.userRevealedTheSolidScore
 
-  if (error) {
+  if (error || !isAdmin) {
     return null
   }
 

@@ -3,15 +3,11 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
-import { TestButton } from '@/components/pudgy/components/test-button'
 import { usePudgyStore } from '@/components/pudgy/stores/use-pudgy-store'
-import { ResetProfileButton } from '@/components/solid-score/components/smart-cta/reset-profile-button'
 import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
 import { cn } from '@/utils/utils'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -23,7 +19,6 @@ export function LeftSideMenu() {
   const t = useTranslations()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
-  const { mainProfile } = useCurrentWallet()
   const { theme } = usePudgyStore()
 
   return (
@@ -44,12 +39,12 @@ export function LeftSideMenu() {
           </Link>
           <ProfileInfos />
           <Menu />
-          <ResetProfileButton />
-          <TestButton />
+          {/* <ResetProfileButton />
+          <TestButton /> */}
         </div>
         <div className="space-y-4 py-4">
           <LowFeeTrades />
-          {isSpecialUser(mainProfile) && <SolidScore />}
+          <SolidScore />
         </div>
         <div className="flex flex-col items-center gap-2">
           <Button
