@@ -24,6 +24,9 @@ import { useCreateProfile } from '../../tapestry/hooks/use-create-profile'
 import { EOnboardingSteps } from '../onboarding.models'
 import { SuggestedUsernames } from './suggested-usernames'
 
+// Acceptable SNS suffixes
+const ACCEPTABLE_SUFFIXES = ['.sol']
+
 interface Props {
   walletAddress: string
   suggestedUsernames: ISuggestedUsername[]
@@ -52,9 +55,44 @@ export function CreateUsernameForm({
       .string()
       .min(3, { message: t('onboarding.form.username.validation.min_length') })
       .max(30, { message: t('onboarding.form.username.validation.max_length') })
-      .regex(/^[a-zA-Z0-9_]+$/, {
+      .regex(/^[a-zA-Z0-9_.]+$/, {
         message: t('onboarding.form.username.validation.format'),
-      }),
+      })
+      .refine(
+        (username) => {
+          // Check if username contains a period
+          if (username.includes('.')) {
+            // Check if it ends with an acceptable suffix
+            return ACCEPTABLE_SUFFIXES.some((suffix) =>
+              username.endsWith(suffix)
+            )
+          }
+          // If no period, it's valid
+          return true
+        },
+        {
+          message: `Usernames with periods must end with one of: ${ACCEPTABLE_SUFFIXES.join(
+            ', '
+          )}`,
+        }
+      )
+      .refine(
+        (username) => {
+          // Ensure username doesn't start or end with period (unless it's a valid suffix)
+          if (username.startsWith('.')) return false
+          if (
+            username.endsWith('.') &&
+            !ACCEPTABLE_SUFFIXES.some((suffix) => username.endsWith(suffix))
+          ) {
+            return false
+          }
+          // Ensure no consecutive periods
+          return !username.includes('..')
+        },
+        {
+          message: 'Invalid username format',
+        }
+      ),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({

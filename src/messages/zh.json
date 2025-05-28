@@ -560,11 +560,11 @@
       "username": {
         "label": "Username",
         "placeholder": "Please add a title",
-        "description": "Username can only contain letters, numbers, and underscores",
+        "description": "用户名只能包含字母、数字、下划线和句点（用于SNS名称，如.sol）",
         "validation": {
           "min_length": "Username must be at least 3 characters long",
           "max_length": "Username must not exceed 30 characters",
-          "format": "Username can only contain letters, numbers, and underscores"
+          "format": "用户名只能包含字母、数字、下划线和句点。支持SNS名称（.sol）"
         }
       },
       "profile_image": {
