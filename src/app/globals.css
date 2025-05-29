@@ -30,6 +30,19 @@ body {
   font-feature-settings: 'rlig' 1, 'calt' 1;
 }
 
+/* Safe area support for mobile devices */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    /* Only apply safe area padding on mobile */
+    @media (max-width: 768px) {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+  }
+}
+
 .absolute-centered {
   @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
 }

@@ -37,7 +37,7 @@ export function TokenSearchHeader({
   }, [])
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="p-4 space-y-6 max-sm:pt-6">
       <div className="relative">
         <Input
           ref={inputRef}

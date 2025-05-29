@@ -20,6 +20,14 @@ const rethinkSans = Rethink_Sans({
   display: 'swap',
 })
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const name = 'Solana Social Explorer | Tapestry Protocol'
   const description =

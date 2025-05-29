@@ -53,7 +53,7 @@ export function TokenSearch({
       <VisuallyHidden>
         <DialogTitle>Token Search</DialogTitle>
       </VisuallyHidden>
-      <DialogContent className="max-w-lg flex flex-col">
+      <DialogContent className="max-w-lg flex flex-col max-sm:w-[95vw] max-sm:h-[calc(100vh-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)-4rem)]">
         <DialogHeader>
           <TokenSearchHeader
             searchQuery={searchQuery}
@@ -65,7 +65,7 @@ export function TokenSearch({
             setSortBy={setSortBy}
           />
         </DialogHeader>
-        <div className="max-h-[400px] overflow-y-auto">
+        <div className="max-h-[400px] overflow-y-auto max-sm:flex-1">
           <TokenList
             isLoading={isLoading}
             error={error}
