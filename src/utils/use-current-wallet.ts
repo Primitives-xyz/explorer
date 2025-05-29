@@ -8,6 +8,12 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { EXPLORER_NAMESPACE } from './constants'
 
+export interface LoadingStates {
+  sdk: boolean
+  profiles: boolean
+  overall: boolean
+}
+
 export function useCurrentWallet() {
   const {
     sdkHasLoaded: dynamicSdkHasLoaded,
@@ -48,6 +54,7 @@ export function useCurrentWallet() {
     refetch: refetchGetProfiles,
   } = useGetProfiles({
     walletAddress,
+    skip: !walletAddress,
   })
 
   const { mainProfile } = useMemo(() => {
@@ -62,12 +69,22 @@ export function useCurrentWallet() {
     }
   }, [profiles, walletAddress])
 
+  const loadingStates: LoadingStates = useMemo(
+    () => ({
+      sdk: !sdkHasLoaded,
+      profiles: !!walletAddress && getProfilesLoading,
+      overall: !sdkHasLoaded,
+    }),
+    [sdkHasLoaded, walletAddress, getProfilesLoading]
+  )
+
   return {
     profiles,
     walletAddress,
     socialCounts: mainProfile?.socialCounts,
     mainProfile: mainProfile?.profile,
-    loading: !dynamicSdkHasLoaded || getProfilesLoading,
+    loading: loadingStates.overall,
+    loadingStates,
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,

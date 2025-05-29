@@ -344,7 +344,12 @@
     "confirming_transaction": {
       "title": "Confirming Transaction",
       "description": "Waiting for confirmation"
-    }
+    },
+    "initializing_wallet": "Initializing Wallet",
+    "wallet_sdk": "Loading wallet SDK",
+    "fetching_profile": "Fetching profile",
+    "initializing_trading": "Initializing trading",
+    "loading_accounts": "Loading accounts"
   },
   "success": {
     "transaction": {

@@ -4,9 +4,7 @@ import { isSolanaWallet } from '@dynamic-labs/solana'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
 import { PublicKey } from '@solana/web3.js'
 import { useState } from 'react'
-import { toast } from 'sonner'
 import { useInitializeDrift } from './use-initialize-drift'
-import { useToastContent } from './use-toast-content'
 
 interface UseInitAccountAndDepositParams {
   amount: string
@@ -18,14 +16,19 @@ interface UseInitAccountAndDepositParams {
 
 const env = 'mainnet-beta'
 
-export const getTokenAddress = (
-  mintAddress: string,
-  userPubKey: string
+const getTokenAddress = async (
+  tokenMint: string,
+  walletAddress: string
 ): Promise<PublicKey> => {
-  return getAssociatedTokenAddress(
-    new PublicKey(mintAddress),
-    new PublicKey(userPubKey)
-  )
+  const mint = new PublicKey(tokenMint)
+  const owner = new PublicKey(walletAddress)
+  return await getAssociatedTokenAddress(mint, owner)
+}
+
+export interface DepositCallbacks {
+  onLoading?: (message: string) => void
+  onSuccess?: (signature: string) => void
+  onError?: (error: string) => void
 }
 
 export function useDeposit({
@@ -39,28 +42,27 @@ export function useDeposit({
   const [error, setError] = useState<string | null>(null)
   const { driftClient } = useInitializeDrift()
   const { primaryWallet, walletAddress } = useCurrentWallet()
-  const { ERRORS, LOADINGS, SUCCESS } = useToastContent()
 
-  const depositCollateral = async () => {
+  const depositCollateral = async (callbacks?: DepositCallbacks) => {
     try {
       let isDriftAccountExist = false
       setLoading(true)
-      if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
-        toast.error(
-          ERRORS.WALLET_CONNETION_ERR.title,
-          ERRORS.WALLET_CONNETION_ERR.content
-        )
+      setError(null)
 
+      if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+        const error = 'Please connect a Solana wallet'
+        setError(error)
+        callbacks?.onError?.(error)
         return
       }
 
       if (!driftClient) {
-        toast.error(
-          ERRORS.DRIFT_CLIENT_INIT_ERR.title,
-          ERRORS.DRIFT_CLIENT_INIT_ERR.content
-        )
+        const error = 'Drift client not initialized'
+        setError(error)
+        callbacks?.onError?.(error)
         return
       }
+
       await driftClient.subscribe()
 
       const userTokenAccount =
@@ -73,19 +75,15 @@ export function useDeposit({
       )
 
       if (!marketInfo) {
-        toast.error(
-          ERRORS.PERPS_MARKET_ERR.title,
-          ERRORS.PERPS_MARKET_ERR.content
-        )
+        const error = 'Market not found'
+        setError(error)
+        callbacks?.onError?.(error)
         return
       }
 
       let signature
 
-      toast.loading(
-        LOADINGS.CONFIRM_LOADING.title,
-        LOADINGS.CONFIRM_LOADING.content
-      )
+      callbacks?.onLoading?.('Please confirm the transaction in your wallet')
 
       try {
         const user = driftClient.getUser()
@@ -127,21 +125,16 @@ export function useDeposit({
         signature = sig
       }
 
-      toast.dismiss()
-      toast.success(
-        SUCCESS.DEPOSIT_COLLATERAL_TX_SUCCESS.title,
-        SUCCESS.DEPOSIT_COLLATERAL_TX_SUCCESS.content
-      )
+      callbacks?.onSuccess?.(signature)
 
       return {
         signature,
       }
     } catch (error) {
-      toast.dismiss()
-      toast.error(
-        ERRORS.TX_DEPOSIT_COLLATERAL_ERR.title,
-        ERRORS.TX_DEPOSIT_COLLATERAL_ERR.content
-      )
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to deposit collateral'
+      setError(errorMessage)
+      callbacks?.onError?.(errorMessage)
       return {
         signature: null,
       }
