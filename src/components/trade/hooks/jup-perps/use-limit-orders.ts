@@ -95,6 +95,14 @@ export const useLimitOrders = ({
   useEffect(() => {
     const placeLimitOrder = async () => {
       const counter = Math.floor(Math.random() * 1e6).toString()
+
+      console.log('triggerPrice', triggerPrice)
+
+      if (Number(triggerPrice) === 0) {
+        setError('Trigger price must be greater than 0')
+        return
+      }
+
       try {
         setIsLoading(true)
         const response = await fetch('/api/jupiter/perps/limit', {

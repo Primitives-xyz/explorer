@@ -87,6 +87,7 @@ export const useIncreasePosition = ({
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to place increase position'
+      toast.dismiss()
       toast.error(ERRORS.INCREASE_POSITION_TX_ERR.title, {
         description: errorMessage,
         duration: 5000,
@@ -98,7 +99,10 @@ export const useIncreasePosition = ({
   useEffect(() => {
     const increasePosition = async () => {
       try {
+        if (Number(collateralTokenDelta) === 0) return
+
         setIsLoading(true)
+
         const response = await fetch('/api/jupiter/perps/increase', {
           method: 'POST',
           headers: {

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui'
 import { useState } from 'react'
 import TPSLModal from './tpsl-modal'
+import PositionCloseModal from './position-close-modal'
 
 interface PositionTabContentProps {
   perpsPositionsInfo: Position[]
@@ -20,6 +21,7 @@ export default function JupPositionTabContent({
   positionsLoading,
 }: PositionTabContentProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [isCloseModalOpen, setIsCloseModalOpen] = useState<boolean>(false)
   const [size, setSize] = useState<string>('')
   const [positionPubkey, setPositionPubkey] = useState<string>('')
   const symbol = 'SOL'
@@ -30,9 +32,15 @@ export default function JupPositionTabContent({
     setPositionPubkey(positionPubkey)
   }
 
+  const handleClosePosition = (size: string, positionPubkey: string) => {
+    setIsCloseModalOpen(true)
+    setSize(size)
+    setPositionPubkey(positionPubkey)
+  }
+
   return (
     <div className="pb-2">
-      <div className="h-[250px] overflow-auto space-y-2">
+      <div className="h-[285px] overflow-auto space-y-2">
         {perpsPositionsInfo.length ? (
           <>
             {perpsPositionsInfo.map((position, index) => {
@@ -123,13 +131,7 @@ export default function JupPositionTabContent({
 
                       <Button
                         variant={ButtonVariant.OUTLINE}
-                        // disabled={loading}
-                        // onClick={() =>
-                        //   handleAddTPAndSL(
-                        //     position.direction,
-                        //     position.marketIndex
-                        //   )
-                        // }
+                        onClick={() => handleClosePosition(position.size, position.positionPubkey)}
                         className="w-full p-1"
                       >
                         <span className="text-center">CLOSE</span>
@@ -152,6 +154,13 @@ export default function JupPositionTabContent({
         {isModalOpen && (
           <TPSLModal
             setIsModalOpen={setIsModalOpen}
+            size={size}
+            positionPubkey={positionPubkey}
+          />
+        )}
+        {isCloseModalOpen && (
+          <PositionCloseModal
+            setIsModalOpen={setIsCloseModalOpen}
             size={size}
             positionPubkey={positionPubkey}
           />
