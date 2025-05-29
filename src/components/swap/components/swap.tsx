@@ -125,8 +125,11 @@ export function Swap({ autoFocus }: Props) {
     primaryWallet,
     setShowAuthFlow,
   } = useCurrentWallet()
-  const { balance: inputBalance, rawBalance: inputRawBalance } =
-    useTokenBalance(walletAddress, inputTokenMint)
+  const { 
+    balance: inputBalance, 
+    rawBalance: inputRawBalance,
+    mutate: mutateInputBalance 
+  } = useTokenBalance(walletAddress, inputTokenMint)
   const { price: inputTokenUsdPrice, loading: inputTokenUsdPriceLoading } =
     useTokenUSDCPrice({
       tokenMint: inputTokenMint,
@@ -137,7 +140,16 @@ export function Swap({ autoFocus }: Props) {
       tokenMint: outputTokenMint,
       decimals: outputTokenDecimals,
     })
-  const { balance: sseBalance, rawBalance: sseRawBalance } = useTokenBalance(
+  const { 
+    balance: outputBalance, 
+    rawBalance: outputRawBalance,
+    mutate: mutateOutputBalance 
+  } = useTokenBalance(walletAddress, outputTokenMint)
+  const { 
+    balance: sseBalance, 
+    rawBalance: sseRawBalance,
+    mutate: mutateSseBalance 
+  } = useTokenBalance(
     walletAddress,
     SSE_MINT
   )
@@ -402,6 +414,16 @@ export function Swap({ autoFocus }: Props) {
         return prev
       })
 
+      // Refresh all token balances after successful swap
+      // Wait a bit to ensure the transaction is fully processed
+      setTimeout(() => {
+        mutateInputBalance()
+        mutateOutputBalance()
+        if (useSSEForFees) {
+          mutateSseBalance()
+        }
+      }, 1000)
+
       // Immediately reset state and fetch new quote
       setTimeout(() => {
         resetQuoteState()
@@ -409,7 +431,17 @@ export function Swap({ autoFocus }: Props) {
         refreshQuote()
       }, 100) // Small delay to ensure state updates properly
     }
-  }, [isFullyConfirmed, txStatus, txSignature, resetQuoteState, refreshQuote])
+  }, [
+    isFullyConfirmed, 
+    txStatus, 
+    txSignature, 
+    resetQuoteState, 
+    refreshQuote,
+    mutateInputBalance,
+    mutateOutputBalance,
+    mutateSseBalance,
+    useSSEForFees
+  ])
 
   const dismissTransaction = (signature: string) => {
     setConfirmedTransactions((prev) => prev.filter((sig) => sig !== signature))
