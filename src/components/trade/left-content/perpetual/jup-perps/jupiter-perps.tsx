@@ -6,6 +6,7 @@ import {
   OrderType,
 } from '@/components/tapestry/models/drift.model'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import { useTrade } from '@/components/trade/context/trade-context'
 import { useIncreasePosition } from '@/components/trade/hooks/jup-perps/use-increase'
 import { useLimitOrders } from '@/components/trade/hooks/jup-perps/use-limit-orders'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
@@ -29,9 +30,8 @@ import { SOL_MINT, USDC_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { formatRawAmount } from '@/utils/utils'
 import Image from 'next/image'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Slippage } from '../slippage'
-import { useTrade } from '@/components/trade/context/trade-context'
 
 // Extracted validation functions
 const validateNumericInput = (value: string): boolean => {
@@ -128,6 +128,26 @@ export function JupiterPerps() {
     triggerPrice: (Number(limitPrice) * Math.pow(10, 6)).toString(),
     walletAddress: walletAddress || '',
   })
+
+  const orderAmountForMarketOrder = useMemo(() => {
+    if (increaseResponse) {
+      const sizeTokenDelta =
+        Number(increaseResponse.quote.sizeTokenDelta) /
+        Math.pow(10, assetTokenDecimals || 9)
+
+      return sizeTokenDelta
+    }
+  }, [increaseResponse])
+
+  const orderAmountForLimitOrder = useMemo(() => {
+    if (limitResponse) {
+      const sizeTokenDelta =
+        Number(limitResponse.quote.sizeTokenDelta) /
+        Math.pow(10, assetTokenDecimals || 9)
+
+      return sizeTokenDelta
+    }
+  }, [limitResponse])
 
   // Memoized handlers
   const handleAmountChange = useCallback(
@@ -404,24 +424,22 @@ export function JupiterPerps() {
                         disabled={
                           isMarketOrderTxLoading ||
                           isIncreaseLoading ||
-                          increaseError !== null
+                          increaseError !== null ||
+                          !orderAmountForMarketOrder
                         }
                       >
                         {isMarketOrderTxLoading || isIncreaseLoading ? (
                           <Spinner />
-                        ) : increaseResponse ? (
+                        ) : orderAmountForMarketOrder && !increaseError ? (
                           <p>
-                            {direction}{' '}
-                            {(
-                              Number(increaseResponse.quote.sizeTokenDelta) /
-                              Math.pow(10, assetTokenDecimals || 9)
-                            ).toFixed(4)}{' '}
+                            {direction} {orderAmountForMarketOrder.toFixed(4)}{' '}
                             {assetTokenSymbol}
                           </p>
                         ) : (
                           <p>Enter an amount</p>
                         )}
                       </Button>
+
                       {increaseError && (
                         <p className="text-red-500 text-sm mt-2">
                           {increaseError}
@@ -438,24 +456,22 @@ export function JupiterPerps() {
                         disabled={
                           isLimitOrderTxLoading ||
                           isLimitLoading ||
-                          limitError !== null
+                          limitError !== null ||
+                          !orderAmountForLimitOrder
                         }
                       >
                         {isLimitOrderTxLoading || isLimitLoading ? (
                           <Spinner />
-                        ) : limitResponse ? (
+                        ) : orderAmountForLimitOrder && !limitError ? (
                           <p>
-                            {direction}{' '}
-                            {(
-                              Number(limitResponse.quote.sizeTokenDelta) /
-                              Math.pow(10, assetTokenDecimals || 9)
-                            ).toFixed(4)}{' '}
+                            {direction} {orderAmountForLimitOrder.toFixed(4)}{' '}
                             {assetTokenSymbol}
                           </p>
                         ) : (
                           <p>Enter an amount</p>
                         )}
                       </Button>
+
                       {limitError && (
                         <p className="text-red-500 text-sm mt-2">
                           {limitError}
