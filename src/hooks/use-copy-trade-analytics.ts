@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import useSWR from 'swr'
 
 interface CopyTradeStats {
   walletAddress: string
@@ -36,74 +36,68 @@ interface CopyTradeOverview {
   activeCopiers: number
 }
 
+const fetcher = async (url: string) => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Failed to fetch data')
+  }
+  return response.json()
+}
+
 export function useCopyTradeStats(walletAddress?: string) {
-  return useQuery({
-    queryKey: ['copy-trade-stats', walletAddress],
-    queryFn: async () => {
-      if (!walletAddress) return null
+  const { data, error, isLoading } = useSWR<{ stats: CopyTradeStats }>(
+    walletAddress
+      ? `/api/copy-trades/analytics?walletAddress=${walletAddress}`
+      : null,
+    fetcher
+  )
 
-      const response = await fetch(
-        `/api/copy-trades/analytics?walletAddress=${walletAddress}`
-      )
-      if (!response.ok) {
-        throw new Error('Failed to fetch copy trade stats')
-      }
-
-      const data = await response.json()
-      return data.stats as CopyTradeStats
-    },
-    enabled: !!walletAddress,
-  })
+  return {
+    data: data?.stats || null,
+    error,
+    isLoading,
+  }
 }
 
 export function useCopyTradeOverview() {
-  return useQuery({
-    queryKey: ['copy-trade-overview'],
-    queryFn: async () => {
-      const response = await fetch('/api/copy-trades/analytics')
-      if (!response.ok) {
-        throw new Error('Failed to fetch copy trade overview')
-      }
+  const { data, error, isLoading } = useSWR<{ overview: CopyTradeOverview }>(
+    '/api/copy-trades/analytics',
+    fetcher
+  )
 
-      const data = await response.json()
-      return data.overview as CopyTradeOverview
-    },
-  })
+  return {
+    data: data?.overview,
+    error,
+    isLoading,
+  }
 }
 
 export function useCopyTradeLeaderboard(
   period: 'daily' | 'weekly' | 'monthly' | 'all-time' = 'weekly'
 ) {
-  return useQuery({
-    queryKey: ['copy-trade-leaderboard', period],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/copy-trades/leaderboard?period=${period}`
-      )
-      if (!response.ok) {
-        throw new Error('Failed to fetch copy trade leaderboard')
-      }
+  const { data, error, isLoading } = useSWR(
+    `/api/copy-trades/leaderboard?period=${period}`,
+    fetcher
+  )
 
-      return response.json()
-    },
-  })
+  return {
+    data,
+    error,
+    isLoading,
+  }
 }
 
 export function usePendingPayments(walletAddress?: string) {
-  return useQuery({
-    queryKey: ['pending-payments', walletAddress],
-    queryFn: async () => {
-      if (!walletAddress) return []
+  const { data, error, isLoading } = useSWR(
+    walletAddress
+      ? `/api/copy-trades/payments/pending?walletAddress=${walletAddress}`
+      : null,
+    fetcher
+  )
 
-      const response = await fetch(
-        `/api/copy-trades/payments/pending?walletAddress=${walletAddress}`
-      )
-      if (!response.ok) {
-        throw new Error('Failed to fetch pending payments')
-      }
-
-      return response.json()
-    },
-    enabled: !!walletAddress,
-  })
+  return {
+    data: data || [],
+    error,
+    isLoading,
+  }
 }
