@@ -40,4 +40,6 @@ export interface ISwapInputs {
   inputMint: string
   outputMint: string
   inputAmount: number
+  sourceWallet?: string
+  sourceTransactionId?: string
 }

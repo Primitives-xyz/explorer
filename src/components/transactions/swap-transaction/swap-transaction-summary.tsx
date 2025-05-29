@@ -5,10 +5,14 @@ import { Transaction } from '@/components/tapestry/models/helius.models'
 import { TokenLine } from '@/components/transactions/common/token-line'
 import { TransactionsHeader } from '@/components/transactions/transactions-header'
 import { ButtonSize, ButtonVariant, Card, CardContent } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
 import { CopyToClipboardButton } from '@/components/ui/button/copy-to-clipboard-button'
+import { isCopiedSwap } from '@/types/content'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { getSourceIcon } from '@/utils/transactions'
-import { Share } from 'lucide-react'
+import { Copy, Share } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { useTransactionWithContent } from '../hooks/use-transaction-with-content'
 import {
   getDisplayIncomingToken,
   getDisplayOutgoingToken,
@@ -24,6 +28,8 @@ export const SwapTransactionSummary = ({
   transaction,
   onCopyTrade,
 }: SwapTransactionSummaryProps) => {
+  const { t } = useTranslation()
+
   // Process the transaction
   const processedTx = processSwapTransaction(transaction)
 
@@ -36,6 +42,10 @@ export const SwapTransactionSummary = ({
   const profile = profiles?.profiles.find(
     (p) => p.namespace.name === EXPLORER_NAMESPACE
   )?.profile
+
+  // Check if this is a copy trade
+  const { content } = useTransactionWithContent(transaction.signature)
+  const isCopiedTrade = content && isCopiedSwap(content)
 
   // Get the primary swap tokens or fall back to the first ones
   const outToken = getDisplayOutgoingToken(
@@ -58,9 +68,20 @@ export const SwapTransactionSummary = ({
           onClickTradeButton={onCopyTrade}
         >
           <div className="flex flex-row justify-between gap-2">
-            <span>
-              Swap on {getSourceIcon(transaction.source)} {transaction.source}
-            </span>
+            <div className="flex items-center gap-2">
+              {isCopiedTrade && (
+                <Badge
+                  variant="secondary"
+                  className="bg-muted text-muted-foreground border border-border/50"
+                >
+                  <Copy size={12} className="mr-1" />
+                  {t('common.copied')}
+                </Badge>
+              )}
+              <span>
+                Swap on {getSourceIcon(transaction.source)} {transaction.source}
+              </span>
+            </div>
             <CopyToClipboardButton
               textToCopy={
                 typeof window !== 'undefined' ? window.location.href : ''

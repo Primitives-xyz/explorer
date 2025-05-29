@@ -24,7 +24,24 @@
       "following": "Following"
     },
     "no_description": "No description",
-    "since": "since"
+    "since": "since",
+    "copied": "Copied"
+  },
+  "copy_trading": {
+    "copy_trade": "Copy Trade",
+    "info_title": "Copy Trading Information",
+    "original_trader": "Original Trader",
+    "copy_this_trade": "Copy This Trade",
+    "trade_flow": "Trade Flow",
+    "source": "Source",
+    "you": "You",
+    "copier": "Copier",
+    "trade_amount": "Trade Amount",
+    "expected_output": "Expected Output",
+    "performance_coming_soon": "Performance metrics coming soon",
+    "clear_copy_trade": "Clear copy trade",
+    "from": "from",
+    "original_trade": "Original trade"
   },
   "menu": {
     "home": "Home",

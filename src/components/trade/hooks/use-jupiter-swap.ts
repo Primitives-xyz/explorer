@@ -29,6 +29,8 @@ interface UseJupiterSwapParams {
   walletAddress: string
   swapMode?: string
   useSSE?: boolean // Enable Server-Sent Events for real-time updates
+  sourceWallet?: string // For copy trades
+  sourceTransactionId?: string // For copy trades
 }
 
 interface QuoteResponse {
@@ -74,6 +76,8 @@ export function useJupiterSwap({
   walletAddress,
   swapMode = 'ExactIn',
   useSSE = true, // Default to using SSE for better performance
+  sourceWallet,
+  sourceTransactionId,
 }: UseJupiterSwapParams) {
   const t = useTranslations()
   const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
@@ -127,6 +131,8 @@ export function useJupiterSwap({
         inputDecimals: inputDecimals || 6,
         outputDecimals: outputDecimals || 6,
         walletAddress,
+        sourceWallet,
+        sourceTransactionId,
         swapUsdValue: quoteResponse?.swapUsdValue,
         usdcFeeAmount: quoteResponse?.swapUsdValue
           ? (
@@ -155,6 +161,8 @@ export function useJupiterSwap({
       inputDecimals,
       outputDecimals,
       walletAddress,
+      sourceWallet,
+      sourceTransactionId,
       quoteResponse?.swapUsdValue,
       platformFeeBps,
       pathname,

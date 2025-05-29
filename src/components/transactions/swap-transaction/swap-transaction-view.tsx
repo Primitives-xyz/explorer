@@ -57,6 +57,8 @@ export const SwapTransactionView = ({
               inputMint: fromToken.mint,
               outputMint: toToken.mint,
               inputAmount: fromToken.amount,
+              sourceWallet: processedTx.feePayer,
+              sourceTransactionId: transaction.signature,
             })
           }
         }}

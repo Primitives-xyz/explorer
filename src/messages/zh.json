@@ -24,7 +24,24 @@
       "following": "正在关注"
     },
     "no_description": "暂无描述",
-    "since": "注册于"
+    "since": "注册于",
+    "copied": "已复制"
+  },
+  "copy_trading": {
+    "copy_trade": "复制交易",
+    "info_title": "复制交易信息",
+    "original_trader": "原始交易者",
+    "copy_this_trade": "复制此交易",
+    "trade_flow": "交易流程",
+    "source": "来源",
+    "you": "您",
+    "copier": "复制者",
+    "trade_amount": "交易金额",
+    "expected_output": "预期产出",
+    "performance_coming_soon": "性能指标即将推出",
+    "clear_copy_trade": "清除复制交易",
+    "from": "来自",
+    "original_trade": "原始交易"
   },
   "menu": {
     "home": "首页",

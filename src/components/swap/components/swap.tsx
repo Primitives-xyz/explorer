@@ -4,18 +4,25 @@ import { TokenSearch } from '@/components/swap/components/swap-dialog/token-sear
 import { BottomSwap } from '@/components/swap/components/swap-elements/bottom-swap'
 import { CenterButtonSwap } from '@/components/swap/components/swap-elements/center-button-swap'
 import { TopSwap } from '@/components/swap/components/swap-elements/top-swap'
+import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { useTrade } from '@/components/trade/context/trade-context'
 import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
-import { SOL_MINT, SSE_MINT } from '@/utils/constants'
+import { Avatar } from '@/components/ui/avatar/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { EXPLORER_NAMESPACE, SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
+  abbreviateWalletAddress,
   formatLargeNumber,
   formatRawAmount,
   formatUsdValue,
 } from '@/utils/utils'
+import { Copy, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { useSwapStore } from '../stores/use-swap-store'
@@ -93,7 +100,12 @@ export function Swap({ autoFocus }: Props) {
 
   // Centralized swap state from store
   const {
-    inputs: { inputMint: inputTokenMint, outputMint: outputTokenMint },
+    inputs: {
+      inputMint: inputTokenMint,
+      outputMint: outputTokenMint,
+      sourceWallet,
+      sourceTransactionId,
+    },
     swapMode,
     inAmount,
     outAmount,
@@ -171,6 +183,8 @@ export function Swap({ autoFocus }: Props) {
     primaryWallet: primaryWallet,
     walletAddress: walletAddress,
     swapMode: swapMode,
+    sourceWallet: sourceWallet,
+    sourceTransactionId: sourceTransactionId,
   })
 
   const displayInAmount = useMemo(() => {
@@ -264,6 +278,7 @@ export function Swap({ autoFocus }: Props) {
 
       if (validateAmount(formattedQuarter, inputTokenDecimals)) {
         setInAmount(formattedQuarter)
+        // Don't clear sourceWallet/sourceTransactionId - amount changes are still copies
       }
     } catch (err) {
       console.error('Error calculating amount:', err)
@@ -281,6 +296,9 @@ export function Swap({ autoFocus }: Props) {
       inputMint: token.address,
       outputMint: outputTokenMint,
       inputAmount: parseFloat(inAmount) || 0,
+      // Clear copy trade info when selecting new token
+      sourceWallet: undefined,
+      sourceTransactionId: undefined,
     })
     setShowInputTokenSearch(false)
   }
@@ -295,6 +313,9 @@ export function Swap({ autoFocus }: Props) {
       inputMint: inputTokenMint,
       outputMint: token.address,
       inputAmount: parseFloat(inAmount) || 0,
+      // Clear copy trade info when selecting new token
+      sourceWallet: undefined,
+      sourceTransactionId: undefined,
     })
     setShowOutputTokenSearch(false)
   }
@@ -309,6 +330,7 @@ export function Swap({ autoFocus }: Props) {
     ) {
       const cursorPosition = e.target.selectionStart
       setInAmount(val)
+      // Don't clear sourceWallet/sourceTransactionId - amount changes are still copies
       window.setTimeout(() => {
         e.target.focus()
         e.target.setSelectionRange(cursorPosition, cursorPosition)
@@ -326,6 +348,7 @@ export function Swap({ autoFocus }: Props) {
     ) {
       const cursorPosition = e.target.selectionStart
       setOutAmount(val)
+      // Don't clear sourceWallet/sourceTransactionId - amount changes are still copies
       window.setTimeout(() => {
         e.target.focus()
         e.target.setSelectionRange(cursorPosition, cursorPosition)
@@ -344,6 +367,9 @@ export function Swap({ autoFocus }: Props) {
       inputMint: tempOut,
       outputMint: tempIn,
       inputAmount: parseFloat(tempAmtOut) || 0,
+      // Clear copy trade info when swapping direction
+      sourceWallet: undefined,
+      sourceTransactionId: undefined,
     })
     setInAmount(tempAmtOut)
     setOutAmount(tempAmtIn)
@@ -451,8 +477,81 @@ export function Swap({ autoFocus }: Props) {
     buttonDisabled = true
   }
 
+  // Get source wallet profile if copying a trade
+  const { profiles: sourceProfiles } = useGetProfiles({
+    walletAddress: sourceWallet || '',
+    skip: !sourceWallet,
+  })
+
+  const sourceProfile = sourceProfiles?.profiles?.find(
+    (p) => p.namespace.name === EXPLORER_NAMESPACE
+  )?.profile
+
   return (
     <div className="space-y-4">
+      {/* Copy Trade Indicator */}
+      {sourceWallet && (
+        <Card className="border-muted bg-muted/50">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="secondary"
+                  className="bg-muted text-muted-foreground border border-border/50"
+                >
+                  <Copy size={12} className="mr-1" />
+                  {t('copy_trading.copy_trade')}
+                </Badge>
+                <div className="flex items-center gap-2">
+                  {sourceProfile?.image && (
+                    <Avatar
+                      username={sourceProfile.username || sourceWallet}
+                      imageUrl={sourceProfile.image}
+                      size={20}
+                      className="h-5 w-5"
+                    />
+                  )}
+                  <span className="text-sm text-foreground">
+                    {t('copy_trading.from')}{' '}
+                    {sourceProfile?.username
+                      ? `@${sourceProfile.username}`
+                      : abbreviateWalletAddress({
+                          address: sourceWallet,
+                          desiredLength: 8,
+                        })}
+                  </span>
+                </div>
+              </div>
+              <Button
+                variant={ButtonVariant.GHOST}
+                size={ButtonSize.ICON_SM}
+                onClick={() => {
+                  setInputs({
+                    inputMint: inputTokenMint,
+                    outputMint: outputTokenMint,
+                    inputAmount: parseFloat(inAmount) || 0,
+                    sourceWallet: undefined,
+                    sourceTransactionId: undefined,
+                  })
+                }}
+                title="Clear copy trade"
+              >
+                <X size={14} />
+              </Button>
+            </div>
+            {sourceTransactionId && (
+              <p className="text-xs text-muted-foreground mt-2">
+                {t('copy_trading.original_trade')}:{' '}
+                {abbreviateWalletAddress({
+                  address: sourceTransactionId,
+                  desiredLength: 8,
+                })}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <TopSwap
         walletAddress={walletAddress}
         setShowInputTokenSearch={setShowInputTokenSearch}
