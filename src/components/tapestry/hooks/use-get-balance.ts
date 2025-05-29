@@ -5,17 +5,22 @@ import { formatNumber } from '@/utils/utils'
 
 interface Props {
   walletAddress: string
+  skip?: boolean
 }
 
-export const useGetBalance = ({ walletAddress }: Props) => {
+export const useGetBalance = ({ walletAddress, skip }: Props) => {
   const { data, loading, error, refetch } = useQuery<ITokenBalanceResponse>({
     endpoint: 'tokens/balance',
     queryParams: {
       walletAddress,
       mintAddress: SSE_TOKEN_MINT,
     },
-    skip: !walletAddress,
-    config: { refreshInterval: 60000 },
+    skip: !walletAddress || skip,
+    config: {
+      refreshInterval: 120000,
+      revalidateOnFocus: false,
+      dedupingInterval: 30000,
+    },
   })
 
   return {

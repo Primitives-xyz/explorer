@@ -125,7 +125,9 @@ export function useJupiterSwap({
             : Number(slippageBps),
         priorityLevel: 'low',
         inputDecimals: inputDecimals || 6,
+        outputDecimals: outputDecimals || 6,
         walletAddress,
+        swapUsdValue: quoteResponse?.swapUsdValue,
         usdcFeeAmount: quoteResponse?.swapUsdValue
           ? (
               Number(quoteResponse.swapUsdValue) *
@@ -151,6 +153,7 @@ export function useJupiterSwap({
       priceImpact,
       slippageBps,
       inputDecimals,
+      outputDecimals,
       walletAddress,
       quoteResponse?.swapUsdValue,
       platformFeeBps,

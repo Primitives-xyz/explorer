@@ -124,7 +124,21 @@ export function processSwapTransaction(
       return incomingFromRecipient.some((inc) => inc.mint !== transfer.mint)
     })
 
-    // If we found a swap pattern, use that as the primary outgoing
+    // If we found a swap pattern, find the corresponding incoming token
+    let correspondingIncoming = null
+    if (firstSwapOutgoing) {
+      const incomingFromRecipient = incomingTransfersBySource.get(
+        firstSwapOutgoing.toUserAccount
+      )
+      if (incomingFromRecipient) {
+        // Find the incoming transfer with a different mint
+        correspondingIncoming = incomingFromRecipient.find(
+          (inc) => inc.mint !== firstSwapOutgoing.mint
+        )
+      }
+    }
+
+    // If we didn't find a swap pattern, use the first outgoing transfer
     const firstOutgoingTransfer =
       firstSwapOutgoing ||
       transaction.tokenTransfers.find(
@@ -132,9 +146,14 @@ export function processSwapTransaction(
       )
 
     // Find the last incoming transfer (toUserAccount matching feePayer)
-    const lastIncomingTransfer = [...transaction.tokenTransfers]
-      .reverse()
-      .find((transfer) => transfer.toUserAccount === feePayer && transfer.mint)
+    // But prefer the corresponding incoming if we found a swap pattern
+    const lastIncomingTransfer =
+      correspondingIncoming ||
+      [...transaction.tokenTransfers]
+        .reverse()
+        .find(
+          (transfer) => transfer.toUserAccount === feePayer && transfer.mint
+        )
 
     // Process all transfers to build the full picture
     transaction.tokenTransfers.forEach((transfer) => {

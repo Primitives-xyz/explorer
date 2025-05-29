@@ -5,49 +5,59 @@ import { useInitializeDrift } from './use-initialize-drift'
 
 export function useDriftUsers() {
   const [error, setError] = useState<string | null>(null)
-  const { driftClient } = useInitializeDrift()
+  const { driftClient, isInitializing: driftInitializing } =
+    useInitializeDrift()
   const { walletAddress } = useCurrentWallet()
   const [accountIds, setAccountIds] = useState<number[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
-  const getUserAccountIds = async () => {
-    try {
-      setLoading(true)
-
-      if (!driftClient) {
-        setError('Drift client not initialized')
-        setAccountIds([])
+  useEffect(() => {
+    const getUserAccountIds = async () => {
+      // Skip if no wallet or drift client not ready or already loading
+      if (!walletAddress || !driftClient || loading) {
         return
       }
 
-      const userAccounts = await driftClient.getUserAccountsForAuthority(
-        new PublicKey(walletAddress)
-      )
-      const userAccountIds = userAccounts.map(
-        (userAccount) => userAccount.subAccountId
-      )
-      setAccountIds(userAccountIds)
-    } catch (error) {
-      console.error(error)
-      setAccountIds([])
-    } finally {
-      setLoading(false)
+      try {
+        setLoading(true)
+        setError(null)
+
+        const userAccounts = await driftClient.getUserAccountsForAuthority(
+          new PublicKey(walletAddress)
+        )
+        const userAccountIds = userAccounts.map(
+          (userAccount) => userAccount.subAccountId
+        )
+        setAccountIds(userAccountIds)
+      } catch (error) {
+        console.error('Error fetching user accounts:', error)
+        setError('Failed to fetch user accounts')
+        setAccountIds([])
+      } finally {
+        setLoading(false)
+      }
     }
-  }
+
+    getUserAccountIds()
+  }, [walletAddress, driftClient])
+
+  // Reset when wallet changes
+  useEffect(() => {
+    if (!walletAddress) {
+      setAccountIds([])
+      setError(null)
+    }
+  }, [walletAddress])
 
   const refreshGetUserAccountIds = () => {
-    getUserAccountIds()
+    // Force a re-fetch by resetting loading state
+    setLoading(false)
   }
-
-  useEffect(() => {
-    getUserAccountIds()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletAddress, driftClient])
 
   return {
     accountIds,
     error,
-    loading,
+    loading: loading || driftInitializing,
     refreshGetUserAccountIds,
   }
 }
