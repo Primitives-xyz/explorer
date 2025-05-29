@@ -4,12 +4,23 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   try {
-    const contentData = await fetchWrapper<{ contents: any[] }>({
+    // Get pagination parameters from query string
+    const searchParams = request.nextUrl.searchParams
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const pageSize = parseInt(searchParams.get('pageSize') || '20', 10)
+
+    const contentData = await fetchWrapper<{
+      contents: any[]
+      totalCount: number
+      page: number
+      pageSize: number
+    }>({
       endpoint: `contents`,
       queryParams: {
         orderByDirection: 'DESC',
         orderByField: 'created_at',
-        limit: 20,
+        page: page.toString(),
+        pageSize: pageSize.toString(),
       },
     })
 
@@ -44,7 +55,16 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(allTransactions)
+    // Return paginated response with metadata
+    return NextResponse.json({
+      data: allTransactions,
+      pagination: {
+        page: contentData?.page || page,
+        pageSize: contentData?.pageSize || pageSize,
+        totalCount: contentData?.totalCount || 0,
+        totalPages: Math.ceil((contentData?.totalCount || 0) / pageSize),
+      },
+    })
   } catch (error) {
     console.error('Error fetching all transactions:', error)
 
