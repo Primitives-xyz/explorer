@@ -74,7 +74,10 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
               outputMint: toToken.mint,
               inputAmount: fromToken.amount,
               // For copy trades, pass the original source wallet and transaction
-              sourceWallet: isCopyTrade ? copySourceWallet : sourceWallet,
+              // For non-copy trades, use the transaction's feePayer (who executed the trade)
+              sourceWallet: isCopyTrade
+                ? copySourceWallet
+                : processedTx.feePayer,
               sourceTransactionId: isCopyTrade
                 ? copySourceTransactionId
                 : transaction.signature,
