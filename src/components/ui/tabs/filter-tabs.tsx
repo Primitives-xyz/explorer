@@ -35,11 +35,23 @@ export function FilterTabs<T extends string>({
   }
 
   return (
-    <div className={cn('flex items-center gap-2 mb-4', className)}>
+    <div className={cn(
+      'flex items-center gap-2 mb-4',
+      // Add horizontal scroll on mobile
+      'max-sm:overflow-x-auto max-sm:scrollbar-hide',
+      // Prevent wrapping on mobile
+      'max-sm:flex-nowrap',
+      className
+    )}>
       {options.map((option) => (
         <Button
           key={option.value}
-          className={cn('rounded-full', buttonClassName)}
+          className={cn(
+            'rounded-full',
+            // Ensure buttons don't shrink on mobile
+            'max-sm:whitespace-nowrap max-sm:flex-shrink-0',
+            buttonClassName
+          )}
           variant={getVariant(selected === option.value)}
           onClick={() => onSelect?.(option.value)}
           size={size}

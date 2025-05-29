@@ -37,8 +37,8 @@ export function TokenSearchHeader({
   }, [])
 
   return (
-    <div className="p-4 space-y-6 max-sm:pt-6">
-      <div className="relative">
+    <div className="p-4 space-y-6 max-sm:pt-6 max-sm:px-2">
+      <div className="relative max-sm:px-2">
         <Input
           ref={inputRef}
           type="text"
@@ -53,7 +53,7 @@ export function TokenSearchHeader({
         />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 max-sm:px-2">
         <Checkbox
           id="verified_only"
           checked={verifiedOnly}
@@ -64,11 +64,14 @@ export function TokenSearchHeader({
         </label>
       </div>
 
-      <FilterTabs
-        options={sortOptions}
-        selected={sortBy}
-        onSelect={setSortBy}
-      />
+      <div className="max-sm:-mx-2">
+        <FilterTabs
+          options={sortOptions}
+          selected={sortBy}
+          onSelect={setSortBy}
+          className="max-sm:px-2"
+        />
+      </div>
     </div>
   )
 }
