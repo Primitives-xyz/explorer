@@ -13,15 +13,53 @@ const formatNumber = (value: string) => {
   const num = parseFloat(value)
   if (isNaN(num)) return '0'
 
+  // For very large numbers, use abbreviations
   if (num >= 1_000_000) {
-    return (num / 1_000_000).toFixed(2) + 'M'
+    return (num / 1_000_000).toFixed(3) + 'M'
   }
 
-  if (num >= 1_000) {
-    return (num / 1_000).toFixed(2) + 'K'
+  if (num >= 10_000) {
+    return (num / 1_000).toFixed(3) + 'K'
   }
 
-  return num.toFixed(Math.min(2, value.split('.')[1]?.length || 0))
+  // For smaller numbers, show more precision
+  if (num >= 1000) {
+    return num.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
+
+  if (num >= 100) {
+    return num.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 3,
+    })
+  }
+
+  if (num >= 10) {
+    return num.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4,
+    })
+  }
+
+  if (num >= 1) {
+    return num.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 6,
+    })
+  }
+
+  // For very small numbers, show up to 8 decimal places
+  if (num > 0) {
+    return num.toLocaleString(undefined, {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 8,
+    })
+  }
+
+  return '0'
 }
 
 export const TokenBalance = ({
