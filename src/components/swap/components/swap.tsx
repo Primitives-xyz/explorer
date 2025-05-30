@@ -1,5 +1,6 @@
 'use client'
 
+import { useGetHomeAllTransactions } from '@/components/home-transactions/hooks/use-get-home-all-transactions'
 import { TokenSearch } from '@/components/swap/components/swap-dialog/token-search'
 import { BottomSwap } from '@/components/swap/components/swap-elements/bottom-swap'
 import { CenterButtonSwap } from '@/components/swap/components/swap-elements/center-button-swap'
@@ -15,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { EXPLORER_NAMESPACE, SOL_MINT, SSE_MINT } from '@/utils/constants'
+import { listCache } from '@/utils/redis'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   abbreviateWalletAddress,
@@ -428,6 +430,15 @@ export function Swap({ autoFocus }: Props) {
     []
   )
 
+  // Get refetch function from home transactions hook if we're on the home page
+  const isHomePage =
+    typeof window !== 'undefined' && window.location.pathname === '/'
+  const { refetch: refetchHomeTransactions } = useGetHomeAllTransactions({
+    pageSize: 20,
+    infiniteScroll: true,
+    skip: !isHomePage, // Skip if not on home page
+  })
+
   // Auto-reset transaction state after success and refetch quote
   useEffect(() => {
     if (isFullyConfirmed && txStatus?.status === 'confirmed' && txSignature) {
@@ -446,6 +457,25 @@ export function Swap({ autoFocus }: Props) {
         mutateSseBalance()
       }
 
+      // Clear cache and refresh feed if on home page
+      const clearCacheAndRefresh = async () => {
+        try {
+          // Clear the list cache for home transactions
+          await listCache.invalidate('home-all:*')
+
+          // Refetch home transactions if we're on the home page
+          if (isHomePage && refetchHomeTransactions) {
+            setTimeout(() => {
+              refetchHomeTransactions()
+            }, 1000) // Give the content API time to process
+          }
+        } catch (error) {
+          console.error('Error clearing cache:', error)
+        }
+      }
+
+      clearCacheAndRefresh()
+
       // Immediately reset state and fetch new quote
       setTimeout(() => {
         resetQuoteState()
@@ -463,6 +493,8 @@ export function Swap({ autoFocus }: Props) {
     mutateOutputBalance,
     mutateSseBalance,
     useSSEForFees,
+    isHomePage,
+    refetchHomeTransactions,
   ])
 
   const dismissTransaction = (signature: string) => {
