@@ -158,7 +158,7 @@ export default async function RootLayout({
         </Script>
       </head>
       <body className={cn('relative min-h-screen', rethinkSans.className)}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} locale={locale}>
           <WalletProvider>
             <AddressHighlightProvider>
               <div className="fixed inset-0 z-0 background-gradient" />

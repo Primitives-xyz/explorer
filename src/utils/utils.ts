@@ -383,3 +383,9 @@ export function getPayerKeypair(): Keypair {
   const secretKey = bs58.decode(process.env.VERTIGO_SECRET_KEY)
   return Keypair.fromSecretKey(secretKey)
 }
+
+export function abbreviateAddress(address: string, startLength = 4, endLength = 4): string {
+  if (!address) return ''
+  if (address.length <= startLength + endLength) return address
+  return `${address.slice(0, startLength)}...${address.slice(-endLength)}`
+}

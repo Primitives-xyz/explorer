@@ -6,6 +6,7 @@ import {
   formatPrice,
 } from '@/components/swap/utils/token-utils'
 import { Button, ButtonVariant } from '@/components/ui'
+import { abbreviateAddress } from '@/utils/utils'
 import { Check } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
@@ -16,7 +17,7 @@ interface TokenListItemProps {
 }
 
 export function TokenListItem({ token, onSelect }: TokenListItemProps) {
-  const t = useTranslations()
+  const t = useTranslations('common')
 
   // Format balance to a readable format
   const formattedBalance = token.uiAmount
@@ -63,16 +64,21 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{token.symbol}</span>
-          <span className="text-sm truncate">{token.name}</span>
-          {token.chainId && (
-            <span className="text-xs px-1.5 py-0.5 rounded-full">
-              {token.chainId}
-            </span>
-          )}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{token.symbol}</span>
+            <span className="text-sm truncate">{token.name}</span>
+            {token.chainId && (
+              <span className="text-xs px-1.5 py-0.5 rounded-full">
+                {token.chainId}
+              </span>
+            )}
+          </div>
+          <span className="text-xs text-muted-foreground">
+            {abbreviateAddress(token.address)}
+          </span>
         </div>
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-0.5 mt-1">
           <div className="text-sm font-medium flex items-center gap-2">
             <span>{formatPrice(token.price || token.priceUsd || 0)}</span>
             {formattedBalance && (
@@ -86,7 +92,7 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
               <span>{formattedValue}</span>
             ) : (
               <span className="font-medium">
-                {t('common.m_cap')}:{' '}
+                {t('m_cap')}:{' '}
                 {formatMarketCap(token.market_cap, t('trade.no_m_cap'))}
               </span>
             )}
@@ -94,11 +100,11 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
               <>
                 <span>•</span>
                 <span>
-                  {t('common.vol')}: $
+                  {t('vol')}: $
                   {(token.volume_24h_usd / 1e6).toLocaleString(undefined, {
                     maximumFractionDigits: 2,
                   })}
-                  {t('common.m')}
+                  {t('m')}
                 </span>
               </>
             )}
