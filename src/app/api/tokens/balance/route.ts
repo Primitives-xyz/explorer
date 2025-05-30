@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const connection = new Connection(RPC_ENDPOINT)
+    const connection = new Connection(RPC_ENDPOINT, { commitment: 'confirmed' })
     let tokenAccountToQuery: PublicKey
 
     if (tokenAccount) {
