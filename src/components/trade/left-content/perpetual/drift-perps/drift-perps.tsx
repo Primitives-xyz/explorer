@@ -8,6 +8,7 @@ import {
   StopLimitOrderParams,
   TakeProfitOrderParams,
 } from '@/components/tapestry/models/drift.model'
+import { useTrade } from '@/components/trade/context/trade-context'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import { useLimitOrders } from '@/components/trade/hooks/drift/use-limit-orders'
 import { useMarketPrice } from '@/components/trade/hooks/drift/use-market-price'
@@ -38,7 +39,6 @@ import LimitOrder from './limit-order'
 import MarketOrder from './market-order'
 import StopLimit from './stop-limit'
 import TakeProfit from './take-profit'
-import { useTrade } from '@/components/trade/context/trade-context'
 
 const options = [
   { label: 'Market', value: OrderType.MARKET },
@@ -133,7 +133,7 @@ export function DriftPerps() {
       orderType,
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderParams])
+  }, [orderParams, selectedDirection, symbol, orderType])
 
   // Market
   const { price: marketPrice, loading: priceLoading } = useMarketPrice({
@@ -171,6 +171,10 @@ export function DriftPerps() {
       setTokenMint(SOL_MINT)
     }
   }, [setTokenMint])
+
+  useEffect(() => {
+    console.log('placeOrderParams', placeOrderParams)
+  }, [placeOrderParams])
 
   return (
     <div className="w-full">
