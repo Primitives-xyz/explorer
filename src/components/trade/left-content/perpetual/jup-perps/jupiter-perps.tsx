@@ -9,6 +9,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTrade } from '@/components/trade/context/trade-context'
 import { useIncreasePosition } from '@/components/trade/hooks/jup-perps/use-increase'
 import { useLimitOrders } from '@/components/trade/hooks/jup-perps/use-limit-orders'
+import { useMarketStats } from '@/components/trade/hooks/jup-perps/use-market-stats'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
 import {
   Button,
@@ -30,8 +31,7 @@ import { SOL_MINT, USDC_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { formatRawAmount } from '@/utils/utils'
 import Image from 'next/image'
-import { useCallback, useMemo, useState } from 'react'
-import { Slippage } from '../slippage'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Extracted validation functions
 const validateNumericInput = (value: string): boolean => {
@@ -71,8 +71,9 @@ export function JupiterPerps() {
   const [limitPrice, setLimitPrice] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [assetMint, setAssetMint] = useState<string>(SOL_MINT)
+  const { marketStats } = useMarketStats(assetMint)
   const [leverageValue, setLeverageValue] = useState<number>(1.1)
-  const [slippageOption, setSlippageOption] = useState<string>('0.1')
+  const [slippageOption, setSlippageOption] = useState<string>('1')
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
   const [isMarketOrderTxLoading, setIsMarketOrderTxLoading] =
     useState<boolean>(false)
@@ -227,6 +228,16 @@ export function JupiterPerps() {
     }
   }, [isLoggedIn, sdkHasLoaded, isLimitOrderTxLoading, placeLimitOrder])
 
+  useEffect(() => {
+    if (marketStats && orderType === OrderType.MARKET) {
+      setLimitPrice(
+        Number(marketStats.price)
+          .toFixed(4)
+          .replace(/\.?0+$/, '')
+      )
+    }
+  }, [marketStats, orderType])
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -283,7 +294,7 @@ export function JupiterPerps() {
               placeholder="Amount"
               value={limitPrice}
               disabled={orderType !== OrderType.LIMIT}
-              className="w-[150px]"
+              className="w-[150px] text-primary text-right bg-primary/10 border-primary/20"
               onChange={(e) => handleAmountChange(e, 'limit')}
             />
           </div>
@@ -348,7 +359,7 @@ export function JupiterPerps() {
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => handleAmountChange(e, 'amount')}
-                  className="w-full text-white border-none"
+                  className="w-full text-primary text-right bg-primary/10 border-primary/20"
                 />
               </div>
             </div>
@@ -369,24 +380,134 @@ export function JupiterPerps() {
             />
           </div>
 
-          <Slippage
+          {/* <Slippage
             handleDynamicSlippage={(e) => handleAmountChange(e, 'slippage')}
             setSlippageExpanded={setSlippageExpanded}
             setSlippageOption={setSlippageOption}
             slippageExpanded={slippageExpanded}
             slippageOption={slippageOption}
-          />
+          /> */}
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-6 gap-2">
+              <Button
+                variant={
+                  slippageOption === '1'
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.BADGE
+                }
+                className="px-0"
+                onClick={() => setSlippageOption('1')}
+              >
+                1%
+              </Button>
+              <Button
+                variant={
+                  slippageOption === '2'
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.BADGE
+                }
+                className="px-0"
+                onClick={() => setSlippageOption('2')}
+              >
+                2%
+              </Button>
+              <Button
+                variant={
+                  slippageOption === '3'
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.BADGE
+                }
+                className="px-0"
+                onClick={() => setSlippageOption('3')}
+              >
+                3%
+              </Button>
+
+              <div className="relative w-full col-span-3 flex items-center border border-primary/20 bg-primary/10 rounded-button h-9 p-1">
+                <span className="text-primary text-sm">Custom</span>
+                <Input
+                  type="text"
+                  className="text-primary h-full border-none bg-transparent"
+                  onChange={(e) => handleAmountChange(e, 'slippage')}
+                  value={
+                    isNaN(Number(slippageOption)) ? '' : `${slippageOption}`
+                  }
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary">
+                  %
+                </span>
+              </div>
+            </div>
+          </div>
 
           <Separator />
 
-          <div className="flex justify-between items-center text-sm">
-            <p>Entry Price</p>
-            <div className="flex items-center gap-2">$173.12</div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col space-y-1 text-left">
+              <span className="text-sm">Entry Price</span>
+              <span className="text-sm">Liquidation Price</span>
+            </div>
+
+            <div className="flex flex-col space-y-1 text-right">
+              <span className="text-sm">
+                {increaseResponse && increaseError === null
+                  ? `$${increaseResponse.quote.entryPriceUsd}`
+                  : '...'}
+              </span>
+              <span className="text-sm">
+                {increaseResponse && increaseError === null
+                  ? `$${increaseResponse.quote.liquidationPriceUsd}`
+                  : '...'}
+              </span>
+            </div>
           </div>
 
-          <div className="flex justify-between items-center text-sm">
-            <p>Liquidation Price</p>
-            <p className="flex items-center gap-2">$167.16</p>
+          <Separator />
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col space-y-1 text-left">
+              <span className="text-sm">Open Fee</span>
+              <span className="text-sm">Price Impact</span>
+              <span className="text-sm">Borrow Fee</span>
+              <span className="text-sm">Transaction Fee</span>
+              <span className="text-sm">Account Rent</span>
+            </div>
+
+            <div className="flex flex-col space-y-1 text-right">
+              <span className="text-sm">
+                {increaseResponse && increaseError === null
+                  ? `$${increaseResponse.quote.openFeeUsd}`
+                  : '...'}
+              </span>
+              <span className="text-sm">
+                {increaseResponse && increaseError === null
+                  ? `$${increaseResponse.quote.priceImpactFeeUsd}`
+                  : '...'}
+              </span>
+              <span className="text-sm">
+                {increaseResponse && increaseError === null
+                  ? `$${increaseResponse.quote.outstandingBorrowFeeUsd}`
+                  : '...'}
+              </span>
+              <span className="text-sm">
+                {increaseResponse && increaseError === null
+                  ? `$${
+                      Number(
+                        increaseResponse.txMetadata.transactionFeeLamports
+                      ) / Math.pow(10, assetTokenDecimals || 9)
+                    } ${assetTokenSymbol}`
+                  : '...'}
+              </span>
+              <span className="text-sm">
+                {increaseResponse && increaseError === null
+                  ? `$${
+                      Number(increaseResponse.txMetadata.accountRentLamports) /
+                      Math.pow(10, assetTokenDecimals || 9)
+                    } ${assetTokenSymbol}`
+                  : '...'}
+              </span>
+            </div>
           </div>
 
           <div>
