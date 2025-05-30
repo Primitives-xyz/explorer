@@ -15,7 +15,7 @@
 }
 
 .background-gradient-blue {
-  background: radial-gradient(
+  /* background: radial-gradient(
       113.59% 150.04% at 50% -15%,
       #477dfd 14.02%,
       #477dfd 43.59%,
@@ -26,11 +26,12 @@
       180deg,
       rgba(68, 68, 68, 0.59) -44.93%,
       rgba(71, 125, 253, 0.59) 106.67%
-    );
+    ); */
+  background: linear-gradient(180deg, #80abff 0%, #477dfd 100%);
 }
 
 .background-gradient-green {
-  background: radial-gradient(
+  /* background: radial-gradient(
       145.14% 191.7% at 50% -95%,
       rgba(242, 255, 239, 0.52) 0%,
       #e9f7fb 30.5%,
@@ -44,11 +45,13 @@
       180deg,
       rgba(169, 255, 153, 0.59) -44.93%,
       rgba(68, 68, 68, 0.59) 129.86%
-    );
+    ); */
+  background: linear-gradient(180deg, #a9ff99 0%, #e9f7fb 100%),
+    linear-gradient(180deg, #a9ff99 0%, #e9f7fb 283.59%);
 }
 
 .background-gradient-pink {
-  background: radial-gradient(
+  /* background: radial-gradient(
       137.03% 170.09% at 51.43% -32%,
       #181818 0%,
       rgba(215, 109, 215, 0.56) 9.43%,
@@ -60,7 +63,15 @@
       180deg,
       rgba(239, 212, 212, 0.43) -36.67%,
       rgba(68, 68, 68, 0.43) 93.88%
-    );
+    ); */
+  background: linear-gradient(
+    180deg,
+    #a9ff99 -196.09%,
+    #ffe092 -65.07%,
+    #ff8b8b 54.46%,
+    #ffa3ff 173.99%,
+    #ad93f8 282.03%
+  );
 }
 
 .background-gradient-card {

@@ -77,37 +77,12 @@ export function PudgyOnboardingButton({ mainProfile }: Props) {
             experience.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex-1">
-          {step === EPudgyOnboardingStep.INTRO && <PudgyUpgradeBenefits />}
-          {step === EPudgyOnboardingStep.CLAIM && <PudgyClaimProfileStep />}
-        </div>
-        <div className="flex justify-between mt-auto">
-          <Button
-            onClick={onClose}
-            className="w-[160px]"
-            variant={ButtonVariant.OUTLINE}
-          >
-            Cancel
-          </Button>
-          {step === EPudgyOnboardingStep.INTRO ? (
-            <Button
-              onClick={() => setStep(EPudgyOnboardingStep.CLAIM)}
-              className="w-[160px]"
-            >
-              Claim Profile
-            </Button>
-          ) : (
-            <div className="relative">
-              <Button
-                onClick={() => setStep(EPudgyOnboardingStep.CLAIM)}
-                className="w-[160px]"
-              >
-                Burn PENGU
-              </Button>
-              <p className="text-xs text-primary absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-2">
-                -123 PENGU
-              </p>
-            </div>
+        <div className="flex-1 flex flex-col">
+          {step === EPudgyOnboardingStep.INTRO && (
+            <PudgyUpgradeBenefits onClose={onClose} setStep={setStep} />
+          )}
+          {step === EPudgyOnboardingStep.CLAIM && (
+            <PudgyClaimProfileStep setStep={setStep} />
           )}
         </div>
         <div className="mt-5">

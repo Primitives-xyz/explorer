@@ -1,8 +1,15 @@
 'use client'
 
+import { Button, ButtonVariant } from '@/components/ui'
 import Image from 'next/image'
+import { EPudgyOnboardingStep } from '../pudgy.models'
 
-export function PudgyUpgradeBenefits() {
+interface Props {
+  onClose: () => void
+  setStep: (step: EPudgyOnboardingStep) => void
+}
+
+export function PudgyUpgradeBenefits({ onClose, setStep }: Props) {
   const benefits = [
     {
       title: 'Premium Pudgy Profile UI',
@@ -22,7 +29,7 @@ export function PudgyUpgradeBenefits() {
   ]
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center flex-1">
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <div className="shrink-0 mt-6">
           <Image
@@ -62,6 +69,21 @@ export function PudgyUpgradeBenefits() {
           upgrade.
           <span>👈</span>
         </p>
+      </div>
+      <div className="flex justify-between mt-auto w-full">
+        <Button
+          onClick={onClose}
+          className="w-[160px]"
+          variant={ButtonVariant.OUTLINE}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={() => setStep(EPudgyOnboardingStep.CLAIM)}
+          className="w-[160px]"
+        >
+          Claim Profile
+        </Button>
       </div>
     </div>
   )

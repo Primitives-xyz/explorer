@@ -4,7 +4,6 @@ import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
 import { usePudgyStore } from '@/components/pudgy/stores/use-pudgy-store'
-import { ResetProfileButton } from '@/components/solid-score/components/smart-cta/reset-profile-button'
 import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
@@ -39,7 +38,7 @@ export function LeftSideMenu() {
           </Button>
           <ProfileInfos />
           <Menu />
-          <ResetProfileButton />
+          {/* <ResetProfileButton /> */}
           {/* <TestButton /> */}
         </div>
         <div className="space-y-4 py-4">

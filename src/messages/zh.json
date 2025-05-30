@@ -559,7 +559,7 @@
       },
       "username": {
         "label": "Username",
-        "placeholder": "Please add a title",
+        "placeholder": "Please add a username",
         "description": "用户名只能包含字母、数字、下划线和句点（用于SNS名称，如.sol）",
         "validation": {
           "min_length": "Username must be at least 3 characters long",
