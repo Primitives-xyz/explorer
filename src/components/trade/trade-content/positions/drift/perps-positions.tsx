@@ -67,13 +67,13 @@ export function PerpsPositions() {
         )}
         <div className="h-6">
           {selectedType === Tabs.PERPS_POSITIONS && positionsLoading && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-sm">
               <p>Loading Positions</p>
               <Spinner size={16} />
             </div>
           )}
           {selectedType === Tabs.PERPS_ORDERS && ordersLoading && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-sm">
               <p>Loading Limit Orders</p>
               <Spinner size={16} />
             </div>

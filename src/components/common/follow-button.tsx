@@ -1,12 +1,15 @@
 'use client'
 
 import { useFollowUser } from '@/components/tapestry/hooks/use-follow-user'
+import { useFollowWallet } from '@/components/tapestry/hooks/use-follow-wallet'
 import { useGetFollowers } from '@/components/tapestry/hooks/use-get-followers'
 import { useGetFollowersState } from '@/components/tapestry/hooks/use-get-followers-state'
 import { useGetFollowing } from '@/components/tapestry/hooks/use-get-following'
 import { useUnfollowUser } from '@/components/tapestry/hooks/use-unfollow-user'
+import { useUnfollowWallet } from '@/components/tapestry/hooks/use-unfollow-wallet'
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { isValidSolanaAddress } from '@/utils/validation'
 import { UserMinus, UserPlus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -29,6 +32,8 @@ export function FollowButton({
 }: Props) {
   const { followUser, loading: followUserLoading } = useFollowUser()
   const { unfollowUser, loading: unfollowUserLoading } = useUnfollowUser()
+  const { followWallet, loading: followWalletLoading } = useFollowWallet()
+  const { unfollowWallet, loading: unfollowWalletLoading } = useUnfollowWallet()
   const { refetch: refetchCurrentUser, loading: loadingCurrentUser } =
     useCurrentWallet()
   const { refetch: refetchGetFollowing } = useGetFollowing({
@@ -39,6 +44,9 @@ export function FollowButton({
   })
   const [refetchLoading, setRefetchLoading] = useState(false)
   const t = useTranslations()
+
+  // Determine if followeeUsername is a wallet address
+  const isWalletAddress = isValidSolanaAddress(followeeUsername)
 
   const {
     data,
@@ -55,9 +63,11 @@ export function FollowButton({
 
   const loading =
     followUserLoading ||
+    followWalletLoading ||
     refetchLoading ||
     loadingCurrentUser ||
-    unfollowUserLoading
+    unfollowUserLoading ||
+    unfollowWalletLoading
 
   const refetch = async () => {
     setRefetchLoading(true)
@@ -75,10 +85,17 @@ export function FollowButton({
     setIsFollowingOptimistic(true)
 
     try {
-      await followUser({
-        followerUsername,
-        followeeUsername,
-      })
+      if (isWalletAddress) {
+        await followWallet({
+          followerUsername,
+          walletToFollow: followeeUsername,
+        })
+      } else {
+        await followUser({
+          followerUsername,
+          followeeUsername,
+        })
+      }
       await refetch()
       onFollowSuccess?.()
     } catch (error) {
@@ -93,10 +110,17 @@ export function FollowButton({
     setIsFollowingOptimistic(false)
 
     try {
-      await unfollowUser({
-        followerUsername,
-        followeeUsername,
-      })
+      if (isWalletAddress) {
+        await unfollowWallet({
+          followerUsername,
+          followeeUsername,
+        })
+      } else {
+        await unfollowUser({
+          followerUsername,
+          followeeUsername,
+        })
+      }
       await refetch()
     } catch (error) {
       console.error('Failed to unfollow:', error)

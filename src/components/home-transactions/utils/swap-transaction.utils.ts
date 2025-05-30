@@ -55,7 +55,7 @@ export function processSwapTransaction(
       })
 
       // Also include in outgoing/incoming tracking
-      if (transfer.fromUserAccount === feePayer) {
+      if (transfer.fromUserAccount === feePayer && amount > 0) {
         if (!outgoingTokens[SOL_MINT]) {
           outgoingTokens[SOL_MINT] = {
             mint: SOL_MINT,
@@ -65,9 +65,19 @@ export function processSwapTransaction(
         } else {
           outgoingTokens[SOL_MINT].amount += amount
         }
+
+        // If this is the first SOL outgoing and we don't have a primary yet, set it
+        if (!primaryOutgoingToken && amount > 0.0000001) {
+          // Even tiny amounts count
+          primaryOutgoingToken = {
+            mint: SOL_MINT,
+            amount: amount,
+            symbol: 'SOL',
+          }
+        }
       }
 
-      if (transfer.toUserAccount === feePayer) {
+      if (transfer.toUserAccount === feePayer && amount > 0) {
         if (!incomingTokens[SOL_MINT]) {
           incomingTokens[SOL_MINT] = {
             mint: SOL_MINT,
@@ -86,15 +96,70 @@ export function processSwapTransaction(
     // Track if a token transfer is also in native transfers to avoid duplication
     const processedSolTransfers = new Set()
 
-    // Find the first outgoing transfer (fromUserAccount matching feePayer)
-    const firstOutgoingTransfer = transaction.tokenTransfers.find(
-      (transfer) => transfer.fromUserAccount === feePayer && transfer.mint
-    )
+    // Build a map of all incoming transfers by their source
+    const incomingTransfersBySource = new Map<string, any[]>()
+    transaction.tokenTransfers.forEach((transfer) => {
+      if (transfer.toUserAccount === feePayer && transfer.fromUserAccount) {
+        if (!incomingTransfersBySource.has(transfer.fromUserAccount)) {
+          incomingTransfersBySource.set(transfer.fromUserAccount, [])
+        }
+        incomingTransfersBySource.get(transfer.fromUserAccount)!.push(transfer)
+      }
+    })
+
+    // Find the first outgoing transfer that has a corresponding incoming transfer
+    // This indicates a swap pattern
+    const firstSwapOutgoing = transaction.tokenTransfers.find((transfer) => {
+      if (
+        transfer.fromUserAccount !== feePayer ||
+        !transfer.mint ||
+        !transfer.toUserAccount
+      )
+        return false
+
+      // Check if the recipient sends something back to us
+      const recipientSendsBack = incomingTransfersBySource.has(
+        transfer.toUserAccount
+      )
+      if (!recipientSendsBack) return false
+
+      // Check if what they send back is a different token (indicating a swap)
+      const incomingFromRecipient = incomingTransfersBySource.get(
+        transfer.toUserAccount
+      )!
+      return incomingFromRecipient.some((inc) => inc.mint !== transfer.mint)
+    })
+
+    // If we found a swap pattern, find the corresponding incoming token
+    let correspondingIncoming = null
+    if (firstSwapOutgoing && firstSwapOutgoing.toUserAccount) {
+      const incomingFromRecipient = incomingTransfersBySource.get(
+        firstSwapOutgoing.toUserAccount
+      )
+      if (incomingFromRecipient) {
+        // Find the incoming transfer with a different mint
+        correspondingIncoming = incomingFromRecipient.find(
+          (inc) => inc.mint !== firstSwapOutgoing.mint
+        )
+      }
+    }
+
+    // If we didn't find a swap pattern, use the first outgoing transfer
+    const firstOutgoingTransfer =
+      firstSwapOutgoing ||
+      transaction.tokenTransfers.find(
+        (transfer) => transfer.fromUserAccount === feePayer && transfer.mint
+      )
 
     // Find the last incoming transfer (toUserAccount matching feePayer)
-    const lastIncomingTransfer = [...transaction.tokenTransfers]
-      .reverse()
-      .find((transfer) => transfer.toUserAccount === feePayer && transfer.mint)
+    // But prefer the corresponding incoming if we found a swap pattern
+    const lastIncomingTransfer =
+      correspondingIncoming ||
+      [...transaction.tokenTransfers]
+        .reverse()
+        .find(
+          (transfer) => transfer.toUserAccount === feePayer && transfer.mint
+        )
 
     // Process all transfers to build the full picture
     transaction.tokenTransfers.forEach((transfer) => {
@@ -174,15 +239,52 @@ export function processSwapTransaction(
     transaction.timestamp * 1000
   ).toLocaleTimeString()
 
-  // If we didn't find primary tokens in token transfers, use the first from outgoingTokens/incomingTokens
+  // If we didn't find primary tokens in token transfers, use the largest outgoing/incoming amounts
   if (!primaryOutgoingToken && Object.keys(outgoingTokens).length > 0) {
-    const mint = Object.keys(outgoingTokens)[0]
-    primaryOutgoingToken = outgoingTokens[mint]
+    // Special case: if SOL is outgoing and not circular, prioritize it
+    if (outgoingTokens[SOL_MINT] && !circularTokens.has(SOL_MINT)) {
+      primaryOutgoingToken = outgoingTokens[SOL_MINT]
+    } else {
+      // Find the token with the largest outgoing amount (excluding circular tokens)
+      let largestAmount = 0
+      let largestMint = null
+
+      Object.entries(outgoingTokens).forEach(([mint, token]) => {
+        // Skip if this token is also incoming (circular)
+        if (!circularTokens.has(mint) && token.amount > largestAmount) {
+          largestAmount = token.amount
+          largestMint = mint
+        }
+      })
+
+      // If all tokens are circular, just use the first one
+      if (!largestMint) {
+        largestMint = Object.keys(outgoingTokens)[0]
+      }
+
+      primaryOutgoingToken = outgoingTokens[largestMint]
+    }
   }
 
   if (!primaryIncomingToken && Object.keys(incomingTokens).length > 0) {
-    const mint = Object.keys(incomingTokens)[0]
-    primaryIncomingToken = incomingTokens[mint]
+    // Find the token with the largest incoming amount (excluding circular tokens)
+    let largestAmount = 0
+    let largestMint = null
+
+    Object.entries(incomingTokens).forEach(([mint, token]) => {
+      // Skip if this token is also outgoing (circular)
+      if (!circularTokens.has(mint) && token.amount > largestAmount) {
+        largestAmount = token.amount
+        largestMint = mint
+      }
+    })
+
+    // If all tokens are circular, just use the first one
+    if (!largestMint) {
+      largestMint = Object.keys(incomingTokens)[0]
+    }
+
+    primaryIncomingToken = incomingTokens[largestMint]
   }
 
   return {

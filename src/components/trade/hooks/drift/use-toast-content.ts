@@ -137,6 +137,13 @@ export function useToastContent() {
         duration: 5000,
       },
     },
+    DECREASE_POSITION_TX_ERR: {
+      title: 'Failed to decrease position',
+      content: {
+        description: 'Failed to decrease position',
+        duration: 5000,
+      },
+    },
   }
 
   const LOADINGS = {
@@ -210,6 +217,13 @@ export function useToastContent() {
       title: 'Successfully increased position',
       content: {
         description: 'Successfully increased position',
+        duration: 2000,
+      },
+    },
+    DECREASE_POSITION_TX_SUCCESS: {
+      title: 'Successfully decreased position',
+      content: {
+        description: 'Successfully decreased position',
         duration: 2000,
       },
     },

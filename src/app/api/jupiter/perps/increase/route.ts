@@ -70,8 +70,6 @@ export async function POST(request: Request) {
       }
     }
 
-    console.log('body', body)
-
     // Forward request to Jupiter API
     const response = await fetch('https://perps-api.jup.ag/v1/positions-gasless/increase', {
       method: 'POST',

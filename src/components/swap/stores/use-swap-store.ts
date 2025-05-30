@@ -35,9 +35,15 @@ export const useSwapStore = create<State>()((set) => ({
         ...inputs,
         inputMint: inputs.inputMint || SOL_MINT,
         outputMint: inputs.outputMint || SSE_MINT,
-        inputAmount: typeof inputs.inputAmount === 'number' ? inputs.inputAmount : 0,
+        inputAmount:
+          typeof inputs.inputAmount === 'number' ? inputs.inputAmount : 0,
+        sourceWallet: inputs.sourceWallet || undefined,
+        sourceTransactionId: inputs.sourceTransactionId || undefined,
       },
-      inAmount: typeof inputs.inputAmount === 'number' ? inputs.inputAmount.toString() : '0',
+      inAmount:
+        typeof inputs.inputAmount === 'number'
+          ? inputs.inputAmount.toString()
+          : '0',
     })),
   setSwapMode: (mode) => set(() => ({ swapMode: mode })),
   setInAmount: (amount) => set(() => ({ inAmount: amount })),

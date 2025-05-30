@@ -1,5 +1,6 @@
 'use client'
 
+import { TokenBalance } from '@/components/common/left-side-menu/balance'
 import { TokenHolders } from '@/components/common/token-holders'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { DEFAULT_OUTPUT_TOKEN_SYMBOL } from '@/components/swap/swap.constants'
@@ -15,9 +16,10 @@ import { ESwapMode } from '../../swap.models'
 
 interface Props {
   setShowOutputTokenSearch: (show: boolean) => void
+  walletAddress: string
 }
 
-export function Receive({ setShowOutputTokenSearch }: Props) {
+export function Receive({ setShowOutputTokenSearch, walletAddress }: Props) {
   const t = useTranslations()
   const {
     inputs: { outputMint },
@@ -69,6 +71,13 @@ export function Receive({ setShowOutputTokenSearch }: Props) {
       <div>
         <div className="flex justify-between items-center">
           <p>{t('swap.input.receive')}</p>
+          <p className="text-xs text-muted-foreground">
+            {t('swap.input.balance_label')}{' '}
+            <TokenBalance
+              walletAddress={walletAddress}
+              tokenMint={outputMint}
+            />
+          </p>
         </div>
 
         <div className="flex justify-between items-center">

@@ -45,7 +45,10 @@ export function TopSwap({
           <div className="bg-muted w-full h-[1px]" />
         </div>
 
-        <Receive setShowOutputTokenSearch={setShowOutputTokenSearch} />
+        <Receive
+          setShowOutputTokenSearch={setShowOutputTokenSearch}
+          walletAddress={walletAddress}
+        />
       </CardContent>
     </Card>
   )

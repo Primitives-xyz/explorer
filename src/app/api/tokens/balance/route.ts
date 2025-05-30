@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const connection = new Connection(RPC_ENDPOINT)
+    const connection = new Connection(RPC_ENDPOINT, { commitment: 'confirmed' })
     let tokenAccountToQuery: PublicKey
 
     if (tokenAccount) {
@@ -33,13 +33,33 @@ export async function GET(request: Request) {
         new PublicKey(mintAddress!),
         new PublicKey(walletAddress!)
       )
+    }
 
-      // Check if the token account exists
-      const accountInfo = await connection.getAccountInfo(
-        tokenAccountToQuery,
-        'confirmed'
+    try {
+      // Try to get the token balance directly
+      const balance = await connection.getTokenAccountBalance(
+        tokenAccountToQuery
       )
-      if (!accountInfo) {
+
+      // Return response with cache headers
+      return NextResponse.json(
+        {
+          balance: {
+            amount: balance.value.amount,
+            decimals: balance.value.decimals,
+            uiAmount: balance.value.uiAmount,
+            uiAmountString: balance.value.uiAmountString,
+          },
+        },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60', // Cache for 1 minute with stale-while-revalidate
+          },
+        }
+      )
+    } catch (balanceError: any) {
+      // If the account doesn't exist, return 0 balance
+      if (balanceError?.message?.includes('could not find account')) {
         return NextResponse.json(
           {
             balance: {
@@ -56,26 +76,9 @@ export async function GET(request: Request) {
           }
         )
       }
+      // Re-throw other errors
+      throw balanceError
     }
-
-    const balance = await connection.getTokenAccountBalance(tokenAccountToQuery)
-
-    // Return response with cache headers
-    return NextResponse.json(
-      {
-        balance: {
-          amount: balance.value.amount,
-          decimals: balance.value.decimals,
-          uiAmount: balance.value.uiAmount,
-          uiAmountString: balance.value.uiAmountString,
-        },
-      },
-      {
-        headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60', // Cache for 1 minute with stale-while-revalidate
-        },
-      }
-    )
   } catch (error) {
     console.error('Error fetching token balance:', error)
     return NextResponse.json(

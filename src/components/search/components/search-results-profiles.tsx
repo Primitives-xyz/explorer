@@ -1,7 +1,7 @@
 'use client'
 
 import { Avatar } from '@/components/ui/avatar/avatar'
-import { route } from '@/utils/route'
+import { getProfileUrl, isExternalProfile } from '@/utils/profile-utils'
 import { useGetSearchProfiles } from '../hooks/use-get-search-profiles'
 import { SearchResultsEntry } from './search-results-entry'
 
@@ -51,10 +51,9 @@ export function SearchResultsProfiles({ query, closePopover }: Props) {
               </>
             }
             rightContent={entry.namespace.readableName}
-            href={route('entity', {
-              id: entry.profile.id,
-            })}
+            href={getProfileUrl(entry)}
             closePopover={closePopover}
+            newTab={isExternalProfile(entry.namespace.name)}
           />
         ))}
         {profiles.length === 0 && !loading && (

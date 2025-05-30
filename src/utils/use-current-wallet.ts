@@ -9,6 +9,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { EXPLORER_NAMESPACE } from './constants'
 import { ADMIN_USERS } from './user-permissions'
 
+export interface LoadingStates {
+  sdk: boolean
+  profiles: boolean
+  overall: boolean
+}
+
 export function useCurrentWallet() {
   const {
     sdkHasLoaded: dynamicSdkHasLoaded,
@@ -48,6 +54,7 @@ export function useCurrentWallet() {
     refetch: refetchGetProfiles,
   } = useGetProfiles({
     walletAddress,
+    skip: !walletAddress,
   })
 
   const { mainProfile } = useMemo(() => {
@@ -66,12 +73,22 @@ export function useCurrentWallet() {
     ? ADMIN_USERS.includes(mainProfile.profile.username)
     : false
 
+  const loadingStates: LoadingStates = useMemo(
+    () => ({
+      sdk: !sdkHasLoaded,
+      profiles: !!walletAddress && getProfilesLoading,
+      overall: !sdkHasLoaded,
+    }),
+    [sdkHasLoaded, walletAddress, getProfilesLoading]
+  )
+
   return {
     profiles,
     walletAddress,
     socialCounts: mainProfile?.socialCounts,
     mainProfile: mainProfile?.profile,
-    loading: !dynamicSdkHasLoaded || getProfilesLoading,
+    loading: loadingStates.overall,
+    loadingStates,
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,

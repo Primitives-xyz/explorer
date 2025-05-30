@@ -11,6 +11,7 @@ interface BaseTransactionContent {
   txSignature: string
   timestamp: string
   route?: string // Where the swap was executed from: 'trenches', 'trade', or 'home'
+  usdcFeeAmount?: string // USDC value of the swap fee
 
   // Token information
   inputTokenSymbol: string

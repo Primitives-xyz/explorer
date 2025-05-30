@@ -67,6 +67,8 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
               inputMint: fromToken.mint,
               outputMint: toToken.mint,
               inputAmount: fromToken.amount,
+              sourceWallet,
+              sourceTransactionId: transaction.signature,
             })
           }}
         >
