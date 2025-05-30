@@ -2,6 +2,7 @@
 
 import { OnboardingButton } from '@/components/onboarding/components/onboarding-button'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
+import { Skeleton } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
 import {
@@ -20,25 +21,6 @@ import { useEffect, useState } from 'react'
 
 interface Props {
   setOpen?: (open: boolean) => void
-}
-
-function ProfileSkeleton() {
-  return (
-    <div className="space-y-2 animate-pulse">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 md:w-6 md:h-6 bg-gray-200 rounded-full" />
-        <div className="flex items-center gap-1">
-          <div className="h-4 w-16 bg-gray-200 rounded" />
-          <div className="h-4 w-20 bg-gray-200 rounded" />
-        </div>
-      </div>
-      <div className="flex items-center gap-1">
-        <div className="w-5 h-5 md:w-4 md:h-4 bg-gray-200 rounded-full" />
-        <div className="h-4 w-12 bg-gray-200 rounded" />
-        <div className="h-4 w-16 bg-gray-200 rounded" />
-      </div>
-    </div>
-  )
 }
 
 export function ProfileInfos({ setOpen }: Props) {
@@ -64,7 +46,7 @@ export function ProfileInfos({ setOpen }: Props) {
   // Always show skeleton during SSR and initial client render
   // This ensures consistent rendering between server and client
   if (!isClientReady || !sdkHasLoaded || (isLoggedIn && !mainProfile)) {
-    return <ProfileSkeleton />
+    return <Skeleton className="w-full h-[36px]" />
   }
 
   if (!isLoggedIn) {
