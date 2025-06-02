@@ -1,7 +1,8 @@
 'use client'
 
-import { SolidScoreLeaderboardResponse } from '@/components/tapestry/models/solid.score.models'
+import { ISolidScoreLeaderboardResponse } from '@/components/tapestry/models/solid.score.models'
 import { Button, ButtonVariant } from '@/components/ui'
+import { Avatar } from '@/components/ui/avatar/avatar'
 import { DataTable } from '@/components/ui/table/data-table'
 import { SortableHeader } from '@/components/ui/table/sortable-header'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
@@ -19,7 +20,7 @@ const baseColumnStyles = {
 }
 
 interface DataTableLeaderboardProps {
-  data: SolidScoreLeaderboardResponse[]
+  data: ISolidScoreLeaderboardResponse[]
   loading: boolean
   currentUsername?: string
 }
@@ -34,7 +35,9 @@ export function DataTableLeaderboard({
     { id: 'position', desc: false },
   ])
 
-  const columns: ColumnDef<SolidScoreLeaderboardResponse>[] = [
+  console.log(data)
+
+  const columns: ColumnDef<ISolidScoreLeaderboardResponse>[] = [
     {
       accessorKey: 'position',
       enableSorting: true,
@@ -69,6 +72,7 @@ export function DataTableLeaderboard({
       cell: ({ getValue, row }) => {
         const value = getValue<string>()
         const isCurrentUser = row.original.username === currentUsername
+
         return (
           <div className={baseColumnStyles.username}>
             <Button
@@ -78,6 +82,12 @@ export function DataTableLeaderboard({
                 'text-primary font-bold': isCurrentUser,
               })}
             >
+              <Avatar
+                imageUrl={row.original.image}
+                username={value}
+                size={24}
+                className="w-6 h-6"
+              />
               <p className="truncate">{value}</p>
             </Button>
           </div>
