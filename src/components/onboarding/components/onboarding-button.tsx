@@ -25,10 +25,10 @@ import { SuggestedFollow } from './suggested-follow'
 import { UpdateUsernameForm } from './update-username-form'
 
 interface Props {
-  username: string
+  profileId: string
 }
 
-export function OnboardingButton({ username }: Props) {
+export function OnboardingButton({ profileId }: Props) {
   const t = useTranslations()
   const [open, setOpen] = useState(false)
   const {
@@ -110,11 +110,10 @@ export function OnboardingButton({ username }: Props) {
             <div className="flex flex-col gap-10 flex-1 w-full">
               {step !== EOnboardingSteps.FOLLOW && <StepsWrapper step={step} />}
 
-              {step === EOnboardingSteps.USERNAME && mainProfile?.username && (
+              {step === EOnboardingSteps.USERNAME && !!mainProfile && (
                 <UpdateUsernameForm
-                  walletAddress={walletAddress}
                   suggestedUsernames={suggestedUsernames}
-                  username={mainProfile.username}
+                  mainProfile={mainProfile}
                   setStep={setStep}
                   closeModal={() => setOpen(false)}
                 />

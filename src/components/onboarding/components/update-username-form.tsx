@@ -1,7 +1,10 @@
 'use client'
 
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
-import { ISuggestedUsername } from '@/components/tapestry/models/profiles.models'
+import {
+  IProfile,
+  ISuggestedUsername,
+} from '@/components/tapestry/models/profiles.models'
 import {
   Button,
   ButtonVariant,
@@ -30,17 +33,15 @@ import { SuggestedUsernames } from './suggested-usernames'
 const ACCEPTABLE_SUFFIXES = ['.sol']
 
 interface Props {
-  walletAddress: string
   suggestedUsernames: ISuggestedUsername[]
-  username: string
+  mainProfile: IProfile
   setStep: (step: EOnboardingSteps) => void
   closeModal: () => void
 }
 
 export function UpdateUsernameForm({
-  walletAddress,
   suggestedUsernames,
-  username,
+  mainProfile,
   setStep,
   closeModal,
 }: Props) {
@@ -48,9 +49,9 @@ export function UpdateUsernameForm({
   const [suggestedUsername, setSuggestedUsername] =
     useState<ISuggestedUsername>()
   const { updateProfile, loading } = useUpdateProfile({
-    profileId,
+    profileId: mainProfile.id,
   })
-  const { mainProfile, refetch: refetchCurrentUser } = useCurrentWallet()
+  const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { push } = useRouter()
 
   const formSchema = z.object({

@@ -124,8 +124,8 @@ export function ProfileInfos({ setOpen }: Props) {
           {`${t('common.balance')}: ${balanceLoading ? '...' : balance}`}
         </span>
       </div>
-      {!mainProfile?.hasSeenProfileSetupModal && mainProfile?.username && (
-        <OnboardingButton username={mainProfile.username} />
+      {!mainProfile?.hasSeenProfileSetupModal && !!mainProfile?.id && (
+        <OnboardingButton profileId={mainProfile.id} />
       )}
     </div>
   )

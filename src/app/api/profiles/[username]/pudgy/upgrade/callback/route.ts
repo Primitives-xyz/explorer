@@ -6,10 +6,12 @@ import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
 import { FetchMethod } from '@/utils/api/api.models'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { username: string } }
-) {
+type RouteContext = {
+  params: Promise<{ username: string }>
+}
+
+export async function POST(request: NextRequest, context: RouteContext) {
+  const params = await context.params
   const { username } = params
 
   try {

@@ -2,10 +2,12 @@ import { IPudgyUpgradeInitiateResponse } from '@/components/pudgy/solana-payment
 import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { username: string } }
-) {
+type RouteContext = {
+  params: Promise<{ username: string }>
+}
+
+export async function GET(req: NextRequest, context: RouteContext) {
+  const params = await context.params
   const { username } = params
 
   try {

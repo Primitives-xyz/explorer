@@ -2,12 +2,14 @@ import { ICryptoChallengePaymentStatus } from '@/components/pudgy/solana-payment
 import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
+export async function GET(_request: NextRequest, context: RouteContext) {
   try {
-    const id = params.id
+    const params = await context.params
+    const { id } = params
 
     const response = await fetchTapestry<ICryptoChallengePaymentStatus>({
       endpoint: `transactions/${id}`,
