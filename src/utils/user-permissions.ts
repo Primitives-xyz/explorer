@@ -7,4 +7,5 @@ export const ADMIN_USERS = [
   'poloqweqwe',
   'marcusmth',
   'polo2',
+  'polomain',
 ]

@@ -1,6 +1,6 @@
 'use client'
 
-import { SolidScoreResponse } from '@/components/tapestry/models/solid.score.models'
+import { ISolidScoreResponse } from '@/components/tapestry/models/solid.score.models'
 import { useQuery } from '@/utils/api'
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function useSolidScore({ profileId }: Props) {
-  const { data, error, loading, refetch } = useQuery<SolidScoreResponse>({
+  const { data, error, loading, refetch } = useQuery<ISolidScoreResponse>({
     endpoint: `solid-score/${profileId}`,
     skip: !profileId,
   })

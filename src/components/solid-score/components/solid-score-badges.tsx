@@ -1,4 +1,4 @@
-import { SolidScoreResponse } from '@/components/tapestry/models/solid.score.models'
+import { ISolidScoreResponse } from '@/components/tapestry/models/solid.score.models'
 import {
   Tooltip,
   TooltipContent,
@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 interface Props {
-  data?: SolidScoreResponse
+  data?: ISolidScoreResponse
   smallView?: boolean
   compactLimit?: number
 }

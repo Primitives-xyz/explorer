@@ -9,7 +9,6 @@ import {
   AlignJustify,
   ArrowRightLeft,
   Beef,
-  Compass,
   House,
   LucideIcon,
   PocketKnife,
@@ -53,13 +52,6 @@ export function Menu({ setOpen }: Props) {
       />
 
       <Entry
-        title={t('menu.discover')}
-        icon={Compass}
-        href={route('discover')}
-        setOpen={setOpen}
-      />
-
-      <Entry
         title={t('menu.stake')}
         icon={Beef}
         href={route('stake')}
@@ -72,19 +64,12 @@ export function Menu({ setOpen }: Props) {
           icon={AlignJustify}
           href={route('leaderboard')}
           setOpen={setOpen}
-          onlyMobile
         />
       )}
 
       {process.env.NODE_ENV === 'production' && (
         <DialectNotificationsComponent />
       )}
-
-      {/* <Entry
-        title="Design System"
-        icon={PaintbrushVertical}
-        href={route('designSystem')}
-      /> */}
     </div>
   )
 }
