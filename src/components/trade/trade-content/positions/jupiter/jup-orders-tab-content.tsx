@@ -1,3 +1,4 @@
+import { useDeleteLimitOrder } from '@/components/trade/hooks/jup-perps/use-delete-order'
 import { OpenOrder } from '@/components/trade/hooks/jup-perps/use-open-orders'
 import {
   Button,
@@ -5,6 +6,7 @@ import {
   Card,
   CardContent,
   CardVariant,
+  Separator,
 } from '@/components/ui'
 
 interface JupOrdersTabContentProps {
@@ -16,48 +18,83 @@ export default function JupOrdersTabContent({
   limitOrders,
   ordersLoading,
 }: JupOrdersTabContentProps) {
+  const { deleteLimitOrder, isLoading } = useDeleteLimitOrder()
+
+  const handleCancelOrder = (positionRequestPubkey: string) => {
+    deleteLimitOrder(positionRequestPubkey)
+  }
+
   return (
     <div className="pb-2">
-      <div className="grid grid-cols-5 gap-2 px-2 py-2">
-        <div className="text-primary">Position</div>
-        <div className="text-primary">Trigger Price</div>
-        <div className="text-primary">Size</div>
-        <div className="text-primary">Collateral</div>
-        <div className="text-primary">Action</div>
-      </div>
-
       <div className="h-[250px] overflow-auto space-y-2">
         {limitOrders.length ? (
           <>
             {limitOrders.map((openOrder, index) => {
               return (
                 <Card variant={CardVariant.ACCENT_SOCIAL} key={index}>
-                  <CardContent className="px-2 py-2 grid grid-cols-5 gap-2 items-center">
-                    <div>
-                      <p className="text-sm">SOL</p>
-                      <p className="text-sm">{openOrder.side.toUpperCase()}</p>
+                  <CardContent className="px-2 py-2 space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <p className="text-sm">SOL</p>
+                        <p className="text-sm text-primary">
+                          {openOrder.side.toUpperCase()}
+                        </p>
+                      </div>
+
+                      <div className="flex justify-end">
+                        <Button
+                          variant={ButtonVariant.OUTLINE}
+                          onClick={() => {
+                            handleCancelOrder(openOrder.positionRequestPubkey)
+                          }}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? 'Cancelling...' : 'Cancel'}
+                        </Button>
+                      </div>
                     </div>
 
-                    <div>
-                      <p className="text-sm">${openOrder.triggerPrice}</p>
+                    <Separator className="my-1" />
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm text-primary">Trigger Price</p>
+                        <p className="text-sm">${openOrder.triggerPrice}</p>
+                      </div>
+
+                      <div className="flex flex-col text-end space-y-1">
+                        <p className="text-sm text-primary">Size</p>
+                        <p className="text-sm">${openOrder.sizeUsd}</p>
+                      </div>
                     </div>
 
-                    <div>
-                      <p className="text-sm">${openOrder.sizeUsd}</p>
-                    </div>
+                    <Separator className="my-1" />
 
-                    <div>
-                      <p className="text-sm">
-                        {(
-                          Number(openOrder.collateralTokenAmount) /
-                          Math.pow(10, 9)
-                        ).toFixed(4).replace(/\.?0+$/, '')}{' '}
-                        SOL
-                      </p>
-                      <p className="text-sm">${openOrder.collateralUsdAtTriggerPrice}</p>
-                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm text-primary">
+                          Collateral(amount)
+                        </p>
+                        <p className="text-sm">
+                          {(
+                            Number(openOrder.collateralTokenAmount) /
+                            Math.pow(10, 9)
+                          )
+                            .toFixed(4)
+                            .replace(/\.?0+$/, '')}{' '}
+                          SOL
+                        </p>
+                      </div>
 
-                    <Button variant={ButtonVariant.OUTLINE}>Cancel</Button>
+                      <div className="flex flex-col text-end space-y-1">
+                        <p className="text-sm text-primary">
+                          Collateral(trig.price)
+                        </p>
+                        <p className="text-sm">
+                          ${openOrder.collateralUsdAtTriggerPrice}
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               )

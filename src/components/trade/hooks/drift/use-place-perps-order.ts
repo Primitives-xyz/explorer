@@ -28,7 +28,6 @@ export interface UsePlacePerpsOrderParams {
   symbol: string
   direction: PositionDirection
   orderType: OrderType
-  currentPositionDirection?: string
   slippage?: string
   limitPrice?: string
   triggerPrice?: string
@@ -41,7 +40,6 @@ export function usePlacePerpsOrder({
   amount,
   symbol,
   direction,
-  currentPositionDirection,
   slippage = '0.1',
   orderType,
   limitPrice,
