@@ -15,6 +15,7 @@ import {
   Label,
   Spinner,
 } from '@/components/ui'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
@@ -34,6 +35,7 @@ interface Props {
 
 export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
   const t = useTranslations()
+  const { refetch: refetchCurrentUser } = useCurrentWallet()
   const {
     paymentDetailsData,
     transactionStatusData,
@@ -77,6 +79,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
     await updateProfile({
       username: values.username,
     })
+    await refetchCurrentUser()
     pay()
   }
 
