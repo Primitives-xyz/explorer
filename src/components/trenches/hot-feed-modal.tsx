@@ -703,6 +703,18 @@ export function HotFeedModal({
     [currency, solPrice]
   )
 
+  const formatLiquidity = useMemo(
+    () => (realSolReservesLamports: number) => {
+      // Check if realSolReserves is 0 or very close to 0
+      if (realSolReservesLamports === 0) {
+        return 'Unknown'
+      }
+      const solValue = realSolReservesLamports / LAMPORTS_PER_SOL
+      return formatValue(solValue, 2)
+    },
+    [formatValue]
+  )
+
   const formatPnL = useMemo(
     () => (amount: number) => {
       if (currency === 'USD' && solPrice) {
@@ -1063,11 +1075,11 @@ export function HotFeedModal({
                                   <Zap size={10} /> Liquidity
                                 </div>
                                 <div className="text-sm font-bold text-white">
-                                  {formatValue(
+                                  {formatLiquidity(
                                     Number(
                                       token.lastTrade?.eventData
                                         ?.tradeEvents?.[0]?.realSolReserves || 0
-                                    ) / LAMPORTS_PER_SOL
+                                    )
                                   )}
                                 </div>
                               </div>
@@ -1445,11 +1457,11 @@ export function HotFeedModal({
                                   <Zap size={10} /> Liquidity
                                 </div>
                                 <div className="text-sm font-bold text-white">
-                                  {formatValue(
+                                  {formatLiquidity(
                                     Number(
                                       token.lastTrade?.eventData
                                         ?.tradeEvents?.[0]?.realSolReserves || 0
-                                    ) / LAMPORTS_PER_SOL
+                                    )
                                   )}
                                 </div>
                               </div>

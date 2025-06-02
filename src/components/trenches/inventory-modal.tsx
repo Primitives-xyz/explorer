@@ -1,7 +1,13 @@
 'use client'
 
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import {
@@ -148,8 +154,11 @@ export function InventoryModal({
           <DialogHeader className="border-b border-white/10 pb-4">
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Inventory</h2>
+              <DialogTitle className="text-xl font-bold">Inventory</DialogTitle>
             </div>
+            <DialogDescription className="text-gray-400">
+              Please connect your wallet to view inventory
+            </DialogDescription>
           </DialogHeader>
           <div className="flex items-center justify-center py-12">
             <p className="text-gray-400">
@@ -168,7 +177,7 @@ export function InventoryModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold">Inventory</h2>
+              <DialogTitle className="text-xl font-bold">Inventory</DialogTitle>
             </div>
 
             {/* Display Mode Toggle */}
@@ -197,6 +206,10 @@ export function InventoryModal({
               </button>
             </div>
           </div>
+
+          <DialogDescription className="text-gray-400">
+            View and manage your token positions from trenches trading
+          </DialogDescription>
 
           {/* Portfolio Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">

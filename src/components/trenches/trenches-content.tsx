@@ -24,6 +24,7 @@ import { HotFeedModal } from './hot-feed-modal'
 import { InventoryModal } from './inventory-modal'
 import { useInventoryStore } from './stores/use-inventory-store'
 import { TokenDetailsModal } from './token-details-modal'
+import { TrenchesHotZone } from './trenches-hot-zone'
 import { TrenchesLeaderboard } from './trenches-leaderboard'
 import { MintAggregate } from './trenches-types'
 
@@ -234,40 +235,39 @@ export function TrenchesContent() {
       {/* Title Banner */}
       <div className="w-full max-w-7xl mb-4">
         <div className="bg-gradient-to-r from-orange-900/40 to-red-900/40 backdrop-blur-sm rounded-lg p-4 border border-orange-500/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">🪖</span>
-              <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-                SSE TRENCHES
-              </h1>
-            </div>
-            {/* Quick Controls */}
-            <div className="flex items-center gap-2">
-              {/* Pause Button */}
-              <button
-                onClick={() => setPauseUpdates(!pauseUpdates)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  pauseUpdates
-                    ? 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-400'
-                    : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
-                }`}
-                aria-label={pauseUpdates ? 'Resume updates' : 'Pause updates'}
-              >
-                {pauseUpdates ? <Play size={14} /> : <Pause size={14} />}
-                <span className="hidden sm:inline">
-                  {pauseUpdates ? 'Resume' : 'Pause'}
-                </span>
-              </button>
+          {/* Title Row */}
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-3xl flex-shrink-0">🪖</span>
+            <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent whitespace-nowrap">
+              SSE TRENCHES
+            </h1>
+          </div>
+          {/* Controls Row */}
+          <div className="flex items-center gap-2">
+            {/* Pause Button */}
+            <button
+              onClick={() => setPauseUpdates(!pauseUpdates)}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                pauseUpdates
+                  ? 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-400'
+                  : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
+              }`}
+              aria-label={pauseUpdates ? 'Resume updates' : 'Pause updates'}
+            >
+              {pauseUpdates ? <Play size={14} /> : <Pause size={14} />}
+              <span className="hidden sm:inline">
+                {pauseUpdates ? 'Resume' : 'Pause'}
+              </span>
+            </button>
 
-              {/* Settings Button */}
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="p-1.5 rounded-md bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
-                aria-label="Settings"
-              >
-                <Settings size={16} />
-              </button>
-            </div>
+            {/* Settings Button */}
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="p-1.5 rounded-md bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
+              aria-label="Settings"
+            >
+              <Settings size={16} />
+            </button>
           </div>
 
           {/* Settings Panel */}
@@ -325,111 +325,15 @@ export function TrenchesContent() {
         {/* Trenches Leaderboard */}
         <TrenchesLeaderboard currency={currency} solPrice={solPrice} />
 
-        {/* Hot Zone - Cooking & Runner-ups */}
-        <div className="bg-gradient-to-br from-orange-900/20 to-red-900/20 backdrop-blur-sm rounded-lg p-3 border border-orange-500/30">
-          <div className="flex items-center gap-2 mb-3">
-            <Flame className="w-5 h-5 text-orange-400 animate-pulse" />
-            <h2 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
-              HOT ZONE
-            </h2>
-            <Flame className="w-5 h-5 text-orange-400 animate-pulse" />
-          </div>
-
-          {/* Grid Layout for Top 5 */}
-          {cookingToken && topRunnerUps.length > 0 ? (
-            <div className="space-y-2">
-              {/* First Row: #1 (2 cols) and #2 (1 col) */}
-              <div
-                className={`grid ${
-                  isMobile ? 'grid-cols-1 gap-2' : 'grid-cols-3 gap-2'
-                }`}
-              >
-                {/* #1 Token - Takes 2 columns */}
-                <div className={`${isMobile ? '' : 'col-span-2'}`}>
-                  <div className="relative">
-                    <div className="absolute -top-2 -left-2 bg-gradient-to-r from-orange-400 to-red-400 text-black font-bold text-xs px-2 py-1 rounded-full z-10">
-                      #1 🔥
-                    </div>
-                    <TokenRow
-                      key={cookingToken.mint}
-                      agg={cookingToken}
-                      onClick={() => handleTokenClick(cookingToken)}
-                      onBuy={handleDirectBuy}
-                      createdAt={(cookingToken as any).tokenCreatedAt}
-                      volume={
-                        ((cookingToken as any).volumePerToken || 0) /
-                        LAMPORTS_PER_SOL
-                      }
-                      currency={currency}
-                      solPrice={solPrice}
-                    />
-                  </div>
-                </div>
-
-                {/* #2 Token - Takes 1 column */}
-                {topRunnerUps[0] && (
-                  <div className="relative">
-                    <div className="absolute -top-2 -left-2 bg-yellow-400 text-black font-bold text-xs px-2 py-1 rounded-full z-10">
-                      #2
-                    </div>
-                    <TokenRow
-                      key={topRunnerUps[0].mint}
-                      agg={topRunnerUps[0]}
-                      onClick={() => handleTokenClick(topRunnerUps[0])}
-                      onBuy={handleDirectBuy}
-                      createdAt={(topRunnerUps[0] as any).tokenCreatedAt}
-                      volume={
-                        ((topRunnerUps[0] as any).volumePerToken || 0) /
-                        LAMPORTS_PER_SOL
-                      }
-                      currency={currency}
-                      solPrice={solPrice}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Second Row: #3, #4, #5 */}
-              {topRunnerUps.slice(1, 4).length > 0 && (
-                <div
-                  className={`grid ${
-                    isMobile ? 'grid-cols-1' : 'grid-cols-3'
-                  } gap-2`}
-                >
-                  {topRunnerUps.slice(1, 4).map((agg, index) => (
-                    <div key={agg.mint} className="relative">
-                      <div className="absolute -top-2 -left-2 bg-gray-400 text-black font-bold text-xs px-2 py-1 rounded-full z-10">
-                        #{index + 3}
-                      </div>
-                      <TokenRow
-                        agg={agg}
-                        onClick={() => handleTokenClick(agg)}
-                        onBuy={handleDirectBuy}
-                        createdAt={(agg as any).tokenCreatedAt}
-                        volume={
-                          ((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL
-                        }
-                        currency={currency}
-                        solPrice={solPrice}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={i === 0 && !isMobile ? 'col-span-2' : ''}
-                >
-                  <Skeleton className="w-full h-[100px] rounded-lg bg-neutral-800" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Hot Zone */}
+        <TrenchesHotZone
+          cookingToken={cookingToken}
+          topRunnerUps={topRunnerUps}
+          currency={currency}
+          solPrice={solPrice}
+          onTokenClick={handleTokenClick}
+          onDirectBuy={handleDirectBuy}
+        />
 
         {/* Section Selector - Sticky on mobile */}
         <div

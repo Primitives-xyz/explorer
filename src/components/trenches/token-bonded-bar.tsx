@@ -52,7 +52,6 @@ export function TokenBondedBar({
 
         {/* Progress bar */}
         <motion.div
-          initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className={`h-full relative ${styles['token-bonded-bar-gradient']}`}

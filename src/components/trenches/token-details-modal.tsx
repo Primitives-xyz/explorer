@@ -139,6 +139,14 @@ export function TokenDetailsModal({
     })} SOL`
   }
 
+  const formatLiquidity = (realSolReserves: number) => {
+    // Check if realSolReserves is 0 or very close to 0 (considering it might be from Number() conversion)
+    if (realSolReserves === 0) {
+      return 'Unknown'
+    }
+    return formatVolume(realSolReserves / LAMPORTS_PER_SOL)
+  }
+
   const formatMarketCap = () => {
     if (currency === 'USD' && marketCapInUsd) {
       return `$${marketCapInUsd.toLocaleString(undefined, {
@@ -303,7 +311,7 @@ export function TokenDetailsModal({
                     Real Liquidity
                   </div>
                   <div className="font-semibold">
-                    {formatVolume(realSolReserves / LAMPORTS_PER_SOL)}
+                    {formatLiquidity(realSolReserves)}
                   </div>
                 </div>
                 <div className="bg-white/5 backdrop-blur p-3 rounded-xl border border-white/10">
@@ -375,7 +383,7 @@ export function TokenDetailsModal({
                   bondingProgress={agg.bondingProgress}
                 />
                 <div className="mt-2 text-xs text-gray-500">
-                  {formatVolume(realSolReserves / LAMPORTS_PER_SOL)} / 74 SOL
+                  {formatLiquidity(realSolReserves)} / 74 SOL
                   {agg.aboutToGraduate && (
                     <span className="ml-2 text-yellow-400">
                       🎓 About to graduate!
