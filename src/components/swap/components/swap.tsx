@@ -450,6 +450,18 @@ export function Swap({ autoFocus }: Props) {
         return prev
       })
 
+      // Emit swap success event for tracking
+      const swapSuccessEvent = new CustomEvent('swap-success', {
+        detail: {
+          signature: txSignature,
+          inputMint: inputTokenMint,
+          outputMint: outputTokenMint,
+          inputAmount: parseFloat(inAmount) || 0,
+          outputAmount: parseFloat(outAmount) || 0,
+        },
+      })
+      window.dispatchEvent(swapSuccessEvent)
+
       // Refresh token balances after successful swap
       mutateInputBalance()
       mutateOutputBalance()

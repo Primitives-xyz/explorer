@@ -4,12 +4,30 @@ import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { TokenRow } from '@/components/trenches/trenches-components'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Switch } from '@/components/ui/switch/switch'
 import { SOL_MINT } from '@/utils/constants'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import {
+  Flame,
+  GraduationCap,
+  Package,
+  Pause,
+  Play,
+  Rocket,
+  Settings,
+  Sparkles,
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTradeTracker } from './hooks/use-trade-tracker'
+import { HotFeedModal } from './hot-feed-modal'
+import { InventoryModal } from './inventory-modal'
+import { useInventoryStore } from './stores/use-inventory-store'
+import { TokenDetailsModal } from './token-details-modal'
+import { TrenchesLeaderboard } from './trenches-leaderboard'
 import { MintAggregate } from './trenches-types'
+
+type SectionType = 'newly_minted' | 'about_to_graduate' | 'recently_graduated'
 
 export function TrenchesContent() {
   const { isMobile } = useIsMobile()
@@ -17,11 +35,68 @@ export function TrenchesContent() {
   const [mintMap, setMintMap] = useState<Record<string, MintAggregate>>({})
   const wsRef = useRef<WebSocket | null>(null)
   const [currency, setCurrency] = useState<'SOL' | 'USD'>('USD')
-  const [disableAnimations, setDisableAnimations] = useState(false)
+  const [disableAnimations, setDisableAnimations] = useState(true)
+  const [pauseUpdates, setPauseUpdates] = useState(false)
+  const pausedMintMapRef = useRef<Record<string, MintAggregate>>({})
+  const [selectedToken, setSelectedToken] = useState<MintAggregate | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showHotFeed, setShowHotFeed] = useState(false)
+  const [showInventory, setShowInventory] = useState(false)
+  const [activeSection, setActiveSection] =
+    useState<SectionType>('newly_minted')
+  const [clickedTokenForHotFeed, setClickedTokenForHotFeed] =
+    useState<MintAggregate | null>(null)
+
+  // Inventory tracking
+  const { addTransaction, updatePrices } = useInventoryStore()
+
   const { price: solPrice, loading: solPriceLoading } = useTokenUSDCPrice({
     tokenMint: SOL_MINT,
     decimals: 9,
   })
+
+  // Memoize websocket message handler
+  const handleWebSocketMessage = useCallback(
+    (event: MessageEvent) => {
+      try {
+        const msg = JSON.parse(event.data)
+        if (msg.type === 'MintMapSnapshot') {
+          const newData = msg.data
+          setMintMap(newData)
+          if (!pauseUpdates) {
+            pausedMintMapRef.current = newData
+          }
+          // Update prices in inventory
+          const prices: Record<string, number> = {}
+          Object.entries(newData).forEach(([mint, agg]: [string, any]) => {
+            if (agg.pricePerToken) {
+              prices[mint] = agg.pricePerToken
+            }
+          })
+          updatePrices(prices)
+        } else if (msg.type === 'MintAggregateUpdate') {
+          setMintMap((prev) => {
+            const updated = {
+              ...prev,
+              [msg.data.mint]: msg.data,
+            }
+            if (!pauseUpdates) {
+              pausedMintMapRef.current = updated
+            }
+            return updated
+          })
+          // Update single price
+          if (msg.data.pricePerToken) {
+            updatePrices({ [msg.data.mint]: msg.data.pricePerToken })
+          }
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+    },
+    [pauseUpdates, updatePrices]
+  )
 
   useEffect(() => {
     const ws = new window.WebSocket(
@@ -30,60 +105,70 @@ export function TrenchesContent() {
     )
     wsRef.current = ws
 
-    ws.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data)
-        if (msg.type === 'MintMapSnapshot') {
-          setMintMap(msg.data)
-        } else if (msg.type === 'MintAggregateUpdate') {
-          setMintMap((prev) => ({
-            ...prev,
-            [msg.data.mint]: msg.data,
-          }))
-        }
-        // (Handle other message types as needed)
-      } catch (e) {
-        // ignore parse errors
-      }
-    }
+    ws.onmessage = handleWebSocketMessage
     ws.onerror = () => {}
     ws.onclose = () => {}
 
     return () => {
       ws.close()
     }
-  }, [])
+  }, [handleWebSocketMessage])
 
-  // Filtering and sorting logic
-  const now = Date.now() / 1000
-  let tokens = Object.values(mintMap)
-  // Sort by TPS descending for all views
-  tokens = tokens.sort((a, b) => (b.tps || 0) - (a.tps || 0))
+  // Use paused data when updates are paused
+  const displayMintMap = pauseUpdates ? pausedMintMapRef.current : mintMap
 
-  // Filter for each column, ensuring no overlap
-  const graduatedMints = new Set(
-    tokens.filter((agg) => agg.fullyBonded).map((agg) => agg.mint)
-  )
-  const aboutToGraduateMints = new Set(
-    tokens
-      .filter((agg) => !graduatedMints.has(agg.mint) && agg.aboutToGraduate)
-      .map((agg) => agg.mint)
-  )
-  const newlyMinted = tokens
-    .filter(
-      (agg) =>
-        !graduatedMints.has(agg.mint) &&
-        !aboutToGraduateMints.has(agg.mint) &&
-        (agg as any).tokenCreatedAt &&
-        now - (agg as any).tokenCreatedAt < 3600
+  // Use trade tracker to monitor swaps
+  useTradeTracker({ mintMap: displayMintMap })
+
+  // Memoize token filtering and sorting
+  const { cookingToken, topRunnerUps, sectionTokens } = useMemo(() => {
+    const now = Date.now() / 1000
+    let tokens = Object.values(displayMintMap)
+    // Sort by TPS descending for all views
+    tokens = tokens.sort((a, b) => (b.tps || 0) - (a.tps || 0))
+
+    // Get the top tokens
+    const cookingToken = tokens[0]
+    const topRunnerUps = tokens.slice(1, 5) // Top 4 runner-ups (#2-#5)
+
+    // Filter for each section
+    const graduatedMints = new Set(
+      tokens.filter((agg) => agg.fullyBonded).map((agg) => agg.mint)
     )
-    .slice(0, 50)
-  const aboutToGraduate = tokens
-    .filter((agg) => aboutToGraduateMints.has(agg.mint))
-    .slice(0, 50)
-  const recentlyGraduated = tokens
-    .filter((agg) => graduatedMints.has(agg.mint))
-    .slice(0, 50)
+    const aboutToGraduateMints = new Set(
+      tokens
+        .filter((agg) => !graduatedMints.has(agg.mint) && agg.aboutToGraduate)
+        .map((agg) => agg.mint)
+    )
+
+    const newlyMinted = tokens
+      .filter(
+        (agg) =>
+          !graduatedMints.has(agg.mint) &&
+          !aboutToGraduateMints.has(agg.mint) &&
+          (agg as any).tokenCreatedAt &&
+          now - (agg as any).tokenCreatedAt < 3600
+      )
+      .slice(0, 20)
+
+    const aboutToGraduate = tokens
+      .filter((agg) => aboutToGraduateMints.has(agg.mint))
+      .slice(0, 20)
+
+    const recentlyGraduated = tokens
+      .filter((agg) => graduatedMints.has(agg.mint))
+      .slice(0, 20)
+
+    return {
+      cookingToken,
+      topRunnerUps,
+      sectionTokens: {
+        newly_minted: newlyMinted,
+        about_to_graduate: aboutToGraduate,
+        recently_graduated: recentlyGraduated,
+      },
+    }
+  }, [displayMintMap])
 
   // Helper for price display
   const solPriceDisplay = solPriceLoading
@@ -92,168 +177,385 @@ export function TrenchesContent() {
     ? `$${solPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
     : '--'
 
+  const handleTokenClick = useCallback((agg: MintAggregate) => {
+    // Set the clicked token and open hot feed
+    setClickedTokenForHotFeed(agg)
+    setShowHotFeed(true)
+  }, [])
+
+  const handleDirectBuy = useCallback(
+    (mint: string, amount: number) => {
+      // Track the intended purchase
+      const token = displayMintMap[mint]
+      if (token) {
+        // We'll track this as a pending transaction and update when confirmed
+        // For now, just open the swap
+      }
+
+      setOpen(true)
+      setTimeout(() => {
+        setInputs({
+          inputMint: SOL_MINT,
+          outputMint: mint,
+          inputAmount: amount,
+        })
+      }, 0)
+    },
+    [displayMintMap, setOpen, setInputs]
+  )
+
+  const sectionInfo = useMemo(
+    () => ({
+      newly_minted: {
+        icon: <Sparkles className="w-4 h-4" />,
+        label: 'Newly Minted',
+        color: 'text-cyan-400',
+      },
+      about_to_graduate: {
+        icon: <Rocket className="w-4 h-4" />,
+        label: 'About to Graduate',
+        color: 'text-yellow-400',
+      },
+      recently_graduated: {
+        icon: <GraduationCap className="w-4 h-4" />,
+        label: 'Recently Graduated',
+        color: 'text-green-400',
+      },
+    }),
+    []
+  )
+
   return (
     <div
-      className={`flex flex-col w-full justify-center items-center py-6 gap-4${
+      className={`flex flex-col w-full justify-center items-center py-2 gap-2${
         isMobile ? ' px-2' : ''
       }`}
     >
-      <div className="flex flex-col items-center gap-2 mb-4 w-full max-w-7xl">
-        {/* Controls: Price + Toggle + Disable Animations */}
+      {/* Title Banner */}
+      <div className="w-full max-w-7xl mb-4">
+        <div className="bg-gradient-to-r from-orange-900/40 to-red-900/40 backdrop-blur-sm rounded-lg p-4 border border-orange-500/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🪖</span>
+              <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                SSE TRENCHES
+              </h1>
+            </div>
+            {/* Quick Controls */}
+            <div className="flex items-center gap-2">
+              {/* Pause Button */}
+              <button
+                onClick={() => setPauseUpdates(!pauseUpdates)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  pauseUpdates
+                    ? 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-400'
+                    : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
+                }`}
+                aria-label={pauseUpdates ? 'Resume updates' : 'Pause updates'}
+              >
+                {pauseUpdates ? <Play size={14} /> : <Pause size={14} />}
+                <span className="hidden sm:inline">
+                  {pauseUpdates ? 'Resume' : 'Pause'}
+                </span>
+              </button>
+
+              {/* Settings Button */}
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="p-1.5 rounded-md bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 transition-all"
+                aria-label="Settings"
+              >
+                <Settings size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Settings Panel */}
+          {showSettings && (
+            <div className="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-4">
+              {/* Currency Toggle */}
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-gray-400">Display prices in:</span>
+                <div className="flex items-center gap-1 bg-black/20 rounded-md p-1">
+                  <button
+                    onClick={() => setCurrency('USD')}
+                    className={`px-2 py-1 rounded transition-all ${
+                      currency === 'USD'
+                        ? 'bg-white/10 text-white'
+                        : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    USD
+                  </button>
+                  <button
+                    onClick={() => setCurrency('SOL')}
+                    className={`px-2 py-1 rounded transition-all ${
+                      currency === 'SOL'
+                        ? 'bg-white/10 text-white'
+                        : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    SOL
+                  </button>
+                </div>
+                {currency === 'USD' && (
+                  <span className="text-gray-500">
+                    (1 SOL = {solPriceDisplay})
+                  </span>
+                )}
+              </div>
+
+              {/* Disable Animations */}
+              <label className="flex items-center gap-2 text-xs cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={disableAnimations}
+                  onChange={(e) => setDisableAnimations(e.target.checked)}
+                  className="accent-primary w-3 h-3"
+                />
+                <span className="text-gray-400">Disable animations</span>
+              </label>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="w-full max-w-7xl space-y-3">
+        {/* Trenches Leaderboard */}
+        <TrenchesLeaderboard currency={currency} solPrice={solPrice} />
+
+        {/* Hot Zone - Cooking & Runner-ups */}
+        <div className="bg-gradient-to-br from-orange-900/20 to-red-900/20 backdrop-blur-sm rounded-lg p-3 border border-orange-500/30">
+          <div className="flex items-center gap-2 mb-3">
+            <Flame className="w-5 h-5 text-orange-400 animate-pulse" />
+            <h2 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+              HOT ZONE
+            </h2>
+            <Flame className="w-5 h-5 text-orange-400 animate-pulse" />
+          </div>
+
+          {/* Grid Layout for Top 5 */}
+          {cookingToken && topRunnerUps.length > 0 ? (
+            <div className="space-y-2">
+              {/* First Row: #1 (2 cols) and #2 (1 col) */}
+              <div
+                className={`grid ${
+                  isMobile ? 'grid-cols-1 gap-2' : 'grid-cols-3 gap-2'
+                }`}
+              >
+                {/* #1 Token - Takes 2 columns */}
+                <div className={`${isMobile ? '' : 'col-span-2'}`}>
+                  <div className="relative">
+                    <div className="absolute -top-2 -left-2 bg-gradient-to-r from-orange-400 to-red-400 text-black font-bold text-xs px-2 py-1 rounded-full z-10">
+                      #1 🔥
+                    </div>
+                    <TokenRow
+                      key={cookingToken.mint}
+                      agg={cookingToken}
+                      onClick={() => handleTokenClick(cookingToken)}
+                      onBuy={handleDirectBuy}
+                      createdAt={(cookingToken as any).tokenCreatedAt}
+                      volume={
+                        ((cookingToken as any).volumePerToken || 0) /
+                        LAMPORTS_PER_SOL
+                      }
+                      currency={currency}
+                      solPrice={solPrice}
+                    />
+                  </div>
+                </div>
+
+                {/* #2 Token - Takes 1 column */}
+                {topRunnerUps[0] && (
+                  <div className="relative">
+                    <div className="absolute -top-2 -left-2 bg-yellow-400 text-black font-bold text-xs px-2 py-1 rounded-full z-10">
+                      #2
+                    </div>
+                    <TokenRow
+                      key={topRunnerUps[0].mint}
+                      agg={topRunnerUps[0]}
+                      onClick={() => handleTokenClick(topRunnerUps[0])}
+                      onBuy={handleDirectBuy}
+                      createdAt={(topRunnerUps[0] as any).tokenCreatedAt}
+                      volume={
+                        ((topRunnerUps[0] as any).volumePerToken || 0) /
+                        LAMPORTS_PER_SOL
+                      }
+                      currency={currency}
+                      solPrice={solPrice}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Second Row: #3, #4, #5 */}
+              {topRunnerUps.slice(1, 4).length > 0 && (
+                <div
+                  className={`grid ${
+                    isMobile ? 'grid-cols-1' : 'grid-cols-3'
+                  } gap-2`}
+                >
+                  {topRunnerUps.slice(1, 4).map((agg, index) => (
+                    <div key={agg.mint} className="relative">
+                      <div className="absolute -top-2 -left-2 bg-gray-400 text-black font-bold text-xs px-2 py-1 rounded-full z-10">
+                        #{index + 3}
+                      </div>
+                      <TokenRow
+                        agg={agg}
+                        onClick={() => handleTokenClick(agg)}
+                        onBuy={handleDirectBuy}
+                        createdAt={(agg as any).tokenCreatedAt}
+                        volume={
+                          ((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL
+                        }
+                        currency={currency}
+                        solPrice={solPrice}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={i === 0 && !isMobile ? 'col-span-2' : ''}
+                >
+                  <Skeleton className="w-full h-[100px] rounded-lg bg-neutral-800" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Section Selector - Sticky on mobile */}
         <div
-          className={`w-full flex ${
-            isMobile
-              ? 'flex-col gap-2 items-center'
-              : 'flex-row items-center justify-between'
+          className={`bg-black/40 backdrop-blur-sm rounded-lg p-2 border border-white/10 ${
+            isMobile ? 'sticky top-0 z-20 shadow-lg' : ''
           }`}
         >
-          {/* Price + Toggle Row */}
+          <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-1`}>
+            {(Object.keys(sectionInfo) as SectionType[]).map((section) => (
+              <button
+                key={section}
+                onClick={() => setActiveSection(section)}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-all text-sm font-medium ${
+                  activeSection === section
+                    ? `bg-white/10 ${sectionInfo[section].color} border border-current`
+                    : 'bg-transparent text-gray-400 hover:bg-white/5'
+                }`}
+              >
+                {sectionInfo[section].icon}
+                <span>{sectionInfo[section].label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Section Content */}
+        <div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 border border-white/10 min-h-[400px]">
           <div
-            className={`flex items-center ${
-              isMobile ? 'justify-center' : ''
-            } gap-2 text-xs text-gray-400`}
+            className={`grid ${
+              isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3'
+            } gap-2`}
           >
-            <span className={currency === 'SOL' ? 'font-bold text-white' : ''}>
-              1 SOL
-            </span>
-            <Switch
-              checked={currency === 'USD'}
-              onCheckedChange={(v) => setCurrency(v ? 'USD' : 'SOL')}
-              className="scale-90 mx-1"
-              aria-label="Toggle SOL/USD"
-            />
-            <span className={currency === 'USD' ? 'font-bold text-white' : ''}>
-              {solPriceDisplay} USD
-            </span>
+            {sectionTokens[activeSection].length === 0
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="w-full">
+                    <Skeleton className="w-full h-[100px] rounded-lg bg-neutral-800" />
+                  </div>
+                ))
+              : sectionTokens[activeSection].map((agg) => (
+                  <TokenRow
+                    key={agg.mint}
+                    agg={agg}
+                    onClick={() => handleTokenClick(agg)}
+                    onBuy={handleDirectBuy}
+                    createdAt={(agg as any).tokenCreatedAt}
+                    volume={
+                      ((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL
+                    }
+                    currency={currency}
+                    solPrice={solPrice}
+                  />
+                ))}
           </div>
-          {/* Disable Animations Checkbox */}
-          <label
-            className={`flex items-center gap-1 text-xs cursor-pointer select-none ${
-              isMobile ? '' : 'ml-4'
-            }`}
-            style={isMobile ? { marginTop: 4 } : {}}
-          >
-            <input
-              type="checkbox"
-              checked={disableAnimations}
-              onChange={(e) => setDisableAnimations(e.target.checked)}
-              className="accent-primary w-3 h-3"
-            />
-            Disable Animations
-          </label>
         </div>
       </div>
-      <div
-        className={`w-full max-w-7xl grid ${
-          isMobile ? 'grid-cols-1' : 'grid-cols-3'
-        } gap-4`}
+
+      {/* Token Details Modal */}
+      <AnimatePresence>
+        <TokenDetailsModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          agg={selectedToken}
+          currency={currency}
+          solPrice={solPrice}
+        />
+      </AnimatePresence>
+
+      {/* Inventory Modal */}
+      <InventoryModal
+        isOpen={showInventory}
+        onClose={() => setShowInventory(false)}
+        mintMap={displayMintMap}
+        currency={currency}
+        solPrice={solPrice}
+      />
+
+      {/* Hot Feed Modal */}
+      <HotFeedModal
+        isOpen={showHotFeed}
+        onClose={() => {
+          setShowHotFeed(false)
+          setClickedTokenForHotFeed(null)
+        }}
+        tokens={Object.values(displayMintMap)}
+        currency={currency}
+        solPrice={solPrice}
+        onShowDetails={(token) => {
+          // Hot feed modal now handles details internally
+        }}
+        initialToken={clickedTokenForHotFeed}
+      />
+
+      {/* Floating Action Button for Hot Feed */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => {
+          // When opening via FAB, don't set a specific token
+          setClickedTokenForHotFeed(null)
+          setShowHotFeed(!showHotFeed)
+        }}
+        className={`fixed bottom-20 right-4 w-14 h-14 rounded-full shadow-lg flex items-center justify-center z-[60] transition-all ${
+          showHotFeed
+            ? 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800'
+            : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+        }`}
+        aria-label={showHotFeed ? 'Close hot feed' : 'Open hot feed'}
       >
-        {/* Newly Minted */}
-        <div className="flex flex-col gap-2">
-          <div className="text-lg font-bold mb-2 text-white/80 text-center">
-            Newly Minted
-          </div>
-          {newlyMinted.length === 0 &&
-          aboutToGraduate.length === 0 &&
-          recentlyGraduated.length === 0
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="w-full">
-                  <Skeleton className="w-full h-[120px] rounded-lg bg-neutral-800" />
-                </div>
-              ))
-            : newlyMinted.map((agg) => (
-                <TokenRow
-                  key={agg.mint}
-                  agg={agg}
-                  onClick={(mint, buyAmount = 0.01) => {
-                    setOpen(true)
-                    setTimeout(() => {
-                      setInputs({
-                        inputMint: SOL_MINT,
-                        outputMint: mint,
-                        inputAmount: buyAmount,
-                      })
-                    }, 0)
-                  }}
-                  createdAt={(agg as any).tokenCreatedAt}
-                  volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
-                  currency={currency}
-                  solPrice={solPrice}
-                  disableFlash={disableAnimations}
-                />
-              ))}
-        </div>
-        {/* About to Graduate */}
-        <div className="flex flex-col gap-2">
-          <div className="text-lg font-bold mb-2 text-white/80 text-center">
-            About to Graduate
-          </div>
-          {newlyMinted.length === 0 &&
-          aboutToGraduate.length === 0 &&
-          recentlyGraduated.length === 0
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="w-full">
-                  <Skeleton className="w-full h-[120px] rounded-lg bg-neutral-800" />
-                </div>
-              ))
-            : aboutToGraduate.map((agg) => (
-                <TokenRow
-                  key={agg.mint}
-                  agg={agg}
-                  onClick={(mint, buyAmount = 0.01) => {
-                    setOpen(true)
-                    setTimeout(() => {
-                      setInputs({
-                        inputMint: SOL_MINT,
-                        outputMint: mint,
-                        inputAmount: buyAmount,
-                      })
-                    }, 0)
-                  }}
-                  createdAt={(agg as any).tokenCreatedAt}
-                  volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
-                  currency={currency}
-                  solPrice={solPrice}
-                  disableFlash={disableAnimations}
-                />
-              ))}
-        </div>
-        {/* Recently Graduated */}
-        <div className="flex flex-col gap-2">
-          <div className="text-lg font-bold mb-2 text-white/80 text-center">
-            Recently Graduated
-          </div>
-          {newlyMinted.length === 0 &&
-          aboutToGraduate.length === 0 &&
-          recentlyGraduated.length === 0
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="w-full">
-                  <Skeleton className="w-full h-[120px] rounded-lg bg-neutral-800" />
-                </div>
-              ))
-            : recentlyGraduated.map((agg) => (
-                <TokenRow
-                  key={agg.mint}
-                  agg={agg}
-                  onClick={(mint, buyAmount = 0.01) => {
-                    setOpen(true)
-                    setTimeout(() => {
-                      setInputs({
-                        inputMint: SOL_MINT,
-                        outputMint: mint,
-                        inputAmount: buyAmount,
-                      })
-                    }, 0)
-                  }}
-                  createdAt={(agg as any).tokenCreatedAt}
-                  volume={((agg as any).volumePerToken || 0) / LAMPORTS_PER_SOL}
-                  currency={currency}
-                  solPrice={solPrice}
-                  disableFlash={disableAnimations}
-                />
-              ))}
-        </div>
-      </div>
+        <Flame
+          className={`w-6 h-6 ${showHotFeed ? 'text-gray-400' : 'text-white'}`}
+        />
+      </motion.button>
+
+      {/* Floating Inventory Button - Bottom Left */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowInventory(true)}
+        className="fixed bottom-20 left-4 w-14 h-14 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-lg flex items-center justify-center z-[60]"
+      >
+        <Package className="w-6 h-6 text-white" />
+      </motion.button>
     </div>
   )
 }

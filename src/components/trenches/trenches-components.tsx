@@ -1,6 +1,5 @@
 import { Card, CardContent } from '@/components/ui'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { useEffect, useRef, useState } from 'react'
 import { TokenBadges } from './token-badges'
 import { TokenBondedBar } from './token-bonded-bar'
 import { TokenBuySellBar } from './token-buy-sell-bar'
@@ -16,14 +15,15 @@ import { MintAggregate } from './trenches-types'
 export function TokenRow({
   agg,
   onClick,
+  onBuy,
   createdAt,
   volume,
   currency = 'SOL',
   solPrice = null,
-  disableFlash = false,
 }: {
   agg: MintAggregate
-  onClick: (mint: string, amount: number) => void
+  onClick: () => void
+  onBuy: (mint: string, amount: number) => void
   createdAt?: number | null
   volume?: number
   currency?: 'SOL' | 'USD'
@@ -46,41 +46,20 @@ export function TokenRow({
     })
   }
 
-  // Animation state
-  const [flash, setFlash] = useState(false)
-  const lastUpdateRef = useRef<number | undefined>(agg.lastUpdate)
-
-  useEffect(() => {
-    if (disableFlash) {
-      setFlash(false)
-      lastUpdateRef.current = agg.lastUpdate
-      return
-    }
-    if (agg.lastUpdate && agg.lastUpdate !== lastUpdateRef.current) {
-      setFlash(true)
-      lastUpdateRef.current = agg.lastUpdate
-      const timeout = setTimeout(() => setFlash(false), 500)
-      return () => clearTimeout(timeout)
-    }
-  }, [agg.lastUpdate, disableFlash])
-
-  // Remove onClick from Card, move buy logic to button
   return (
     <Card
-      className={`w-full overflow-visible transition-all mb-2 ${
-        flash ? 'flash-shake-row flash-shake-row-text-black' : 'bg-neutral-900'
-      } hover:bg-neutral-800`}
-      style={{ border: flash ? '2px solid #fff700' : '2px solid transparent' }}
+      onClick={onClick}
+      className="w-full overflow-visible transition-all cursor-pointer bg-neutral-900 hover:bg-neutral-800 border-2 border-transparent"
     >
       <CardContent className="w-full px-2 py-2">
         <div
           className="flex flex-col items-stretch h-full justify-between"
-          style={{ minHeight: 120 }}
+          style={{ minHeight: 100 }}
         >
           {/* Top section: left and right columns */}
           <div className="flex flex-row w-full justify-between gap-2">
             {/* Left: Identity and Real Liquidity */}
-            <div className="flex flex-col min-w-0 gap-1">
+            <div className="flex flex-col min-w-0 gap-0.5">
               <TokenIdentity
                 agg={agg}
                 symbol={symbol}
@@ -93,15 +72,17 @@ export function TokenRow({
                 solPrice={solPrice}
               />
               <TokenBadges agg={agg} />
-              <TokenSmallBuy
-                onBuy={(mint, amount) => {
-                  onClick(mint, amount)
-                }}
-                mint={agg.mint}
-              />
+              <div onClick={(e) => e.stopPropagation()}>
+                <TokenSmallBuy
+                  onBuy={(mint, amount) => {
+                    onBuy(mint, amount)
+                  }}
+                  mint={agg.mint}
+                />
+              </div>
             </div>
             {/* Right: Price, Top Traders, Created, Volume */}
-            <div className="flex flex-col items-end min-w-0 gap-1">
+            <div className="flex flex-col items-end min-w-0 gap-0.5">
               <TokenPrice
                 lastTradePriceSol={lastTradePriceSol}
                 currency={currency}
@@ -120,7 +101,7 @@ export function TokenRow({
             </div>
           </div>
           {/* Double bars at the bottom */}
-          <div className="flex flex-col gap-1 mt-2">
+          <div className="flex flex-col gap-0.5 mt-1">
             <TokenBuySellBar
               totalBuy={agg.totalBuy}
               totalSell={agg.totalSell}
@@ -133,29 +114,6 @@ export function TokenRow({
           </div>
         </div>
       </CardContent>
-      {/* Animation style */}
-      <style>{`
-        .flash-shake-row {
-          background: #fff700 !important;
-          animation: flash-shake-row 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
-        .flash-shake-row-text-black * {
-          color: #000 !important;
-        }
-        @keyframes flash-shake-row {
-          0% { background: #fff700; transform: translateX(0); }
-          10% { background: #fff700; transform: translateX(-6px); }
-          20% { background: #fff700; transform: translateX(6px); }
-          30% { background: #fff700; transform: translateX(-6px); }
-          40% { background: #fff700; transform: translateX(6px); }
-          50% { background: #fff700; transform: translateX(-4px); }
-          60% { background: #fff700; transform: translateX(4px); }
-          70% { background: #fff700; transform: translateX(-2px); }
-          80% { background: #fff700; transform: translateX(2px); }
-          90% { background: #fff700; transform: translateX(0); }
-          100% { background: #18181b; transform: none; }
-        }
-      `}</style>
     </Card>
   )
 }

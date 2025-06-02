@@ -8,11 +8,13 @@ interface State {
   swapMode: ESwapMode
   inAmount: string
   outAmount: string
+  isNestedModal: boolean
   setOpen: (open: boolean) => void
   setInputs: (inputs: ISwapInputs) => void
   setSwapMode: (mode: ESwapMode) => void
   setInAmount: (amount: string) => void
   setOutAmount: (amount: string) => void
+  setIsNestedModal: (isNested: boolean) => void
 }
 
 export const useSwapStore = create<State>()((set) => ({
@@ -25,9 +27,11 @@ export const useSwapStore = create<State>()((set) => ({
   swapMode: ESwapMode.EXACT_IN,
   inAmount: '1',
   outAmount: '',
+  isNestedModal: false,
   setOpen: (open) =>
-    set(() => ({
+    set((state) => ({
       open,
+      isNestedModal: open ? state.isNestedModal : false,
     })),
   setInputs: (inputs: ISwapInputs) =>
     set(() => ({
@@ -48,4 +52,5 @@ export const useSwapStore = create<State>()((set) => ({
   setSwapMode: (mode) => set(() => ({ swapMode: mode })),
   setInAmount: (amount) => set(() => ({ inAmount: amount })),
   setOutAmount: (amount) => set(() => ({ outAmount: amount })),
+  setIsNestedModal: (isNested) => set(() => ({ isNestedModal: isNested })),
 }))
