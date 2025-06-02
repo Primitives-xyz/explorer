@@ -1,4 +1,4 @@
-export interface SolidScoreResponse {
+export interface ISolidScoreResponse {
   walletAddress: string
   score: number
   badges: string[]
@@ -6,9 +6,10 @@ export interface SolidScoreResponse {
   percentile: number
 }
 
-export interface SolidScoreLeaderboardResponse {
+export interface ISolidScoreLeaderboardResponse {
   id: string
   username: string
+  image?: string
   position: number
   walletAddress: string
   score: number
