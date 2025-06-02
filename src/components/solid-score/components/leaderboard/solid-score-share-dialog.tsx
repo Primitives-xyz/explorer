@@ -29,7 +29,7 @@ export function SolidScoreShareDialog({ open, setOpen }: Props) {
   const [isShared, setIsShared] = useState(false)
   const [isXInstructionsOpen, setIsXInstructionsOpen] = useState(false)
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
-    username: mainProfile?.username || '',
+    profileId: mainProfile?.username || '',
   })
 
   const params = {

@@ -1,20 +1,27 @@
 'use client'
 
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import Image from 'next/image'
 import { EPudgyTheme } from '../pudgy.models'
-import { usePudgyStore } from '../stores/use-pudgy-store'
 
 export function BackgroundTheme() {
-  const { theme } = usePudgyStore()
+  const { mainProfile } = useCurrentWallet()
+
+  if (!mainProfile) {
+    return null
+  }
 
   return (
     <div
       className={cn('fixed inset-0 z-0', {
-        'background-gradient': theme === EPudgyTheme.DEFAULT,
-        'background-gradient-blue': theme === EPudgyTheme.BLUE,
-        'background-gradient-green': theme === EPudgyTheme.GREEN,
-        'background-gradient-pink': theme === EPudgyTheme.PINK,
+        'background-gradient': mainProfile?.pudgyTheme === EPudgyTheme.DEFAULT,
+        'background-gradient-blue':
+          mainProfile?.pudgyTheme === EPudgyTheme.BLUE,
+        'background-gradient-green':
+          mainProfile?.pudgyTheme === EPudgyTheme.GREEN,
+        'background-gradient-pink':
+          mainProfile?.pudgyTheme === EPudgyTheme.PINK,
       })}
     >
       <Image

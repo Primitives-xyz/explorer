@@ -15,7 +15,12 @@ export interface LoadingStates {
   overall: boolean
 }
 
-export function useCurrentWallet() {
+interface Props {
+  refreshInterval?: number
+  skip?: boolean
+}
+
+export function useCurrentWallet({ refreshInterval, skip }: Props = {}) {
   const {
     sdkHasLoaded: dynamicSdkHasLoaded,
     primaryWallet,
@@ -54,7 +59,8 @@ export function useCurrentWallet() {
     refetch: refetchGetProfiles,
   } = useGetProfiles({
     walletAddress,
-    skip: !walletAddress,
+    skip: !walletAddress || skip,
+    refreshInterval,
   })
 
   const { mainProfile } = useMemo(() => {

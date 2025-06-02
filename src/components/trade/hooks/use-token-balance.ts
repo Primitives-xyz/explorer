@@ -147,7 +147,6 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     mutate = mutateSolBalance
   } else {
     if (tokenData) {
-      console.log('tokenData:', tokenData.balance.uiAmountString)
       balance = formatBalance(tokenData.balance.uiAmountString)
     }
     error = tokenError ? t('error.failed_to_fetch_balance') : null

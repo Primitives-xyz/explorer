@@ -1,6 +1,7 @@
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { getDicebearUrl } from '@/utils/constants'
 import { cn } from '@/utils/utils'
+import Image from 'next/image'
 import { useState } from 'react'
 
 interface AvatarProps {
@@ -8,6 +9,7 @@ interface AvatarProps {
   size?: number
   imageUrl?: string | null
   className?: string
+  displayPudgyFrame?: boolean
 }
 
 export function Avatar({
@@ -15,6 +17,7 @@ export function Avatar({
   size = 32,
   imageUrl,
   className,
+  displayPudgyFrame = false,
 }: AvatarProps) {
   const [imageError, setImageError] = useState(false)
   const dicebearUrl = getDicebearUrl(username)
@@ -59,6 +62,17 @@ export function Avatar({
         onError={() => setImageError(true)}
         unoptimized={finalImageUrl === dicebearUrl}
       />
+      {displayPudgyFrame && (
+        <div className="border-4 border-pudgy-border absolute top-0 left-0 inset-0 rounded-full overflow-hidden">
+          <Image
+            src="/images/pudgy/pudgy-frame.webp"
+            alt="Pudgy Frame"
+            width={size}
+            height={size}
+            className="rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%]"
+          />
+        </div>
+      )}
     </div>
   )
 }

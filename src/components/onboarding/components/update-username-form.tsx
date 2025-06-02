@@ -48,7 +48,7 @@ export function UpdateUsernameForm({
   const [suggestedUsername, setSuggestedUsername] =
     useState<ISuggestedUsername>()
   const { updateProfile, loading } = useUpdateProfile({
-    username,
+    profileId,
   })
   const { mainProfile, refetch: refetchCurrentUser } = useCurrentWallet()
   const { push } = useRouter()

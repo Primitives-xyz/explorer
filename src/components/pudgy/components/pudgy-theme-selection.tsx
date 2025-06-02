@@ -1,11 +1,16 @@
 import { Button, Label } from '@/components/ui'
 import { cn } from '@/utils/utils'
-import { useState } from 'react'
 import { EPudgyTheme } from '../pudgy.models'
 
-export function PudgyThemeSelection() {
-  const [selectedTheme, setSelectedTheme] = useState(EPudgyTheme.DEFAULT)
+interface Props {
+  selectedTheme: EPudgyTheme
+  setSelectedTheme: (theme: EPudgyTheme) => void
+}
 
+export function PudgyThemeSelection({
+  selectedTheme,
+  setSelectedTheme,
+}: Props) {
   return (
     <div className="space-y-2 gap-2">
       <Label>Pudgy x SSE Profile Themes</Label>

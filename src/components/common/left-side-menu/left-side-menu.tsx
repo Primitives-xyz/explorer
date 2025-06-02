@@ -3,11 +3,11 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
-import { usePudgyStore } from '@/components/pudgy/stores/use-pudgy-store'
 import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -18,14 +18,15 @@ export function LeftSideMenu() {
   const t = useTranslations()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
   const { accountIds } = useDriftUsers()
-  const { theme } = usePudgyStore()
+  const { mainProfile } = useCurrentWallet()
 
   return (
     <div
       className={cn(
         'hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar',
         {
-          'left-sidebar-theme-background backdrop-blur-md': !!theme,
+          'left-sidebar-theme-background backdrop-blur-md':
+            !!mainProfile?.pudgy_profile_date,
         }
       )}
     >

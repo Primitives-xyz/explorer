@@ -32,7 +32,7 @@ export function AddProfileImage({
   const [uploadLoading, setUploadLoading] = useState(false)
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { updateProfile } = useUpdateProfile({
-    username: mainProfile.username,
+    profileId: mainProfile.username,
   })
   const { uploadFiles, UploadFilesModal } = useUploadFiles({
     getUploadUrl: async (file: File) => {

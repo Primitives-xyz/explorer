@@ -4,14 +4,11 @@ import { PoweredbyTapestry } from '@/components/common/powered-by-tapestry'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { IProfile } from '@/components/tapestry/models/profiles.models'
 import {
-  Button,
-  ButtonVariant,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
@@ -21,26 +18,20 @@ import { PudgyUpgradeBenefits } from './pudgy-upgrade-benefits'
 
 interface Props {
   mainProfile: IProfile
+  open: boolean
+  setOpen: (open: boolean) => void
 }
 
-export function PudgyOnboardingButton({ mainProfile }: Props) {
+export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
   const { refetch: refetchCurrentUser } = useCurrentWallet()
-  const [open, setOpen] = useState(false)
   const [step, setStep] = useState(EPudgyOnboardingStep.INTRO)
   const { updateProfile } = useUpdateProfile({
-    username: mainProfile.username,
+    profileId: mainProfile.username,
   })
 
   useEffect(() => {
     setStep(EPudgyOnboardingStep.INTRO)
   }, [open])
-
-  useEffect(() => {
-    console.log('mainProfile', mainProfile)
-    if (!mainProfile.hasSeenPudgyOnboardingModal) {
-      setOpen(true)
-    }
-  }, [mainProfile])
 
   const hasSeenPudgyOnboardingModal = async () => {
     await updateProfile({
@@ -61,9 +52,6 @@ export function PudgyOnboardingButton({ mainProfile }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant={ButtonVariant.PUDGY_DEFAULT}>Claim Profile</Button>
-      </DialogTrigger>
       <DialogContent
         className="max-w-full md:max-w-2xl min-h-[90%] md:min-h-[546px] flex flex-col"
         onClose={onClose}
@@ -82,7 +70,10 @@ export function PudgyOnboardingButton({ mainProfile }: Props) {
             <PudgyUpgradeBenefits onClose={onClose} setStep={setStep} />
           )}
           {step === EPudgyOnboardingStep.CLAIM && (
-            <PudgyClaimProfileStep setStep={setStep} />
+            <PudgyClaimProfileStep
+              setStep={setStep}
+              mainProfile={mainProfile}
+            />
           )}
         </div>
         <div className="mt-5">

@@ -1,5 +1,7 @@
 'use client'
 
+import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import {
   Button,
   ButtonVariant,
@@ -11,23 +13,48 @@ import {
   FormMessage,
   Input,
   Label,
+  Spinner,
 } from '@/components/ui'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
-import { EPudgyOnboardingStep } from '../pudgy.models'
+import { usePudgyPayment } from '../hooks/use-pudgy-payment'
+import { EPudgyOnboardingStep, EPudgyTheme } from '../pudgy.models'
+import { ECryptoTransactionStatus } from '../solana-payment.models'
 import { PudgyAvatarFrameSelection } from './pudgy-avatar-frame-selection'
 import { PudgyThemeSelection } from './pudgy-theme-selection'
 
 interface Props {
   setStep: (step: EPudgyOnboardingStep) => void
+  mainProfile: IProfile
 }
 
-export function PudgyClaimProfileStep({ setStep }: Props) {
+export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
   const t = useTranslations()
-  const { mainProfile } = useCurrentWallet()
+  const {
+    paymentDetailsData,
+    transactionStatusData,
+    loading: pudgyPaymentLoading,
+    error: pudgyPaymentError,
+    pay,
+  } = usePudgyPayment({
+    profileId: mainProfile.id,
+  })
+  const {
+    updateProfile,
+    loading: updateProfileLoading,
+    error: updateProfileError,
+  } = useUpdateProfile({
+    profileId: mainProfile.id,
+  })
+  const [pudgyTheme, setPudgyTheme] = useState(EPudgyTheme.DEFAULT)
+  const [pudgyFrame, setPudgyFrame] = useState(true)
+
+  const loading = pudgyPaymentLoading || updateProfileLoading
+  const error = pudgyPaymentError || updateProfileError
 
   const formSchema = z.object({
     username: z
@@ -42,27 +69,40 @@ export function PudgyClaimProfileStep({ setStep }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: mainProfile?.username,
+      username: mainProfile.username,
     },
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // try {
-    //   await createProfile({
-    //     username: values.username,
-    //     ownerWalletAddress: walletAddress,
-    //   })
-    //   refetchCurrentUser()
-    //   setStep(EOnboardingSteps.IMAGE)
-    //   // form.reset()
-    // } catch (error: any) {
-    //   // console.error('Error', error)
-    //   form.setError('username', {
-    //     type: 'manual',
-    //     message: error.message ?? 'Error creating profile. Please try again.',
-    //   })
-    // }
+    await updateProfile({
+      username: values.username,
+    })
+    pay()
   }
+
+  useEffect(() => {
+    if (transactionStatusData?.status === ECryptoTransactionStatus.VERIFIED) {
+      updateProfile({
+        username: form.getValues('username'),
+        properties: [
+          {
+            key: 'pudgyTheme',
+            value: pudgyTheme,
+          },
+          {
+            key: 'pudgyFrame',
+            value: pudgyFrame,
+          },
+        ],
+      })
+    }
+  }, [transactionStatusData, updateProfile, form, pudgyTheme, pudgyFrame])
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message)
+    }
+  }, [error])
 
   return (
     <Form {...form}>
@@ -72,7 +112,10 @@ export function PudgyClaimProfileStep({ setStep }: Props) {
       >
         <div className="grid grid-cols-5 gap-8">
           <div className="col-span-2">
-            <PudgyAvatarFrameSelection />
+            <PudgyAvatarFrameSelection
+              displayPudgyFrame={pudgyFrame}
+              setDisplayPudgyFrame={setPudgyFrame}
+            />
           </div>
           <div className="col-span-3">
             <FormField
@@ -95,7 +138,10 @@ export function PudgyClaimProfileStep({ setStep }: Props) {
                 </FormItem>
               )}
             />
-            <PudgyThemeSelection />
+            <PudgyThemeSelection
+              selectedTheme={pudgyTheme}
+              setSelectedTheme={setPudgyTheme}
+            />
           </div>
         </div>
         <div className="flex justify-between mt-auto">
@@ -109,15 +155,18 @@ export function PudgyClaimProfileStep({ setStep }: Props) {
             {t('onboarding.buttons.back')}
           </Button>
           <div className="relative">
-            <Button
-              onClick={() => setStep(EPudgyOnboardingStep.CLAIM)}
-              className="w-[160px]"
-            >
-              Burn PENGU
+            <Button className="w-[160px]" disabled={loading} type="submit">
+              {loading ? (
+                <Spinner />
+              ) : (
+                <>Burn {paymentDetailsData?.tokenSymbol}</>
+              )}
             </Button>
-            <p className="text-xs text-primary absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-2">
-              -123 PENGU
-            </p>
+            {!!paymentDetailsData && (
+              <p className="text-xs text-primary absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-2 w-full text-center">
+                -{paymentDetailsData.amount} {paymentDetailsData.tokenSymbol}
+              </p>
+            )}
           </div>
         </div>
       </form>

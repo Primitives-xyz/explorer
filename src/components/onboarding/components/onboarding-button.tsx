@@ -40,7 +40,7 @@ export function OnboardingButton({ username }: Props) {
   } = useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
   const { updateProfile } = useUpdateProfile({
-    username,
+    profileId,
   })
   const { identities, loading: getIdentitiesLoading } = useGetIdentities({
     walletAddress,

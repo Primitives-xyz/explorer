@@ -7,7 +7,7 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 export function ResetProfileButton() {
   const { mainProfile, refetch } = useCurrentWallet()
   const { updateProfile } = useUpdateProfile({
-    username: mainProfile?.username || '',
+    profileId: mainProfile?.username || '',
   })
 
   return (

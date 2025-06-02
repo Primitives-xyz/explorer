@@ -3,17 +3,17 @@ import { IProfile } from '@/components/tapestry/models/profiles.models'
 import { FetchMethod, useMutation } from '@/utils/api'
 
 interface Props {
-  username: string
+  profileId: string
 }
 
-export const useUpdateProfile = ({ username }: Props) => {
+export const useUpdateProfile = ({ profileId }: Props) => {
   const {
     mutate: updateProfile,
     loading,
     error,
     data,
   } = useMutation<null, Partial<IProfile> & IUpdateContentInput>({
-    endpoint: `profiles/${username}`,
+    endpoint: `profiles/${profileId}`,
     method: FetchMethod.PUT,
   })
 
