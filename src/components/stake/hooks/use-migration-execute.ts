@@ -92,7 +92,10 @@ export function useMigrationExecute() {
         transaction.serialize()
       )
 
-      const confirmation = await connection.confirmTransaction(signature)
+      const confirmation = await connection.confirmTransaction(
+        signature,
+        'confirmed'
+      )
 
       // Sign and send the transaction using Dynamic wallet's method
       console.log('Transaction sent, signature:', confirmation)
