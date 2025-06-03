@@ -1,6 +1,5 @@
 import { SseStake } from '@/new-idl/sse_stake_new'
 import newStakingIdl from '@/new-idl/sse_stake_new.json'
-import { initializeUmi } from '@/utils/utils'
 import * as anchor from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import {
@@ -128,9 +127,6 @@ export async function POST(request: NextRequest) {
     console.log('Total claimable SSE:', totalClaimableSSE)
     console.log('Transfer amount (raw):', SSE_TRANSFER_AMOUNT)
 
-    // Initialize Umi
-    const umi = initializeUmi()
-
     // Initialize connection
     const connection = new Connection(
       process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
@@ -203,7 +199,9 @@ export async function POST(request: NextRequest) {
     // Create the final transaction with all instructions
     migrationIx.instructions = instructions
     migrationIx.feePayer = userPubkey
-    migrationIx.recentBlockhash = (await umi.rpc.getLatestBlockhash()).blockhash
+    migrationIx.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash
 
     // Partially sign the transaction with the payer keypair for the transfer instruction
     migrationIx.partialSign(payerKeypair)
