@@ -5,7 +5,6 @@ import { SolidScoreProfileHeader } from '@/components/profile/components/profile
 import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
-import { Avatar } from '@/components/ui/avatar/avatar'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSpecialUser } from '@/utils/user-permissions'
 import { abbreviateWalletAddress } from '@/utils/utils'
@@ -14,7 +13,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { ProfileEditableField } from '../profile-editable-field'
 import { ProfileFollowersModal } from '../profile-followers-modal'
-// import { ProfileImageEditor } from '../profile-image-editor' // TODO: Enable when CORS is fixed
+import { ProfileImageEditor } from '../profile-image-editor'
 import { UsernameChangeModal } from '../username-change-modal'
 
 interface Props {
@@ -107,20 +106,10 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
     <div className="flex flex-col md:flex-row justify-between">
       <div className="flex items-center md:items-start gap-2 md:gap-4">
         {/* Profile picture with editing capability */}
-        {/* TODO: Enable ProfileImageEditor when CORS issues are fixed
         <ProfileImageEditor
           username={username || 'unknown'}
           imageUrl={imageUrl}
           isOwnProfile={isOwnProfile}
-          size={72}
-        />
-        */}
-
-        {/* Temporary: Static avatar until image editing is fixed */}
-        <Avatar
-          username={username || 'unknown'}
-          imageUrl={imageUrl}
-          className={hasProfile ? 'w-18 h-18 aspect-square' : 'w-10 md:w-18'}
           size={72}
         />
 
