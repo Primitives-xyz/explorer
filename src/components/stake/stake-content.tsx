@@ -1,10 +1,7 @@
 'use client'
 
-import { StakeData } from '@/components/stake/stake-data/stake-data'
-import { StakeDetails } from '@/components/stake/stake-details/stake-details'
-import { Card, CardContent, FilterTabs } from '@/components/ui'
+import { Card, CardContent } from '@/components/ui'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
 
 export enum StakeFilterType {
   STAKE = 'stake',
@@ -14,6 +11,35 @@ export enum StakeFilterType {
 
 export function StakeContent() {
   const t = useTranslations('stake')
+
+  // Under construction overlay
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] w-full p-8">
+      <Card className="max-w-md w-full text-center">
+        <CardContent className="p-8">
+          <div className="text-6xl mb-4">🚧</div>
+          <h2 className="text-2xl font-bold mb-4 text-primary">
+            Under Construction
+          </h2>
+          <div className="space-y-3 text-muted-foreground">
+            <p className="text-lg">
+              We're currently migrating things on-chain to bring you an even
+              better staking experience!
+            </p>
+            <p className="font-medium">We'll be done soon! ⚡</p>
+            <div className="flex justify-center items-center gap-2 mt-6">
+              <div className="animate-bounce">🔧</div>
+              <span className="text-sm">Working hard behind the scenes...</span>
+              <div className="animate-bounce delay-100">⚙️</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+
+  // Original content (commented out for now)
+  /*
   const options = [
     { label: t('tabs.stake'), value: StakeFilterType.STAKE },
     { label: t('tabs.unstake'), value: StakeFilterType.UNSTAKE },
@@ -43,4 +69,5 @@ export function StakeContent() {
       </div>
     </div>
   )
+  */
 }
