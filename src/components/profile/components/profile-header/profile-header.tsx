@@ -125,11 +125,12 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
                         ? abbreviateWalletAddress({
                             address: profileInfo.profile.username,
                           })
-                        : `@${profileInfo.profile.username}`
+                        : profileInfo.profile.username
                       : walletAddress
                       ? abbreviateWalletAddress({ address: walletAddress })
                       : 'unknown'
                   }
+                  prefix={hasProfile && !isSame ? '@' : undefined}
                   isEditing={editingUsername}
                   onEdit={() => setEditingUsername(true)}
                   onSave={handleUsernameSave}

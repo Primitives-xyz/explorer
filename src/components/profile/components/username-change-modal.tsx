@@ -58,9 +58,9 @@ export function UsernameChangeModal({
             <p>
               This will change your profile URL from <br />
               <code className="bg-muted px-1 rounded">
-                @{currentUsername}
+                /{currentUsername}
               </code>{' '}
-              to <code className="bg-muted px-1 rounded">@{newUsername}</code>
+              to <code className="bg-muted px-1 rounded">/{newUsername}</code>
             </p>
             <p className="text-xs">You'll be redirected to the new URL!</p>
           </div>
