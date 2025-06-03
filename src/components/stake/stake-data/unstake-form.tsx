@@ -31,10 +31,10 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
 
   // Format the stake amount to match how it's displayed in stake form
   const formattedStakeAmount = formatSmartNumber(stakeAmount, {
-    micro: true,
     compact: true,
     minimumFractionDigits: 2,
     maximumFractionDigits: 4,
+    withComma: true,
   })
 
   const validateAmount = (value: string): boolean => {
@@ -191,18 +191,24 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
 
   return (
     <div>
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-start md:items-center">
-          <p>{t('stake.form.amount')}</p>
+      <div className="flex flex-col gap-4">
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <p className="text-sm font-medium">{t('stake.form.amount')}</p>
+          </div>
+
           {!showUserInfoLoading && stakeAmount && (
-            <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
-              <p className="text-muted-foreground text-xs">
-                {t('stake.form.staked_balance')}: {formattedStakeAmount}
-              </p>
-              <div className="flex items-center justify-end space-x-2">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-muted-foreground text-xs">
+                  {t('stake.form.staked_balance')}: {formattedStakeAmount}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
                 <Button
                   variant={ButtonVariant.OUTLINE}
-                  className="rounded-full"
+                  className="rounded-full flex-1"
                   size={ButtonSize.SM}
                   disabled={showUnstakeLoading || !stakeAmount}
                   onClick={handleQuarterAmount}
@@ -212,7 +218,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
 
                 <Button
                   variant={ButtonVariant.OUTLINE}
-                  className="rounded-full"
+                  className="rounded-full flex-1"
                   size={ButtonSize.SM}
                   onClick={handleHalfAmount}
                   disabled={showUnstakeLoading || !stakeAmount}
@@ -222,7 +228,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
 
                 <Button
                   variant={ButtonVariant.OUTLINE}
-                  className="rounded-full"
+                  className="rounded-full flex-1"
                   size={ButtonSize.SM}
                   onClick={handleMaxAmount}
                   disabled={showUnstakeLoading || !stakeAmount}
@@ -242,11 +248,11 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
           disabled={showUnstakeLoading}
         />
 
-        {inputError && <p className="text-destructive">{inputError}</p>}
+        {inputError && <p className="text-destructive text-sm">{inputError}</p>}
       </div>
 
       <Button
-        className="mt-4 w-full"
+        className="mt-6 w-full"
         onClick={handleUnstake}
         disabled={showUnstakeLoading || !displayAmount || !!inputError}
       >

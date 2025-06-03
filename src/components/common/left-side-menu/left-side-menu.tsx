@@ -3,6 +3,7 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
+import { MigrationReminder } from '@/components/common/left-side-menu/migration-reminder'
 import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
@@ -43,6 +44,7 @@ export function LeftSideMenu() {
           {/* <TestButton /> */}
         </div>
         <div className="space-y-4 py-4">
+          <MigrationReminder />
           <LowFeeTrades />
           <SolidScore />
         </div>

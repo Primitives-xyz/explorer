@@ -10,7 +10,8 @@ import {
 import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { formatNumber } from '@/utils/utils'
+import { formatRawAmount } from '@/utils/utils'
+import { Wallet } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
@@ -37,10 +38,10 @@ export function StakeForm({ initialAmount = '' }: Props) {
 
   // Format the balance to match unstake form
   const formattedBalance = formatSmartNumber(inputBalance, {
-    micro: true,
     compact: true,
     minimumFractionDigits: 2,
     maximumFractionDigits: 4,
+    withComma: true,
   })
 
   const { stake, isLoading: showStakeLoading } = useStake()
@@ -89,42 +90,16 @@ export function StakeForm({ initialAmount = '' }: Props) {
     return true
   }
 
-  // Helper function to format raw token amounts
-  const formatRawAmount = (rawAmount: bigint, decimals: number): string => {
-    try {
-      if (rawAmount === 0n) return '0'
-
-      const divisor = 10n ** BigInt(decimals)
-      const integerPart = rawAmount / divisor
-      const fractionPart = rawAmount % divisor
-
-      if (fractionPart === 0n) {
-        return integerPart.toString()
-      }
-
-      // Convert to string and pad with zeros
-      let fractionStr = fractionPart.toString()
-      while (fractionStr.length < decimals) {
-        fractionStr = '0' + fractionStr
-      }
-
-      // Remove trailing zeros
-      fractionStr = fractionStr.replace(/0+$/, '')
-
-      return `${integerPart}${fractionStr ? `.${fractionStr}` : ''}`
-    } catch (err) {
-      console.error('Error formatting amount:', err)
-      return '0'
-    }
-  }
-
   // Handle percentage amount buttons
   const handleQuarterAmount = () => {
     if (!inputRawBalance) return
 
     try {
       const quarterAmount = inputRawBalance / 4n
-      const formattedAmount = formatRawAmount(quarterAmount, SSE_TOKEN_DECIMAL)
+      const formattedAmount = formatRawAmount(
+        quarterAmount,
+        BigInt(SSE_TOKEN_DECIMAL)
+      )
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -140,7 +115,10 @@ export function StakeForm({ initialAmount = '' }: Props) {
 
     try {
       const halfAmount = inputRawBalance / 2n
-      const formattedAmount = formatRawAmount(halfAmount, SSE_TOKEN_DECIMAL)
+      const formattedAmount = formatRawAmount(
+        halfAmount,
+        BigInt(SSE_TOKEN_DECIMAL)
+      )
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -157,7 +135,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
     try {
       const formattedAmount = formatRawAmount(
         inputRawBalance,
-        SSE_TOKEN_DECIMAL
+        BigInt(SSE_TOKEN_DECIMAL)
       )
 
       if (validateAmount(formattedAmount)) {
@@ -213,6 +191,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
         className="w-full"
         onClick={() => setShowAuthFlow(true)}
       >
+        <Wallet className="h-4 w-4 mr-2" />
         {t('common.connect_wallet')}
       </Button>
     )
@@ -220,18 +199,24 @@ export function StakeForm({ initialAmount = '' }: Props) {
 
   return (
     <div>
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-start md:items-center">
-          <p>{t('stake.form.amount')}</p>
+      <div className="flex flex-col gap-4">
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <p className="text-sm font-medium">{t('stake.form.amount')}</p>
+          </div>
+
           {!inputBalanceLoading && inputBalance && (
-            <div className="flex flex-col md:flex-row items-end md:items-center gap-2">
-              <p className="text-muted-foreground text-xs">
-                {t('stake.form.balance')}: {formatNumber(inputBalance)}
-              </p>
-              <div className="flex items-center justify-end space-x-2">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-muted-foreground text-xs">
+                  {t('stake.form.balance')}: {formattedBalance} SSE
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
                 <Button
                   variant={ButtonVariant.OUTLINE}
-                  className="rounded-full"
+                  className="rounded-full flex-1"
                   size={ButtonSize.SM}
                   disabled={showStakeLoading || !inputBalance}
                   onClick={handleQuarterAmount}
@@ -241,7 +226,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
 
                 <Button
                   variant={ButtonVariant.OUTLINE}
-                  className="rounded-full"
+                  className="rounded-full flex-1"
                   size={ButtonSize.SM}
                   onClick={handleHalfAmount}
                   disabled={showStakeLoading || !inputBalance}
@@ -251,7 +236,7 @@ export function StakeForm({ initialAmount = '' }: Props) {
 
                 <Button
                   variant={ButtonVariant.OUTLINE}
-                  className="rounded-full"
+                  className="rounded-full flex-1"
                   size={ButtonSize.SM}
                   onClick={handleMaxAmount}
                   disabled={showStakeLoading || !inputBalance}
@@ -271,11 +256,11 @@ export function StakeForm({ initialAmount = '' }: Props) {
           disabled={showStakeLoading}
         />
 
-        {inputError && <p className="text-destructive">{inputError}</p>}
+        {inputError && <p className="text-destructive text-sm">{inputError}</p>}
       </div>
 
       <Button
-        className="mt-4 w-full"
+        className="mt-6 w-full"
         onClick={handleStake}
         disabled={showStakeLoading || !displayAmount || !!inputError}
       >

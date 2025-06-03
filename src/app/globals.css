@@ -3,6 +3,7 @@
 @import '../styles/motion.css' layer(base);
 @import '../styles/backgrounds.css' layer(base);
 @import '../styles/dialect.css' layer(base);
+@import '../components/stake/components/staking-v2-modal.css' layer(base);
 
 @import 'tailwindcss';
 

@@ -1,66 +1,84 @@
-import { SseStake } from '@/sse_stake'
-import stakingProgramIdl from '@/sse_stake.json'
 import { SSE_MINT } from '@/utils/constants'
+import { detectStakingVersion } from '@/utils/staking-version'
 import { getAssociatedTokenAccount } from '@/utils/token'
-import * as anchor from '@coral-xyz/anchor'
 import {
-  Connection,
-  PublicKey,
-  TransactionMessage,
-  VersionedTransaction,
-} from '@solana/web3.js'
+  createTransactionErrorResponse,
+  serializeTransactionForClient,
+} from '@/utils/transaction-helpers'
+import { Connection, PublicKey, Transaction } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
-
-// The seed used for finding the config PDA
-const SEED_CONFIG = 'config'
 
 export async function POST(req: NextRequest) {
   try {
-    const { walletAddy } = await req.json()
-    const connection = new Connection(process.env.RPC_URL || '')
-    const program = new anchor.Program(stakingProgramIdl as SseStake, {
+    const { walletAddy, walletAddress } = await req.json()
+
+    // Support both field names for backward compatibility
+    const userWallet = walletAddy || walletAddress
+    if (!userWallet) {
+      return NextResponse.json(
+        { error: 'Missing wallet address' },
+        { status: 400 }
+      )
+    }
+
+    const connection = new Connection(
+      process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
+    )
+
+    const userPubkey = new PublicKey(userWallet)
+
+    // Detect which version to use
+    const { isNewVersion, program, configPda } = await detectStakingVersion(
       connection,
-    })
-
-    const [configPda, _] = PublicKey.findProgramAddressSync(
-      [Buffer.from(SEED_CONFIG)],
-      program.programId
+      userPubkey
     )
 
-    let globalTokenAccount = await getAssociatedTokenAccount(
-      configPda,
-      new PublicKey(SSE_MINT)
+    console.log(
+      `Using ${isNewVersion ? 'new' : 'old'} staking contract for claim reward`
     )
-    let userTokenAccount = await getAssociatedTokenAccount(
-      new PublicKey(walletAddy),
+
+    const userTokenAccount = getAssociatedTokenAccount(
+      userPubkey,
       new PublicKey(SSE_MINT)
     )
 
-    const claimRewardTx = await program.methods
-      .claimReward()
-      .accounts({
-        globalTokenAccount,
-        user: new PublicKey(walletAddy),
-        userTokenAccount,
-      })
-      .transaction()
+    // Build transaction based on version
+    let claimRewardTx: Transaction
+    if (isNewVersion) {
+      // New version needs globalTokenAccount
+      const globalTokenAccount = await getAssociatedTokenAccount(
+        configPda,
+        new PublicKey(SSE_MINT)
+      )
 
-    const blockHash = (await connection.getLatestBlockhash('finalized'))
-      .blockhash
+      claimRewardTx = await (program.methods as any)
+        .claimReward()
+        .accounts({
+          globalTokenAccount,
+          user: userPubkey,
+          userTokenAccount,
+        })
+        .transaction()
+    } else {
+      // Old version doesn't need globalTokenAccount
+      claimRewardTx = await (program.methods as any)
+        .claimReward()
+        .accounts({
+          user: userPubkey,
+          userTokenAccount,
+        })
+        .transaction()
+    }
 
-    const messageV0 = new TransactionMessage({
-      payerKey: new PublicKey(walletAddy),
-      recentBlockhash: blockHash,
-      instructions: claimRewardTx.instructions,
-    }).compileToV0Message()
+    // Use our helper to serialize the transaction
+    const serializedTx = await serializeTransactionForClient(
+      claimRewardTx,
+      connection,
+      userPubkey
+    )
 
-    const vtx = new VersionedTransaction(messageV0)
-    const serialized = vtx.serialize()
-    const buffer = Buffer.from(serialized).toString('base64')
-
-    return NextResponse.json({ claimRewardTx: buffer })
+    return NextResponse.json({ claimRewardTx: serializedTx })
   } catch (err) {
-    console.log(err)
-    return NextResponse.json({ error: String(err) })
+    return createTransactionErrorResponse(err)
   }
 }
