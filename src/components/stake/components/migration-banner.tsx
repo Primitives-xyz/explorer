@@ -146,12 +146,12 @@ export function MigrationBanner({
                 <div className="absolute inset-0 h-5 w-5 sm:h-6 sm:w-6 animate-ping rounded-full bg-purple-400/30" />
               </div>
               <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                🚨 Migration Required
+                📊 On-Chain Data Update
               </h2>
             </div>
             <p className="text-sm sm:text-base text-purple-100/90">
-              Complete your account migration to claim your rewards and continue
-              staking
+              We're adding on-chain data to better track your rewards. One quick
+              transaction and you'll start accumulating rewards more accurately!
             </p>
           </div>
         </div>
@@ -191,7 +191,7 @@ export function MigrationBanner({
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground/90 flex items-center gap-2">
                 <Wallet className="h-4 w-4 text-muted-foreground" />
-                Current Staking Status
+                Your Staking Remains Unchanged
               </h3>
               <div className="rounded-xl bg-gradient-to-br from-muted/30 to-muted/50 backdrop-blur-sm border border-border/50 p-3 sm:p-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -210,6 +210,12 @@ export function MigrationBanner({
                       {oldAccountData.initialized ? 'Active' : 'Inactive'}
                     </span>
                   </div>
+                </div>
+                <div className="mt-3 p-2 sm:p-3 bg-blue-500/10 backdrop-blur-sm rounded-lg border border-blue-500/30">
+                  <p className="text-xs text-blue-200">
+                    ✅ No contracts changed • No tokens transferred • Same
+                    staking continues
+                  </p>
                 </div>
               </div>
             </div>
@@ -275,8 +281,8 @@ export function MigrationBanner({
                     {stakingData.status === 'under-claimed'
                       ? `You're eligible for the 100 SSE loyalty reward plus your ${formatSSEAmount(
                           Math.abs(stakingData.overClaimed || 0)
-                        )} SSE unclaimed rewards!`
-                      : "You'll receive 100 SSE as a loyalty bonus for migrating to the new staking format."}
+                        )} SSE unclaimed rewards! This upgrade adds on-chain tracking for better reward accuracy.`
+                      : "You'll receive 100 SSE as a loyalty bonus for upgrading to our improved on-chain reward tracking system."}
                   </p>
                 </div>
               </div>
@@ -293,11 +299,11 @@ export function MigrationBanner({
               {isProcessing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Processing Migration...
+                  Adding On-Chain Data...
                 </>
               ) : (
                 <>
-                  🚀 Migrate & Claim{' '}
+                  📊 Upgrade Tracking & Claim{' '}
                   {formatSSEAmount(calculateTotalClaimable())} SSE
                   <ArrowRight className="h-4 w-4" />
                 </>
@@ -323,9 +329,13 @@ export function MigrationBanner({
           </div>
           <div className="flex-1">
             <h3 className="text-xl font-bold text-yellow-400 mb-2">
-              {t('required_title')}
+              On-Chain Data Upgrade Available
             </h3>
-            <p className="text-sm text-gray-300">{t('required_description')}</p>
+            <p className="text-sm text-gray-300">
+              We're adding on-chain data to better track your staking rewards.
+              Your tokens stay exactly where they are - this is just one
+              transaction to enable more accurate reward tracking going forward.
+            </p>
           </div>
         </div>
 
@@ -365,7 +375,15 @@ export function MigrationBanner({
         )}
 
         <div className="flex items-center justify-between bg-black/30 rounded-xl p-4 border border-yellow-500/20">
-          <p className="text-sm text-gray-300">{t('migration_info')}</p>
+          <div className="flex-1">
+            <p className="text-sm text-gray-300 mb-1">
+              Add on-chain tracking for better rewards accuracy
+            </p>
+            <p className="text-xs text-gray-400">
+              ✅ No contract changes • No token transfers • Same staking
+              continues
+            </p>
+          </div>
           <button
             onClick={handleMigration}
             disabled={isProcessing}
@@ -374,11 +392,11 @@ export function MigrationBanner({
             {isProcessing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>{t('processing')}</span>
+                <span>Adding Data...</span>
               </>
             ) : (
               <>
-                <span>{t('migrate_button')}</span>
+                <span>📊 Upgrade Tracking</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
