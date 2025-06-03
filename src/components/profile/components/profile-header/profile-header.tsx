@@ -1,5 +1,6 @@
 'use client'
 
+import { FollowBlinkButton } from '@/components/common/follow-blink-button'
 import { FollowButton } from '@/components/common/follow-button'
 import { SolidScoreProfileHeader } from '@/components/profile/components/profile-header/solid-score-profile-header'
 import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
@@ -215,11 +216,30 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
         {!!mainProfile?.username &&
           !!username &&
           mainProfile.username !== username && (
-            <FollowButton
-              className="my-4 md:my-0 w-full"
-              followerUsername={mainProfile.username}
-              followeeUsername={username}
-            />
+            <div className="flex gap-2 my-4 md:my-0">
+              <FollowButton
+                className="flex-1"
+                followerUsername={mainProfile.username}
+                followeeUsername={username}
+              />
+              <FollowBlinkButton
+                username={username}
+                displayVariant="icon"
+                title="Share follow link - Let others follow with one Solana transaction!"
+              />
+            </div>
+          )}
+
+        {/* Show blink button even when user is not logged in to encourage sharing */}
+        {(!mainProfile?.username || mainProfile.username === username) &&
+          username && (
+            <div className="my-4 md:my-0">
+              <FollowBlinkButton
+                username={username}
+                className="w-full"
+                showLabel={true}
+              />
+            </div>
           )}
 
         {/* Bio editing - Mobile */}
