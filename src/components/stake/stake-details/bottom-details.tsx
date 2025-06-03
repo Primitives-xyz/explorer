@@ -1,16 +1,22 @@
 import { Card, CardContent, CardHeader } from '@/components/ui'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, Trophy } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export function BottomDetails() {
   const t = useTranslations('stake')
   return (
-    <Card>
-      <CardHeader>
-        <p className="text-lg">{t('details.tiers.title')}</p>
+    <Card className="h-full border-0 shadow-md bg-gradient-to-br from-background to-muted/20">
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Trophy className="h-5 w-5 text-primary" />
+            <div className="absolute inset-0 animate-ping rounded-full bg-primary/20 opacity-30" />
+          </div>
+          <p className="text-lg font-semibold">{t('details.tiers.title')}</p>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center justify-center">
+      <CardContent className="space-y-3 pt-0">
+        <div className="space-y-3">
           <StakingTierCard
             emoji="🥇"
             title={t('details.tiers.gold.title')}
@@ -19,9 +25,9 @@ export function BottomDetails() {
               t('details.tiers.gold.benefits.swap_fee'),
               t('details.tiers.gold.benefits.comment_fee'),
             ]}
+            gradientClass="from-yellow-500/10 to-amber-500/10 border-yellow-500/30"
+            textColorClass="text-yellow-700 dark:text-yellow-300"
           />
-        </div>
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <StakingTierCard
             emoji="🥈"
             title={t('details.tiers.silver.title')}
@@ -30,6 +36,8 @@ export function BottomDetails() {
               t('details.tiers.silver.benefits.swap_fee'),
               t('details.tiers.silver.benefits.comment_fee'),
             ]}
+            gradientClass="from-gray-400/10 to-slate-400/10 border-gray-400/30"
+            textColorClass="text-gray-700 dark:text-gray-300"
           />
           <StakingTierCard
             emoji="🥉"
@@ -39,10 +47,12 @@ export function BottomDetails() {
               t('details.tiers.bronze.benefits.swap_fee'),
               t('details.tiers.bronze.benefits.comment_fee'),
             ]}
+            gradientClass="from-orange-600/10 to-amber-600/10 border-orange-500/30"
+            textColorClass="text-orange-700 dark:text-orange-300"
           />
         </div>
-        <div className="my-4 text-xs text-muted-foreground italic text-center">
-          {t('details.tiers.disclaimer')}
+        <div className="text-xs text-muted-foreground text-center bg-gradient-to-r from-muted/20 via-muted/40 to-muted/20 p-2 rounded-md border border-border/30">
+          ℹ️ {t('details.tiers.disclaimer')}
         </div>
       </CardContent>
     </Card>
@@ -54,7 +64,8 @@ interface StakingTierCardProps {
   title: string
   requirement: string
   benefits: string[]
-  className?: string
+  gradientClass: string
+  textColorClass: string
 }
 
 export function StakingTierCard({
@@ -62,28 +73,33 @@ export function StakingTierCard({
   title,
   requirement,
   benefits,
+  gradientClass,
+  textColorClass,
 }: StakingTierCardProps) {
   return (
-    <Card className="bg-card-accent">
-      <CardHeader className="flex flex-col items-center justify-center">
-        <p className="text-primary font-bold">
-          {emoji} {title}
-        </p>
-        <p>{requirement}</p>
-      </CardHeader>
-      <CardContent>
-        <ul className="text-sm space-y-2">
-          {benefits.map((benefit, idx) => (
-            <li key={idx} className="flex gap-2 items-center">
-              <div>
-                <CheckCircle size={12} className="text-primary" />
-              </div>
-
-              <span>{benefit}</span>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
+    <div
+      className={`bg-gradient-to-r ${gradientClass} rounded-lg border p-3 hover:border-opacity-50 transition-all duration-300`}
+    >
+      <div className="flex items-center gap-3 mb-2">
+        <div className="text-lg flex-shrink-0">{emoji}</div>
+        <div className="flex-1 min-w-0">
+          <p className={`font-medium text-sm ${textColorClass}`}>{title}</p>
+          <p className="text-xs text-muted-foreground">{requirement}</p>
+        </div>
+      </div>
+      <div className="space-y-1">
+        {benefits.map((benefit, idx) => (
+          <div key={idx} className="flex gap-2 items-start">
+            <CheckCircle
+              size={10}
+              className="text-green-500 flex-shrink-0 mt-1"
+            />
+            <span className="text-xs text-muted-foreground leading-relaxed">
+              {benefit}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

@@ -1,80 +1,93 @@
-import { SseStake } from '@/sse_stake'
-import stakingProgramIdl from '@/sse_stake.json'
 import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
+import { detectStakingVersion } from '@/utils/staking-version'
 import { getAssociatedTokenAccount } from '@/utils/token'
-import * as anchor from '@coral-xyz/anchor'
-import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import {
-  Connection,
-  Keypair,
-  PublicKey,
-  TransactionMessage,
-  VersionedTransaction,
-} from '@solana/web3.js'
+  createTransactionErrorResponse,
+  serializeTransactionForClient,
+} from '@/utils/transaction-helpers'
+import * as anchor from '@coral-xyz/anchor'
+import { Connection, PublicKey, Transaction } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
 
 function convertToBN(value: number, decimals: number) {
-	const wholePart = Math.floor(value)
+  const wholePart = Math.floor(value)
   const precision = new anchor.BN(Math.pow(10, decimals))
-	const decimalPart = Math.round((value - wholePart) * precision.toNumber())
-  
-	return new anchor.BN(wholePart).mul(precision).add(new anchor.BN(decimalPart))
+  const decimalPart = Math.round((value - wholePart) * precision.toNumber())
+
+  return new anchor.BN(wholePart).mul(precision).add(new anchor.BN(decimalPart))
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { walletAddy, amount } = await await req.json()
-    const connection = new Connection(process.env.RPC_URL || '')
-    const wallet = new NodeWallet(Keypair.generate())
-    const provider = new anchor.AnchorProvider(connection, wallet, {
-      preflightCommitment: 'confirmed',
-    })
-    const stakingProgramInterface = JSON.parse(
-      JSON.stringify(stakingProgramIdl)
+    const { walletAddy, walletAddress, amount } = await req.json()
+
+    // Support both field names for backward compatibility
+    const userWallet = walletAddy || walletAddress
+    if (!userWallet) {
+      return NextResponse.json(
+        { error: 'Missing wallet address' },
+        { status: 400 }
+      )
+    }
+
+    const connection = new Connection(
+      process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
     )
-    const program = new anchor.Program(stakingProgramIdl as SseStake, {
+
+    const userPubkey = new PublicKey(userWallet)
+
+    // Detect which version to use
+    const { isNewVersion, program, configPda } = await detectStakingVersion(
       connection,
-    })
-
-    const [configPda, _] = PublicKey.findProgramAddressSync(
-      [Buffer.from('config')],
-      program.programId
+      userPubkey
     )
 
-    let globalTokenAccount = await getAssociatedTokenAccount(
-      configPda,
-      new PublicKey(SSE_MINT)
+    console.log(
+      `Using ${isNewVersion ? 'new' : 'old'} staking contract for unstake`
     )
-    let userTokenAccount = await getAssociatedTokenAccount(
-      new PublicKey(walletAddy),
+
+    const userTokenAccount = getAssociatedTokenAccount(
+      userPubkey,
       new PublicKey(SSE_MINT)
     )
 
-    const unstakeTx = await program.methods
-      .unstake(convertToBN(Number(amount), SSE_TOKEN_DECIMAL))
-      .accounts({
-        globalTokenAccount,
-        user: new PublicKey(walletAddy),
-        userTokenAccount,
-      })
-      .transaction()
+    // Build transaction based on version
+    let unstakeTx: Transaction
+    if (isNewVersion) {
+      // New version needs globalTokenAccount
+      const globalTokenAccount = await getAssociatedTokenAccount(
+        configPda,
+        new PublicKey(SSE_MINT)
+      )
 
-    const blockHash = (await connection.getLatestBlockhash('finalized'))
-      .blockhash
+      unstakeTx = await (program.methods as any)
+        .unstake(convertToBN(Number(amount), SSE_TOKEN_DECIMAL))
+        .accounts({
+          globalTokenAccount,
+          user: userPubkey,
+          userTokenAccount,
+        })
+        .transaction()
+    } else {
+      // Old version doesn't need globalTokenAccount
+      unstakeTx = await (program.methods as any)
+        .unstake(convertToBN(Number(amount), SSE_TOKEN_DECIMAL))
+        .accounts({
+          user: userPubkey,
+          userTokenAccount,
+        })
+        .transaction()
+    }
 
-    const messageV0 = new TransactionMessage({
-      payerKey: new PublicKey(walletAddy),
-      recentBlockhash: blockHash,
-      instructions: unstakeTx.instructions,
-    }).compileToV0Message()
+    // Use our helper to serialize the transaction
+    const serializedTx = await serializeTransactionForClient(
+      unstakeTx,
+      connection,
+      userPubkey
+    )
 
-    const vtx = new VersionedTransaction(messageV0)
-    const serialized = vtx.serialize()
-    const buffer = Buffer.from(serialized).toString('base64')
-
-    return NextResponse.json({ unStakeTx: buffer })
+    return NextResponse.json({ unStakeTx: serializedTx })
   } catch (err) {
-    console.log(err)
-    return NextResponse.json({ error: String(err) })
+    return createTransactionErrorResponse(err)
   }
 }

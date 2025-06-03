@@ -21,20 +21,44 @@ export function formatSmartNumber(
 
   if (micro) value /= 1_000_000
 
+  // Validate and clamp fraction digits to valid range (0-20)
+  const clampedMinFractionDigits = Math.max(
+    0,
+    Math.min(20, minimumFractionDigits)
+  )
+  const clampedMaxFractionDigits = Math.max(
+    0,
+    Math.min(20, maximumFractionDigits)
+  )
+
+  // Ensure minimumFractionDigits is not greater than maximumFractionDigits
+  const validMinFractionDigits = Math.min(
+    clampedMinFractionDigits,
+    clampedMaxFractionDigits
+  )
+  const validMaxFractionDigits = Math.max(
+    clampedMinFractionDigits,
+    clampedMaxFractionDigits
+  )
+
   if (withComma && !compact) {
     return value.toLocaleString('en-US', {
-      minimumFractionDigits,
-      maximumFractionDigits,
+      minimumFractionDigits: validMinFractionDigits,
+      maximumFractionDigits: validMaxFractionDigits,
     })
   }
 
   if (compact) {
-    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`
-    if (value >= 1_000) return `${(value / 1_000).toFixed(2)}K`
+    if (value >= 1_000_000)
+      return `${(value / 1_000_000).toFixed(
+        Math.min(2, validMaxFractionDigits)
+      )}M`
+    if (value >= 1_000)
+      return `${(value / 1_000).toFixed(Math.min(2, validMaxFractionDigits))}K`
   }
 
   return value.toLocaleString('en-US', {
-    minimumFractionDigits,
-    maximumFractionDigits,
+    minimumFractionDigits: validMinFractionDigits,
+    maximumFractionDigits: validMaxFractionDigits,
   })
 }

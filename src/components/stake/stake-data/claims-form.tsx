@@ -21,11 +21,10 @@ export function ClaimsForm({ className }: Props) {
       : '0'
 
   const formattedRewardsAmount = formatSmartNumber(nonNegativeRewardsAmount, {
-    micro: true,
     compact: false,
     withComma: false,
-    minimumFractionDigits: 6,
-    maximumFractionDigits: 6,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 18,
   })
 
   const { claimRewards, hasRewards, currentStep, isLoading } = useClaimRewards({
@@ -105,14 +104,16 @@ export function ClaimsForm({ className }: Props) {
         </div>
       )}
 
-      <Button
-        onClick={claimRewards}
-        disabled={isLoading || !hasRewards}
-        className="w-full"
-      >
-        {isLoading && <Spinner className="mr-2" />}
-        {getClaimButtonText()}
-      </Button>
+      <div className="mt-6">
+        <Button
+          onClick={claimRewards}
+          disabled={isLoading || !hasRewards}
+          className="w-full"
+        >
+          {isLoading && <Spinner className="mr-2" />}
+          {getClaimButtonText()}
+        </Button>
+      </div>
 
       <div className="mt-4 text-sm text-muted-foreground">
         <p>{t('stake.claim.description')}</p>
