@@ -71,7 +71,7 @@ export function useMigrationExecute() {
 
       // Optional: simulate the transaction without signature verification
       // since it's not signed yet
-      // const simulation = await connection.simulateTransaction(transaction, {
+      // const simulation = await connection.simulateTransaction(signedTransaction, {
       //   sigVerify: false,
       //   replaceRecentBlockhash: true,
       // })
@@ -97,11 +97,12 @@ export function useMigrationExecute() {
       // Sign and send the transaction using Dynamic wallet's method
       console.log('Transaction sent, signature:', confirmation)
 
-      // Invalidate caches to refresh data
-      await mutate(`/migration/check/${walletAddress}`)
-      // Invalidate the unified staking endpoint to ensure fresh data
-      await mutate(`/api/staking/user-info/${walletAddress}`)
-      await mutate(`/api/staking-v2/${walletAddress}`)
+      // Parallelize cache invalidation to refresh data faster
+      await Promise.all([
+        mutate(`/migration/check/${walletAddress}`),
+        mutate(`/api/staking/user-info/${walletAddress}`),
+        mutate(`/api/staking-v2/${walletAddress}`),
+      ])
 
       toast.success('Migration completed successfully!')
 

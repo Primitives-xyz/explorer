@@ -121,7 +121,9 @@ export async function POST(request: NextRequest) {
     // Get staking V2 data to calculate proper reward amount
     const stakingData = await getStakingV2Data(walletAddress)
     const totalClaimableSSE = calculateTotalClaimable(stakingData)
-    const SSE_TRANSFER_AMOUNT = totalClaimableSSE * Math.pow(10, SSE_DECIMALS)
+    const SSE_TRANSFER_AMOUNT = Math.floor(
+      totalClaimableSSE * Math.pow(10, SSE_DECIMALS)
+    )
 
     console.log('Staking V2 Data:', stakingData)
     console.log('Total claimable SSE:', totalClaimableSSE)
