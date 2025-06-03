@@ -6,17 +6,27 @@ import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useMigrationCheck } from './use-migration-check'
 
 export function useStake() {
   const [isLoading, setIsLoading] = useState(false)
   const t = useTranslations('stake')
   const { refreshUserInfo } = useStakeInfo({})
   const { createContentNode } = useCreateStakeContentNode()
+  const { needsMigration } = useMigrationCheck()
 
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
   const stake = async (amount: string) => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+      return
+    }
+
+    // Check if migration is needed before staking
+    if (needsMigration) {
+      toast.error(t('migration_required'), {
+        description: t('migration_required_description'),
+      })
       return
     }
 
@@ -31,7 +41,7 @@ export function useStake() {
 
       const data = await response.json()
       const serializedBuffer = Buffer.from(data.stakeTx, 'base64')
-      const vtx = VersionedTransaction.deserialize(
+      let vtx = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
 
@@ -40,12 +50,16 @@ export function useStake() {
       }
 
       const signer = await primaryWallet.getSigner()
+      vtx = await signer.signTransaction(vtx)
+
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
-      const simulate = await connection.simulateTransaction(vtx)
+      const simulate = await connection.simulateTransaction(vtx, {
+        sigVerify: false,
+      })
       console.log('sim:', simulate)
 
-      const txid = await signer.signAndSendTransaction(vtx)
+      const txid = await connection.sendRawTransaction(vtx.serialize())
 
       const confirmToastId = toast(t('transaction.confirming'), {
         description: t('transaction.waiting_confirmation'),
@@ -53,7 +67,7 @@ export function useStake() {
       })
 
       const confirmation = await connection.confirmTransaction({
-        signature: txid.signature,
+        signature: txid,
         ...(await connection.getLatestBlockhash()),
       })
 
@@ -71,7 +85,7 @@ export function useStake() {
 
         // Create content node for the stake transaction
         await createContentNode({
-          signature: txid.signature,
+          signature: txid,
           stakeAmount: amount,
           walletAddress,
           route: 'stake',
@@ -90,5 +104,6 @@ export function useStake() {
   return {
     stake,
     isLoading,
+    needsMigration,
   }
 }

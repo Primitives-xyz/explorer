@@ -1,11 +1,11 @@
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
 import { StakeFilterType } from '@/components/stake/stake-content'
 import { ClaimsForm } from '@/components/stake/stake-data/claims-form'
-import { DisplayStakeData } from '@/components/stake/stake-data/display-stake-data'
 import { StakeForm } from '@/components/stake/stake-data/stake-form'
 import { UnstakeForm } from '@/components/stake/stake-data/unstake-form'
 import { Card, CardContent } from '@/components/ui'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
+import { Gift, TrendingUp, Wallet } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface Props {
@@ -29,7 +29,8 @@ export function StakeData({ selectedType }: Props) {
   const formattedTotalStake = formatSmartNumber(
     totalStakeAmount === '0' ? totalStakeAmount2 : totalStakeAmount,
     {
-      micro: true,
+      compact: true,
+      withComma: true,
     }
   )
 
@@ -40,7 +41,6 @@ export function StakeData({ selectedType }: Props) {
       : '0'
 
   const formattedRewardsAmount = formatSmartNumber(nonNegativeRewardsAmount, {
-    micro: true,
     compact: false,
     withComma: true,
     minimumFractionDigits: 0,
@@ -48,8 +48,9 @@ export function StakeData({ selectedType }: Props) {
   })
 
   const formattedStakeAmount = formatSmartNumber(stakeAmount, {
-    micro: true,
-    minimumFractionDigits: 6,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 6,
+    withComma: true,
   })
 
   const renderForm = () => {
@@ -81,41 +82,87 @@ export function StakeData({ selectedType }: Props) {
     }
   }
 
+  if (showUserInfoLoading) {
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="animate-pulse space-y-2">
+                <div className="h-4 bg-muted rounded w-3/4" />
+                <div className="h-6 bg-muted rounded w-1/2" />
+              </div>
+              <div className="animate-pulse space-y-2">
+                <div className="h-4 bg-muted rounded w-2/3" />
+                <div className="h-6 bg-muted rounded w-1/3" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card-accent">
+          <CardContent className="p-4">
+            <div className="animate-pulse space-y-4">
+              <div className="h-10 bg-muted rounded" />
+              <div className="h-12 bg-muted rounded" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex flex-col space-y-10">
-      <div className="flex flex-col md:flex-row justify-between md:items-center space-y-6 md:space-y-0">
-        <DisplayStakeData
-          label={t('platform_stats.platform_total_stake')}
-          value={formattedTotalStake}
-          loading={showUserInfoLoading}
-        />
+    <div className="space-y-4">
+      {/* Stats Cards */}
+      <div className="space-y-4">
+        <Card className="bg-background border border-border/50 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-center">
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-medium">Platform Total</p>
+                </div>
+                <p className="text-xl font-bold">{formattedTotalStake}</p>
+                <p className="text-xs text-muted-foreground">SSE tokens</p>
+              </div>
 
-        <DisplayStakeData
-          label={t('platform_stats.total_reward_amount')}
-          value={formattedRewardsAmount}
-          loading={showUserInfoLoading}
-        />
+              <div className="text-center">
+                <div className="flex items-center gap-2 mb-1">
+                  <Gift className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-medium">Total Reward Amount</p>
+                </div>
+                <p className="text-xl font-bold">{formattedRewardsAmount}</p>
+                <p className="text-xs text-muted-foreground">tokens</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-background border border-border/50 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium">Total Staking Amount</p>
+            </div>
+            <p className="text-2xl font-bold">{formattedStakeAmount}</p>
+            <p className="text-xs text-muted-foreground">tokens</p>
+
+            {!hasStaked &&
+              (selectedType === StakeFilterType.UNSTAKE ||
+                selectedType === StakeFilterType.CLAIM_REWARDS) && (
+                <p className="text-xs text-destructive mt-1">
+                  {t('errors.no_stake_warning')}
+                  <br /> {t('errors.stake_first')}
+                </p>
+              )}
+          </CardContent>
+        </Card>
       </div>
 
-      <div>
-        <DisplayStakeData
-          label={t('platform_stats.total_staking_amount')}
-          value={formattedStakeAmount}
-          loading={showUserInfoLoading}
-        />
-        {!hasStaked &&
-          (selectedType === StakeFilterType.UNSTAKE ||
-            selectedType === StakeFilterType.CLAIM_REWARDS) && (
-            <p className="text-xs text-destructive mt-1">
-              {t('errors.no_stake_warning')}
-              <br /> {t('errors.stake_first')}
-            </p>
-          )}
-      </div>
-      <Card className="bg-card-accent">
-        <CardContent>
-          <div>{renderForm()}</div>
-        </CardContent>
+      <Card className="bg-background border border-border/50 shadow-sm">
+        <CardContent className="p-4">{renderForm()}</CardContent>
       </Card>
     </div>
   )
