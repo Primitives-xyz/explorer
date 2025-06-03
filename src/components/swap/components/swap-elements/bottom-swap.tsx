@@ -106,7 +106,7 @@ export function BottomSwap({
             type="single"
             collapsible
             className="w-full"
-            defaultValue={isMobile ? '' : 'item-1'}
+            defaultValue=""
           >
             <AccordionItem value="item-1">
               <AccordionTrigger

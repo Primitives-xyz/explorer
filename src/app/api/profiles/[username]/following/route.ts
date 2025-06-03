@@ -15,6 +15,8 @@ export async function GET(_req: NextRequest, context: RouteContext) {
 
     const searchParams = _req.nextUrl.searchParams
     const namespace = searchParams.get('namespace')
+    const page = searchParams.get('page')
+    const pageSize = searchParams.get('pageSize')
 
     const { username } = params
     if (!username) {
@@ -23,10 +25,20 @@ export async function GET(_req: NextRequest, context: RouteContext) {
         { status: 400 }
       )
     }
+
+    // Build query string with all parameters
+    const queryParams = new URLSearchParams()
+    if (namespace) queryParams.set('namespace', namespace)
+    if (page) queryParams.set('page', page)
+    if (pageSize) queryParams.set('pageSize', pageSize)
+
+    const queryString = queryParams.toString()
+    const endpoint = `profiles/${username}/following${
+      queryString ? `?${queryString}` : ''
+    }`
+
     const response = await fetchTapestryServer({
-      endpoint: `profiles/${username}/following${
-        namespace ? `?namespace=${namespace}` : ''
-      }`,
+      endpoint,
       method: FetchMethod.GET,
     })
     return NextResponse.json(response)
