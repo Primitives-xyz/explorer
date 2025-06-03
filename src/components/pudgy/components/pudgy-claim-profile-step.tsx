@@ -15,9 +15,11 @@ import {
   Label,
   Spinner,
 } from '@/components/ui'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -54,6 +56,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
   })
   const [pudgyTheme, setPudgyTheme] = useState(EPudgyTheme.DEFAULT)
   const [pudgyFrame, setPudgyFrame] = useState(true)
+  const { push } = useRouter()
 
   const loading = pudgyPaymentLoading || updateProfileLoading
   const error = pudgyPaymentError || updateProfileError
@@ -84,8 +87,8 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
   }
 
   useEffect(() => {
-    if (transactionStatusData?.status === ECryptoTransactionStatus.VERIFIED) {
-      updateProfile({
+    const updatePudgyProfile = async () => {
+      await updateProfile({
         username: form.getValues('username'),
         properties: [
           {
@@ -98,8 +101,27 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
           },
         ],
       })
+      refetchCurrentUser()
+      push(
+        route('entity', {
+          id: mainProfile.id,
+        })
+      )
     }
-  }, [transactionStatusData, updateProfile, form, pudgyTheme, pudgyFrame])
+
+    if (transactionStatusData?.status === ECryptoTransactionStatus.VERIFIED) {
+      updatePudgyProfile()
+    }
+  }, [
+    transactionStatusData,
+    updateProfile,
+    form,
+    pudgyTheme,
+    pudgyFrame,
+    mainProfile.id,
+    push,
+    refetchCurrentUser,
+  ])
 
   useEffect(() => {
     if (error) {
