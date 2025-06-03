@@ -229,6 +229,10 @@
     "waiting_for_confirmation": "Waiting for confirmation",
     "transaction_successful": "Transaction Successful",
     "transaction_failed": "Transaction Failed",
+    "the_claim_transaction_was_successful_creating_shareable_link": "The claim transaction was successful. Creating shareable link",
+    "the_claim_transaction_failed_please_try_again": "The claim transaction failed. Please try again",
+    "no_rewards_to_claim": "No rewards to claim",
+    "confirming_transaction": "Confirming Transaction",
     "search_tokens": "Search tokens...",
     "verified_tokens_only": "Verified tokens only",
     "no_tokens_found": "No tokens found",
@@ -509,6 +513,57 @@
       "no_rewards_description": "You don't have any rewards to claim at this time",
       "description": "Claim your accumulated rewards from staking",
       "connect_wallet_description": "Connect your wallet to view and claim your accumulated rewards"
+    },
+    "v2_unlock": {
+      "title": "Welcome to Staking V2!",
+      "subtitle": "Thank you for being a loyal member of our community",
+      "reward_title": "100 SSE Loyalty Reward",
+      "reward_description": "Claim your reward for being an early supporter",
+      "staking_summary": "Your Staking Summary",
+      "staked_amount": "Staked Amount",
+      "earned_rewards": "Earned Rewards",
+      "analysis_title": "Your Staking V2 Analysis",
+      "total_transactions": "Total Transactions",
+      "total_staked": "Total Staked",
+      "fair_rewards": "Fair Rewards (Calculated)",
+      "actually_claimed": "Actually Claimed",
+      "over_claimed": "Over-claimed",
+      "under_claimed": "Under-claimed",
+      "your_status": "Your Status",
+      "status": {
+        "over_claimed": "⚠️ Over-claimed",
+        "under_claimed": "💎 Under-claimed",
+        "correctly_claimed": "✅ Correctly claimed"
+      },
+      "explanation": {
+        "under_claimed": "Good news! You've claimed less than your fair share. You're eligible for the 100 SSE loyalty reward!",
+        "over_claimed": "You've already claimed more than the calculated fair rewards. Thank you for being an active participant!",
+        "correctly_claimed": "Your claims match the calculated fair rewards perfectly!"
+      },
+      "loading_credits": "Loading your credits...",
+      "claim_button": "Claim 100 SSE",
+      "processing": "Processing...",
+      "maybe_later": "Maybe Later",
+      "close": "Close",
+      "success_title": "Reward claimed successfully! 🎉",
+      "view_transaction": "View transaction",
+      "connect_wallet_error": "Please connect your wallet",
+      "claim_failed": "Failed to claim reward. Please try again."
+    },
+    "migration": {
+      "success_title": "Migration Successful!",
+      "success_description": "Your staking account has been successfully migrated to the new format.",
+      "required_title": "Account Migration Required",
+      "required_description": "Your staking account needs to be migrated to the new format to continue earning rewards.",
+      "current_status_title": "Current Account Status",
+      "staked": "Staked",
+      "last_update": "Last Update",
+      "status": "Status",
+      "status_active": "Active",
+      "status_inactive": "Inactive",
+      "migration_info": "This is a one-time migration. Your staked tokens will be transferred to the new account format.",
+      "processing": "Processing Migration...",
+      "migrate_button": "Migrate Account"
     }
   },
   "swap": {

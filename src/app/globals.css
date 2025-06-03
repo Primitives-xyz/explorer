@@ -2,6 +2,7 @@
 @import '../styles/loading-dots.css' layer(base);
 @import '../styles/motion.css' layer(base);
 @import '../styles/dialect.css' layer(base);
+@import '../components/stake/components/staking-v2-modal.css' layer(base);
 
 @import 'tailwindcss';
 
