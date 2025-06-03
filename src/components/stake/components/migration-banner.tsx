@@ -146,12 +146,13 @@ export function MigrationBanner({
                 <div className="absolute inset-0 h-5 w-5 sm:h-6 sm:w-6 animate-ping rounded-full bg-purple-400/30" />
               </div>
               <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                📊 On-Chain Data Update
+                🚀 Staking V2 Upgrade
               </h2>
             </div>
             <p className="text-sm sm:text-base text-purple-100/90">
-              We're adding on-chain data to better track your rewards. One quick
-              transaction and you'll start accumulating rewards more accurately!
+              Upgrade to V2 staking with enhanced features: stake, unstake, and
+              claim rewards multiple times per day with second-by-second reward
+              calculations!
             </p>
           </div>
         </div>
@@ -213,8 +214,8 @@ export function MigrationBanner({
                 </div>
                 <div className="mt-3 p-2 sm:p-3 bg-blue-500/10 backdrop-blur-sm rounded-lg border border-blue-500/30">
                   <p className="text-xs text-blue-200">
-                    ✅ No contracts changed • No tokens transferred • Same
-                    staking continues
+                    ✅ Current staking stays active • Enhanced daily operations
+                    • Real-time reward tracking
                   </p>
                 </div>
               </div>
@@ -279,10 +280,10 @@ export function MigrationBanner({
                 <div className="mt-3 p-2 sm:p-3 bg-muted/30 backdrop-blur-sm rounded-lg border border-border/30">
                   <p className="text-xs text-muted-foreground">
                     {stakingData.status === 'under-claimed'
-                      ? `You're eligible for the 100 SSE loyalty reward plus your ${formatSSEAmount(
+                      ? `Upgrade to V2 staking for flexible daily operations and precise reward tracking! Plus get your 100 SSE loyalty bonus and ${formatSSEAmount(
                           Math.abs(stakingData.overClaimed || 0)
-                        )} SSE unclaimed rewards! This upgrade adds on-chain tracking for better reward accuracy.`
-                      : "You'll receive 100 SSE as a loyalty bonus for upgrading to our improved on-chain reward tracking system."}
+                        )} SSE unclaimed rewards.`
+                      : 'Upgrade to V2 staking for enhanced features: multiple daily operations, second-by-second reward calculations, plus a 100 SSE loyalty bonus!'}
                   </p>
                 </div>
               </div>
@@ -299,7 +300,7 @@ export function MigrationBanner({
               {isProcessing ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Adding On-Chain Data...
+                  Upgrading to V2...
                 </>
               ) : (
                 <>
@@ -329,12 +330,13 @@ export function MigrationBanner({
           </div>
           <div className="flex-1">
             <h3 className="text-xl font-bold text-yellow-400 mb-2">
-              On-Chain Data Upgrade Available
+              Staking V2 Upgrade Available
             </h3>
             <p className="text-sm text-gray-300">
-              We're adding on-chain data to better track your staking rewards.
-              Your tokens stay exactly where they are - this is just one
-              transaction to enable more accurate reward tracking going forward.
+              Upgrade to our enhanced staking system with flexible operations
+              (stake/unstake/claim multiple times daily) and precise
+              second-by-second reward calculations. Your current staking remains
+              active during the upgrade.
             </p>
           </div>
         </div>
@@ -377,11 +379,11 @@ export function MigrationBanner({
         <div className="flex items-center justify-between bg-black/30 rounded-xl p-4 border border-yellow-500/20">
           <div className="flex-1">
             <p className="text-sm text-gray-300 mb-1">
-              Add on-chain tracking for better rewards accuracy
+              Enable flexible staking operations & real-time reward tracking
             </p>
             <p className="text-xs text-gray-400">
-              ✅ No contract changes • No token transfers • Same staking
-              continues
+              ✅ Multiple daily operations • Second-by-second rewards • Enhanced
+              flexibility
             </p>
           </div>
           <button
@@ -392,12 +394,13 @@ export function MigrationBanner({
             {isProcessing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Adding Data...</span>
+                <span>🚀 Upgrade to V2</span>
               </>
             ) : (
               <>
-                <span>📊 Upgrade Tracking</span>
-                <ArrowRight className="w-4 h-4" />
+                🚀 Upgrade to V2 & Claim{' '}
+                {formatSSEAmount(calculateTotalClaimable())} SSE
+                <ArrowRight className="h-4 w-4" />
               </>
             )}
           </button>
