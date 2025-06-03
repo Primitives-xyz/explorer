@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 interface ProfileEditableFieldProps {
   value: string
+  prefix?: string
   placeholder?: string
   isEditing: boolean
   onEdit: () => void
@@ -21,6 +22,7 @@ interface ProfileEditableFieldProps {
 
 export function ProfileEditableField({
   value,
+  prefix = '',
   placeholder = '',
   isEditing,
   onEdit,
@@ -67,13 +69,18 @@ export function ProfileEditableField({
             autoFocus
           />
         ) : (
-          <Input
-            value={localValue}
-            onChange={(e) => setLocalValue(e.target.value)}
-            className="font-bold text-base max-w-[200px]"
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
+          <div className="flex items-center">
+            {prefix && (
+              <span className="font-bold text-base mr-1">{prefix}</span>
+            )}
+            <Input
+              value={localValue}
+              onChange={(e) => setLocalValue(e.target.value)}
+              className="font-bold text-base max-w-[200px]"
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+          </div>
         )}
         <div className="flex items-center gap-2">
           <Button size="sm" onClick={handleSave} disabled={loading}>
@@ -94,7 +101,10 @@ export function ProfileEditableField({
 
   return (
     <div className={`flex items-start gap-2 group ${className}`}>
-      <p className="flex-1">{value || placeholder}</p>
+      <p className="flex-1">
+        {prefix}
+        {value || placeholder}
+      </p>
       <button
         onClick={onEdit}
         className="md:opacity-0 md:group-hover:opacity-100 opacity-60 transition-opacity p-1 hover:bg-muted rounded shrink-0"
