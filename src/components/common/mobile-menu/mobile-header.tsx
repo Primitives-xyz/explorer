@@ -33,7 +33,7 @@ export function MobileHeader() {
           {/* <SearchButton /> */}
           {!!mainProfile ? (
             <>
-              {/* <Button
+              <Button
                 href={route('entity', { id: mainProfile.username })}
                 isInvisible
               >
@@ -43,13 +43,7 @@ export function MobileHeader() {
                   className="w-10"
                   size={40}
                 />
-              </Button> */}
-              <Avatar
-                username={mainProfile.username}
-                imageUrl={mainProfile.image}
-                className="w-10"
-                size={40}
-              />
+              </Button>
             </>
           ) : (
             <Button
