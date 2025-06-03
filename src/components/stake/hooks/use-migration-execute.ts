@@ -71,18 +71,19 @@ export function useMigrationExecute() {
 
       // Optional: simulate the transaction without signature verification
       // since it's not signed yet
-      const simulation = await connection.simulateTransaction(transaction, {
-        sigVerify: false,
-      })
-      console.log('Simulation:', simulation)
+      // const simulation = await connection.simulateTransaction(transaction, {
+      //   sigVerify: false,
+      //   replaceRecentBlockhash: true,
+      // })
+      // console.log('Simulation:', simulation)
 
-      if (simulation.value.err) {
-        throw new Error(
-          `Transaction simulation failed: ${JSON.stringify(
-            simulation.value.err
-          )}`
-        )
-      }
+      // if (simulation.value.err) {
+      //   throw new Error(
+      //     `Transaction simulation failed: ${JSON.stringify(
+      //       simulation.value.err
+      //     )}`
+      //   )
+      // }
 
       // Get signer from Dynamic wallet
       console.log('ARE WE HERE?')
