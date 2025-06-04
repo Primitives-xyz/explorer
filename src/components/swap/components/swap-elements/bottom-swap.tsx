@@ -82,7 +82,6 @@ export function BottomSwap({
                 id="pay_fee_with_sse"
                 checked={useSSEForFees}
                 onClick={() => setUseSSEForFees(!useSSEForFees)}
-                onChange={() => {}}
                 className="pointer-events-none mt-1"
                 size={CheckboxSize.LG}
               />

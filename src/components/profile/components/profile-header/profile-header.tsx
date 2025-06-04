@@ -5,9 +5,12 @@ import { SolidScoreProfileHeader } from '@/components/profile/components/profile
 import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
+import { Button, ButtonVariant } from '@/components/ui'
+import { createURL } from '@/utils/api'
+import { share } from '@/utils/share'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
-import { abbreviateWalletAddress } from '@/utils/utils'
+import { abbreviateWalletAddress, cn } from '@/utils/utils'
+import { ShareIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -51,12 +54,14 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const followers = hasProfile ? profileInfo.socialCounts?.followers ?? 0 : 0
   const following = hasProfile ? profileInfo.socialCounts?.following ?? 0 : 0
 
+  const isPudgy = !!mainProfile?.pudgy_profile_date
+
   // Check if this is the current user's profile
   const isOwnProfile =
     hasProfile && mainProfile?.username === profileInfo.profile.username
 
   const { updateProfile, loading: updateLoading } = useUpdateProfile({
-    username: profileInfo?.profile.username || '',
+    profileId: profileInfo?.profile.id || '',
   })
   const { refetch: refetchCurrentUser } = useCurrentWallet()
 
@@ -102,119 +107,82 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
     setPendingUsername('')
   }
 
+  const displayedUsername = hasProfile
+    ? isSame
+      ? abbreviateWalletAddress({
+          address: profileInfo.profile.username,
+        })
+      : `@${profileInfo.profile.username}`
+    : walletAddress
+    ? abbreviateWalletAddress({ address: walletAddress })
+    : 'unknown'
+
   return (
-    <div className="flex flex-col md:flex-row justify-between">
-      <div className="flex items-center md:items-start gap-2 md:gap-4">
-        {/* Profile picture with editing capability */}
+    <div className="flex flex-col md:flex-row justify-between gap-4">
+      <div>
         <ProfileImageEditor
           username={username || 'unknown'}
           imageUrl={imageUrl}
           isOwnProfile={isOwnProfile}
           size={72}
+          isPudgy={isPudgy}
         />
-
-        <div className="space-y-1 flex-1">
-          <div className="flex flex-col md:flex-row gap-1 md:items-center">
-            {/* Username editing */}
-            {isOwnProfile ? (
-              <div className="w-fit">
-                <ProfileEditableField
-                  value={
-                    hasProfile
-                      ? isSame
-                        ? abbreviateWalletAddress({
-                            address: profileInfo.profile.username,
-                          })
-                        : profileInfo.profile.username
-                      : walletAddress
-                      ? abbreviateWalletAddress({ address: walletAddress })
-                      : 'unknown'
-                  }
-                  prefix={hasProfile && !isSame ? '@' : undefined}
-                  isEditing={editingUsername}
-                  onEdit={() => setEditingUsername(true)}
-                  onSave={handleUsernameSave}
-                  onCancel={() => setEditingUsername(false)}
-                  loading={updateLoading}
-                  title="Edit username"
-                  className="font-bold"
-                />
-              </div>
-            ) : (
-              <p className="font-bold">
-                {hasProfile
-                  ? isSame
-                    ? abbreviateWalletAddress({
-                        address: profileInfo.profile.username,
-                      })
-                    : `@${profileInfo.profile.username}`
-                  : walletAddress
-                  ? abbreviateWalletAddress({ address: walletAddress })
-                  : 'unknown'}
-              </p>
-            )}
-
-            {hasProfile && profileInfo.walletAddress && !isSame && (
-              <p className="text-muted-foreground">
-                {abbreviateWalletAddress({
-                  address: profileInfo.walletAddress,
-                })}
-              </p>
-            )}
-            <p className="text-muted-foreground desktop">
-              • {t('common.since')} {creationYear}
-            </p>
-            <p className="text-muted-foreground mobile">
-              {t('common.since')} {creationYear}
-            </p>
-          </div>
-
-          {hasProfile && isSpecialUser(mainProfile) && (
-            <SolidScoreProfileHeader id={profileInfo.profile.id} />
-          )}
-
-          {/* Bio editing - Desktop */}
-          {isOwnProfile ? (
-            <div className="text-muted-foreground text-sm desktop">
-              <ProfileEditableField
-                value={bio || ''}
-                placeholder={t('common.no_description')}
-                isEditing={editingBio}
-                onEdit={() => setEditingBio(true)}
-                onSave={handleBioSave}
-                onCancel={() => setEditingBio(false)}
-                maxLength={300}
-                multiline={true}
-                loading={updateLoading}
-                title="Edit bio"
-              />
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-sm desktop">
-              {bio || t('common.no_description')}
-            </p>
-          )}
-        </div>
       </div>
 
-      {hasProfile && isSpecialUser(mainProfile) && (
-        <SolidScoreSmartCtaWrapper />
-      )}
+      <div className="space-y-1 flex-1">
+        <div className="flex flex-col md:flex-row gap-1 md:items-center">
+          <div
+            className={cn('w-fit', {
+              'font-bold': !isPudgy,
+              'font-pudgy-heading text-xl': isPudgy,
+            })}
+          >
+            {isOwnProfile ? (
+              <ProfileEditableField
+                value={displayedUsername}
+                isEditing={editingUsername}
+                onEdit={() => setEditingUsername(true)}
+                onSave={handleUsernameSave}
+                onCancel={() => setEditingUsername(false)}
+                loading={updateLoading}
+                title="Edit username"
+                className="font-bold"
+              />
+            ) : (
+              <p>{displayedUsername}</p>
+            )}
+          </div>
 
-      <div className="space-y-2">
-        {!!mainProfile?.username &&
-          !!username &&
-          mainProfile.username !== username && (
-            <FollowButton
-              className="my-4 md:my-0 w-full"
-              followerUsername={mainProfile.username}
-              followeeUsername={username}
-            />
+          {hasProfile && profileInfo.walletAddress && !isSame && (
+            <p className="text-muted-foreground">
+              {abbreviateWalletAddress({
+                address: profileInfo.walletAddress,
+              })}
+            </p>
           )}
+          <span className="desktop">•</span>
+          <p
+            className={cn('text-sm', {
+              'text-muted-foreground': !isPudgy,
+              'font-pudgy-body uppercase': isPudgy,
+            })}
+          >
+            {t('common.since')} {creationYear}
+          </p>
+        </div>
 
-        {/* Bio editing - Mobile */}
-        {isOwnProfile ? (
-          <div className="text-muted-foreground text-sm mobile mb-6">
+        {hasProfile && (
+          <SolidScoreProfileHeader profileId={profileInfo.profile.id} />
+        )}
+
+        {/* Bio editing - Desktop */}
+        <div
+          className={cn('text-sm', {
+            'text-muted-foreground': !isPudgy,
+            'font-pudgy-body uppercase': isPudgy,
+          })}
+        >
+          {isOwnProfile ? (
             <ProfileEditableField
               value={bio || ''}
               placeholder={t('common.no_description')}
@@ -227,12 +195,51 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
               loading={updateLoading}
               title="Edit bio"
             />
-          </div>
-        ) : (
-          <p className="text-muted-foreground text-sm mobile mb-6">
-            {bio || t('common.no_description')}
-          </p>
+          ) : (
+            <p>{bio || t('common.no_description')}</p>
+          )}
+        </div>
+      </div>
+
+      {hasProfile && (
+        <div className="my-3 md:my-0">
+          <SolidScoreSmartCtaWrapper />
+        </div>
+      )}
+
+      <div className="space-y-2">
+        {!!mainProfile?.username && (
+          <Button
+            className="w-full"
+            // variant={ButtonVariant.DEFAULT_SOCIAL}
+            variant={
+              isPudgy
+                ? ButtonVariant.PUDGY_SECONDARY
+                : ButtonVariant.DEFAULT_SOCIAL
+            }
+            onClick={() =>
+              share({
+                title: 'Check out this profile on SSE!',
+                url: createURL({
+                  domain: window.location.origin,
+                  endpoint: mainProfile.username,
+                }),
+              })
+            }
+          >
+            {!isPudgy && <ShareIcon size={16} />} Share
+          </Button>
         )}
+        {!!mainProfile?.username &&
+          !!username &&
+          mainProfile.username !== username && (
+            <FollowButton
+              className="w-full"
+              followerUsername={mainProfile.username}
+              followeeUsername={username}
+              isPudgy={isPudgy}
+            />
+          )}
 
         <p className="flex items-center space-x-2 text-xs text-muted-foreground">
           <button

@@ -23,7 +23,7 @@ export function ProfileNfts({ walletAddress }: Props) {
         </span>
       </div>
       <Card>
-        <CardContent className="h-[300px] overflow-auto p-3">
+        <CardContent className="max-h-[300px] overflow-auto p-3">
           {loading && (
             <div className="flex items-center justify-center w-full h-full">
               <Spinner />

@@ -2,7 +2,7 @@
 
 import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import useSWRMutation from 'swr/mutation'
-import { FetchMethod } from './api.models'
+import { FetchMethod, IError } from './api.models'
 import { fetchWrapper, getUrlWithQueryParameters } from './fetch-wrapper'
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 export function useMutation<
   ResponseType = unknown,
   InputType = Record<string, unknown>,
-  Error = unknown
+  ErrorType = IError
 >({ endpoint, method = FetchMethod.POST, queryParams }: Props) {
   const authToken = getAuthToken()
 

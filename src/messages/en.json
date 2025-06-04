@@ -610,8 +610,8 @@
     "own_this": "own this"
   },
   "onboarding": {
-    "create_profile": "Create Your Profile",
-    "welcome_success": "Welcome @{username}! Your profile has been successfully created!",
+    "create_profile": "Complete Your Profile",
+    "onboarding_success": "Your profile has been successfully updated!",
     "steps": {
       "username": "Username",
       "profile_image": "Profile Image",
@@ -636,7 +636,7 @@
       },
       "username": {
         "label": "Username",
-        "placeholder": "Please add a title",
+        "placeholder": "Please add a username",
         "description": "Username can only contain letters, numbers, underscores, and periods (for SNS names like .sol)",
         "validation": {
           "min_length": "Username must be at least 3 characters long",

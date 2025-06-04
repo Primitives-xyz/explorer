@@ -15,6 +15,10 @@ export enum ButtonVariant {
   SELECTABLE_ACTIVE = 'selectable-active',
   GHOST = 'ghost',
   LINK = 'link',
+
+  // Pudgy
+  PUDGY_DEFAULT = 'pudgy-default',
+  PUDGY_SECONDARY = 'pudgy-secondary',
 }
 
 export enum ButtonSize {

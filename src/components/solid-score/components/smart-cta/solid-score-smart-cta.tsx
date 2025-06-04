@@ -21,7 +21,7 @@ export function SolidScoreSmartCta({ simpleRevealButton, mainProfile }: Props) {
   const pathname = usePathname()
   const t = useTranslations()
   const { updateProfile, loading } = useUpdateProfile({
-    username: mainProfile.username,
+    profileId: mainProfile.username,
   })
   const { setOpenRevealScoreAnimation } = useSolidScoreStore()
 

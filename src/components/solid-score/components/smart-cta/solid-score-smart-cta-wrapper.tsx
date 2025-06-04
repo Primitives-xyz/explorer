@@ -10,9 +10,9 @@ interface Props {
 export function SolidScoreSmartCtaWrapper({
   simpleRevealButton = false,
 }: Props) {
-  const { mainProfile } = useCurrentWallet()
+  const { mainProfile, isAdmin } = useCurrentWallet()
 
-  if (!mainProfile?.username) {
+  if (!mainProfile?.username || !isAdmin) {
     return null
   }
 
