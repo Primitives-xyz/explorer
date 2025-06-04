@@ -7,21 +7,20 @@ import { useEffect, useState } from 'react'
 import { PudgyOnboardingModal } from './pudgy-onboarding-modal'
 
 export function PudgyBanner() {
-  const { mainProfile, loading } = useCurrentWallet()
+  const { mainProfile, loading, isAdmin } = useCurrentWallet()
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    console.log('mainProfile', mainProfile)
-    if (!!mainProfile && !mainProfile.hasSeenPudgyOnboardingModal) {
+    if (!!mainProfile && !mainProfile.hasSeenPudgyOnboardingModal && isAdmin) {
       setOpen(true)
     }
-  }, [mainProfile])
+  }, [mainProfile, isAdmin])
 
   if (loading) {
     return <Skeleton className="w-full aspect-[594/130] rounded-lg" />
   }
 
-  if (!mainProfile) {
+  if (!mainProfile || !isAdmin) {
     return null
   }
 
