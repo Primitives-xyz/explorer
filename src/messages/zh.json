@@ -422,6 +422,7 @@
       "building": "Building Transaction",
       "sending": "Sending Transaction",
       "waiting_confirmation": "Waiting for confirmation",
+      "confirming": "正在确认交易",
       "successful": "Transaction Successful",
       "failed": "Transaction Failed",
       "stake_failed_try_again": "The stake transaction failed. Please try again",
@@ -516,11 +517,14 @@
       "actually_claimed": "实际领取",
       "over_claimed": "超额领取",
       "under_claimed": "领取不足",
+      "additional_rewards": "额外奖励",
       "your_status": "您的状态",
       "status": {
         "over_claimed": "⚠️ 超额领取",
         "under_claimed": "💎 领取不足",
-        "correctly_claimed": "✅ 正确领取"
+        "correctly_claimed": "✅ 正确领取",
+        "eligible_for_more": "有资格获得更多奖励",
+        "fully_rewarded": "已完全奖励"
       },
       "explanation": {
         "under_claimed": "好消息！您领取的奖励少于应得份额。您有资格获得 100 SSE 忠诚奖励！",

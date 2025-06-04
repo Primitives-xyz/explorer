@@ -431,6 +431,7 @@
       "building": "Building Transaction",
       "sending": "Sending Transaction",
       "waiting_confirmation": "Waiting for confirmation",
+      "confirming": "Confirming transaction",
       "successful": "Transaction Successful",
       "failed": "Transaction Failed",
       "stake_failed_try_again": "The stake transaction failed. Please try again",
@@ -525,11 +526,14 @@
       "actually_claimed": "Actually Claimed",
       "over_claimed": "Over-claimed",
       "under_claimed": "Under-claimed",
+      "additional_rewards": "Additional Rewards",
       "your_status": "Your Status",
       "status": {
         "over_claimed": "⚠️ Over-claimed",
         "under_claimed": "💎 Under-claimed",
-        "correctly_claimed": "✅ Correctly claimed"
+        "correctly_claimed": "✅ Correctly claimed",
+        "eligible_for_more": "Eligible for more rewards",
+        "fully_rewarded": "Fully rewarded"
       },
       "explanation": {
         "under_claimed": "Good news! You've claimed less than your fair share. You're eligible for the 100 SSE loyalty reward!",
