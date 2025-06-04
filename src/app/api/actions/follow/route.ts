@@ -5,6 +5,7 @@ import {
   ActionGetResponse,
   ActionPostResponse,
 } from '@solana/actions'
+import { PublicKey } from '@solana/web3.js'
 import { NextRequest } from 'next/server'
 
 // helper to extract username from URL path if provided as /follow/:username
@@ -37,21 +38,56 @@ export async function GET(req: NextRequest) {
     )
   }
 
+  // Get the host from the request for absolute URLs
+  const host = req.headers.get('host') || 'localhost:3000'
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+  const baseUrl = `${protocol}://${host}`
+
+  // Try to get user's profile image if they exist
+  let userIcon = `${baseUrl}/default-profile.png`
+  try {
+    const profileResponse = await fetchTapestryServer({
+      endpoint: `profiles/new/${username}`,
+      method: FetchMethod.GET,
+    })
+    if (profileResponse?.profile?.image) {
+      userIcon = profileResponse.profile.image
+    }
+  } catch (err) {
+    // Use default icon if profile lookup fails
+    userIcon = `https://api.dicebear.com/7.x/shapes/svg?seed=${username}`
+  }
+
   const response: ActionGetResponse = {
     type: 'action',
-    icon: '/default-profile.png',
+    icon: userIcon,
     title: `Follow @${username}`,
-    description: `Sign a message to follow @${username} on Tapestry`,
+    description: `Sign a message to follow @${username} on Tapestry Protocol - the decentralized social graph for Solana`,
     label: `Follow @${username}`,
+    disabled: false,
+    links: {
+      actions: [
+        {
+          label: `Follow @${username}`,
+          href: `${baseUrl}/api/actions/follow/${encodeURIComponent(username)}`,
+          type: 'transaction',
+        },
+      ],
+    },
+    error: undefined,
   }
 
   return new Response(JSON.stringify(response), {
     status: 200,
-    headers: ACTIONS_CORS_HEADERS,
+    headers: {
+      ...ACTIONS_CORS_HEADERS,
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=3600',
+    },
   })
 }
 
-// POST: Ask the user to sign a follow message
+// POST: Return a transaction for the user to sign to follow someone
 export async function POST(req: NextRequest) {
   const url = new URL(req.url)
   const usernameToFollow = extractUsername(url)
@@ -65,62 +101,44 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // 1. Ensure follower has a profile (lookup by wallet address -> username)
-    let followerUsername: string = account
-    try {
-      const existing = await fetchTapestryServer({
-        endpoint: `profiles?walletAddress=${account}`,
-        method: FetchMethod.GET,
-      })
-      if (existing?.profiles?.[0]?.username) {
-        followerUsername = existing.profiles[0].username
-      } else {
-        // create profile
-        const created = await fetchTapestryServer({
-          endpoint: 'profiles/findOrCreate',
-          method: FetchMethod.POST,
-          data: {
-            username: account,
-            walletAddress: account,
-            blockchain: 'SOLANA',
-            execution: 'FAST_UNCONFIRMED',
-            image: `https://api.dicebear.com/7.x/shapes/svg?seed=${account}`,
-            properties: [],
-          },
-        })
-        followerUsername = created?.profile?.username || account
-      }
-    } catch (err) {
-      console.error('Error ensuring follower profile:', err)
-    }
+    const userPublicKey = new PublicKey(account)
 
-    // 2. If the target username is actually a wallet address, resolve profile
-    let endId = usernameToFollow
-    try {
-      const prof = await fetchTapestryServer({
-        endpoint: `profiles/new/${usernameToFollow}`,
-        method: FetchMethod.GET,
-      })
-      if (prof?.profile?.username) {
-        endId = prof.profile.username
-      }
-    } catch (err) {
-      // ignore, maybe user is raw wallet
-    }
-
-    // 3. Call followers/add
-    await fetchTapestryServer({
-      endpoint: 'followers/add',
+    // Call your backend to create the follow relationship and get the transaction
+    // The backend should:
+    // 1. Create/update the follow in the database (maybe in pending state)
+    // 2. Create the transaction to mint the edge on-chain
+    // 3. Set the backend wallet as fee payer
+    // 4. Add the user as a required signer
+    // 5. Return the unsigned transaction for the user to sign
+    const backendResponse = await fetchTapestryServer({
+      endpoint: 'followers/createTransaction',
       method: FetchMethod.POST,
       data: {
-        startId: followerUsername,
-        endId,
+        followerWallet: account,
+        followeeUsername: usernameToFollow,
+        // Tell backend this user needs to sign
+        userSigner: account,
       },
     })
 
+    if (!backendResponse?.transaction) {
+      throw new Error('Failed to create follow transaction')
+    }
+
+    // The backend returns a partially signed transaction where:
+    // - Backend wallet is the fee payer (not signed yet)
+    // - User is required signer (needs to sign)
+    // - After user signs, it goes back to backend for final signature + submission
     const response: ActionPostResponse = {
-      type: 'post',
-      message: `Successfully followed @${endId}`,
+      transaction: backendResponse.transaction,
+      message: `Sign to follow @${usernameToFollow}`,
+      type: 'transaction',
+      links: {
+        next: {
+          type: 'post',
+          href: `/api/actions/follow/finalize`,
+        },
+      },
     }
 
     return new Response(JSON.stringify(response), {
@@ -128,7 +146,7 @@ export async function POST(req: NextRequest) {
       headers: ACTIONS_CORS_HEADERS,
     })
   } catch (error: any) {
-    console.error('Error processing follow request:', error)
+    console.error('Error creating follow transaction:', error)
     return new Response(
       JSON.stringify({ error: error.message || 'Internal Server Error' }),
       { status: 500, headers: ACTIONS_CORS_HEADERS }
