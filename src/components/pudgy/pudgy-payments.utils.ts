@@ -21,7 +21,7 @@ export function createMemoInstruction({
 }): TransactionInstruction {
   // The Memo Program ID
   const MEMO_PROGRAM_ID = new PublicKey(
-    'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr',
+    'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'
   )
 
   return new TransactionInstruction({

@@ -25,8 +25,8 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { usePudgyPayment } from '../hooks/use-pudgy-payment'
+import { ECryptoTransactionStatus } from '../pudgy-payment.models'
 import { EPudgyOnboardingStep, EPudgyTheme } from '../pudgy.models'
-import { ECryptoTransactionStatus } from '../solana-payment.models'
 import { PudgyAvatarFrameSelection } from './pudgy-avatar-frame-selection'
 import { PudgyThemeSelection } from './pudgy-theme-selection'
 
@@ -109,7 +109,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
       )
     }
 
-    if (transactionStatusData?.status === ECryptoTransactionStatus.VERIFIED) {
+    if (transactionStatusData?.status === ECryptoTransactionStatus.COMPLETED) {
       updatePudgyProfile()
     }
   }, [

@@ -8,6 +8,8 @@ import { EPudgyTheme } from '../pudgy.models'
 export function BackgroundTheme() {
   const { mainProfile } = useCurrentWallet()
 
+  console.log('mainProfile', mainProfile)
+
   if (!mainProfile) {
     return null
   }

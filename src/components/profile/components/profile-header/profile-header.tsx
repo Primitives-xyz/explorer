@@ -54,8 +54,7 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const followers = hasProfile ? profileInfo.socialCounts?.followers ?? 0 : 0
   const following = hasProfile ? profileInfo.socialCounts?.following ?? 0 : 0
 
-  const isPudgy = false
-  // const isPudgy = true
+  const isPudgy = !!mainProfile?.pudgy_profile_date
 
   // Check if this is the current user's profile
   const isOwnProfile =
@@ -126,6 +125,7 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
           imageUrl={imageUrl}
           isOwnProfile={isOwnProfile}
           size={72}
+          isPudgy={isPudgy}
         />
       </div>
 

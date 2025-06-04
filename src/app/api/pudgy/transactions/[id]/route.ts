@@ -1,4 +1,4 @@
-import { ICryptoChallengePaymentStatus } from '@/components/pudgy/solana-payment.models'
+import { ICryptoChallengePaymentStatus } from '@/components/pudgy/pudgy-payment.models'
 import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
 import { NextRequest, NextResponse } from 'next/server'
 

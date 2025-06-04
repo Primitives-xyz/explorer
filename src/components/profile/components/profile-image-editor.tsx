@@ -14,6 +14,7 @@ interface ProfileImageEditorProps {
   isOwnProfile: boolean
   size?: number
   className?: string
+  isPudgy?: boolean
 }
 
 export function ProfileImageEditor({
@@ -22,6 +23,7 @@ export function ProfileImageEditor({
   isOwnProfile,
   size = 72,
   className = '',
+  isPudgy = false,
 }: ProfileImageEditorProps) {
   const [uploadingImage, setUploadingImage] = useState(false)
   const { updateProfile } = useUpdateProfile({
@@ -83,6 +85,7 @@ export function ProfileImageEditor({
           imageUrl={imageUrl}
           className="w-18 h-18 aspect-square"
           size={size}
+          displayPudgyFrame={isPudgy}
         />
         {isOwnProfile && (
           <button

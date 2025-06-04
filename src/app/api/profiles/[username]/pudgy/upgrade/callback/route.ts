@@ -1,7 +1,7 @@
 import {
   IPudgyUpgradeCallbackInput,
   IPudgyUpgradeCallbackResponse,
-} from '@/components/pudgy/solana-payment.models'
+} from '@/components/pudgy/pudgy-payment.models'
 import { fetchTapestry } from '@/components/tapestry/api/fetch-tapestry'
 import { FetchMethod } from '@/utils/api/api.models'
 import { NextRequest, NextResponse } from 'next/server'

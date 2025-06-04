@@ -16,7 +16,7 @@ export interface IPudgyUpgradeCallbackResponse {
 
 export enum ECryptoTransactionStatus {
   PENDING = 'PENDING',
-  VERIFIED = 'VERIFIED',
+  COMPLETED = 'COMPLETED',
   ERROR = 'ERROR',
 }
 

@@ -20,7 +20,7 @@ import {
   IPudgyUpgradeCallbackInput,
   IPudgyUpgradeCallbackResponse,
   IPudgyUpgradeInitiateResponse,
-} from '../solana-payment.models'
+} from '../pudgy-payment.models'
 
 const PENGU_MINT_ADDRESS = '2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv'
 const PENGU_DECIMALS = 6
@@ -62,7 +62,7 @@ export function usePudgyPayment({ profileId }: Props) {
   const [loadingPayment, setLoadingPayment] = useState(false)
 
   useEffect(() => {
-    if (transactionStatusData?.status === ECryptoTransactionStatus.VERIFIED) {
+    if (transactionStatusData?.status === ECryptoTransactionStatus.COMPLETED) {
       setPolling(false)
       refetch()
     }
