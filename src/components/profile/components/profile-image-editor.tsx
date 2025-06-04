@@ -24,7 +24,9 @@ export function ProfileImageEditor({
   className = '',
 }: ProfileImageEditorProps) {
   const [uploadingImage, setUploadingImage] = useState(false)
-  const { updateProfile } = useUpdateProfile({ username })
+  const { updateProfile } = useUpdateProfile({
+    profileId: username,
+  })
   const { refetch: refetchCurrentUser } = useCurrentWallet()
 
   const { uploadFiles, UploadFilesModal } = useUploadFiles({

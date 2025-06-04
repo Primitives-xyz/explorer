@@ -120,31 +120,14 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
 
   return (
     <div className="flex flex-col md:flex-row justify-between gap-4">
-      <ProfileImageEditor
-        username={username || 'unknown'}
-        imageUrl={imageUrl}
-        isOwnProfile={isOwnProfile}
-        size={72}
-      />
-
-      {/* <div className="flex flex-col md:flex-row gap-1 md:items-center mb-1">
-        <p
-          className={cn({
-            'font-bold': !isPudgy,
-            'font-pudgy-heading text-xl': isPudgy,
-          })}
-        >
-          {hasProfile
-            ? isSame
-              ? abbreviateWalletAddress({
-                  address: profileInfo.profile.username,
-                })
-              : `@${profileInfo.profile.username}`
-            : walletAddress
-            ? abbreviateWalletAddress({ address: walletAddress })
-            : 'unknown'}
-        </p>
-      </div> */}
+      <div>
+        <ProfileImageEditor
+          username={username || 'unknown'}
+          imageUrl={imageUrl}
+          isOwnProfile={isOwnProfile}
+          size={72}
+        />
+      </div>
 
       <div className="space-y-1 flex-1">
         <div className="flex flex-col md:flex-row gap-1 md:items-center">
