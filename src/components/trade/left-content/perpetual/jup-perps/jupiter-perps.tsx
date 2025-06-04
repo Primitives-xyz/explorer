@@ -7,7 +7,7 @@ import {
 } from '@/components/tapestry/models/drift.model'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTrade } from '@/components/trade/context/trade-context'
-import { useIncreasePosition } from '@/components/trade/hooks/jup-perps/use-increase'
+import { useIncrease } from '@/components/trade/hooks/jup-perps/use-increase'
 import { useLimitOrders } from '@/components/trade/hooks/jup-perps/use-limit-orders'
 import { useMarketStats } from '@/components/trade/hooks/jup-perps/use-market-stats'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
@@ -75,8 +75,6 @@ export function JupiterPerps() {
   const [leverageValue, setLeverageValue] = useState<number>(1.1)
   const [slippageOption, setSlippageOption] = useState<string>('1')
   const [slippageExpanded, setSlippageExpanded] = useState<boolean>(false)
-  const [isMarketOrderTxLoading, setIsMarketOrderTxLoading] =
-    useState<boolean>(false)
   const [isLimitOrderTxLoading, setIsLimitOrderTxLoading] =
     useState<boolean>(false)
 
@@ -91,11 +89,12 @@ export function JupiterPerps() {
   } = useTokenInfo(assetMint)
 
   const {
-    isLoading: isIncreaseLoading,
+    isIncreaseLoading,
+    isTxExecuteLoading,
     response: increaseResponse,
     error: increaseError,
     placeIncreasePosition,
-  } = useIncreasePosition({
+  } = useIncrease({
     collateralMint:
       direction === DirectionFilterType.SHORT ? USDC_MINT : SOL_MINT,
     collateralTokenDelta: amount
@@ -203,17 +202,14 @@ export function JupiterPerps() {
   )
 
   const handlePlaceOrder = useCallback(async () => {
-    if (!isLoggedIn || !sdkHasLoaded || isMarketOrderTxLoading) return
+    if (!isLoggedIn || !sdkHasLoaded) return
 
     try {
-      setIsMarketOrderTxLoading(true)
       await placeIncreasePosition()
     } catch (err) {
       console.error('Failed to place order:', err)
-    } finally {
-      setIsMarketOrderTxLoading(false)
     }
-  }, [isLoggedIn, sdkHasLoaded, isMarketOrderTxLoading, placeIncreasePosition])
+  }, [isLoggedIn, sdkHasLoaded, placeIncreasePosition])
 
   const handleLimitOrder = useCallback(async () => {
     if (!isLoggedIn || !sdkHasLoaded || isLimitOrderTxLoading) return
@@ -475,38 +471,80 @@ export function JupiterPerps() {
             </div>
 
             <div className="flex flex-col space-y-1 text-right">
-              <span className="text-sm">
-                {increaseResponse && increaseError === null
-                  ? `$${increaseResponse.quote.openFeeUsd}`
-                  : '...'}
-              </span>
-              <span className="text-sm">
-                {increaseResponse && increaseError === null
-                  ? `$${increaseResponse.quote.priceImpactFeeUsd}`
-                  : '...'}
-              </span>
-              <span className="text-sm">
-                {increaseResponse && increaseError === null
-                  ? `$${increaseResponse.quote.outstandingBorrowFeeUsd}`
-                  : '...'}
-              </span>
-              <span className="text-sm">
-                {increaseResponse && increaseError === null
-                  ? `$${
-                      Number(
-                        increaseResponse.txMetadata.transactionFeeLamports
-                      ) / Math.pow(10, assetTokenDecimals || 9)
-                    } ${assetTokenSymbol}`
-                  : '...'}
-              </span>
-              <span className="text-sm">
-                {increaseResponse && increaseError === null
-                  ? `$${
-                      Number(increaseResponse.txMetadata.accountRentLamports) /
-                      Math.pow(10, assetTokenDecimals || 9)
-                    } ${assetTokenSymbol}`
-                  : '...'}
-              </span>
+              {orderType === OrderType.MARKET && (
+                <>
+                  <span className="text-sm">
+                    {increaseResponse && increaseError === null
+                      ? `$${increaseResponse.quote.openFeeUsd}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {increaseResponse && increaseError === null
+                      ? `$${increaseResponse.quote.priceImpactFeeUsd}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {increaseResponse && increaseError === null
+                      ? `$${increaseResponse.quote.outstandingBorrowFeeUsd}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {increaseResponse && increaseError === null
+                      ? `$${
+                          Number(
+                            increaseResponse.txMetadata.transactionFeeLamports
+                          ) / Math.pow(10, assetTokenDecimals || 9)
+                        } ${assetTokenSymbol}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {increaseResponse && increaseError === null
+                      ? `$${
+                          Number(
+                            increaseResponse.txMetadata.accountRentLamports
+                          ) / Math.pow(10, assetTokenDecimals || 9)
+                        } ${assetTokenSymbol}`
+                      : '...'}
+                  </span>
+                </>
+              )}
+
+              {orderType === OrderType.LIMIT && (
+                <>
+                  <span className="text-sm">
+                    {limitResponse && limitError === null
+                      ? `$${limitResponse.quote.openFeeUsd}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {limitResponse && limitError === null
+                      ? `$${limitResponse.quote.priceImpactFeeUsd}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {limitResponse && limitError === null
+                      ? `$${limitResponse.quote.outstandingBorrowFeeUsd}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {limitResponse && limitError === null
+                      ? `$${
+                          Number(
+                            limitResponse.txMetadata.transactionFeeLamports
+                          ) / Math.pow(10, assetTokenDecimals || 9)
+                        } ${assetTokenSymbol}`
+                      : '...'}
+                  </span>
+                  <span className="text-sm">
+                    {limitResponse && limitError === null
+                      ? `$${
+                          Number(limitResponse.txMetadata.accountRentLamports) /
+                          Math.pow(10, assetTokenDecimals || 9)
+                        } ${assetTokenSymbol}`
+                      : '...'}
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
@@ -543,21 +581,23 @@ export function JupiterPerps() {
                         onClick={() => handlePlaceOrder()}
                         className="capitalize font-bold w-full text-lg"
                         disabled={
-                          isMarketOrderTxLoading ||
                           isIncreaseLoading ||
                           increaseError !== null ||
-                          !orderAmountForMarketOrder
+                          !orderAmountForMarketOrder ||
+                          isTxExecuteLoading
                         }
                       >
-                        {isMarketOrderTxLoading || isIncreaseLoading ? (
-                          <Spinner />
-                        ) : orderAmountForMarketOrder && !increaseError ? (
-                          <p>
+                        {Number(amount) <= 0 ? (
+                          <span>Enter an amount</span>
+                        ) : isTxExecuteLoading ? (
+                          <span>Submitting Order...</span>
+                        ) : orderAmountForMarketOrder ? (
+                          <span>
                             {direction} {orderAmountForMarketOrder.toFixed(4)}{' '}
                             {assetTokenSymbol}
-                          </p>
+                          </span>
                         ) : (
-                          <p>Enter an amount</p>
+                          <span>{direction}</span>
                         )}
                       </Button>
 
