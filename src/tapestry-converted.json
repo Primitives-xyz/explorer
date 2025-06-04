@@ -1,0 +1,392 @@
+{
+  "address": "GraphUyqhPmEAckWzi7zAvbvUTXf8kqX7JtuvdGYRDRh",
+  "metadata": {
+    "name": "tapestry",
+    "version": "0.1.0",
+    "spec": "0.1.0"
+  },
+  "instructions": [
+    {
+      "name": "create_node",
+      "discriminator": [
+        20,
+        183,
+        134,
+        233,
+        51,
+        51,
+        115,
+        83
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "update_authority",
+          "signer": true,
+          "optional": true
+        },
+        {
+          "name": "owner"
+        },
+        {
+          "name": "cpi_authority_pda"
+        },
+        {
+          "name": "self_program"
+        },
+        {
+          "name": "light_system_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "account_compression_program"
+        },
+        {
+          "name": "registered_program_pda"
+        },
+        {
+          "name": "noop_program"
+        },
+        {
+          "name": "account_compression_authority"
+        }
+      ],
+      "args": [
+        {
+          "name": "proof",
+          "type": {
+            "defined": {
+              "name": "AnchorCompressedProof"
+            }
+          }
+        },
+        {
+          "name": "address_merkle_tree_root_index",
+          "type": "u16"
+        },
+        {
+          "name": "random_bytes",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "node_args",
+          "type": {
+            "defined": {
+              "name": "NodeArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_edge",
+      "discriminator": [
+        16,
+        53,
+        77,
+        246,
+        154,
+        187,
+        100,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "update_authority",
+          "signer": true,
+          "optional": true
+        },
+        {
+          "name": "owner"
+        },
+        {
+          "name": "cpi_authority_pda"
+        },
+        {
+          "name": "self_program"
+        },
+        {
+          "name": "light_system_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "account_compression_program"
+        },
+        {
+          "name": "registered_program_pda"
+        },
+        {
+          "name": "noop_program"
+        },
+        {
+          "name": "account_compression_authority"
+        }
+      ],
+      "args": [
+        {
+          "name": "proof",
+          "type": {
+            "defined": {
+              "name": "AnchorCompressedProof"
+            }
+          }
+        },
+        {
+          "name": "address_merkle_tree_root_index",
+          "type": "u16"
+        },
+        {
+          "name": "random_bytes",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "edge_args",
+          "type": {
+            "defined": {
+              "name": "EdgeArgs"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "GroupMaxSizeExceeded",
+      "msg": "GroupMaxSizeExceeded"
+    },
+    {
+      "code": 6001,
+      "name": "GroupAuthorityOrDelegateMismatch",
+      "msg": "GroupAuthorityOrDelegateMismatch"
+    },
+    {
+      "code": 6002,
+      "name": "AssetNotMutable",
+      "msg": "AssetNotMutable"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidAuthority",
+      "msg": "Authority is not the owner or delegate"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidMerkleTrees",
+      "msg": "Invalid merkle trees"
+    },
+    {
+      "code": 6005,
+      "name": "PluginAlreadySet",
+      "msg": "Plugin is already set"
+    },
+    {
+      "code": 6006,
+      "name": "TransferDelegatePluginNotEnabled",
+      "msg": "Transfer delegate plugin is not enabled on this asset"
+    },
+    {
+      "code": 6007,
+      "name": "AssetIsFrozen",
+      "msg": "Asset is frozen"
+    },
+    {
+      "code": 6008,
+      "name": "FreezeDelegateNotProvided",
+      "msg": "Freeze delegate is not provided"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidPluginIndex",
+      "msg": "Invalid plugin index provided"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidPluginsToInitialize",
+      "msg": "Invalid plugins to initialize"
+    },
+    {
+      "code": 6011,
+      "name": "SelfReferenceNotAllowed",
+      "msg": "Self-referencing edges are not allowed"
+    }
+  ],
+  "types": [
+    {
+      "name": "AnchorCompressedProof",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "a",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "b",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "c",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "EdgeArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "source_node",
+            "docs": [
+              "The source node of the edge"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "target_node",
+            "docs": [
+              "The target node of the edge"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "properties",
+            "docs": [
+              "Properties of the edge"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Properties"
+                }
+              }
+            }
+          },
+          {
+            "name": "is_mutable",
+            "docs": [
+              "Whether or not the edge is mutable"
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Creator",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "address",
+            "type": "pubkey"
+          },
+          {
+            "name": "verified",
+            "type": "bool"
+          },
+          {
+            "name": "share",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NodeArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "label",
+            "docs": [
+              "The label of the node"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "properties",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Properties"
+                }
+              }
+            }
+          },
+          {
+            "name": "is_mutable",
+            "type": "bool"
+          },
+          {
+            "name": "creators",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Creator"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Properties",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}

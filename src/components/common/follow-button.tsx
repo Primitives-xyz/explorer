@@ -1,18 +1,17 @@
 'use client'
 
-import { useFollowUser } from '@/components/tapestry/hooks/use-follow-user'
-import { useFollowWallet } from '@/components/tapestry/hooks/use-follow-wallet'
 import { useGetFollowers } from '@/components/tapestry/hooks/use-get-followers'
 import { useGetFollowersState } from '@/components/tapestry/hooks/use-get-followers-state'
 import { useGetFollowing } from '@/components/tapestry/hooks/use-get-following'
-import { useUnfollowUser } from '@/components/tapestry/hooks/use-unfollow-user'
-import { useUnfollowWallet } from '@/components/tapestry/hooks/use-unfollow-wallet'
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isValidSolanaAddress } from '@/utils/validation'
+import { isSolanaWallet } from '@dynamic-labs/solana'
+import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { UserMinus, UserPlus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface Props extends Omit<ButtonProps, 'children'> {
   followerUsername: string
@@ -28,18 +27,18 @@ export function FollowButton({
   children,
   ...props
 }: Props) {
-  const { followUser, loading: followUserLoading } = useFollowUser()
-  const { unfollowUser, loading: unfollowUserLoading } = useUnfollowUser()
-  const { followWallet, loading: followWalletLoading } = useFollowWallet()
-  const { unfollowWallet, loading: unfollowWalletLoading } = useUnfollowWallet()
-  const { refetch: refetchCurrentUser, loading: loadingCurrentUser } =
-    useCurrentWallet()
+  const {
+    refetch: refetchCurrentUser,
+    primaryWallet,
+    walletAddress,
+  } = useCurrentWallet()
   const { refetch: refetchGetFollowing } = useGetFollowing({
     username: followerUsername,
   })
   const { refetch: refetchGetFollowers } = useGetFollowers({
     username: followeeUsername,
   })
+  const [transactionLoading, setTransactionLoading] = useState(false)
   const [refetchLoading, setRefetchLoading] = useState(false)
   const t = useTranslations()
 
@@ -58,75 +57,159 @@ export function FollowButton({
   const [isFollowingOptimistic, setIsFollowingOptimistic] = useState(
     data?.isFollowing
   )
-  const [showFollowError, setShowFollowError] = useState(false)
 
-  const loading =
-    followUserLoading ||
-    followWalletLoading ||
-    refetchLoading ||
-    loadingCurrentUser ||
-    unfollowUserLoading ||
-    unfollowWalletLoading
+  const loading = transactionLoading || refetchLoading || loadingFollowersState
 
   const refetch = async () => {
     setRefetchLoading(true)
-
     await Promise.all([
       refetchCurrentUser(),
       refetchGetFollowing(),
       refetchGetFollowers(),
+      refetchFollowersState(),
     ])
-
     setRefetchLoading(false)
   }
 
   const handleFollow = async () => {
+    if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+      toast.error('Please connect your wallet')
+      return
+    }
+
     setIsFollowingOptimistic(true)
+    setTransactionLoading(true)
 
     try {
+      // Get profile IDs for both follower and followee
+      let followerProfileId = followerUsername
+      let followeeProfileId = followeeUsername
+
       if (isWalletAddress) {
-        await followWallet({
-          followerUsername,
-          walletToFollow: followeeUsername,
+        followeeProfileId = followeeUsername
+      }
+
+      // Get serialized transaction from our API (built with ZK data + fresh blockhash)
+      // This uses the hybrid approach: Tapestry provides ZK data, we build transaction locally
+      const response = await fetch('/api/followers/build-follow-transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          startId: followerProfileId,
+          endId: followeeProfileId,
+          followerWallet: walletAddress,
+          namespace: 'nemoapp',
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create transaction')
+      }
+
+      const { transaction } = await response.json()
+
+      // Deserialize the transaction (same as staking flow)
+      const serializedBuffer = Buffer.from(transaction, 'base64')
+      const vtx = VersionedTransaction.deserialize(
+        Uint8Array.from(serializedBuffer)
+      )
+
+      if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+        throw new Error('Wallet not connected')
+      }
+
+      // Sign the transaction
+      const signer = await primaryWallet.getSigner()
+      const signedTx = await signer.signTransaction(vtx)
+
+      // Submit the transaction
+      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+
+      const simulate = await connection.simulateTransaction(signedTx, {
+        sigVerify: false,
+      })
+
+      if (simulate.value.err) {
+        throw new Error(
+          `Transaction simulation failed: ${JSON.stringify(simulate.value.err)}`
+        )
+      }
+
+      const txid = await connection.sendRawTransaction(signedTx.serialize())
+
+      const confirmToastId = toast('Confirming follow transaction...', {
+        description: 'Waiting for blockchain confirmation',
+        duration: 1000000000,
+      })
+
+      const confirmation = await connection.confirmTransaction({
+        signature: txid,
+        ...(await connection.getLatestBlockhash()),
+      })
+
+      toast.dismiss(confirmToastId)
+
+      if (confirmation.value.err) {
+        toast.error('Transaction failed', {
+          description: 'Follow transaction failed, please try again',
         })
       } else {
-        await followUser({
-          followerUsername,
-          followeeUsername,
-        })
+        toast.success(
+          `Successfully followed @${followeeUsername}! Tx: ${txid.slice(
+            0,
+            8
+          )}...`
+        )
+        await refetch()
+        onFollowSuccess?.()
       }
-      await refetch()
-      onFollowSuccess?.()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to follow:', error)
       setIsFollowingOptimistic(false)
-      setShowFollowError(true)
+      toast.error(error.message || 'Failed to follow user')
     } finally {
-      refetchFollowersState()
+      setTransactionLoading(false)
     }
   }
 
   const handleUnfollow = async () => {
+    if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+      toast.error('Please connect your wallet')
+      return
+    }
+
     setIsFollowingOptimistic(false)
+    setTransactionLoading(true)
 
     try {
-      if (isWalletAddress) {
-        await unfollowWallet({
+      // For now, we can fallback to the old unfollow API until you create an unfollow transaction endpoint
+      // Or we can create a similar transaction flow for unfollowing
+      const response = await fetch('/api/followers/unfollow-wallet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           followerUsername,
           followeeUsername,
-        })
-      } else {
-        await unfollowUser({
-          followerUsername,
-          followeeUsername,
-        })
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to unfollow')
       }
+
+      toast.success(`Unfollowed @${followeeUsername}`)
       await refetch()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to unfollow:', error)
       setIsFollowingOptimistic(true)
+      toast.error(error.message || 'Failed to unfollow user')
     } finally {
-      refetchFollowersState()
+      setTransactionLoading(false)
     }
   }
 
@@ -147,7 +230,7 @@ export function FollowButton({
       <Button
         {...props}
         onClick={isFollowing ? handleUnfollow : handleFollow}
-        loading={loadingFollowersState}
+        loading={loading}
         disabled={loading}
         variant={ButtonVariant.SECONDARY_SOCIAL}
       >
