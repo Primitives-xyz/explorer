@@ -23,7 +23,7 @@ interface Props {
 }
 
 export function Menu({ setOpen }: Props) {
-  const { isLoggedIn, isAdmin } = useCurrentWallet()
+  const { isLoggedIn } = useCurrentWallet()
   const t = useTranslations()
 
   return (
@@ -58,7 +58,7 @@ export function Menu({ setOpen }: Props) {
         setOpen={setOpen}
       />
 
-      {isLoggedIn && isAdmin && (
+      {isLoggedIn && (
         <Entry
           title={t('menu.leaderboard')}
           icon={AlignJustify}

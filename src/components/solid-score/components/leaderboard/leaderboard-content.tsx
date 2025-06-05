@@ -6,25 +6,17 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { DataTableLeaderboard } from './data-table-leaderboard'
 import { DataTableUserPosition } from './data-table-user-position'
 import { SolidScoreShareDialog } from './solid-score-share-dialog'
 
 export function LeaderboardContent() {
   const { data, loading } = useSolidScoreLeaderboard()
-  const { mainProfile, loading: walletLoading, isAdmin } = useCurrentWallet()
+  const { mainProfile, loading: walletLoading } = useCurrentWallet()
   const [open, setOpen] = useState(false)
   const t = useTranslations('menu.solid_score.leaderboard')
   const router = useRouter()
-
-  useEffect(() => {
-    if (!walletLoading && mainProfile?.username) {
-      if (!isAdmin) {
-        router.push('/')
-      }
-    }
-  }, [walletLoading, mainProfile, router, isAdmin])
 
   const hasRevealedShare = !!mainProfile?.userHasClickedOnShareHisSolidScore
 
@@ -40,7 +32,7 @@ export function LeaderboardContent() {
     )
   }
 
-  if (!mainProfile?.username || !isAdmin) {
+  if (!mainProfile?.username) {
     return null
   }
 
