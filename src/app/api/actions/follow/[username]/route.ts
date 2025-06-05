@@ -138,6 +138,7 @@ export async function POST(
           endId: followeeProfileId,
           followerWallet: account,
           namespace: 'nemoapp',
+          type: 'follow',
         }),
       }
     )

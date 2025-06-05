@@ -16,14 +16,15 @@ import {
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
- * Builds follow transactions using ZK data from Tapestry + local transaction building
+ * Builds follow/unfollow transactions using ZK data from Tapestry + local transaction building
  *
  * Flow:
- * 1. Get expensive ZK compression data from Tapestry /prepare-zk-data
+ * 1. Get expensive ZK compression data from Tapestry /prepare-zk-data with type: "follow"|"unfollow"
  * 2. Build transaction locally using Anchor + fresh blockhash
  * 3. Serialize transaction for frontend signing
  *
  * This approach ensures fresh blockhashes while offloading expensive ZK work to Tapestry.
+ * The backend sets different edge properties based on the type parameter.
  */
 
 // Tapestry Program setup using converted IDL
@@ -54,6 +55,7 @@ interface BuildTransactionRequestBody {
   endId: string
   followerWallet: string
   namespace: string
+  type: 'follow' | 'unfollow'
 }
 
 export async function POST(req: NextRequest) {
@@ -63,11 +65,15 @@ export async function POST(req: NextRequest) {
       endId,
       followerWallet,
       namespace,
+      type,
     }: BuildTransactionRequestBody = await req.json()
 
-    if (!startId || !endId || !followerWallet || !namespace) {
+    if (!startId || !endId || !followerWallet || !namespace || !type) {
       return NextResponse.json(
-        { error: 'startId, endId, followerWallet, and namespace are required' },
+        {
+          error:
+            'startId, endId, followerWallet, namespace, and type are required',
+        },
         { status: 400 }
       )
     }
@@ -81,10 +87,26 @@ export async function POST(req: NextRequest) {
         endId,
         followerWallet,
         namespace,
+        type,
       },
     })
 
     const { zkData } = zkResponse
+
+    // Ensure type property is included for websocket parsing (if not already present)
+    const enhancedProperties = [...zkData.properties]
+    const hasType = enhancedProperties.find((prop) => prop.key === 'type')
+    const hasNamespace = enhancedProperties.find(
+      (prop) => prop.key === 'namespace'
+    )
+
+    if (!hasType) {
+      enhancedProperties.push({ key: 'type', value: type })
+    }
+
+    if (!hasNamespace) {
+      enhancedProperties.push({ key: 'namespace', value: namespace })
+    }
 
     // STEP 2: Build transaction locally using ZK data + fresh blockhash
     const connection = new Connection(
@@ -117,7 +139,7 @@ export async function POST(req: NextRequest) {
     const edgeArgs = {
       sourceNode: zkData.followerProfileId,
       targetNode: zkData.followedProfileId,
-      properties: zkData.properties,
+      properties: enhancedProperties,
       isMutable: true,
     }
 
@@ -130,7 +152,7 @@ export async function POST(req: NextRequest) {
       })
     )
 
-    // Create the follow instruction using Tapestry program
+    // Create the follow/unfollow instruction using Tapestry program (same instruction, different properties)
     const followIx = await program.methods
       .createEdge(
         proof,

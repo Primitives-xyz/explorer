@@ -101,6 +101,7 @@ export function FollowButton({
           endId: followeeProfileId,
           followerWallet: walletAddress,
           namespace: 'nemoapp',
+          type: 'follow',
         }),
       })
 
@@ -185,25 +186,93 @@ export function FollowButton({
     setTransactionLoading(true)
 
     try {
-      // For now, we can fallback to the old unfollow API until you create an unfollow transaction endpoint
-      // Or we can create a similar transaction flow for unfollowing
-      const response = await fetch('/api/followers/unfollow-wallet', {
+      // Get profile IDs for both follower and followee (same logic as follow)
+      let followerProfileId = followerUsername
+      let followeeProfileId = followeeUsername
+
+      if (isWalletAddress) {
+        followeeProfileId = followeeUsername
+      }
+
+      // Get serialized transaction from our unified API (built with ZK data + fresh blockhash)
+      // This uses the same hybrid approach but with type: "unfollow"
+      const response = await fetch('/api/followers/build-follow-transaction', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          followerUsername,
-          followeeUsername,
+          startId: followerProfileId,
+          endId: followeeProfileId,
+          followerWallet: walletAddress,
+          namespace: 'nemoapp',
+          type: 'unfollow',
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to unfollow')
+        const errorData = await response.json()
+        throw new Error(
+          errorData.error || 'Failed to create unfollow transaction'
+        )
       }
 
-      toast.success(`Unfollowed @${followeeUsername}`)
-      await refetch()
+      const { transaction } = await response.json()
+
+      // Deserialize the transaction (same as staking flow)
+      const serializedBuffer = Buffer.from(transaction, 'base64')
+      const vtx = VersionedTransaction.deserialize(
+        Uint8Array.from(serializedBuffer)
+      )
+
+      if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
+        throw new Error('Wallet not connected')
+      }
+
+      // Sign the transaction
+      const signer = await primaryWallet.getSigner()
+      const signedTx = await signer.signTransaction(vtx)
+
+      // Submit the transaction
+      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+
+      const simulate = await connection.simulateTransaction(signedTx, {
+        sigVerify: false,
+      })
+
+      if (simulate.value.err) {
+        throw new Error(
+          `Transaction simulation failed: ${JSON.stringify(simulate.value.err)}`
+        )
+      }
+
+      const txid = await connection.sendRawTransaction(signedTx.serialize())
+
+      const confirmToastId = toast('Confirming unfollow transaction...', {
+        description: 'Waiting for blockchain confirmation',
+        duration: 1000000000,
+      })
+
+      const confirmation = await connection.confirmTransaction({
+        signature: txid,
+        ...(await connection.getLatestBlockhash()),
+      })
+
+      toast.dismiss(confirmToastId)
+
+      if (confirmation.value.err) {
+        toast.error('Transaction failed', {
+          description: 'Unfollow transaction failed, please try again',
+        })
+      } else {
+        toast.success(
+          `Successfully unfollowed @${followeeUsername}! Tx: ${txid.slice(
+            0,
+            8
+          )}...`
+        )
+        await refetch()
+      }
     } catch (error: any) {
       console.error('Failed to unfollow:', error)
       setIsFollowingOptimistic(true)
