@@ -4,6 +4,7 @@ export interface ISolidScoreResponse {
   badges: string[]
   position: number
   percentile: number
+  image?: string
 }
 
 export interface ISolidScoreLeaderboardResponse {

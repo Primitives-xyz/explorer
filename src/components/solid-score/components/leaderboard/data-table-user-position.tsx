@@ -2,6 +2,7 @@
 
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
 import { Button, ButtonVariant } from '@/components/ui'
+import { Avatar } from '@/components/ui/avatar/avatar'
 import { DataTable } from '@/components/ui/table/data-table'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { route } from '@/utils/route'
@@ -22,6 +23,7 @@ interface UserPosition {
   username: string
   score?: number
   percentile?: number
+  image?: string
 }
 
 export function DataTableUserPosition() {
@@ -36,6 +38,7 @@ export function DataTableUserPosition() {
     username: mainProfile?.username ?? '',
     score: solidScoreUserData?.score,
     percentile: solidScoreUserData?.percentile || 0,
+    image: solidScoreUserData?.image,
   }
 
   const columns: ColumnDef<UserPosition>[] = [
@@ -59,16 +62,23 @@ export function DataTableUserPosition() {
       header: () => (
         <div className={baseColumnStyles.username}>{t('columns.username')}</div>
       ),
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const value = getValue<string>()
+
         return (
           <div className={baseColumnStyles.username}>
             <Button
               variant={ButtonVariant.LINK}
               href={route('entity', { id: value })}
-              className="text-primary font-bold p-0 h-auto"
+              className="p-0 h-auto max-w-[100px] md:max-w-[200px] text-primary font-bold"
             >
-              {value}
+              <Avatar
+                imageUrl={row.original.image}
+                username={value}
+                size={24}
+                className="w-6 h-6"
+              />
+              <p className="truncate">{value}</p>
             </Button>
           </div>
         )
