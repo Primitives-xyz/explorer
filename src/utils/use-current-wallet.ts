@@ -7,6 +7,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 import { EXPLORER_NAMESPACE } from './constants'
+import { ADMIN_USERS } from './user-permissions'
 
 export interface LoadingStates {
   sdk: boolean
@@ -14,14 +15,18 @@ export interface LoadingStates {
   overall: boolean
 }
 
-export function useCurrentWallet() {
+interface Props {
+  refreshInterval?: number
+  skip?: boolean
+}
+
+export function useCurrentWallet({ refreshInterval, skip }: Props = {}) {
   const {
     sdkHasLoaded: dynamicSdkHasLoaded,
     primaryWallet,
     handleLogOut,
     setShowAuthFlow,
   } = useDynamicContext()
-
   const t = useTranslations()
   const isLoggedIn = useIsLoggedIn()
   const userWallets = useUserWallets()
@@ -54,7 +59,8 @@ export function useCurrentWallet() {
     refetch: refetchGetProfiles,
   } = useGetProfiles({
     walletAddress,
-    skip: !walletAddress,
+    skip: !walletAddress || skip,
+    refreshInterval,
   })
 
   const { mainProfile } = useMemo(() => {
@@ -68,6 +74,10 @@ export function useCurrentWallet() {
       mainProfile,
     }
   }, [profiles, walletAddress])
+
+  const isAdmin = !!mainProfile?.profile?.username
+    ? ADMIN_USERS.includes(mainProfile.profile.username)
+    : false
 
   const loadingStates: LoadingStates = useMemo(
     () => ({
@@ -88,6 +98,7 @@ export function useCurrentWallet() {
     isLoggedIn,
     primaryWallet,
     sdkHasLoaded,
+    isAdmin,
     logout: handleLogOut,
     setShowAuthFlow,
     refetch: refetchGetProfiles,

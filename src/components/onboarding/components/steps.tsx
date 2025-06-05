@@ -14,7 +14,7 @@ export function Steps({ step, total }: Props) {
           <div className="flex items-center">
             <Step index={index + 1} isActive={step > index} />
           </div>
-          {index < total - 1 && <div className="bg-muted h-px w-6" />}
+          {index < total - 1 && <div className="bg-border h-px w-6" />}
         </Fragment>
       ))}
     </div>

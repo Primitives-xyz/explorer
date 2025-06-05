@@ -1,9 +1,9 @@
 import { ActivityTape } from '@/components/activity-tape/components/activity-tape'
+import { SignupHandler } from '@/components/auth/components/signup-handler'
+import { WalletProvider } from '@/components/auth/components/wallet-provider'
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
-import { WalletProvider } from '@/components/common/wallet-provider'
-import { Onboarding } from '@/components/onboarding/components/onboarding'
 import { RevealScoreAnimation } from '@/components/solid-score/components/animation/reveal-score-animation'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils/utils'
@@ -11,6 +11,7 @@ import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Rethink_Sans } from 'next/font/google'
+import localFont from 'next/font/local'
 import Script from 'next/script'
 import './globals.css'
 
@@ -18,6 +19,24 @@ const rethinkSans = Rethink_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   display: 'swap',
+  variable: '--font-rethink-sans',
+})
+
+// Pudgy fonts
+const ttTrailersExtraBold = localFont({
+  src: '../../public/fonts/tt-trailers-extrabold.otf',
+  variable: '--font-tt-trailers-extra-bold',
+  weight: '800',
+})
+const fobbleRegular = localFont({
+  src: '../../public/fonts/fobble-regular.otf',
+  variable: '--font-fobble-regular',
+  weight: '400',
+})
+const mencoMedium = localFont({
+  src: '../../public/fonts/menco-medium.otf',
+  variable: '--font-menco-medium',
+  weight: '500',
 })
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -93,7 +112,38 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <head>
+      <body
+        className={cn(
+          'relative min-h-screen antialiased font-sans',
+          rethinkSans.variable,
+          ttTrailersExtraBold.variable,
+          fobbleRegular.variable,
+          mencoMedium.variable
+        )}
+      >
+        <NextIntlClientProvider messages={messages}>
+          <WalletProvider>
+            <AddressHighlightProvider>
+              <div className="fixed inset-0 z-0 background-gradient" />
+
+              <div className="relative z-20">
+                <Toaster />
+                <SignupHandler />
+                <ActivityTape />
+                <MobileHeader />
+                <RevealScoreAnimation />
+
+                <main className="w-full md:flex md:justify-between md:pt-topbar">
+                  <LeftSideMenu />
+                  <div className="flex-1 flex justify-between pt-5">
+                    {children}
+                  </div>
+                </main>
+              </div>
+            </AddressHighlightProvider>
+          </WalletProvider>
+        </NextIntlClientProvider>
+
         <Script id="heap-analytics" strategy="afterInteractive">
           {`
             window.heapReadyCb = window.heapReadyCb || [];
@@ -148,30 +198,6 @@ export default async function RootLayout({
             heap.load('3854626676');
           `}
         </Script>
-      </head>
-      <body className={cn('relative min-h-screen', rethinkSans.className)}>
-        <NextIntlClientProvider messages={messages}>
-          <WalletProvider>
-            <AddressHighlightProvider>
-              <div className="fixed inset-0 z-0 background-gradient" />
-
-              <div className="relative z-20">
-                <Toaster />
-                <Onboarding />
-                <ActivityTape />
-                <MobileHeader />
-                <RevealScoreAnimation />
-
-                <main className="w-full md:flex md:justify-between md:pt-topbar">
-                  <LeftSideMenu />
-                  <div className="flex-1 flex justify-between pt-5">
-                    {children}
-                  </div>
-                </main>
-              </div>
-            </AddressHighlightProvider>
-          </WalletProvider>
-        </NextIntlClientProvider>
       </body>
     </html>
   )

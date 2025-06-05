@@ -21,13 +21,15 @@ export interface Props {
 
 export function SolidScoreShareDialog({ open, setOpen }: Props) {
   const { mainProfile, refetch } = useCurrentWallet()
-  const { data, loading: scoreLoading } = useSolidScore({ id: mainProfile?.id })
+  const { data, loading: scoreLoading } = useSolidScore({
+    profileId: mainProfile?.id,
+  })
   const t = useTranslations('menu.solid_score.leaderboard.share_dialog')
   const [isImageCopied, setIsImageCopied] = useState(false)
   const [isShared, setIsShared] = useState(false)
   const [isXInstructionsOpen, setIsXInstructionsOpen] = useState(false)
   const { updateProfile, loading: updateProfileLoading } = useUpdateProfile({
-    username: mainProfile?.username || '',
+    profileId: mainProfile?.username || '',
   })
 
   const params = {

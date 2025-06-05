@@ -435,6 +435,7 @@
       "building": "Building Transaction",
       "sending": "Sending Transaction",
       "waiting_confirmation": "Waiting for confirmation",
+      "confirming": "Confirming transaction",
       "successful": "Transaction Successful",
       "failed": "Transaction Failed",
       "stake_failed_try_again": "The stake transaction failed. Please try again",
@@ -529,11 +530,14 @@
       "actually_claimed": "Actually Claimed",
       "over_claimed": "Over-claimed",
       "under_claimed": "Under-claimed",
+      "additional_rewards": "Additional Rewards",
       "your_status": "Your Status",
       "status": {
         "over_claimed": "⚠️ Over-claimed",
         "under_claimed": "💎 Under-claimed",
-        "correctly_claimed": "✅ Correctly claimed"
+        "correctly_claimed": "✅ Correctly claimed",
+        "eligible_for_more": "Eligible for more rewards",
+        "fully_rewarded": "Fully rewarded"
       },
       "explanation": {
         "under_claimed": "Good news! You've claimed less than your fair share. You're eligible for the 100 SSE loyalty reward!",
@@ -614,8 +618,8 @@
     "own_this": "own this"
   },
   "onboarding": {
-    "create_profile": "Create Your Profile",
-    "welcome_success": "Welcome @{username}! Your profile has been successfully created!",
+    "create_profile": "Complete Your Profile",
+    "onboarding_success": "Your profile has been successfully updated!",
     "steps": {
       "username": "Username",
       "profile_image": "Profile Image",
@@ -640,7 +644,7 @@
       },
       "username": {
         "label": "Username",
-        "placeholder": "Please add a title",
+        "placeholder": "Please add a username",
         "description": "Username can only contain letters, numbers, underscores, and periods (for SNS names like .sol)",
         "validation": {
           "min_length": "Username must be at least 3 characters long",

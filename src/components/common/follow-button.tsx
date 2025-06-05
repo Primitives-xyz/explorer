@@ -16,6 +16,7 @@ import { toast } from 'sonner'
 interface Props extends Omit<ButtonProps, 'children'> {
   followerUsername: string
   followeeUsername: string
+  isPudgy?: boolean
   onFollowSuccess?: () => void
   children?: (isFollowing: boolean) => React.ReactNode
 }
@@ -23,6 +24,7 @@ interface Props extends Omit<ButtonProps, 'children'> {
 export function FollowButton({
   followerUsername,
   followeeUsername,
+  isPudgy = false,
   onFollowSuccess,
   children,
   ...props
@@ -297,11 +299,13 @@ export function FollowButton({
   return (
     <div className="flex flex-col items-center gap-1">
       <Button
-        {...props}
         onClick={isFollowing ? handleUnfollow : handleFollow}
         loading={loading}
         disabled={loading}
-        variant={ButtonVariant.SECONDARY_SOCIAL}
+        variant={
+          isPudgy ? ButtonVariant.PUDGY_DEFAULT : ButtonVariant.SECONDARY_SOCIAL
+        }
+        {...props}
       >
         {!!children ? (
           children(!!isFollowing)
@@ -312,14 +316,16 @@ export function FollowButton({
                 <UserMinus size={iconSize} />
               ) : (
                 <>
-                  <UserMinus size={iconSize} /> {t('common.follow.unfollow')}
+                  {!isPudgy && <UserMinus size={iconSize} />}{' '}
+                  {t('common.follow.unfollow')}
                 </>
               )
             ) : isIcon ? (
               <UserPlus size={iconSize} />
             ) : (
               <>
-                <UserPlus size={iconSize} /> {t('common.follow.follow')}
+                {!isPudgy && <UserPlus size={iconSize} />}{' '}
+                {t('common.follow.follow')}
               </>
             )}
           </>

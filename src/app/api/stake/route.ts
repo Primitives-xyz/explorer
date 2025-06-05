@@ -6,7 +6,12 @@ import {
   serializeTransactionForClient,
 } from '@/utils/transaction-helpers'
 import * as anchor from '@coral-xyz/anchor'
-import { Connection, PublicKey, Transaction } from '@solana/web3.js'
+import {
+  Connection,
+  PublicKey,
+  Transaction,
+  VersionedTransaction,
+} from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
 
 function convertToBN(value: number, decimals: number) {
@@ -17,15 +22,15 @@ function convertToBN(value: number, decimals: number) {
   return new anchor.BN(wholePart).mul(precision).add(new anchor.BN(decimalPart))
 }
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const { amount, walletAddy, walletAddress } = await req.json()
+    const { searchParams } = new URL(req.url)
+    const amount = searchParams.get('amount')
+    const walletAddress = searchParams.get('walletAddress')
 
-    // Support both field names for backward compatibility
-    const userWallet = walletAddy || walletAddress
-    if (!userWallet) {
+    if (!walletAddress || !amount) {
       return NextResponse.json(
-        { error: 'Missing wallet address' },
+        { error: 'Missing wallet address or amount' },
         { status: 400 }
       )
     }
@@ -34,7 +39,7 @@ export async function POST(req: NextRequest) {
       process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
     )
 
-    const userPubkey = new PublicKey(userWallet)
+    const userPubkey = new PublicKey(walletAddress)
 
     // Detect which version to use
     const { isNewVersion, program, configPda } = await detectStakingVersion(
@@ -90,6 +95,79 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ stakeTx: serializedTx })
   } catch (err) {
+    return createTransactionErrorResponse(err)
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const { signedTransaction } = await req.json()
+
+    if (!signedTransaction) {
+      return NextResponse.json(
+        { error: 'Missing signed transaction' },
+        { status: 400 }
+      )
+    }
+
+    const connection = new Connection(
+      process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
+    )
+
+    return await handleSignedTransaction(signedTransaction, connection)
+  } catch (err) {
+    return createTransactionErrorResponse(err)
+  }
+}
+
+async function handleSignedTransaction(
+  signedTransaction: string,
+  connection: Connection
+) {
+  try {
+    const serializedBuffer = Buffer.from(signedTransaction, 'base64')
+    const vtx = VersionedTransaction.deserialize(
+      Uint8Array.from(serializedBuffer)
+    )
+
+    // Run simulation and send transaction in parallel
+    const [simulationResult, txid] = await Promise.all([
+      connection.simulateTransaction(vtx, { sigVerify: false }),
+      connection.sendRawTransaction(vtx.serialize()),
+    ])
+
+    // Log simulation results for debugging
+    console.log('Stake simulation result:', {
+      success: !simulationResult.value.err,
+      logs: simulationResult.value.logs,
+      error: simulationResult.value.err,
+      unitsConsumed: simulationResult.value.unitsConsumed,
+    })
+
+    if (simulationResult.value.err) {
+      console.error('Stake simulation failed:', simulationResult.value.err)
+    }
+
+    // Wait for confirmation
+    const confirmation = await connection.confirmTransaction({
+      signature: txid,
+      ...(await connection.getLatestBlockhash()),
+    })
+
+    console.log('Stake transaction confirmation:', {
+      signature: txid,
+      success: !confirmation.value.err,
+      error: confirmation.value.err,
+    })
+
+    return NextResponse.json({
+      txid,
+      simulationResult: simulationResult.value,
+      confirmed: !confirmation.value.err,
+      confirmationError: confirmation.value.err,
+    })
+  } catch (err) {
+    console.error('Error handling signed stake transaction:', err)
     return createTransactionErrorResponse(err)
   }
 }

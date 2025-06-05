@@ -1,9 +1,9 @@
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { useToastContent } from '../drift/use-toast-content'
+import useTxExecute from './use-tx-execute'
 
 interface DecreasePositionProps {
   collateralUsdDelta: string
@@ -56,12 +56,16 @@ export function useDecreasePosition({
   positionPubkey,
   sizeUsdDelta,
 }: DecreasePositionProps) {
-  const { LOADINGS, ERRORS, SUCCESS } = useToastContent()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [base64Tx, setBase64Tx] = useState<string | null>(null)
   const [serializedTxBase64, setSerializedTxBase64] = useState<string | null>(
     null
   )
+  const { loading: isTxExecuteLoading, isTxSuccess } = useTxExecute({
+    serializedTxBase64: base64Tx,
+    action: 'decrease-position',
+  })
   const [quote, setQuote] = useState<Quote | null>(null)
   const { primaryWallet } = useCurrentWallet()
 
@@ -70,64 +74,39 @@ export function useDecreasePosition({
       throw new Error('Wallet not connected')
     }
 
-    setIsLoading(true)
-
     try {
+      console.log('serializedTxBase64', serializedTxBase64)
       if (!serializedTxBase64) {
         throw new Error('No transaction available')
       }
 
       const signer = await primaryWallet.getSigner()
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
       const transaction = VersionedTransaction.deserialize(
         Buffer.from(serializedTxBase64, 'base64')
       )
 
-      const txid = await signer.signAndSendTransaction(transaction)
-
-      const confirmToastId = toast(
-        LOADINGS.CONFIRM_LOADING.title,
-        LOADINGS.CONFIRM_LOADING.content
-      )
-
-      const confirmation = await connection.confirmTransaction({
-        signature: txid.signature,
-        ...(await connection.getLatestBlockhash()),
-      })
-
-      toast.dismiss(confirmToastId)
-
-      if (confirmation.value.err) {
-        toast.error(
-          ERRORS.DECREASE_POSITION_TX_ERR.title,
-          ERRORS.DECREASE_POSITION_TX_ERR.content
-        )
-      } else {
-        toast.success(
-          SUCCESS.DECREASE_POSITION_TX_SUCCESS.title,
-          SUCCESS.DECREASE_POSITION_TX_SUCCESS.content
-        )
-      }
-
+      const signedTransaction = await signer.signTransaction(transaction)
+      const serializedSignedTx = signedTransaction.serialize()
+      const base64Tx = Buffer.from(serializedSignedTx).toString('base64')
+      setBase64Tx(base64Tx)
       setError(null)
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to decrease position'
       toast.dismiss()
-      toast.error(ERRORS.DECREASE_POSITION_TX_ERR.title, {
+      toast.error('Failed to decrease position', {
         description: errorMessage,
         duration: 5000,
       })
       setError(errorMessage)
-    } finally {
-      setIsLoading(false)
     }
   }
 
   useEffect(() => {
     const decreasePosition = async () => {
       try {
+        setIsLoading(true)
         const response = await fetch('/api/jupiter/perps/decrease', {
           method: 'POST',
           headers: {
@@ -159,10 +138,12 @@ export function useDecreasePosition({
         console.error(
           error instanceof Error ? error.message : 'Failed to decrease position'
         )
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    const intervalId = setInterval(decreasePosition, 1000)
+    const intervalId = setInterval(decreasePosition, 3000)
     return () => clearInterval(intervalId)
   }, [
     collateralUsdDelta,
@@ -174,6 +155,8 @@ export function useDecreasePosition({
 
   return {
     isLoading,
+    isTxExecuteLoading,
+    isTxSuccess,
     error,
     quote,
     closePosition,

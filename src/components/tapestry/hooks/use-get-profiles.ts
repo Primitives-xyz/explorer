@@ -4,9 +4,14 @@ import { useQuery } from '@/utils/api'
 interface Props {
   walletAddress: string
   skip?: boolean
+  refreshInterval?: number
 }
 
-export const useGetProfiles = ({ walletAddress, skip }: Props) => {
+export const useGetProfiles = ({
+  walletAddress,
+  skip,
+  refreshInterval,
+}: Props) => {
   const { data, loading, error, refetch } = useQuery<IGetProfilesResponse>({
     endpoint: 'profiles',
     queryParams: {
@@ -16,6 +21,7 @@ export const useGetProfiles = ({ walletAddress, skip }: Props) => {
     config: {
       revalidateOnFocus: false,
       dedupingInterval: 5000,
+      refreshInterval,
     },
   })
 
