@@ -1,10 +1,11 @@
 import { LimitOrderResponse } from '@/components/tapestry/models/jupiter.models'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useToastContent } from '../drift/use-toast-content'
+import useTxExecute from './use-tx-execute'
 
 interface LimitOrderParams {
   collateralMint: string
@@ -29,12 +30,17 @@ export const useLimitOrders = ({
   triggerPrice,
   walletAddress,
 }: LimitOrderParams) => {
-  const { LOADINGS, ERRORS, SUCCESS } = useToastContent()
+  const { ERRORS } = useToastContent()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [serializedTx, setSerializedTx] = useState<string | null>(null)
   const { primaryWallet } = useCurrentWallet()
   const [response, setResponse] = useState<LimitOrderResponse | null>(null)
+  const [base64Tx, setBase64Tx] = useState<string | null>(null)
+  const { loading: isTxExecuteLoading } = useTxExecute({
+    serializedTxBase64: base64Tx,
+    action: 'limit-order',
+  })
 
   const placeLimitOrder = async () => {
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
@@ -47,44 +53,19 @@ export const useLimitOrders = ({
 
     try {
       const signer = await primaryWallet.getSigner()
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
-      // Deserialize the versioned transaction
       const transaction = VersionedTransaction.deserialize(
         Buffer.from(serializedTx, 'base64')
       )
 
-      // Sign the transaction
-      const txid = await signer.signAndSendTransaction(transaction)
-
-      const confirmToastId = toast(
-        LOADINGS.CONFIRM_LOADING.title,
-        LOADINGS.CONFIRM_LOADING.content
-      )
-
-      const confirmation = await connection.confirmTransaction({
-        signature: txid.signature,
-        ...(await connection.getLatestBlockhash()),
-      })
-
-      toast.dismiss(confirmToastId)
-
-      if (confirmation.value.err) {
-        toast.error(
-          ERRORS.INCREASE_POSITION_TX_ERR.title,
-          ERRORS.INCREASE_POSITION_TX_ERR.content
-        )
-      } else {
-        toast.success(
-          SUCCESS.INCREASE_POSITION_TX_SUCCESS.title,
-          SUCCESS.INCREASE_POSITION_TX_SUCCESS.content
-        )
-        setError(null)
-      }
+      const signedTransaction = await signer.signTransaction(transaction)
+      const serializedSignedTx = signedTransaction.serialize()
+      const base64Tx = Buffer.from(serializedSignedTx).toString('base64')
+      setBase64Tx(base64Tx)
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Failed to place increase position'
-      toast.error(ERRORS.INCREASE_POSITION_TX_ERR.title, {
+        err instanceof Error ? err.message : 'Failed to place limit order'
+      toast.error('Failed to place limit order', {
         description: errorMessage,
         duration: 5000,
       })
@@ -95,8 +76,6 @@ export const useLimitOrders = ({
   useEffect(() => {
     const placeLimitOrder = async () => {
       const counter = Math.floor(Math.random() * 1e6).toString()
-
-      console.log('triggerPrice', triggerPrice)
 
       if (Number(triggerPrice) === 0) {
         setError('Trigger price must be greater than 0')
@@ -130,7 +109,6 @@ export const useLimitOrders = ({
         }
 
         const data: LimitOrderResponse = await response.json()
-        console.log('data', data)
         setSerializedTx(data.serializedTxBase64)
         setResponse(data)
         setError(null)
@@ -166,6 +144,7 @@ export const useLimitOrders = ({
 
   return {
     isLoading,
+    isTxExecuteLoading,
     error,
     response,
     placeLimitOrder,

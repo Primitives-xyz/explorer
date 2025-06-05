@@ -1,14 +1,24 @@
 'use client'
 
+import { FollowBlinkButton } from '@/components/common/follow-blink-button'
 import { FollowButton } from '@/components/common/follow-button'
 import { SolidScoreProfileHeader } from '@/components/profile/components/profile-header/solid-score-profile-header'
 import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
+import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
-import { Avatar } from '@/components/ui/avatar/avatar'
+import { Button, ButtonVariant } from '@/components/ui'
+import { createURL } from '@/utils/api'
+import { share } from '@/utils/share'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
-import { abbreviateWalletAddress } from '@/utils/utils'
+import { abbreviateWalletAddress, cn } from '@/utils/utils'
+import { ShareIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { ProfileEditableField } from '../profile-editable-field'
+import { ProfileFollowersModal } from '../profile-followers-modal'
+import { ProfileImageEditor } from '../profile-image-editor'
+import { UsernameChangeModal } from '../username-change-modal'
 
 interface Props {
   profileInfo?: IGetProfileResponse
@@ -18,6 +28,18 @@ interface Props {
 export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const { mainProfile } = useCurrentWallet()
   const t = useTranslations()
+  const router = useRouter()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalTab, setModalTab] = useState<'followers' | 'following'>(
+    'followers'
+  )
+
+  // Editing states
+  const [editingBio, setEditingBio] = useState(false)
+  const [editingUsername, setEditingUsername] = useState(false)
+  const [showUsernameWarning, setShowUsernameWarning] = useState(false)
+  const [usernameError, setUsernameError] = useState('')
+  const [pendingUsername, setPendingUsername] = useState('')
 
   const hasProfile = !!profileInfo
   const username = hasProfile ? profileInfo.profile.username : walletAddress
@@ -33,80 +55,279 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const followers = hasProfile ? profileInfo.socialCounts?.followers ?? 0 : 0
   const following = hasProfile ? profileInfo.socialCounts?.following ?? 0 : 0
 
+  const isPudgy = !!mainProfile?.pudgy_profile_date
+
+  // Check if this is the current user's profile
+  const isOwnProfile =
+    hasProfile && mainProfile?.username === profileInfo.profile.username
+
+  const { updateProfile, loading: updateLoading } = useUpdateProfile({
+    profileId: profileInfo?.profile.id || '',
+  })
+  const { refetch: refetchCurrentUser } = useCurrentWallet()
+
+  // Bio editing handlers
+  const handleBioSave = async (newBio: string) => {
+    try {
+      await updateProfile({ bio: newBio })
+      await refetchCurrentUser()
+      setEditingBio(false)
+    } catch (error) {
+      console.error('Failed to update bio:', error)
+    }
+  }
+
+  // Username editing handlers
+  const handleUsernameSave = async (newUsername: string) => {
+    if (newUsername !== profileInfo?.profile.username) {
+      setPendingUsername(newUsername)
+      setUsernameError('')
+      setShowUsernameWarning(true)
+      setEditingUsername(false)
+    }
+  }
+
+  const confirmUsernameSave = async () => {
+    try {
+      await updateProfile({ username: pendingUsername })
+      await refetchCurrentUser()
+      setShowUsernameWarning(false)
+      setUsernameError('')
+
+      // 🔥 Navigate to the new username URL - MAGIC MOMENT!
+      router.push(`/${pendingUsername}`)
+    } catch (error: any) {
+      console.error('Failed to update username:', error)
+      setUsernameError(error)
+    }
+  }
+
+  const handleUsernameModalCancel = () => {
+    setShowUsernameWarning(false)
+    setUsernameError('')
+    setPendingUsername('')
+  }
+
+  const displayedUsername = hasProfile
+    ? isSame
+      ? abbreviateWalletAddress({
+          address: profileInfo.profile.username,
+        })
+      : `@${profileInfo.profile.username}`
+    : walletAddress
+    ? abbreviateWalletAddress({ address: walletAddress })
+    : 'unknown'
+
   return (
-    <div className="flex flex-col md:flex-row justify-between">
-      <div className="flex items-center md:items-start gap-2 md:gap-4">
-        <Avatar
+    <div className="flex flex-col md:flex-row justify-between gap-4">
+      <div>
+        <ProfileImageEditor
           username={username || 'unknown'}
           imageUrl={imageUrl}
-          className={hasProfile ? 'w-18 h-18 aspect-square' : 'w-10 md:w-18'}
+          isOwnProfile={isOwnProfile}
           size={72}
+          isPudgy={isPudgy}
         />
-        <div className="space-y-1">
-          <div className="flex flex-col md:flex-row gap-1 md:items-center">
-            <p className="font-bold">
-              {hasProfile
-                ? isSame
-                  ? abbreviateWalletAddress({
-                      address: profileInfo.profile.username,
-                    })
-                  : `@${profileInfo.profile.username}`
-                : walletAddress
-                ? abbreviateWalletAddress({ address: walletAddress })
-                : 'unknown'}
-            </p>
-            {hasProfile && profileInfo.walletAddress && !isSame && (
-              <p className="text-muted-foreground">
-                {abbreviateWalletAddress({
-                  address: profileInfo.walletAddress,
-                })}
-              </p>
+      </div>
+
+      <div className="space-y-1 flex-1">
+        <div className="flex flex-col md:flex-row gap-1 md:items-center">
+          <div
+            className={cn('w-fit', {
+              'font-bold': !isPudgy,
+              'font-pudgy-heading text-xl': isPudgy,
+            })}
+          >
+            {isOwnProfile ? (
+              <ProfileEditableField
+                value={displayedUsername}
+                isEditing={editingUsername}
+                onEdit={() => setEditingUsername(true)}
+                onSave={handleUsernameSave}
+                onCancel={() => setEditingUsername(false)}
+                loading={updateLoading}
+                title="Edit username"
+                className="font-bold"
+              />
+            ) : (
+              <p>{displayedUsername}</p>
             )}
-            <p className="text-muted-foreground desktop">
-              • {t('common.since')} {creationYear}
-            </p>
-            <p className="text-muted-foreground mobile">
-              {t('common.since')} {creationYear}
-            </p>
           </div>
 
-          {hasProfile && isSpecialUser(mainProfile) && (
-            <SolidScoreProfileHeader id={profileInfo.profile.id} />
+          {hasProfile && profileInfo.walletAddress && !isSame && (
+            <p className="text-muted-foreground">
+              {abbreviateWalletAddress({
+                address: profileInfo.walletAddress,
+              })}
+            </p>
           )}
-
-          <p className="text-muted-foreground text-sm desktop">
-            {bio || t('common.no_description')}
+          <span className="desktop">•</span>
+          <p
+            className={cn('text-sm', {
+              'text-muted-foreground': !isPudgy,
+              'font-pudgy-body uppercase': isPudgy,
+            })}
+          >
+            {t('common.since')} {creationYear}
           </p>
+        </div>
+
+        {hasProfile && (
+          <SolidScoreProfileHeader profileId={profileInfo.profile.id} />
+        )}
+
+        {/* Bio editing - Desktop */}
+        <div
+          className={cn('text-sm', {
+            'text-muted-foreground': !isPudgy,
+            'font-pudgy-body uppercase': isPudgy,
+          })}
+        >
+          {isOwnProfile ? (
+            <ProfileEditableField
+              value={bio || ''}
+              placeholder={t('common.no_description')}
+              isEditing={editingBio}
+              onEdit={() => setEditingBio(true)}
+              onSave={handleBioSave}
+              onCancel={() => setEditingBio(false)}
+              maxLength={300}
+              multiline={true}
+              loading={updateLoading}
+              title="Edit bio"
+            />
+          ) : (
+            <p>{bio || t('common.no_description')}</p>
+          )}
         </div>
       </div>
 
-      {hasProfile && isSpecialUser(mainProfile) && (
-        <SolidScoreSmartCtaWrapper />
+      {hasProfile && (
+        <div className="my-3 md:my-0">
+          <SolidScoreSmartCtaWrapper />
+        </div>
       )}
 
       <div className="space-y-2">
+        {!!mainProfile?.username && (
+          <Button
+            className="w-full"
+            // variant={ButtonVariant.DEFAULT_SOCIAL}
+            variant={
+              isPudgy
+                ? ButtonVariant.PUDGY_SECONDARY
+                : ButtonVariant.DEFAULT_SOCIAL
+            }
+            onClick={() =>
+              share({
+                title: 'Check out this profile on SSE!',
+                url: createURL({
+                  domain: window.location.origin,
+                  endpoint: mainProfile.username,
+                }),
+              })
+            }
+          >
+            {!isPudgy && <ShareIcon size={16} />} Share
+          </Button>
+        )}
         {!!mainProfile?.username &&
           !!username &&
           mainProfile.username !== username && (
-            <FollowButton
-              className="my-4 md:my-0 w-full"
-              followerUsername={mainProfile.username}
-              followeeUsername={username}
-            />
+            <div className="flex gap-2 my-4 md:my-0">
+              <FollowButton
+                className="w-full"
+                followerUsername={mainProfile.username}
+                followeeUsername={username}
+                isPudgy={isPudgy}
+              />
+              <FollowBlinkButton
+                username={username}
+                displayVariant="icon"
+                title="Share follow link - Let others follow with one Solana transaction!"
+              />
+            </div>
           )}
-        <p className="text-muted-foreground text-sm mobile mb-6">
-          {bio || t('common.no_description')}
-        </p>
+
+        {/* Show blink button even when user is not logged in to encourage sharing */}
+        {(!mainProfile?.username || mainProfile.username === username) &&
+          username && (
+            <div className="my-4 md:my-0">
+              <FollowBlinkButton
+                username={username}
+                className="w-full"
+                showLabel={true}
+              />
+            </div>
+          )}
+
+        {/* Bio editing - Mobile */}
+        {isOwnProfile ? (
+          <div className="text-muted-foreground text-sm mobile mb-6">
+            <ProfileEditableField
+              value={bio || ''}
+              placeholder={t('common.no_description')}
+              isEditing={editingBio}
+              onEdit={() => setEditingBio(true)}
+              onSave={handleBioSave}
+              onCancel={() => setEditingBio(false)}
+              maxLength={300}
+              multiline={true}
+              loading={updateLoading}
+              title="Edit bio"
+            />
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm mobile mb-6">
+            {bio || t('common.no_description')}
+          </p>
+        )}
+
         <p className="flex items-center space-x-2 text-xs text-muted-foreground">
-          <span>
+          <button
+            onClick={() => {
+              setModalTab('followers')
+              setModalOpen(true)
+            }}
+            className="hover:text-foreground transition-colors cursor-pointer"
+          >
             {followers} {t('common.follow.followers')}
-          </span>
+          </button>
           <span>|</span>
-          <span>
+          <button
+            onClick={() => {
+              setModalTab('following')
+              setModalOpen(true)
+            }}
+            className="hover:text-foreground transition-colors cursor-pointer"
+          >
             {following} {t('common.follow.following')}
-          </span>
+          </button>
         </p>
       </div>
+
+      {/* Username change confirmation modal */}
+      <UsernameChangeModal
+        isOpen={showUsernameWarning}
+        currentUsername={profileInfo?.profile.username || ''}
+        newUsername={pendingUsername}
+        error={usernameError}
+        loading={updateLoading}
+        onConfirm={confirmUsernameSave}
+        onCancel={handleUsernameModalCancel}
+      />
+
+      {/* Followers/Following modal */}
+      {hasProfile && (
+        <ProfileFollowersModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          username={profileInfo.profile.username}
+          defaultTab={modalTab}
+          totalFollowers={followers}
+          totalFollowing={following}
+        />
+      )}
     </div>
   )
 }

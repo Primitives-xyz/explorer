@@ -1,5 +1,6 @@
 'use client'
 
+import { FollowBlinkButton } from '@/components/common/follow-blink-button'
 import { FollowButton } from '@/components/common/follow-button'
 import { useGetRecentProfiles } from '@/components/tapestry/hooks/use-get-recent-profiles'
 import {
@@ -80,11 +81,17 @@ export function RightSideDiscover() {
                   </div>
                   <div>
                     {!!mainProfile?.username && (
-                      <FollowButton
-                        size={ButtonSize.ICON}
-                        followerUsername={mainProfile.username}
-                        followeeUsername={entry.profile.username}
-                      />
+                      <div className="flex gap-1">
+                        <FollowButton
+                          size={ButtonSize.ICON}
+                          followerUsername={mainProfile.username}
+                          followeeUsername={entry.profile.username}
+                        />
+                        <FollowBlinkButton
+                          username={entry.profile.username}
+                          displayVariant="icon"
+                        />
+                      </div>
                     )}
                   </div>
                 </div>

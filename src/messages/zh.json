@@ -422,6 +422,7 @@
       "building": "Building Transaction",
       "sending": "Sending Transaction",
       "waiting_confirmation": "Waiting for confirmation",
+      "confirming": "正在确认交易",
       "successful": "Transaction Successful",
       "failed": "Transaction Failed",
       "stake_failed_try_again": "The stake transaction failed. Please try again",
@@ -500,6 +501,45 @@
       "no_rewards_description": "You don't have any rewards to claim at this time",
       "description": "Claim your accumulated rewards from staking",
       "connect_wallet_description": "Connect your wallet to view and claim your accumulated rewards"
+    },
+    "v2_unlock": {
+      "title": "欢迎来到质押 V2！",
+      "subtitle": "感谢您成为我们社区的忠实成员",
+      "reward_title": "100 SSE 忠诚奖励",
+      "reward_description": "领取您作为早期支持者的奖励",
+      "staking_summary": "您的质押摘要",
+      "staked_amount": "质押金额",
+      "earned_rewards": "已赚取奖励",
+      "analysis_title": "您的质押 V2 分析",
+      "total_transactions": "总交易数",
+      "total_staked": "总质押量",
+      "fair_rewards": "公平奖励（计算值）",
+      "actually_claimed": "实际领取",
+      "over_claimed": "超额领取",
+      "under_claimed": "领取不足",
+      "additional_rewards": "额外奖励",
+      "your_status": "您的状态",
+      "status": {
+        "over_claimed": "⚠️ 超额领取",
+        "under_claimed": "💎 领取不足",
+        "correctly_claimed": "✅ 正确领取",
+        "eligible_for_more": "有资格获得更多奖励",
+        "fully_rewarded": "已完全奖励"
+      },
+      "explanation": {
+        "under_claimed": "好消息！您领取的奖励少于应得份额。您有资格获得 100 SSE 忠诚奖励！",
+        "over_claimed": "您已经领取了超过计算公平奖励的金额。感谢您成为活跃参与者！",
+        "correctly_claimed": "您的领取金额与计算的公平奖励完全匹配！"
+      },
+      "loading_credits": "正在加载您的积分...",
+      "claim_button": "领取 100 SSE",
+      "processing": "处理中...",
+      "maybe_later": "稍后再说",
+      "close": "关闭",
+      "success_title": "奖励领取成功！🎉",
+      "view_transaction": "查看交易",
+      "connect_wallet_error": "请连接您的钱包",
+      "claim_failed": "领取奖励失败。请重试。"
     }
   },
   "swap": {
@@ -551,7 +591,7 @@
   },
   "onboarding": {
     "create_profile": "Create Your Profile",
-    "welcome_success": "Welcome @{username}! Your profile has been successfully created!",
+    "onboarding_success": "Your profile has been successfully updated!",
     "steps": {
       "username": "Username",
       "profile_image": "Profile Image",
@@ -576,7 +616,7 @@
       },
       "username": {
         "label": "Username",
-        "placeholder": "Please add a title",
+        "placeholder": "Please add a username",
         "description": "用户名只能包含字母、数字、下划线和句点（用于SNS名称，如.sol）",
         "validation": {
           "min_length": "Username must be at least 3 characters long",

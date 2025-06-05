@@ -2,16 +2,18 @@ import { useCreateStakeContentNode } from '@/components/stake/hooks/use-create-s
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useMigrationCheck } from './use-migration-check'
 
 export function useStake() {
   const [isLoading, setIsLoading] = useState(false)
   const t = useTranslations('stake')
   const { refreshUserInfo } = useStakeInfo({})
   const { createContentNode } = useCreateStakeContentNode()
+  const { needsMigration } = useMigrationCheck()
 
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
@@ -20,18 +22,25 @@ export function useStake() {
       return
     }
 
+    // Check if migration is needed before staking
+    if (needsMigration) {
+      toast.error(t('migration_required'), {
+        description: t('migration_required_description'),
+      })
+      return
+    }
+
     try {
       setIsLoading(true)
 
-      const response = await fetch('/api/stake', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, walletAddy: walletAddress }),
-      })
+      // Step 1: Get unsigned transaction from backend
+      const getResponse = await fetch(
+        `/api/stake?amount=${amount}&walletAddress=${walletAddress}`
+      )
 
-      const data = await response.json()
+      const data = await getResponse.json()
       const serializedBuffer = Buffer.from(data.stakeTx, 'base64')
-      const vtx = VersionedTransaction.deserialize(
+      let vtx = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
 
@@ -39,30 +48,38 @@ export function useStake() {
         throw new Error('Wallet not connected')
       }
 
+      // Step 2: Sign transaction on frontend
       const signer = await primaryWallet.getSigner()
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
+      vtx = await signer.signTransaction(vtx)
 
-      const simulate = await connection.simulateTransaction(vtx)
-      console.log('sim:', simulate)
-
-      const txid = await signer.signAndSendTransaction(vtx)
+      // Step 3: Send signed transaction to backend for execution
+      const signedTxBuffer = Buffer.from(vtx.serialize())
+      const signedTransactionBase64 = signedTxBuffer.toString('base64')
 
       const confirmToastId = toast(t('transaction.confirming'), {
         description: t('transaction.waiting_confirmation'),
         duration: 1000000000,
       })
 
-      const confirmation = await connection.confirmTransaction({
-        signature: txid.signature,
-        ...(await connection.getLatestBlockhash()),
+      const executeResponse = await fetch('/api/stake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          signedTransaction: signedTransactionBase64,
+        }),
       })
 
+      const executeData = await executeResponse.json()
       toast.dismiss(confirmToastId)
 
-      if (confirmation.value.err) {
+      if (!executeData.confirmed || executeData.confirmationError) {
         toast.error(t('transaction.failed'), {
           description: t('transaction.stake_failed_try_again'),
         })
+        console.error(
+          'Stake transaction failed:',
+          executeData.confirmationError
+        )
       } else {
         toast.success(t('transaction.successful'), {
           description: t('transaction.stake_successful'),
@@ -71,7 +88,7 @@ export function useStake() {
 
         // Create content node for the stake transaction
         await createContentNode({
-          signature: txid.signature,
+          signature: executeData.txid,
           stakeAmount: amount,
           walletAddress,
           route: 'stake',
@@ -90,5 +107,6 @@ export function useStake() {
   return {
     stake,
     isLoading,
+    needsMigration,
   }
 }

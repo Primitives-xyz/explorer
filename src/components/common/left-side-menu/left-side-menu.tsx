@@ -3,12 +3,13 @@
 import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
+import { MigrationReminder } from '@/components/common/left-side-menu/migration-reminder'
 import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
+import { cn } from '@/utils/utils'
 import { Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -21,18 +22,31 @@ export function LeftSideMenu() {
   const { mainProfile } = useCurrentWallet()
 
   return (
-    <div className="hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar">
+    <div
+      className={cn(
+        'hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar',
+        {
+          'left-sidebar-theme-background backdrop-blur-md':
+            !!mainProfile?.pudgy_profile_date,
+        }
+      )}
+    >
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
-          <h1 className="font-bold text-primary leading-none">
-            {t('menu.title')}
-          </h1>
+          <Button href="/" isInvisible>
+            <h1 className="font-bold text-primary leading-none">
+              {t('menu.title')}
+            </h1>
+          </Button>
           <ProfileInfos />
           <Menu />
+          {/* <ResetProfileButton /> */}
+          {/* <TestButton /> */}
         </div>
         <div className="space-y-4 py-4">
+          <MigrationReminder />
           <LowFeeTrades />
-          {isSpecialUser(mainProfile) && <SolidScore />}
+          <SolidScore />
         </div>
         <div className="flex flex-col items-center gap-2">
           <Button

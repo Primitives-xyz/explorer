@@ -82,7 +82,6 @@ export function BottomSwap({
                 id="pay_fee_with_sse"
                 checked={useSSEForFees}
                 onClick={() => setUseSSEForFees(!useSSEForFees)}
-                onChange={() => {}}
                 className="pointer-events-none mt-1"
                 size={CheckboxSize.LG}
               />
@@ -106,7 +105,7 @@ export function BottomSwap({
             type="single"
             collapsible
             className="w-full"
-            defaultValue={isMobile ? '' : 'item-1'}
+            defaultValue=""
           >
             <AccordionItem value="item-1">
               <AccordionTrigger

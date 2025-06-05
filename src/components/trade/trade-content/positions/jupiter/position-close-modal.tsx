@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/utils/utils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   SOL_IMG_URI,
@@ -34,7 +34,13 @@ export default function PositionCloseModal({
     25 | 50 | 75 | 100
   >(100)
 
-  const { quote, closePosition, isLoading } = useDecreasePosition({
+  const {
+    quote,
+    closePosition,
+    isLoading: isDecreasePositionLoading,
+    isTxExecuteLoading,
+    isTxSuccess,
+  } = useDecreasePosition({
     collateralUsdDelta: '0',
     desiredMint: receiveInToken === 'SOL' ? SOL_MINT : USDC_MINT,
     entirePosition: selectedPercentage === 100 ? true : false,
@@ -48,6 +54,12 @@ export default function PositionCloseModal({
     setSelectedPercentage(percentage)
     setSizeUsdDelta(sizeUsdDelta.toString())
   }
+
+  useEffect(() => {
+    if (isTxSuccess) {
+      setIsModalOpen(false)
+    }
+  }, [isTxSuccess])
 
   return (
     <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
@@ -196,12 +208,15 @@ export default function PositionCloseModal({
             >
               Dismiss
             </Button>
+
             <Button
               variant={ButtonVariant.OUTLINE}
               onClick={closePosition}
-              disabled={isLoading}
+              disabled={
+                isDecreasePositionLoading || isTxExecuteLoading || !quote
+              }
             >
-              {isLoading ? 'Closing...' : 'Close'}
+              {isTxExecuteLoading ? 'Closing...' : 'Close'}
             </Button>
           </div>
         </CardContent>

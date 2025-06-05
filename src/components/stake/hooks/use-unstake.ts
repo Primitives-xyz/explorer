@@ -6,16 +6,26 @@ import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useMigrationCheck } from './use-migration-check'
 
 export function useUnstake() {
   const [isLoading, setIsLoading] = useState(false)
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
   const { createContentNode } = useCreateUnstakeContentNode()
+  const { needsMigration } = useMigrationCheck()
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
   const unstake = async (amount: string) => {
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+      return
+    }
+
+    // Check if migration is needed before unstaking
+    if (needsMigration) {
+      toast.error(t('stake.migration_required'), {
+        description: t('stake.migration_required_description'),
+      })
       return
     }
 
@@ -36,17 +46,20 @@ export function useUnstake() {
       const data = await response.json()
       const unStakeTx = data.unStakeTx
       const serializedBuffer: Buffer = Buffer.from(unStakeTx, 'base64')
-      const vtx: VersionedTransaction = VersionedTransaction.deserialize(
+      let vtx: VersionedTransaction = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
 
       const signer = await primaryWallet.getSigner()
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
-      const simulate = await connection.simulateTransaction(vtx)
+      const simulate = await connection.simulateTransaction(vtx, {
+        sigVerify: false,
+      })
       console.log('sim:', simulate)
 
-      const txid = await signer.signAndSendTransaction(vtx)
+      vtx = await signer.signTransaction(vtx)
+      const txid = await connection.sendRawTransaction(vtx.serialize())
 
       const confirmToastId = toast.loading(t('trade.confirming_transaction'), {
         description: t('trade.waiting_for_confirmation'),
@@ -54,7 +67,7 @@ export function useUnstake() {
       })
 
       const confirmation = await connection.confirmTransaction({
-        signature: txid.signature,
+        signature: txid,
         ...(await connection.getLatestBlockhash()),
       })
 
@@ -78,7 +91,7 @@ export function useUnstake() {
 
         // Create content node for the unstake transaction
         await createContentNode({
-          signature: txid.signature,
+          signature: txid,
           unstakeAmount: amount,
           walletAddress,
           route: 'stake',
@@ -98,5 +111,6 @@ export function useUnstake() {
   return {
     unstake,
     isLoading,
+    needsMigration,
   }
 }

@@ -4,13 +4,11 @@ import { DialectNotificationsComponent } from '@/components/notifications/dialec
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
 import { cn } from '@/utils/utils'
 import {
   AlignJustify,
   ArrowRightLeft,
   Beef,
-  Compass,
   House,
   LucideIcon,
   PocketKnife,
@@ -25,7 +23,7 @@ interface Props {
 }
 
 export function Menu({ setOpen }: Props) {
-  const { isLoggedIn, mainProfile } = useCurrentWallet()
+  const { isLoggedIn, isAdmin } = useCurrentWallet()
   const t = useTranslations()
 
   return (
@@ -54,38 +52,24 @@ export function Menu({ setOpen }: Props) {
       />
 
       <Entry
-        title={t('menu.discover')}
-        icon={Compass}
-        href={route('discover')}
-        setOpen={setOpen}
-      />
-
-      <Entry
         title={t('menu.stake')}
         icon={Beef}
         href={route('stake')}
         setOpen={setOpen}
       />
 
-      {isLoggedIn && isSpecialUser(mainProfile) && (
+      {isLoggedIn && isAdmin && (
         <Entry
           title={t('menu.leaderboard')}
           icon={AlignJustify}
           href={route('leaderboard')}
           setOpen={setOpen}
-          onlyMobile
         />
       )}
 
       {process.env.NODE_ENV === 'production' && (
         <DialectNotificationsComponent />
       )}
-
-      {/* <Entry
-        title="Design System"
-        icon={PaintbrushVertical}
-        href={route('designSystem')}
-      /> */}
     </div>
   )
 }

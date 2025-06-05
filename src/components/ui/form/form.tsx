@@ -15,25 +15,6 @@ import {
 import { Label } from './label'
 
 const Form = FormProvider
-// const Form = <
-//   TFieldValues extends FieldValues,
-//   TContext = any,
-//   TTransformedValues extends FieldValues | undefined = undefined,
-// >(
-//   props: { onSubmit: any } & FormProviderProps<
-//     TFieldValues,
-//     TContext,
-//     TTransformedValues
-//   >,
-// ) => {
-//   return (
-//     <FormProvider {...props}>
-//       <form onSubmit={props.handleSubmit(props.onSubmit)} className="space-y-6">
-//         {props.children}
-//       </form>
-//     </FormProvider>
-//   )
-// }
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,

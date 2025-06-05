@@ -1,3 +1,4 @@
+import { EPudgyTheme } from '@/components/pudgy/pudgy.models'
 import { IPaginatedResponse } from './common.models'
 
 export enum BLOCKCHAIN {
@@ -29,8 +30,14 @@ export interface IProfile {
   blockchain: BLOCKCHAIN
   wallet: IWallet
   hasSeenProfileSetupModal?: boolean
+  hasSeenPudgyOnboardingModal?: boolean
   userRevealedTheSolidScore?: boolean
   userHasClickedOnShareHisSolidScore?: boolean
+
+  // Pudgy
+  pudgy_profile_date?: Date
+  pudgyTheme?: EPudgyTheme
+  pudgyFrame?: boolean
 }
 
 // POST /profiles/findOrCreate

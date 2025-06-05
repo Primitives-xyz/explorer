@@ -1,24 +1,15 @@
 'use client'
 
 import { Menu } from '@/components/common/left-side-menu/menu'
-import { ProfileInfos } from '@/components/common/left-side-menu/profile-infos'
+import { MigrationReminder } from '@/components/common/left-side-menu/migration-reminder'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
-import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
-import {
-  Button,
-  ButtonVariant,
-  DialogHeader,
-  DialogTitle,
-  Sheet,
-  SheetContent,
-} from '@/components/ui'
-import { Separator } from '@/components/ui/separator'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { Lock, LogOutIcon, MessageCircle, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { Button, ButtonVariant } from '@/components/ui'
 import { route } from '@/utils/route'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
+import { useState } from 'react'
 
 interface Props {
   open: boolean
@@ -62,6 +53,9 @@ export function MobileMenu({ open, setOpen }: Props) {
             Trade
           </Button>
           <Menu setOpen={setOpen} />
+          <div className="mt-4">
+            <MigrationReminder />
+          </div>
         </div>
       </div>
     </>

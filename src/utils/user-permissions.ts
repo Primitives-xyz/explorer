@@ -1,8 +1,4 @@
-export interface Profile {
-  username?: string
-}
-
-export const SPECIAL_USERNAMES = [
+export const ADMIN_USERS = [
   'nehemiah',
   'nemoblackburn',
   'cedrick',
@@ -11,11 +7,6 @@ export const SPECIAL_USERNAMES = [
   'poloqweqwe',
   'marcusmth',
   'polo2',
+  'polomain',
+  'bennyy',
 ]
-
-export type SpecialUsername = (typeof SPECIAL_USERNAMES)[number]
-
-export function isSpecialUser(profile?: Profile | null): boolean {
-  if (!profile?.username) return false
-  return SPECIAL_USERNAMES.includes(profile.username as SpecialUsername)
-}

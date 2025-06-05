@@ -1,8 +1,7 @@
 'use client'
 
-import { Spinner } from '@/components/ui/spinner'
-import { CheckIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { createPortal } from 'react-dom'
 import { Toaster as Sonner } from 'sonner'
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
@@ -10,14 +9,9 @@ type ToasterProps = React.ComponentProps<typeof Sonner>
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme()
 
-  return (
+  const toasterContent = (
     <Sonner
-      duration={5000}
       theme={theme as ToasterProps['theme']}
-      icons={{
-        success: <CheckIcon size={20} />,
-        loading: <Spinner size={20} />,
-      }}
       className="toaster group"
       toastOptions={{
         classNames: {
@@ -33,6 +27,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
       {...props}
     />
   )
+
+  // Only render in the browser
+  if (typeof window === 'undefined') return null
+
+  return createPortal(toasterContent, document.body)
 }
 
 export { Toaster }

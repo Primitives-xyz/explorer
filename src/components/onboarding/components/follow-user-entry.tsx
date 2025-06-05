@@ -1,3 +1,4 @@
+import { FollowBlinkButton } from '@/components/common/follow-blink-button'
 import { FollowButton } from '@/components/common/follow-button'
 import Image from 'next/image'
 
@@ -34,11 +35,14 @@ export function FollowUserEntry({
           </p>
           {info && <p className="text-xs text-muted-foreground">{info}</p>}
         </div>
-        <FollowButton
-          followerUsername={mainUsername}
-          followeeUsername={username}
-          className="w-[121px]"
-        />
+        <div className="flex gap-2 items-center">
+          <FollowButton
+            followerUsername={mainUsername}
+            followeeUsername={username}
+            className="w-[100px]"
+          />
+          <FollowBlinkButton username={username} displayVariant="icon" />
+        </div>
       </div>
     </div>
   )

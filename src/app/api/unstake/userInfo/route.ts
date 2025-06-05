@@ -128,8 +128,7 @@ export async function POST(req: NextRequest) {
 
     console.log('userInfoAccount: ', userInfoAccount)
 
-    const slot = await provider.connection.getSlot('confirmed')
-    const blockTime = await provider.connection.getBlockTime(slot)
+    const blockTime = Date.now()
 
     if (blockTime) {
       const userDeposit = userInfoAccount.deposit.toNumber()
@@ -153,6 +152,7 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ userInfo })
     } else {
+      console.log('Error in blocktime fetch: ', blockTime)
       return NextResponse.json({ error: String('Error in blocktime fetch') })
     }
   } catch (err) {

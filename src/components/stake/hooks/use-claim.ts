@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useMigrationCheck } from './use-migration-check'
 
 interface Props {
   rewardsAmount: string
@@ -18,6 +19,7 @@ export function useClaimRewards({ rewardsAmount }: Props) {
 
   const t = useTranslations()
   const { refreshUserInfo } = useStakeInfo({})
+  const { needsMigration } = useMigrationCheck()
   const { primaryWallet, walletAddress } = useCurrentWallet()
 
   const hasRewards = rewardsAmount && parseFloat(rewardsAmount) > 0
@@ -25,6 +27,13 @@ export function useClaimRewards({ rewardsAmount }: Props) {
   const claimRewards = async () => {
     router.refresh()
     if (!walletAddress || !primaryWallet || !isSolanaWallet(primaryWallet)) {
+      return
+    }
+
+    if (needsMigration) {
+      toast.error(t('stake.migration_required'), {
+        description: t('stake.migration_required_description'),
+      })
       return
     }
 
@@ -73,17 +82,20 @@ export function useClaimRewards({ rewardsAmount }: Props) {
 
       setCurrentStep('sending_transaction')
       const serializedBuffer = Buffer.from(data.claimRewardTx, 'base64')
-      const vtx = VersionedTransaction.deserialize(
+      let vtx = VersionedTransaction.deserialize(
         Uint8Array.from(serializedBuffer)
       )
 
       const signer = await primaryWallet.getSigner()
       const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
 
-      const simulate = await connection.simulateTransaction(vtx)
+      const simulate = await connection.simulateTransaction(vtx, {
+        sigVerify: false,
+      })
       console.log('sim:', simulate)
 
-      const txid = await signer.signAndSendTransaction(vtx)
+      vtx = await signer.signTransaction(vtx)
+      const txid = await connection.sendRawTransaction(vtx.serialize())
 
       const confirmToastId = toast.loading(t('trade.confirming_transaction'), {
         description: t('trade.waiting_for_confirmation'),
@@ -93,7 +105,7 @@ export function useClaimRewards({ rewardsAmount }: Props) {
       setCurrentStep('waiting_for_confirmation')
 
       const confirmation = await connection.confirmTransaction({
-        signature: txid.signature,
+        signature: txid,
         ...(await connection.getLatestBlockhash()),
       })
 
@@ -130,5 +142,6 @@ export function useClaimRewards({ rewardsAmount }: Props) {
     hasRewards,
     currentStep,
     isLoading,
+    needsMigration,
   }
 }

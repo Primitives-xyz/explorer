@@ -8,7 +8,7 @@ import {
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import { Connection, SystemProgram } from '@solana/web3.js'
 
-export enum RouteType {
+export enum ERouteType {
   TRANSACTION = 'transaction',
   TOKEN = 'token',
   PROFILE = 'profile',
@@ -19,33 +19,33 @@ export enum RouteType {
 export async function determineRouteType(
   id: string,
   connection: Connection
-): Promise<RouteType> {
+): Promise<ERouteType> {
   const cleanId = id.startsWith('@') ? id.slice(1) : id
 
   if (isValidTransactionSignature(cleanId)) {
-    return RouteType.TRANSACTION
+    return ERouteType.TRANSACTION
   }
 
   if (isValidPublicKey(cleanId)) {
     // Check the owner of the account
     const owner = await getAccountOwner(cleanId, connection)
     if (owner === SystemProgram.programId.toString()) {
-      return RouteType.WALLET // Wallet
+      return ERouteType.WALLET // Wallet
     }
     // Only fetch token info if not a wallet
     const tokenInfo = await fetchTokenInfo(cleanId)
     if (tokenInfo && tokenInfo.result && isNFTToken(tokenInfo.result)) {
-      return RouteType.NFT
+      return ERouteType.NFT
     } else if (!tokenInfo || !tokenInfo.result) {
-      return RouteType.WALLET
+      return ERouteType.WALLET
     } else if (
       owner === TOKEN_PROGRAM_ID.toString() ||
       owner === TOKEN_2022_PROGRAM_ID.toString()
     ) {
-      return RouteType.TOKEN // Token account or mint
+      return ERouteType.TOKEN // Token account or mint
     }
-    return RouteType.WALLET // Token account most likely
+    return ERouteType.WALLET // Token account most likely
   }
 
-  return RouteType.PROFILE
+  return ERouteType.PROFILE
 }

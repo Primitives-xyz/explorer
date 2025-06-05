@@ -3,7 +3,6 @@
 import { useSolidScoreLeaderboard } from '@/components/solid-score/hooks/use-solid-score-leaderboard'
 import { Button, ButtonSize, Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { isSpecialUser } from '@/utils/user-permissions'
 import { cn } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
@@ -14,18 +13,18 @@ import { SolidScoreShareDialog } from './solid-score-share-dialog'
 
 export function LeaderboardContent() {
   const { data, loading } = useSolidScoreLeaderboard()
-  const { mainProfile, loading: walletLoading } = useCurrentWallet()
+  const { mainProfile, loading: walletLoading, isAdmin } = useCurrentWallet()
   const [open, setOpen] = useState(false)
   const t = useTranslations('menu.solid_score.leaderboard')
   const router = useRouter()
 
   useEffect(() => {
     if (!walletLoading && mainProfile?.username) {
-      if (!isSpecialUser(mainProfile)) {
+      if (!isAdmin) {
         router.push('/')
       }
     }
-  }, [walletLoading, mainProfile, router])
+  }, [walletLoading, mainProfile, router, isAdmin])
 
   const hasRevealedShare = !!mainProfile?.userHasClickedOnShareHisSolidScore
 
@@ -41,7 +40,7 @@ export function LeaderboardContent() {
     )
   }
 
-  if (!mainProfile?.username || !isSpecialUser(mainProfile)) {
+  if (!mainProfile?.username || !isAdmin) {
     return null
   }
 

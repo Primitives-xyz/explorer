@@ -37,7 +37,7 @@ export function AddBioForm({ suggestedBios, mainProfile, setStep }: Props) {
   const t = useTranslations()
   const { refetch: refetchCurrentUser } = useCurrentWallet()
   const { updateProfile, loading } = useUpdateProfile({
-    username: mainProfile.username,
+    profileId: mainProfile.username,
   })
   const form = useForm<z.infer<ReturnType<typeof formSchema>>>({
     resolver: zodResolver(formSchema(t)),
