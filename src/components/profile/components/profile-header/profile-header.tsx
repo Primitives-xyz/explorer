@@ -1,5 +1,6 @@
 'use client'
 
+import { FollowBlinkButton } from '@/components/common/follow-blink-button'
 import { FollowButton } from '@/components/common/follow-button'
 import { SolidScoreProfileHeader } from '@/components/profile/components/profile-header/solid-score-profile-header'
 import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
@@ -233,13 +234,54 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
         {!!mainProfile?.username &&
           !!username &&
           mainProfile.username !== username && (
-            <FollowButton
-              className="w-full"
-              followerUsername={mainProfile.username}
-              followeeUsername={username}
-              isPudgy={isPudgy}
-            />
+            <div className="flex gap-2 my-4 md:my-0">
+              <FollowButton
+                className="w-full"
+                followerUsername={mainProfile.username}
+                followeeUsername={username}
+                isPudgy={isPudgy}
+              />
+              <FollowBlinkButton
+                username={username}
+                displayVariant="icon"
+                title="Share follow link - Let others follow with one Solana transaction!"
+              />
+            </div>
           )}
+
+        {/* Show blink button even when user is not logged in to encourage sharing */}
+        {(!mainProfile?.username || mainProfile.username === username) &&
+          username && (
+            <div className="my-4 md:my-0">
+              <FollowBlinkButton
+                username={username}
+                className="w-full"
+                showLabel={true}
+              />
+            </div>
+          )}
+
+        {/* Bio editing - Mobile */}
+        {isOwnProfile ? (
+          <div className="text-muted-foreground text-sm mobile mb-6">
+            <ProfileEditableField
+              value={bio || ''}
+              placeholder={t('common.no_description')}
+              isEditing={editingBio}
+              onEdit={() => setEditingBio(true)}
+              onSave={handleBioSave}
+              onCancel={() => setEditingBio(false)}
+              maxLength={300}
+              multiline={true}
+              loading={updateLoading}
+              title="Edit bio"
+            />
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm mobile mb-6">
+            {bio || t('common.no_description')}
+          </p>
+        )}
 
         <p className="flex items-center space-x-2 text-xs text-muted-foreground">
           <button
