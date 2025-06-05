@@ -7,9 +7,10 @@ import {
   CardVariant,
   Separator,
 } from '@/components/ui'
+import { cn } from '@/utils/utils'
 import { useState } from 'react'
-import TPSLModal from './tpsl-modal'
 import PositionCloseModal from './position-close-modal'
+import TPSLModal from './tpsl-modal'
 
 interface PositionTabContentProps {
   perpsPositionsInfo: Position[]
@@ -63,7 +64,31 @@ export default function JupPositionTabContent({
                         <span className="text-sm text-primary">
                           PNL (EX. open/close/borrow fees)
                         </span>
-                        <span className="text-sm">0.37</span>
+                        <div className="flex flex-row gap-2">
+                          <span
+                            className={cn(
+                              'text-sm',
+                              Number(position.pnlBeforeFeesUsd) < 0 &&
+                                'text-red-400',
+                              Number(position.pnlBeforeFeesUsd) > 0 &&
+                                'text-primary'
+                            )}
+                          >
+                            {Number(position.pnlBeforeFeesUsd) < 0 ? '-$' : '$'}
+                            {Math.abs(Number(position.pnlBeforeFeesUsd))}
+                          </span>
+                          <span
+                            className={cn(
+                              'text-sm',
+                              Number(position.pnlChangePctBeforeFees) < 0 &&
+                                'text-red-400',
+                              Number(position.pnlChangePctBeforeFees) > 0 &&
+                                'text-primary'
+                            )}
+                          >
+                            {`(${position.pnlChangePctBeforeFees}%)`}
+                          </span>
+                        </div>
                       </div>
 
                       <div className="flex flex-col space-y-1 text-end">
@@ -131,7 +156,12 @@ export default function JupPositionTabContent({
 
                       <Button
                         variant={ButtonVariant.OUTLINE}
-                        onClick={() => handleClosePosition(position.size, position.positionPubkey)}
+                        onClick={() =>
+                          handleClosePosition(
+                            position.size,
+                            position.positionPubkey
+                          )
+                        }
                         className="w-full p-1"
                       >
                         <span className="text-center">CLOSE</span>
