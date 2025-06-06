@@ -1,3 +1,8 @@
+import {
+  SOL_IMG_URI,
+  USDC_IMG_URI,
+} from '@/components/trade/constants/constants'
+import { useDeleteTPSL } from '@/components/trade/hooks/jup-perps/use-delete-tpsl'
 import { Position } from '@/components/trade/hooks/jup-perps/use-positions'
 import {
   Button,
@@ -8,6 +13,8 @@ import {
   Separator,
 } from '@/components/ui'
 import { cn } from '@/utils/utils'
+import { Edit3 } from 'lucide-react'
+import Image from 'next/image'
 import { useState } from 'react'
 import PositionCloseModal from './position-close-modal'
 import TPSLModal from './tpsl-modal'
@@ -17,6 +24,73 @@ interface PositionTabContentProps {
   positionsLoading: boolean
 }
 
+// const perpsPositionsInfoTest: Position[] = [
+//   {
+//     borrowFees: '757',
+//     borrowFeesUsd: '0.00',
+//     closeFees: '344090',
+//     closeFeesUsd: '0.34',
+//     collateral: '9.56',
+//     collateralUsd: '9560456',
+//     collateralMint: 'So11111111111111111111111111111111111111112',
+//     createdTime: 1749205155,
+//     entryPrice: '148.69',
+//     leverage: '59.98',
+//     liquidationPrice: '146.61',
+//     marketMint: 'So11111111111111111111111111111111111111112',
+//     markPrice: '148.80',
+//     openFees: '344090',
+//     openFeesUsd: '0.34',
+//     pnlAfterFees: '-230039',
+//     pnlAfterFeesUsd: '-0.23',
+//     pnlBeforeFees: '458898',
+//     pnlBeforeFeesUsd: '0.46',
+//     pnlChangePctAfterFees: '-2.41',
+//     pnlChangePctBeforeFees: '4.80',
+//     positionPubkey: '9crjGdPPNjuWkWkhstBFh1a811p6zvSJja7xauGQhwF6',
+//     side: 'long',
+//     size: '573.48',
+//     sizeUsdDelta: '573483695',
+//     sizeTokenAmount: '3857038000',
+//     totalFees: '688937',
+//     totalFeesUsd: '0.69',
+//     tpslRequests: [
+//       {
+//         collateralUsdDelta: '0',
+//         desiredMint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+//         entirePosition: false,
+//         positionRequestPubkey: '82kX9afgQ8iVZJYHmX32JSwuzwHyGL5VwgECn57Y8zFn',
+//         positionSizeUsd: '573483695',
+//         positionSizeUsdFormatted: '573.48',
+//         sizeUsd: '573483695',
+//         sizeUsdFormatted: '573.48',
+//         sizePercentage: '100.00',
+//         triggerPrice: '151000000',
+//         triggerPriceUsd: '151.00',
+//         openTime: '1749205304',
+//         requestType: 'tp',
+//       },
+//       {
+//         collateralUsdDelta: '0',
+//         desiredMint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+//         entirePosition: false,
+//         positionRequestPubkey: 'HTrnZvEYvPi4mvqaWp54KW8gyZebuwzMCkdZLWf8dEKm',
+//         positionSizeUsd: '573483695',
+//         positionSizeUsdFormatted: '573.48',
+//         sizeUsd: '573483695',
+//         sizeUsdFormatted: '573.48',
+//         sizePercentage: '100.00',
+//         triggerPrice: '148500000',
+//         triggerPriceUsd: '148.50',
+//         openTime: '1749205304',
+//         requestType: 'sl',
+//       },
+//     ],
+//     updatedTime: 1749205155,
+//     value: '9.67',
+//   },
+// ]
+
 export default function JupPositionTabContent({
   perpsPositionsInfo,
   positionsLoading,
@@ -25,6 +99,11 @@ export default function JupPositionTabContent({
   const [isCloseModalOpen, setIsCloseModalOpen] = useState<boolean>(false)
   const [size, setSize] = useState<string>('')
   const [positionPubkey, setPositionPubkey] = useState<string>('')
+  const {
+    deleteTPSL,
+    isLoading: isDeleteTPSLLoading,
+    error: deleteTPSLError,
+  } = useDeleteTPSL()
   const symbol = 'SOL'
 
   const handleAddTPAndSL = (size: string, positionPubkey: string) => {
@@ -149,9 +228,7 @@ export default function JupPositionTabContent({
                         }
                         className="w-full p-1"
                       >
-                        <span className="text-center">
-                          Take Profit/Stop Loss
-                        </span>
+                        <span className="text-center">TP/SL</span>
                       </Button>
 
                       <Button
@@ -167,6 +244,211 @@ export default function JupPositionTabContent({
                         <span className="text-center">CLOSE</span>
                       </Button>
                     </div>
+
+                    {position.tpslRequests.length > 0 && (
+                      <>
+                        <Card>
+                          <CardContent className="px-2 py-2 space-y-2">
+                            <span className="text-sm text-primary">
+                              Full TP/SL
+                            </span>
+
+                            {position.tpslRequests.filter(
+                              (request) => request.entirePosition
+                            ).length > 0 ? (
+                              <>
+                                {position.tpslRequests
+                                  .filter((request) => request.entirePosition)
+                                  .map((request, index) => {
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="flex justify-between items-center"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <div>
+                                            <div className="text-sm">
+                                              {request.requestType === 'tp'
+                                                ? 'Take Profit'
+                                                : 'Stop Loss'}
+                                            </div>
+                                            <div className="flex items-center gap-1 text-xs">
+                                              <Image
+                                                src={
+                                                  request.desiredMint ===
+                                                  'So11111111111111111111111111111111111111112'
+                                                    ? SOL_IMG_URI
+                                                    : USDC_IMG_URI
+                                                }
+                                                alt="SOL"
+                                                width={20}
+                                                height={20}
+                                                className="rounded-full"
+                                              />
+                                              <span className="text-sm">
+                                                {request.desiredMint ===
+                                                'So11111111111111111111111111111111111111112'
+                                                  ? 'SOL'
+                                                  : 'USDC'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-1">
+                                          <span
+                                            className={cn(
+                                              'text-sm',
+                                              request.requestType === 'tp' &&
+                                                'text-primary',
+                                              request.requestType === 'sl' &&
+                                                'text-red-400'
+                                            )}
+                                          >
+                                            ${request.triggerPriceUsd}
+                                          </span>
+
+                                          <Button
+                                            variant={ButtonVariant.GHOST}
+                                            className="text-gray-400 hover:text-white transition-colors text-xs p-1 h-6"
+                                          >
+                                            <Edit3 className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                          <span className="text-sm">
+                                            {request.sizePercentage}%
+                                          </span>
+                                          <Button
+                                            variant={ButtonVariant.OUTLINE}
+                                            className="text-xs p-1 h-6"
+                                            disabled={isDeleteTPSLLoading}
+                                          >
+                                            {isDeleteTPSLLoading
+                                              ? 'Cancelling...'
+                                              : 'Cancel'}
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                              </>
+                            ) : (
+                              <div className="w-full flex justify-center items-center">
+                                <span className="text-sm">-</span>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+
+                        <Card>
+                          <CardContent className="px-2 py-2 space-y-2">
+                            <span className="text-sm text-primary">
+                              Partial TP/SL
+                            </span>
+
+                            {position.tpslRequests.filter(
+                              (request) => !request.entirePosition
+                            ).length > 0 ? (
+                              <>
+                                {position.tpslRequests
+                                  .filter((request) => !request.entirePosition)
+                                  .map((request, index) => {
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="flex justify-between items-center"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <div>
+                                            <div className="text-sm">
+                                              {request.requestType === 'tp'
+                                                ? 'Take Profit'
+                                                : 'Stop Loss'}
+                                            </div>
+                                            <div className="flex items-center gap-1 text-xs">
+                                              <Image
+                                                src={
+                                                  request.desiredMint ===
+                                                  'So11111111111111111111111111111111111111112'
+                                                    ? SOL_IMG_URI
+                                                    : USDC_IMG_URI
+                                                }
+                                                alt="SOL"
+                                                width={20}
+                                                height={20}
+                                                className="rounded-full"
+                                              />
+                                              <span className="text-sm">
+                                                {request.desiredMint ===
+                                                'So11111111111111111111111111111111111111112'
+                                                  ? 'SOL'
+                                                  : 'USDC'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-1">
+                                          <span
+                                            className={cn(
+                                              'text-sm',
+                                              request.requestType === 'tp' &&
+                                                'text-primary',
+                                              request.requestType === 'sl' &&
+                                                'text-red-400'
+                                            )}
+                                          >
+                                            ${request.triggerPriceUsd}
+                                          </span>
+
+                                          <Button
+                                            variant={ButtonVariant.GHOST}
+                                            className="text-gray-400 hover:text-white transition-colors text-xs p-1 h-6"
+                                          >
+                                            <Edit3 className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                          <div className="flex flex-col gap-1">
+                                            <span className="text-sm">
+                                              {request.sizePercentage}%
+                                            </span>
+                                            <span className="text-sm">
+                                              ${request.sizeUsdFormatted}
+                                            </span>
+                                          </div>
+
+                                          <Button
+                                            variant={ButtonVariant.OUTLINE}
+                                            className="text-xs p-1 h-full"
+                                            onClick={() =>
+                                              deleteTPSL(
+                                                request.positionRequestPubkey
+                                              )
+                                            }
+                                            disabled={isDeleteTPSLLoading}
+                                          >
+                                            {isDeleteTPSLLoading
+                                              ? 'Cancelling...'
+                                              : 'Cancel'}
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                              </>
+                            ) : (
+                              <div className="w-full flex justify-center items-center">
+                                <span className="text-sm">-</span>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               )

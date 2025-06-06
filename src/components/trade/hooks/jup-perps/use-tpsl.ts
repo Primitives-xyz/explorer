@@ -1,9 +1,10 @@
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { Connection, VersionedTransaction } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useToastContent } from '../drift/use-toast-content'
+import useTxExecute from './use-tx-execute'
 
 interface UseTPSLProps {
   owner: string
@@ -35,7 +36,15 @@ export function useTPSL({ owner, positionPubkey, tpsl }: UseTPSLProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { primaryWallet } = useCurrentWallet()
-
+  const [base64Tx, setBase64Tx] = useState<string | null>(null)
+  const {
+    loading: isTxExecuteLoading,
+    isTxSuccess,
+    txId,
+  } = useTxExecute({
+    serializedTxBase64: base64Tx,
+    action: 'tpsl',
+  })
   const placeTPSL = async () => {
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
       throw new Error('Wallet not connected')
@@ -66,39 +75,14 @@ export function useTPSL({ owner, positionPubkey, tpsl }: UseTPSLProps) {
       }
 
       const signer = await primaryWallet.getSigner()
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL || '')
-
-      // Deserialize the versioned transaction
-      const transaction = VersionedTransaction.deserialize(
-        Buffer.from(serializedTxBase64, 'base64')
-      )
-
-      const txid = await signer.signAndSendTransaction(transaction)
-
-      const confirmToastId = toast(
-        LOADINGS.CONFIRM_LOADING.title,
-        LOADINGS.CONFIRM_LOADING.content
-      )
-
-      const confirmation = await connection.confirmTransaction({
-        signature: txid.signature,
-        ...(await connection.getLatestBlockhash()),
-      })
-
-      toast.dismiss(confirmToastId)
-
-      if (confirmation.value.err) {
-        toast.error(
-          ERRORS.INCREASE_POSITION_TX_ERR.title,
-          ERRORS.INCREASE_POSITION_TX_ERR.content
+      const signedTransaction = await signer.signTransaction(
+        VersionedTransaction.deserialize(
+          Buffer.from(serializedTxBase64, 'base64')
         )
-      } else {
-        toast.success(
-          SUCCESS.INCREASE_POSITION_TX_SUCCESS.title,
-          SUCCESS.INCREASE_POSITION_TX_SUCCESS.content
-        )
-      }
-
+      )
+      const serializedSignedTx = signedTransaction.serialize()
+      const base64Tx = Buffer.from(serializedSignedTx).toString('base64')
+      setBase64Tx(base64Tx)
       setError(null)
     } catch (error) {
       const errorMessage =
@@ -121,7 +105,10 @@ export function useTPSL({ owner, positionPubkey, tpsl }: UseTPSLProps) {
 
   return {
     isLoading,
+    isTxExecuteLoading,
+    isTxSuccess,
     error,
+    txId,
     placeTPSL,
   }
 }
