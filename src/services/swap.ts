@@ -8,7 +8,6 @@ import {
   simulateTransaction,
 } from '@/services/jupiter'
 import type { SwapRouteResponse } from '@/types/jupiter-service'
-
 import { createATAIfNotExists } from '@/utils/token'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
 import {
@@ -29,7 +28,6 @@ export interface SwapRequest {
   isCopyTrade?: boolean
   slippageMode: 'auto' | 'fixed'
   slippageBps: number
-  platform?: 'trenches' | 'main'
 }
 
 interface ErrorLogContext {
@@ -73,8 +71,7 @@ export class SwapService {
   public async verifyOrCreateATA(
     mintAddress: string,
     ownerAddress: string,
-    retryCount = 0,
-    platform: 'trenches' | 'main' = 'main'
+    retryCount = 0
   ): Promise<PublicKey> {
     try {
       // Get the payer ready in case we need it
@@ -87,8 +84,7 @@ export class SwapService {
           payer,
           new PublicKey(mintAddress),
           new PublicKey(ownerAddress),
-          'High',
-          platform // Pass platform context for timeout handling
+          'High'
         )
 
       return associatedTokenAddress
@@ -102,12 +98,7 @@ export class SwapService {
           }/${maxRetries} after ${delayMs}ms delay`
         )
         await this.delay(delayMs)
-        return this.verifyOrCreateATA(
-          mintAddress,
-          ownerAddress,
-          retryCount + 1,
-          platform
-        )
+        return this.verifyOrCreateATA(mintAddress, ownerAddress, retryCount + 1)
       }
 
       const errorDetails = {
@@ -139,9 +130,10 @@ export class SwapService {
   }
 
   // create connection
-  public static async createConnection(platform?: string): Promise<Connection> {
-    const rpcUrl = process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
-    return new Connection(rpcUrl, { commitment: 'confirmed' })
+  public static async createConnection(): Promise<Connection> {
+    return new Connection(
+      process.env.RPC_URL || 'https://api.mainnet-beta.solana.com'
+    )
   }
 
   public async buildSwapTransaction(
@@ -166,7 +158,6 @@ export class SwapService {
           prioritizationFeeLamports: request.priorityFee,
           feeAccount: outputAta.toString(),
           slippageBps: effectiveSlippageBps,
-          platform: request.platform,
         })
       } catch (error: any) {
         await this.logError({
@@ -266,22 +257,18 @@ export class SwapService {
     request: SwapRequest
   ): Promise<SwapRouteResponse> {
     try {
-      // Skip fee wallet ATA creation - Jupiter will handle ATA creation in the swap transaction if needed
-      // This prevents timeout issues and simplifies the swap process
-      const outputAta = await getAssociatedTokenAddress(
-        new PublicKey(request.mintAddress),
-        new PublicKey(JUPITER_CONFIG.FEE_WALLET),
-        false
+      // Verify output token ATA
+      const outputAta = await this.verifyOrCreateATA(
+        request.mintAddress,
+        JUPITER_CONFIG.FEE_WALLET,
+        3
       )
-      console.log('⚡ Skipping fee wallet ATA creation for better performance')
 
       // Verify SSE token ATA if needed
       if (request.sseTokenAccount) {
         await this.verifyOrCreateATA(
           JUPITER_CONFIG.SSE_TOKEN_MINT,
-          request.walletAddress,
-          0,
-          request.platform || 'main'
+          request.walletAddress
         )
       }
 
@@ -329,7 +316,6 @@ export class SwapService {
               lastValidBlockHeight: response.lastValidBlockHeight,
               computeUnitLimit: response.computeUnitLimit,
               blockHeight: swapResponse.lastValidBlockHeight,
-              ataCreationSkipped: true,
             },
           },
           null,
