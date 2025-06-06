@@ -44,8 +44,6 @@ export function useQuery<ResponseType = unknown, Error = IError>({
 
   endpoint = getUrlWithQueryParameters(endpoint, queryParams)
 
-  console.log('endpoint _________', endpoint)
-
   const { data, error, isLoading, mutate } = useSWR<ResponseType, Error>(
     shouldFetch ? endpoint : null,
     async (endpoint: string) =>

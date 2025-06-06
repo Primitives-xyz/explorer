@@ -41,10 +41,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const fromToken = processedTx.primaryOutgoingToken
   const toToken = processedTx.primaryIncomingToken
 
-  console.log(
-    'transaction.signature *********************',
-    transaction.signature
-  )
   // Fetch content information for likes
   const {
     content,
@@ -54,8 +50,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
     signature: transaction.signature,
     enabled: !!transaction.signature,
   })
-
-  console.log('content -----', content)
 
   // Get like data from content
   const hasLiked = content?.requestingProfileSocialInfo?.hasLiked || false

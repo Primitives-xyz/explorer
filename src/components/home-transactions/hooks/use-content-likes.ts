@@ -14,7 +14,6 @@ interface LikeUsersResponse {
 }
 
 export const useLikeContent = ({ contentId }: { contentId: string }) => {
-  console.log('useLikeContent*******', contentId)
   const { mainProfile } = useCurrentWallet()
 
   const {
@@ -71,9 +70,6 @@ export const useContentLikes = ({
     endpoint: `content/${contentId}/likes`,
     skip: !enabled || !contentId,
   })
-
-  console.log('$$$$$$')
-  console.log(data)
 
   return {
     users: data?.profiles || [],
