@@ -15,6 +15,7 @@ import { Avatar } from '@/components/ui/avatar/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { useAutoTradeLogger } from '@/hooks/use-auto-trade-logger'
 import { EXPLORER_NAMESPACE, SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { listCache } from '@/utils/redis'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -107,6 +108,7 @@ export function Swap({ autoFocus }: Props) {
       outputMint: outputTokenMint,
       sourceWallet,
       sourceTransactionId,
+      platform,
     },
     swapMode,
     inAmount,
@@ -120,6 +122,15 @@ export function Swap({ autoFocus }: Props) {
   const [useSSEForFees, setUseSSEForFeesState] = useState(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
+  const [displayCurrency, setDisplayCurrency] = useState<'SOL' | 'USD'>(() => {
+    if (typeof window !== 'undefined') {
+      return (
+        (localStorage.getItem('swap-display-currency') as 'SOL' | 'USD') ||
+        'USD'
+      )
+    }
+    return 'USD'
+  })
 
   const {
     symbol: inputTokenSymbol,
@@ -154,6 +165,10 @@ export function Swap({ autoFocus }: Props) {
       tokenMint: outputTokenMint,
       decimals: outputTokenDecimals,
     })
+  const { price: solPrice } = useTokenUSDCPrice({
+    tokenMint: SOL_MINT,
+    decimals: 9,
+  })
   const {
     balance: sseBalance,
     rawBalance: sseRawBalance,
@@ -425,6 +440,13 @@ export function Swap({ autoFocus }: Props) {
     }
   }, [useSSEForFees])
 
+  // Persist display currency preference
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('swap-display-currency', displayCurrency)
+    }
+  }, [displayCurrency])
+
   // Track confirmed transactions
   const [confirmedTransactions, setConfirmedTransactions] = useState<string[]>(
     []
@@ -439,6 +461,10 @@ export function Swap({ autoFocus }: Props) {
     skip: !isHomePage, // Skip if not on home page
   })
 
+  // Automatically log trades to Tapestry backend
+  // Note: Import useAutoTradeLogger from '@/hooks/use-auto-trade-logger' at the top
+  useAutoTradeLogger({ platform: platform || 'main' })
+
   // Auto-reset transaction state after success and refetch quote
   useEffect(() => {
     if (isFullyConfirmed && txStatus?.status === 'confirmed' && txSignature) {
@@ -450,7 +476,7 @@ export function Swap({ autoFocus }: Props) {
         return prev
       })
 
-      // Emit swap success event for tracking
+      // Emit swap success event for tracking with comprehensive price data
       const swapSuccessEvent = new CustomEvent('swap-success', {
         detail: {
           signature: txSignature,
@@ -458,6 +484,16 @@ export function Swap({ autoFocus }: Props) {
           outputMint: outputTokenMint,
           inputAmount: parseFloat(inAmount) || 0,
           outputAmount: parseFloat(outAmount) || 0,
+          inputTokenUsdPrice: inputTokenUsdPrice || 0,
+          outputTokenUsdPrice: outputTokenUsdPrice || 0,
+          inputTokenSymbol: inputTokenSymbol || '',
+          outputTokenSymbol: outputTokenSymbol || '',
+          inputTokenDecimals: inputTokenDecimals || 9,
+          outputTokenDecimals: outputTokenDecimals || 6,
+          sourceWallet: sourceWallet,
+          sourceTransactionId: sourceTransactionId,
+          platform: platform || 'main',
+          quoteResponse: quoteResponse,
         },
       })
       window.dispatchEvent(swapSuccessEvent)
@@ -657,6 +693,15 @@ export function Swap({ autoFocus }: Props) {
         }}
         buttonText={executeButtonText}
         notReady={buttonDisabled}
+        // Price display props
+        outputTokenSymbol={outputTokenSymbol}
+        outputTokenUsdPrice={outputTokenUsdPrice || undefined}
+        solPrice={solPrice || undefined}
+        showPriceDisplay={true}
+        displayCurrency={displayCurrency}
+        onCurrencyToggle={() =>
+          setDisplayCurrency((prev) => (prev === 'USD' ? 'SOL' : 'USD'))
+        }
       />
 
       {/* Transaction Status - shows during processing */}

@@ -12,7 +12,27 @@ import { useTapestryTransactionHistory } from '@/hooks/use-tapestry-transaction-
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { DollarSign, Package, TrendingDown, TrendingUp } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+
+// Better precision formatting for crypto values
+function formatCryptoValue(
+  usdValue: number,
+  currency: 'SOL' | 'USD',
+  solPrice: number | null
+) {
+  if (currency === 'SOL' && solPrice && solPrice > 0) {
+    return `${(usdValue / solPrice).toFixed(6)} SOL`
+  }
+  // Use more precision for small USD amounts (common in crypto)
+  if (Math.abs(usdValue) < 0.01) {
+    return `$${usdValue.toFixed(8)}`
+  } else if (Math.abs(usdValue) < 1) {
+    return `$${usdValue.toFixed(6)}`
+  } else if (Math.abs(usdValue) < 100) {
+    return `$${usdValue.toFixed(4)}`
+  }
+  return `$${usdValue.toFixed(2)}`
+}
 
 // Transaction interface based on the API TradeLogSchema
 interface TradeTransaction {
@@ -57,7 +77,6 @@ interface TokenPosition {
 interface InventoryModalProps {
   isOpen: boolean
   onClose: () => void
-  mintMap: Record<string, any>
   currency: 'SOL' | 'USD'
   solPrice: number | null
 }
@@ -65,6 +84,8 @@ interface InventoryModalProps {
 // Simple position calculator using transaction USD values
 function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
   const positionMap = new Map<string, TokenPosition>()
+
+  console.log(`🔄 Processing ${transactions.length} transactions`)
 
   // Group transactions by token mint
   transactions.forEach((tx) => {
@@ -79,7 +100,7 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
     if (!positionMap.has(tokenMint)) {
       positionMap.set(tokenMint, {
         mint: tokenMint,
-        symbol: tokenMint.substring(0, 8), // Will get real symbol later
+        symbol: tokenMint.substring(0, 8), // Use first 8 chars as symbol
         totalBought: 0,
         totalSold: 0,
         remainingTokens: 0,
@@ -99,9 +120,19 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
     if (isBuy) {
       position.totalBought += tx.outputAmount
       position.totalCostUSD += tx.inputValueUSD || 0
+      console.log(
+        `📈 ${position.symbol}: Buy ${tx.outputAmount.toFixed(2)} tokens for $${
+          tx.inputValueUSD
+        }`
+      )
     } else {
       position.totalSold += tx.inputAmount
       position.totalRevenueUSD += tx.outputValueUSD || 0
+      console.log(
+        `📉 ${position.symbol}: Sell ${tx.inputAmount.toFixed(2)} tokens for $${
+          tx.outputValueUSD
+        }`
+      )
     }
   })
 
@@ -123,10 +154,27 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
     // Sort transactions by timestamp
     position.transactions.sort((a, b) => a.timestamp - b.timestamp)
 
-    positions.push(position)
+    console.log(
+      `📊 ${position.symbol}: ${position.totalBought.toFixed(
+        2
+      )} bought, ${position.totalSold.toFixed(
+        2
+      )} sold, ${position.remainingTokens.toFixed(2)} remaining`
+    )
+    console.log(
+      `💰 ${position.symbol}: $${position.totalCostUSD.toFixed(
+        2
+      )} cost, $${position.totalRevenueUSD.toFixed(
+        2
+      )} revenue, $${position.realizedPnLUSD.toFixed(2)} realized P&L`
+    )
+
+    if (position.totalBought > 0) {
+      positions.push(position)
+    }
   })
 
-  return positions.filter((p) => p.totalBought > 0) // Only show positions where we bought something
+  return positions
 }
 
 // Open Position Component
@@ -143,16 +191,11 @@ function OpenPosition({
 }) {
   const { isMobile } = useIsMobile()
 
-  const formatValue = (usdValue: number) => {
-    if (currency === 'SOL' && solPrice && solPrice > 0) {
-      return `${(usdValue / solPrice).toFixed(6)} SOL`
-    }
-    return `$${usdValue.toFixed(4)}`
-  }
+  const formatValue = (usdValue: number) =>
+    formatCryptoValue(usdValue, currency, solPrice)
 
   const investedUSD =
     position.totalCostUSD * (position.remainingTokens / position.totalBought)
-  const unrealizedPnL = -investedUSD // We don't have current market value, so show as cost basis
 
   if (isMobile) {
     return (
@@ -246,12 +289,8 @@ function ClosedPosition({
 }) {
   const { isMobile } = useIsMobile()
 
-  const formatValue = (usdValue: number) => {
-    if (currency === 'SOL' && solPrice && solPrice > 0) {
-      return `${(usdValue / solPrice).toFixed(6)} SOL`
-    }
-    return `$${usdValue.toFixed(4)}`
-  }
+  const formatValue = (usdValue: number) =>
+    formatCryptoValue(usdValue, currency, solPrice)
 
   const pnlPercent =
     position.totalCostUSD > 0
@@ -354,18 +393,14 @@ function ClosedPosition({
   )
 }
 
-export function InventoryModal({
+export function SimpleInventoryModal({
   isOpen,
   onClose,
-  mintMap,
   currency,
   solPrice,
 }: InventoryModalProps) {
   const { walletAddress, loading: walletLoading } = useCurrentWallet()
   const { setOpen: setSwapOpen, setInputs } = useSwapStore()
-  const [displayMode, setDisplayMode] = useState<'dollars' | 'percent'>(
-    'dollars'
-  )
   const { isMobile } = useIsMobile()
 
   // Fetch transaction history
@@ -386,7 +421,9 @@ export function InventoryModal({
     const validTransactions = transactions
       .filter(
         (tx: any) =>
-          tx.transactionSignature && (tx.inputValueUSD || tx.outputValueUSD)
+          tx.transactionSignature &&
+          (tx.inputValueUSD || tx.outputValueUSD) &&
+          tx.tradeType !== 'swap'
       )
       .map((tx: any) => tx as TradeTransaction)
 
@@ -412,19 +449,15 @@ export function InventoryModal({
 
     return {
       totalInvested,
-      openValue: openInvested, // We don't have current market prices
+      openValue: openInvested, // Cost basis of open positions
       totalRealized,
       winningPositions: positions.filter((p) => p.realizedPnLUSD > 0).length,
       losingPositions: positions.filter((p) => p.realizedPnLUSD < 0).length,
     }
   }, [positions, openPositions])
 
-  const formatValue = (usdValue: number) => {
-    if (currency === 'SOL' && solPrice && solPrice > 0) {
-      return `${(usdValue / solPrice).toFixed(6)} SOL`
-    }
-    return `$${usdValue.toFixed(2)}`
-  }
+  const formatValue = (usdValue: number) =>
+    formatCryptoValue(usdValue, currency, solPrice)
 
   const handleSell = (mint: string, amount: number) => {
     onClose()
@@ -469,24 +502,17 @@ export function InventoryModal({
               <DialogTitle className="text-xl font-bold">Inventory</DialogTitle>
             </div>
 
-            {/* Currency Toggle */}
+            {/* Currency Display */}
             <div className="flex items-center gap-1 bg-white/5 rounded-lg p-1">
-              <button
-                onClick={() => setDisplayMode('dollars')}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  displayMode === 'dollars'
-                    ? 'bg-white/10 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium bg-white/10 text-white">
                 <DollarSign size={14} />
                 <span>{currency}</span>
-              </button>
+              </div>
             </div>
           </div>
 
           <DialogDescription className="text-gray-400">
-            View your token positions from trenches trading
+            Your token positions from trenches trading (using transaction data)
           </DialogDescription>
 
           {/* Portfolio Stats */}
@@ -498,7 +524,7 @@ export function InventoryModal({
               </div>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Open Positions</div>
+              <div className="text-xs text-gray-400 mb-1">Open Cost Basis</div>
               <div className="text-sm font-bold">
                 {formatValue(stats.openValue)}
               </div>
@@ -583,7 +609,7 @@ export function InventoryModal({
                             <th className="text-right py-3 px-2">Amount</th>
                             <th className="text-right py-3 px-2">Avg Buy</th>
                             <th className="text-right py-3 px-2">Current</th>
-                            <th className="text-right py-3 px-2">Value</th>
+                            <th className="text-right py-3 px-2">Cost Basis</th>
                             <th className="text-right py-3 px-2">P&L</th>
                             <th className="text-right py-3 px-2">Actions</th>
                           </tr>
@@ -632,7 +658,9 @@ export function InventoryModal({
                             <th className="text-right py-3 px-2">Avg Buy</th>
                             <th className="text-right py-3 px-2">Avg Sell</th>
                             <th className="text-right py-3 px-2">Invested</th>
-                            <th className="text-right py-3 px-2">P&L</th>
+                            <th className="text-right py-3 px-2">
+                              Realized P&L
+                            </th>
                             <th className="text-right py-3 px-2">Status</th>
                           </tr>
                         </thead>

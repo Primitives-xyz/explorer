@@ -43,6 +43,7 @@ export const useSwapStore = create<State>()((set) => ({
           typeof inputs.inputAmount === 'number' ? inputs.inputAmount : 0,
         sourceWallet: inputs.sourceWallet || undefined,
         sourceTransactionId: inputs.sourceTransactionId || undefined,
+        platform: inputs.platform || 'main',
       },
       inAmount:
         typeof inputs.inputAmount === 'number'

@@ -4,6 +4,7 @@ import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { TokenRow } from '@/components/trenches/trenches-components'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAutoTradeLogger } from '@/hooks/use-auto-trade-logger'
 import { SOL_MINT } from '@/utils/constants'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
@@ -11,17 +12,15 @@ import { AnimatePresence, motion } from 'framer-motion'
 import {
   Flame,
   GraduationCap,
-  Package,
   Pause,
   Play,
   Rocket,
   Settings,
   Sparkles,
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTradeTracker } from './hooks/use-trade-tracker'
 import { HotFeedModal } from './hot-feed-modal'
-import { InventoryModal } from './inventory-modal'
 import { useInventoryStore } from './stores/use-inventory-store'
 import { TokenDetailsModal } from './token-details-modal'
 import { TrenchesHotZone } from './trenches-hot-zone'
@@ -30,12 +29,21 @@ import { MintAggregate } from './trenches-types'
 
 type SectionType = 'newly_minted' | 'about_to_graduate' | 'recently_graduated'
 
-export function TrenchesContent() {
+interface TrenchesContentProps {
+  currency: 'SOL' | 'USD'
+  setCurrency: (currency: 'SOL' | 'USD') => void
+  onOpenInventory: () => void
+}
+
+export function TrenchesContent({
+  currency,
+  setCurrency,
+  onOpenInventory,
+}: TrenchesContentProps) {
   const { isMobile } = useIsMobile()
   const { setOpen, setInputs, open } = useSwapStore()
   const [mintMap, setMintMap] = useState<Record<string, MintAggregate>>({})
   const wsRef = useRef<WebSocket | null>(null)
-  const [currency, setCurrency] = useState<'SOL' | 'USD'>('USD')
   const [disableAnimations, setDisableAnimations] = useState(true)
   const [pauseUpdates, setPauseUpdates] = useState(false)
   const pausedMintMapRef = useRef<Record<string, MintAggregate>>({})
@@ -43,7 +51,6 @@ export function TrenchesContent() {
   const [modalOpen, setModalOpen] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showHotFeed, setShowHotFeed] = useState(false)
-  const [showInventory, setShowInventory] = useState(false)
   const [activeSection, setActiveSection] =
     useState<SectionType>('newly_minted')
   const [clickedTokenForHotFeed, setClickedTokenForHotFeed] =
@@ -57,47 +64,44 @@ export function TrenchesContent() {
     decimals: 9,
   })
 
-  // Memoize websocket message handler
-  const handleWebSocketMessage = useCallback(
-    (event: MessageEvent) => {
-      try {
-        const msg = JSON.parse(event.data)
-        if (msg.type === 'MintMapSnapshot') {
-          const newData = msg.data
-          setMintMap(newData)
-          if (!pauseUpdates) {
-            pausedMintMapRef.current = newData
-          }
-          // Update prices in inventory
-          const prices: Record<string, number> = {}
-          Object.entries(newData).forEach(([mint, agg]: [string, any]) => {
-            if (agg.pricePerToken) {
-              prices[mint] = agg.pricePerToken
-            }
-          })
-          updatePrices(prices)
-        } else if (msg.type === 'MintAggregateUpdate') {
-          setMintMap((prev) => {
-            const updated = {
-              ...prev,
-              [msg.data.mint]: msg.data,
-            }
-            if (!pauseUpdates) {
-              pausedMintMapRef.current = updated
-            }
-            return updated
-          })
-          // Update single price
-          if (msg.data.pricePerToken) {
-            updatePrices({ [msg.data.mint]: msg.data.pricePerToken })
-          }
+  // Websocket message handler
+  const handleWebSocketMessage = (event: MessageEvent) => {
+    try {
+      const msg = JSON.parse(event.data)
+      if (msg.type === 'MintMapSnapshot') {
+        const newData = msg.data
+        setMintMap(newData)
+        if (!pauseUpdates) {
+          pausedMintMapRef.current = newData
         }
-      } catch (e) {
-        // ignore parse errors
+        // Update prices in inventory
+        const prices: Record<string, number> = {}
+        Object.entries(newData).forEach(([mint, agg]: [string, any]) => {
+          if (agg.pricePerToken) {
+            prices[mint] = agg.pricePerToken
+          }
+        })
+        updatePrices(prices)
+      } else if (msg.type === 'MintAggregateUpdate') {
+        setMintMap((prev) => {
+          const updated = {
+            ...prev,
+            [msg.data.mint]: msg.data,
+          }
+          if (!pauseUpdates) {
+            pausedMintMapRef.current = updated
+          }
+          return updated
+        })
+        // Update single price
+        if (msg.data.pricePerToken) {
+          updatePrices({ [msg.data.mint]: msg.data.pricePerToken })
+        }
       }
-    },
-    [pauseUpdates, updatePrices]
-  )
+    } catch (e) {
+      // ignore parse errors
+    }
+  }
 
   useEffect(() => {
     const ws = new window.WebSocket(
@@ -120,6 +124,9 @@ export function TrenchesContent() {
 
   // Use trade tracker to monitor swaps
   useTradeTracker({ mintMap: displayMintMap })
+
+  // Automatically log trades to Tapestry backend
+  useAutoTradeLogger({ platform: 'trenches' })
 
   // Memoize token filtering and sorting
   const { cookingToken, topRunnerUps, sectionTokens } = useMemo(() => {
@@ -178,32 +185,30 @@ export function TrenchesContent() {
     ? `$${solPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
     : '--'
 
-  const handleTokenClick = useCallback((agg: MintAggregate) => {
+  const handleTokenClick = (agg: MintAggregate) => {
     // Set the clicked token and open hot feed
     setClickedTokenForHotFeed(agg)
     setShowHotFeed(true)
-  }, [])
+  }
 
-  const handleDirectBuy = useCallback(
-    (mint: string, amount: number) => {
-      // Track the intended purchase
-      const token = displayMintMap[mint]
-      if (token) {
-        // We'll track this as a pending transaction and update when confirmed
-        // For now, just open the swap
-      }
+  const handleDirectBuy = (mint: string, amount: number) => {
+    // Track the intended purchase
+    const token = displayMintMap[mint]
+    if (token) {
+      // We'll track this as a pending transaction and update when confirmed
+      // For now, just open the swap
+    }
 
-      setOpen(true)
-      setTimeout(() => {
-        setInputs({
-          inputMint: SOL_MINT,
-          outputMint: mint,
-          inputAmount: amount,
-        })
-      }, 0)
-    },
-    [displayMintMap, setOpen, setInputs]
-  )
+    setOpen(true)
+    setTimeout(() => {
+      setInputs({
+        inputMint: SOL_MINT,
+        outputMint: mint,
+        inputAmount: amount,
+        platform: 'trenches',
+      })
+    }, 0)
+  }
 
   const sectionInfo = useMemo(
     () => ({
@@ -401,15 +406,6 @@ export function TrenchesContent() {
         />
       </AnimatePresence>
 
-      {/* Inventory Modal */}
-      <InventoryModal
-        isOpen={showInventory}
-        onClose={() => setShowInventory(false)}
-        mintMap={displayMintMap}
-        currency={currency}
-        solPrice={solPrice}
-      />
-
       {/* Hot Feed Modal */}
       <HotFeedModal
         isOpen={showHotFeed}
@@ -447,18 +443,6 @@ export function TrenchesContent() {
         <Flame
           className={`w-6 h-6 ${showHotFeed ? 'text-gray-400' : 'text-white'}`}
         />
-      </motion.button>
-
-      {/* Floating Inventory Button - Bottom Left */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setShowInventory(true)}
-        className="fixed bottom-20 left-4 w-14 h-14 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-lg flex items-center justify-center z-[60]"
-      >
-        <Package className="w-6 h-6 text-white" />
       </motion.button>
     </div>
   )

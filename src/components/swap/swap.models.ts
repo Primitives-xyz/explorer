@@ -42,4 +42,5 @@ export interface ISwapInputs {
   inputAmount: number
   sourceWallet?: string
   sourceTransactionId?: string
+  platform?: 'trenches' | 'main'
 }

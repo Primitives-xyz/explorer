@@ -13,118 +13,129 @@ import { useEffect, useRef, useState } from 'react'
 interface Trader {
   rank: number
   address: string
-  pnl: number
-  pnlPercentage: number
-  winRate: number
-  totalTrades: number
-  avgTradeSize: number
+  pnl: number | string
+  pnlPercentage: number | string
+  winRate: number | string
+  totalTrades: number | string
+  avgTradeSize: number | string
   bestTrade: {
     token: string
-    profit: number
+    profit: number | string
   }
+  isPlaceholder?: boolean
 }
 
-// Mock data for top traders
-const mockTraders: Trader[] = [
+// Placeholder data for upcoming leaderboard
+const placeholderTraders: Trader[] = [
   {
     rank: 1,
-    address: '8xKj9...3mPq',
-    pnl: 127543.89,
-    pnlPercentage: 2847.3,
-    winRate: 89.2,
-    totalTrades: 342,
-    avgTradeSize: 5.2,
-    bestTrade: { token: 'BONK', profit: 45230.12 },
+    address: 'Your Address Here?',
+    pnl: 'Calculating...',
+    pnlPercentage: '∞',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'LEGEND', profit: 'Epic' },
+    isPlaceholder: true,
   },
   {
     rank: 2,
-    address: '4nBc7...9kLm',
-    pnl: 98234.56,
-    pnlPercentage: 1923.7,
-    winRate: 76.5,
-    totalTrades: 289,
-    avgTradeSize: 3.8,
-    bestTrade: { token: 'WIF', profit: 32156.78 },
+    address: 'Top Trencher #2',
+    pnl: 'Being Tracked...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'BEAST', profit: 'Massive' },
+    isPlaceholder: true,
   },
   {
     rank: 3,
-    address: '7pQr2...5xNv',
-    pnl: 76890.23,
-    pnlPercentage: 1567.2,
-    winRate: 82.1,
-    totalTrades: 256,
-    avgTradeSize: 4.5,
-    bestTrade: { token: 'POPCAT', profit: 28934.45 },
+    address: 'Elite Trader #3',
+    pnl: 'Processing...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'MOON', profit: 'Huge' },
+    isPlaceholder: true,
   },
   {
     rank: 4,
-    address: '2mTy8...6wRs',
-    pnl: 65432.1,
-    pnlPercentage: 1234.5,
-    winRate: 71.8,
-    totalTrades: 198,
-    avgTradeSize: 6.2,
-    bestTrade: { token: 'MYRO', profit: 21567.89 },
+    address: 'Could Be You?',
+    pnl: 'Analyzing...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'DEGEN', profit: 'Big' },
+    isPlaceholder: true,
   },
   {
     rank: 5,
-    address: '9kLp4...3xQw',
-    pnl: 54321.98,
-    pnlPercentage: 987.6,
-    winRate: 68.9,
-    totalTrades: 167,
-    avgTradeSize: 7.1,
-    bestTrade: { token: 'BOME', profit: 18765.43 },
+    address: 'Future Whale',
+    pnl: 'Loading...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'PUMP', profit: 'Nice' },
+    isPlaceholder: true,
   },
   {
     rank: 6,
-    address: '5vNm3...8yTr',
-    pnl: 43210.87,
-    pnlPercentage: 765.4,
-    winRate: 74.2,
-    totalTrades: 145,
-    avgTradeSize: 4.9,
-    bestTrade: { token: 'SLERF', profit: 15432.21 },
+    address: 'Trench Master',
+    pnl: 'Compiling...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'ALPHA', profit: 'Sweet' },
+    isPlaceholder: true,
   },
   {
     rank: 7,
-    address: '3wXs6...2qPn',
-    pnl: 32109.76,
-    pnlPercentage: 543.2,
-    winRate: 69.7,
-    totalTrades: 123,
-    avgTradeSize: 5.5,
-    bestTrade: { token: 'BRETT', profit: 12098.76 },
+    address: 'Degen Royalty',
+    pnl: 'Scanning...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'GEMS', profit: 'Solid' },
+    isPlaceholder: true,
   },
   {
     rank: 8,
-    address: '6yBn9...4rKm',
-    pnl: 21098.65,
-    pnlPercentage: 321.1,
-    winRate: 66.3,
-    totalTrades: 98,
-    avgTradeSize: 3.2,
-    bestTrade: { token: 'PEPE', profit: 8765.43 },
+    address: 'Your Spot?',
+    pnl: 'Pending...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'REKT', profit: 'Good' },
+    isPlaceholder: true,
   },
   {
     rank: 9,
-    address: '1qAz7...9oLp',
-    pnl: 19876.54,
-    pnlPercentage: 298.7,
-    winRate: 72.5,
-    totalTrades: 87,
-    avgTradeSize: 2.8,
-    bestTrade: { token: 'FLOKI', profit: 7654.32 },
+    address: 'Future Legend',
+    pnl: 'Calculating...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'BAGS', profit: 'Nice' },
+    isPlaceholder: true,
   },
   {
     rank: 10,
-    address: '8uTr5...3wQx',
-    pnl: 15432.21,
-    pnlPercentage: 234.5,
-    winRate: 64.8,
-    totalTrades: 76,
-    avgTradeSize: 3.5,
-    bestTrade: { token: 'SHIB', profit: 5432.1 },
+    address: 'Claim This Spot',
+    pnl: 'Available...',
+    pnlPercentage: '???',
+    winRate: 'TBD',
+    totalTrades: 'Coming Soon',
+    avgTradeSize: '---',
+    bestTrade: { token: 'MOON', profit: 'Soon' },
+    isPlaceholder: true,
   },
 ]
 
@@ -147,9 +158,9 @@ export function TrenchesLeaderboard({
 
   // Create extended array with duplicates for smooth wrapping
   const extendedTraders = [
-    ...mockTraders.slice(-tradersPerSlide), // Last items at the beginning
-    ...mockTraders,
-    ...mockTraders.slice(0, tradersPerSlide), // First items at the end
+    ...placeholderTraders.slice(-tradersPerSlide), // Last items at the beginning
+    ...placeholderTraders,
+    ...placeholderTraders.slice(0, tradersPerSlide), // First items at the end
   ]
 
   // Auto-scroll every 5 seconds
@@ -171,10 +182,10 @@ export function TrenchesLeaderboard({
       setIsTransitioning(false)
 
       // Reset to real position if we're at duplicates
-      if (currentIndex >= mockTraders.length + tradersPerSlide) {
+      if (currentIndex >= placeholderTraders.length + tradersPerSlide) {
         setCurrentIndex(tradersPerSlide)
       } else if (currentIndex < tradersPerSlide) {
-        setCurrentIndex(mockTraders.length)
+        setCurrentIndex(placeholderTraders.length)
       }
     }, 500) // Match transition duration
 
@@ -192,14 +203,18 @@ export function TrenchesLeaderboard({
     setCurrentIndex((prev) => prev + 1)
   }
 
-  const formatValue = (valueInSol: number) => {
+  const formatValue = (value: number | string) => {
+    if (typeof value === 'string') {
+      return value
+    }
+
     if (currency === 'USD' && solPrice) {
-      const valueInUsd = valueInSol * solPrice
+      const valueInUsd = value * solPrice
       return `$${valueInUsd.toLocaleString(undefined, {
         maximumFractionDigits: 0,
       })}`
     }
-    return `${valueInSol.toLocaleString(undefined, {
+    return `${value.toLocaleString(undefined, {
       maximumFractionDigits: 2,
     })} SOL`
   }
@@ -264,6 +279,15 @@ export function TrenchesLeaderboard({
             transform: translateX(300%) rotate(25deg);
           }
         }
+        @keyframes pulse-glow {
+          0%,
+          100% {
+            opacity: 0.5;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
 
         .shimmer-gold::before {
           content: '';
@@ -321,6 +345,10 @@ export function TrenchesLeaderboard({
           animation: shimmer-bronze 5s infinite;
           z-index: 1;
         }
+
+        .pulse-glow {
+          animation: pulse-glow 2s infinite;
+        }
       `}</style>
       <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm rounded-lg p-4 border border-purple-500/30">
         {/* Header */}
@@ -332,6 +360,9 @@ export function TrenchesLeaderboard({
               <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
                 TRENCH WARRIORS
               </h2>
+              <div className="bg-purple-600/20 px-2 py-0.5 rounded-full text-xs text-purple-300 border border-purple-500/30 pulse-glow">
+                Coming Soon
+              </div>
             </div>
 
             {/* Elegant Navigation */}
@@ -372,7 +403,7 @@ export function TrenchesLeaderboard({
                 <div
                   className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
                     trader.rank
-                  )}`}
+                  )} group hover:scale-105`}
                 >
                   {/* Rank Badge */}
                   <div className="flex items-center justify-between mb-2 relative z-10">
@@ -383,7 +414,7 @@ export function TrenchesLeaderboard({
                     >
                       #{trader.rank}
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-400 italic">
                       {trader.address}
                     </div>
                   </div>
@@ -393,13 +424,15 @@ export function TrenchesLeaderboard({
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-400">Total PNL</span>
                       <div className="flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3 text-green-400" />
-                        <span className="text-sm font-bold text-green-400">
-                          +{trader.pnlPercentage.toFixed(1)}%
+                        <TrendingUp className="w-3 h-3 text-purple-400 pulse-glow" />
+                        <span className="text-sm font-bold text-purple-400">
+                          {typeof trader.pnlPercentage === 'string'
+                            ? trader.pnlPercentage
+                            : `+${trader.pnlPercentage.toFixed(1)}%`}
                         </span>
                       </div>
                     </div>
-                    <div className="text-lg font-bold">
+                    <div className="text-lg font-bold text-gray-300">
                       {formatValue(trader.pnl)}
                     </div>
                   </div>
@@ -408,29 +441,36 @@ export function TrenchesLeaderboard({
                   <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
                     <div className="bg-white/5 rounded p-1.5">
                       <div className="text-gray-400">Win Rate</div>
-                      <div className="font-semibold">{trader.winRate}%</div>
+                      <div className="font-semibold text-gray-300">
+                        {trader.winRate}
+                        {typeof trader.winRate === 'number' ? '%' : ''}
+                      </div>
                     </div>
                     <div className="bg-white/5 rounded p-1.5">
                       <div className="text-gray-400">Trades</div>
-                      <div className="font-semibold">{trader.totalTrades}</div>
+                      <div className="font-semibold text-gray-300">
+                        {trader.totalTrades}
+                      </div>
                     </div>
                     <div className="bg-white/5 rounded p-1.5 col-span-2">
                       <div className="text-gray-400">Best Trade</div>
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold">
+                        <span className="font-semibold text-purple-300">
                           {trader.bestTrade.token}
                         </span>
-                        <span className="text-green-400">
-                          +{formatValue(trader.bestTrade.profit)}
+                        <span className="text-purple-400">
+                          {typeof trader.bestTrade.profit === 'string'
+                            ? trader.bestTrade.profit
+                            : `+${formatValue(trader.bestTrade.profit)}`}
                         </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Action Button */}
-                  <button className="w-full mt-3 py-1.5 px-3 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1 relative z-10">
-                    <Zap className="w-3 h-3" />
-                    Copy Trades
+                  <button className="w-full mt-3 py-1.5 px-3 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1 relative z-10 group-hover:border-purple-400/70">
+                    <Zap className="w-3 h-3 pulse-glow" />
+                    {trader.rank <= 3 ? 'Reserve Spot' : 'Claim Position'}
                   </button>
                 </div>
               </div>
@@ -441,7 +481,7 @@ export function TrenchesLeaderboard({
         {/* Progress Dots */}
         <div className="flex items-center justify-center gap-1 mt-3">
           {Array.from({
-            length: Math.ceil(mockTraders.length / tradersPerSlide),
+            length: Math.ceil(placeholderTraders.length / tradersPerSlide),
           }).map((_, i) => (
             <div
               key={i}
@@ -454,6 +494,15 @@ export function TrenchesLeaderboard({
               }`}
             />
           ))}
+        </div>
+
+        {/* Teaser Footer */}
+        <div className="mt-4 text-center">
+          <p className="text-xs text-gray-400 italic">
+            🔥 Leaderboard tracking begins soon. Start trading to secure your
+            legendary status! Only trades opened and closed on SSE will be
+            eligible for PnL 🔥
+          </p>
         </div>
       </div>
     </>
