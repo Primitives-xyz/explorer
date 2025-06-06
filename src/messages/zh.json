@@ -25,7 +25,9 @@
     },
     "no_description": "暂无描述",
     "since": "注册于",
-    "copied": "已复制"
+    "copied": "已复制",
+    "likes": "点赞",
+    "no_likes_yet": "暂无点赞"
   },
   "copy_trading": {
     "copy_trade": "复制交易",

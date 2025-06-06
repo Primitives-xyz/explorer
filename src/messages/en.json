@@ -29,7 +29,9 @@
     },
     "no_description": "No description",
     "since": "since",
-    "copied": "Copied"
+    "copied": "Copied",
+    "likes": "Likes",
+    "no_likes_yet": "No likes yet"
   },
   "copy_trading": {
     "copy_trade": "Copy Trade",

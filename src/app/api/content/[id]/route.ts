@@ -1,10 +1,15 @@
 import { contentServer } from '@/utils/content-server'
 import { NextResponse } from 'next/server'
 
-export async function GET(request: Request) {
+type RouteContext = {
+  params: Promise<{ id: string }>
+}
+
+export async function GET(request: Request, context: RouteContext) {
   const { searchParams } = new URL(request.url)
   const requestingProfileId = searchParams.get('requestingProfileId')
-  const id = request.url.split('/').pop() as string
+  const params = await context.params
+  const { id } = params
 
   console.log(
     `[API] Fetching content for id: ${id}, requestingProfileId: ${
@@ -35,8 +40,9 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
-  const id = request.url.split('/').pop() as string
+export async function PUT(request: Request, context: RouteContext) {
+  const params = await context.params
+  const { id } = params
   try {
     const body = await request.json()
     const { properties } = body
@@ -59,8 +65,9 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
-  const id = request.url.split('/').pop() as string
+export async function DELETE(request: Request, context: RouteContext) {
+  const params = await context.params
+  const { id } = params
   try {
     await contentServer.deleteContent(id)
     return NextResponse.json({ success: true })

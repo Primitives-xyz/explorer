@@ -14,7 +14,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
       return Response.json({ error: 'Profile ID is required' }, { status: 400 })
     }
 
-    await socialfi.likeContent(id, profileId)
+    await socialfi.api.likes.likesCreate(
+      {
+        nodeId: id,
+      },
+      {
+        startId: profileId,
+      }
+    )
     return Response.json({ success: true })
   } catch (error) {
     console.error('Error liking content:', error)
@@ -32,7 +39,14 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       return Response.json({ error: 'Profile ID is required' }, { status: 400 })
     }
 
-    await socialfi.unlikeContent(id, profileId)
+    await socialfi.api.likes.likesDelete(
+      {
+        nodeId: id,
+      },
+      {
+        startId: profileId,
+      }
+    )
     return Response.json({ success: true })
   } catch (error) {
     console.error('Error unliking content:', error)
