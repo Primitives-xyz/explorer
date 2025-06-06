@@ -1,5 +1,6 @@
 'use client'
 
+import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import {
   Dialog,
@@ -12,7 +13,113 @@ import { useTapestryTransactionHistory } from '@/hooks/use-tapestry-transaction-
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { DollarSign, Package, TrendingDown, TrendingUp } from 'lucide-react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+// Simple token info cache
+const TOKEN_INFO_CACHE = new Map<
+  string,
+  { info: TokenInfo; timestamp: number }
+>()
+const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours
+
+interface TokenInfo {
+  symbol: string
+  name: string
+  image?: string
+}
+
+// Hook to fetch token info with caching
+function useTokenInfo(mints: string[]) {
+  const [tokenInfo, setTokenInfo] = useState<Record<string, TokenInfo>>({})
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchTokenInfo = async (mintsToFetch: string[]) => {
+      if (mintsToFetch.length === 0) return
+
+      setLoading(true)
+      console.log(`🔍 Fetching token info for ${mintsToFetch.length} tokens`)
+
+      const fetchPromises = mintsToFetch.map(async (mint) => {
+        try {
+          const response = await fetch(`/api/token?mint=${mint}`)
+          if (response.ok) {
+            const data = await response.json()
+            const info: TokenInfo = {
+              symbol:
+                data?.result?.content?.metadata?.symbol || mint.substring(0, 8),
+              name:
+                data?.result?.content?.metadata?.name || mint.substring(0, 8),
+              image: data?.result?.content?.links?.image,
+            }
+
+            // Cache the result
+            TOKEN_INFO_CACHE.set(mint, {
+              info,
+              timestamp: Date.now(),
+            })
+
+            console.log(
+              `✅ Fetched info for ${mint}: ${info.symbol} (${info.name})`
+            )
+            return { mint, info }
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch token info for ${mint}:`, error)
+        }
+
+        // Fallback
+        const fallbackInfo: TokenInfo = {
+          symbol: mint.substring(0, 8),
+          name: mint.substring(0, 8),
+        }
+
+        TOKEN_INFO_CACHE.set(mint, {
+          info: fallbackInfo,
+          timestamp: Date.now(),
+        })
+
+        return { mint, info: fallbackInfo }
+      })
+
+      const results = await Promise.all(fetchPromises)
+      const newTokenInfo: Record<string, TokenInfo> = {}
+
+      results.forEach(({ mint, info }) => {
+        newTokenInfo[mint] = info
+      })
+
+      setTokenInfo((prev) => ({ ...prev, ...newTokenInfo }))
+      setLoading(false)
+    }
+
+    const now = Date.now()
+    const mintsToFetch: string[] = []
+    const cachedInfo: Record<string, TokenInfo> = {}
+
+    // Check cache first
+    mints.forEach((mint) => {
+      const cached = TOKEN_INFO_CACHE.get(mint)
+      if (cached && now - cached.timestamp < CACHE_DURATION) {
+        cachedInfo[mint] = cached.info
+      } else {
+        mintsToFetch.push(mint)
+      }
+    })
+
+    // Set cached info immediately
+    if (Object.keys(cachedInfo).length > 0) {
+      setTokenInfo((prev) => ({ ...prev, ...cachedInfo }))
+    }
+
+    // Fetch missing info
+    if (mintsToFetch.length > 0) {
+      fetchTokenInfo(mintsToFetch)
+    }
+  }, [mints.join(',')])
+
+  return { tokenInfo, loading }
+}
 
 // Better precision formatting for crypto values
 function formatCryptoValue(
@@ -74,11 +181,10 @@ interface TokenPosition {
   averageSellPriceUSD: number // revenue per token sold
 }
 
-interface InventoryModalProps {
-  isOpen: boolean
-  onClose: () => void
-  currency: 'SOL' | 'USD'
-  solPrice: number | null
+// Enhanced TokenPosition interface with token info
+interface EnrichedTokenPosition extends TokenPosition {
+  name: string
+  image?: string
 }
 
 // Simple position calculator using transaction USD values
@@ -177,6 +283,57 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
   return positions
 }
 
+// Enhanced Token Display Component
+function TokenDisplay({
+  position,
+  isOpen = true,
+}: {
+  position: EnrichedTokenPosition
+  isOpen?: boolean
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      {position.image ? (
+        <img
+          src={position.image}
+          alt={position.symbol}
+          className="w-10 h-10 rounded-full"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement
+            target.style.display = 'none'
+            const fallback = target.nextElementSibling as HTMLElement
+            if (fallback) fallback.style.display = 'flex'
+          }}
+        />
+      ) : null}
+      <div
+        className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold"
+        style={{
+          display: position.image ? 'none' : 'flex',
+        }}
+      >
+        {position.symbol.substring(0, 2)}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <div className="font-semibold">{position.symbol}</div>
+          {!isOpen && <span className="text-xs text-green-400">✅</span>}
+        </div>
+        <div className="text-sm text-gray-500">{position.name}</div>
+        <div className="text-xs">
+          <SolanaAddressDisplay
+            address={position.mint}
+            displayText={`${position.mint.substring(0, 8)}...`}
+            className="text-gray-400 hover:text-gray-300"
+            showTooltip={false}
+            fullAddressOnHover={false}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Open Position Component
 function OpenPosition({
   position,
@@ -184,7 +341,7 @@ function OpenPosition({
   solPrice,
   onSell,
 }: {
-  position: TokenPosition
+  position: EnrichedTokenPosition
   currency: 'SOL' | 'USD'
   solPrice: number | null
   onSell: (mint: string, amount: number) => void
@@ -201,20 +358,13 @@ function OpenPosition({
     return (
       <div className="bg-white/5 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
-              {position.symbol.substring(0, 2)}
-            </div>
-            <div>
-              <div className="font-semibold">{position.symbol}</div>
-              <div className="text-xs text-gray-400">
-                {position.remainingTokens.toFixed(2)} tokens
-              </div>
-            </div>
-          </div>
+          <TokenDisplay position={position} isOpen={true} />
           <div className="text-right">
             <div className="font-bold">{formatValue(investedUSD)}</div>
             <div className="text-sm text-gray-400">Cost basis</div>
+            <div className="text-xs text-gray-500">
+              {position.remainingTokens.toFixed(2)} tokens
+            </div>
           </div>
         </div>
         <div className="flex gap-2">
@@ -238,15 +388,7 @@ function OpenPosition({
   return (
     <tr className="border-b border-white/5 hover:bg-white/5">
       <td className="py-4 px-2">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
-            {position.symbol.substring(0, 2)}
-          </div>
-          <div>
-            <div className="font-semibold">{position.symbol}</div>
-            <div className="text-sm text-gray-500">Open Position</div>
-          </div>
-        </div>
+        <TokenDisplay position={position} isOpen={true} />
       </td>
       <td className="text-right py-4 px-2">
         {position.remainingTokens.toFixed(2)}
@@ -283,7 +425,7 @@ function ClosedPosition({
   currency,
   solPrice,
 }: {
-  position: TokenPosition
+  position: EnrichedTokenPosition
   currency: 'SOL' | 'USD'
   solPrice: number | null
 }) {
@@ -301,20 +443,7 @@ function ClosedPosition({
     return (
       <div className="bg-white/5 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center text-white text-xs font-bold">
-              {position.symbol.substring(0, 2)}
-            </div>
-            <div>
-              <div className="font-semibold flex items-center gap-1">
-                {position.symbol}
-                <span className="text-xs text-green-400">✅</span>
-              </div>
-              <div className="text-xs text-gray-400">
-                {position.totalSold.toFixed(2)} tokens sold
-              </div>
-            </div>
-          </div>
+          <TokenDisplay position={position} isOpen={false} />
           <div className="text-right">
             <div
               className={`font-bold ${
@@ -328,6 +457,9 @@ function ClosedPosition({
               ({pnlPercent >= 0 ? '+' : ''}
               {pnlPercent.toFixed(1)}%)
             </div>
+            <div className="text-xs text-gray-500">
+              {position.totalSold.toFixed(2)} tokens sold
+            </div>
           </div>
         </div>
         <div className="py-2 bg-gray-600/20 rounded-lg text-sm font-medium text-gray-400 text-center">
@@ -340,18 +472,7 @@ function ClosedPosition({
   return (
     <tr className="border-b border-white/5 hover:bg-white/5">
       <td className="py-4 px-2">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center text-white text-xs font-bold">
-            {position.symbol.substring(0, 2)}
-          </div>
-          <div>
-            <div className="font-semibold flex items-center gap-1">
-              {position.symbol}
-              <span className="text-xs text-green-400">✅</span>
-            </div>
-            <div className="text-sm text-gray-500">Closed Position</div>
-          </div>
-        </div>
+        <TokenDisplay position={position} isOpen={false} />
       </td>
       <td className="text-right py-4 px-2">
         {position.totalSold.toFixed(2)} sold
@@ -393,6 +514,13 @@ function ClosedPosition({
   )
 }
 
+interface InventoryModalProps {
+  isOpen: boolean
+  onClose: () => void
+  currency: 'SOL' | 'USD'
+  solPrice: number | null
+}
+
 export function SimpleInventoryModal({
   isOpen,
   onClose,
@@ -432,13 +560,34 @@ export function SimpleInventoryModal({
     return calculatePositions(validTransactions)
   }, [transactions])
 
-  const openPositions = positions.filter((p) => p.isOpen)
-  const closedPositions = positions.filter((p) => !p.isOpen)
+  // Get unique mints for token info fetching
+  const uniqueMints = useMemo(() => {
+    return positions.map((p) => p.mint)
+  }, [positions])
+
+  // Fetch token info for all positions with caching
+  const { tokenInfo, loading: loadingTokenInfo } = useTokenInfo(uniqueMints)
+
+  // Enrich positions with token info
+  const enrichedPositions: EnrichedTokenPosition[] = useMemo(() => {
+    return positions.map((position) => ({
+      ...position,
+      symbol: tokenInfo[position.mint]?.symbol || position.symbol,
+      name: tokenInfo[position.mint]?.name || position.symbol,
+      image: tokenInfo[position.mint]?.image,
+    }))
+  }, [positions, tokenInfo])
+
+  const openPositions = enrichedPositions.filter((p) => p.isOpen)
+  const closedPositions = enrichedPositions.filter((p) => !p.isOpen)
 
   // Calculate portfolio stats
   const stats = useMemo(() => {
-    const totalInvested = positions.reduce((sum, p) => sum + p.totalCostUSD, 0)
-    const totalRealized = positions.reduce(
+    const totalInvested = enrichedPositions.reduce(
+      (sum, p) => sum + p.totalCostUSD,
+      0
+    )
+    const totalRealized = enrichedPositions.reduce(
       (sum, p) => sum + p.realizedPnLUSD,
       0
     )
@@ -451,10 +600,12 @@ export function SimpleInventoryModal({
       totalInvested,
       openValue: openInvested, // Cost basis of open positions
       totalRealized,
-      winningPositions: positions.filter((p) => p.realizedPnLUSD > 0).length,
-      losingPositions: positions.filter((p) => p.realizedPnLUSD < 0).length,
+      winningPositions: enrichedPositions.filter((p) => p.realizedPnLUSD > 0)
+        .length,
+      losingPositions: enrichedPositions.filter((p) => p.realizedPnLUSD < 0)
+        .length,
     }
-  }, [positions, openPositions])
+  }, [enrichedPositions, openPositions])
 
   const formatValue = (usdValue: number) =>
     formatCryptoValue(usdValue, currency, solPrice)
@@ -500,6 +651,9 @@ export function SimpleInventoryModal({
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5 text-primary" />
               <DialogTitle className="text-xl font-bold">Inventory</DialogTitle>
+              {loadingTokenInfo && (
+                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+              )}
             </div>
 
             {/* Currency Display */}
@@ -514,6 +668,20 @@ export function SimpleInventoryModal({
           <DialogDescription className="text-gray-400">
             Your token positions from trenches trading (using transaction data)
           </DialogDescription>
+
+          {/* WIP Notice */}
+          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mt-2">
+            <div className="flex items-center gap-2 text-yellow-400 text-sm font-medium">
+              🚧{' '}
+              <span>
+                WIP: PnL tracking is not expected to be accurate right now!
+              </span>
+            </div>
+            <p className="text-xs text-yellow-300/80 mt-1">
+              This feature is in development. Position calculations may not
+              reflect actual performance.
+            </p>
+          </div>
 
           {/* Portfolio Stats */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
@@ -572,7 +740,7 @@ export function SimpleInventoryModal({
               <Package className="w-12 h-12 text-gray-600 mb-3 animate-pulse" />
               <p className="text-gray-400">Loading positions...</p>
             </div>
-          ) : positions.length === 0 ? (
+          ) : enrichedPositions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <Package className="w-12 h-12 text-gray-600 mb-3" />
               <p className="text-gray-400">No positions found</p>

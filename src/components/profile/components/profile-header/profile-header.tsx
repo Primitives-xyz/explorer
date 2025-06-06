@@ -118,6 +118,14 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
     ? abbreviateWalletAddress({ address: walletAddress })
     : 'unknown'
 
+  // For editing, we need the username without the @ sign
+  const editableUsername =
+    hasProfile && !isSame
+      ? profileInfo.profile.username // Raw username without @
+      : hasProfile && isSame
+      ? profileInfo.profile.username // Wallet address case
+      : walletAddress || 'unknown' // Fallback
+
   return (
     <div className="flex flex-col md:flex-row justify-between gap-4">
       <div>
@@ -141,6 +149,7 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             {isOwnProfile ? (
               <ProfileEditableField
                 value={displayedUsername}
+                editValue={editableUsername}
                 isEditing={editingUsername}
                 onEdit={() => setEditingUsername(true)}
                 onSave={handleUsernameSave}
