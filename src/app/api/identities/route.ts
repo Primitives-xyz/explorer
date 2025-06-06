@@ -26,7 +26,7 @@ function processWalletRelatedProfile(identity: any, elem: any) {
     socialCounts: {
       followers: elem.socialCounts?.followers || 0,
       following: elem.socialCounts?.following || 0,
-    }
+    },
   }
 }
 
@@ -50,7 +50,7 @@ function processContactRelatedProfile(elem: any) {
     socialCounts: {
       followers: elem.socialCounts?.followers || 0,
       following: elem.socialCounts?.following || 0,
-    }
+    },
   }
 }
 

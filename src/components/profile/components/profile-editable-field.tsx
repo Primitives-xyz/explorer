@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 interface ProfileEditableFieldProps {
   value: string
+  editValue?: string // Optional separate value for editing (e.g., username without @)
   placeholder?: string
   isEditing: boolean
   onEdit: () => void
@@ -21,6 +22,7 @@ interface ProfileEditableFieldProps {
 
 export function ProfileEditableField({
   value,
+  editValue,
   placeholder = '',
   isEditing,
   onEdit,
@@ -33,14 +35,14 @@ export function ProfileEditableField({
   loading = false,
   title,
 }: ProfileEditableFieldProps) {
-  const [localValue, setLocalValue] = useState(value)
+  const [localValue, setLocalValue] = useState(editValue || value)
 
   const handleSave = async () => {
     await onSave(localValue)
   }
 
   const handleCancel = () => {
-    setLocalValue(value) // Reset to original value
+    setLocalValue(editValue || value) // Reset to original edit value
     onCancel()
   }
 

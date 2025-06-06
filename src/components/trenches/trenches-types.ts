@@ -26,10 +26,10 @@ export interface StreamMessage {
 }
 
 export interface WalletVolume {
-  buyVolume: number;
-  sellVolume: number;
-  totalVolume: number;
-  tradeCount: number;
+  buyVolume: number
+  sellVolume: number
+  totalVolume: number
+  tradeCount: number
 }
 
 export interface MintAggregate {
@@ -56,9 +56,10 @@ export interface MintAggregate {
   bondingProgress?: number
   aboutToGraduate?: boolean
   fullyBonded?: boolean
+  source?: 'Pump' | 'Jester' | 'Believe' | 'Vertigo' | 'Meteora' | 'Unknown'
 }
 
 export interface TokenModalState {
   open: boolean
   mint: string | null
-} 
+}
