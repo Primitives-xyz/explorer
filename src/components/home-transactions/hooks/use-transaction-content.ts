@@ -15,6 +15,9 @@ export const useTransactionContent = ({
 }: UseTransactionContentParams) => {
   const { mainProfile } = useCurrentWallet()
 
+  console.log('MAIN PROFILE +++++++', mainProfile?.username)
+  console.log('signature +++++++', signature)
+
   const { data, loading, error, refetch } = useQuery<ContentResponse>({
     endpoint: `content/${signature}`,
     queryParams: {
@@ -30,8 +33,5 @@ export const useTransactionContent = ({
     loading,
     error,
     refetch,
-    socialCounts: data?.socialCounts,
-    hasLiked: data?.requestingProfileSocialInfo?.hasLiked || false,
-    likeCount: data?.socialCounts?.likeCount || 0,
   }
 }

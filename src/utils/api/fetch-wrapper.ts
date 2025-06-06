@@ -6,10 +6,16 @@ export const getUrlWithQueryParameters = <
   endpoint: string | null,
   data?: InputType
 ) => {
+  if (!data || !endpoint) return endpoint || ''
+
   const parsedData = data as Record<string, string>
   const queryParameters = new URLSearchParams(parsedData).toString()
 
-  return `${endpoint}${!!queryParameters ? '?' + queryParameters : ''}`
+  if (!queryParameters) return endpoint
+
+  // Check if the endpoint already has query parameters
+  const separator = endpoint.includes('?') ? '&' : '?'
+  return `${endpoint}${separator}${queryParameters}`
 }
 
 export const getUrlWithPathParameters = ({
@@ -108,7 +114,7 @@ export const fetchWrapper = async <
     endpoint,
   })
 
-  // console.log('------url', url)
+  console.log('---$$$---url', url)
 
   const response = await fetch(url, {
     method,

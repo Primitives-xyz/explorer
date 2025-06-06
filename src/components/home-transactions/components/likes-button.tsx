@@ -13,7 +13,7 @@ import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Heart } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useContentLikes, useLikeContent } from '../hooks/use-content-likes'
 
 interface Props {
@@ -34,6 +34,12 @@ export function LikesButton({
   const [showLikesModal, setShowLikesModal] = useState(false)
   const [likeCount, setLikeCount] = useState(initialLikeCount)
   const [hasLiked, setHasLiked] = useState(initialHasLiked)
+
+  // Sync local state when initial props change
+  useEffect(() => {
+    setLikeCount(initialLikeCount)
+    setHasLiked(initialHasLiked)
+  }, [initialLikeCount, initialHasLiked])
 
   const { likeContent, unlikeContent, loading } = useLikeContent({ contentId })
   const {

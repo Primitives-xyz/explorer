@@ -10,7 +10,7 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/utils/utils'
 import { Copy } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { IHomeTransaction } from '../home-transactions.models'
 import { useTransactionContent } from '../hooks/use-transaction-content'
 import { processSwapTransaction } from '../utils/swap-transaction.utils'
@@ -36,24 +36,30 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const t = useTranslations()
   const { setOpen, setInputs } = useSwapStore()
   const { mainProfile } = useCurrentWallet()
-  const [likeCount, setLikeCount] = useState(0)
-  const [hasLiked, setHasLiked] = useState(false)
 
   const processedTx = processSwapTransaction(transaction)
   const fromToken = processedTx.primaryOutgoingToken
   const toToken = processedTx.primaryIncomingToken
 
+  console.log(
+    'transaction.signature *********************',
+    transaction.signature
+  )
   // Fetch content information for likes
   const {
     content,
     loading: contentLoading,
-    hasLiked: initialHasLiked,
-    likeCount: initialLikeCount,
     refetch: refetchContent,
   } = useTransactionContent({
     signature: transaction.signature,
     enabled: !!transaction.signature,
   })
+
+  console.log('content -----', content)
+
+  // Get like data from content
+  const hasLiked = content?.requestingProfileSocialInfo?.hasLiked || false
+  const likeCount = content?.socialCounts?.likeCount || 0
 
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
     fromToken?.mint
@@ -61,14 +67,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
     toToken?.mint
   )
-
-  // Update local state when content data changes
-  useEffect(() => {
-    if (content) {
-      setLikeCount(initialLikeCount)
-      setHasLiked(initialHasLiked)
-    }
-  }, [content, initialLikeCount, initialHasLiked])
 
   // Create content if it doesn't exist and we have the necessary data
   useEffect(() => {
@@ -124,10 +122,8 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
     refetchContent,
   ])
 
-  const handleLikeChange = (newHasLiked: boolean, newCount: number) => {
-    setHasLiked(newHasLiked)
-    setLikeCount(newCount)
-    // Optionally refetch content to sync with server
+  const handleLikeChange = () => {
+    // Refresh content data from server after like/unlike
     refetchContent()
   }
 

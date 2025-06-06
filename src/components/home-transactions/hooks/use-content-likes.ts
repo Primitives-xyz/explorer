@@ -14,6 +14,7 @@ interface LikeUsersResponse {
 }
 
 export const useLikeContent = ({ contentId }: { contentId: string }) => {
+  console.log('useLikeContent*******', contentId)
   const { mainProfile } = useCurrentWallet()
 
   const {

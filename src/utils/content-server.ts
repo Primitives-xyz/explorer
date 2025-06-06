@@ -89,7 +89,6 @@ export const contentServer = {
     if (requestingProfileId)
       params.append('requestingProfileId', requestingProfileId)
 
-    console.log('params: ', params.toString())
     return fetchTapestryServer({
       endpoint: `contents?${params.toString()}`,
       method: FetchMethod.GET,
