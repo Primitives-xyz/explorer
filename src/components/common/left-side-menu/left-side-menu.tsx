@@ -10,16 +10,33 @@ import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-m
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
-import { Lock, MessageCircle } from 'lucide-react'
+import { Lock, MessageCircle, Copy, CheckCheck } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
 
+const SSE_CONTRACT_ADDRESS = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
+
 export function LeftSideMenu() {
   const t = useTranslations()
   const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
+  const [copied, setCopied] = useState(false)
   const { accountIds } = useDriftUsers()
   const { mainProfile } = useCurrentWallet()
+
+  const handleCopyAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(SSE_CONTRACT_ADDRESS)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy address:', err)
+    }
+  }
+
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-6)}`
+  }
 
   return (
     <div
@@ -33,11 +50,31 @@ export function LeftSideMenu() {
     >
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
-          <Button href="/" isInvisible>
-            <h1 className="font-bold text-primary leading-none">
-              {t('menu.title')}
-            </h1>
-          </Button>
+          <div className="space-y-2">
+            <Button href="/" isInvisible>
+              <h1 className="font-bold text-primary leading-none">
+                {t('menu.title')}
+              </h1>
+            </Button>
+            <div 
+              className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 hover:border-primary transition-colors cursor-pointer group"
+              onClick={handleCopyAddress}
+              title={`Click to copy: ${SSE_CONTRACT_ADDRESS}`}
+            >
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-mono text-foreground/80 break-all group-hover:text-primary transition-colors">
+                  {SSE_CONTRACT_ADDRESS}
+                </div>
+              </div>
+              <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                {copied ? (
+                  <CheckCheck size={14} className="text-green-500" />
+                ) : (
+                  <Copy size={14} className="text-primary" />
+                )}
+              </div>
+            </div>
+          </div>
           <ProfileInfos />
           <Menu />
           {/* <ResetProfileButton /> */}

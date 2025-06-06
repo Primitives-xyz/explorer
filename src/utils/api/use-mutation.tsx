@@ -22,7 +22,7 @@ export function useMutation<
 
   const { data, error, isMutating, trigger } = useSWRMutation<
     ResponseType,
-    Error,
+    ErrorType,
     string | null,
     InputType
   >(endpoint, async (endpoint: string, args: { arg: InputType }) =>

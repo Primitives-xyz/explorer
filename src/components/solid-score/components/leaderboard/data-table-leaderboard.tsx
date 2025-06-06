@@ -35,8 +35,6 @@ export function DataTableLeaderboard({
     { id: 'position', desc: false },
   ])
 
-  console.log(data)
-
   const columns: ColumnDef<ISolidScoreLeaderboardResponse>[] = [
     {
       accessorKey: 'position',

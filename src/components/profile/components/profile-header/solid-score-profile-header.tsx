@@ -8,11 +8,7 @@ interface Props {
 }
 
 export function SolidScoreProfileHeader({ profileId }: Props) {
-  const {
-    mainProfile,
-    loading: currentWalletLoading,
-    isAdmin,
-  } = useCurrentWallet()
+  const { mainProfile, loading: currentWalletLoading } = useCurrentWallet()
   const { data, loading: scoreLoading } = useSolidScore({
     profileId,
   })
@@ -23,7 +19,7 @@ export function SolidScoreProfileHeader({ profileId }: Props) {
 
   const loading = currentWalletLoading || scoreLoading
 
-  if (!data || loading || !mainProfile?.userRevealedTheSolidScore || !isAdmin) {
+  if (!data || loading || !mainProfile?.userRevealedTheSolidScore) {
     return null
   }
 

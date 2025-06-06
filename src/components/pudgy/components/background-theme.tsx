@@ -1,29 +1,22 @@
 'use client'
 
-import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import { cn } from '@/utils/utils'
 import Image from 'next/image'
 import { EPudgyTheme } from '../pudgy.models'
 
-export function BackgroundTheme() {
-  const { mainProfile } = useCurrentWallet()
+interface Props {
+  profile: IProfile
+}
 
-  console.log('mainProfile', mainProfile)
-
-  if (!mainProfile) {
-    return null
-  }
-
+export function BackgroundTheme({ profile }: Props) {
   return (
     <div
       className={cn('fixed inset-0 z-0', {
-        'background-gradient': mainProfile?.pudgyTheme === EPudgyTheme.DEFAULT,
-        'background-gradient-blue':
-          mainProfile?.pudgyTheme === EPudgyTheme.BLUE,
-        'background-gradient-green':
-          mainProfile?.pudgyTheme === EPudgyTheme.GREEN,
-        'background-gradient-pink':
-          mainProfile?.pudgyTheme === EPudgyTheme.PINK,
+        'background-gradient': profile?.pudgyTheme === EPudgyTheme.DEFAULT,
+        'background-gradient-blue': profile?.pudgyTheme === EPudgyTheme.BLUE,
+        'background-gradient-green': profile?.pudgyTheme === EPudgyTheme.GREEN,
+        'background-gradient-pink': profile?.pudgyTheme === EPudgyTheme.PINK,
       })}
     >
       <Image
