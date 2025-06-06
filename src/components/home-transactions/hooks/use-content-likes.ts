@@ -72,6 +72,9 @@ export const useContentLikes = ({
     skip: !enabled || !contentId,
   })
 
+  console.log('$$$$$$')
+  console.log(data)
+
   return {
     users: data?.profiles || [],
     loading,

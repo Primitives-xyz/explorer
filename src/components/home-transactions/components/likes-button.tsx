@@ -42,13 +42,15 @@ export function LikesButton({
   }, [initialLikeCount, initialHasLiked])
 
   const { likeContent, unlikeContent, loading } = useLikeContent({ contentId })
+
+  // Only fetch likes data when modal is open
   const {
     users: likedUsers,
     loading: loadingUsers,
     refetch,
   } = useContentLikes({
     contentId,
-    enabled: showLikesModal,
+    enabled: showLikesModal, // Only call when modal is open
   })
 
   const handleLikeToggle = async () => {
@@ -86,6 +88,11 @@ export function LikesButton({
     }
   }
 
+  // Close modal handler that can be used to clean up
+  const handleModalClose = (open: boolean) => {
+    setShowLikesModal(open)
+  }
+
   if (!mainProfile?.username) {
     return null
   }
@@ -118,7 +125,7 @@ export function LikesButton({
         )}
       </div>
 
-      <Dialog open={showLikesModal} onOpenChange={setShowLikesModal}>
+      <Dialog open={showLikesModal} onOpenChange={handleModalClose}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>

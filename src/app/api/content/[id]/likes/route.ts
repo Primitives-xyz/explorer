@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const { id } = params
 
     const result = await fetchTapestryServer({
-      endpoint: `likes/${id}/profiles`,
+      endpoint: `likes/${id}`,
       method: FetchMethod.GET,
     })
 
