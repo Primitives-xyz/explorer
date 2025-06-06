@@ -17,9 +17,9 @@ import {
   Label,
   Switch,
 } from '@/components/ui'
+import { SOL_MINT, USDC_MINT } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import Image from 'next/image'
-import { SOL_MINT, USDC_MINT } from '@/utils/constants'
 
 interface TPSLModalProps {
   setIsModalOpen: (val: boolean) => void
@@ -51,11 +51,12 @@ export default function TPSLModal({
       entirePosition: boolean
     }[]
   >([])
-  const { isLoading, error, placeTPSL } = useTPSL({
-    owner: walletAddress,
-    positionPubkey: positionPubkey,
-    tpsl: tpsl,
-  })
+  const { isLoading, error, placeTPSL, isTxExecuteLoading, isTxSuccess } =
+    useTPSL({
+      owner: walletAddress,
+      positionPubkey: positionPubkey,
+      tpsl: tpsl,
+    })
   const [selectedPercentage, setSelectedPercentage] = useState<
     25 | 50 | 75 | 100
   >(100)
@@ -109,7 +110,7 @@ export default function TPSLModal({
             activeTab === 'TP'
               ? convertPrecision(tpPrice)
               : convertPrecision(slPrice),
-          sizeUsdDelta: sizeUsdDelta,
+          sizeUsdDelta: convertPrecision(sizeUsdDelta),
           entirePosition: false,
         },
       ])
@@ -126,6 +127,12 @@ export default function TPSLModal({
     slPrice,
     receivedToken,
   ])
+
+  useEffect(() => {
+    if (isTxSuccess) {
+      setIsModalOpen(false)
+    }
+  }, [isTxSuccess])
 
   return (
     <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
@@ -441,9 +448,9 @@ export default function TPSLModal({
             <Button
               variant={ButtonVariant.OUTLINE}
               onClick={placeTPSL}
-              disabled={isLoading}
+              disabled={isLoading || isTxExecuteLoading}
             >
-              {isLoading ? 'Placing...' : 'Confirm'}
+              {isLoading || isTxExecuteLoading ? 'Placing...' : 'Confirm'}
             </Button>
           </div>
         </CardContent>

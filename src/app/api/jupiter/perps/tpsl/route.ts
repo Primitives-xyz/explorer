@@ -84,6 +84,7 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       const error = await response.json()
+      console.log('error', error)
       return NextResponse.json(
         { error: error.message || 'Failed to create TPSL' },
         { status: response.status }
