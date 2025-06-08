@@ -19,7 +19,6 @@ export interface TransactionMetadata {
   slippageBps?: number | string
   usdcFeeAmount?: string
   route?: string
-  platform?: string
 }
 
 export function useJupiterTransactionSSE(

@@ -1,3 +1,4 @@
+// TODO IMPLEMENT BACKEND SERVICE TO FETCH POSITIONS DIRECTLY
 import { FetchMethod } from '@/utils/api'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
 import { NextRequest, NextResponse } from 'next/server'

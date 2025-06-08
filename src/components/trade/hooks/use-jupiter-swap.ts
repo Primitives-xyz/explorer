@@ -378,11 +378,6 @@ export function useJupiterSwap({
               ? calculateAutoSlippage(priceImpact)
               : slippageBps,
           swapMode,
-          platform: (() => {
-            const path = pathname
-            if (path.includes('/trenches')) return 'trenches'
-            return 'main'
-          })(), // Add platform for priority fee logic
         }),
       }).then((res) => res.json())
 
@@ -401,13 +396,6 @@ export function useJupiterSwap({
       const signedTransaction = await signer.signTransaction(transaction)
 
       // Prepare metadata for the transaction
-      const platformInfo = (() => {
-        const path = pathname
-        if (path.includes('/trenches')) return 'trenches'
-        if (path.includes('/trade')) return 'trade'
-        return 'home'
-      })()
-
       const metadata = {
         inputMint,
         outputMint,
@@ -426,8 +414,12 @@ export function useJupiterSwap({
                 : PLATFORM_FEE_BPS / 10000)
             ).toString()
           : '0',
-        route: platformInfo,
-        platform: platformInfo === 'trenches' ? 'trenches' : 'main', // Add platform field for timeout logic
+        route: (() => {
+          const path = pathname
+          if (path.includes('/trenches')) return 'trenches'
+          if (path.includes('/trade')) return 'trade'
+          return 'home'
+        })(),
       }
 
       // Store for retry

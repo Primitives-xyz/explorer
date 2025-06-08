@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { PnLDisplay } from './mobile-token-cards/pnl-display'
-import { useInventoryStore } from './stores/use-inventory-store'
+
 import { TokenBadges } from './token-badges'
 import { TokenBondedBar } from './token-bonded-bar'
 import { TokenBuySellBar } from './token-buy-sell-bar'
@@ -151,7 +151,7 @@ export function HotFeedModal({
   const [userPositions, setUserPositions] = useState<UserPosition[]>([])
   const { setOpen, setInputs } = useSwapStore()
   const [showPnL, setShowPnL] = useState(false)
-  const { addTransaction } = useInventoryStore()
+  // Inventory store removed - using local state only
   const [recentTrades, setRecentTrades] = useState<
     Record<string, TradeActivity[]>
   >({})
@@ -560,23 +560,7 @@ export function HotFeedModal({
     setUserPositions((prev) => [...prev, newPosition])
     setShowPnL(true)
 
-    // Track in inventory store
-    addTransaction(
-      currentToken.mint,
-      {
-        type: 'buy',
-        amount: amount / (currentToken.pricePerToken || 1), // Approximate token amount
-        price: currentToken.pricePerToken || 0,
-        totalValue: amount,
-        timestamp: Date.now(),
-      },
-      {
-        symbol: currentToken.mintSymbol || 'Unknown',
-        name: currentToken.mintName || 'Unknown Token',
-        image: currentToken.mintImage,
-        currentPrice: currentToken.pricePerToken || 0,
-      }
-    )
+    // Local tracking only - real trades logged by auto-trade-logger
 
     // Get the setIsNestedModal function from the store
     const { setIsNestedModal } = useSwapStore.getState()

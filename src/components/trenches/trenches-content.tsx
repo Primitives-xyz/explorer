@@ -19,9 +19,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useTradeTracker } from './hooks/use-trade-tracker'
 import { HotFeedModal } from './hot-feed-modal'
-import { useInventoryStore } from './stores/use-inventory-store'
 import { TokenDetailsModal } from './token-details-modal'
 import { TrenchesHotZone } from './trenches-hot-zone'
 import { TrenchesLeaderboard } from './trenches-leaderboard'
@@ -56,8 +54,7 @@ export function TrenchesContent({
   const [clickedTokenForHotFeed, setClickedTokenForHotFeed] =
     useState<MintAggregate | null>(null)
 
-  // Inventory tracking
-  const { addTransaction, updatePrices } = useInventoryStore()
+  // Inventory tracking removed - now handled by database
 
   const { price: solPrice, loading: solPriceLoading } = useTokenUSDCPrice({
     tokenMint: SOL_MINT,
@@ -74,14 +71,7 @@ export function TrenchesContent({
         if (!pauseUpdates) {
           pausedMintMapRef.current = newData
         }
-        // Update prices in inventory
-        const prices: Record<string, number> = {}
-        Object.entries(newData).forEach(([mint, agg]: [string, any]) => {
-          if (agg.pricePerToken) {
-            prices[mint] = agg.pricePerToken
-          }
-        })
-        updatePrices(prices)
+        // Price updates now handled by database via auto-trade-logger
       } else if (msg.type === 'MintAggregateUpdate') {
         setMintMap((prev) => {
           const updated = {
@@ -93,10 +83,7 @@ export function TrenchesContent({
           }
           return updated
         })
-        // Update single price
-        if (msg.data.pricePerToken) {
-          updatePrices({ [msg.data.mint]: msg.data.pricePerToken })
-        }
+        // Price updates now handled by database via auto-trade-logger
       }
     } catch (e) {
       // ignore parse errors
@@ -122,8 +109,7 @@ export function TrenchesContent({
   // Use paused data when updates are paused
   const displayMintMap = pauseUpdates ? pausedMintMapRef.current : mintMap
 
-  // Use trade tracker to monitor swaps
-  useTradeTracker({ mintMap: displayMintMap })
+  // Trade tracking now handled by auto-trade-logger
 
   // Automatically log trades to Tapestry backend
   useAutoTradeLogger({ platform: 'trenches' })
