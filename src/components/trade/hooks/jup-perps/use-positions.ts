@@ -2,7 +2,19 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 
 interface TPSLRequest {
-  // Add TPSL request properties if needed
+  collateralUsdDelta: string
+  desiredMint: string
+  entirePosition: boolean
+  positionRequestPubkey: string
+  positionSizeUsd: string
+  positionSizeUsdFormatted: string
+  sizeUsd: string
+  sizeUsdFormatted: string
+  sizePercentage: string
+  triggerPrice: string
+  triggerPriceUsd: string
+  openTime: string
+  requestType: string
 }
 
 export interface Position {
