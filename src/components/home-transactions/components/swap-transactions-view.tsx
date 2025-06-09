@@ -6,11 +6,15 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { SwapTransactionsViewDetails } from '@/components/transactions/swap-transactions/swap-transactions-view-details'
 import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
 import { getSourceIcon } from '@/utils/transactions'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/utils/utils'
 import { Copy } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useEffect } from 'react'
 import { IHomeTransaction } from '../home-transactions.models'
+import { useTransactionContent } from '../hooks/use-transaction-content'
 import { processSwapTransaction } from '../utils/swap-transaction.utils'
+import { LikesButton } from './likes-button'
 import { TransactionsHeader } from './transactions-header'
 
 export type TokenDisplay = {
@@ -31,10 +35,25 @@ interface Props {
 export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const t = useTranslations()
   const { setOpen, setInputs } = useSwapStore()
+  const { mainProfile } = useCurrentWallet()
 
   const processedTx = processSwapTransaction(transaction)
   const fromToken = processedTx.primaryOutgoingToken
   const toToken = processedTx.primaryIncomingToken
+
+  // Fetch content information for likes
+  const {
+    content,
+    loading: contentLoading,
+    refetch: refetchContent,
+  } = useTransactionContent({
+    signature: transaction.signature,
+    enabled: !!transaction.signature,
+  })
+
+  // Get like data from content
+  const hasLiked = content?.requestingProfileSocialInfo?.hasLiked || false
+  const likeCount = content?.socialCounts?.likeCount || 0
 
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
     fromToken?.mint
@@ -42,6 +61,65 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const { data: toTokenInfo, loading: toTokenLoading } = useTokenInfo(
     toToken?.mint
   )
+
+  // Create content if it doesn't exist and we have the necessary data
+  useEffect(() => {
+    const createContentIfNeeded = async () => {
+      if (
+        !content &&
+        !contentLoading &&
+        transaction.signature &&
+        mainProfile?.username &&
+        fromToken &&
+        toToken
+      ) {
+        try {
+          // Create content for this transaction
+          await fetch('/api/content', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: transaction.signature,
+              profileId: transaction.profile?.username || sourceWallet,
+              properties: [
+                { key: 'type', value: 'swap' },
+                { key: 'txSignature', value: transaction.signature },
+                { key: 'timestamp', value: String(Date.now()) },
+                { key: 'inputMint', value: fromToken.mint },
+                { key: 'outputMint', value: toToken.mint },
+                { key: 'inputAmount', value: String(fromToken.amount) },
+                { key: 'sourceWallet', value: sourceWallet },
+                { key: 'transactionType', value: 'direct' },
+              ],
+            }),
+          })
+          // Refetch content after creation
+          refetchContent()
+        } catch (error) {
+          console.error('Error creating content:', error)
+        }
+      }
+    }
+
+    createContentIfNeeded()
+  }, [
+    content,
+    contentLoading,
+    transaction.signature,
+    mainProfile?.username,
+    fromToken,
+    toToken,
+    sourceWallet,
+    transaction.profile?.username,
+    refetchContent,
+  ])
+
+  const handleLikeChange = () => {
+    // Refresh content data from server after like/unlike
+    refetchContent()
+  }
 
   if (!fromToken || !toToken) return null
 
@@ -134,6 +212,18 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           priceLoading={toTokenLoading}
           isReceived
         />
+
+        {/* Likes section in bottom right */}
+        <div className="flex justify-end">
+          {transaction.signature && (
+            <LikesButton
+              contentId={transaction.signature}
+              initialLikeCount={likeCount}
+              initialHasLiked={hasLiked}
+              onLikeChange={handleLikeChange}
+            />
+          )}
+        </div>
       </CardContent>
     </Card>
   )
