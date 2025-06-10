@@ -134,7 +134,8 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
           imageUrl={imageUrl}
           isOwnProfile={isOwnProfile}
           size={72}
-          isPudgy={isPudgy}
+          pudgyTheme={profileInfo?.profile.pudgyTheme}
+          displayPudgyFrame={profileInfo?.profile.pudgyFrame}
         />
       </div>
 

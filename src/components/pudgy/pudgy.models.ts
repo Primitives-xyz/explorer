@@ -1,8 +1,8 @@
 export enum EPudgyTheme {
-  DEFAULT = 'DEFAULT',
   BLUE = 'BLUE',
-  GREEN = 'GREEN',
   PINK = 'PINK',
+  GREEN = 'GREEN',
+  DEFAULT = 'DEFAULT',
 }
 
 export enum EPudgyOnboardingStep {

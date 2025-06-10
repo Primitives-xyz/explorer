@@ -10,7 +10,7 @@ import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-m
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
-import { Lock, MessageCircle, Copy, CheckCheck } from 'lucide-react'
+import { CheckCheck, Copy, Lock, MessageCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { ProfileInfos } from './profile-infos'
@@ -56,7 +56,7 @@ export function LeftSideMenu() {
                 {t('menu.title')}
               </h1>
             </Button>
-            <div 
+            <div
               className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted/70 hover:border-primary transition-colors cursor-pointer group"
               onClick={handleCopyAddress}
               title={`Click to copy: ${SSE_CONTRACT_ADDRESS}`}
@@ -78,7 +78,7 @@ export function LeftSideMenu() {
           <ProfileInfos />
           <Menu />
           {/* <ResetProfileButton /> */}
-          {/* <TestButton /> */}
+          {/* <TestThemeButton /> */}
         </div>
         <div className="space-y-4 py-4">
           <MigrationReminder />
