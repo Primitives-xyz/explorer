@@ -353,9 +353,13 @@ export function TrenchesLeaderboard({
       <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm rounded-lg p-4 border border-purple-500/30">
         {/* Header */}
         <div className="mb-4">
-          <div className="flex items-center justify-between">
+          <div
+            className={`flex items-center ${
+              isMobile ? 'flex-col' : 'justify-between'
+            }`}
+          >
             {/* Title */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Trophy className="w-5 h-5 text-yellow-400 flex-shrink-0" />
               <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
                 TRENCH WARRIORS
@@ -366,10 +370,12 @@ export function TrenchesLeaderboard({
             </div>
 
             {/* Elegant Navigation */}
-            <div className="flex items-center gap-1">
+            <div
+              className={`flex items-center gap-1 ${isMobile ? 'mt-2' : ''}`}
+            >
               <button
                 onClick={handlePrevious}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center group"
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center group flex-shrink-0"
                 onMouseEnter={() => setIsAutoScrolling(false)}
                 aria-label="Previous"
               >
@@ -377,7 +383,7 @@ export function TrenchesLeaderboard({
               </button>
               <button
                 onClick={handleNext}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center group"
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center group flex-shrink-0"
                 onMouseEnter={() => setIsAutoScrolling(false)}
                 aria-label="Next"
               >
