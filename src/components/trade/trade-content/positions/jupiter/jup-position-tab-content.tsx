@@ -1,9 +1,12 @@
 import {
+  Position,
+  TPSLRequest,
+} from '@/components/tapestry/models/jupiter.models'
+import {
   SOL_IMG_URI,
   USDC_IMG_URI,
 } from '@/components/trade/constants/constants'
 import { useDeleteTPSL } from '@/components/trade/hooks/jup-perps/use-delete-tpsl'
-import { Position } from '@/components/trade/hooks/jup-perps/use-positions'
 import {
   Button,
   ButtonVariant,
@@ -18,6 +21,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import PositionCloseModal from './position-close-modal'
 import TPSLModal from './tpsl-modal'
+import EditTPSLModal from './edit-tpsl-modal'
 
 interface PositionTabContentProps {
   perpsPositionsInfo: Position[]
@@ -97,6 +101,10 @@ export default function JupPositionTabContent({
 }: PositionTabContentProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isCloseModalOpen, setIsCloseModalOpen] = useState<boolean>(false)
+  const [isEditTPSLModalOpen, setIsEditTPSLModalOpen] = useState<boolean>(false)
+  const [editTPSLRequest, setEditTPSLRequest] = useState<TPSLRequest | null>(
+    null
+  )
   const [size, setSize] = useState<string>('')
   const [positionPubkey, setPositionPubkey] = useState<string>('')
   const {
@@ -116,6 +124,11 @@ export default function JupPositionTabContent({
     setIsCloseModalOpen(true)
     setSize(size)
     setPositionPubkey(positionPubkey)
+  }
+
+  const handleEditTPSL = (request: TPSLRequest) => {
+    setIsEditTPSLModalOpen(true)
+    setEditTPSLRequest(request)
   }
 
   return (
@@ -311,6 +324,9 @@ export default function JupPositionTabContent({
                                           <Button
                                             variant={ButtonVariant.GHOST}
                                             className="text-gray-400 hover:text-white transition-colors text-xs p-1 h-6"
+                                            onClick={() =>
+                                              handleEditTPSL(request)
+                                            }
                                           >
                                             <Edit3 className="w-3 h-3" />
                                           </Button>
@@ -406,6 +422,9 @@ export default function JupPositionTabContent({
                                           <Button
                                             variant={ButtonVariant.GHOST}
                                             className="text-gray-400 hover:text-white transition-colors text-xs p-1 h-6"
+                                            onClick={() =>
+                                              handleEditTPSL(request)
+                                            }
                                           >
                                             <Edit3 className="w-3 h-3" />
                                           </Button>
@@ -475,6 +494,12 @@ export default function JupPositionTabContent({
             setIsModalOpen={setIsCloseModalOpen}
             size={size}
             positionPubkey={positionPubkey}
+          />
+        )}
+        {isEditTPSLModalOpen && (
+          <EditTPSLModal
+            setIsModalOpen={setIsEditTPSLModalOpen}
+            editTPSLRequest={editTPSLRequest}
           />
         )}
       </div>
