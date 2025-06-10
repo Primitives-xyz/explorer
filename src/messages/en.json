@@ -23,6 +23,7 @@
       "followers": "Followers",
       "following": "Following",
       "share_follow": "Share Follow",
+      "share_blink": "Share Blink",
       "blink_copied": "Follow blink copied! Share it to let others follow @{username} with one click on Solana! 🚀",
       "blink_copy_failed": "Failed to copy follow link",
       "blink_tooltip": "Share follow link for @{username} - Let others follow with one Solana transaction!"
