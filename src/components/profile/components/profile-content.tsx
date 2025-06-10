@@ -16,7 +16,9 @@ export function ProfileContent({ profileInfo, walletAddress }: Props) {
 
   return (
     <>
-      {isPudgy && <BackgroundTheme profile={profileInfo.profile} />}
+      {isPudgy && profileInfo.profile.pudgyTheme && (
+        <BackgroundTheme pudgyTheme={profileInfo.profile.pudgyTheme} />
+      )}
       <div className="flex flex-col w-full space-y-6 pb-6 relative">
         <ProfileHeader
           profileInfo={profileInfo ?? undefined}

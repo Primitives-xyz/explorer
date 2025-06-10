@@ -1,5 +1,6 @@
 'use client'
 
+import { EPudgyTheme } from '@/components/pudgy/pudgy.models'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { useUploadFiles } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
@@ -14,7 +15,8 @@ interface ProfileImageEditorProps {
   isOwnProfile: boolean
   size?: number
   className?: string
-  isPudgy?: boolean
+  pudgyTheme?: EPudgyTheme
+  displayPudgyFrame?: boolean
 }
 
 export function ProfileImageEditor({
@@ -22,8 +24,9 @@ export function ProfileImageEditor({
   imageUrl,
   isOwnProfile,
   size = 72,
-  className = '',
-  isPudgy = false,
+  className,
+  pudgyTheme,
+  displayPudgyFrame,
 }: ProfileImageEditorProps) {
   const [uploadingImage, setUploadingImage] = useState(false)
   const { updateProfile } = useUpdateProfile({
@@ -85,7 +88,8 @@ export function ProfileImageEditor({
           imageUrl={imageUrl}
           className="w-18 h-18 aspect-square"
           size={size}
-          displayPudgyFrame={isPudgy}
+          pudgyTheme={pudgyTheme}
+          displayPudgyFrame={displayPudgyFrame}
         />
         {isOwnProfile && (
           <button

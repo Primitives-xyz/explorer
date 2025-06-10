@@ -140,6 +140,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
             <PudgyAvatarFrameSelection
               displayPudgyFrame={pudgyFrame}
               setDisplayPudgyFrame={setPudgyFrame}
+              pudgyTheme={pudgyTheme}
             />
           </div>
           <div className="col-span-3">

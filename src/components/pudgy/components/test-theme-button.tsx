@@ -76,6 +76,21 @@ export function TestThemeButton() {
               >
                 Pink
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await updateProfile({
+                    properties: [
+                      {
+                        key: 'pudgyTheme',
+                        value: EPudgyTheme.GREEN,
+                      },
+                    ],
+                  })
+                  refetch()
+                }}
+              >
+                Green
+              </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
