@@ -32,12 +32,12 @@ export function SolidScoreCard({
   return (
     <div
       className={cn(
-        'flex gap-4',
+        'flex gap-4 w-full',
         pathname === '/' && 'py-4',
         isOnProfilePage && 'py-4 md:py-0'
       )}
     >
-      <Card>
+      <Card className="flex-1">
         <CardContent
           className={cn(
             pathname === '/' ? 'p-2 md:py-6' : 'p-2 max-w-40 w-full'

@@ -3,14 +3,14 @@ import { SolidScoreBadges } from '@/components/solid-score/components/solid-scor
 import { SolidScoreCardWrapper } from '@/components/solid-score/components/solid-score-card-wrapper'
 import { SolidScoreValue } from '@/components/solid-score/components/solid-score-value'
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
-import { Button, ButtonVariant, Spinner } from '@/components/ui'
+import { Button, ButtonVariant } from '@/components/ui'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 import { SolidScoreSmartCtaWrapper } from './smart-cta/solid-score-smart-cta-wrapper'
 
 export function SolidScore() {
-  const { mainProfile, loading: currentWalletLoading } = useCurrentWallet()
+  const { mainProfile } = useCurrentWallet()
   const t = useTranslations('menu')
   const {
     data,
@@ -20,15 +20,13 @@ export function SolidScore() {
 
   const hasRevealed = !!mainProfile?.userRevealedTheSolidScore
 
-  if (error) {
+  if (error || !mainProfile) {
     return null
   }
 
   return (
     <SolidScoreCardWrapper displayScore={hasRevealed}>
-      {currentWalletLoading ? (
-        <Spinner className="m-auto" />
-      ) : hasRevealed ? (
+      {hasRevealed ? (
         <div className="flex flex-col justify-center">
           <div className="h-[100px] w-full">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full">
