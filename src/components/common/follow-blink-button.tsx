@@ -27,10 +27,8 @@ export function FollowBlinkButton({
   const getBlinkUrl = () => {
     if (typeof window === 'undefined') return ''
     const { protocol, host } = window.location
-    // Updated to use dynamic route structure with username as path parameter
-    return `${protocol}//${host}/api/actions/follow/${encodeURIComponent(
-      username
-    )}`
+    // Updated to use clean username URL that works for both profiles and blinks
+    return `${protocol}//${host}/${encodeURIComponent(username)}`
   }
 
   const handleCopyBlinkUrl = async () => {
