@@ -234,6 +234,12 @@ export function JupiterPerps() {
     }
   }, [marketStats, orderType])
 
+  useEffect(() => {
+    if (assetMint.length > 0) {
+      setAssetMint(assetMint)
+    }
+  }, [assetMint])
+
   return (
     <Card>
       <CardContent className="p-4">

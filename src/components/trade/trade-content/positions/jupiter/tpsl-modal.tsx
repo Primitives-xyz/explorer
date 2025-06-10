@@ -436,8 +436,6 @@ export default function TPSLModal({
             </>
           )}
 
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-
           <div className="w-full grid grid-cols-2 gap-3">
             <Button
               variant={ButtonVariant.OUTLINE}
