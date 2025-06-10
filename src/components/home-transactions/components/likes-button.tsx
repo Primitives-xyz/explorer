@@ -1,5 +1,6 @@
 'use client'
 
+import { FollowButton } from '@/components/common/follow-button'
 import {
   Button,
   ButtonVariant,
@@ -139,31 +140,51 @@ export function LikesButton({
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
               </div>
             ) : likedUsers.length > 0 ? (
-              likedUsers.map((user) => (
-                <div key={user.id} className="flex items-center gap-3">
-                  <Avatar
-                    username={user.username}
-                    imageUrl={user.image}
-                    size={32}
-                    className="w-8 h-8"
-                  />
-                  <Button
-                    variant={ButtonVariant.GHOST}
-                    href={route('entity', { id: user.username })}
-                    className="p-0 hover:bg-transparent text-left flex-1"
-                    onClick={() => setShowLikesModal(false)}
+              likedUsers.map((user) => {
+                const isCurrentUser = mainProfile?.username === user.username
+
+                return (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between gap-3 py-2"
                   >
-                    <div>
-                      <p className="font-medium">@{user.username}</p>
-                      {user.bio && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          {user.bio}
-                        </p>
-                      )}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <Avatar
+                        username={user.username}
+                        imageUrl={user.image}
+                        size={40}
+                        className="w-10 h-10 shrink-0"
+                      />
+                      <Button
+                        variant={ButtonVariant.GHOST}
+                        href={route('entity', { id: user.username })}
+                        className="p-0 hover:bg-transparent text-left flex-1 min-w-0"
+                        onClick={() => setShowLikesModal(false)}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium truncate">
+                            @{user.username}
+                          </p>
+                          {user.bio && (
+                            <p className="text-sm text-muted-foreground truncate">
+                              {user.bio}
+                            </p>
+                          )}
+                        </div>
+                      </Button>
                     </div>
-                  </Button>
-                </div>
-              ))
+
+                    {!isCurrentUser && mainProfile?.username && (
+                      <FollowButton
+                        followerUsername={mainProfile.username}
+                        followeeUsername={user.username}
+                        size="sm"
+                        className="shrink-0 min-w-fit"
+                      />
+                    )}
+                  </div>
+                )
+              })
             ) : (
               <p className="text-center text-muted-foreground py-4">
                 {t('common.no_likes_yet')}
