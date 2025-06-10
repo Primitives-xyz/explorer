@@ -64,7 +64,7 @@ export function FollowBlinkButton({
       <>
         <Icon size={iconSize} />
         {showLabel &&
-          (copied ? t('common.copied') : t('common.follow.share_follow'))}
+          (copied ? t('common.copied') : t('common.follow.share_blink'))}
       </>
     )
   }
