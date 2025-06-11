@@ -9,5 +9,5 @@ export const ADMIN_USERS = [
   'polo2',
   'polomain',
   'bennyy',
-  'hello',
+  'hello'
 ]
