@@ -75,7 +75,8 @@ export function usePudgyPayment({ profileId }: Props) {
     : 0
   const requiredAmountRaw =
     BigInt(requiredAmount) * BigInt(10 ** PENGU_DECIMALS)
-  const hasInsufficientBalance = rawBalance < requiredAmountRaw
+  const hasInsufficientBalance =
+    rawBalance == null || rawBalance < requiredAmountRaw
 
   useEffect(() => {
     if (transactionStatusData?.status === ECryptoTransactionStatus.COMPLETED) {
