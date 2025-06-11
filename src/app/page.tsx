@@ -15,13 +15,13 @@ export default function Home() {
 
   useEffect(() => {
     if (isMobile) {
-      router.replace(route('trade'))
+      const hasVisitedBefore = localStorage.getItem('hasVisitedBefore')
+      if (!hasVisitedBefore) {
+        localStorage.setItem('hasVisitedBefore', 'true')
+        router.push(route('trade'))
+      }
     }
   }, [isMobile, router])
-
-  if (isMobile) {
-    return null
-  }
 
   return (
     <>

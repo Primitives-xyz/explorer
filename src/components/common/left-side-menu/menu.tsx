@@ -29,6 +29,14 @@ export function Menu({ setOpen }: Props) {
   return (
     <div className="space-y-4 md:space-y-2">
       <Entry
+        title={t('menu.trade')}
+        icon={ArrowRightLeft}
+        href={route('trade')}
+        setOpen={setOpen}
+        onlyMobile
+      />
+
+      <Entry
         title={t('menu.home')}
         icon={House}
         href={route('home')}
@@ -49,6 +57,7 @@ export function Menu({ setOpen }: Props) {
         icon={ArrowRightLeft}
         href={route('trade')}
         setOpen={setOpen}
+        onlyDesktop
       />
 
       <Entry
