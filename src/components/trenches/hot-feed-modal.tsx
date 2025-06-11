@@ -19,6 +19,7 @@ import {
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { PnLDisplay } from './mobile-token-cards/pnl-display'
 
+import { MiniPriceChart } from './mini-price-chart'
 import { TokenBadges } from './token-badges'
 import { TokenBondedBar } from './token-bonded-bar'
 import { TokenBuySellBar } from './token-buy-sell-bar'
@@ -172,8 +173,8 @@ export function HotFeedModal({
   const [viewIndex, setViewIndex] = useState(1) // 0=transactions, 1=main, 2=details
   const [isDesktop, setIsDesktop] = useState(false)
 
-  // Create a stable token stack that won't reorder
-  const [tokenStack, setTokenStack] = useState<MintAggregate[]>([])
+  // Create a stable mint stack that won't reorder
+  const [mintStack, setMintStack] = useState<string[]>([])
   const stackInitialized = useRef(false)
   const highestIndexViewed = useRef(0)
   const isNavigatingRef = useRef(false) // Track if we're navigating
@@ -212,10 +213,13 @@ export function HotFeedModal({
     return () => window.removeEventListener('resize', checkDesktop)
   }, [])
 
-  // Initialize the stack once when component mounts
+  // Initialize the mint stack once when component mounts
   useEffect(() => {
     if (!stackInitialized.current && sortedTokens.length > 0 && isOpen) {
-      setTokenStack(sortedTokens.slice(0, INITIAL_LOAD))
+      const initialMints = sortedTokens
+        .slice(0, INITIAL_LOAD)
+        .map((t) => t.mint)
+      setMintStack(initialMints)
       stackInitialized.current = true
 
       // Reset to first token when we have a new initial token
@@ -252,48 +256,56 @@ export function HotFeedModal({
       !isNavigatingRef.current
     ) {
       // Only process if this is actually a different token than what's currently first
-      if (tokenStack[0]?.mint !== initialToken.mint) {
+      if (mintStack[0] !== initialToken.mint) {
         // Find if the initial token is already in our stack
-        const existingIndex = tokenStack.findIndex(
-          (t) => t.mint === initialToken.mint
+        const existingIndex = mintStack.findIndex(
+          (mint) => mint === initialToken.mint
         )
 
         if (existingIndex === -1) {
           // Token not in stack, rebuild the stack with this token first
           const otherTokens = tokens.filter((t) => t.mint !== initialToken.mint)
           const sorted = otherTokens.sort((a, b) => (b.tps || 0) - (a.tps || 0))
-          const newStack = [initialToken, ...sorted.slice(0, INITIAL_LOAD - 1)]
-          setTokenStack(newStack)
+          const newMintStack = [
+            initialToken.mint,
+            ...sorted.slice(0, INITIAL_LOAD - 1).map((t) => t.mint),
+          ]
+          setMintStack(newMintStack)
           setCurrentIndex(0)
         } else if (existingIndex !== 0) {
           // Token is in stack but not first, move it to first
-          const newStack = [
-            initialToken,
-            ...tokenStack.filter((t) => t.mint !== initialToken.mint),
+          const newMintStack = [
+            initialToken.mint,
+            ...mintStack.filter((mint) => mint !== initialToken.mint),
           ]
-          setTokenStack(newStack)
+          setMintStack(newMintStack)
           setCurrentIndex(0)
         }
       }
 
       // Don't reset viewIndex here - it interferes with navigation
     }
-  }, [isOpen, initialToken, tokens, tokenStack])
+  }, [isOpen, initialToken, tokens, mintStack])
 
-  // Detect real trades from token updates - only for visible tokens
+  // Helper to get current live token data
+  const getCurrentToken = (index: number): MintAggregate | null => {
+    const mint = mintStack[index]
+    if (!mint) return null
+    return tokens.find((t) => t.mint === mint) || null
+  }
+
+  // Detect trades for visible tokens (no need to update stack since we always lookup fresh data)
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen || !stackInitialized.current) return
 
     const currentTokenMap: Record<string, MintAggregate> = {}
     tokens.forEach((t) => {
       currentTokenMap[t.mint] = t
     })
 
-    // Only process updates for tokens that are visible or nearby
+    // Only process trade updates for tokens that are visible or nearby
     const visibleMints = new Set(
-      tokenStack
-        .slice(Math.max(0, currentIndex - 2), currentIndex + 3)
-        .map((t) => t.mint)
+      mintStack.slice(Math.max(0, currentIndex - 2), currentIndex + 3)
     )
 
     // Compare with previous state to detect trades
@@ -349,7 +361,7 @@ export function HotFeedModal({
     })
 
     prevTokensRef.current = currentTokenMap
-  }, [tokens, isOpen, currentIndex, tokenStack])
+  }, [tokens, isOpen, currentIndex, mintStack])
 
   // Clear old trades periodically - optimized to run less frequently
   useEffect(() => {
@@ -379,19 +391,19 @@ export function HotFeedModal({
       highestIndexViewed.current = currentIndex
 
       // Check if we need to load more
-      const remainingTokens = tokenStack.length - currentIndex - 1
+      const remainingTokens = mintStack.length - currentIndex - 1
       if (remainingTokens <= LOAD_MORE_THRESHOLD) {
         // Get current TPS rankings and find tokens not in our stack
         const sortedTokens = [...tokens].sort(
           (a, b) => (b.tps || 0) - (a.tps || 0)
         )
-        const stackMints = new Set(tokenStack.map((t) => t.mint))
+        const stackMints = new Set(mintStack)
         const newTokens = sortedTokens
           .filter((t) => !stackMints.has(t.mint))
           .slice(0, LOAD_MORE_COUNT)
 
         if (newTokens.length > 0) {
-          setTokenStack((prev) => [...prev, ...newTokens])
+          setMintStack((prev) => [...prev, ...newTokens.map((t) => t.mint)])
 
           // Initialize bonding progress for new tokens
           const newProgress: Record<string, number> = {}
@@ -407,7 +419,7 @@ export function HotFeedModal({
         }
       }
     }
-  }, [currentIndex, tokenStack, tokens])
+  }, [currentIndex, mintStack, tokens])
 
   // Calculate total PnL
   const totalPnL = userPositions.reduce((acc, pos) => {
@@ -428,14 +440,14 @@ export function HotFeedModal({
   useEffect(() => {
     setUserPositions((prev) =>
       prev.map((pos) => {
-        const token = tokenStack.find((t) => t.mint === pos.mint)
+        const token = tokens.find((t) => t.mint === pos.mint)
         if (token && token.pricePerToken) {
           return { ...pos, currentPrice: token.pricePerToken }
         }
         return pos
       })
     )
-  }, [tokenStack])
+  }, [tokens])
 
   // Touch and navigation handlers
   const handleSwipe = (direction: 'up' | 'down') => {
@@ -449,7 +461,7 @@ export function HotFeedModal({
     // Let the current card animate out completely
     setTimeout(() => {
       // Change index after animation
-      if (direction === 'up' && currentIndex < tokenStack.length - 1) {
+      if (direction === 'up' && currentIndex < mintStack.length - 1) {
         setCurrentIndex((prev) => prev + 1)
       } else if (direction === 'down' && currentIndex > 0) {
         setCurrentIndex((prev) => prev - 1)
@@ -472,7 +484,7 @@ export function HotFeedModal({
   const handleDesktopNavigation = (direction: 'up' | 'down') => {
     if (isAnimating) return
 
-    if (direction === 'up' && currentIndex < tokenStack.length - 1) {
+    if (direction === 'up' && currentIndex < mintStack.length - 1) {
       handleSwipe('up')
     } else if (direction === 'down' && currentIndex > 0) {
       handleSwipe('down')
@@ -587,7 +599,7 @@ export function HotFeedModal({
       switch (e.key) {
         case 'ArrowUp':
           e.preventDefault()
-          if (currentIndex < tokenStack.length - 1) {
+          if (currentIndex < mintStack.length - 1) {
             handleSwipe('up')
           }
           break
@@ -622,7 +634,7 @@ export function HotFeedModal({
     isOpen,
     isDesktop,
     currentIndex,
-    tokenStack.length,
+    mintStack.length,
     viewIndex,
     isAnimating,
     onClose,
@@ -639,7 +651,7 @@ export function HotFeedModal({
 
       // Debounce wheel events
       if (Math.abs(e.deltaY) > 50) {
-        if (e.deltaY > 0 && currentIndex < tokenStack.length - 1) {
+        if (e.deltaY > 0 && currentIndex < mintStack.length - 1) {
           handleSwipe('up')
         } else if (e.deltaY < 0 && currentIndex > 0) {
           handleSwipe('down')
@@ -654,7 +666,7 @@ export function HotFeedModal({
     isOpen,
     isDesktop,
     currentIndex,
-    tokenStack.length,
+    mintStack.length,
     viewIndex,
     isAnimating,
   ])
@@ -719,7 +731,7 @@ export function HotFeedModal({
     return `${solValue.toFixed(4)} SOL`
   }
 
-  const currentToken = tokenStack[currentIndex]
+  const currentToken = getCurrentToken(currentIndex)
 
   // Body scroll lock
   useEffect(() => {
@@ -908,7 +920,7 @@ export function HotFeedModal({
               )}
 
               {/* Next Button */}
-              {currentIndex < tokenStack.length - 1 && (
+              {currentIndex < mintStack.length - 1 && (
                 <button
                   onClick={() => handleDesktopNavigation('up')}
                   className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all transform hover:scale-110"
@@ -921,13 +933,13 @@ export function HotFeedModal({
           )}
 
           {/* Token position indicator */}
-          {tokenStack.length > 1 && (
+          {mintStack.length > 1 && (
             <div
               className={`absolute top-4 ${
                 isDesktop ? 'left-1/2 -translate-x-1/2' : 'right-4'
               } z-20 px-3 py-1 bg-black/40 rounded-full text-sm text-white/60`}
             >
-              {currentIndex + 1} / {tokenStack.length}
+              {currentIndex + 1} / {mintStack.length}
             </div>
           )}
 
@@ -973,8 +985,9 @@ export function HotFeedModal({
                 <div className="relative w-[420px] h-[600px] overflow-hidden">
                   {[currentIndex - 1, currentIndex, currentIndex + 1].map(
                     (index) => {
-                      if (index < 0 || index >= tokenStack.length) return null
-                      const token = tokenStack[index]
+                      if (index < 0 || index >= mintStack.length) return null
+                      const token = getCurrentToken(index)
+                      if (!token) return null
                       const isCurrentCard = index === currentIndex
                       const isPrevCard = index === currentIndex - 1
                       const isNextCard = index === currentIndex + 1
@@ -1086,6 +1099,17 @@ export function HotFeedModal({
                                   {token.tps?.toFixed(1) || '0'}
                                 </div>
                               </div>
+                            </div>
+
+                            {/* Mini Chart */}
+                            <div className="mb-6">
+                              <MiniPriceChart
+                                token={token}
+                                height={180}
+                                className="backdrop-blur border-white/20"
+                                currency={currency}
+                                solPrice={solPrice}
+                              />
                             </div>
 
                             {/* Badges */}
@@ -1333,8 +1357,9 @@ export function HotFeedModal({
           {!isDesktop &&
             isOpen &&
             [currentIndex - 1, currentIndex, currentIndex + 1].map((index) => {
-              if (index < 0 || index >= tokenStack.length) return null
-              const token = tokenStack[index]
+              if (index < 0 || index >= mintStack.length) return null
+              const token = getCurrentToken(index)
+              if (!token) return null
               const isCurrentCard = index === currentIndex
 
               return (
@@ -1470,49 +1495,20 @@ export function HotFeedModal({
                               </div>
                             </div>
 
-                            {/* Badges */}
-                            <div className="flex flex-wrap gap-1 mb-4">
-                              <TokenBadges agg={token} />
+                            {/* Mini Chart */}
+                            <div className="mb-6">
+                              <MiniPriceChart
+                                token={token}
+                                height={180}
+                                className="backdrop-blur border-white/20"
+                                currency={currency}
+                                solPrice={solPrice}
+                              />
                             </div>
 
-                            {/* Animated Bonding Progress */}
-                            <div className="mb-6">
-                              <div className="text-xs text-white/60 mb-2 flex items-center justify-between">
-                                <span>Bonding Progress</span>
-                                <span className="text-white/80 font-medium">
-                                  {(
-                                    ((bondingProgress[token.mint] || 0) / 74) *
-                                    100
-                                  ).toFixed(1)}
-                                  %
-                                </span>
-                              </div>
-                              <div className="relative h-4 bg-black/30 rounded-full overflow-hidden backdrop-blur">
-                                <div
-                                  className="absolute inset-0 bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 transition-all duration-500"
-                                  style={{
-                                    width: `${
-                                      ((bondingProgress[token.mint] || 0) /
-                                        74) *
-                                      100
-                                    }%`,
-                                  }}
-                                />
-                                {/* Milestone markers */}
-                                {[25, 50, 75].map((milestone) => (
-                                  <div
-                                    key={milestone}
-                                    className="absolute top-0 bottom-0 w-px bg-white/20"
-                                    style={{
-                                      left: `${(milestone / 74) * 100}%`,
-                                    }}
-                                  />
-                                ))}
-                              </div>
-                              <div className="flex justify-between text-[10px] text-white/40 mt-1">
-                                <span>0 SOL</span>
-                                <span>74 SOL</span>
-                              </div>
+                            {/* Badges */}
+                            <div className="flex flex-wrap gap-1 mb-6">
+                              <TokenBadges agg={token} />
                             </div>
 
                             {/* Navigation Buttons */}
