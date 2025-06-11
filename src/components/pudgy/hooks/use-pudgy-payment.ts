@@ -1,3 +1,4 @@
+import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
 import { useMutation } from '@/utils/api/use-mutation'
 import { useQuery } from '@/utils/api/use-query'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -60,6 +61,21 @@ export function usePudgyPayment({ profileId }: Props) {
   const { refetch } = useCurrentWallet()
   const [paymentError, setPaymentError] = useState<Error>()
   const [loadingPayment, setLoadingPayment] = useState(false)
+
+  // Get PENGU token balance
+  const {
+    balance,
+    rawBalance,
+    loading: balanceLoading,
+  } = useTokenBalance(primaryWallet?.address, PENGU_MINT_ADDRESS)
+
+  // Check if user has sufficient balance
+  const requiredAmount = paymentDetailsData
+    ? Math.ceil(paymentDetailsData.amount)
+    : 0
+  const requiredAmountRaw =
+    BigInt(requiredAmount) * BigInt(10 ** PENGU_DECIMALS)
+  const hasInsufficientBalance = rawBalance < requiredAmountRaw
 
   useEffect(() => {
     if (transactionStatusData?.status === ECryptoTransactionStatus.COMPLETED) {
@@ -170,7 +186,8 @@ export function usePudgyPayment({ profileId }: Props) {
     loadingSubmitSignature ||
     loadingTransactionStatus ||
     loadingPayment ||
-    polling
+    polling ||
+    balanceLoading
 
   const error =
     paymentDetailsError ||
@@ -184,5 +201,9 @@ export function usePudgyPayment({ profileId }: Props) {
     transactionStatusData,
     error,
     pay,
+    balance,
+    rawBalance,
+    hasInsufficientBalance,
+    requiredAmount,
   }
 }

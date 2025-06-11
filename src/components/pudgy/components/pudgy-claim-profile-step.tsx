@@ -19,6 +19,7 @@ import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -44,6 +45,9 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
     loading: pudgyPaymentLoading,
     error: pudgyPaymentError,
     pay,
+    balance,
+    hasInsufficientBalance,
+    requiredAmount,
   } = usePudgyPayment({
     profileId: mainProfile.id,
   })
@@ -181,21 +185,53 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
             {t('onboarding.buttons.back')}
           </Button>
           <div className="relative">
-            <Button
-              className="w-full md:w-[160px]"
-              disabled={loading}
-              type="submit"
-            >
-              {loading ? (
-                <Spinner />
-              ) : (
-                <>Burn {paymentDetailsData?.tokenSymbol}</>
-              )}
-            </Button>
-            {!!paymentDetailsData && (
-              <p className="text-xs text-primary absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-2 w-full text-center">
-                -{paymentDetailsData.amount} {paymentDetailsData.tokenSymbol}
-              </p>
+            {hasInsufficientBalance ? (
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  className="w-full md:w-[160px]"
+                  disabled={true}
+                  type="button"
+                >
+                  Insufficient Balance
+                </Button>
+                <div className="text-xs text-center">
+                  <p className="text-muted-foreground mb-1">
+                    You need {requiredAmount}{' '}
+                    {paymentDetailsData?.tokenSymbol || 'PENGU'}
+                  </p>
+                  <p className="text-muted-foreground mb-2">
+                    Current balance: {balance}
+                  </p>
+                  <Link
+                    href="https://www.sse.gg/trade?inputMint=So11111111111111111111111111111111111111112&outputMint=2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    Buy {paymentDetailsData?.tokenSymbol || 'PENGU'} →
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <>
+                <Button
+                  className="w-full md:w-[160px]"
+                  disabled={loading || hasInsufficientBalance}
+                  type="submit"
+                >
+                  {loading ? (
+                    <Spinner />
+                  ) : (
+                    <>Burn {paymentDetailsData?.tokenSymbol}</>
+                  )}
+                </Button>
+                {!!paymentDetailsData && (
+                  <p className="text-xs text-primary absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-2 w-full text-center">
+                    -{paymentDetailsData.amount}{' '}
+                    {paymentDetailsData.tokenSymbol}
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>

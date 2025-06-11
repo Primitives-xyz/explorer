@@ -29,9 +29,10 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
   const { updateProfile } = useUpdateProfile({
     profileId: mainProfile.username,
   })
-  const { paymentDetailsData } = usePudgyPayment({
-    profileId: mainProfile.id,
-  })
+  const { paymentDetailsData, balance, hasInsufficientBalance } =
+    usePudgyPayment({
+      profileId: mainProfile.id,
+    })
 
   useEffect(() => {
     setStep(EPudgyOnboardingStep.INTRO)
@@ -69,6 +70,12 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
             to unlock <br className="mobile" /> your exclusive{' '}
             <br className="desktop" /> Pudgy x SSE <br className="mobile" />
             profile experience.
+            {balance !== undefined && (
+              <span className="block mt-1 text-xs">
+                Your balance: {balance}{' '}
+                {paymentDetailsData?.tokenSymbol || 'PENGU'}
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 flex flex-col">
