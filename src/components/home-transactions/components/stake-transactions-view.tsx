@@ -28,8 +28,7 @@ interface Props {
 
 export function StakeTransactionsView({ transaction, sourceWallet }: Props) {
   const t = useTranslations()
-  const { data: tokenInfo, loading: tokenLoading } =
-    useTokenInfo(SSE_TOKEN_MINT)
+  const { data: tokenInfo } = useTokenInfo(SSE_TOKEN_MINT)
 
   // Extract stake data from content properties
   const isStake = transaction.content?.action === 'stake'
