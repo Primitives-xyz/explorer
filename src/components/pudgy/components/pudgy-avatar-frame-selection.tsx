@@ -26,7 +26,7 @@ export function PudgyAvatarFrameSelection({
       <Avatar
         username={mainProfile.username}
         imageUrl={mainProfile.image}
-        className="w-40"
+        className="w-22 md:w-40"
         size={160}
         pudgyTheme={pudgyTheme}
         displayPudgyFrame={displayPudgyFrame}

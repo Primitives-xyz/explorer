@@ -31,7 +31,7 @@ export function PudgyUpgradeBenefits({ onClose, setStep }: Props) {
   return (
     <div className="flex flex-col items-center flex-1">
       <div className="flex flex-col md:flex-row gap-6 items-start">
-        <div className="shrink-0 mt-6">
+        <div className="shrink-0 mt-6 desktop">
           <Image
             src="/images/pudgy/pudgy-onboarding.webp"
             alt="Pudgy Penguin"
@@ -70,17 +70,17 @@ export function PudgyUpgradeBenefits({ onClose, setStep }: Props) {
           <span>👈</span>
         </p>
       </div>
-      <div className="flex justify-between mt-auto w-full">
+      <div className="flex flex-col md:flex-row gap-3 justify-between mt-6 md:mt-auto w-full">
         <Button
           onClick={onClose}
-          className="w-[160px]"
+          className="w-full md:w-[160px] order-1 md:order-0"
           variant={ButtonVariant.OUTLINE}
         >
           Cancel
         </Button>
         <Button
           onClick={() => setStep(EPudgyOnboardingStep.CLAIM)}
-          className="w-[160px]"
+          className="w-full md:w-[160px]"
         >
           Claim Profile
         </Button>

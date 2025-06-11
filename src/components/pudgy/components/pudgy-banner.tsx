@@ -37,7 +37,7 @@ export function PudgyBanner() {
             height={137}
             className="w-full absolute bottom-0 left-0"
           />
-          <div className="rounded-lg border-2 border-pudgy-border bg-pudgy-background/30 relative backdrop-blur-sm py-4 px-5 w-full flex items-center justify-between">
+          <div className="rounded-lg border-2 border-pudgy-border bg-pudgy-background/30 relative backdrop-blur-sm py-4 px-5 w-full flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-4 md:gap-0">
             <div>
               <h2 className="font-pudgy-heading text-xl uppercase drop-shadow-md">
                 The pudgy x sse collab is here!
@@ -46,7 +46,7 @@ export function PudgyBanner() {
                 level up to a Pudgy profile — exclusively on sse
               </p>
             </div>
-            <div className="mr-9">
+            <div className="md:mr-9">
               <Button
                 variant={ButtonVariant.PUDGY_DEFAULT}
                 onClick={() => setOpen(true)}
