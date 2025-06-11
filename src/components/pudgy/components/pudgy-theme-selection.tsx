@@ -13,7 +13,7 @@ export function PudgyThemeSelection({
 }: Props) {
   return (
     <div className="space-y-2 gap-2">
-      <Label>Pudgy x SSE Profile Themes</Label>
+      <Label className="mb-3">Pudgy x SSE Profile Themes</Label>
       <div className="grid grid-cols-4 gap-4">
         {Object.values(EPudgyTheme).map((theme) => (
           <Button

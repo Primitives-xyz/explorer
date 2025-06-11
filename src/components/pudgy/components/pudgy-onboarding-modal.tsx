@@ -57,7 +57,7 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
-        className="max-w-full md:max-w-2xl min-h-[90%] md:min-h-[546px] flex flex-col"
+        className="max-w-full md:max-w-2xl md:min-h-[546px] flex flex-col"
         onClose={onClose}
       >
         <DialogHeader>
@@ -66,7 +66,9 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
           </DialogTitle>
           <DialogDescription className="text-center">
             Burn {paymentDetailsData?.amount} {paymentDetailsData?.tokenSymbol}{' '}
-            to unlock your exclusive <br /> Pudgy x SSE profile experience.
+            to unlock <br className="mobile" /> your exclusive{' '}
+            <br className="desktop" /> Pudgy x SSE <br className="mobile" />
+            profile experience.
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 flex flex-col">
