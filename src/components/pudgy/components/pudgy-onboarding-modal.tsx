@@ -12,6 +12,7 @@ import {
 } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
+import { usePudgyPayment } from '../hooks/use-pudgy-payment'
 import { EPudgyOnboardingStep } from '../pudgy.models'
 import { PudgyClaimProfileStep } from './pudgy-claim-profile-step'
 import { PudgyUpgradeBenefits } from './pudgy-upgrade-benefits'
@@ -27,6 +28,9 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
   const [step, setStep] = useState(EPudgyOnboardingStep.INTRO)
   const { updateProfile } = useUpdateProfile({
     profileId: mainProfile.username,
+  })
+  const { paymentDetailsData } = usePudgyPayment({
+    profileId: mainProfile.id,
   })
 
   useEffect(() => {
@@ -61,8 +65,8 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
             Pudgy Penguins x SSE: Unlock Your Official Profile
           </DialogTitle>
           <DialogDescription className="text-center">
-            Burn 123 $PENGU to unlock your exclusive <br /> Pudgy x SSE profile
-            experience.
+            Burn {paymentDetailsData?.amount} {paymentDetailsData?.tokenSymbol}{' '}
+            to unlock your exclusive <br /> Pudgy x SSE profile experience.
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 flex flex-col">

@@ -54,7 +54,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
   } = useUpdateProfile({
     profileId: mainProfile.id,
   })
-  const [pudgyTheme, setPudgyTheme] = useState(EPudgyTheme.DEFAULT)
+  const [pudgyTheme, setPudgyTheme] = useState(EPudgyTheme.BLUE)
   const [pudgyFrame, setPudgyFrame] = useState(true)
   const { push } = useRouter()
 
