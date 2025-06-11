@@ -1,4 +1,3 @@
-import { useUmi } from '@/hooks/use-umi'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
@@ -13,8 +12,6 @@ interface MigrationResult {
 }
 
 export function useMigrationExecute() {
-  const umi = useUmi()
-
   const [isProcessing, setIsProcessing] = useState(false)
   const { walletAddress, primaryWallet } = useCurrentWallet()
 

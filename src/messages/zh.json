@@ -21,11 +21,17 @@
       "follow": "关注",
       "unfollow": "取消关注",
       "followers": "关注者",
-      "following": "正在关注"
+      "following": "正在关注",
+      "share_follow": "分享 关注",
+      "blink_copied": "关注 blink 已复制！分享后，只需在 Solana 上点击一下，即可让其他人关注 @{username}！🚀",
+      "blink_copy_failed": "复制链接失败",
+      "blink_tooltip": "分享@{username} 的关注链接 - 让其他人通过一笔 Solana 交易来关注！"
     },
     "no_description": "暂无描述",
     "since": "注册于",
-    "copied": "已复制"
+    "copied": "已复制",
+    "likes": "点赞",
+    "no_likes_yet": "暂无点赞"
   },
   "copy_trading": {
     "copy_trade": "复制交易",

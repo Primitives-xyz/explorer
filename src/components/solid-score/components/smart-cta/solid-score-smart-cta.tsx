@@ -37,7 +37,6 @@ export function SolidScoreSmartCta({ simpleRevealButton, mainProfile }: Props) {
       ],
     })
     await refetch()
-    console.log('setOpenRevealScoreAnimation')
     setOpenRevealScoreAnimation(true)
   }
 

@@ -89,3 +89,6 @@ export const DEFAULT_SLIPPAGE_VALUE = 50 // 0.5% as base value when needed
 export const DEFAULT_PRIORITY_LEVEL = 'Medium'
 
 export const TWITTER_REDIRECT_URL = '/x/callback'
+
+export const SSE_CONTRACT_ADDRESS =
+  'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'

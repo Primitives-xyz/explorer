@@ -83,36 +83,48 @@ export function FollowButton({
     setTransactionLoading(true)
 
     try {
-      // Get profile IDs for both follower and followee
-      let followerProfileId = followerUsername
-      let followeeProfileId = followeeUsername
+      let response: Response
+      let responseData: any
 
       if (isWalletAddress) {
-        followeeProfileId = followeeUsername
+        // Use follow-wallet endpoint for wallet addresses (includes wallet-to-username resolution)
+        response = await fetch('/api/followers/follow-wallet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            followerUsername: followerUsername,
+            walletToFollow: followeeUsername,
+            followerWallet: walletAddress,
+            namespace: 'nemoapp',
+            type: 'follow',
+          }),
+        })
+      } else {
+        // Use build-follow-transaction for usernames
+        response = await fetch('/api/followers/build-follow-transaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            startId: followerUsername,
+            endId: followeeUsername,
+            followerWallet: walletAddress,
+            namespace: 'nemoapp',
+            type: 'follow',
+          }),
+        })
       }
-
-      // Get serialized transaction from our API (built with ZK data + fresh blockhash)
-      // This uses the hybrid approach: Tapestry provides ZK data, we build transaction locally
-      const response = await fetch('/api/followers/build-follow-transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startId: followerProfileId,
-          endId: followeeProfileId,
-          followerWallet: walletAddress,
-          namespace: 'nemoapp',
-          type: 'follow',
-        }),
-      })
 
       if (!response.ok) {
         const errorData = await response.json()
         throw new Error(errorData.error || 'Failed to create transaction')
       }
 
-      const { transaction } = await response.json()
+      responseData = await response.json()
+      const { transaction } = responseData
 
       // Deserialize the transaction (same as staking flow)
       const serializedBuffer = Buffer.from(transaction, 'base64')
@@ -160,11 +172,9 @@ export function FollowButton({
           description: 'Follow transaction failed, please try again',
         })
       } else {
+        const displayName = responseData?.usernameToFollow || followeeUsername
         toast.success(
-          `Successfully followed @${followeeUsername}! Tx: ${txid.slice(
-            0,
-            8
-          )}...`
+          `Successfully followed @${displayName}! Tx: ${txid.slice(0, 8)}...`
         )
         await refetch()
         onFollowSuccess?.()
@@ -188,29 +198,40 @@ export function FollowButton({
     setTransactionLoading(true)
 
     try {
-      // Get profile IDs for both follower and followee (same logic as follow)
-      let followerProfileId = followerUsername
-      let followeeProfileId = followeeUsername
+      let response: Response
+      let responseData: any
 
       if (isWalletAddress) {
-        followeeProfileId = followeeUsername
+        // Use follow-wallet endpoint for wallet addresses (includes wallet-to-username resolution)
+        response = await fetch('/api/followers/follow-wallet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            followerUsername: followerUsername,
+            walletToFollow: followeeUsername,
+            followerWallet: walletAddress,
+            namespace: 'nemoapp',
+            type: 'unfollow',
+          }),
+        })
+      } else {
+        // Use build-follow-transaction for usernames
+        response = await fetch('/api/followers/build-follow-transaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            startId: followerUsername,
+            endId: followeeUsername,
+            followerWallet: walletAddress,
+            namespace: 'nemoapp',
+            type: 'unfollow',
+          }),
+        })
       }
-
-      // Get serialized transaction from our unified API (built with ZK data + fresh blockhash)
-      // This uses the same hybrid approach but with type: "unfollow"
-      const response = await fetch('/api/followers/build-follow-transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startId: followerProfileId,
-          endId: followeeProfileId,
-          followerWallet: walletAddress,
-          namespace: 'nemoapp',
-          type: 'unfollow',
-        }),
-      })
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -219,7 +240,8 @@ export function FollowButton({
         )
       }
 
-      const { transaction } = await response.json()
+      responseData = await response.json()
+      const { transaction } = responseData
 
       // Deserialize the transaction (same as staking flow)
       const serializedBuffer = Buffer.from(transaction, 'base64')
@@ -267,11 +289,9 @@ export function FollowButton({
           description: 'Unfollow transaction failed, please try again',
         })
       } else {
+        const displayName = responseData?.usernameToFollow || followeeUsername
         toast.success(
-          `Successfully unfollowed @${followeeUsername}! Tx: ${txid.slice(
-            0,
-            8
-          )}...`
+          `Successfully unfollowed @${displayName}! Tx: ${txid.slice(0, 8)}...`
         )
         await refetch()
       }

@@ -33,7 +33,7 @@ export function TransactionsHeader({
     skip: !!transaction.profile,
   })
 
-  let profile = null
+  let profile: IProfile | null | undefined = null
 
   if (transaction.profile) {
     profile = transaction.profile
@@ -58,6 +58,8 @@ export function TransactionsHeader({
             size={40}
             className="w-10"
             imageUrl={profile?.image}
+            pudgyTheme={profile?.pudgyTheme}
+            displayPudgyFrame={profile?.pudgyFrame}
           />
         </Button>
       </div>

@@ -117,3 +117,53 @@ export interface LimitOrderResponse {
   positionRequestPubkey: string
   requireKeeperSignature: boolean
 }
+
+export interface TPSLRequest {
+  collateralUsdDelta: string
+  desiredMint: string
+  entirePosition: boolean
+  positionRequestPubkey: string
+  positionSizeUsd: string
+  positionSizeUsdFormatted: string
+  sizeUsd: string
+  sizeUsdFormatted: string
+  sizePercentage: string
+  triggerPrice: string
+  triggerPriceUsd: string
+  openTime: string
+  requestType: string
+}
+
+export interface Position {
+  borrowFees: string
+  borrowFeesUsd: string
+  closeFees: string
+  closeFeesUsd: string
+  collateral: string
+  collateralUsd: string
+  collateralMint: string
+  createdTime: number
+  entryPrice: string
+  leverage: string
+  liquidationPrice: string
+  marketMint: string
+  markPrice: string
+  openFees: string
+  openFeesUsd: string
+  pnlAfterFees: string
+  pnlAfterFeesUsd: string
+  pnlBeforeFees: string
+  pnlBeforeFeesUsd: string
+  pnlChangePctAfterFees: string
+  pnlChangePctBeforeFees: string
+  positionPubkey: string
+  side: 'long' | 'short'
+  size: string
+  sizeUsdDelta: string
+  sizeTokenAmount: string
+  totalFees: string
+  totalFeesUsd: string
+  tpslRequests: TPSLRequest[]
+  updatedTime: number
+  value: string
+}

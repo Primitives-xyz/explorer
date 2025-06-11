@@ -28,9 +28,7 @@ export function FollowBlinkButton({
     if (typeof window === 'undefined') return ''
     const { protocol, host } = window.location
     // Updated to use dynamic route structure with username as path parameter
-    return `${protocol}//${host}/api/actions/follow/${encodeURIComponent(
-      username
-    )}`
+    return `${protocol}//${host}/${encodeURIComponent(username)}`
   }
 
   const handleCopyBlinkUrl = async () => {
@@ -64,7 +62,7 @@ export function FollowBlinkButton({
       <>
         <Icon size={iconSize} />
         {showLabel &&
-          (copied ? t('common.copied') : t('common.follow.share_follow'))}
+          (copied ? t('common.copied') : t('common.follow.share_blink'))}
       </>
     )
   }

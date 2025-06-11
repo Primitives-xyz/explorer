@@ -2,14 +2,10 @@
 
 import { Menu } from '@/components/common/left-side-menu/menu'
 import { MigrationReminder } from '@/components/common/left-side-menu/migration-reminder'
-import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
-import { Button, ButtonVariant } from '@/components/ui'
+import { Button } from '@/components/ui'
 import { route } from '@/utils/route'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { useState } from 'react'
 
 interface Props {
   open: boolean
@@ -17,11 +13,6 @@ interface Props {
 }
 
 export function MobileMenu({ open, setOpen }: Props) {
-  const { logout, isLoggedIn } = useCurrentWallet()
-  const [isFundsModalOpen, setIsFundsModalOpen] = useState<boolean>(false)
-  const { accountIds } = useDriftUsers()
-  const t = useTranslations()
-
   return (
     <>
       <div
@@ -37,7 +28,12 @@ export function MobileMenu({ open, setOpen }: Props) {
       >
         <div className="flex items-center justify-between p-3 h-14">
           <Button href={route('home')} isInvisible>
-            <Image src="/images/logo.svg" alt="logo" width={34} height={34} />
+            <Image
+              src="/images/logo-mobile.svg"
+              alt="logo"
+              width={34}
+              height={34}
+            />
           </Button>
           <Button onClick={() => setOpen(false)} isInvisible>
             <X className="text-primary" />
@@ -45,13 +41,6 @@ export function MobileMenu({ open, setOpen }: Props) {
         </div>
 
         <div className="p-3">
-          <Button
-            href={route('trade')}
-            variant={ButtonVariant.DEFAULT}
-            className="w-full mb-4 text-lg"
-          >
-            Trade
-          </Button>
           <Menu setOpen={setOpen} />
           <div className="mt-4">
             <MigrationReminder />

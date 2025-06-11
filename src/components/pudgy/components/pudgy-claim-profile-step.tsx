@@ -54,7 +54,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
   } = useUpdateProfile({
     profileId: mainProfile.id,
   })
-  const [pudgyTheme, setPudgyTheme] = useState(EPudgyTheme.DEFAULT)
+  const [pudgyTheme, setPudgyTheme] = useState(EPudgyTheme.BLUE)
   const [pudgyFrame, setPudgyFrame] = useState(true)
   const { push } = useRouter()
 
@@ -135,11 +135,12 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex-1 flex flex-col"
       >
-        <div className="grid grid-cols-5 gap-8">
-          <div className="col-span-2">
+        <div className="md:grid grid-cols-5 gap-8">
+          <div className="col-span-2 mb-4 md:mb-0">
             <PudgyAvatarFrameSelection
               displayPudgyFrame={pudgyFrame}
               setDisplayPudgyFrame={setPudgyFrame}
+              pudgyTheme={pudgyTheme}
             />
           </div>
           <div className="col-span-3">
@@ -169,9 +170,9 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
             />
           </div>
         </div>
-        <div className="flex justify-between mt-auto">
+        <div className="flex flex-col md:flex-row gap-3 justify-between mt-6 md:mt-auto w-full">
           <Button
-            className="w-[160px]"
+            className="w-full md:w-[160px]"
             onClick={() => {
               setStep(EPudgyOnboardingStep.INTRO)
             }}
@@ -180,7 +181,11 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
             {t('onboarding.buttons.back')}
           </Button>
           <div className="relative">
-            <Button className="w-[160px]" disabled={loading} type="submit">
+            <Button
+              className="w-full md:w-[160px]"
+              disabled={loading}
+              type="submit"
+            >
               {loading ? (
                 <Spinner />
               ) : (
