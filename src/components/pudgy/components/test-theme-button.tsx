@@ -82,14 +82,14 @@ export function TestThemeButton() {
                     properties: [
                       {
                         key: 'pudgyTheme',
-                        value: EPudgyTheme.GREEN,
+                        value: EPudgyTheme.BLUE,
                       },
                     ],
                   })
                   refetch()
                 }}
               >
-                Green
+                Blue
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>

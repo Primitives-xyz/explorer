@@ -11,7 +11,7 @@ interface Props {
 export function BackgroundTheme({ pudgyTheme }: Props) {
   return (
     <div
-      className={cn('fixed inset-0 z-0', {
+      className={cn('fixed inset-0 z-0 pointer-events-none', {
         // 'background-gradient': pudgyTheme === EPudgyTheme.DEFAULT,
         // 'background-gradient-blue': pudgyTheme === EPudgyTheme.BLUE,
         // 'background-gradient-green': pudgyTheme === EPudgyTheme.GREEN,
@@ -34,7 +34,7 @@ export function BackgroundTheme({ pudgyTheme }: Props) {
         width={1500}
         height={1006}
       />
-      {/* <div className="absolute top-0 left-0 inset-0 bg-black/10" /> */}
+      <div className="absolute top-0 left-0 inset-0 bg-black/10" />
     </div>
   )
 }
