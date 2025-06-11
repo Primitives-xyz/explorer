@@ -70,7 +70,7 @@ export function Avatar({
           className={cn(
             'border-4 border-pudgy-border absolute top-0 left-0 inset-0 rounded-full overflow-hidden',
             {
-              'border-pudgy-border': pudgyTheme === EPudgyTheme.BLUE,
+              'border-[#72a0fe]': pudgyTheme === EPudgyTheme.BLUE,
               'border-primary': pudgyTheme === EPudgyTheme.GREEN,
               'border-[#ff93b0]': pudgyTheme === EPudgyTheme.PINK,
               'border-border': pudgyTheme === EPudgyTheme.DEFAULT,
