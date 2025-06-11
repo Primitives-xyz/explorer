@@ -291,7 +291,23 @@ export function HotFeedModal({
   const getCurrentToken = (index: number): MintAggregate | null => {
     const mint = mintStack[index]
     if (!mint) return null
-    return tokens.find((t) => t.mint === mint) || null
+
+    // Try to find in current tokens first
+    const liveToken = tokens.find((t) => t.mint === mint)
+    if (liveToken) return liveToken
+
+    // Fallback: create minimal token object to prevent crashes
+    return {
+      mint,
+      trades: [],
+      totalBuy: 0,
+      totalSell: 0,
+      lastTrade: null,
+      tps: 0,
+      mintSymbol: 'Loading...',
+      mintName: 'Loading...',
+      pricePerToken: 0,
+    } as MintAggregate
   }
 
   // Detect trades for visible tokens (no need to update stack since we always lookup fresh data)

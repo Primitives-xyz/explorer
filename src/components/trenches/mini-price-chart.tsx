@@ -29,15 +29,16 @@ export function MiniPriceChart({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [currentPrice, setCurrentPrice] = useState<number>(0)
   const [priceHistory, setPriceHistory] = useState<PricePoint[]>([])
+  const [animationTick, setAnimationTick] = useState(0) // Force redraws
   const lastTradeSignatureRef = useRef<string | null>(null)
   const animationFrameRef = useRef<number | undefined>(undefined)
   const lastUpdateTimeRef = useRef<number>(Date.now())
   const backgroundOffsetRef = useRef<number>(0)
 
   // Chart settings
-  const SCROLL_SPEED = 0.5 // pixels per frame at 60fps
-  const PRICE_LINE_X_PERCENT = 0.75 // Price line stays at 75% from left
+  const PIXELS_PER_SECOND = 30 // How many pixels = 1 second of time
   const GRID_SPACING = 50 // pixels between grid lines
+  const CHART_RIGHT_EDGE = 50 // Keep price line this many pixels from right edge
 
   // Convert SOL price to display currency
   const convertPrice = useCallback(
@@ -123,11 +124,11 @@ export function MiniPriceChart({
       const deltaTime = now - lastUpdateTimeRef.current
       lastUpdateTimeRef.current = now
 
-      // Scroll background left
-      backgroundOffsetRef.current += SCROLL_SPEED
+      // Update background offset based on time
+      backgroundOffsetRef.current += (deltaTime / 1000) * PIXELS_PER_SECOND
 
-      // Add price tracking point every 500ms
-      if (deltaTime > 500) {
+      // Add price tracking point every 1000ms (every second to match time counter)
+      if (deltaTime > 1000) {
         setPriceHistory((prev) => {
           const newPoint: PricePoint = {
             timestamp: now,
@@ -135,13 +136,16 @@ export function MiniPriceChart({
             isTradePoint: false,
           }
 
-          // Keep only recent points
+          // Keep only recent points (last 2 minutes worth)
           const cutoff = now - 120000
           const filtered = prev.filter((p) => p.timestamp > cutoff)
 
           return [...filtered, newPoint].slice(-100)
         })
       }
+
+      // Force chart redraw for smooth movement
+      setAnimationTick((prev) => (prev + 1) % 1000) // Cycle to prevent overflow
 
       animationFrameRef.current = requestAnimationFrame(animate)
     }
@@ -176,8 +180,9 @@ export function MiniPriceChart({
     // Clear canvas
     ctx.clearRect(0, 0, width, height)
 
-    // Price line X position (fixed)
-    const priceLineX = width * PRICE_LINE_X_PERCENT
+    // Current time position (flows from right to left)
+    const now = Date.now()
+    const currentTimeX = width - CHART_RIGHT_EDGE
 
     // Calculate price range for Y scaling
     const padding = 20
@@ -236,7 +241,7 @@ export function MiniPriceChart({
       priceHistory.forEach((point, index) => {
         // Calculate X position based on time difference from now
         const timeDiff = now - point.timestamp
-        const x = priceLineX - (timeDiff / 1000) * (SCROLL_SPEED * 60) // Convert to pixels
+        const x = currentTimeX - (timeDiff / 1000) * PIXELS_PER_SECOND
 
         // Only draw points that are still visible
         if (x >= -50 && x <= width) {
@@ -258,7 +263,7 @@ export function MiniPriceChart({
       priceHistory.forEach((point) => {
         if (point.isTradePoint) {
           const timeDiff = now - point.timestamp
-          const x = priceLineX - (timeDiff / 1000) * (SCROLL_SPEED * 60)
+          const x = currentTimeX - (timeDiff / 1000) * PIXELS_PER_SECOND
 
           if (x >= -10 && x <= width) {
             const y = getY(point.price)
@@ -278,20 +283,26 @@ export function MiniPriceChart({
     // Draw current price line (fixed position)
     const currentY = getY(currentPrice)
 
-    // Price line extending across the chart
+    // Animated dotted price line extending across the chart
     ctx.strokeStyle = '#22c55e'
     ctx.lineWidth = 2
+
+    // Animate dash pattern to show time flow
+    const dashOffset = (Date.now() / 50) % 10 // Animate every 50ms
     ctx.setLineDash([5, 5])
+    ctx.lineDashOffset = -dashOffset // Make dashes flow left
+
     ctx.beginPath()
     ctx.moveTo(0, currentY)
     ctx.lineTo(width, currentY)
     ctx.stroke()
     ctx.setLineDash([]) // Reset dash
+    ctx.lineDashOffset = 0 // Reset offset
 
     // Current price indicator (pulsing dot)
     const pulseRadius = 6 + Math.sin(Date.now() / 300) * 2
     ctx.beginPath()
-    ctx.arc(priceLineX, currentY, pulseRadius, 0, 2 * Math.PI)
+    ctx.arc(currentTimeX, currentY, pulseRadius, 0, 2 * Math.PI)
     ctx.fillStyle = '#22c55e'
     ctx.fill()
     ctx.strokeStyle = '#ffffff'
@@ -302,10 +313,10 @@ export function MiniPriceChart({
     ctx.strokeStyle = '#22c55e'
     ctx.lineWidth = 4
     ctx.beginPath()
-    ctx.moveTo(priceLineX, currentY)
+    ctx.moveTo(currentTimeX, currentY)
     ctx.lineTo(width, currentY)
     ctx.stroke()
-  }, [currentPrice, priceHistory])
+  }, [currentPrice, priceHistory, animationTick])
 
   // Format price for display
   const formatPrice = (price: number) => {
