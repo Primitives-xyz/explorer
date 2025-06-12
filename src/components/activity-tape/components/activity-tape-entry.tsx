@@ -11,10 +11,10 @@ interface Props {
 }
 
 export function ActivityTapeEntry({ activity }: Props) {
-  const [timeago, setTimeago] = useState<string | null>(null)
+  const [timeAgo, setTimeAgo] = useState<string | null>(null)
 
   useEffect(() => {
-    setTimeago(formatTimeAgo(new Date(activity.timestamp)))
+    setTimeAgo(formatTimeAgo(new Date(activity.timestamp)))
   }, [activity.timestamp])
 
   return (
@@ -53,7 +53,7 @@ export function ActivityTapeEntry({ activity }: Props) {
           </span>
         )}
         <span>•</span>
-        {timeago && <span>{timeago}</span>}
+        {timeAgo && <span>{timeAgo}</span>}
       </div>
     </Button>
   )

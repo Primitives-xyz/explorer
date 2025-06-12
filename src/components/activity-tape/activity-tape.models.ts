@@ -1,32 +1,4 @@
-export interface IGetFeedResponse {
-  transactions: IGetFeedEntry[]
-  total: number
-}
-
-export interface IGetFeedEntry {
-  type: string
-  source: string
-  description: string
-  fee: number
-  timestamp: string
-  signature: string
-  success: boolean
-  walletAddress: string
-  username: string
-  from: From
-  to: To
-  accountsInvolved: string[]
-}
-
-export interface From {
-  amount: number
-  token: string
-}
-
-export interface To {
-  amount: number
-  token: string
-}
+import { IPaginatedResponse } from '@/components/tapestry/models/common.models'
 
 export interface IActivityTapeEntry {
   type: string
@@ -39,4 +11,20 @@ export interface IActivityTapeEntry {
   amountSuffix?: string
   isSSEBuy?: boolean
   signature?: string
+}
+
+export interface IActivityGlobalResponse extends IPaginatedResponse {
+  activities: IActivityGlobal[]
+}
+
+export interface IActivityGlobal {
+  type: string
+  actor_id: string
+  actor_username: string
+  target_id: string
+  target_username?: string
+  comment_id?: string
+  content_type?: string
+  timestamp: number
+  activity: string
 }
