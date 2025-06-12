@@ -21,11 +21,12 @@ export function SharePudgyDialog({ open, setOpen, profile }: Props) {
       setOpen={setOpen}
       imageData={data}
       isGeneratingImage={loading}
-      tweetText="I just claimed my PUDGY x $SSE profile 🐧 Claim yours before it's too late!"
+      tweetText={`I just claimed my $PENGU x $SSE profile 🐧
+
+Claim yours before it's too late!`}
       imageFilename="pudgy-x-sse.png"
       modalTitle="Share Your Pudgy x SSE Profile"
       instructionTitle="How to share your profile:"
-      shareXModalTitle="How to share your profile on X"
     />
   )
 }
