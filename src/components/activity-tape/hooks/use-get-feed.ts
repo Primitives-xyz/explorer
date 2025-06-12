@@ -10,8 +10,6 @@ export function useActivityTape() {
     endpoint: 'activity/global',
   })
 
-  console.log({ data })
-
   const activities: IActivityTapeEntry[] = useMemo(() => {
     return (
       data?.activities?.map((activity) => {
