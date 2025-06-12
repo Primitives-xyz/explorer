@@ -5,7 +5,6 @@ import { Button, ButtonSize, Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { DataTableLeaderboard } from './data-table-leaderboard'
 import { DataTableUserPosition } from './data-table-user-position'
@@ -16,7 +15,6 @@ export function LeaderboardContent() {
   const { mainProfile, loading: walletLoading } = useCurrentWallet()
   const [open, setOpen] = useState(false)
   const t = useTranslations('menu.solid_score.leaderboard')
-  const router = useRouter()
 
   const hasRevealedShare = !!mainProfile?.userHasClickedOnShareHisSolidScore
 

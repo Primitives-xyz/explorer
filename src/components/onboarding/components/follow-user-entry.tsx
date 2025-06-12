@@ -1,5 +1,6 @@
 import { FollowBlinkButton } from '@/components/common/follow-blink-button'
 import { FollowButton } from '@/components/common/follow-button'
+import { ButtonSize } from '@/components/ui'
 import Image from 'next/image'
 
 interface Props {
@@ -41,7 +42,7 @@ export function FollowUserEntry({
             followeeUsername={username}
             className="w-[100px]"
           />
-          <FollowBlinkButton username={username} displayVariant="icon" />
+          <FollowBlinkButton username={username} size={ButtonSize.ICON} />
         </div>
       </div>
     </div>
