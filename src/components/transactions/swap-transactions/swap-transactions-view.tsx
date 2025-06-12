@@ -92,15 +92,9 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       <CardContent className="space-y-4">
         <SwapTransactionsViewDetails
           token={{ ...fromToken, ...fromTokenInfo }}
-          tokenLoading={fromTokenLoading}
-          tokenPrice={fromTokenPrice ?? null}
-          priceLoading={fromTokenLoading}
         />
         <SwapTransactionsViewDetails
           token={{ ...toToken, ...toTokenInfo }}
-          tokenLoading={toTokenLoading}
-          tokenPrice={toTokenPrice ?? null}
-          priceLoading={toTokenLoading}
           isReceived
         />
       </CardContent>
