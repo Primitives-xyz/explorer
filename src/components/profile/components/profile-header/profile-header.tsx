@@ -55,7 +55,7 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
   const followers = hasProfile ? profileInfo.socialCounts?.followers ?? 0 : 0
   const following = hasProfile ? profileInfo.socialCounts?.following ?? 0 : 0
 
-  const isPudgy = !!mainProfile?.pudgy_profile_date
+  const isPudgy = !!profileInfo?.profile.pudgy_profile_date
 
   // Check if this is the current user's profile
   const isOwnProfile =
@@ -218,11 +218,10 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
         </div>
       )}
 
-      <div className="space-y-2">
-        {!!mainProfile?.username && (
+      <div className="space-y-2 w-[150px]">
+        {isOwnProfile && !!mainProfile?.username && (
           <Button
             className="w-full"
-            // variant={ButtonVariant.DEFAULT_SOCIAL}
             variant={
               isPudgy
                 ? ButtonVariant.PUDGY_SECONDARY
@@ -241,35 +240,31 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             {!isPudgy && <ShareIcon size={16} />} Share
           </Button>
         )}
-        {!!mainProfile?.username &&
-          !!username &&
-          mainProfile.username !== username && (
-            <div className="flex gap-2 my-4 md:my-0">
-              <FollowButton
-                className="w-full"
-                followerUsername={mainProfile.username}
-                followeeUsername={username}
-                isPudgy={isPudgy}
-              />
-              <FollowBlinkButton
-                username={username}
-                displayVariant="icon"
-                title="Share follow link - Let others follow with one Solana transaction!"
-              />
-            </div>
-          )}
+
+        {!isOwnProfile && !!mainProfile?.username && !!username && (
+          <FollowButton
+            className="w-full"
+            followerUsername={mainProfile.username}
+            followeeUsername={username}
+            isPudgy={isPudgy}
+          />
+        )}
+
+        {!!username && (
+          <FollowBlinkButton
+            username={username}
+            isPudgy={isPudgy}
+            className="w-full"
+          />
+        )}
 
         {/* Show blink button even when user is not logged in to encourage sharing */}
-        {(!mainProfile?.username || mainProfile.username === username) &&
+        {/* {(!mainProfile?.username || mainProfile.username === username) &&
           username && (
             <div className="my-4 md:my-0">
-              <FollowBlinkButton
-                username={username}
-                className="w-full"
-                showLabel={true}
-              />
+              <FollowBlinkButton username={username} className="w-full" />
             </div>
-          )}
+          )} */}
 
         {/* Bio editing - Mobile */}
         {isOwnProfile ? (

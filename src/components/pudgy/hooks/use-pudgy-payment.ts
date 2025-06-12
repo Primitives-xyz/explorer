@@ -92,7 +92,12 @@ export function usePudgyPayment({ profileId }: Props) {
       const penguPublicKey = new PublicKey(PENGU_MINT_ADDRESS)
 
       const account = await getAssociatedTokenAddress(penguPublicKey, publicKey)
+      console.dir(paymentDetailsData, { depth: null })
       const amount = Math.ceil(paymentDetailsData.amount) // round up to the nearest whole number, so that the transaction ca pass
+      const finalAmount = amount * 10 ** PENGU_DECIMALS
+      console.log(`    ✅ - Amount: ${amount}`)
+      console.log(`    ✅ - Final Amount: ${finalAmount}`)
+      console.log(`    ✅ - Decimals: ${PENGU_DECIMALS}`)
 
       const burnIx = createBurnCheckedInstruction(
         account, // PublicKey of Owner's Associated Token Account

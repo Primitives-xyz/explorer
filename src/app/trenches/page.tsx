@@ -8,8 +8,6 @@ import { SimpleInventoryModal } from '@/components/trenches/simple-inventory-mod
 import { TrenchesContent } from '@/components/trenches/trenches-content'
 import { SOL_MINT } from '@/utils/constants'
 import { useIsMobile } from '@/utils/use-is-mobile'
-import { motion } from 'framer-motion'
-import { Package } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Trenches() {
@@ -38,18 +36,6 @@ export default function Trenches() {
         currency={currency}
         solPrice={solPrice}
       />
-
-      {/* Floating Inventory Button - Bottom Left */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setShowInventory(true)}
-        className="fixed bottom-20 left-4 w-14 h-14 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-lg flex items-center justify-center z-[60]"
-      >
-        <Package className="w-6 h-6 text-white" />
-      </motion.button>
     </MainContentWrapper>
   )
 }
