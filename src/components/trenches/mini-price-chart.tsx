@@ -22,7 +22,7 @@ interface PricePoint {
 export function MiniPriceChart({
   token,
   className,
-  height = 180,
+  height,
   currency = 'SOL',
   solPrice,
 }: MiniPriceChartProps) {
@@ -65,9 +65,14 @@ export function MiniPriceChart({
       typeof token.pricePerToken === 'number' &&
       currentPrice === 0
     ) {
-      setCurrentPrice(convertPrice(token.pricePerToken))
+      // Use pricePerToken directly (it's already in SOL) and only convert for USD display
+      const displayPrice =
+        currency === 'USD' && solPrice
+          ? token.pricePerToken * solPrice
+          : token.pricePerToken
+      setCurrentPrice(displayPrice)
     }
-  }, [token.pricePerToken, convertPrice, currentPrice])
+  }, [token.pricePerToken, currency, solPrice, currentPrice])
 
   // Detect new trades - same logic as live trades section
   useEffect(() => {
@@ -91,17 +96,19 @@ export function MiniPriceChart({
       return
     }
 
-    const newPrice = convertPrice(priceInSol)
+    // Convert for display (same logic as initial price)
+    const displayPrice =
+      currency === 'USD' && solPrice ? priceInSol * solPrice : priceInSol
 
     // Update current price (this will cause a jump up/down)
-    setCurrentPrice(newPrice)
+    setCurrentPrice(displayPrice)
 
     // Add trade point to history
     const now = Date.now()
     setPriceHistory((prev) => {
       const newPoint: PricePoint = {
         timestamp: now,
-        price: newPrice,
+        price: displayPrice,
         isTradePoint: true,
       }
 
@@ -113,7 +120,7 @@ export function MiniPriceChart({
     })
 
     lastTradeSignatureRef.current = token.lastTrade.signature
-  }, [token, convertPrice])
+  }, [token, currency, solPrice])
 
   // Continuous background scrolling and price tracking
   useEffect(() => {
@@ -348,9 +355,10 @@ export function MiniPriceChart({
       <div
         className={cn(
           'w-full bg-black/20 rounded-lg flex items-center justify-center text-white/40 text-sm',
+          height ? '' : 'h-full', // Use h-full when no height specified
           className
         )}
-        style={{ height: `${height}px` }}
+        style={height ? { height: `${height}px` } : undefined}
       >
         No price data available
       </div>
@@ -361,9 +369,10 @@ export function MiniPriceChart({
     <div
       className={cn(
         'w-full rounded-lg bg-black/20 border border-white/10 relative overflow-hidden',
+        height ? '' : 'h-full', // Use h-full when no height specified
         className
       )}
-      style={{ height: `${height}px` }}
+      style={height ? { height: `${height}px` } : undefined}
     >
       {/* Live Price Header */}
       <div className="absolute top-2 left-3 z-10">

@@ -203,10 +203,10 @@ export function HotFeedModal({
     }
   }, [isOpen])
 
-  // Check if desktop
+  // Check if desktop - using consistent breakpoint with useIsMobile
   useEffect(() => {
     const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 768) // md breakpoint
+      setIsDesktop(window.innerWidth >= 1024) // lg breakpoint - consistent with useIsMobile
     }
     checkDesktop()
     window.addEventListener('resize', checkDesktop)
@@ -1117,12 +1117,11 @@ export function HotFeedModal({
                               </div>
                             </div>
 
-                            {/* Mini Chart */}
-                            <div className="mb-6">
+                            {/* Mini Chart - Responsive height */}
+                            <div className="mb-4 flex-1 min-h-0">
                               <MiniPriceChart
                                 token={token}
-                                height={180}
-                                className="backdrop-blur border-white/20"
+                                className="backdrop-blur border-white/20 h-full"
                                 currency={currency}
                                 solPrice={solPrice}
                               />
@@ -1396,7 +1395,7 @@ export function HotFeedModal({
                   {/* Main Card Container */}
                   <div className="w-full max-w-sm relative">
                     {/* Main container for all panels */}
-                    <div className="relative w-full h-[600px] max-h-[80vh] overflow-hidden">
+                    <div className="relative w-full h-[700px] max-h-[90vh] overflow-hidden">
                       {/* Horizontal panel group */}
                       <div
                         className="absolute inset-0 flex"
@@ -1442,7 +1441,7 @@ export function HotFeedModal({
                         <div className="w-full flex-shrink-0">
                           <div className="bg-gradient-to-br from-purple-900/90 via-pink-900/90 to-orange-900/90 rounded-3xl p-6 border border-white/20 shadow-2xl backdrop-blur h-full flex flex-col">
                             {/* Token Header */}
-                            <div className="flex items-start justify-between mb-4 gap-4">
+                            <div className="flex items-start justify-between mb-4 gap-4 flex-shrink-0">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 {token.mintImage && (
                                   <img
@@ -1476,7 +1475,7 @@ export function HotFeedModal({
                             </div>
 
                             {/* Quick Stats */}
-                            <div className="grid grid-cols-3 gap-2 mb-4">
+                            <div className="grid grid-cols-3 gap-2 mb-4 flex-shrink-0">
                               <div className="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20 hover:bg-white/20 transition-colors">
                                 <div className="text-xs text-white/60 flex items-center gap-1">
                                   <Zap size={10} /> Liquidity
@@ -1511,24 +1510,23 @@ export function HotFeedModal({
                               </div>
                             </div>
 
-                            {/* Mini Chart */}
-                            <div className="mb-6">
+                            {/* Mini Chart - Responsive height */}
+                            <div className="mb-4 flex-1 min-h-0">
                               <MiniPriceChart
                                 token={token}
-                                height={180}
-                                className="backdrop-blur border-white/20"
+                                className="backdrop-blur border-white/20 h-full"
                                 currency={currency}
                                 solPrice={solPrice}
                               />
                             </div>
 
                             {/* Badges */}
-                            <div className="flex flex-wrap gap-1 mb-6">
+                            <div className="flex flex-wrap gap-1 mb-4 flex-shrink-0">
                               <TokenBadges agg={token} />
                             </div>
 
                             {/* Navigation Buttons */}
-                            <div className="flex justify-between items-center mb-4">
+                            <div className="flex justify-between items-center mb-4 flex-shrink-0">
                               <button
                                 onClick={() => setViewIndex(0)}
                                 className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-sm"
@@ -1545,8 +1543,8 @@ export function HotFeedModal({
                               </button>
                             </div>
 
-                            {/* Buy Amounts */}
-                            <div className="grid grid-cols-3 gap-2 mt-auto">
+                            {/* Buy Amounts - Always visible */}
+                            <div className="grid grid-cols-3 gap-2 flex-shrink-0">
                               {[0.01, 0.1, 0.5].map((amount) => (
                                 <button
                                   key={amount}
