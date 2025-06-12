@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, ButtonProps, ButtonVariant } from '@/components/ui'
+import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { cn } from '@/utils/utils'
 import { CheckIcon, ShareIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -60,6 +60,8 @@ export function FollowBlinkButton({ username, isPudgy, ...props }: Props) {
   //   )
   // }
 
+  const isIcon = props.size === ButtonSize.ICON
+
   return (
     <Button
       {...props}
@@ -79,12 +81,12 @@ export function FollowBlinkButton({ username, isPudgy, ...props }: Props) {
       {copied ? (
         <>
           <CheckIcon size={18} />
-          {t('common.copied')}
+          {!isIcon && t('common.copied')}
         </>
       ) : (
         <>
-          {!isPudgy && <ShareIcon size={16} />}
-          {t('common.follow.share_blink')}
+          {(!isPudgy || isIcon) && <ShareIcon size={16} />}
+          {!isIcon && t('common.follow.share_blink')}
         </>
       )}
     </Button>
