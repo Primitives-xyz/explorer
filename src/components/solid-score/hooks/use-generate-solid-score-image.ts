@@ -12,15 +12,15 @@ interface UseGenerateSolidScoreImageParams {
 export function useGenerateSolidScoreImage(
   params: UseGenerateSolidScoreImageParams
 ) {
-  const [data, setData] = useState<Blob | null>(null)
+  const [data, setData] = useState<Blob>()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<Error>()
 
   useEffect(() => {
     const generateImage = async () => {
       try {
         setLoading(true)
-        setError(null)
+        setError(undefined)
 
         const searchParams = new URLSearchParams()
         searchParams.set('username', params.username)
