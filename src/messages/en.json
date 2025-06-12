@@ -108,7 +108,7 @@
           "share_x_instructions": {
             "title": "Share your SOLID Score on X",
             "desktop": {
-              "instruction": "Press {shortcut} to paste your SOLID Score image"
+              "instruction": "Press {shortcut} to paste your image"
             },
             "mobile": {
               "step_1": "Tap and hold in the tweet composer",
