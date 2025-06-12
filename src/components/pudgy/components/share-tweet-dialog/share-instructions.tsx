@@ -4,15 +4,20 @@ import Image from 'next/image'
 interface Props {
   isImageCopied: boolean
   isShared: boolean
+  instructionTitle: string
 }
 
-export function ShareInstructions({ isImageCopied, isShared }: Props) {
+export function ShareInstructions({
+  isImageCopied,
+  isShared,
+  instructionTitle,
+}: Props) {
   const t = useTranslations('menu.solid_score.leaderboard.share_dialog')
 
   return (
     <div className="w-[280px] md:w-[350px] md:h-[350px] bg-muted rounded-lg p-4 md:p-6 flex flex-col shrink-0">
       <div className="flex flex-col h-full justify-center gap-4 md:gap-8">
-        <h3 className="md:text-lg">{t('instructions.title')}</h3>
+        <h3 className="md:text-lg">{instructionTitle}</h3>
         <div className="flex flex-col gap-3 md:gap-4">
           <p className="flex items-center gap-2 text-sm md:text-base">
             <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-xs md:text-sm">

@@ -1,16 +1,26 @@
 'use client'
 
+import { IProfile } from '@/components/tapestry/models/profiles.models'
+import { Animate } from '@/components/ui'
 import { cn } from '@/utils/utils'
 import Image from 'next/image'
 import { EPudgyTheme } from '../pudgy.models'
 
 interface Props {
-  pudgyTheme: EPudgyTheme
+  profile: IProfile
 }
 
-export function BackgroundTheme({ pudgyTheme }: Props) {
+export function BackgroundTheme({ profile }: Props) {
+  const isPudgy = !!profile?.pudgy_profile_date
+  const isVisible = isPudgy && !!profile.pudgyTheme
+
   return (
-    <div
+    <Animate
+      isVisible={isVisible}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
       className={cn('fixed inset-0 z-0 pointer-events-none', {
         // 'background-gradient': pudgyTheme === EPudgyTheme.DEFAULT,
         // 'background-gradient-blue': pudgyTheme === EPudgyTheme.BLUE,
@@ -18,9 +28,9 @@ export function BackgroundTheme({ pudgyTheme }: Props) {
         // 'background-gradient-pink': pudgyTheme === EPudgyTheme.PINK,
       })}
     >
-      {pudgyTheme !== EPudgyTheme.DEFAULT && (
+      {!!profile.pudgyTheme && profile.pudgyTheme !== EPudgyTheme.DEFAULT && (
         <Image
-          src={`/images/pudgy/pudgy-bg-${pudgyTheme.toLowerCase()}.webp`}
+          src={`/images/pudgy/pudgy-bg-${profile.pudgyTheme.toLowerCase()}.webp`}
           alt="Background Theme"
           className="absolute top-0 left-0 w-full h-full object-cover"
           width={1500}
@@ -35,6 +45,6 @@ export function BackgroundTheme({ pudgyTheme }: Props) {
         height={1006}
       />
       <div className="absolute top-0 left-0 inset-0 bg-black/10" />
-    </div>
+    </Animate>
   )
 }
