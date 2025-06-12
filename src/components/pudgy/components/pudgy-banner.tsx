@@ -42,7 +42,7 @@ export function PudgyBanner() {
               <h2 className="font-pudgy-heading text-xl uppercase drop-shadow-md">
                 The pudgy x sse collab is here!
               </h2>
-              <p className="font-pudgy-body text-sm uppercase drop-shadow-md font-bold">
+              <p className="font-pudgy-body text-sm uppercase drop-shadow-md">
                 level up to a Pudgy profile — exclusively on sse
               </p>
             </div>

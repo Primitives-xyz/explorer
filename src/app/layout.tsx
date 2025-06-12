@@ -33,10 +33,10 @@ const fobbleRegular = localFont({
   variable: '--font-fobble-regular',
   weight: '400',
 })
-const mencoMedium = localFont({
-  src: '../../public/fonts/menco-medium.otf',
-  variable: '--font-menco-medium',
-  weight: '500',
+const mencoBold = localFont({
+  src: '../../public/fonts/menco-bold.otf',
+  variable: '--font-menco-bold',
+  weight: '700',
 })
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -118,7 +118,7 @@ export default async function RootLayout({
           rethinkSans.variable,
           ttTrailersExtraBold.variable,
           fobbleRegular.variable,
-          mencoMedium.variable
+          mencoBold.variable
         )}
       >
         <NextIntlClientProvider messages={messages}>

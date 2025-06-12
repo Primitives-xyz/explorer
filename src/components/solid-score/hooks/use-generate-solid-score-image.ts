@@ -51,5 +51,9 @@ export function useGenerateSolidScoreImage(
     generateImage()
   }, [params.username, params.score, params.profileImage, params.badges])
 
-  return { data, loading, error }
+  return {
+    data,
+    loading,
+    error,
+  }
 }

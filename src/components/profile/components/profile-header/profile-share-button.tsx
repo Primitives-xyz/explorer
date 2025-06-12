@@ -38,6 +38,7 @@ export function ProfileShareButton({ profile, isPudgy }: Props) {
       <ShareTweetDialog
         open={openPudgyShareDialog}
         setOpen={setOpenPudgyShareDialog}
+        profile={profile}
       />
     </>
   )

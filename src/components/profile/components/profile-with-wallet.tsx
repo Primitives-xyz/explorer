@@ -39,16 +39,20 @@ export function ProfileWithWallet({ walletAddress }: Props) {
     )
   }
 
+  if (!profileInfo?.wallet) {
+    return (
+      <div className="w-full flex items-center justify-center pt-[200px] text-lg flex-col gap-4">
+        Profile not found
+      </div>
+    )
+  }
+
   return (
     <ProfileContent
-      profileInfo={
-        profileInfo?.wallet?.address
-          ? {
-              ...profileInfo,
-              walletAddress: profileInfo.wallet.address,
-            }
-          : null
-      }
+      profileInfo={{
+        ...profileInfo,
+        walletAddress: profileInfo.wallet.address,
+      }}
       walletAddress={walletAddress}
     />
   )
