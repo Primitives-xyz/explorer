@@ -1,4 +1,5 @@
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
+import { useSolanaTransaction } from '@/hooks/use-solana-transaction'
 import { useMutation } from '@/utils/api/use-mutation'
 import { useQuery } from '@/utils/api/use-query'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -14,7 +15,7 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from '@solana/web3.js'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   ECryptoTransactionStatus,
   ICryptoChallengePaymentStatus,
@@ -60,7 +61,35 @@ export function usePudgyPayment({ profileId }: Props) {
   })
   const { refetch } = useCurrentWallet()
   const [paymentError, setPaymentError] = useState<Error>()
-  const [loadingPayment, setLoadingPayment] = useState(false)
+
+  // Use the generic Solana transaction hook for real-time updates
+  const {
+    sendAndConfirmTransaction,
+    loading: loadingTransaction,
+    status: transactionStatus,
+    error: transactionError,
+  } = useSolanaTransaction({
+    onStatusUpdate: (status) => {
+      console.log('Transaction status update:', status)
+    },
+    onSuccess: async (signature) => {
+      console.log('Transaction confirmed:', signature)
+
+      // Submit the signature to the backend
+      if (paymentDetailsData) {
+        await submitSignature({
+          txSignature: signature,
+          txId: paymentDetailsData.memo,
+          pudgyProfileId: profileId,
+        })
+        setPolling(true)
+      }
+    },
+    onError: (error) => {
+      console.error('Transaction error:', error)
+      setPaymentError(new Error(error))
+    },
+  })
 
   // Get PENGU token balance
   const {
@@ -85,32 +114,27 @@ export function usePudgyPayment({ profileId }: Props) {
     }
   }, [transactionStatusData, refetch])
 
-  const pay = async () => {
+  const pay = useCallback(async () => {
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
       console.error(
         'Wallet not connected. Please connect your wallet to proceed with the payment.'
       )
-
       return
     }
 
     if (!paymentDetailsData) {
       console.error('Payment details not available. Please try again later.')
-
       return
     }
 
     try {
-      setLoadingPayment(true)
-
-      // const connection: Connection = await primaryWallet.getConnection()
       const connection = await primaryWallet.getConnection()
       const publicKey = new PublicKey(primaryWallet.address)
       const penguPublicKey = new PublicKey(PENGU_MINT_ADDRESS)
 
       const account = await getAssociatedTokenAddress(penguPublicKey, publicKey)
       console.dir(paymentDetailsData, { depth: null })
-      const amount = Math.ceil(paymentDetailsData.amount) // round up to the nearest whole number, so that the transaction ca pass
+      const amount = Math.ceil(paymentDetailsData.amount) // round up to the nearest whole number
       const finalAmount = amount * 10 ** PENGU_DECIMALS
       console.log(`    ✅ - Amount: ${amount}`)
       console.log(`    ✅ - Final Amount: ${finalAmount}`)
@@ -159,34 +183,27 @@ export function usePudgyPayment({ profileId }: Props) {
       const signedTransaction = await signer.signTransaction(transaction)
 
       console.log(`Step 5 - Execute & Confirm Transaction`)
-      const txSignature = await connection.sendTransaction(signedTransaction)
-      console.log('    ✅ - Transaction sent to network')
-      console.log(
-        '🚀 ~ createAndSendBurnTransaction ~ txSignature:',
-        txSignature
-      ) // must save this to /callback
 
-      await submitSignature({
-        txSignature,
-        txId: paymentDetailsData.memo,
-        pudgyProfileId: profileId,
+      // Use the generic transaction system with metadata
+      await sendAndConfirmTransaction(signedTransaction, {
+        type: 'pudgy-payment',
+        profileId,
+        memo: paymentDetailsData.memo,
+        amount: amount,
+        tokenMint: PENGU_MINT_ADDRESS,
       })
-
-      setPolling(true)
     } catch (error: any) {
-      // console.error('Error sending transaction:', error)
+      console.error('Error creating transaction:', error)
       setPaymentError(error)
       throw error
-    } finally {
-      setLoadingPayment(false)
     }
-  }
+  }, [primaryWallet, paymentDetailsData, profileId, sendAndConfirmTransaction])
 
   const loading =
     loadingPaymentDetails ||
     loadingSubmitSignature ||
     loadingTransactionStatus ||
-    loadingPayment ||
+    loadingTransaction ||
     polling ||
     balanceLoading
 
@@ -194,12 +211,14 @@ export function usePudgyPayment({ profileId }: Props) {
     paymentDetailsError ||
     submitSignatureError ||
     transactionStatusError ||
+    transactionError ||
     paymentError
 
   return {
     paymentDetailsData,
     loading,
     transactionStatusData,
+    transactionStatus,
     error,
     pay,
     balance,
