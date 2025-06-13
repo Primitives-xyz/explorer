@@ -1,5 +1,6 @@
 import { FetchMethod } from '@/utils/api'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
+import { dedupTokenHolders } from '@/utils/redis-dedup'
 import { NextRequest, NextResponse } from 'next/server'
 
 type RouteContext = {
@@ -22,17 +23,30 @@ export async function GET(req: NextRequest, context: RouteContext) {
       )
     }
 
-    const response = await fetchTapestryServer({
-      endpoint: `profiles/token-owners/${mint}?page=${page}&pageSize=${pageSize}${
-        requestorId ? `&requestorId=${requestorId}` : ''
-      }`,
-      method: FetchMethod.GET,
+    // Create a cache key that includes pagination params
+    const cacheKey = `${mint}:${page}:${pageSize}:${requestorId || 'none'}`
+
+    // Use deduplication to prevent concurrent requests
+    const response = await dedupTokenHolders(mint, async () => {
+      const result = await fetchTapestryServer({
+        endpoint: `profiles/token-owners/${mint}?page=${page}&pageSize=${pageSize}${
+          requestorId ? `&requestorId=${requestorId}` : ''
+        }`,
+        method: FetchMethod.GET,
+      })
+
+      // Transform the response to match our expected format
+      return {
+        profiles: result.profiles || [],
+        totalAmount: result.profiles?.length || 0,
+      }
     })
 
-    // Transform the response to match our expected format
-    return NextResponse.json({
-      profiles: response.profiles || [],
-      totalAmount: response.profiles?.length || 0,
+    return NextResponse.json(response, {
+      headers: {
+        // Cache for 2 minutes since holder data changes moderately
+        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+      },
     })
   } catch (error: any) {
     console.error('[Token Holders API Error]:', {

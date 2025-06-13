@@ -42,6 +42,14 @@ export function usePudgyPayment({ profileId, onComplete }: Props) {
     error: detailsError,
   } = useQuery<IPudgyUpgradeInitiateResponse>({
     endpoint: `profiles/${profileId}/pudgy/upgrade/initiate`,
+    config: {
+      // Cache for 30 minutes since payment details don't change often
+      refreshInterval: 30 * 60 * 1000,
+      revalidateOnFocus: false,
+      keepPreviousData: true,
+      dedupingInterval: 60 * 1000,
+      revalidateIfStale: false,
+    },
   })
 
   // Submit signature mutation
