@@ -25,16 +25,16 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
     // Create a cache key that includes pagination params
     const cacheKey = `${mint}:${page}:${pageSize}:${requestorId || 'none'}`
-    
+
     // Use deduplication to prevent concurrent requests
-    const response = await dedupTokenHolders(cacheKey, async () => {
+    const response = await dedupTokenHolders(mint, async () => {
       const result = await fetchTapestryServer({
         endpoint: `profiles/token-owners/${mint}?page=${page}&pageSize=${pageSize}${
           requestorId ? `&requestorId=${requestorId}` : ''
         }`,
         method: FetchMethod.GET,
       })
-      
+
       // Transform the response to match our expected format
       return {
         profiles: result.profiles || [],

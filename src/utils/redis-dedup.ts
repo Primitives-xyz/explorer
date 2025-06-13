@@ -20,19 +20,19 @@ export const dedupRequest = async <T>(
   ttl = DEDUP_TTL.CONTENT
 ): Promise<T> => {
   const cacheKey = `dedup:${key}`
-  
+
   // Check in-memory promise cache first (for concurrent requests)
   if (promiseCache.has(cacheKey)) {
     return promiseCache.get(cacheKey)!
   }
-  
+
   try {
     // Check Redis cache
     const cached = await redis.get(cacheKey)
-    if (cached !== null) {
-      return cached as T
+    if (cached !== null && cached !== undefined) {
+      return JSON.parse(cached as string) as T
     }
-    
+
     // Create promise and store in memory
     const promise = fetcher()
       .then(async (data) => {
@@ -45,7 +45,7 @@ export const dedupRequest = async <T>(
         promiseCache.delete(cacheKey)
         throw error
       })
-    
+
     promiseCache.set(cacheKey, promise)
     return promise
   } catch (error) {
