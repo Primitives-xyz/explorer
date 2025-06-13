@@ -12,7 +12,14 @@ import {
 import { useTapestryTransactionHistory } from '@/hooks/use-tapestry-transaction-history'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useIsMobile } from '@/utils/use-is-mobile'
-import { DollarSign, Package, TrendingDown, TrendingUp } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronRight,
+  DollarSign,
+  Package,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 // Simple token info cache
@@ -38,7 +45,6 @@ function useTokenInfo(mints: string[]) {
       if (mintsToFetch.length === 0) return
 
       setLoading(true)
-      console.log(`🔍 Fetching token info for ${mintsToFetch.length} tokens`)
 
       const fetchPromises = mintsToFetch.map(async (mint) => {
         try {
@@ -58,10 +64,6 @@ function useTokenInfo(mints: string[]) {
               info,
               timestamp: Date.now(),
             })
-
-            console.log(
-              `✅ Fetched info for ${mint}: ${info.symbol} (${info.name})`
-            )
             return { mint, info }
           }
         } catch (error) {
@@ -119,6 +121,86 @@ function useTokenInfo(mints: string[]) {
   }, [mints.join(',')])
 
   return { tokenInfo, loading }
+}
+
+// Simple current price cache
+const CURRENT_PRICE_CACHE = new Map<
+  string,
+  { price: number; timestamp: number }
+>()
+const PRICE_CACHE_DURATION = 30 * 1000 // 30 seconds
+
+// Hook to fetch current token prices
+function useCurrentPrices(mints: string[]) {
+  const [prices, setPrices] = useState<Record<string, number>>({})
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchPrices = async (mintsToFetch: string[]) => {
+      if (mintsToFetch.length === 0) return
+
+      setLoading(true)
+
+      try {
+        // Use Jupiter price API for current prices
+        const mintParams = mintsToFetch.join(',')
+        const response = await fetch(
+          `https://price.jup.ag/v4/price?ids=${mintParams}`
+        )
+
+        if (response.ok) {
+          const data = await response.json()
+          const newPrices: Record<string, number> = {}
+
+          mintsToFetch.forEach((mint) => {
+            const priceData = data.data?.[mint]
+            if (priceData?.price) {
+              const price = parseFloat(priceData.price)
+              newPrices[mint] = price
+
+              // Cache the price
+              CURRENT_PRICE_CACHE.set(mint, {
+                price,
+                timestamp: Date.now(),
+              })
+            }
+          })
+
+          setPrices((prev) => ({ ...prev, ...newPrices }))
+        }
+      } catch (error) {
+        console.warn('Failed to fetch current prices:', error)
+      }
+
+      setLoading(false)
+    }
+
+    const now = Date.now()
+    const mintsToFetch: string[] = []
+    const cachedPrices: Record<string, number> = {}
+
+    // Check cache first
+    mints.forEach((mint) => {
+      const cached = CURRENT_PRICE_CACHE.get(mint)
+      if (cached && now - cached.timestamp < PRICE_CACHE_DURATION) {
+        cachedPrices[mint] = cached.price
+      } else {
+        mintsToFetch.push(mint)
+      }
+    })
+
+    // Set cached prices immediately
+    if (Object.keys(cachedPrices).length > 0) {
+      setPrices((prev) => ({ ...prev, ...cachedPrices }))
+    }
+
+    // Fetch missing prices
+    if (mintsToFetch.length > 0) {
+      fetchPrices(mintsToFetch)
+    }
+  }, [mints.join(',')])
+
+  return { prices, loading }
 }
 
 // Better precision formatting for crypto values
@@ -191,10 +273,9 @@ interface EnrichedTokenPosition extends TokenPosition {
 function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
   const positionMap = new Map<string, TokenPosition>()
 
-  console.log(`🔄 Processing ${transactions.length} transactions`)
-
   // Group transactions by token mint
   transactions.forEach((tx) => {
+    console.log('tx', tx)
     if (tx.tradeType === 'swap') return // Skip swaps for now
 
     const isBuy = tx.tradeType === 'buy'
@@ -226,19 +307,15 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
     if (isBuy) {
       position.totalBought += tx.outputAmount
       position.totalCostUSD += tx.inputValueUSD || 0
-      console.log(
-        `📈 ${position.symbol}: Buy ${tx.outputAmount.toFixed(2)} tokens for $${
-          tx.inputValueUSD
-        }`
-      )
+      if (!tx.inputValueUSD) {
+        console.log('tx missing inputValueUSD: ', tx)
+      }
     } else {
       position.totalSold += tx.inputAmount
       position.totalRevenueUSD += tx.outputValueUSD || 0
-      console.log(
-        `📉 ${position.symbol}: Sell ${tx.inputAmount.toFixed(2)} tokens for $${
-          tx.outputValueUSD
-        }`
-      )
+      if (!tx.outputValueUSD) {
+        console.log('tx missing outputValueUSD: ', tx)
+      }
     }
   })
 
@@ -247,9 +324,7 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
   positionMap.forEach((position) => {
     position.remainingTokens = position.totalBought - position.totalSold
     position.isOpen = position.remainingTokens > 0.001
-    position.realizedPnLUSD =
-      position.totalRevenueUSD -
-      position.totalCostUSD * (position.totalSold / position.totalBought || 0)
+    position.realizedPnLUSD = position.totalRevenueUSD - position.totalCostUSD
     position.averageBuyPriceUSD =
       position.totalBought > 0
         ? position.totalCostUSD / position.totalBought
@@ -259,21 +334,6 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
 
     // Sort transactions by timestamp
     position.transactions.sort((a, b) => a.timestamp - b.timestamp)
-
-    console.log(
-      `📊 ${position.symbol}: ${position.totalBought.toFixed(
-        2
-      )} bought, ${position.totalSold.toFixed(
-        2
-      )} sold, ${position.remainingTokens.toFixed(2)} remaining`
-    )
-    console.log(
-      `💰 ${position.symbol}: $${position.totalCostUSD.toFixed(
-        2
-      )} cost, $${position.totalRevenueUSD.toFixed(
-        2
-      )} revenue, $${position.realizedPnLUSD.toFixed(2)} realized P&L`
-    )
 
     if (position.totalBought > 0) {
       positions.push(position)
@@ -339,11 +399,13 @@ function OpenPosition({
   position,
   currency,
   solPrice,
+  currentPrice,
   onSell,
 }: {
   position: EnrichedTokenPosition
   currency: 'SOL' | 'USD'
   solPrice: number | null
+  currentPrice?: number
   onSell: (mint: string, amount: number) => void
 }) {
   const { isMobile } = useIsMobile()
@@ -351,8 +413,13 @@ function OpenPosition({
   const formatValue = (usdValue: number) =>
     formatCryptoValue(usdValue, currency, solPrice)
 
-  const investedUSD =
+  const costBasis =
     position.totalCostUSD * (position.remainingTokens / position.totalBought)
+  const currentValue = currentPrice
+    ? currentPrice * position.remainingTokens
+    : 0
+  const pnl = currentValue - costBasis
+  const pnlPercent = costBasis > 0 ? (pnl / costBasis) * 100 : 0
 
   if (isMobile) {
     return (
@@ -360,11 +427,27 @@ function OpenPosition({
         <div className="flex items-center justify-between mb-3">
           <TokenDisplay position={position} isOpen={true} />
           <div className="text-right">
-            <div className="font-bold">{formatValue(investedUSD)}</div>
-            <div className="text-sm text-gray-400">Cost basis</div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 mb-1">
               {position.remainingTokens.toFixed(2)} tokens
             </div>
+            {currentPrice ? (
+              <>
+                <div
+                  className={`font-bold ${
+                    pnl >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}
+                >
+                  {pnl >= 0 ? '+' : ''}
+                  {formatValue(pnl)}
+                </div>
+                <div className="text-sm text-gray-400">
+                  ({pnl >= 0 ? '+' : ''}
+                  {pnlPercent.toFixed(1)}%)
+                </div>
+              </>
+            ) : (
+              <div className="text-sm text-gray-400">Loading...</div>
+            )}
           </div>
         </div>
         <div className="flex gap-2">
@@ -394,11 +477,34 @@ function OpenPosition({
         {position.remainingTokens.toFixed(2)}
       </td>
       <td className="text-right py-4 px-2">
-        {formatValue(position.averageBuyPriceUSD)}
+        {currentPrice ? (
+          formatValue(currentValue)
+        ) : (
+          <span className="text-gray-500">--</span>
+        )}
       </td>
-      <td className="text-right py-4 px-2 text-gray-500">--</td>
-      <td className="text-right py-4 px-2">{formatValue(investedUSD)}</td>
-      <td className="text-right py-4 px-2 text-gray-500">--</td>
+      <td className="text-right py-4 px-2">{formatValue(costBasis)}</td>
+      <td
+        className={`text-right py-4 px-2 font-medium ${
+          pnl >= 0 ? 'text-green-400' : 'text-red-400'
+        }`}
+      >
+        {currentPrice ? (
+          <div className="flex items-center justify-end gap-1">
+            {pnl >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+            <span>
+              {pnl >= 0 ? '+' : ''}
+              {formatValue(pnl)}
+              <span className="text-xs ml-1">
+                ({pnl >= 0 ? '+' : ''}
+                {pnlPercent.toFixed(1)}%)
+              </span>
+            </span>
+          </div>
+        ) : (
+          <span className="text-gray-500">--</span>
+        )}
+      </td>
       <td className="text-right py-4 px-2">
         <div className="flex justify-end gap-2">
           <button
@@ -531,6 +637,10 @@ export function SimpleInventoryModal({
   const { setOpen: setSwapOpen, setInputs } = useSwapStore()
   const { isMobile } = useIsMobile()
 
+  // State for collapsible sections
+  const [showOpenPositions, setShowOpenPositions] = useState(true)
+  const [showClosedPositions, setShowClosedPositions] = useState(true)
+
   // Fetch transaction history
   const { transactions, isLoading, isError } = useTapestryTransactionHistory(
     walletAddress || '',
@@ -540,10 +650,6 @@ export function SimpleInventoryModal({
   // Calculate positions from transactions
   const positions = useMemo(() => {
     if (!transactions || transactions.length === 0) return []
-
-    console.log(
-      `🔄 Calculating positions from ${transactions.length} transactions`
-    )
 
     // Cast transactions to proper type and filter valid ones
     const validTransactions = transactions
@@ -555,8 +661,6 @@ export function SimpleInventoryModal({
       )
       .map((tx: any) => tx as TradeTransaction)
 
-    console.log(`✅ Processing ${validTransactions.length} valid transactions`)
-
     return calculatePositions(validTransactions)
   }, [transactions])
 
@@ -567,6 +671,10 @@ export function SimpleInventoryModal({
 
   // Fetch token info for all positions with caching
   const { tokenInfo, loading: loadingTokenInfo } = useTokenInfo(uniqueMints)
+
+  // Fetch current prices for all positions
+  const { prices: currentPrices, loading: loadingPrices } =
+    useCurrentPrices(uniqueMints)
 
   // Enrich positions with token info
   const enrichedPositions: EnrichedTokenPosition[] = useMemo(() => {
@@ -623,8 +731,8 @@ export function SimpleInventoryModal({
   if (!walletAddress && !walletLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden bg-black/95 border-white/10">
-          <DialogHeader className="border-b border-white/10 pb-4">
+        <DialogContent className="max-w-4xl h-[85vh] overflow-hidden bg-black/95 border-white/10">
+          <DialogHeader className="pb-4">
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5 text-primary" />
               <DialogTitle className="text-xl font-bold">Inventory</DialogTitle>
@@ -633,7 +741,7 @@ export function SimpleInventoryModal({
               Please connect your wallet to view inventory
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center flex-1">
             <p className="text-gray-400">
               Please connect your wallet to view inventory
             </p>
@@ -645,13 +753,14 @@ export function SimpleInventoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[85vh] overflow-hidden bg-black/95 border-white/10">
-        <DialogHeader className="border-b border-white/10 pb-4">
+      <DialogContent className="max-w-5xl h-[85vh] overflow-hidden bg-black/95 border-white/10 flex flex-col">
+        {/* Compact Header */}
+        <DialogHeader className="shrink-0 border-b border-white/10 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5 text-primary" />
               <DialogTitle className="text-xl font-bold">Inventory</DialogTitle>
-              {loadingTokenInfo && (
+              {(loadingTokenInfo || loadingPrices) && (
                 <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
               )}
             </div>
@@ -665,40 +774,26 @@ export function SimpleInventoryModal({
             </div>
           </div>
 
-          <DialogDescription className="text-gray-400">
-            Your token positions from trenches trading (using transaction data)
-          </DialogDescription>
-
-          {/* WIP Notice */}
-          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mt-2">
-            <div className="flex items-center gap-2 text-yellow-400 text-sm font-medium">
-              🚧{' '}
-              <span>
-                WIP: PnL tracking is not expected to be accurate right now!
-              </span>
-            </div>
-            <p className="text-xs text-yellow-300/80 mt-1">
-              This feature is in development. Position calculations may not
-              reflect actual performance.
-            </p>
-          </div>
-
-          {/* Portfolio Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Total Invested</div>
+          {/* Compact Portfolio Stats */}
+          <div
+            className={`grid gap-2 mt-3 ${
+              isMobile ? 'grid-cols-2' : 'grid-cols-5'
+            }`}
+          >
+            <div className="bg-white/5 rounded-lg p-2">
+              <div className="text-xs text-gray-400">Invested</div>
               <div className="text-sm font-bold">
                 {formatValue(stats.totalInvested)}
               </div>
             </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Open Cost Basis</div>
+            <div className="bg-white/5 rounded-lg p-2">
+              <div className="text-xs text-gray-400">Open Basis</div>
               <div className="text-sm font-bold">
                 {formatValue(stats.openValue)}
               </div>
             </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Realized P&L</div>
+            <div className="bg-white/5 rounded-lg p-2">
+              <div className="text-xs text-gray-400">Realized P&L</div>
               <div
                 className={`text-sm font-bold ${
                   stats.totalRealized >= 0 ? 'text-green-400' : 'text-red-400'
@@ -708,40 +803,51 @@ export function SimpleInventoryModal({
                 {formatValue(stats.totalRealized)}
               </div>
             </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Win Rate</div>
-              <div className="text-sm font-bold">
-                {stats.winningPositions}/
-                {stats.winningPositions + stats.losingPositions}
-                <span className="text-xs text-gray-400 ml-1">
-                  (
-                  {(
-                    (stats.winningPositions /
-                      (stats.winningPositions + stats.losingPositions)) *
-                      100 || 0
-                  ).toFixed(0)}
-                  %)
-                </span>
-              </div>
-            </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Positions</div>
-              <div className="text-sm font-bold">
-                {openPositions.length} open, {closedPositions.length} closed
-              </div>
+            {!isMobile && (
+              <>
+                <div className="bg-white/5 rounded-lg p-2">
+                  <div className="text-xs text-gray-400">Win Rate</div>
+                  <div className="text-sm font-bold">
+                    {stats.winningPositions}/
+                    {stats.winningPositions + stats.losingPositions}
+                    <span className="text-xs text-gray-400 ml-1">
+                      (
+                      {(
+                        (stats.winningPositions /
+                          (stats.winningPositions + stats.losingPositions)) *
+                          100 || 0
+                      ).toFixed(0)}
+                      %)
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white/5 rounded-lg p-2">
+                  <div className="text-xs text-gray-400">Positions</div>
+                  <div className="text-sm font-bold">
+                    {openPositions.length} open, {closedPositions.length} closed
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* WIP Notice - More Compact */}
+          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-2 mt-2">
+            <div className="flex items-center gap-2 text-yellow-400 text-xs font-medium">
+              🚧 <span>WIP: PnL tracking may not be accurate</span>
             </div>
           </div>
         </DialogHeader>
 
-        {/* Positions List */}
-        <div className="overflow-y-auto max-h-[55vh]">
+        {/* Positions List - Takes remaining space */}
+        <div className="flex-1 overflow-y-auto">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-12">
+            <div className="flex flex-col items-center justify-center h-full">
               <Package className="w-12 h-12 text-gray-600 mb-3 animate-pulse" />
               <p className="text-gray-400">Loading positions...</p>
             </div>
           ) : enrichedPositions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
+            <div className="flex flex-col items-center justify-center h-full">
               <Package className="w-12 h-12 text-gray-600 mb-3" />
               <p className="text-gray-400">No positions found</p>
               <p className="text-sm text-gray-500 mt-1">
@@ -749,52 +855,70 @@ export function SimpleInventoryModal({
               </p>
             </div>
           ) : (
-            <>
+            <div className="p-4 space-y-6">
               {/* Open Positions Section */}
               {openPositions.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-3 text-green-400">
+                <div>
+                  <button
+                    onClick={() => setShowOpenPositions(!showOpenPositions)}
+                    className="flex items-center gap-2 text-lg font-semibold text-green-400 hover:text-green-300 mb-3 w-full"
+                  >
+                    {showOpenPositions ? (
+                      <ChevronDown className="w-5 h-5" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5" />
+                    )}
                     Open Positions ({openPositions.length})
-                  </h3>
-                  {isMobile ? (
-                    <div className="space-y-3 px-2">
-                      {openPositions.map((position) => (
-                        <OpenPosition
-                          key={position.mint}
-                          position={position}
-                          currency={currency}
-                          solPrice={solPrice}
-                          onSell={handleSell}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="px-4">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="text-sm text-gray-400 border-b border-white/10">
-                            <th className="text-left py-3 px-2">Token</th>
-                            <th className="text-right py-3 px-2">Amount</th>
-                            <th className="text-right py-3 px-2">Avg Buy</th>
-                            <th className="text-right py-3 px-2">Current</th>
-                            <th className="text-right py-3 px-2">Cost Basis</th>
-                            <th className="text-right py-3 px-2">P&L</th>
-                            <th className="text-right py-3 px-2">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                  </button>
+
+                  {showOpenPositions && (
+                    <>
+                      {isMobile ? (
+                        <div className="space-y-3">
                           {openPositions.map((position) => (
                             <OpenPosition
                               key={position.mint}
                               position={position}
                               currency={currency}
                               solPrice={solPrice}
+                              currentPrice={currentPrices[position.mint]}
                               onSell={handleSell}
                             />
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead>
+                              <tr className="text-sm text-gray-400 border-b border-white/10">
+                                <th className="text-left py-3 px-2">Token</th>
+                                <th className="text-right py-3 px-2">Amount</th>
+                                <th className="text-right py-3 px-2">
+                                  Current Value
+                                </th>
+                                <th className="text-right py-3 px-2">Cost</th>
+                                <th className="text-right py-3 px-2">P&L</th>
+                                <th className="text-right py-3 px-2">
+                                  Actions
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {openPositions.map((position) => (
+                                <OpenPosition
+                                  key={position.mint}
+                                  position={position}
+                                  currency={currency}
+                                  solPrice={solPrice}
+                                  currentPrice={currentPrices[position.mint]}
+                                  onSell={handleSell}
+                                />
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
@@ -802,37 +926,22 @@ export function SimpleInventoryModal({
               {/* Closed Positions Section */}
               {closedPositions.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-3 text-gray-400">
+                  <button
+                    onClick={() => setShowClosedPositions(!showClosedPositions)}
+                    className="flex items-center gap-2 text-lg font-semibold text-gray-400 hover:text-gray-300 mb-3 w-full"
+                  >
+                    {showClosedPositions ? (
+                      <ChevronDown className="w-5 h-5" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5" />
+                    )}
                     Closed Positions ({closedPositions.length})
-                  </h3>
-                  {isMobile ? (
-                    <div className="space-y-3 px-2">
-                      {closedPositions.map((position) => (
-                        <ClosedPosition
-                          key={position.mint}
-                          position={position}
-                          currency={currency}
-                          solPrice={solPrice}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="px-4">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="text-sm text-gray-400 border-b border-white/10">
-                            <th className="text-left py-3 px-2">Token</th>
-                            <th className="text-right py-3 px-2">Amount</th>
-                            <th className="text-right py-3 px-2">Avg Buy</th>
-                            <th className="text-right py-3 px-2">Avg Sell</th>
-                            <th className="text-right py-3 px-2">Invested</th>
-                            <th className="text-right py-3 px-2">
-                              Realized P&L
-                            </th>
-                            <th className="text-right py-3 px-2">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
+                  </button>
+
+                  {showClosedPositions && (
+                    <>
+                      {isMobile ? (
+                        <div className="space-y-3">
                           {closedPositions.map((position) => (
                             <ClosedPosition
                               key={position.mint}
@@ -841,13 +950,47 @@ export function SimpleInventoryModal({
                               solPrice={solPrice}
                             />
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead>
+                              <tr className="text-sm text-gray-400 border-b border-white/10">
+                                <th className="text-left py-3 px-2">Token</th>
+                                <th className="text-right py-3 px-2">Amount</th>
+                                <th className="text-right py-3 px-2">
+                                  Avg Buy
+                                </th>
+                                <th className="text-right py-3 px-2">
+                                  Avg Sell
+                                </th>
+                                <th className="text-right py-3 px-2">
+                                  Invested
+                                </th>
+                                <th className="text-right py-3 px-2">
+                                  Realized P&L
+                                </th>
+                                <th className="text-right py-3 px-2">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {closedPositions.map((position) => (
+                                <ClosedPosition
+                                  key={position.mint}
+                                  position={position}
+                                  currency={currency}
+                                  solPrice={solPrice}
+                                />
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
       </DialogContent>
