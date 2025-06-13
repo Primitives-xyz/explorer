@@ -29,7 +29,7 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
   const { updateProfile } = useUpdateProfile({
     profileId: mainProfile.username,
   })
-  const { paymentDetailsData } = usePudgyPayment({
+  const { paymentDetails, balance, hasInsufficientBalance } = usePudgyPayment({
     profileId: mainProfile.id,
   })
 
@@ -53,6 +53,9 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
     hasSeenPudgyOnboardingModal()
     setOpen(false)
   }
+  const burnAmount = Math.ceil(
+    parseFloat(String(paymentDetails?.amount || '0'))
+  )
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -65,10 +68,15 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
             Pudgy Penguins x SSE: Unlock Your Official Profile
           </DialogTitle>
           <DialogDescription className="text-center">
-            Burn {paymentDetailsData?.amount} {paymentDetailsData?.tokenSymbol}{' '}
-            to unlock <br className="mobile" /> your exclusive{' '}
-            <br className="desktop" /> Pudgy x SSE <br className="mobile" />
+            Burn {burnAmount} {paymentDetails?.tokenSymbol} to unlock{' '}
+            <br className="mobile" /> your exclusive <br className="desktop" />{' '}
+            Pudgy x SSE <br className="mobile" />
             profile experience.
+            {balance !== undefined && (
+              <span className="block mt-1 text-xs">
+                Your balance: {balance} {paymentDetails?.tokenSymbol || 'PENGU'}
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 flex flex-col">
