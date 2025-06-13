@@ -252,7 +252,14 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     You need{' '}
-                    {requiredAmount - Math.floor(Number(rawBalance) / 10 ** 6)}{' '}
+                    {(() => {
+                      const currentBalance = Math.floor(
+                        Number(rawBalance) / 10 ** 6
+                      )
+                      const needed = requiredAmount - currentBalance
+                      // Ensure we never show negative values
+                      return Math.max(0, needed)
+                    })()}{' '}
                     more PENGU to unlock your profile
                   </p>
                 </div>
