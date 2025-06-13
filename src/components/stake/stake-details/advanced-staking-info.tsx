@@ -332,6 +332,7 @@ export function AdvancedStakingInfo() {
       },
       nextBatch,
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     canEarnRewards,
     earningRates,

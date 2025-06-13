@@ -190,6 +190,7 @@ export function TrenchesLeaderboard({
     }, 500) // Match transition duration
 
     return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, isTransitioning])
 
   const handlePrevious = () => {
