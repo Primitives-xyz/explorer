@@ -32,8 +32,7 @@ export function LeftSideMenu() {
       className={cn(
         'hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar',
         {
-          'left-sidebar-theme-background backdrop-blur-md':
-            !!mainProfile?.pudgy_profile_date,
+          'backdrop-blur-md': !!mainProfile?.pudgy_profile_date,
         }
       )}
     >
