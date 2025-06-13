@@ -35,6 +35,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const processedTx = processSwapTransaction(transaction)
   const fromToken = processedTx.primaryOutgoingToken
   const toToken = processedTx.primaryIncomingToken
+  const sseFeeTransfer = processedTx.sseFeeTransfer
 
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
     fromToken?.mint
@@ -103,6 +104,37 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           priceLoading={toTokenLoading}
           isReceived
         />
+        
+        {/* SSE Fee Display */}
+        {sseFeeTransfer && (
+          <div className="px-4 py-3 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-lg border border-purple-500/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
+                    Fee paid with SSE
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Lowest fees available
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                  {sseFeeTransfer.amount.toFixed(2)} SSE
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Platform fee
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </MotionCard>
   )

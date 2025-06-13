@@ -600,9 +600,17 @@
       "no_verified_tokens": "No verified tokens found",
       "route_info": "Route Information $ Fees",
       "fee_exceeds_balance": "Transaction fee exceeds your SSE balance.",
-      "not_enough_sse_for_fees": "You do not have enough SSE to pay for transaction fees.",
+      "not_enough_sse_for_fees": "You need SSE tokens to use lower fees",
       "pay_with_sse": "Pay fee with SSE",
-      "get_discount": "Get 50% off on transaction fees"
+      "get_discount": "Get 50% off on transaction fees",
+      "spl_transfer_errors": {
+        "missing_ata": "Associated token account doesn't exist for destination wallet",
+        "insufficient_balance": "Insufficient token balance for transfer",
+        "invalid_mint": "Invalid token mint address",
+        "invalid_wallet": "Invalid destination wallet address",
+        "network_error": "Network error during transfer. Please try again",
+        "generic_error": "Failed to complete token transfer"
+      }
     },
     "price": {
       "price_impact": "Price Impact",
@@ -614,7 +622,11 @@
     },
     "buttons": {
       "swap_tokens": "Swap Tokens"
-    }
+    },
+    "low_fee_sse": "Low Fee Mode",
+    "fee_paid_with_sse": "Fee paid with SSE",
+    "lowest_fees_available": "Lowest fees available",
+    "platform_fee": "Platform fee"
   },
   "token_holders": {
     "others_own": "and +{count} others own this",

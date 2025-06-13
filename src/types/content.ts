@@ -12,6 +12,7 @@ interface BaseTransactionContent {
   timestamp: string
   route?: string // Where the swap was executed from: 'trenches', 'trade', or 'home'
   usdcFeeAmount?: string // USDC value of the swap fee
+  sseFeeAmount?: string // SSE tokens used for fees (if applicable)
 
   // Token information
   inputTokenSymbol: string

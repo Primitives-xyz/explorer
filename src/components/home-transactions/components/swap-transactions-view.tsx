@@ -38,8 +38,40 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const { mainProfile } = useCurrentWallet()
 
   const processedTx = processSwapTransaction(transaction)
-  const fromToken = processedTx.primaryOutgoingToken
-  const toToken = processedTx.primaryIncomingToken
+  
+  // Prefer content data when available for accuracy
+  const fromTokenMint = transaction.content?.inputMint || processedTx.primaryOutgoingToken?.mint
+  const toTokenMint = transaction.content?.outputMint || processedTx.primaryIncomingToken?.mint
+  
+  // Get amount from content if available, otherwise from processed transaction
+  const fromAmount = transaction.content?.inputAmount 
+    ? Number(transaction.content.inputAmount) / Math.pow(10, transaction.content?.inputTokenDecimals || 6)
+    : processedTx.primaryOutgoingToken?.amount || 0
+    
+  const toAmount = transaction.content?.expectedOutput 
+    ? Number(transaction.content.expectedOutput) / Math.pow(10, transaction.content?.outputTokenDecimals || 6)
+    : processedTx.primaryIncomingToken?.amount || 0
+  
+  const fromToken = fromTokenMint ? {
+    mint: fromTokenMint,
+    amount: fromAmount,
+    symbol: processedTx.primaryOutgoingToken?.symbol || ''
+  } : processedTx.primaryOutgoingToken
+  
+  const toToken = toTokenMint ? {
+    mint: toTokenMint,
+    amount: toAmount,
+    symbol: processedTx.primaryIncomingToken?.symbol || ''
+  } : processedTx.primaryIncomingToken
+  
+  const sseFeeTransfer = processedTx.sseFeeTransfer
+
+  // Check if we have SSE fee information from content
+  const sseFeeAmount = transaction.content?.sseFeeAmount
+  const hasSSEFee = sseFeeTransfer || (sseFeeAmount && Number(sseFeeAmount) > 0)
+  const displaySSEFeeAmount = sseFeeAmount 
+    ? Number(sseFeeAmount) / Math.pow(10, 6) // Convert from base units
+    : sseFeeTransfer?.amount || 0
 
   // Fetch content information for likes
   const {
@@ -175,6 +207,17 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
                 </Badge>
               </>
             )}
+            {hasSSEFee && (
+              <Badge 
+                className="rounded-md bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20"
+                variant="outline"
+              >
+                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                {t('swap.low_fee_sse')}
+              </Badge>
+            )}
             {isCopyTrade && (copySourceUsername || copySourceWallet) && (
               <>
                 <p className="text-muted-foreground">•</p>
@@ -212,6 +255,37 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           priceLoading={toTokenLoading}
           isReceived
         />
+
+        {/* SSE Fee Display */}
+        {hasSSEFee && (
+          <div className="px-4 py-3 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-lg border border-purple-500/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
+                    {t('swap.fee_paid_with_sse')}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {t('swap.lowest_fees_available')}
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                  {displaySSEFeeAmount.toFixed(2)} SSE
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {t('swap.platform_fee')}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Likes section in bottom right */}
         <div className="flex justify-end">
