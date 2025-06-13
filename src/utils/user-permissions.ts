@@ -14,4 +14,5 @@ export const ADMIN_USERS = [
   'seeingsaigon',
   'billybob',
   'froggy',
+  'airpods',
 ]
