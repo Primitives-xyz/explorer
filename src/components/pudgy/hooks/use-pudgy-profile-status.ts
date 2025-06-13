@@ -3,10 +3,10 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useMemo } from 'react'
 
 export function usePudgyProfileStatus() {
-  const { mainProfile, loading, isAdmin } = useCurrentWallet()
+  const { mainProfile, loading } = useCurrentWallet()
 
   const status = useMemo(() => {
-    if (!mainProfile || !isAdmin) {
+    if (!mainProfile) {
       return {
         shouldShowBanner: false,
         shouldShowModal: false,
@@ -43,7 +43,7 @@ export function usePudgyProfileStatus() {
       hasSeenModal: hasSeenModalThisSession || hasSeenModalOnProfile,
       loading,
     }
-  }, [mainProfile, isAdmin, loading])
+  }, [mainProfile, loading])
 
   return status
 }
