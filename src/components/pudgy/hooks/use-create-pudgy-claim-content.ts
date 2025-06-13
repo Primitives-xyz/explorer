@@ -83,7 +83,7 @@ export function useCreatePudgyClaimContent() {
         },
         body: JSON.stringify({
           id: signature,
-          profileId: mainProfile?.username,
+          profileId: profileId,
           properties: contentToProperties(content),
         }),
       })
