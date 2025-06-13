@@ -49,6 +49,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
     error,
     pay,
     balance,
+    rawBalance,
     hasInsufficientBalance,
     requiredAmount,
     refreshBalance,
@@ -148,15 +149,15 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
       case 'sending':
         return (
           <>
-            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            Building Transaction...
+            <Send className="w-5 h-5 mr-2" />
+            Sending Transaction...
           </>
         )
       case 'sent':
         return (
           <>
             <Send className="w-5 h-5 mr-2" />
-            Sending Transaction...
+            Transaction Sent...
           </>
         )
       case 'confirming':
@@ -251,10 +252,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     You need{' '}
-                    {Math.ceil(
-                      parseFloat(String(requiredAmount || '0')) -
-                        parseFloat(String(balance || '0'))
-                    )}{' '}
+                    {requiredAmount - Math.floor(Number(rawBalance) / 10 ** 6)}{' '}
                     more PENGU to unlock your profile
                   </p>
                 </div>
@@ -262,15 +260,12 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <p className="text-muted-foreground">Required</p>
-                    <p className="font-semibold">
-                      {Math.ceil(parseFloat(String(requiredAmount || '0')))}{' '}
-                      PENGU
-                    </p>
+                    <p className="font-semibold">{requiredAmount} PENGU</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Your balance</p>
                     <p className="font-semibold text-destructive">
-                      {Math.floor(parseFloat(String(balance || '0')))} PENGU
+                      {Math.floor(Number(rawBalance) / 10 ** 6)} PENGU
                     </p>
                   </div>
                 </div>
@@ -309,9 +304,7 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
           {/* Cost Display - Only show when we have data and no transaction */}
           {paymentDetails && !transactionStatus && !isComplete && (
             <div className="text-center text-sm text-muted-foreground">
-              Burns{' '}
-              {Math.ceil(parseFloat(String(paymentDetails.amount || '0')))}{' '}
-              {paymentDetails.tokenSymbol}
+              Burns {requiredAmount} {paymentDetails.tokenSymbol}
             </div>
           )}
 
