@@ -11,7 +11,7 @@ interface Props {
 
 export function BackgroundTheme({ profile }: Props) {
   const isPudgy = !!profile?.pudgy_profile_date
-  const pudgyTheme = profile.pudgyTheme ?? EPudgyTheme.DEFAULT
+  const pudgyTheme = profile.pudgyTheme ?? EPudgyTheme.BLUE
   const isVisible = isPudgy && !!pudgyTheme
 
   return (
