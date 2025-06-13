@@ -38,38 +38,52 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const { mainProfile } = useCurrentWallet()
 
   const processedTx = processSwapTransaction(transaction)
-  
+
   // Prefer content data when available for accuracy
-  const fromTokenMint = transaction.content?.inputMint || processedTx.primaryOutgoingToken?.mint
-  const toTokenMint = transaction.content?.outputMint || processedTx.primaryIncomingToken?.mint
-  
-  // Get amount from content if available, otherwise from processed transaction
-  const fromAmount = transaction.content?.inputAmount 
-    ? Number(transaction.content.inputAmount) / Math.pow(10, transaction.content?.inputTokenDecimals || 6)
+  const fromTokenMint =
+    transaction.content?.inputMint || processedTx.primaryOutgoingToken?.mint
+  const toTokenMint =
+    transaction.content?.outputMint || processedTx.primaryIncomingToken?.mint
+
+  // Get amount from content if available (content stores human-readable amounts)
+  const fromAmount = transaction.content?.inputAmount
+    ? Number(transaction.content.inputAmount)
     : processedTx.primaryOutgoingToken?.amount || 0
-    
-  const toAmount = transaction.content?.expectedOutput 
-    ? Number(transaction.content.expectedOutput) / Math.pow(10, transaction.content?.outputTokenDecimals || 6)
+
+  const toAmount = transaction.content?.expectedOutput
+    ? Number(transaction.content.expectedOutput)
     : processedTx.primaryIncomingToken?.amount || 0
-  
-  const fromToken = fromTokenMint ? {
-    mint: fromTokenMint,
-    amount: fromAmount,
-    symbol: processedTx.primaryOutgoingToken?.symbol || ''
-  } : processedTx.primaryOutgoingToken
-  
-  const toToken = toTokenMint ? {
-    mint: toTokenMint,
-    amount: toAmount,
-    symbol: processedTx.primaryIncomingToken?.symbol || ''
-  } : processedTx.primaryIncomingToken
-  
+
+  // Get USD values from content
+  const fromAmountUsd = transaction.content?.inputAmountUsd
+    ? Number(transaction.content.inputAmountUsd)
+    : null
+  const toAmountUsd = transaction.content?.outputAmountUsd
+    ? Number(transaction.content.outputAmountUsd)
+    : null
+
+  const fromToken = fromTokenMint
+    ? {
+        mint: fromTokenMint,
+        amount: fromAmount,
+        symbol: processedTx.primaryOutgoingToken?.symbol || '',
+      }
+    : processedTx.primaryOutgoingToken
+
+  const toToken = toTokenMint
+    ? {
+        mint: toTokenMint,
+        amount: toAmount,
+        symbol: processedTx.primaryIncomingToken?.symbol || '',
+      }
+    : processedTx.primaryIncomingToken
+
   const sseFeeTransfer = processedTx.sseFeeTransfer
 
   // Check if we have SSE fee information from content
   const sseFeeAmount = transaction.content?.sseFeeAmount
   const hasSSEFee = sseFeeTransfer || (sseFeeAmount && Number(sseFeeAmount) > 0)
-  const displaySSEFeeAmount = sseFeeAmount 
+  const displaySSEFeeAmount = sseFeeAmount
     ? Number(sseFeeAmount) / Math.pow(10, 6) // Convert from base units
     : sseFeeTransfer?.amount || 0
 
@@ -241,6 +255,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           tokenLoading={fromTokenLoading}
           tokenPrice={fromTokenPrice ?? null}
           priceLoading={fromTokenLoading}
+          usdValue={fromAmountUsd}
         />
         <SwapTransactionsViewDetails
           token={{ ...toToken, ...toTokenInfo }}
@@ -248,6 +263,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           tokenPrice={toTokenPrice ?? null}
           priceLoading={toTokenLoading}
           isReceived
+          usdValue={toAmountUsd}
         />
 
         {/* Likes section in bottom right */}
