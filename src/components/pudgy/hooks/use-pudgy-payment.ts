@@ -15,10 +15,8 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from '@solana/web3.js'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
-  ECryptoTransactionStatus,
-  ICryptoChallengePaymentStatus,
   IPudgyUpgradeCallbackInput,
   IPudgyUpgradeCallbackResponse,
   IPudgyUpgradeInitiateResponse,
@@ -29,201 +27,144 @@ const PENGU_DECIMALS = 6
 
 interface Props {
   profileId: string
+  onComplete?: () => void
 }
 
-export function usePudgyPayment({ profileId }: Props) {
+export function usePudgyPayment({ profileId, onComplete }: Props) {
   const { primaryWallet } = useDynamicContext()
-  const [polling, setPolling] = useState(false)
+  const { refetch } = useCurrentWallet()
+  const [isComplete, setIsComplete] = useState(false)
+
+  // Get payment details
   const {
-    data: paymentDetailsData,
-    loading: loadingPaymentDetails,
-    error: paymentDetailsError,
+    data: paymentDetails,
+    loading: loadingDetails,
+    error: detailsError,
   } = useQuery<IPudgyUpgradeInitiateResponse>({
     endpoint: `profiles/${profileId}/pudgy/upgrade/initiate`,
   })
+
+  // Submit signature mutation
   const {
     mutate: submitSignature,
-    loading: loadingSubmitSignature,
-    error: submitSignatureError,
+    loading: submittingSignature,
+    error: submitError,
   } = useMutation<IPudgyUpgradeCallbackResponse, IPudgyUpgradeCallbackInput>({
     endpoint: `profiles/${profileId}/pudgy/upgrade/callback`,
   })
-  const {
-    data: transactionStatusData,
-    loading: loadingTransactionStatus,
-    error: transactionStatusError,
-  } = useQuery<ICryptoChallengePaymentStatus>({
-    endpoint: `pudgy/transactions/${paymentDetailsData?.memo}`,
-    skip: !polling,
-    config: {
-      refreshInterval: 3000,
-    },
-  })
-  const { refetch } = useCurrentWallet()
-  const [paymentError, setPaymentError] = useState<Error>()
 
-  // Use the generic Solana transaction hook for real-time updates
-  const {
-    sendAndConfirmTransaction,
-    loading: loadingTransaction,
-    status: transactionStatus,
-    error: transactionError,
-  } = useSolanaTransaction({
-    onStatusUpdate: (status) => {
-      console.log('Transaction status update:', status)
-    },
-    onSuccess: async (signature) => {
-      console.log('Transaction confirmed:', signature)
-
-      // Submit the signature to the backend
-      if (paymentDetailsData) {
-        await submitSignature({
-          txSignature: signature,
-          txId: paymentDetailsData.memo,
-          pudgyProfileId: profileId,
-        })
-        setPolling(true)
-      }
-    },
-    onError: (error) => {
-      console.error('Transaction error:', error)
-      setPaymentError(new Error(error))
-    },
-  })
-
-  // Get PENGU token balance
+  // Get PENGU balance
   const {
     balance,
     rawBalance,
     loading: balanceLoading,
+    mutate: refreshBalance,
   } = useTokenBalance(primaryWallet?.address, PENGU_MINT_ADDRESS)
 
-  // Check if user has sufficient balance
-  const requiredAmount = paymentDetailsData
-    ? Math.ceil(paymentDetailsData.amount)
-    : 0
+  // Calculate balance requirements
+  const requiredAmount = paymentDetails ? Math.ceil(paymentDetails.amount) : 0
   const requiredAmountRaw =
     BigInt(requiredAmount) * BigInt(10 ** PENGU_DECIMALS)
   const hasInsufficientBalance =
     rawBalance == null || rawBalance < requiredAmountRaw
 
-  useEffect(() => {
-    if (transactionStatusData?.status === ECryptoTransactionStatus.COMPLETED) {
-      setPolling(false)
-      refetch()
-    }
-  }, [transactionStatusData, refetch])
+  // Use Solana transaction hook
+  const {
+    sendAndConfirmTransaction,
+    loading: transactionLoading,
+    status: transactionStatus,
+    error: transactionError,
+  } = useSolanaTransaction({
+    onSuccess: async (signature) => {
+      if (!paymentDetails) return
+
+      try {
+        // Submit to backend
+        await submitSignature({
+          txSignature: signature,
+          txId: paymentDetails.memo,
+          pudgyProfileId: profileId,
+        })
+
+        // Mark as complete and trigger callback
+        setIsComplete(true)
+        await refetch()
+        onComplete?.()
+      } catch (error) {
+        console.error('Failed to submit signature:', error)
+        throw error
+      }
+    },
+  })
 
   const pay = useCallback(async () => {
-    if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
-      console.error(
-        'Wallet not connected. Please connect your wallet to proceed with the payment.'
-      )
-      return
+    if (!primaryWallet || !isSolanaWallet(primaryWallet) || !paymentDetails) {
+      throw new Error('Missing requirements for payment')
     }
 
-    if (!paymentDetailsData) {
-      console.error('Payment details not available. Please try again later.')
-      return
-    }
+    const connection = await primaryWallet.getConnection()
+    const publicKey = new PublicKey(primaryWallet.address)
+    const penguMint = new PublicKey(PENGU_MINT_ADDRESS)
+    const tokenAccount = await getAssociatedTokenAddress(penguMint, publicKey)
 
-    try {
-      const connection = await primaryWallet.getConnection()
-      const publicKey = new PublicKey(primaryWallet.address)
-      const penguPublicKey = new PublicKey(PENGU_MINT_ADDRESS)
+    const amount = Math.ceil(paymentDetails.amount)
+    const { blockhash } = await connection.getLatestBlockhash('finalized')
 
-      const account = await getAssociatedTokenAddress(penguPublicKey, publicKey)
-      console.dir(paymentDetailsData, { depth: null })
-      const amount = Math.ceil(paymentDetailsData.amount) // round up to the nearest whole number
-      const finalAmount = amount * 10 ** PENGU_DECIMALS
-      console.log(`    ✅ - Amount: ${amount}`)
-      console.log(`    ✅ - Final Amount: ${finalAmount}`)
-      console.log(`    ✅ - Decimals: ${PENGU_DECIMALS}`)
+    // Create burn instruction
+    const burnIx = createBurnCheckedInstruction(
+      tokenAccount,
+      penguMint,
+      publicKey,
+      amount * 10 ** PENGU_DECIMALS,
+      PENGU_DECIMALS
+    )
 
-      const burnIx = createBurnCheckedInstruction(
-        account, // PublicKey of Owner's Associated Token Account
-        penguPublicKey, // Public Key of the Token Mint Address
-        publicKey, // Public Key of Owner's Wallet
-        amount * 10 ** PENGU_DECIMALS, // Number of tokens to burn
-        PENGU_DECIMALS // Number of Decimals of the Token Mint
-      )
-      console.log(`    ✅ - Burn Instruction Created`)
+    // Create memo instruction
+    const MEMO_PROGRAM_ID = new PublicKey(
+      'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'
+    )
+    const memoIx = new TransactionInstruction({
+      keys: [{ pubkey: publicKey, isSigner: true, isWritable: true }],
+      programId: MEMO_PROGRAM_ID,
+      data: Buffer.from(paymentDetails.memo, 'utf-8'),
+    })
 
-      console.log(`Step 3 - Fetch Blockhash`)
-      const { blockhash } = await connection.getLatestBlockhash('finalized')
-      console.log(`    ✅ - Latest Blockhash: ${blockhash}`)
+    // Build and sign transaction
+    const message = new TransactionMessage({
+      payerKey: publicKey,
+      recentBlockhash: blockhash,
+      instructions: [burnIx, memoIx],
+    }).compileToV0Message()
 
-      const MEMO_PROGRAM_ID = new PublicKey(
-        'MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'
-      )
+    const transaction = new VersionedTransaction(message)
+    const signer = await primaryWallet.getSigner()
+    const signedTx = await signer.signTransaction(transaction)
 
-      const memoIx = new TransactionInstruction({
-        keys: [
-          {
-            pubkey: publicKey,
-            isSigner: true,
-            isWritable: true,
-          },
-        ],
-        programId: MEMO_PROGRAM_ID,
-        data: Buffer.from(paymentDetailsData.memo, 'utf-8'),
-      })
-
-      console.log(`Step 4 - Assemble Transaction`)
-      const messageV0 = new TransactionMessage({
-        payerKey: publicKey,
-        recentBlockhash: blockhash,
-        instructions: [burnIx, memoIx],
-      }).compileToV0Message()
-
-      const transaction = new VersionedTransaction(messageV0)
-      console.log(`    ✅ - Transaction Created`)
-
-      const signer = await primaryWallet.getSigner()
-      const signedTransaction = await signer.signTransaction(transaction)
-
-      console.log(`Step 5 - Execute & Confirm Transaction`)
-
-      // Use the generic transaction system with metadata
-      await sendAndConfirmTransaction(signedTransaction, {
-        type: 'pudgy-payment',
-        profileId,
-        memo: paymentDetailsData.memo,
-        amount: amount,
-        tokenMint: PENGU_MINT_ADDRESS,
-      })
-    } catch (error: any) {
-      console.error('Error creating transaction:', error)
-      setPaymentError(error)
-      throw error
-    }
-  }, [primaryWallet, paymentDetailsData, profileId, sendAndConfirmTransaction])
-
-  const loading =
-    loadingPaymentDetails ||
-    loadingSubmitSignature ||
-    loadingTransactionStatus ||
-    loadingTransaction ||
-    polling ||
-    balanceLoading
-
-  const error =
-    paymentDetailsError ||
-    submitSignatureError ||
-    transactionStatusError ||
-    transactionError ||
-    paymentError
+    // Send transaction
+    await sendAndConfirmTransaction(signedTx, {
+      type: 'pudgy-payment',
+      profileId,
+      memo: paymentDetails.memo,
+      amount,
+      tokenMint: PENGU_MINT_ADDRESS,
+    })
+  }, [primaryWallet, paymentDetails, profileId, sendAndConfirmTransaction])
 
   return {
-    paymentDetailsData,
-    loading,
-    transactionStatusData,
+    paymentDetails,
     transactionStatus,
-    error,
+    isComplete,
+    loading:
+      loadingDetails ||
+      balanceLoading ||
+      transactionLoading ||
+      submittingSignature,
+    error: detailsError || submitError || transactionError,
     pay,
     balance,
     rawBalance,
     hasInsufficientBalance,
     requiredAmount,
+    refreshBalance,
   }
 }
