@@ -21,6 +21,7 @@ import {
   IPudgyUpgradeCallbackResponse,
   IPudgyUpgradeInitiateResponse,
 } from '../pudgy-payment.models'
+import { useCreatePudgyClaimContent } from './use-create-pudgy-claim-content'
 
 const PENGU_MINT_ADDRESS = '2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv'
 const PENGU_DECIMALS = 6
@@ -28,12 +29,22 @@ const PENGU_DECIMALS = 6
 interface Props {
   profileId: string
   onComplete?: () => void
+  pudgyTheme?: string
+  pudgyFrame?: boolean
+  username?: string
 }
 
-export function usePudgyPayment({ profileId, onComplete }: Props) {
+export function usePudgyPayment({
+  profileId,
+  onComplete,
+  pudgyTheme = 'BLUE',
+  pudgyFrame = true,
+  username = '',
+}: Props) {
   const { primaryWallet } = useDynamicContext()
   const { refetch } = useCurrentWallet()
   const [isComplete, setIsComplete] = useState(false)
+  const { createContentNode } = useCreatePudgyClaimContent()
 
   // Get payment details
   const {
@@ -98,6 +109,23 @@ export function usePudgyPayment({ profileId, onComplete }: Props) {
         setIsComplete(true)
         await refetch()
         onComplete?.()
+
+        // Create content node
+        if (primaryWallet) {
+          await createContentNode({
+            signature,
+            burnAmount: String(requiredAmount),
+            tokenSymbol: paymentDetails.tokenSymbol,
+            tokenMint: PENGU_MINT_ADDRESS,
+            tokenDecimals: PENGU_DECIMALS,
+            burnAmountUsd: '0', // TODO: Calculate USD value
+            profileId,
+            username,
+            pudgyTheme,
+            pudgyFrame,
+            walletAddress: primaryWallet.address,
+          })
+        }
       } catch (error) {
         console.error('Failed to submit signature:', error)
         throw error

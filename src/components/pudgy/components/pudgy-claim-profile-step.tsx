@@ -55,6 +55,9 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
     refreshBalance,
   } = usePudgyPayment({
     profileId: mainProfile.id,
+    pudgyTheme,
+    pudgyFrame,
+    username: mainProfile.username,
     onComplete: async () => {
       try {
         // Clear the polling interval when payment is complete
