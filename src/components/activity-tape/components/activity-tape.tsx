@@ -15,7 +15,7 @@ export function ActivityTape() {
           <div key={index} className="inline-flex items-center gap-2">
             <Skeleton
               className="h-6"
-              randomWidthRange={{ min: 100, max: 200 }}
+              randomWidthRange={{ min: 200, max: 200 }}
             />
           </div>
         ))

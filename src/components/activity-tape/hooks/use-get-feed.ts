@@ -1,8 +1,8 @@
 import { useQuery } from '@/utils/api'
 import { useMemo } from 'react'
 import {
+  IActivityGlobal,
   IActivityGlobalResponse,
-  IActivityTapeEntry,
 } from '../activity-tape.models'
 
 export function useActivityTape() {
@@ -10,12 +10,11 @@ export function useActivityTape() {
     endpoint: 'activity/global',
   })
 
-  const activities: IActivityTapeEntry[] = useMemo(() => {
+  const activities: IActivityGlobal[] = useMemo(() => {
     return (
       data?.activities?.map((activity) => {
         let text = ''
         let action = ''
-        let highlight = 'neutral'
 
         switch (activity.type) {
           case 'new_follower':
@@ -29,14 +28,14 @@ export function useActivityTape() {
               ? `${activity.actor_username} published ${activity.content_type}`
               : `${activity.actor_username} published content`
             action = '📝'
-            highlight = 'positive'
+
             break
           case 'like':
             text = activity.content_type
               ? `${activity.actor_username} liked a ${activity.content_type}`
               : `${activity.actor_username} liked content`
             action = '❤️'
-            highlight = 'positive'
+
             break
           case 'comment':
             text = `${activity.actor_username} commented on content`
@@ -49,11 +48,15 @@ export function useActivityTape() {
 
         return {
           type: activity.type,
+          actor_id: activity.actor_id,
+          actor_username: activity.actor_username,
+          target_id: activity.target_id || '',
+          target_username: activity.target_username,
+          comment_id: activity.comment_id,
+          activity: activity.activity,
+          timestamp: activity.timestamp,
           text,
           action,
-          wallet: activity.actor_id,
-          timestamp: activity.timestamp,
-          highlight,
         }
       }) ?? []
     )
