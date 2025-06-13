@@ -149,7 +149,7 @@ export function TrenchesLeaderboard({
   solPrice,
 }: TrenchesLeaderboardProps) {
   const { isMobile } = useIsMobile()
-  const tradersPerSlide = isMobile ? 2 : 3
+  const tradersPerSlide = isMobile ? 1 : 3
 
   const [currentIndex, setCurrentIndex] = useState(tradersPerSlide) // Start after the duplicated items
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -361,11 +361,16 @@ export function TrenchesLeaderboard({
             {/* Title */}
             <div className="flex items-center gap-2 flex-wrap">
               <Trophy className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-              <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
-                TRENCH WARRIORS
-              </h2>
+              <div className="flex flex-col">
+                <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
+                  SSE PROFIT LEADERBOARD
+                </h2>
+                <p className="text-xs text-gray-400 leading-tight">
+                  Most profitable SSE traders earn their legendary status
+                </p>
+              </div>
               <div className="bg-purple-600/20 px-2 py-0.5 rounded-full text-xs text-purple-300 border border-purple-500/30 pulse-glow">
-                Coming Soon
+                Tracking Live
               </div>
             </div>
 
@@ -403,7 +408,7 @@ export function TrenchesLeaderboard({
               <div
                 key={`${trader.rank}-${index}`}
                 className={`flex-shrink-0 ${
-                  isMobile ? 'w-1/2' : 'w-1/3'
+                  isMobile ? 'w-full' : 'w-1/3'
                 } px-1.5`}
               >
                 <div
@@ -505,9 +510,9 @@ export function TrenchesLeaderboard({
         {/* Teaser Footer */}
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-400 italic">
-            🔥 Leaderboard tracking begins soon. Start trading to secure your
-            legendary status! Only trades opened and closed on SSE will be
-            eligible for PnL 🔥
+            🔥 Your SSE trades are being tracked! Most profitable traders will
+            earn their spots on this leaderboard. Only positions opened AND
+            closed through SSE count toward your ranking 🔥
           </p>
         </div>
       </div>

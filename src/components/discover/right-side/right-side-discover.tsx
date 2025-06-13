@@ -89,7 +89,7 @@ export function RightSideDiscover() {
                         />
                         <FollowBlinkButton
                           username={entry.profile.username}
-                          displayVariant="icon"
+                          size={ButtonSize.ICON}
                         />
                       </div>
                     )}

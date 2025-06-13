@@ -1,22 +1,20 @@
 'use client'
 
+import { ShareSolidScoreDialog } from '@/components/pudgy/components/share-tweet-dialog/share-solid-score-dialog'
 import { useSolidScoreLeaderboard } from '@/components/solid-score/hooks/use-solid-score-leaderboard'
 import { Button, ButtonSize, Spinner } from '@/components/ui'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { DataTableLeaderboard } from './data-table-leaderboard'
 import { DataTableUserPosition } from './data-table-user-position'
-import { SolidScoreShareDialog } from './solid-score-share-dialog'
 
 export function LeaderboardContent() {
   const { data, loading } = useSolidScoreLeaderboard()
   const { mainProfile, loading: walletLoading } = useCurrentWallet()
   const [open, setOpen] = useState(false)
   const t = useTranslations('menu.solid_score.leaderboard')
-  const router = useRouter()
 
   const hasRevealedShare = !!mainProfile?.userHasClickedOnShareHisSolidScore
 
@@ -75,7 +73,7 @@ export function LeaderboardContent() {
           </Button>
         )}
       </div>
-      <SolidScoreShareDialog open={open} setOpen={setOpen} />
+      <ShareSolidScoreDialog open={open} setOpen={setOpen} />
     </div>
   )
 }

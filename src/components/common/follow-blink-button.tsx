@@ -2,24 +2,17 @@
 
 import { Button, ButtonProps, ButtonSize, ButtonVariant } from '@/components/ui'
 import { cn } from '@/utils/utils'
-import { Check, Share } from 'lucide-react'
+import { CheckIcon, ShareIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 interface Props extends Omit<ButtonProps, 'children' | 'variant'> {
   username: string
-  displayVariant?: 'button' | 'icon' | 'minimal'
-  showLabel?: boolean
+  isPudgy?: boolean
 }
 
-export function FollowBlinkButton({
-  username,
-  displayVariant = 'button',
-  showLabel = true,
-  className,
-  ...props
-}: Props) {
+export function FollowBlinkButton({ username, isPudgy, ...props }: Props) {
   const [copied, setCopied] = useState(false)
   const t = useTranslations()
 
@@ -46,56 +39,56 @@ export function FollowBlinkButton({
     }
   }
 
-  const getButtonContent = () => {
-    const iconSize = displayVariant === 'icon' ? 16 : 14
-    const Icon = copied ? Check : Share
+  // const getButtonContent = () => {
+  //   const iconSize = displayVariant === 'icon' ? 16 : 14
+  //   const Icon = copied ? Check : Share
 
-    if (displayVariant === 'icon') {
-      return <Icon size={iconSize} />
-    }
+  //   if (displayVariant === 'icon') {
+  //     return <Icon size={iconSize} />
+  //   }
 
-    if (displayVariant === 'minimal') {
-      return <Icon size={iconSize} />
-    }
+  //   if (displayVariant === 'minimal') {
+  //     return <Icon size={iconSize} />
+  //   }
 
-    return (
-      <>
-        <Icon size={iconSize} />
-        {showLabel &&
-          (copied ? t('common.copied') : t('common.follow.share_blink'))}
-      </>
-    )
-  }
+  //   return (
+  //     <>
+  //       <Icon size={iconSize} />
+  //       {showLabel &&
+  //         (copied ? t('common.copied') : t('common.follow.share_blink'))}
+  //     </>
+  //   )
+  // }
 
-  const getButtonVariant = () => {
-    if (displayVariant === 'icon' || displayVariant === 'minimal') {
-      return ButtonVariant.GHOST
-    }
-    return ButtonVariant.OUTLINE_SOCIAL
-  }
-
-  const getButtonSize = () => {
-    if (displayVariant === 'icon') {
-      return ButtonSize.ICON_SM
-    }
-    return ButtonSize.SM
-  }
+  const isIcon = props.size === ButtonSize.ICON
 
   return (
     <Button
       {...props}
       onClick={handleCopyBlinkUrl}
-      variant={getButtonVariant()}
-      size={getButtonSize()}
+      variant={
+        isPudgy ? ButtonVariant.PUDGY_SECONDARY : ButtonVariant.SECONDARY_SOCIAL
+      }
       className={cn(
         'transition-all duration-200',
-        copied && 'text-primary',
-        displayVariant === 'minimal' && 'h-8 px-2',
-        className
+        {
+          // 'text-primary': copied,
+        },
+        props.className
       )}
       title={t('common.follow.blink_tooltip', { username })}
     >
-      {getButtonContent()}
+      {copied ? (
+        <>
+          <CheckIcon size={18} />
+          {!isIcon && t('common.copied')}
+        </>
+      ) : (
+        <>
+          {(!isPudgy || isIcon) && <ShareIcon size={16} />}
+          {!isIcon && t('common.follow.share_blink')}
+        </>
+      )}
     </Button>
   )
 }

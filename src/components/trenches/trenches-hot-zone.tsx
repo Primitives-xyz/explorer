@@ -3,7 +3,7 @@
 import { TokenRow } from '@/components/trenches/trenches-components'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { ChevronLeft, ChevronRight, Flame } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Flame, Info } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { MintAggregate } from './trenches-types'
 
@@ -14,6 +14,38 @@ interface TrenchesHotZoneProps {
   solPrice: number | null
   onTokenClick: (token: MintAggregate) => void
   onDirectBuy: (mint: string, amount: number) => void
+}
+
+// Tooltip component
+function Tooltip({
+  children,
+  content,
+}: {
+  children: React.ReactNode
+  content: string
+}) {
+  const [isVisible, setIsVisible] = useState(false)
+
+  return (
+    <div className="relative inline-block">
+      <div
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        onClick={() => setIsVisible(!isVisible)}
+        className="cursor-help"
+      >
+        {children}
+      </div>
+      {isVisible && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
+          <div className="bg-black/90 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap border border-white/20 shadow-lg">
+            {content}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/90"></div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function TrenchesHotZone({
@@ -105,6 +137,9 @@ export function TrenchesHotZone({
           <h2 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent whitespace-nowrap">
             HOT ZONE
           </h2>
+          <Tooltip content="These are tokens which have the highest TPS">
+            <Info className="w-4 h-4 text-orange-400/70 hover:text-orange-400 transition-colors" />
+          </Tooltip>
           <Flame className="w-5 h-5 text-orange-400 animate-pulse flex-shrink-0" />
         </div>
         <div className="text-center text-gray-400 py-8">
@@ -124,6 +159,9 @@ export function TrenchesHotZone({
             <h2 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent whitespace-nowrap">
               HOT ZONE
             </h2>
+            <Tooltip content="These are tokens which have the highest TPS">
+              <Info className="w-4 h-4 text-orange-400/70 hover:text-orange-400 transition-colors" />
+            </Tooltip>
             <Flame className="w-5 h-5 text-orange-400 animate-pulse flex-shrink-0" />
           </div>
 
@@ -205,6 +243,9 @@ export function TrenchesHotZone({
         <h2 className="text-lg font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent whitespace-nowrap">
           HOT ZONE
         </h2>
+        <Tooltip content="These are tokens which have the highest TPS">
+          <Info className="w-4 h-4 text-orange-400/70 hover:text-orange-400 transition-colors" />
+        </Tooltip>
         <Flame className="w-5 h-5 text-orange-400 animate-pulse flex-shrink-0" />
       </div>
 

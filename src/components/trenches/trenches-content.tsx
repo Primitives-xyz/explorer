@@ -8,9 +8,8 @@ import { useAutoTradeLogger } from '@/hooks/use-auto-trade-logger'
 import { SOL_MINT } from '@/utils/constants'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import {
-  Flame,
   GraduationCap,
   Pause,
   Play,
@@ -19,6 +18,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { FloatingActionDock } from './floating-action-dock'
 import { HotFeedModal } from './hot-feed-modal'
 import { TokenDetailsModal } from './token-details-modal'
 import { TrenchesHotZone } from './trenches-hot-zone'
@@ -408,28 +408,15 @@ export function TrenchesContent({
         initialToken={clickedTokenForHotFeed}
       />
 
-      {/* Floating Action Button for Hot Feed */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => {
-          // When opening via FAB, don't set a specific token
+      {/* Floating Action Dock */}
+      <FloatingActionDock
+        showHotFeed={showHotFeed}
+        onToggleHotFeed={() => {
           setClickedTokenForHotFeed(null)
           setShowHotFeed(!showHotFeed)
         }}
-        className={`fixed bottom-20 right-4 w-14 h-14 rounded-full shadow-lg flex items-center justify-center z-[60] transition-all ${
-          showHotFeed
-            ? 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800'
-            : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
-        }`}
-        aria-label={showHotFeed ? 'Close hot feed' : 'Open hot feed'}
-      >
-        <Flame
-          className={`w-6 h-6 ${showHotFeed ? 'text-gray-400' : 'text-white'}`}
-        />
-      </motion.button>
+        onOpenInventory={onOpenInventory}
+      />
     </div>
   )
 }
