@@ -208,15 +208,9 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
               </>
             )}
             {hasSSEFee && (
-              <Badge 
-                className="rounded-md bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20"
-                variant="outline"
-              >
-                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                {t('swap.low_fee_sse')}
-              </Badge>
+              <div className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-2.5 py-1 rounded-full text-[10px] font-black shadow-lg animate-pulse">
+                ⚡ LOW FEE
+              </div>
             )}
             {isCopyTrade && (copySourceUsername || copySourceWallet) && (
               <>
@@ -255,37 +249,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           priceLoading={toTokenLoading}
           isReceived
         />
-
-        {/* SSE Fee Display */}
-        {hasSSEFee && (
-          <div className="px-4 py-3 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-lg border border-purple-500/10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
-                    {t('swap.fee_paid_with_sse')}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {t('swap.lowest_fees_available')}
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                  {displaySSEFeeAmount.toFixed(2)} SSE
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t('swap.platform_fee')}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Likes section in bottom right */}
         <div className="flex justify-end">

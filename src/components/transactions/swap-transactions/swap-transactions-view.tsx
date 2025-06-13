@@ -56,7 +56,14 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       : null
 
   return (
-    <MotionCard>
+    <MotionCard className="relative">
+      {/* SSE Fee Sticker - Positioned absolutely */}
+      {sseFeeTransfer && (
+        <div className="absolute -top-2 -right-2 z-10 bg-gradient-to-br from-purple-500 to-blue-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg transform rotate-12 hover:rotate-3 transition-transform">
+          ⚡ {sseFeeTransfer.amount.toFixed(0)} SSE
+        </div>
+      )}
+      
       <CardHeader>
         <TransactionsHeader
           transaction={transaction}
@@ -104,37 +111,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           priceLoading={toTokenLoading}
           isReceived
         />
-        
-        {/* SSE Fee Display */}
-        {sseFeeTransfer && (
-          <div className="px-4 py-3 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-lg border border-purple-500/10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
-                    Fee paid with SSE
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    Lowest fees available
-                  </span>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                  {sseFeeTransfer.amount.toFixed(2)} SSE
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Platform fee
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </CardContent>
     </MotionCard>
   )
