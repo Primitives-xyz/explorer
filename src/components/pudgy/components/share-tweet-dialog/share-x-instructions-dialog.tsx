@@ -8,9 +8,15 @@ interface Props {
   open: boolean
   setOpen: (open: boolean) => void
   onShare: () => void
+  modalTitle: string
 }
 
-export function ShareXInstructionsDialog({ open, setOpen, onShare }: Props) {
+export function ShareXInstructionsDialog({
+  open,
+  setOpen,
+  onShare,
+  modalTitle,
+}: Props) {
   const t = useTranslations(
     'menu.solid_score.leaderboard.share_dialog.share_x_instructions'
   )
@@ -20,7 +26,7 @@ export function ShareXInstructionsDialog({ open, setOpen, onShare }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-[500px] flex flex-col items-center justify-start gap-6 p-6">
         <DialogHeader className="w-full">
-          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogTitle>{modalTitle}</DialogTitle>
         </DialogHeader>
 
         <div className="w-full flex flex-col items-center gap-6">

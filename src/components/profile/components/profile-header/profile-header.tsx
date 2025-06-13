@@ -6,12 +6,8 @@ import { SolidScoreProfileHeader } from '@/components/profile/components/profile
 import { SolidScoreSmartCtaWrapper } from '@/components/solid-score/components/smart-cta/solid-score-smart-cta-wrapper'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
-import { Button, ButtonVariant } from '@/components/ui'
-import { createURL } from '@/utils/api'
-import { share } from '@/utils/share'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { abbreviateWalletAddress, cn } from '@/utils/utils'
-import { ShareIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -19,6 +15,7 @@ import { ProfileEditableField } from '../profile-editable-field'
 import { ProfileFollowersModal } from '../profile-followers-modal'
 import { ProfileImageEditor } from '../profile-image-editor'
 import { UsernameChangeModal } from '../username-change-modal'
+import { ProfileShareButton } from './profile-share-button'
 
 interface Props {
   profileInfo?: IGetProfileResponse
@@ -220,25 +217,7 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
 
       <div className="space-y-2 w-[150px]">
         {isOwnProfile && !!mainProfile?.username && (
-          <Button
-            className="w-full"
-            variant={
-              isPudgy
-                ? ButtonVariant.PUDGY_SECONDARY
-                : ButtonVariant.DEFAULT_SOCIAL
-            }
-            onClick={() =>
-              share({
-                title: 'Check out this profile on SSE!',
-                url: createURL({
-                  domain: window.location.origin,
-                  endpoint: mainProfile.username,
-                }),
-              })
-            }
-          >
-            {!isPudgy && <ShareIcon size={16} />} Share
-          </Button>
+          <ProfileShareButton profile={mainProfile} isPudgy={isPudgy} />
         )}
 
         {!isOwnProfile && !!mainProfile?.username && !!username && (
@@ -257,14 +236,6 @@ export function ProfileHeader({ profileInfo, walletAddress }: Props) {
             className="w-full"
           />
         )}
-
-        {/* Show blink button even when user is not logged in to encourage sharing */}
-        {/* {(!mainProfile?.username || mainProfile.username === username) &&
-          username && (
-            <div className="my-4 md:my-0">
-              <FollowBlinkButton username={username} className="w-full" />
-            </div>
-          )} */}
 
         {/* Bio editing - Mobile */}
         {isOwnProfile ? (

@@ -1,4 +1,4 @@
-import { ShareTweetDialog } from '@/components/pudgy/components/share-tweet-dialog'
+import { SharePudgyDialog } from '@/components/pudgy/components/share-pudgy-dialog'
 import { IProfile } from '@/components/tapestry/models/profiles.models'
 import { Button, ButtonVariant } from '@/components/ui'
 import { createURL } from '@/utils/api/fetch-wrapper'
@@ -35,9 +35,10 @@ export function ProfileShareButton({ profile, isPudgy }: Props) {
       >
         {!isPudgy && <ShareIcon size={16} />} Share
       </Button>
-      <ShareTweetDialog
+      <SharePudgyDialog
         open={openPudgyShareDialog}
         setOpen={setOpenPudgyShareDialog}
+        profile={profile}
       />
     </>
   )

@@ -3,7 +3,7 @@ import { DownloadIcon } from 'lucide-react'
 import Image from 'next/image'
 
 interface Props {
-  imageData: Blob | null
+  imageData?: Blob
   isGeneratingImage: boolean
   handleDownloadImage: () => void
 }
