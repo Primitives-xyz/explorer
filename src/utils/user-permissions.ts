@@ -12,4 +12,6 @@ export const ADMIN_USERS = [
   'hello',
   'wallet13',
   'seeingsaigon',
+  'billybob',
+  'froggy',
 ]

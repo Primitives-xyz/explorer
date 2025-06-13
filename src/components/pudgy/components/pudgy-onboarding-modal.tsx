@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui'
+import { pudgyStorage } from '@/utils/pudgy-cookies'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useEffect, useState } from 'react'
 import { usePudgyPayment } from '../hooks/use-pudgy-payment'
@@ -46,6 +47,7 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
         },
       ],
     })
+    pudgyStorage.setHasSeenModal(mainProfile.username)
     refetchCurrentUser()
   }
 
@@ -87,6 +89,7 @@ export function PudgyOnboardingModal({ mainProfile, open, setOpen }: Props) {
             <PudgyClaimProfileStep
               setStep={setStep}
               mainProfile={mainProfile}
+              onClose={onClose}
             />
           )}
         </div>

@@ -153,15 +153,6 @@ export function PudgyClaimTransactionsView({ transaction }: Props) {
                     displayPudgyFrame={content.pudgyFrame === 'true'}
                   />
                 </div>
-                {/* Theme Badge */}
-                <div
-                  className={cn(
-                    'absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold',
-                    'bg-white/90 backdrop-blur-sm border'
-                  )}
-                >
-                  {content.pudgyTheme} Theme
-                </div>
               </div>
             </div>
 
