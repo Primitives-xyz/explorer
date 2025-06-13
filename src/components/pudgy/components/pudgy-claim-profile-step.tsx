@@ -251,16 +251,20 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
                     Insufficient Balance
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    You need{' '}
-                    {(() => {
-                      const currentBalance = Math.floor(
-                        Number(rawBalance) / 10 ** 6
-                      )
-                      const needed = requiredAmount - currentBalance
-                      // Ensure we never show negative values
-                      return Math.max(0, needed)
-                    })()}{' '}
-                    more PENGU to unlock your profile
+                    {rawBalance === undefined ? (
+                      'Checking your balance...'
+                    ) : (
+                      <>
+                        You need{' '}
+                        {(() => {
+                          const currentBalance = Number(rawBalance) / 10 ** 6
+                          const needed = requiredAmount - currentBalance
+                          // Ensure we never show negative values and round to 2 decimals
+                          return Math.max(0, needed).toFixed(2)
+                        })()}{' '}
+                        more PENGU to unlock your profile
+                      </>
+                    )}
                   </p>
                 </div>
 
@@ -272,7 +276,14 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
                   <div>
                     <p className="text-muted-foreground">Your balance</p>
                     <p className="font-semibold text-destructive">
-                      {Math.floor(Number(rawBalance) / 10 ** 6)} PENGU
+                      {rawBalance === undefined ? (
+                        <span className="inline-flex items-center gap-1">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Loading...
+                        </span>
+                      ) : (
+                        `${(Number(rawBalance) / 10 ** 6).toFixed(2)} PENGU`
+                      )}
                     </p>
                   </div>
                 </div>
