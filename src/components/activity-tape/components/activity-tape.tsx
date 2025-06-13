@@ -2,7 +2,7 @@
 
 import { ScrollingText } from '@/components/ui/scrolling-text'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useActivityTape } from '../hooks/use-get-activity-tape'
+import { useActivityTape } from '../hooks/use-activity-tape'
 import { ActivityTapeEntry } from './activity-tape-entry'
 
 export function ActivityTape() {
