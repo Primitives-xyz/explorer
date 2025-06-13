@@ -38,8 +38,54 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const { mainProfile } = useCurrentWallet()
 
   const processedTx = processSwapTransaction(transaction)
-  const fromToken = processedTx.primaryOutgoingToken
-  const toToken = processedTx.primaryIncomingToken
+
+  // Prefer content data when available for accuracy
+  const fromTokenMint =
+    transaction.content?.inputMint || processedTx.primaryOutgoingToken?.mint
+  const toTokenMint =
+    transaction.content?.outputMint || processedTx.primaryIncomingToken?.mint
+
+  // Get amount from content if available (content stores human-readable amounts)
+  const fromAmount = transaction.content?.inputAmount
+    ? Number(transaction.content.inputAmount)
+    : processedTx.primaryOutgoingToken?.amount || 0
+
+  const toAmount = transaction.content?.expectedOutput
+    ? Number(transaction.content.expectedOutput)
+    : processedTx.primaryIncomingToken?.amount || 0
+
+  // Get USD values from content
+  const fromAmountUsd = transaction.content?.inputAmountUsd
+    ? Number(transaction.content.inputAmountUsd)
+    : null
+  const toAmountUsd = transaction.content?.outputAmountUsd
+    ? Number(transaction.content.outputAmountUsd)
+    : null
+
+  const fromToken = fromTokenMint
+    ? {
+        mint: fromTokenMint,
+        amount: fromAmount,
+        symbol: processedTx.primaryOutgoingToken?.symbol || '',
+      }
+    : processedTx.primaryOutgoingToken
+
+  const toToken = toTokenMint
+    ? {
+        mint: toTokenMint,
+        amount: toAmount,
+        symbol: processedTx.primaryIncomingToken?.symbol || '',
+      }
+    : processedTx.primaryIncomingToken
+
+  const sseFeeTransfer = processedTx.sseFeeTransfer
+
+  // Check if we have SSE fee information from content
+  const sseFeeAmount = transaction.content?.sseFeeAmount
+  const hasSSEFee = sseFeeTransfer || (sseFeeAmount && Number(sseFeeAmount) > 0)
+  const displaySSEFeeAmount = sseFeeAmount
+    ? Number(sseFeeAmount) / Math.pow(10, 6) // Convert from base units
+    : sseFeeTransfer?.amount || 0
 
   // Fetch content information for likes
   const {
@@ -175,6 +221,11 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
                 </Badge>
               </>
             )}
+            {hasSSEFee && (
+              <div className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-2.5 py-1 rounded-full text-[10px] font-black shadow-lg animate-pulse">
+                ⚡ LOW FEE
+              </div>
+            )}
             {isCopyTrade && (copySourceUsername || copySourceWallet) && (
               <>
                 <p className="text-muted-foreground">•</p>
@@ -204,6 +255,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           tokenLoading={fromTokenLoading}
           tokenPrice={fromTokenPrice ?? null}
           priceLoading={fromTokenLoading}
+          usdValue={fromAmountUsd}
         />
         <SwapTransactionsViewDetails
           token={{ ...toToken, ...toTokenInfo }}
@@ -211,6 +263,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           tokenPrice={toTokenPrice ?? null}
           priceLoading={toTokenLoading}
           isReceived
+          usdValue={toAmountUsd}
         />
 
         {/* Likes section in bottom right */}

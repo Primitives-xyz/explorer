@@ -22,6 +22,7 @@ interface CreateContentNodeParams {
   inputTokenPrice?: number
   outputTokenPrice?: number
   sourceTransactionId?: string // For copy trades
+  sseFeeAmount?: string // SSE fee amount if used
 }
 
 export function useCreateTradeContentNode() {
@@ -46,6 +47,7 @@ export function useCreateTradeContentNode() {
     inputTokenPrice,
     outputTokenPrice,
     sourceTransactionId,
+    sseFeeAmount,
   }: CreateContentNodeParams) => {
     try {
       // Fetch profiles for both wallets
@@ -154,6 +156,7 @@ export function useCreateTradeContentNode() {
         walletImage: walletProfile?.image || '',
         usdcFeeAmount: usdcFeeAmount || '0',
         route: route || '',
+        sseFeeAmount: sseFeeAmount || '0',
 
         // Token information
         inputTokenSymbol:

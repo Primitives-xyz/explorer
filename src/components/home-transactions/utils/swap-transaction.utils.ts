@@ -22,7 +22,13 @@ export interface ProcessedTransaction {
   timeAgo: Date
   primaryOutgoingToken: ProcessedTokenTransfer | null
   primaryIncomingToken: ProcessedTokenTransfer | null
+  sseFeeTransfer?: ProcessedTokenTransfer | null
 }
+
+// Known fee recipient addresses
+const KNOWN_FEE_WALLETS = [
+  '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz', // Platform fee wallet
+]
 
 export function processSwapTransaction(
   transaction: IHomeTransaction
@@ -41,6 +47,9 @@ export function processSwapTransaction(
   // Track primary outgoing and incoming tokens
   let primaryOutgoingToken: ProcessedTokenTransfer | null = null
   let primaryIncomingToken: ProcessedTokenTransfer | null = null
+
+  // Track SSE fee transfers
+  let sseFeeTransfer: ProcessedTokenTransfer | null = null
 
   // First, collect all native SOL transfers
   if (transaction.nativeTransfers && transaction.nativeTransfers.length > 0) {
@@ -95,7 +104,7 @@ export function processSwapTransaction(
   if (transaction.tokenTransfers && transaction.tokenTransfers.length > 0) {
     // Track if a token transfer is also in native transfers to avoid duplication
     const processedSolTransfers = new Set()
-
+    
     // Build a map of all incoming transfers by their source
     const incomingTransfersBySource = new Map<string, any[]>()
     transaction.tokenTransfers.forEach((transfer) => {
@@ -107,9 +116,29 @@ export function processSwapTransaction(
       }
     })
 
+    // Filter out fee transfers before finding swap pattern
+    const nonFeeTransfers = transaction.tokenTransfers.filter((transfer: any) => {
+      // Check if this is an SSE fee transfer
+      if (
+        transfer.mint === SSE_MINT &&
+        transfer.fromUserAccount === feePayer &&
+        transfer.toUserAccount &&
+        KNOWN_FEE_WALLETS.includes(transfer.toUserAccount)
+      ) {
+        // Track the SSE fee transfer
+        sseFeeTransfer = {
+          mint: transfer.mint,
+          amount: transfer.tokenAmount,
+          symbol: 'SSE',
+        }
+        return false // Exclude from main processing
+      }
+      return true
+    })
+
     // Find the first outgoing transfer that has a corresponding incoming transfer
     // This indicates a swap pattern
-    const firstSwapOutgoing = transaction.tokenTransfers.find((transfer) => {
+    const firstSwapOutgoing = nonFeeTransfers.find((transfer: any) => {
       if (
         transfer.fromUserAccount !== feePayer ||
         !transfer.mint ||
@@ -144,10 +173,10 @@ export function processSwapTransaction(
       }
     }
 
-    // If we didn't find a swap pattern, use the first outgoing transfer
+    // If we didn't find a swap pattern, use the first outgoing transfer (excluding fees)
     const firstOutgoingTransfer =
       firstSwapOutgoing ||
-      transaction.tokenTransfers.find(
+      nonFeeTransfers.find(
         (transfer) => transfer.fromUserAccount === feePayer && transfer.mint
       )
 
@@ -155,14 +184,14 @@ export function processSwapTransaction(
     // But prefer the corresponding incoming if we found a swap pattern
     const lastIncomingTransfer =
       correspondingIncoming ||
-      [...transaction.tokenTransfers]
+      [...nonFeeTransfers]
         .reverse()
         .find(
           (transfer) => transfer.toUserAccount === feePayer && transfer.mint
         )
 
     // Process all transfers to build the full picture
-    transaction.tokenTransfers.forEach((transfer) => {
+    nonFeeTransfers.forEach((transfer) => {
       if (!transfer.mint) return
 
       // Skip SOL transfers that were already processed in nativeTransfers
@@ -299,6 +328,7 @@ export function processSwapTransaction(
     timeAgo: new Date(transaction.timestamp * 1000),
     primaryOutgoingToken,
     primaryIncomingToken,
+    sseFeeTransfer,
   }
 }
 
