@@ -3,6 +3,7 @@
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { IProfile } from '@/components/tapestry/models/profiles.models'
 import { Button, ButtonVariant, Input, Label } from '@/components/ui'
+import { pudgyStorage } from '@/utils/pudgy-cookies'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
@@ -26,9 +27,14 @@ import { PudgyThemeSelection } from './pudgy-theme-selection'
 interface Props {
   setStep: (step: EPudgyOnboardingStep) => void
   mainProfile: IProfile
+  onClose?: () => void
 }
 
-export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
+export function PudgyClaimProfileStep({
+  setStep,
+  mainProfile,
+  onClose,
+}: Props) {
   const t = useTranslations()
   const { push } = useRouter()
   const { refetch: refetchCurrentUser } = useCurrentWallet()
@@ -55,6 +61,9 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
     refreshBalance,
   } = usePudgyPayment({
     profileId: mainProfile.id,
+    pudgyTheme,
+    pudgyFrame,
+    username: mainProfile.username,
     onComplete: async () => {
       try {
         // Clear the polling interval when payment is complete
@@ -72,8 +81,22 @@ export function PudgyClaimProfileStep({ setStep, mainProfile }: Props) {
           ],
         })
 
+        // Mark in local storage that the profile has been created
+        pudgyStorage.setHasCreatedPudgyProfile(mainProfile.username)
+
+        // Invalidate all profile caches to ensure fresh data
+        await pudgyStorage.invalidateProfileCache()
+
+        // Add a small delay to ensure backend has processed the pudgy_profile_date update
+        await new Promise((resolve) => setTimeout(resolve, 250))
+
         await refetchCurrentUser()
         toast.success('Pudgy profile activated successfully!')
+
+        // Close the modal if onClose is provided
+        if (onClose) {
+          onClose()
+        }
 
         // Navigate to profile
         push(route('entity', { id: mainProfile.id }))

@@ -90,12 +90,38 @@ export interface CopiedPerpTradeContent extends BasePerpTradeContent {
   sourceWalletImage?: string
 }
 
+// Pudgy profile claim content
+export interface PudgyProfileClaimContent {
+  type: 'pudgy_profile_claim'
+  txSignature: string
+  timestamp: string
+
+  // Burn details
+  burnAmount: string
+  tokenSymbol: string
+  tokenMint: string
+  tokenDecimals: string
+  burnAmountUsd: string
+
+  // Profile details
+  profileId: string
+  username: string
+  pudgyTheme: string
+  pudgyFrame: string
+
+  // Wallet that claimed the profile
+  walletAddress: string
+  walletUsername?: string
+  walletImage?: string
+}
+
 // Union type for all transaction content types
 export type TransactionContent =
   | DirectSwapContent
   | CopiedSwapContent
   | DirectPerpTradeContent
   | CopiedPerpTradeContent
+  | PudgyProfileClaimContent
 
 // Union type for Perp Trade content types
 export type PerpTradeContent = DirectPerpTradeContent | CopiedPerpTradeContent
@@ -125,14 +151,21 @@ export function isDirectPerpTrade(
 export function isCopiedSwap(
   content: TransactionContent
 ): content is CopiedSwapContent {
-  return content.transactionType === 'copied'
+  return content.type === 'swap' && content.transactionType === 'copied'
 }
 
 // Type guard to check if a transaction is a direct swap
 export function isDirectSwap(
   content: TransactionContent
 ): content is DirectSwapContent {
-  return content.transactionType === 'direct'
+  return content.type === 'swap' && content.transactionType === 'direct'
+}
+
+// Type guard to check if a transaction is a pudgy profile claim
+export function isPudgyProfileClaim(
+  content: TransactionContent
+): content is PudgyProfileClaimContent {
+  return content.type === 'pudgy_profile_claim'
 }
 
 // Base display data that all transactions share
