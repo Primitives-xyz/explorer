@@ -21,8 +21,14 @@ export function ProfileContent({ profileInfo, walletAddress }: Props) {
           walletAddress={walletAddress}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ProfileWallets walletAddress={walletAddress} />
-          <ProfileSocial walletAddress={walletAddress} />
+          <ProfileWallets
+            walletAddress={walletAddress}
+            profile={profileInfo.profile}
+          />
+          <ProfileSocial
+            walletAddress={walletAddress}
+            profile={profileInfo.profile}
+          />
         </div>
       </div>
     </>
