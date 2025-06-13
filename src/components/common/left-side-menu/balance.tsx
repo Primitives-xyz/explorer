@@ -108,8 +108,8 @@ export const TokenBalance = ({
     }
 
     fetchBalance()
-    // Refresh balance every 5 minutes instead of every minute
-    const interval = setInterval(fetchBalance, 5 * 60000)
+    // Refresh balance every minute
+    const interval = setInterval(fetchBalance, 60000)
 
     return () => clearInterval(interval)
   }, [walletAddress, tokenMint])
