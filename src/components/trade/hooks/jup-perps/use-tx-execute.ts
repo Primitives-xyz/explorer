@@ -64,6 +64,7 @@ const useTxExecute = ({ serializedTxBase64, action }: TxExecuteParams) => {
     }
 
     fetchTxId()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serializedTxBase64, action])
 
   return {

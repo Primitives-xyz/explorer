@@ -16,10 +16,10 @@ import {
   Users,
   Zap,
 } from 'lucide-react'
+import Image from 'next/image'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import { PnLDisplay } from './mobile-token-cards/pnl-display'
-
 import { MiniPriceChart } from './mini-price-chart'
+import { PnLDisplay } from './mobile-token-cards/pnl-display'
 import { TokenBadges } from './token-badges'
 import { TokenBondedBar } from './token-bonded-bar'
 import { TokenBuySellBar } from './token-buy-sell-bar'
@@ -646,6 +646,7 @@ export function HotFeedModal({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isOpen,
     isDesktop,
@@ -678,6 +679,7 @@ export function HotFeedModal({
     // Add wheel listener to the window with passive: false to allow preventDefault
     window.addEventListener('wheel', handleWheel, { passive: false })
     return () => window.removeEventListener('wheel', handleWheel)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isOpen,
     isDesktop,
@@ -1051,10 +1053,12 @@ export function HotFeedModal({
                             <div className="flex items-start justify-between mb-4 gap-4">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 {token.mintImage && (
-                                  <img
-                                    src={token.mintImage}
-                                    alt={token.mintSymbol}
-                                    className="w-16 h-16 rounded-full ring-4 ring-white/20 hover:scale-110 transition-transform duration-200 flex-shrink-0"
+                                  <Image
+                                    src={token.mintImage || ''}
+                                    alt={token.mintSymbol || ''}
+                                    width={64}
+                                    height={64}
+                                    className="rounded-full ring-4 ring-white/20 hover:scale-110 transition-transform duration-200 flex-shrink-0"
                                   />
                                 )}
                                 <div className="min-w-0 flex-1">
@@ -1444,10 +1448,12 @@ export function HotFeedModal({
                             <div className="flex items-start justify-between mb-4 gap-4 flex-shrink-0">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 {token.mintImage && (
-                                  <img
+                                  <Image
                                     src={token.mintImage}
-                                    alt={token.mintSymbol}
-                                    className="w-16 h-16 rounded-full ring-4 ring-white/20 hover:scale-110 transition-transform duration-200 flex-shrink-0"
+                                    alt={token.mintSymbol || ''}
+                                    width={64}
+                                    height={64}
+                                    className="rounded-full ring-4 ring-white/20 hover:scale-110 transition-transform duration-200 flex-shrink-0"
                                   />
                                 )}
                                 <div className="min-w-0 flex-1">

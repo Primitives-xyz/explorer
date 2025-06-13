@@ -120,6 +120,7 @@ export function MiniPriceChart({
     })
 
     lastTradeSignatureRef.current = token.lastTrade.signature
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, currency, solPrice])
 
   // Continuous background scrolling and price tracking

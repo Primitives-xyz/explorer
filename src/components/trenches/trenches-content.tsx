@@ -104,6 +104,7 @@ export function TrenchesContent({
     return () => {
       ws.close()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Use paused data when updates are paused

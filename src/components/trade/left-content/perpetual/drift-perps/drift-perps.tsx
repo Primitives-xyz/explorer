@@ -132,7 +132,6 @@ export function DriftPerps() {
           : PositionDirection.SHORT,
       orderType,
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderParams, selectedDirection, symbol, orderType])
 
   // Market
