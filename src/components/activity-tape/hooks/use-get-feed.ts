@@ -6,7 +6,7 @@ import {
 } from '../activity-tape.models'
 
 export function useActivityTape() {
-  const { data } = useQuery<IActivityGlobalResponse>({
+  const { data, loading } = useQuery<IActivityGlobalResponse>({
     endpoint: 'activity/global',
   })
 
@@ -19,16 +19,22 @@ export function useActivityTape() {
 
         switch (activity.type) {
           case 'new_follower':
-            text = `${activity.actor_username} followed ${activity.target_username}`
+            text = activity.target_username
+              ? `${activity.actor_username} followed ${activity.target_username}`
+              : `${activity.actor_username} followed someone`
             action = '👥'
             break
           case 'new_content':
-            text = `${activity.actor_username} published ${activity.content_type}`
+            text = activity.content_type
+              ? `${activity.actor_username} published ${activity.content_type}`
+              : `${activity.actor_username} published content`
             action = '📝'
             highlight = 'positive'
             break
           case 'like':
-            text = `${activity.actor_username} liked a ${activity.content_type}`
+            text = activity.content_type
+              ? `${activity.actor_username} liked a ${activity.content_type}`
+              : `${activity.actor_username} liked content`
             action = '❤️'
             highlight = 'positive'
             break
@@ -53,5 +59,5 @@ export function useActivityTape() {
     )
   }, [data])
 
-  return { data: { activities } }
+  return { data: { activities }, loading }
 }
