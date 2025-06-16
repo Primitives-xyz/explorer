@@ -1,5 +1,6 @@
 import { scoreManager } from '@/services/scoring/score-manager'
 import { ScoringCategory } from '@/services/scoring/scoring-config'
+import redis from '@/utils/redis'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -34,6 +35,27 @@ export async function GET(request: NextRequest) {
       category || undefined
     )
 
+    // Get total count from Redis
+    const getCurrentTimeKey = (tf: 'daily' | 'weekly' | 'monthly'): string => {
+      const now = new Date()
+      switch (tf) {
+        case 'daily':
+          return now.toISOString().split('T')[0]
+        case 'weekly':
+          return `${now.getFullYear()}-${Math.ceil((((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 86400000) + 1) / 7)}`
+        case 'monthly':
+          return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+      }
+    }
+
+    const key = category
+      ? `scores:category:${category}`
+      : timeframe === 'lifetime'
+      ? 'scores:lifetime'
+      : `scores:${timeframe}:${getCurrentTimeKey(timeframe as 'daily' | 'weekly' | 'monthly')}`
+
+    const totalCount = await redis.zcard(key)
+
     // Enrich with profile data (in a real app, you'd fetch from your profiles API)
     // For now, we'll just return the basic data
     const enrichedLeaderboard = leaderboard.map(entry => ({
@@ -48,7 +70,7 @@ export async function GET(request: NextRequest) {
       category,
       limit,
       offset,
-      total: enrichedLeaderboard.length
+      total: totalCount || 0
     }, {
       headers: {
         'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60', // Cache for 30 seconds

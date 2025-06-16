@@ -165,7 +165,16 @@ export class ScoreManager {
     return {
       score,
       rank,
-      recentActions: recentActions.map((a: string | null) => JSON.parse(a || '[]')),
+      recentActions: recentActions
+        .filter((a: string | null): a is string => a !== null && a !== undefined)
+        .map((a: string) => {
+          try {
+            return JSON.parse(a)
+          } catch {
+            return null
+          }
+        })
+        .filter((a: any): a is any => a !== null),
       achievements: achievements as string[],
       streaks: {
         trading: tradingStreak ? parseInt(tradingStreak) : 0,
