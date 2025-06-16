@@ -62,12 +62,13 @@ export class ScoreManager {
         `user:${userId}:daily:${today}`,
         action
       )
-      if (dailyCount && parseInt(dailyCount) >= config.dailyLimit) return 0
+      if (dailyCount && parseInt(dailyCount as string) >= config.dailyLimit)
+        return 0
     }
 
     // Calculate score with multipliers
     let score = config.base
-    
+
     if (config.multipliers) {
       for (const [key, multiplierFn] of Object.entries(config.multipliers)) {
         if (metadata[key] !== undefined && typeof multiplierFn === 'function') {
@@ -90,14 +91,16 @@ export class ScoreManager {
     const now = new Date()
     const dateKey = now.toISOString().split('T')[0]
     const weekKey = `${now.getFullYear()}-${this.getWeekNumber(now)}`
-    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    const monthKey = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, '0')}`
 
     // Update various leaderboards
     pipeline.zincrby('scores:lifetime', score, userId)
     pipeline.zincrby(`scores:daily:${dateKey}`, score, userId)
     pipeline.zincrby(`scores:weekly:${weekKey}`, score, userId)
     pipeline.zincrby(`scores:monthly:${monthKey}`, score, userId)
-    
+
     // Category-specific scores
     if (metadata.category) {
       pipeline.zincrby(`scores:category:${metadata.category}`, score, userId)
@@ -118,7 +121,7 @@ export class ScoreManager {
       action,
       score,
       metadata,
-      timestamp: now.toISOString()
+      timestamp: now.toISOString(),
     }
     pipeline.lpush(`user:${userId}:recent`, JSON.stringify(actionRecord))
     pipeline.ltrim(`user:${userId}:recent`, 0, 99) // Keep last 100 actions
@@ -139,42 +142,52 @@ export class ScoreManager {
     // Update streaks and check achievements
     await Promise.all([
       this.updateStreaks(userId, action),
-      this.checkAchievements(userId, action, metadata, score)
+      this.checkAchievements(userId, action, metadata, score),
     ])
 
     return score
   }
 
   async getUserScore(
-    userId: string, 
+    userId: string,
     timeframe: 'lifetime' | 'daily' | 'weekly' | 'monthly' = 'lifetime'
   ): Promise<number> {
-    const key = timeframe === 'lifetime' 
-      ? 'scores:lifetime'
-      : `scores:${timeframe}:${this.getCurrentTimeKey(timeframe)}`
-    
+    const key =
+      timeframe === 'lifetime'
+        ? 'scores:lifetime'
+        : `scores:${timeframe}:${this.getCurrentTimeKey(timeframe)}`
+
     const score = await this.redis.zscore(key, userId)
-    return score ? parseInt(score) : 0
+    return score ? Number(score) : 0
   }
 
   async getUserScoreData(
     userId: string,
     timeframe: 'lifetime' | 'daily' | 'weekly' | 'monthly' = 'lifetime'
   ): Promise<UserScoreData> {
-    const [score, rank, recentActions, achievements, tradingStreak, lastTradeDate] = await Promise.all([
+    const [
+      score,
+      rank,
+      recentActions,
+      achievements,
+      tradingStreak,
+      lastTradeDate,
+    ] = await Promise.all([
       this.getUserScore(userId, timeframe),
       this.getUserRank(userId, timeframe),
       this.redis.lrange(`user:${userId}:recent`, 0, 9),
       this.redis.smembers(`user:${userId}:achievements`),
       this.redis.get(`user:${userId}:streak:trading`),
-      this.redis.get(`user:${userId}:streak:last_trade`)
+      this.redis.get(`user:${userId}:streak:last_trade`),
     ])
 
     return {
       score,
       rank,
       recentActions: recentActions
-        .filter((a: string | null): a is string => a !== null && a !== undefined)
+        .filter(
+          (a: string | null): a is string => a !== null && a !== undefined
+        )
         .map((a: string) => {
           try {
             return JSON.parse(a)
@@ -185,9 +198,9 @@ export class ScoreManager {
         .filter((a: any): a is any => a !== null),
       achievements: achievements as string[],
       streaks: {
-        trading: tradingStreak ? parseInt(tradingStreak) : 0,
-        lastTradeDate: lastTradeDate
-      }
+        trading: tradingStreak ? parseInt(tradingStreak as string) : 0,
+        lastTradeDate: lastTradeDate as string | null,
+      },
     }
   }
 
@@ -203,14 +216,17 @@ export class ScoreManager {
       ? 'scores:lifetime'
       : `scores:${timeframe}:${this.getCurrentTimeKey(timeframe)}`
 
-    const results = await this.redis.zrevrange(key, offset, offset + limit - 1, 'WITHSCORES')
-    
+    const results = (await this.redis.zrange(key, offset, offset + limit - 1, {
+      rev: true,
+      withScores: true,
+    })) as string[]
+
     const leaderboard: LeaderboardEntry[] = []
     for (let i = 0; i < results.length; i += 2) {
       leaderboard.push({
         userId: results[i] as string,
         score: parseInt(results[i + 1] as string),
-        rank: offset + (i / 2) + 1
+        rank: offset + i / 2 + 1,
       })
     }
 
@@ -218,7 +234,7 @@ export class ScoreManager {
   }
 
   async getUserRank(
-    userId: string, 
+    userId: string,
     timeframe: 'lifetime' | 'daily' | 'weekly' | 'monthly' = 'lifetime',
     category?: ScoringCategory
   ): Promise<number | null> {
@@ -236,13 +252,14 @@ export class ScoreManager {
     userId: string,
     timeframe: 'lifetime' | 'daily' | 'weekly' | 'monthly' = 'lifetime'
   ): Promise<number> {
-    const key = timeframe === 'lifetime'
-      ? 'scores:lifetime'
-      : `scores:${timeframe}:${this.getCurrentTimeKey(timeframe)}`
+    const key =
+      timeframe === 'lifetime'
+        ? 'scores:lifetime'
+        : `scores:${timeframe}:${this.getCurrentTimeKey(timeframe)}`
 
     const [rank, total] = await Promise.all([
       this.redis.zrevrank(key, userId),
-      this.redis.zcard(key)
+      this.redis.zcard(key),
     ])
 
     if (rank === null || total === 0) return 0
@@ -252,22 +269,28 @@ export class ScoreManager {
   private async updateStreaks(userId: string, action: ActionType) {
     if (action === 'TRADE_EXECUTE' || action === 'COPY_TRADE') {
       const today = new Date().toISOString().split('T')[0]
-      const lastTradeDate = await this.redis.get(`user:${userId}:streak:last_trade`)
-      
+      const lastTradeDate = await this.redis.get(
+        `user:${userId}:streak:last_trade`
+      )
+
       if (!lastTradeDate) {
         // First trade
         await this.redis.set(`user:${userId}:streak:trading`, 1)
         await this.redis.set(`user:${userId}:streak:last_trade`, today)
       } else {
-        const lastDate = new Date(lastTradeDate)
+        const lastDate = new Date(lastTradeDate as string)
         const todayDate = new Date(today)
-        const daysDiff = Math.floor((todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24))
-        
+        const daysDiff = Math.floor(
+          (todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)
+        )
+
         if (daysDiff === 1) {
           // Consecutive day - increment streak
-          const currentStreak = await this.redis.incr(`user:${userId}:streak:trading`)
+          const currentStreak = await this.redis.incr(
+            `user:${userId}:streak:trading`
+          )
           await this.redis.set(`user:${userId}:streak:last_trade`, today)
-          
+
           // Check streak milestones
           if (currentStreak === 3) {
             await this.addScore(userId, 'TRADING_STREAK_3', {})
@@ -287,14 +310,17 @@ export class ScoreManager {
   }
 
   private async checkAchievements(
-    userId: string, 
-    action: ActionType, 
+    userId: string,
+    action: ActionType,
     metadata: ScoreMetadata,
     earnedScore: number
   ) {
     // Check first-time achievements
     if (action === 'TRADE_EXECUTE') {
-      const tradeCount = await this.redis.hget(`user:${userId}:actions`, 'TRADE_EXECUTE')
+      const tradeCount = await this.redis.hget(
+        `user:${userId}:actions`,
+        'TRADE_EXECUTE'
+      )
       if (tradeCount === '1') {
         await this.addScore(userId, 'FIRST_TRADE', {})
       }
@@ -315,13 +341,31 @@ export class ScoreManager {
           metadata.profitUsd
         )
 
-        if (cumulativeProfit >= 100 && !await this.redis.sismember(`user:${userId}:achievements`, 'PROFIT_MILESTONE_100')) {
+        if (
+          cumulativeProfit >= 100 &&
+          !(await this.redis.sismember(
+            `user:${userId}:achievements`,
+            'PROFIT_MILESTONE_100'
+          ))
+        ) {
           await this.addScore(userId, 'PROFIT_MILESTONE_100', {})
         }
-        if (cumulativeProfit >= 1000 && !await this.redis.sismember(`user:${userId}:achievements`, 'PROFIT_MILESTONE_1K')) {
+        if (
+          cumulativeProfit >= 1000 &&
+          !(await this.redis.sismember(
+            `user:${userId}:achievements`,
+            'PROFIT_MILESTONE_1K'
+          ))
+        ) {
           await this.addScore(userId, 'PROFIT_MILESTONE_1K', {})
         }
-        if (cumulativeProfit >= 10000 && !await this.redis.sismember(`user:${userId}:achievements`, 'PROFIT_MILESTONE_10K')) {
+        if (
+          cumulativeProfit >= 10000 &&
+          !(await this.redis.sismember(
+            `user:${userId}:achievements`,
+            'PROFIT_MILESTONE_10K'
+          ))
+        ) {
           await this.addScore(userId, 'PROFIT_MILESTONE_10K', {})
         }
       }
@@ -333,13 +377,31 @@ export class ScoreManager {
           metadata.volumeUSD
         )
 
-        if (cumulativeVolume >= 1000 && !await this.redis.sismember(`user:${userId}:achievements`, 'VOLUME_MILESTONE_1K')) {
+        if (
+          cumulativeVolume >= 1000 &&
+          !(await this.redis.sismember(
+            `user:${userId}:achievements`,
+            'VOLUME_MILESTONE_1K'
+          ))
+        ) {
           await this.addScore(userId, 'VOLUME_MILESTONE_1K', {})
         }
-        if (cumulativeVolume >= 10000 && !await this.redis.sismember(`user:${userId}:achievements`, 'VOLUME_MILESTONE_10K')) {
+        if (
+          cumulativeVolume >= 10000 &&
+          !(await this.redis.sismember(
+            `user:${userId}:achievements`,
+            'VOLUME_MILESTONE_10K'
+          ))
+        ) {
           await this.addScore(userId, 'VOLUME_MILESTONE_10K', {})
         }
-        if (cumulativeVolume >= 100000 && !await this.redis.sismember(`user:${userId}:achievements`, 'VOLUME_MILESTONE_100K')) {
+        if (
+          cumulativeVolume >= 100000 &&
+          !(await this.redis.sismember(
+            `user:${userId}:achievements`,
+            'VOLUME_MILESTONE_100K'
+          ))
+        ) {
           await this.addScore(userId, 'VOLUME_MILESTONE_100K', {})
         }
 
@@ -349,7 +411,10 @@ export class ScoreManager {
           `user:${userId}:daily_volume:${today}`,
           metadata.volumeUSD
         )
-        await this.redis.expire(`user:${userId}:daily_volume:${today}`, 60 * 60 * 24)
+        await this.redis.expire(
+          `user:${userId}:daily_volume:${today}`,
+          60 * 60 * 24
+        )
 
         if (dailyVolume >= 1000) {
           await this.addScore(userId, 'DAILY_VOLUME_BONUS', {})
@@ -358,14 +423,20 @@ export class ScoreManager {
     }
 
     if (action === 'COPY_TRADE') {
-      const copyCount = await this.redis.hget(`user:${userId}:actions`, 'COPY_TRADE')
+      const copyCount = await this.redis.hget(
+        `user:${userId}:actions`,
+        'COPY_TRADE'
+      )
       if (copyCount === '1') {
         await this.addScore(userId, 'FIRST_COPY_TRADE', {})
       }
     }
 
     if (action === 'COPIED_BY_OTHERS') {
-      const copiedCount = await this.redis.hget(`user:${userId}:actions`, 'COPIED_BY_OTHERS')
+      const copiedCount = await this.redis.hget(
+        `user:${userId}:actions`,
+        'COPIED_BY_OTHERS'
+      )
       if (copiedCount === '1') {
         await this.addScore(userId, 'FIRST_TIME_COPIED', {})
       }
@@ -373,11 +444,13 @@ export class ScoreManager {
   }
 
   private getWeekNumber(date: Date): number {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+    const d = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    )
     const dayNum = d.getUTCDay() || 7
     d.setUTCDate(d.getUTCDate() + 4 - dayNum)
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
   }
 
   private getCurrentTimeKey(timeframe: 'daily' | 'weekly' | 'monthly'): string {
@@ -388,7 +461,10 @@ export class ScoreManager {
       case 'weekly':
         return `${now.getFullYear()}-${this.getWeekNumber(now)}`
       case 'monthly':
-        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+          2,
+          '0'
+        )}`
     }
   }
 }
