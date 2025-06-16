@@ -3,6 +3,17 @@ import { ScoringCategory } from '@/services/scoring/scoring-config'
 import redis from '@/utils/redis'
 import { NextRequest, NextResponse } from 'next/server'
 
+// ISO 8601 week number calculation - must match ScoreManager implementation
+function getWeekNumber(date: Date): number {
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  )
+  const dayNum = d.getUTCDay() || 7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -14,10 +25,7 @@ export async function GET(request: NextRequest) {
     // Validate parameters
     const validTimeframes = ['lifetime', 'daily', 'weekly', 'monthly'] as const
     if (!validTimeframes.includes(timeframe as any)) {
-      return NextResponse.json(
-        { error: 'Invalid timeframe' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Invalid timeframe' }, { status: 400 })
     }
 
     if (limit < 1 || limit > 1000) {
@@ -42,9 +50,12 @@ export async function GET(request: NextRequest) {
         case 'daily':
           return now.toISOString().split('T')[0]
         case 'weekly':
-          return `${now.getFullYear()}-${Math.ceil((((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 86400000) + 1) / 7)}`
+          return `${now.getFullYear()}-${getWeekNumber(now)}`
         case 'monthly':
-          return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+          return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+            2,
+            '0'
+          )}`
       }
     }
 
@@ -52,30 +63,35 @@ export async function GET(request: NextRequest) {
       ? `scores:category:${category}`
       : timeframe === 'lifetime'
       ? 'scores:lifetime'
-      : `scores:${timeframe}:${getCurrentTimeKey(timeframe as 'daily' | 'weekly' | 'monthly')}`
+      : `scores:${timeframe}:${getCurrentTimeKey(
+          timeframe as 'daily' | 'weekly' | 'monthly'
+        )}`
 
     const totalCount = await redis.zcard(key)
 
     // Enrich with profile data (in a real app, you'd fetch from your profiles API)
     // For now, we'll just return the basic data
-    const enrichedLeaderboard = leaderboard.map(entry => ({
+    const enrichedLeaderboard = leaderboard.map((entry) => ({
       ...entry,
       username: `user_${entry.userId}`, // Placeholder
-      profileImage: null // Placeholder
+      profileImage: null, // Placeholder
     }))
 
-    return NextResponse.json({
-      leaderboard: enrichedLeaderboard,
-      timeframe,
-      category,
-      limit,
-      offset,
-      total: totalCount || 0
-    }, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60', // Cache for 30 seconds
+    return NextResponse.json(
+      {
+        leaderboard: enrichedLeaderboard,
+        timeframe,
+        category,
+        limit,
+        offset,
+        total: totalCount || 0,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60', // Cache for 30 seconds
+        },
       }
-    })
+    )
   } catch (error) {
     console.error('Error fetching leaderboard:', error)
     return NextResponse.json(
