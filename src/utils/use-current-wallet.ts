@@ -83,7 +83,7 @@ export function useCurrentWallet({ refreshInterval, skip }: Props = {}) {
     () => ({
       sdk: !sdkHasLoaded,
       profiles: !!walletAddress && getProfilesLoading,
-      overall: !sdkHasLoaded,
+      overall: !sdkHasLoaded || (!!walletAddress && getProfilesLoading),
     }),
     [sdkHasLoaded, walletAddress, getProfilesLoading]
   )

@@ -20,8 +20,9 @@ export const useGetProfiles = ({
     skip: !walletAddress || skip,
     config: {
       revalidateOnFocus: false,
-      dedupingInterval: 5000,
+      dedupingInterval: 2000,
       refreshInterval,
+      revalidateOnMount: true,
     },
   })
 
