@@ -28,6 +28,13 @@ interface UserScoreData {
   }
 }
 
+interface ActionConfig {
+  base: number
+  oneTime?: boolean
+  dailyLimit?: number
+  multipliers?: Record<string, (value: any) => number>
+}
+
 export class ScoreManager {
   private redis = redis
 
@@ -36,7 +43,7 @@ export class ScoreManager {
     action: ActionType,
     metadata: ScoreMetadata = {}
   ): Promise<number> {
-    const config = SCORING_CONFIG.actions[action]
+    const config = SCORING_CONFIG.actions[action] as ActionConfig
     if (!config) throw new Error(`Unknown action: ${action}`)
 
     // Check if action is one-time only
@@ -73,8 +80,9 @@ export class ScoreManager {
     score = Math.round(score)
 
     // Add category from config if not provided
-    if (!metadata.category && SCORING_CONFIG.categories[action]) {
-      metadata.category = SCORING_CONFIG.categories[action]
+    const categoryKey = action as keyof typeof SCORING_CONFIG.categories
+    if (!metadata.category && SCORING_CONFIG.categories[categoryKey]) {
+      metadata.category = SCORING_CONFIG.categories[categoryKey]
     }
 
     // Update scores in parallel

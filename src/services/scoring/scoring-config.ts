@@ -5,6 +5,8 @@ interface ActionConfig {
   multipliers?: Record<string, (value: any) => number>
 }
 
+type ActionsConfig = Record<string, ActionConfig>
+
 export const SCORING_CONFIG = {
   actions: {
     // Trading Actions
@@ -107,7 +109,7 @@ export const SCORING_CONFIG = {
     DAILY_LOGIN: { base: 5, dailyLimit: 1 },
     DAILY_TRADE: { base: 10, dailyLimit: 1 },
     DAILY_VOLUME_BONUS: { base: 50, dailyLimit: 1 }, // For >$1000 daily volume
-  } as const satisfies Record<string, ActionConfig>,
+  } as ActionsConfig,
   
   // Decay factors for time-based scoring
   decay: {
