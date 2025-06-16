@@ -184,6 +184,18 @@ module.exports = {
           '88%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(0)' },
         },
+        'slide-right': {
+          '0%': { transform: 'translateX(-100%)' },
+          '20%': { transform: 'translateX(-80%)' },
+          '40%': { transform: 'translateX(-60%)' },
+          '60%': { transform: 'translateX(-40%)' },
+          '80%': { transform: 'translateX(-20%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        'marquee-reverse': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'slide-left': 'slide-left 0.5s ease-out',
@@ -194,6 +206,8 @@ module.exports = {
         bounce: 'bounce 0.8s ease-in-out infinite',
         'infinite-scroll-content': 'infinite-scroll-content 7s linear infinite',
         marquee: 'marquee 30s linear infinite',
+        'slide-right': 'slide-right 0.8s steps(5) infinite',
+        'marquee-reverse': 'marquee-reverse 2s linear infinite',
       },
     },
   },
