@@ -167,16 +167,16 @@ export function useCreateTradeContentNodeWithScoring() {
         // If this trade was copied, award points to the source
         if (sourceWallet && sourceProfile?.id) {
           // Get the current copier count for this trader
-          const copierCount = await redis.hget(
+          const copierCountStr = await redis.hget(
             `trader:${sourceProfile.id}:stats`,
             'copier_count'
-          )
+          ) as string | null
           
           await scoreManager.addScore(
             sourceProfile.id,
             'COPIED_BY_OTHERS',
             {
-              copierCount: parseInt(copierCount || '0') + 1,
+              copierCount: parseInt(copierCountStr || '0') + 1,
               category: 'influence' as const,
               copiedByUser: mainProfile.id,
               profitableForCopier: profitUsd > 0
