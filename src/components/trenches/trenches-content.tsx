@@ -27,6 +27,18 @@ import { MintAggregate } from './trenches-types'
 
 type SectionType = 'newly_minted' | 'about_to_graduate' | 'recently_graduated'
 
+// Token source types and their badges
+const TOKEN_SOURCES = {
+  ALL: { key: 'ALL', label: 'All Sources', emoji: '🌐' },
+  Pump: { key: 'Pump', label: 'Pump.fun', emoji: '💊' },
+  Believe: { key: 'Believe', label: 'Believe', emoji: '🅱️' },
+  Jester: { key: 'Jester', label: 'Jester', emoji: '🃏' },
+  Vertigo: { key: 'Vertigo', label: 'Vertigo', emoji: '🌀' },
+  Meteora: { key: 'Meteora', label: 'Meteora', emoji: '☄️' },
+} as const
+
+type TokenSourceFilter = keyof typeof TOKEN_SOURCES
+
 interface TrenchesContentProps {
   currency: 'SOL' | 'USD'
   setCurrency: (currency: 'SOL' | 'USD') => void
@@ -53,6 +65,7 @@ export function TrenchesContent({
     useState<SectionType>('newly_minted')
   const [clickedTokenForHotFeed, setClickedTokenForHotFeed] =
     useState<MintAggregate | null>(null)
+  const [sourceFilter, setSourceFilter] = useState<TokenSourceFilter>('ALL')
 
   // Inventory tracking removed - now handled by database
 
@@ -115,6 +128,12 @@ export function TrenchesContent({
   // Automatically log trades to Tapestry backend
   useAutoTradeLogger({ platform: 'trenches' })
 
+  // Helper function to filter tokens by source
+  const filterTokensBySource = (tokens: MintAggregate[]) => {
+    if (sourceFilter === 'ALL') return tokens
+    return tokens.filter((token) => token.source === sourceFilter)
+  }
+
   // Memoize token filtering and sorting
   const { cookingToken, topRunnerUps, sectionTokens } = useMemo(() => {
     const now = Date.now() / 1000
@@ -122,11 +141,11 @@ export function TrenchesContent({
     // Sort by TPS descending for all views
     tokens = tokens.sort((a, b) => (b.tps || 0) - (a.tps || 0))
 
-    // Get the top tokens
+    // Get the top tokens (not filtered for hot zone)
     const cookingToken = tokens[0]
     const topRunnerUps = tokens.slice(1, 5) // Top 4 runner-ups (#2-#5)
 
-    // Filter for each section
+    // Filter for each section, then apply source filter
     const graduatedMints = new Set(
       tokens.filter((agg) => agg.fullyBonded).map((agg) => agg.mint)
     )
@@ -136,23 +155,23 @@ export function TrenchesContent({
         .map((agg) => agg.mint)
     )
 
-    const newlyMinted = tokens
-      .filter(
+    const newlyMinted = filterTokensBySource(
+      tokens.filter(
         (agg) =>
           !graduatedMints.has(agg.mint) &&
           !aboutToGraduateMints.has(agg.mint) &&
           (agg as any).tokenCreatedAt &&
           now - (agg as any).tokenCreatedAt < 3600
       )
-      .slice(0, 20)
+    ).slice(0, 20)
 
-    const aboutToGraduate = tokens
-      .filter((agg) => aboutToGraduateMints.has(agg.mint))
-      .slice(0, 20)
+    const aboutToGraduate = filterTokensBySource(
+      tokens.filter((agg) => aboutToGraduateMints.has(agg.mint))
+    ).slice(0, 20)
 
-    const recentlyGraduated = tokens
-      .filter((agg) => graduatedMints.has(agg.mint))
-      .slice(0, 20)
+    const recentlyGraduated = filterTokensBySource(
+      tokens.filter((agg) => graduatedMints.has(agg.mint))
+    ).slice(0, 20)
 
     return {
       cookingToken,
@@ -163,7 +182,8 @@ export function TrenchesContent({
         recently_graduated: recentlyGraduated,
       },
     }
-  }, [displayMintMap])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayMintMap, sourceFilter])
 
   // Helper for price display
   const solPriceDisplay = solPriceLoading
@@ -264,7 +284,7 @@ export function TrenchesContent({
 
           {/* Settings Panel */}
           {showSettings && (
-            <div className="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-4">
+            <div className="mt-3 pt-3 border-t border-white/10 space-y-4">
               {/* Currency Toggle */}
               <div className="flex items-center gap-2 text-xs">
                 <span className="text-gray-400">Display prices in:</span>
@@ -295,6 +315,31 @@ export function TrenchesContent({
                     (1 SOL = {solPriceDisplay})
                   </span>
                 )}
+              </div>
+
+              {/* Source Filter */}
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-400 text-xs">Filter by source:</span>
+                <div
+                  className={`grid ${
+                    isMobile ? 'grid-cols-2' : 'grid-cols-3'
+                  } gap-1`}
+                >
+                  {Object.entries(TOKEN_SOURCES).map(([key, source]) => (
+                    <button
+                      key={key}
+                      onClick={() => setSourceFilter(key as TokenSourceFilter)}
+                      className={`flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-medium transition-all ${
+                        sourceFilter === key
+                          ? 'bg-white/10 text-white border border-white/20'
+                          : 'bg-black/20 text-gray-400 hover:bg-white/5 hover:text-gray-300'
+                      }`}
+                    >
+                      <span>{source.emoji}</span>
+                      <span className="truncate">{source.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Disable Animations */}
@@ -349,6 +394,19 @@ export function TrenchesContent({
               </button>
             ))}
           </div>
+
+          {/* Active Filter Indicator */}
+          {sourceFilter !== 'ALL' && (
+            <div className="mt-2 pt-2 border-t border-white/10">
+              <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+                <span>Filtering by:</span>
+                <div className="flex items-center gap-1 px-2 py-1 bg-white/10 rounded-md text-white">
+                  <span>{TOKEN_SOURCES[sourceFilter].emoji}</span>
+                  <span>{TOKEN_SOURCES[sourceFilter].label}</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Section Content */}

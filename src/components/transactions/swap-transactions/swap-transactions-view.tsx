@@ -35,6 +35,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const processedTx = processSwapTransaction(transaction)
   const fromToken = processedTx.primaryOutgoingToken
   const toToken = processedTx.primaryIncomingToken
+  const sseFeeTransfer = processedTx.sseFeeTransfer
 
   const { data: fromTokenInfo, loading: fromTokenLoading } = useTokenInfo(
     fromToken?.mint
@@ -55,7 +56,14 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       : null
 
   return (
-    <MotionCard>
+    <MotionCard className="relative">
+      {/* SSE Fee Sticker - Positioned absolutely */}
+      {sseFeeTransfer && (
+        <div className="absolute -top-2 -right-2 z-10 bg-gradient-to-br from-purple-500 to-blue-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg transform rotate-12 hover:rotate-3 transition-transform">
+          ⚡ {sseFeeTransfer.amount.toFixed(0)} SSE
+        </div>
+      )}
+      
       <CardHeader>
         <TransactionsHeader
           transaction={transaction}

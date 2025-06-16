@@ -2,11 +2,13 @@
 
 import { TwitterFeed } from '@/components/profile/components/twitter-feed'
 import { useTwitterOAuth } from '@/components/profile/hooks/use-twitter-o-auth'
+import { IProfile } from '@/components/tapestry/models/profiles.models'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  CardVariant,
   Spinner,
   Tabs,
   TabsContent,
@@ -22,9 +24,10 @@ import { ProfileExternalProfile } from './profile-external-profile'
 
 interface Props {
   walletAddress: string
+  profile: IProfile
 }
 
-export function ProfileSocial({ walletAddress }: Props) {
+export function ProfileSocial({ walletAddress, profile }: Props) {
   const { namespaces, hasXIdentity, explorerProfile, loading } =
     useGetProfileExternalNamespaces({ walletAddress })
 
@@ -47,8 +50,10 @@ export function ProfileSocial({ walletAddress }: Props) {
 
   const xTabProfile = namespaces?.[0]?.profiles?.[0]
 
+  const isPudgy = !!profile?.pudgy_profile_date
+
   return (
-    <Card>
+    <Card variant={isPudgy ? CardVariant.PUDGY : CardVariant.DEFAULT}>
       <CardHeader>
         <CardTitle>Social</CardTitle>
       </CardHeader>

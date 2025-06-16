@@ -1,3 +1,4 @@
+import { dedupBalance } from '@/utils/redis-dedup'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { NextResponse } from 'next/server'
@@ -22,26 +23,61 @@ export async function GET(request: Request) {
       )
     }
 
-    const connection = new Connection(RPC_ENDPOINT, { commitment: 'confirmed' })
-    let tokenAccountToQuery: PublicKey
+    // Use deduplication for wallet+mint queries
+    if (walletAddress && mintAddress) {
+      const balanceData = await dedupBalance(
+        walletAddress,
+        mintAddress,
+        async () => {
+          const connection = new Connection(RPC_ENDPOINT, { commitment: 'confirmed' })
+          const tokenAccountToQuery = await getAssociatedTokenAddress(
+            new PublicKey(mintAddress),
+            new PublicKey(walletAddress)
+          )
 
-    if (tokenAccount) {
-      tokenAccountToQuery = new PublicKey(tokenAccount)
-    } else {
-      // Find the associated token account for the wallet and mint
-      tokenAccountToQuery = await getAssociatedTokenAddress(
-        new PublicKey(mintAddress!),
-        new PublicKey(walletAddress!)
+          try {
+            const balance = await connection.getTokenAccountBalance(
+              tokenAccountToQuery
+            )
+            return {
+              amount: balance.value.amount,
+              decimals: balance.value.decimals,
+              uiAmount: balance.value.uiAmount,
+              uiAmountString: balance.value.uiAmountString,
+            }
+          } catch (balanceError: any) {
+            if (balanceError?.message?.includes('could not find account')) {
+              return {
+                amount: '0',
+                decimals: 0,
+                uiAmount: 0,
+                uiAmountString: '0',
+              }
+            }
+            throw balanceError
+          }
+        }
+      )
+
+      return NextResponse.json(
+        { balance: balanceData },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60',
+          },
+        }
       )
     }
 
+    // For tokenAccount queries (less common), use original logic
+    const connection = new Connection(RPC_ENDPOINT, { commitment: 'confirmed' })
+    const tokenAccountToQuery = new PublicKey(tokenAccount!)
+
     try {
-      // Try to get the token balance directly
       const balance = await connection.getTokenAccountBalance(
         tokenAccountToQuery
       )
 
-      // Return response with cache headers
       return NextResponse.json(
         {
           balance: {
@@ -53,12 +89,11 @@ export async function GET(request: Request) {
         },
         {
           headers: {
-            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60', // Cache for 1 minute with stale-while-revalidate
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=60',
           },
         }
       )
     } catch (balanceError: any) {
-      // If the account doesn't exist, return 0 balance
       if (balanceError?.message?.includes('could not find account')) {
         return NextResponse.json(
           {
@@ -76,7 +111,6 @@ export async function GET(request: Request) {
           }
         )
       }
-      // Re-throw other errors
       throw balanceError
     }
   } catch (error) {

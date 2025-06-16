@@ -148,6 +148,7 @@ export function useJupiterSwap({
           if (path.includes('/trade')) return 'trade'
           return 'home'
         })(),
+        sseFeeAmount: platformFeeBps === 1 ? sseFeeAmount : undefined,
       })
     },
     [
@@ -166,6 +167,7 @@ export function useJupiterSwap({
       quoteResponse?.swapUsdValue,
       platformFeeBps,
       pathname,
+      sseFeeAmount,
     ]
   )
 

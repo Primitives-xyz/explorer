@@ -55,15 +55,12 @@ export function useTapestryTransactionHistory(
     if (!shouldFetch) {
       return
     }
-
-    console.log('🌐 Starting fetch for wallet:', walletAddress)
     setIsLoading(true)
     setIsError(null)
 
     const fetchTransactions = async () => {
       try {
         const url = `/api/trades/fetch-transaction-history?walletAddress=${walletAddress}`
-        console.log('🌐 Fetching from URL:', url)
 
         const response = await fetch(url)
         if (!response.ok) {
@@ -71,7 +68,6 @@ export function useTapestryTransactionHistory(
         }
 
         const data = await response.json()
-        console.log('📊 Fetched transaction history:', data)
 
         setTransactions(data)
         setHasFetched(true)

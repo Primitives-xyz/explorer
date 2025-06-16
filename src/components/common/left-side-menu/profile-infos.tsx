@@ -11,12 +11,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/popover/dropdown-menu'
-import { SSE_TOKEN_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { EllipsisVerticalIcon, LogOutIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 interface Props {
@@ -101,29 +99,7 @@ export function ProfileInfos({ setOpen }: Props) {
           </DropdownMenu>
         </div>
       </div>
-      <div className="flex items-center gap-1">
-        <Button
-          isInvisible
-          onClick={() => {
-            setOpen && setOpen(false)
-          }}
-          href={route('entity', {
-            id: SSE_TOKEN_MINT,
-          })}
-        >
-          <Image
-            src="/images/sse.png"
-            width={16}
-            height={16}
-            alt="icon"
-            className="rounded-full aspect-square object-cover w-5 h-5 md:w-4 md:h-4"
-          />
-          <span className="text-primary">$SSE</span>
-        </Button>
-        <span className={balanceLoading ? 'animate-pulse' : ''}>
-          {`${t('common.balance')}: ${balanceLoading ? '...' : balance}`}
-        </span>
-      </div>
+
       {!mainProfile?.hasSeenProfileSetupModal && !!mainProfile?.id && (
         <OnboardingButton profileId={mainProfile.id} />
       )}

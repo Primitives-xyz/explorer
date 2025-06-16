@@ -175,6 +175,15 @@ module.exports = {
             transform: 'translate3d(-100%, 0, 0)',
           },
         },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '12%': { transform: 'translateX(0)' },
+          '38%': { transform: 'translateX(calc(-1200px + 100%))' },
+          '50%': { transform: 'translateX(calc(-1200px + 100%))' },
+          '76%': { transform: 'translateX(0)' },
+          '88%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(0)' },
+        },
       },
       animation: {
         'slide-left': 'slide-left 0.5s ease-out',
@@ -184,6 +193,7 @@ module.exports = {
         blink: 'blink 1s ease-in-out infinite',
         bounce: 'bounce 0.8s ease-in-out infinite',
         'infinite-scroll-content': 'infinite-scroll-content 7s linear infinite',
+        marquee: 'marquee 30s linear infinite',
       },
     },
   },

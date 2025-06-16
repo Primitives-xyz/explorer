@@ -1,12 +1,16 @@
 'use client'
 
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
-import { IGetProfilesResponseEntry } from '@/components/tapestry/models/profiles.models'
+import {
+  IGetProfilesResponseEntry,
+  IProfile,
+} from '@/components/tapestry/models/profiles.models'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  CardVariant,
   Spinner,
   Tabs,
   TabsContent,
@@ -19,9 +23,10 @@ import { ProfileWalletContent } from './profile-wallet-content'
 
 interface Props {
   walletAddress: string
+  profile: IProfile
 }
 
-export function ProfileWallets({ walletAddress }: Props) {
+export function ProfileWallets({ walletAddress, profile }: Props) {
   const { identities, loading } = useGetIdentities({
     walletAddress,
   })
@@ -45,9 +50,10 @@ export function ProfileWallets({ walletAddress }: Props) {
   })[]
 
   const shouldShowTabs = !!displayedWallets?.length
+  const isPudgy = !!profile?.pudgy_profile_date
 
   return (
-    <Card>
+    <Card variant={isPudgy ? CardVariant.PUDGY : CardVariant.DEFAULT}>
       <CardHeader>
         <CardTitle>Connected Wallets</CardTitle>
       </CardHeader>

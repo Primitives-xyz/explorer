@@ -15,6 +15,7 @@ interface TokenLineProps {
   type?: 'sent' | 'received'
   showUsd?: boolean
   compact?: boolean
+  usdValue?: number | null
 }
 
 export function TokenLine({
@@ -23,6 +24,7 @@ export function TokenLine({
   type = 'sent',
   showUsd = true,
   compact = false,
+  usdValue: providedUsdValue,
 }: TokenLineProps) {
   const t = useTranslations()
   const isSol = mint === SOL_MINT
@@ -42,7 +44,14 @@ export function TokenLine({
     tokenData?.result && 'token_info' in tokenData.result
       ? tokenData.result.token_info?.price_info?.price_per_token ?? null
       : null
-  const usdValue = price !== null ? amount * price : null
+
+  // Use provided USD value if available, otherwise calculate from price
+  const usdValue =
+    providedUsdValue !== undefined
+      ? providedUsdValue
+      : price !== null
+      ? amount * price
+      : null
 
   const iconSize = compact ? 16 : 20
 

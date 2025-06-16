@@ -5,9 +5,14 @@ import { TokenLine } from '@/components/transactions/common/token-line'
 interface Props {
   token: import('./swap-transactions-view').TokenDisplay
   isReceived?: boolean
+  usdValue?: number | null
 }
 
-export function SwapTransactionsViewDetails({ token, isReceived }: Props) {
+export function SwapTransactionsViewDetails({
+  token,
+  isReceived,
+  usdValue,
+}: Props) {
   return (
     <div className="flex bg-card-accent rounded-lg px-4 gap-4 items-center justify-between h-12 md:ml-12">
       <TokenLine
@@ -15,6 +20,7 @@ export function SwapTransactionsViewDetails({ token, isReceived }: Props) {
         amount={token.amount}
         type={isReceived ? 'received' : 'sent'}
         showUsd={true}
+        usdValue={usdValue}
       />
     </div>
   )

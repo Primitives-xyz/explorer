@@ -105,10 +105,10 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     isValidating: solRefreshing,
     mutate: mutateSolBalance,
   } = useSWR(solKey, () => fetchSolBalance(walletAddress!), {
-    // refreshInterval: 10000, // 10 seconds
-    // dedupingInterval: 2000,
-    // revalidateOnFocus: false,
-    // keepPreviousData: true,
+    refreshInterval: 30000, // 30 seconds
+    dedupingInterval: 1000, // 1 second deduplication
+    revalidateOnFocus: true, // Revalidate on focus for fresh balance
+    keepPreviousData: true,
   })
 
   // For SPL token balance
@@ -123,10 +123,13 @@ export function useTokenBalance(walletAddress?: string, mintAddress?: string) {
     isValidating: tokenRefreshing,
     mutate: mutateTokenBalance,
   } = useSWR(tokenKey, fetcher, {
-    // refreshInterval: 10000, // 10 seconds
-    // dedupingInterval: 2000,
-    // revalidateOnFocus: false,
-    // keepPreviousData: true,
+    refreshInterval: 30000, // 30 seconds
+    dedupingInterval: 1000, // 1 second deduplication
+    revalidateOnFocus: true, // Revalidate on focus for fresh balance
+    keepPreviousData: true,
+    shouldRetryOnError: true,
+    errorRetryCount: 2,
+    revalidateIfStale: true,
   })
 
   // Process the data based on token type

@@ -69,6 +69,7 @@ interface FetchParams<InputType> {
   credentials?: RequestCredentials
   headers?: Record<string, string>
   cache?: RequestCache
+  isBlob?: boolean
   next?: {
     revalidate?: number
     tags?: string[]
@@ -92,6 +93,7 @@ export const fetchWrapper = async <
   headers: _headers,
   cache,
   next,
+  isBlob,
 }: FetchParams<InputType>): Promise<ResponseType> => {
   if (queryParams) {
     endpoint = getUrlWithQueryParameters<Record<string, string | number>>(
@@ -147,7 +149,7 @@ export const fetchWrapper = async <
     throw error
   } else {
     try {
-      const data = await response.json()
+      const data = isBlob ? await response.blob() : await response.json()
 
       return data
     } catch (error) {

@@ -4,7 +4,6 @@ import { LanguageSwitcher } from '@/components/common/language-switcher'
 import { LowFeeTrades } from '@/components/common/left-side-menu/low-fee-trades'
 import { Menu } from '@/components/common/left-side-menu/menu'
 import { MigrationReminder } from '@/components/common/left-side-menu/migration-reminder'
-import { SolidScore } from '@/components/solid-score/components/solid-score'
 import { useDriftUsers } from '@/components/trade/hooks/drift/use-drift-users'
 import AddFundsModal from '@/components/trade/left-content/perpetual/add-funds-modal'
 import {
@@ -14,6 +13,7 @@ import {
   CopyToClipboardButton,
 } from '@/components/ui/button'
 import { SSE_CONTRACT_ADDRESS } from '@/utils/constants'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { CopyIcon, Lock, MessageCircle } from 'lucide-react'
@@ -32,15 +32,14 @@ export function LeftSideMenu() {
       className={cn(
         'hidden md:flex sticky z-20 left-0 top-topbar pt-5 bottom-0 inset-y-0 w-sidebar-left shrink-0 h-screen-minus-topbar',
         {
-          'left-sidebar-theme-background backdrop-blur-md':
-            !!mainProfile?.pudgy_profile_date,
+          'backdrop-blur-md': !!mainProfile?.pudgy_profile_date,
         }
       )}
     >
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Button href="/" isInvisible>
+            <Button href={route('home')} isInvisible>
               <h1 className="font-bold text-primary leading-none">
                 {t('menu.title')}
               </h1>
@@ -64,7 +63,6 @@ export function LeftSideMenu() {
         <div className="space-y-4 py-4">
           <MigrationReminder />
           <LowFeeTrades />
-          <SolidScore />
         </div>
         <div className="flex flex-col items-center gap-2">
           <Button
