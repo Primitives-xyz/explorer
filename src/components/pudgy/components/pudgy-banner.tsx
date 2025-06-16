@@ -9,7 +9,7 @@ import { usePudgyProfileStatus } from '../hooks/use-pudgy-profile-status'
 import { PudgyOnboardingModal } from './pudgy-onboarding-modal'
 
 export function PudgyBanner() {
-  const { mainProfile } = useCurrentWallet()
+  const { mainProfile, setShowAuthFlow } = useCurrentWallet()
   const { shouldShowBanner, shouldShowModal, loading } = usePudgyProfileStatus()
   const [open, setOpen] = useState(false)
 
@@ -58,9 +58,8 @@ export function PudgyBanner() {
                 if (mainProfile) {
                   setOpen(true)
                 } else {
-                  // For logged out users, you might want to redirect to login
-                  // or show a different modal. For now, we'll just open the modal
-                  setOpen(true)
+                  // For logged out users, show the auth flow
+                  setShowAuthFlow(true)
                 }
               }}
             >
