@@ -25,14 +25,14 @@ export function PudgyBanner() {
     return <Skeleton className="w-full aspect-[594/130] rounded-lg" />
   }
 
-  if (!mainProfile || !shouldShowBanner) {
+  if (!shouldShowBanner) {
     return null
   }
 
   return (
     <>
       <div
-        key={mainProfile.pudgy_profile_date ? 'claimed' : 'unclaimed'}
+        key={mainProfile?.pudgy_profile_date ? 'claimed' : 'unclaimed'}
         className="bg-pudgy-background relative rounded-lg overflow-hidden flex items-center justify-center px-5 py-5"
       >
         <Image
@@ -54,7 +54,15 @@ export function PudgyBanner() {
           <div className="md:mr-9">
             <Button
               variant={ButtonVariant.PUDGY_DEFAULT}
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                if (mainProfile) {
+                  setOpen(true)
+                } else {
+                  // For logged out users, you might want to redirect to login
+                  // or show a different modal. For now, we'll just open the modal
+                  setOpen(true)
+                }
+              }}
             >
               Claim Profile
             </Button>
@@ -68,11 +76,13 @@ export function PudgyBanner() {
           className="absolute bottom-0 right-0"
         />
       </div>
-      <PudgyOnboardingModal
-        mainProfile={mainProfile}
-        open={open}
-        setOpen={setOpen}
-      />
+      {mainProfile && (
+        <PudgyOnboardingModal
+          mainProfile={mainProfile}
+          open={open}
+          setOpen={setOpen}
+        />
+      )}
     </>
   )
 }
