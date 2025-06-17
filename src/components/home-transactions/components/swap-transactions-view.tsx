@@ -185,7 +185,6 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
   const copySourceWallet = transaction.content?.sourceWallet
   const copySourceTransactionId = transaction.content?.sourceTransactionId
   const copySourceUsername = transaction.content?.sourceWalletUsername
-  const copySourceImage = transaction.content?.sourceWalletImage
 
   return (
     <Card className="overflow-visible">
@@ -259,6 +258,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
         <SwapTransactionsViewDetails
           token={{ ...toToken, ...toTokenInfo }}
           isReceived
+          showUsd={false}
           usdValue={toAmountUsd}
         />
 

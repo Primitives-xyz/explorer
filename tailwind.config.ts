@@ -175,27 +175,6 @@ module.exports = {
             transform: 'translate3d(-100%, 0, 0)',
           },
         },
-        marquee: {
-          '0%': { transform: 'translateX(0)' },
-          '12%': { transform: 'translateX(0)' },
-          '38%': { transform: 'translateX(calc(-1200px + 100%))' },
-          '50%': { transform: 'translateX(calc(-1200px + 100%))' },
-          '76%': { transform: 'translateX(0)' },
-          '88%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(0)' },
-        },
-        'slide-right': {
-          '0%': { transform: 'translateX(-100%)' },
-          '20%': { transform: 'translateX(-80%)' },
-          '40%': { transform: 'translateX(-60%)' },
-          '60%': { transform: 'translateX(-40%)' },
-          '80%': { transform: 'translateX(-20%)' },
-          '100%': { transform: 'translateX(100%)' },
-        },
-        'marquee-reverse': {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
       },
       animation: {
         'slide-left': 'slide-left 0.5s ease-out',

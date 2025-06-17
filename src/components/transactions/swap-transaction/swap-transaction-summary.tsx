@@ -103,7 +103,7 @@ export const SwapTransactionSummary = ({
                 mint={outToken.mint}
                 amount={outToken.amount}
                 type="sent"
-                showUsd={true}
+                showUsd={false}
               />
             </div>
           )}

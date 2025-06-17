@@ -22,7 +22,7 @@ export function TokenLine({
   mint,
   amount,
   type = 'sent',
-  showUsd = true,
+  showUsd = false,
   compact = false,
   usdValue: providedUsdValue,
 }: TokenLineProps) {

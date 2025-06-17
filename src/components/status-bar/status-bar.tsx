@@ -13,10 +13,8 @@ export interface StatusBarData {
   username?: string
   image?: string
   solidScore: string
-  status: string
   allTimeSavings: string
   balance: string
-  pnl: string
   auraPoints: string
 }
 
@@ -37,9 +35,7 @@ export function StatusBar({ condensed }: Props) {
         })
       : '0',
     balance: balance || '0',
-    status: 'DUST',
     allTimeSavings: '$6.23M',
-    pnl: '6.4',
     auraPoints: '2.345',
   }
 

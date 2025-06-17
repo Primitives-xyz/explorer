@@ -1,3 +1,4 @@
+import { AuraStatusIcon } from '@/components/status-bar/aura-status-icon'
 import { StatusBarData } from '@/components/status-bar/status-bar'
 import { cn } from '@/utils/utils'
 import { ChevronDown } from 'lucide-react'
@@ -22,16 +23,7 @@ export function MobileCondensed({ data }: Props) {
     >
       <div className="flex items-center h-[25px] text-xs border-b-1 border-primary">
         <div className="w-[35%] h-full bg-background flex items-center justify-center text-primary">
-          <Image
-            src="/images/status-bar/status-bar-form.svg"
-            alt="Aura Status"
-            width={18}
-            height={18}
-            className="mr-2"
-          />
-          <span className="font-bold mr-2">{data.auraPoints}</span>
-          <span className="desktop">AURA STATUS:</span>
-          <span className="font-bold ml-2">{data.status}</span>
+          <AuraStatusIcon points={data.auraPoints} />
         </div>
         <div className="w-[calc(65%-30px)] h-full bg-primary flex items-center justify-center text-background">
           <p>All-Time Savings</p>
@@ -59,7 +51,7 @@ export function MobileCondensed({ data }: Props) {
           opacity: isOpen ? 1 : 0,
         }}
       >
-        <div className="w-1/3 h-full border-r-1 border-primary flex items-center justify-between px-2 text-xs">
+        <div className="w-1/2 h-full border-r-1 border-primary flex items-center justify-between px-2 text-xs">
           <span className="flex items-center">
             <Image
               src="/images/sse.png"
@@ -68,18 +60,13 @@ export function MobileCondensed({ data }: Props) {
               height={14}
               className="mr-1 rounded-full"
             />
-            <p className="text-primary text-xs desktop">$SSE OWNED</p>
+            <p className="text-primary text-xs">$SSE OWNED</p>
           </span>
           <p className="text-foreground font-bold">{data.balance}</p>
         </div>
-        <div className="w-1/3 h-full border-r-1 border-primary flex items-center justify-between px-2 text-xs">
+        <div className="w-1/2 h-full border-r-1 border-primary flex items-center justify-between px-2 text-xs">
           <p className="text-foreground">SOLID</p>
           <p className="text-foreground font-bold">{data.solidScore}</p>
-        </div>
-        <div className="w-1/3 h-full flex items-center justify-between px-2 text-xs">
-          <p className="text-foreground desktop">LIVE PnL</p>
-          <p className="text-foreground mobile">PnL</p>
-          <p className="text-foreground font-bold">{data.pnl}</p>
         </div>
       </div>
     </div>
