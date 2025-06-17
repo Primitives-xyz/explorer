@@ -131,7 +131,7 @@ export function TransactionOverview({
                     mint={processedTx.primaryOutgoingToken.mint}
                     amount={processedTx.primaryOutgoingToken.amount}
                     type="sent"
-                    showUsd={true}
+                    showUsd={false}
                   />
                 </div>
               )}

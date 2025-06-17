@@ -9,7 +9,7 @@ export function usePudgyProfileStatus() {
     if (!mainProfile) {
       return {
         shouldShowBanner: false,
-        shouldShowModal: false,
+        shouldShowModal: mainProfile ? false : true,
         hasPudgyProfile: false,
         hasSeenModal: false,
         loading,

@@ -9,6 +9,7 @@ interface Props {
   priceLoading: boolean
   isReceived?: boolean
   usdValue?: number | null
+  showUsd?: boolean
 }
 
 export function SwapTransactionsViewDetails({
@@ -18,6 +19,7 @@ export function SwapTransactionsViewDetails({
   priceLoading,
   isReceived,
   usdValue,
+  showUsd = true,
 }: Props) {
   return (
     <div className="flex bg-card-accent rounded-lg px-4 gap-4 items-center justify-between h-12 md:ml-12">
@@ -25,7 +27,7 @@ export function SwapTransactionsViewDetails({
         mint={token.mint}
         amount={token.amount}
         type={isReceived ? 'received' : 'sent'}
-        showUsd={true}
+        showUsd={showUsd}
         usdValue={usdValue}
       />
     </div>

@@ -9,7 +9,7 @@ import { usePudgyProfileStatus } from '../hooks/use-pudgy-profile-status'
 import { PudgyOnboardingModal } from './pudgy-onboarding-modal'
 
 export function PudgyBanner() {
-  const { mainProfile } = useCurrentWallet()
+  const { mainProfile, setShowAuthFlow } = useCurrentWallet()
   const { shouldShowBanner, shouldShowModal, loading } = usePudgyProfileStatus()
   const [open, setOpen] = useState(false)
 
@@ -25,14 +25,14 @@ export function PudgyBanner() {
     return <Skeleton className="w-full aspect-[594/130] rounded-lg" />
   }
 
-  if (!mainProfile || !shouldShowBanner) {
+  if (!shouldShowBanner) {
     return null
   }
 
   return (
     <>
       <div
-        key={mainProfile.pudgy_profile_date ? 'claimed' : 'unclaimed'}
+        key={mainProfile?.pudgy_profile_date ? 'claimed' : 'unclaimed'}
         className="bg-pudgy-background relative rounded-lg overflow-hidden flex items-center justify-center px-5 py-5"
       >
         <Image
@@ -54,7 +54,14 @@ export function PudgyBanner() {
           <div className="md:mr-9">
             <Button
               variant={ButtonVariant.PUDGY_DEFAULT}
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                if (mainProfile) {
+                  setOpen(true)
+                } else {
+                  // For logged out users, show the auth flow
+                  setShowAuthFlow(true)
+                }
+              }}
             >
               Claim Profile
             </Button>
@@ -68,11 +75,13 @@ export function PudgyBanner() {
           className="absolute bottom-0 right-0"
         />
       </div>
-      <PudgyOnboardingModal
-        mainProfile={mainProfile}
-        open={open}
-        setOpen={setOpen}
-      />
+      {mainProfile && (
+        <PudgyOnboardingModal
+          mainProfile={mainProfile}
+          open={open}
+          setOpen={setOpen}
+        />
+      )}
     </>
   )
 }

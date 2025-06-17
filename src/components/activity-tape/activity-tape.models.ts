@@ -1,42 +1,19 @@
-export interface IGetFeedResponse {
-  transactions: IGetFeedEntry[]
-  total: number
+import { IPaginatedResponse } from '@/components/tapestry/models/common.models'
+
+export interface IActivityGlobalResponse extends IPaginatedResponse {
+  activities: IActivityGlobal[]
 }
 
-export interface IGetFeedEntry {
+export interface IActivityGlobal {
   type: string
-  source: string
-  description: string
-  fee: number
-  timestamp: string
-  signature: string
-  success: boolean
-  walletAddress: string
-  username: string
-  from: From
-  to: To
-  accountsInvolved: string[]
-}
-
-export interface From {
-  amount: number
-  token: string
-}
-
-export interface To {
-  amount: number
-  token: string
-}
-
-export interface IActivityTapeEntry {
-  type: string
-  text: string
-  action: string
-  wallet: string
+  actor_id: string
+  actor_username: string
+  target_id: string
+  target_username?: string
+  comment_id?: string
   timestamp: number
-  highlight: string
-  amount?: string
-  amountSuffix?: string
-  isSSEBuy?: boolean
-  signature?: string
+  activity: string
+  content_type?: string
+  text?: string
+  action?: string
 }
