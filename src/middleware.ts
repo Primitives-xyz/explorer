@@ -1,6 +1,18 @@
-import { importSPKI, jwtVerify } from 'jose'
+import { decodeProtectedHeader, importJWK, jwtVerify } from 'jose'
+import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+
+interface IDynamicPublicKeyResponse {
+  keys: {
+    n: string
+    alg: string
+    kty: string
+    use: string
+    e: string
+    kid: string
+  }[]
+}
 
 interface JWTPayload {
   sub?: string
@@ -16,23 +28,62 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  const authToken = request.headers.get('Authorization')
-  const jwt = authToken?.split(' ')[1]
+  const cookieStore = await cookies()
+  const dynamicJWTFromCookie = cookieStore.get('DYNAMIC_JWT_TOKEN')?.value
 
-  if (!jwt) {
+  if (!dynamicJWTFromCookie) {
     return NextResponse.json(
       { error: 'Authentication required' },
       { status: 401 }
     )
   }
 
-  const DYNAMIC_KEY = process.env.DYNAMIC_KEY || productionPublicKeys
+  const dynamicEnvironmentId = process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID
+
+  if (!dynamicEnvironmentId) {
+    return NextResponse.json(
+      { error: 'Dynamic environment ID is not set' },
+      { status: 401 }
+    )
+  }
+
+  const dynamicPublicKeyResponse = await fetch(
+    `https://app.dynamic.xyz/api/v0/sdk/${dynamicEnvironmentId}/.well-known/jwks`
+  )
+  const dynamicPublicKeyData =
+    (await dynamicPublicKeyResponse.json()) as IDynamicPublicKeyResponse
+
+  // Decode JWT header to get the key ID (kid)
+  let jwtHeader
+  try {
+    jwtHeader = decodeProtectedHeader(dynamicJWTFromCookie)
+  } catch (error) {
+    console.error('Failed to decode JWT header:', error)
+    return NextResponse.json({ error: 'Invalid JWT format' }, { status: 401 })
+  }
+
+  console.log('JWT header:', jwtHeader)
+
+  // Find the matching key based on kid
+  const matchingKey = dynamicPublicKeyData.keys?.find(
+    (key) => key.kid === jwtHeader.kid
+  )
+
+  if (!matchingKey) {
+    console.error('No matching key found for kid:', jwtHeader.kid)
+    return NextResponse.json(
+      { error: 'No matching verification key found' },
+      { status: 401 }
+    )
+  }
+
+  console.log('Using key with kid:', matchingKey.kid)
 
   try {
-    const publicKey = await importSPKI(DYNAMIC_KEY, 'RS256')
+    const publicKey = await importJWK(matchingKey)
 
-    const { payload } = await jwtVerify(jwt as string, publicKey, {
-      algorithms: ['RS256'],
+    const { payload } = await jwtVerify(dynamicJWTFromCookie, publicKey, {
+      algorithms: [matchingKey.alg],
     })
 
     const verifiedToken = payload as unknown as JWTPayload
@@ -54,5 +105,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/api/profiles/create', '/api/comments'],
 }
-
-const productionPublicKeys = process.env.DYNAMIC_KEY || ''
