@@ -15,7 +15,6 @@ export interface StatusBarData {
   solidScore: string
   allTimeSavings: string
   balance: string
-  auraPoints: string
 }
 
 export function StatusBar({ condensed }: Props) {
@@ -36,7 +35,6 @@ export function StatusBar({ condensed }: Props) {
       : '0',
     balance: balance || '0',
     allTimeSavings: '$6.23M',
-    auraPoints: '2.345',
   }
 
   if (

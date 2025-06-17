@@ -1,4 +1,3 @@
-import { AuraStatusIcon } from '@/components/status-bar/aura-status-icon'
 import { StatusBarData } from '@/components/status-bar/status-bar'
 import { TopRightForm } from '@/components/status-bar/top-right-form'
 import { Avatar } from '@/components/ui/avatar/avatar'
@@ -42,7 +41,7 @@ export function DefaultStatusBar({ data }: Props) {
             {data?.username}
           </p>
 
-          <AuraStatusIcon points={data.auraPoints} />
+          {/* <AuraStatusIcon points={data.auraPoints} /> */}
         </div>
       </div>
 
@@ -61,7 +60,7 @@ export function DefaultStatusBar({ data }: Props) {
             </span>
             <p className="text-foreground font-bold">{data.balance}</p>
           </div>
-          <div className="w-1/2 h-full border-r-1 border-primary flex items-center justify-between px-2 text-xs">
+          <div className="w-1/2 h-full flex items-center justify-between px-2 text-xs">
             <p className="text-foreground">SOLID</p>
             <p className="text-foreground font-bold">{data.solidScore}</p>
           </div>

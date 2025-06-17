@@ -1,4 +1,3 @@
-import { AuraStatusIcon } from '@/components/status-bar/aura-status-icon'
 import { StatusBarData } from '@/components/status-bar/status-bar'
 import { TopRightForm } from '@/components/status-bar/top-right-form'
 import Image from 'next/image'
@@ -11,7 +10,7 @@ export function DesktopCondensed({ data }: Props) {
   return (
     <div className="w-full h-[30px] my-5 mb-14 mt:10 border-primary border-1 flex">
       <div className="h-full w-1/5 bg-background flex items-center justify-around text-primary text-sm uppercase">
-        <AuraStatusIcon points={data.auraPoints} />
+        {/* <AuraStatusIcon points={data.auraPoints} /> */}
       </div>
       <div className="h-full w-2/5 bg-primary/45 flex items-center">
         <div className="w-1/2 h-full border-r-1 border-primary flex items-center justify-between px-2 text-xs">
