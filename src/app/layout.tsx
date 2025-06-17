@@ -1,5 +1,4 @@
 import { ActivityTape } from '@/components/activity-tape/components/activity-tape'
-import { SignupHandler } from '@/components/auth/components/signup-handler'
 import { WalletProvider } from '@/components/auth/components/wallet-provider'
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
@@ -128,7 +127,6 @@ export default async function RootLayout({
 
               <div className="relative z-20">
                 <Toaster />
-                <SignupHandler />
                 <ActivityTape />
                 <MobileHeader />
                 <RevealScoreAnimation />

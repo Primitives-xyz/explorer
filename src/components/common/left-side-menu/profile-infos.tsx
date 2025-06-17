@@ -23,6 +23,13 @@ interface Props {
   setOpen?: (open: boolean) => void
 }
 
+// Component to handle profile creation for new users
+function CreateProfileButton() {
+  const [tempProfileId] = useState(() => `temp-${Date.now()}`)
+
+  return <OnboardingButton profileId={tempProfileId} />
+}
+
 export function ProfileInfos({ setOpen }: Props) {
   const t = useTranslations()
   const {
@@ -32,6 +39,8 @@ export function ProfileInfos({ setOpen }: Props) {
     logout,
     setShowAuthFlow,
     sdkHasLoaded,
+    loadingStates,
+    profiles,
   } = useCurrentWallet()
   const { balance, loading: balanceLoading } = useGetBalance({ walletAddress })
 
@@ -39,27 +48,81 @@ export function ProfileInfos({ setOpen }: Props) {
   const [isClientReady, setIsClientReady] = useState(false)
 
   useEffect(() => {
-    // Only set to true after hydration to avoid mismatch
     setIsClientReady(true)
   }, [])
 
-  // Always show skeleton during SSR and initial client render
-  // This ensures consistent rendering between server and client
-  if (!isClientReady || !sdkHasLoaded || (isLoggedIn && !mainProfile)) {
+  // Show skeleton during initial load or when profiles are loading
+  if (!isClientReady || !sdkHasLoaded || loadingStates.profiles) {
     return <Skeleton className="w-full h-[36px]" />
   }
 
+  // Not logged in - show login button
   if (!isLoggedIn) {
     return (
       <Button
-        className="w-full"
         variant={ButtonVariant.OUTLINE_WHITE}
+        className="w-full"
         onClick={() => setShowAuthFlow(true)}
       >
         {t('common.connect_wallet')}
       </Button>
     )
   }
+
+  // Handle case where user is logged in but has no profile yet
+  // This is where we show the onboarding button for new users
+  if (!mainProfile && profiles !== undefined) {
+    console.log(
+      '[ProfileInfos] User logged in but no profile yet, showing onboarding'
+    )
+    return (
+      <div className="space-y-2 text-lg md:text-sm animate-in fade-in duration-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Avatar className="w-8 md:w-6" username="" imageUrl="" size={40} />
+            <div className="flex items-center gap-1 text-lg md:text-sm">
+              <p>{t('menu.profile.greeting')}</p>
+              <p className="text-muted-foreground">New User</p>
+            </div>
+          </div>
+          <div className="desktop">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={ButtonVariant.GHOST} size={ButtonSize.ICON_SM}>
+                  <EllipsisVerticalIcon size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-46">
+                <DropdownMenuItem onClick={logout}>
+                  <LogOutIcon size={18} />
+                  {t('menu.profile.logout')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <CreateProfileButton />
+      </div>
+    )
+  }
+
+  // At this point we should have a mainProfile
+  if (!mainProfile) {
+    console.warn(
+      '[ProfileInfos] Unexpected state: no mainProfile but profiles loaded'
+    )
+    return <Skeleton className="w-full h-[36px]" />
+  }
+
+  // Check if this is a new profile that needs onboarding
+  const needsOnboarding = !mainProfile.hasSeenProfileSetupModal
+
+  console.log('[ProfileInfos] Profile state:', {
+    profileId: mainProfile.id,
+    username: mainProfile.username,
+    hasSeenProfileSetupModal: mainProfile.hasSeenProfileSetupModal,
+    needsOnboarding,
+  })
 
   return (
     <div className="space-y-2 text-lg md:text-sm animate-in fade-in duration-200">
@@ -124,9 +187,17 @@ export function ProfileInfos({ setOpen }: Props) {
           {`${t('common.balance')}: ${balanceLoading ? '...' : balance}`}
         </span>
       </div>
-      {!mainProfile?.hasSeenProfileSetupModal && !!mainProfile?.id && (
-        <OnboardingButton profileId={mainProfile.id} />
-      )}
+      {mainProfile?.id &&
+        needsOnboarding &&
+        (() => {
+          console.log('[ProfileInfos] Showing onboarding for new profile:', {
+            profileId: mainProfile.id,
+            username: mainProfile.username,
+            hasSeenProfileSetupModal: mainProfile.hasSeenProfileSetupModal,
+            needsOnboarding,
+          })
+          return <OnboardingButton profileId={mainProfile.id} />
+        })()}
     </div>
   )
 }

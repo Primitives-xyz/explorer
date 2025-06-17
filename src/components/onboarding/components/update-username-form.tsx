@@ -37,6 +37,7 @@ interface Props {
   mainProfile: IProfile
   setStep: (step: EOnboardingSteps) => void
   closeModal: () => void
+  onUsernameSubmit?: (username: string) => Promise<void>
 }
 
 export function UpdateUsernameForm({
@@ -44,6 +45,7 @@ export function UpdateUsernameForm({
   mainProfile,
   setStep,
   closeModal,
+  onUsernameSubmit,
 }: Props) {
   const t = useTranslations()
   const [suggestedUsername, setSuggestedUsername] =
@@ -108,9 +110,15 @@ export function UpdateUsernameForm({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateProfile({
-        username: values.username,
-      })
+      // If onUsernameSubmit is provided (for new users), call it first
+      if (onUsernameSubmit) {
+        await onUsernameSubmit(values.username)
+      } else {
+        // Otherwise, update existing profile
+        await updateProfile({
+          username: values.username,
+        })
+      }
 
       refetchCurrentUser()
       setStep(EOnboardingSteps.IMAGE)

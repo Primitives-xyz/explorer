@@ -1,10 +1,11 @@
 'use client'
 
+import { useCreateProfile } from '@/components/tapestry/hooks/use-create-profile'
 import { useGetIdentities } from '@/components/tapestry/hooks/use-get-identities'
 import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
 import {
   Button,
@@ -31,6 +32,8 @@ interface Props {
 export function OnboardingButton({ profileId }: Props) {
   const t = useTranslations()
   const [open, setOpen] = useState(false)
+  const [hasInitialized, setHasInitialized] = useState(false)
+  const [actualProfileId, setActualProfileId] = useState<string | null>(null)
   const {
     mainProfile,
     walletAddress,
@@ -39,8 +42,9 @@ export function OnboardingButton({ profileId }: Props) {
     refetch: refetchCurrentUser,
   } = useCurrentWallet()
   const [step, setStep] = useState(EOnboardingSteps.USERNAME)
+  const { createProfile, loading: createProfileLoading } = useCreateProfile()
   const { updateProfile } = useUpdateProfile({
-    profileId,
+    profileId: actualProfileId || profileId,
   })
   const { identities, loading: getIdentitiesLoading } = useGetIdentities({
     walletAddress,
@@ -57,7 +61,40 @@ export function OnboardingButton({ profileId }: Props) {
   })
 
   const loading =
-    getCurrentUserLoading || getIdentitiesLoading || getSuggestedProfilesLoading
+    getCurrentUserLoading ||
+    getIdentitiesLoading ||
+    getSuggestedProfilesLoading ||
+    createProfileLoading
+
+  // Debug logging
+  useEffect(() => {
+    console.log('[OnboardingButton] Component mounted/updated:', {
+      profileId,
+      actualProfileId,
+      mainProfile,
+      hasSeenProfileSetupModal: mainProfile?.hasSeenProfileSetupModal,
+      loading,
+      open,
+    })
+  }, [profileId, actualProfileId, mainProfile, loading, open])
+
+  // Auto-open for new users - run once when component mounts
+  useEffect(() => {
+    if (!hasInitialized && !loading && !mainProfile) {
+      console.log(
+        '[OnboardingButton] Initializing and auto-opening for new user'
+      )
+      setOpen(true)
+      setHasInitialized(true)
+    }
+  }, [hasInitialized, loading, mainProfile])
+
+  // Set actual profile ID when mainProfile becomes available
+  useEffect(() => {
+    if (mainProfile?.id && !actualProfileId) {
+      setActualProfileId(mainProfile.id)
+    }
+  }, [mainProfile, actualProfileId])
 
   const getModalTitle = () => {
     if (step === EOnboardingSteps.FOLLOW) {
@@ -68,6 +105,8 @@ export function OnboardingButton({ profileId }: Props) {
   }
 
   const finishOnboarding = async () => {
+    if (!actualProfileId && !mainProfile?.id) return
+
     await updateProfile({
       properties: [
         {
@@ -86,11 +125,39 @@ export function OnboardingButton({ profileId }: Props) {
     }
   }
 
+  // Handle username submission - this will create the profile if it doesn't exist
+  const handleUsernameSubmit = async (username: string) => {
+    if (!mainProfile && !actualProfileId) {
+      // Create profile with the chosen username
+      try {
+        const response = await createProfile({
+          username,
+          ownerWalletAddress: walletAddress,
+        })
+
+        console.log('[OnboardingButton] Profile creation response:', response)
+
+        // The response might be in data property or directly
+        const profileId =
+          (response as any)?.profile?.id || (response as any)?.data?.profile?.id
+
+        if (profileId) {
+          setActualProfileId(profileId)
+          // Refetch to update the current wallet state
+          await refetchCurrentUser()
+        }
+      } catch (error) {
+        console.error('[OnboardingButton] Failed to create profile:', error)
+        throw error // Re-throw to be handled by the form
+      }
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={ButtonVariant.SECONDARY_SOCIAL} className="w-full">
-          Complete Profile
+          {mainProfile ? 'Complete Profile' : 'Create Profile'}
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -110,38 +177,102 @@ export function OnboardingButton({ profileId }: Props) {
             <div className="flex flex-col gap-10 flex-1 w-full">
               {step !== EOnboardingSteps.FOLLOW && <StepsWrapper step={step} />}
 
-              {step === EOnboardingSteps.USERNAME && !!mainProfile && (
+              {step === EOnboardingSteps.USERNAME && (
                 <UpdateUsernameForm
                   suggestedUsernames={suggestedUsernames}
-                  mainProfile={mainProfile}
+                  mainProfile={
+                    mainProfile || {
+                      id: actualProfileId || profileId,
+                      username: '',
+                      bio: '',
+                      created_at: Date.now(),
+                      namespace: 'solana_social_explorer',
+                      blockchain: 'SOLANA' as any,
+                      wallet: {
+                        id: '',
+                        created_at: Date.now(),
+                        blockchain: 'SOLANA',
+                        wallet_type: '',
+                      },
+                    }
+                  }
                   setStep={setStep}
                   closeModal={() => setOpen(false)}
+                  onUsernameSubmit={handleUsernameSubmit}
                 />
               )}
 
-              {step === EOnboardingSteps.IMAGE && mainProfile && (
-                <AddProfileImage
-                  suggestedImages={suggestedImages}
-                  mainProfile={mainProfile}
-                  setStep={setStep}
-                />
-              )}
+              {step === EOnboardingSteps.IMAGE &&
+                (mainProfile || actualProfileId) && (
+                  <AddProfileImage
+                    suggestedImages={suggestedImages}
+                    mainProfile={
+                      mainProfile || {
+                        id: actualProfileId || profileId,
+                        username: '',
+                        bio: '',
+                        created_at: Date.now(),
+                        namespace: 'solana_social_explorer',
+                        blockchain: 'SOLANA' as any,
+                        wallet: {
+                          id: '',
+                          created_at: Date.now(),
+                          blockchain: 'SOLANA',
+                          wallet_type: '',
+                        },
+                      }
+                    }
+                    setStep={setStep}
+                  />
+                )}
 
-              {step === EOnboardingSteps.BIO && mainProfile && (
-                <AddBioForm
-                  suggestedBios={suggestedBios}
-                  mainProfile={mainProfile}
-                  setStep={setStep}
-                />
-              )}
+              {step === EOnboardingSteps.BIO &&
+                (mainProfile || actualProfileId) && (
+                  <AddBioForm
+                    suggestedBios={suggestedBios}
+                    mainProfile={
+                      mainProfile || {
+                        id: actualProfileId || profileId,
+                        username: '',
+                        bio: '',
+                        created_at: Date.now(),
+                        namespace: 'solana_social_explorer',
+                        blockchain: 'SOLANA' as any,
+                        wallet: {
+                          id: '',
+                          created_at: Date.now(),
+                          blockchain: 'SOLANA',
+                          wallet_type: '',
+                        },
+                      }
+                    }
+                    setStep={setStep}
+                  />
+                )}
 
-              {step === EOnboardingSteps.FOLLOW && mainProfile && (
-                <SuggestedFollow
-                  mainProfile={mainProfile}
-                  closeModal={() => setOpen(false)}
-                  setStep={setStep}
-                />
-              )}
+              {step === EOnboardingSteps.FOLLOW &&
+                (mainProfile || actualProfileId) && (
+                  <SuggestedFollow
+                    mainProfile={
+                      mainProfile || {
+                        id: actualProfileId || profileId,
+                        username: '',
+                        bio: '',
+                        created_at: Date.now(),
+                        namespace: 'solana_social_explorer',
+                        blockchain: 'SOLANA' as any,
+                        wallet: {
+                          id: '',
+                          created_at: Date.now(),
+                          blockchain: 'SOLANA',
+                          wallet_type: '',
+                        },
+                      }
+                    }
+                    closeModal={() => setOpen(false)}
+                    setStep={setStep}
+                  />
+                )}
             </div>
             <PoweredbyTapestry />
           </div>
