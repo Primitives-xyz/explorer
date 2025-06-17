@@ -46,11 +46,33 @@ export async function middleware(request: NextRequest) {
     )
   }
 
-  const dynamicPublicKeyResponse = await fetch(
-    `https://app.dynamic.xyz/api/v0/sdk/${dynamicEnvironmentId}/.well-known/jwks`
-  )
-  const dynamicPublicKeyData =
-    (await dynamicPublicKeyResponse.json()) as IDynamicPublicKeyResponse
+  let dynamicPublicKeyData: IDynamicPublicKeyResponse
+  try {
+    const dynamicPublicKeyResponse = await fetch(
+      `https://app.dynamic.xyz/api/v0/sdk/${dynamicEnvironmentId}/.well-known/jwks`
+    )
+
+    if (!dynamicPublicKeyResponse.ok) {
+      console.error(
+        'Failed to fetch JWKS:',
+        dynamicPublicKeyResponse.status,
+        dynamicPublicKeyResponse.statusText
+      )
+      return NextResponse.json(
+        { error: 'Failed to retrieve verification keys' },
+        { status: 500 }
+      )
+    }
+
+    dynamicPublicKeyData =
+      (await dynamicPublicKeyResponse.json()) as IDynamicPublicKeyResponse
+  } catch (error) {
+    console.error('Error fetching or parsing JWKS:', error)
+    return NextResponse.json(
+      { error: 'Failed to retrieve verification keys' },
+      { status: 500 }
+    )
+  }
 
   // Decode JWT header to get the key ID (kid)
   let jwtHeader
