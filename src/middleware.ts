@@ -52,7 +52,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/profiles/create', '/api/comments'],
+  // matcher: ['/api/profiles/create', '/api/comments'],
+  matcher: ['/api/comments'],
 }
 
 const productionPublicKeys = process.env.DYNAMIC_KEY || ''
