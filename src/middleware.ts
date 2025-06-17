@@ -1,5 +1,4 @@
 import { decodeProtectedHeader, importJWK, jwtVerify } from 'jose'
-import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
@@ -28,10 +27,10 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  const cookieStore = await cookies()
-  const dynamicJWTFromCookie = cookieStore.get('DYNAMIC_JWT_TOKEN')?.value
+  const authToken = request.headers.get('Authorization')
+  const jwt = authToken?.split(' ')[1]
 
-  if (!dynamicJWTFromCookie) {
+  if (!jwt) {
     return NextResponse.json(
       { error: 'Authentication required' },
       { status: 401 }
@@ -56,13 +55,11 @@ export async function middleware(request: NextRequest) {
   // Decode JWT header to get the key ID (kid)
   let jwtHeader
   try {
-    jwtHeader = decodeProtectedHeader(dynamicJWTFromCookie)
+    jwtHeader = decodeProtectedHeader(jwt)
   } catch (error) {
     console.error('Failed to decode JWT header:', error)
     return NextResponse.json({ error: 'Invalid JWT format' }, { status: 401 })
   }
-
-  console.log('JWT header:', jwtHeader)
 
   // Find the matching key based on kid
   const matchingKey = dynamicPublicKeyData.keys?.find(
@@ -77,12 +74,10 @@ export async function middleware(request: NextRequest) {
     )
   }
 
-  console.log('Using key with kid:', matchingKey.kid)
-
   try {
     const publicKey = await importJWK(matchingKey)
 
-    const { payload } = await jwtVerify(dynamicJWTFromCookie, publicKey, {
+    const { payload } = await jwtVerify(jwt, publicKey, {
       algorithms: [matchingKey.alg],
     })
 
@@ -103,6 +98,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // matcher: ['/api/profiles/create', '/api/comments'],
-  matcher: ['/api/comments'],
+  matcher: ['/api/profiles/create', '/api/comments'],
 }
