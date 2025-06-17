@@ -2,6 +2,7 @@
 
 import { FetchMethod, fetchWrapper } from '@/utils/api'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import { useEffect, useMemo } from 'react'
 
 export function SignupHandler() {
@@ -32,6 +33,7 @@ export function SignupHandler() {
             username: walletAddress.slice(0, 4) + '_' + walletAddress.slice(-4),
             ownerWalletAddress: walletAddress,
           },
+          jwt: getAuthToken(),
         })
 
         refetch()
