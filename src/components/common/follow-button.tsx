@@ -91,7 +91,7 @@ export function FollowButton({
         await followWallet({
           followerUsername,
           walletToFollow: followeeUsername,
-          followerWallet: walletAddress,
+          followerWallet: walletAddress || '',
         })
       } else {
         await followUser({
