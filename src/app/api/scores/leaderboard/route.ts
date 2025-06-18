@@ -73,7 +73,9 @@ export async function GET(request: NextRequest) {
     // For now, we'll just return the basic data
     const enrichedLeaderboard = leaderboard.map((entry) => ({
       ...entry,
-      username: `user_${entry.userId}`, // Placeholder
+      username: entry.userId.startsWith('user_')
+        ? entry.userId.slice(5)
+        : entry.userId, // Strip 'user_' prefix if present
       profileImage: null, // Placeholder
     }))
 

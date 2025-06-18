@@ -142,7 +142,7 @@ export function ScoreIndicator({ className }: ScoreIndicatorProps) {
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
             <div className="text-left">
-              <p className="text-xs text-muted-foreground">SSE Score</p>
+              <p className="text-xs text-muted-foreground">Aura Score</p>
               <div className="flex items-center gap-1.5">
                 <span className="text-lg font-semibold leading-none">
                   {formatSmartNumber(score, {
@@ -212,11 +212,14 @@ export function ScoreIndicator({ className }: ScoreIndicatorProps) {
 
                       {action.metadata?.volumeUSD && (
                         <span className="text-xs text-muted-foreground">
-                          $
-                          {formatSmartNumber(action.metadata.volumeUSD, {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0,
-                          })}{' '}
+                          {action.metadata.volumeUSD < 0.01
+                            ? `$${action.metadata.volumeUSD
+                                .toFixed(4)
+                                .replace(/\.?0+$/, '')}`
+                            : `$${formatSmartNumber(action.metadata.volumeUSD, {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2,
+                              })}`}{' '}
                           volume
                         </span>
                       )}
