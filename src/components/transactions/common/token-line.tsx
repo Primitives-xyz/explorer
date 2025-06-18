@@ -4,7 +4,7 @@ import { SolanaAddressDisplay } from '@/components/common/solana-address-display
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { SOL_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
-import { abbreviateWalletAddress, cn, formatNumber } from '@/utils/utils'
+import { abbreviateWalletAddress, cn } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -16,6 +16,41 @@ interface TokenLineProps {
   showUsd?: boolean
   compact?: boolean
   usdValue?: number | null
+}
+
+// Custom formatter for token amounts that removes trailing zeros
+function formatTokenAmount(amount: number): string {
+  if (amount === 0) return '0'
+
+  // For very small numbers (considering Solana can have up to 9 decimals)
+  if (amount < 0.000000001) {
+    return '<0.000000001'
+  }
+
+  // For large numbers
+  if (amount >= 1_000_000_000) {
+    return (amount / 1_000_000_000).toFixed(2).replace(/\.?0+$/, '') + 'B'
+  }
+  if (amount >= 1_000_000) {
+    return (amount / 1_000_000).toFixed(2).replace(/\.?0+$/, '') + 'M'
+  }
+  if (amount >= 1_000) {
+    return (amount / 1_000).toFixed(2).replace(/\.?0+$/, '') + 'K'
+  }
+
+  // For numbers between 0.000000001 and 1000
+  // Determine decimal places based on the number size
+  let decimalPlaces = 2
+  if (amount < 0.000001) decimalPlaces = 9
+  else if (amount < 0.00001) decimalPlaces = 8
+  else if (amount < 0.0001) decimalPlaces = 7
+  else if (amount < 0.001) decimalPlaces = 6
+  else if (amount < 0.01) decimalPlaces = 5
+  else if (amount < 0.1) decimalPlaces = 4
+  else if (amount < 1) decimalPlaces = 3
+
+  // Format and remove trailing zeros
+  return amount.toFixed(decimalPlaces).replace(/\.?0+$/, '')
 }
 
 export function TokenLine({
@@ -158,14 +193,14 @@ export function TokenLine({
           )}
         >
           {type === 'sent' ? '-' : '+'}
-          {formatNumber(amount)}
+          {formatTokenAmount(amount)}
         </div>
         {showUsd && !compact && (
           <span className="text-xs text-muted-foreground block">
             {tokenLoading
               ? t('common.loading')
               : usdValue !== null
-              ? `$${formatNumber(usdValue)}`
+              ? `$${formatTokenAmount(usdValue)}`
               : ''}
           </span>
         )}
