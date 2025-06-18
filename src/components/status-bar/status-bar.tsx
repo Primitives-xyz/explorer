@@ -1,3 +1,5 @@
+'use client'
+
 import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
 import { CondensedStatusBar } from '@/components/status-bar/condensed/condensed'
 import { DefaultStatusBar } from '@/components/status-bar/default'

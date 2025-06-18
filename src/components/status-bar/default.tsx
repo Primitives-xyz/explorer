@@ -1,3 +1,6 @@
+'use client'
+
+import { AuraStatusIcon } from '@/components/status-bar/aura-status-icon'
 import { StatusBarData } from '@/components/status-bar/status-bar'
 import { TopRightForm } from '@/components/status-bar/top-right-form'
 import { Avatar } from '@/components/ui/avatar/avatar'
@@ -41,7 +44,7 @@ export function DefaultStatusBar({ data }: Props) {
             {data?.username}
           </p>
 
-          {/* <AuraStatusIcon points={data.auraPoints} /> */}
+          <AuraStatusIcon />
         </div>
       </div>
 
@@ -57,6 +60,7 @@ export function DefaultStatusBar({ data }: Props) {
                 className="mr-1 rounded-full"
               />
               <p className="text-primary text-xs desktop">$SSE OWNED</p>
+              <p className="text-primary text-xs mobile">$SSE</p>
             </span>
             <p className="text-foreground font-bold">{data.balance}</p>
           </div>

@@ -1,6 +1,5 @@
 'use client'
 
-import { StatusBar } from '@/components/status-bar/status-bar'
 import { Button, ButtonVariant, FullPageSpinner } from '@/components/ui'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
@@ -35,7 +34,6 @@ export function ProfileWithUsername({ username }: Props) {
 
   return (
     <>
-      <StatusBar condensed />
       <ProfileContent
         profileInfo={profileInfo}
         walletAddress={profileInfo.walletAddress}

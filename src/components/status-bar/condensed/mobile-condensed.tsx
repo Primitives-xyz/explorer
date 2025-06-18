@@ -1,3 +1,6 @@
+'use client'
+
+import { AuraStatusIcon } from '@/components/status-bar/aura-status-icon'
 import { StatusBarData } from '@/components/status-bar/status-bar'
 import { cn } from '@/utils/utils'
 import { ChevronDown } from 'lucide-react'
@@ -22,7 +25,7 @@ export function MobileCondensed({ data }: Props) {
     >
       <div className="flex items-center h-[25px] text-xs border-b-1 border-primary">
         <div className="w-[35%] h-full bg-background flex items-center justify-center text-primary">
-          {/* <AuraStatusIcon points={data.auraPoints} /> */}
+          <AuraStatusIcon />
         </div>
         <div className="w-[calc(65%-30px)] h-full bg-primary flex items-center justify-center text-background">
           <p>All-Time Savings</p>
