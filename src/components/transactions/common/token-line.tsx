@@ -22,29 +22,32 @@ interface TokenLineProps {
 function formatTokenAmount(amount: number): string {
   if (amount === 0) return '0'
 
-  // For very small numbers
-  if (Math.abs(amount) < 0.00001) {
-    return amount < 0 ? '>-0.00001' : '<0.00001'
+  // For very small numbers (considering Solana can have up to 9 decimals)
+  if (amount < 0.000000001) {
+    return '<0.000000001'
   }
 
   // For large numbers
-  if (Math.abs(amount) >= 1_000_000_000) {
+  if (amount >= 1_000_000_000) {
     return (amount / 1_000_000_000).toFixed(2).replace(/\.?0+$/, '') + 'B'
   }
-  if (Math.abs(amount) >= 1_000_000) {
+  if (amount >= 1_000_000) {
     return (amount / 1_000_000).toFixed(2).replace(/\.?0+$/, '') + 'M'
   }
-  if (Math.abs(amount) >= 1_000) {
+  if (amount >= 1_000) {
     return (amount / 1_000).toFixed(2).replace(/\.?0+$/, '') + 'K'
   }
 
-  // For numbers between 0.00001 and 1000
+  // For numbers between 0.000000001 and 1000
   // Determine decimal places based on the number size
   let decimalPlaces = 2
-  if (Math.abs(amount) < 0.01) decimalPlaces = 6
-  else if (Math.abs(amount) < 0.1) decimalPlaces = 5
-  else if (Math.abs(amount) < 1) decimalPlaces = 4
-  else if (Math.abs(amount) < 10) decimalPlaces = 3
+  if (amount < 0.000001) decimalPlaces = 9
+  else if (amount < 0.00001) decimalPlaces = 8
+  else if (amount < 0.0001) decimalPlaces = 7
+  else if (amount < 0.001) decimalPlaces = 6
+  else if (amount < 0.01) decimalPlaces = 5
+  else if (amount < 0.1) decimalPlaces = 4
+  else if (amount < 1) decimalPlaces = 3
 
   // Format and remove trailing zeros
   return amount.toFixed(decimalPlaces).replace(/\.?0+$/, '')

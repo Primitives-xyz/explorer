@@ -12,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/popover/dropdown-menu'
-import { SSE_TOKEN_MINT } from '@/utils/constants'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { EllipsisVerticalIcon, LogOutIcon } from 'lucide-react'
@@ -102,30 +101,45 @@ export function ProfileInfos({ setOpen }: Props) {
           </DropdownMenu>
         </div>
       </div>
-      <div className="flex items-center gap-1">
-        <Button
-          isInvisible
-          onClick={() => {
-            setOpen && setOpen(false)
-          }}
-          href={route('entity', {
-            id: SSE_TOKEN_MINT,
-          })}
-        >
-          <Image
-            src="/images/sse.png"
-            width={16}
-            height={16}
-            alt="icon"
-            className="rounded-full aspect-square object-cover w-5 h-5 md:w-4 md:h-4"
-          />
-          <span className="text-primary">$SSE</span>
-        </Button>
-        <span className={balanceLoading ? 'animate-pulse' : ''}>
-          {`${t('common.balance')}: ${balanceLoading ? '...' : balance}`}
-        </span>
+
+      <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Image
+              src="/images/sse.png"
+              width={20}
+              height={20}
+              alt="SSE"
+              className="rounded-full"
+            />
+            <div>
+              <p className="text-xs text-muted-foreground">$SSE Balance</p>
+              <p className="text-lg font-semibold leading-none">
+                {balanceLoading ? (
+                  <span className="animate-pulse">...</span>
+                ) : (
+                  balance
+                )}
+              </p>
+            </div>
+          </div>
+          <Button
+            isInvisible
+            onClick={() => {
+              setOpen && setOpen(false)
+            }}
+            href={route('trade')}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            View →
+          </Button>
+        </div>
+
+        <div className="border-t border-border/50 pt-2">
+          <ScoreIndicator className="w-full" />
+        </div>
       </div>
-      <ScoreIndicator className="w-full" />
+
       {!mainProfile?.hasSeenProfileSetupModal && !!mainProfile?.id && (
         <OnboardingButton profileId={mainProfile.id} />
       )}

@@ -43,109 +43,118 @@ export class ScoreManager {
     action: ActionType,
     metadata: ScoreMetadata = {}
   ): Promise<number> {
-    const config = SCORING_CONFIG.actions[action] as ActionConfig
-    if (!config) throw new Error(`Unknown action: ${action}`)
+    try {
+      const config = SCORING_CONFIG.actions[action] as ActionConfig
+      if (!config) throw new Error(`Unknown action: ${action}`)
 
-    // Check if action is one-time only
-    if (config.oneTime) {
-      const hasAchievement = await this.redis.sismember(
-        `user:${userId}:achievements`,
-        action
-      )
-      if (hasAchievement) return 0
-    }
+      // Check if action is one-time only
+      if (config.oneTime) {
+        const hasAchievement = await this.redis.sismember(
+          `user:${userId}:achievements`,
+          action
+        )
+        if (hasAchievement) return 0
+      }
 
-    // Check daily limits
-    if (config.dailyLimit) {
-      const today = new Date().toISOString().split('T')[0]
-      const dailyCount = await this.redis.hget(
-        `user:${userId}:daily:${today}`,
-        action
-      )
-      if (dailyCount && parseInt(dailyCount as string) >= config.dailyLimit)
-        return 0
-    }
+      // Check daily limits
+      if (config.dailyLimit) {
+        const today = new Date().toISOString().split('T')[0]
+        const dailyCount = await this.redis.hget(
+          `user:${userId}:daily:${today}`,
+          action
+        )
+        if (dailyCount && parseInt(dailyCount as string) >= config.dailyLimit)
+          return 0
+      }
 
-    // Calculate score with multipliers
-    let score = config.base
+      // Calculate score with multipliers
+      let score = config.base
 
-    if (config.multipliers) {
-      for (const [key, multiplierFn] of Object.entries(config.multipliers)) {
-        if (metadata[key] !== undefined && typeof multiplierFn === 'function') {
-          score *= multiplierFn(metadata[key])
+      if (config.multipliers) {
+        for (const [key, multiplierFn] of Object.entries(config.multipliers)) {
+          if (
+            metadata[key] !== undefined &&
+            typeof multiplierFn === 'function'
+          ) {
+            score *= multiplierFn(metadata[key])
+          }
         }
       }
+
+      // Round score
+      score = Math.round(score)
+
+      // Add category from config if not provided
+      const categoryKey = action as keyof typeof SCORING_CONFIG.categories
+      if (!metadata.category && SCORING_CONFIG.categories[categoryKey]) {
+        metadata.category = SCORING_CONFIG.categories[categoryKey]
+      }
+
+      // Update scores in parallel
+      const pipeline = this.redis.pipeline()
+      const now = new Date()
+      const dateKey = now.toISOString().split('T')[0]
+      const weekKey = `${now.getFullYear()}-${this.getWeekNumber(now)}`
+      const monthKey = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+      ).padStart(2, '0')}`
+
+      // Update various leaderboards
+      pipeline.zincrby('scores:lifetime', score, userId)
+      pipeline.zincrby(`scores:daily:${dateKey}`, score, userId)
+      pipeline.zincrby(`scores:weekly:${weekKey}`, score, userId)
+      pipeline.zincrby(`scores:monthly:${monthKey}`, score, userId)
+
+      // Category-specific scores
+      if (metadata.category) {
+        pipeline.zincrby(`scores:category:${metadata.category}`, score, userId)
+      }
+
+      // Update action counters
+      pipeline.hincrby(`user:${userId}:actions`, action, 1)
+      pipeline.hincrby(`user:${userId}:actions:${dateKey}`, action, 1)
+
+      // Track daily actions for limits
+      if (config.dailyLimit) {
+        pipeline.hincrby(`user:${userId}:daily:${dateKey}`, action, 1)
+        pipeline.expire(`user:${userId}:daily:${dateKey}`, 60 * 60 * 24)
+      }
+
+      // Add to recent actions
+      const actionRecord = {
+        action,
+        score,
+        metadata,
+        timestamp: now.toISOString(),
+      }
+      pipeline.lpush(`user:${userId}:recent`, JSON.stringify(actionRecord))
+      pipeline.ltrim(`user:${userId}:recent`, 0, 99) // Keep last 100 actions
+
+      // Track one-time achievements
+      if (config.oneTime) {
+        pipeline.sadd(`user:${userId}:achievements`, action)
+      }
+
+      // Set expiry for time-based keys
+      pipeline.expire(`scores:daily:${dateKey}`, 60 * 60 * 24 * 7) // 7 days
+      pipeline.expire(`scores:weekly:${weekKey}`, 60 * 60 * 24 * 30) // 30 days
+      pipeline.expire(`scores:monthly:${monthKey}`, 60 * 60 * 24 * 365) // 1 year
+      pipeline.expire(`user:${userId}:actions:${dateKey}`, 60 * 60 * 24 * 7)
+
+      await pipeline.exec()
+
+      // Update streaks and check achievements
+      await Promise.all([
+        this.updateStreaks(userId, action),
+        this.checkAchievements(userId, action, metadata, score),
+      ])
+
+      return score
+    } catch (error) {
+      console.error('Error adding score:', error)
+      // Return 0 on error to not break the flow
+      return 0
     }
-
-    // Round score
-    score = Math.round(score)
-
-    // Add category from config if not provided
-    const categoryKey = action as keyof typeof SCORING_CONFIG.categories
-    if (!metadata.category && SCORING_CONFIG.categories[categoryKey]) {
-      metadata.category = SCORING_CONFIG.categories[categoryKey]
-    }
-
-    // Update scores in parallel
-    const pipeline = this.redis.pipeline()
-    const now = new Date()
-    const dateKey = now.toISOString().split('T')[0]
-    const weekKey = `${now.getFullYear()}-${this.getWeekNumber(now)}`
-    const monthKey = `${now.getFullYear()}-${String(
-      now.getMonth() + 1
-    ).padStart(2, '0')}`
-
-    // Update various leaderboards
-    pipeline.zincrby('scores:lifetime', score, userId)
-    pipeline.zincrby(`scores:daily:${dateKey}`, score, userId)
-    pipeline.zincrby(`scores:weekly:${weekKey}`, score, userId)
-    pipeline.zincrby(`scores:monthly:${monthKey}`, score, userId)
-
-    // Category-specific scores
-    if (metadata.category) {
-      pipeline.zincrby(`scores:category:${metadata.category}`, score, userId)
-    }
-
-    // Update action counters
-    pipeline.hincrby(`user:${userId}:actions`, action, 1)
-    pipeline.hincrby(`user:${userId}:actions:${dateKey}`, action, 1)
-
-    // Track daily actions for limits
-    if (config.dailyLimit) {
-      pipeline.hincrby(`user:${userId}:daily:${dateKey}`, action, 1)
-      pipeline.expire(`user:${userId}:daily:${dateKey}`, 60 * 60 * 24)
-    }
-
-    // Add to recent actions
-    const actionRecord = {
-      action,
-      score,
-      metadata,
-      timestamp: now.toISOString(),
-    }
-    pipeline.lpush(`user:${userId}:recent`, JSON.stringify(actionRecord))
-    pipeline.ltrim(`user:${userId}:recent`, 0, 99) // Keep last 100 actions
-
-    // Track one-time achievements
-    if (config.oneTime) {
-      pipeline.sadd(`user:${userId}:achievements`, action)
-    }
-
-    // Set expiry for time-based keys
-    pipeline.expire(`scores:daily:${dateKey}`, 60 * 60 * 24 * 7) // 7 days
-    pipeline.expire(`scores:weekly:${weekKey}`, 60 * 60 * 24 * 30) // 30 days
-    pipeline.expire(`scores:monthly:${monthKey}`, 60 * 60 * 24 * 365) // 1 year
-    pipeline.expire(`user:${userId}:actions:${dateKey}`, 60 * 60 * 24 * 7)
-
-    await pipeline.exec()
-
-    // Update streaks and check achievements
-    await Promise.all([
-      this.updateStreaks(userId, action),
-      this.checkAchievements(userId, action, metadata, score),
-    ])
-
-    return score
   }
 
   async getUserScore(

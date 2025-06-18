@@ -112,13 +112,14 @@ export function ScoreIndicator({ className }: ScoreIndicatorProps) {
 
   if (loading) {
     return (
-      <div
-        className={cn(
-          'flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 animate-pulse',
-          className
-        )}
-      >
-        <div className="h-4 w-16 bg-muted rounded" />
+      <div className={cn('flex items-center justify-between', className)}>
+        <div className="flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-yellow-500" />
+          <div>
+            <p className="text-xs text-muted-foreground">Score</p>
+            <div className="h-5 w-16 bg-muted rounded animate-pulse" />
+          </div>
+        </div>
       </div>
     )
   }
@@ -129,7 +130,7 @@ export function ScoreIndicator({ className }: ScoreIndicatorProps) {
         <button
           type="button"
           className={cn(
-            'flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors group cursor-pointer w-full',
+            'flex items-center justify-between w-full group cursor-pointer',
             className
           )}
           onClick={(e) => {
@@ -138,26 +139,28 @@ export function ScoreIndicator({ className }: ScoreIndicatorProps) {
             setOpen(!open)
           }}
         >
-          <Trophy className="h-4 w-4 text-yellow-500" />
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-semibold text-foreground">
-              {formatSmartNumber(score, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
-            </span>
-            {rank && (
-              <>
-                <span className="text-xs text-muted-foreground">•</span>
-                <span className="text-xs text-muted-foreground">#{rank}</span>
-              </>
-            )}
+          <div className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-yellow-500" />
+            <div className="text-left">
+              <p className="text-xs text-muted-foreground">SSE Score</p>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-semibold leading-none">
+                  {formatSmartNumber(score, {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })}
+                </span>
+                {rank && (
+                  <span className="text-xs text-muted-foreground">#{rank}</span>
+                )}
+              </div>
+            </div>
           </div>
           <TrendingUp className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-80 p-0" align="end">
+      <PopoverContent className="w-80 p-0" align="center" sideOffset={10}>
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Your Score Activity</h3>

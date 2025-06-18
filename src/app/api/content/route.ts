@@ -104,29 +104,34 @@ export async function POST(request: Request) {
 
         // If this trade was copied, award points to the source
         if (sourceWallet && propsMap.sourceWalletUsername) {
+          // Validate sourceWalletUsername to prevent malformed Redis keys
+          const sourceUsername = propsMap.sourceWalletUsername.trim()
+          if (!sourceUsername) {
+            console.error(
+              'Invalid sourceWalletUsername: empty or whitespace only'
+            )
+            return
+          }
+
           // Atomically increment and get the new copier count
           const newCopierCount = await redis.hincrby(
-            `trader:${propsMap.sourceWalletUsername}:stats`,
+            `trader:${sourceUsername}:stats`,
             'copier_count',
             1
           )
 
-          // Award points with the copier count before this increment
-          await scoreManager.addScore(
-            propsMap.sourceWalletUsername,
-            'COPIED_BY_OTHERS',
-            {
-              copierCount: newCopierCount - 1,
-              category: 'influence' as const,
-              copiedByUser: profileId,
-              profitableForCopier: profitUsd > 0,
-            }
-          )
+          // Award points with the current copier count (including this new copy)
+          await scoreManager.addScore(sourceUsername, 'COPIED_BY_OTHERS', {
+            copierCount: newCopierCount,
+            category: 'influence' as const,
+            copiedByUser: profileId,
+            profitableForCopier: profitUsd > 0,
+          })
 
           // Update profitable copies if needed
           if (profitUsd > 0) {
             await redis.hincrby(
-              `trader:${propsMap.sourceWalletUsername}:stats`,
+              `trader:${sourceUsername}:stats`,
               'profitable_copies',
               1
             )
