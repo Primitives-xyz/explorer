@@ -13,10 +13,12 @@ import { isValidSolanaAddress } from '@/utils/validation'
 import { UserMinus, UserPlus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface Props extends Omit<ButtonProps, 'children'> {
   followerUsername: string
   followeeUsername: string
+  isPudgy?: boolean
   onFollowSuccess?: () => void
   children?: (isFollowing: boolean) => React.ReactNode
 }
@@ -24,6 +26,7 @@ interface Props extends Omit<ButtonProps, 'children'> {
 export function FollowButton({
   followerUsername,
   followeeUsername,
+  isPudgy = false,
   onFollowSuccess,
   children,
   ...props
@@ -61,7 +64,6 @@ export function FollowButton({
   const [isFollowingOptimistic, setIsFollowingOptimistic] = useState(
     data?.isFollowing
   )
-  const [showFollowError, setShowFollowError] = useState(false)
 
   const loading =
     followUserLoading ||
@@ -84,6 +86,11 @@ export function FollowButton({
   }
 
   const handleFollow = async () => {
+    if (!walletAddress) {
+      toast.error('Please connect your wallet to follow users')
+      return
+    }
+
     setIsFollowingOptimistic(true)
 
     try {
@@ -91,7 +98,7 @@ export function FollowButton({
         await followWallet({
           followerUsername,
           walletToFollow: followeeUsername,
-          followerWallet: walletAddress || '',
+          followerWallet: walletAddress,
         })
       } else {
         await followUser({
@@ -104,20 +111,27 @@ export function FollowButton({
     } catch (error) {
       console.error('Failed to follow:', error)
       setIsFollowingOptimistic(false)
-      setShowFollowError(true)
+      toast.error('Failed to follow user. Please try again.')
     } finally {
       refetchFollowersState()
     }
   }
 
   const handleUnfollow = async () => {
+    if (!walletAddress) {
+      toast.error('Please connect your wallet to unfollow users')
+      return
+    }
+
     setIsFollowingOptimistic(false)
 
     try {
       if (isWalletAddress) {
-        await unfollowWallet({
+        await followWallet({
           followerUsername,
-          followeeUsername,
+          walletToFollow: followeeUsername,
+          followerWallet: walletAddress,
+          type: 'unfollow',
         })
       } else {
         await unfollowUser({
@@ -129,6 +143,7 @@ export function FollowButton({
     } catch (error) {
       console.error('Failed to unfollow:', error)
       setIsFollowingOptimistic(true)
+      toast.error('Failed to unfollow user. Please try again.')
     } finally {
       refetchFollowersState()
     }
@@ -153,7 +168,9 @@ export function FollowButton({
         onClick={isFollowing ? handleUnfollow : handleFollow}
         loading={loadingFollowersState}
         disabled={loading}
-        variant={ButtonVariant.SECONDARY_SOCIAL}
+        variant={
+          isPudgy ? ButtonVariant.PUDGY_DEFAULT : ButtonVariant.SECONDARY_SOCIAL
+        }
       >
         {!!children ? (
           children(!!isFollowing)
@@ -164,14 +181,16 @@ export function FollowButton({
                 <UserMinus size={iconSize} />
               ) : (
                 <>
-                  <UserMinus size={iconSize} /> {t('common.follow.unfollow')}
+                  {!isPudgy && <UserMinus size={iconSize} />}{' '}
+                  {t('common.follow.unfollow')}
                 </>
               )
             ) : isIcon ? (
               <UserPlus size={iconSize} />
             ) : (
               <>
-                <UserPlus size={iconSize} /> {t('common.follow.follow')}
+                {!isPudgy && <UserPlus size={iconSize} />}{' '}
+                {t('common.follow.follow')}
               </>
             )}
           </>
