@@ -82,6 +82,36 @@
       "leaderboard": {
         "title": "Leaderboard",
         "share_button": "Share your SOLID score",
+        "tabs": {
+          "sse_scores": "SSE Scores 🔥",
+          "solid_scores": "SOLID Scores",
+          "timeframes": {
+            "all_time": "All Time",
+            "monthly": "Monthly", 
+            "weekly": "Weekly",
+            "today": "Today"
+          }
+        },
+        "sse_scores": {
+          "title": "🏆 SSE Activity Scores",
+          "description": "Earn points for trading, staking, and engaging with the SSE ecosystem. The more active you are, the higher you rank!",
+          "your_position": "Your Position",
+          "categories": {
+            "trading": {
+              "title": "🎯 Trading",
+              "description": "Execute trades and copy successful traders"
+            },
+            "staking": {
+              "title": "💎 Staking", 
+              "description": "Stake SSE tokens to earn bonus points"
+            },
+            "social": {
+              "title": "🤝 Social",
+              "description": "Follow traders and engage with the community"
+            }
+          }
+        },
+        "share_button": "Share your SOLID score",
         "share_dialog": {
           "title": "🚀 You're on the board, but it's locked",
           "percentile_text": "Your score ranks you in the Top {percentile}% of SSE users!",
