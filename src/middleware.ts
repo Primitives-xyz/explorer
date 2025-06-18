@@ -138,7 +138,8 @@ export const config = {
     // Content endpoints (GET is public, mutations require auth)
     '/api/content/:path*',
     '/api/comments/:path*',
-    // Note: /api/profiles is NOT in the matcher because GET requests should be public
+    // Profiles (GET is public, mutations require auth)
+    '/api/profiles/:path*',
 
     // Followers (mutations only)
     '/api/followers/add',
