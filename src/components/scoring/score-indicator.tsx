@@ -212,11 +212,14 @@ export function ScoreIndicator({ className }: ScoreIndicatorProps) {
 
                       {action.metadata?.volumeUSD && (
                         <span className="text-xs text-muted-foreground">
-                          $
-                          {formatSmartNumber(action.metadata.volumeUSD, {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0,
-                          })}{' '}
+                          {action.metadata.volumeUSD < 0.01
+                            ? `$${action.metadata.volumeUSD
+                                .toFixed(4)
+                                .replace(/\.?0+$/, '')}`
+                            : `$${formatSmartNumber(action.metadata.volumeUSD, {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2,
+                              })}`}{' '}
                           volume
                         </span>
                       )}
