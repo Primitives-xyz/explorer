@@ -135,15 +135,15 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Comments actions (mutations only)
-    '/api/comments/*/like',
-    '/api/comments/*/unlike',
+    // Comments actions (mutations only) - using regex for dynamic segments
+    '/api/comments/(.*)/like',
+    '/api/comments/(.*)/unlike',
 
     // Followers (mutations only)
     '/api/followers/add',
     '/api/followers/remove',
 
-    // File uploads
-    '/api/upload/*',
+    // File uploads - using regex for any filename
+    '/api/upload/(.*)',
   ],
 }
