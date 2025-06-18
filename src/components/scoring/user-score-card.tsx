@@ -36,11 +36,11 @@ export function UserScoreCard() {
   }
 
   return (
-    <div className="bg-card/95 backdrop-blur-sm rounded-lg p-6 space-y-6 border border-border/50">
+    <div className="bg-background/98 backdrop-blur-md rounded-lg p-6 space-y-6 border-2 border-border shadow-xl">
       {/* Header with timeframe selector */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Your Score</h3>
-        <div className="flex gap-1 bg-muted/80 rounded-lg p-1">
+        <div className="flex gap-1 bg-muted/95 rounded-lg p-1 border border-border/60">
           {timeframeOptions.map((option) => (
             <button
               key={option.value}
@@ -48,8 +48,8 @@ export function UserScoreCard() {
               className={cn(
                 'px-3 py-1 text-sm rounded transition-colors',
                 timeframe === option.value
-                  ? 'bg-background/90 text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-background shadow-md text-foreground border border-border/40'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
               )}
             >
               {option.label}
@@ -59,14 +59,14 @@ export function UserScoreCard() {
       </div>
 
       {/* Score Display */}
-      <div className="text-center bg-muted/30 rounded-lg py-6 px-4">
-        <div className="text-4xl font-bold text-primary">
+      <div className="text-center bg-background/95 rounded-lg py-6 px-4 border border-border/60 shadow-sm">
+        <div className="text-4xl font-bold text-primary drop-shadow-sm">
           {formatSmartNumber(score, {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
           })}
         </div>
-        <div className="text-sm text-muted-foreground mt-1">
+        <div className="text-sm text-muted-foreground mt-1 font-medium">
           {rank ? (
             <>
               Rank #{rank} • Top {percentile}%
@@ -80,7 +80,7 @@ export function UserScoreCard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4">
         {/* Trading Streak */}
-        <div className="bg-muted/80 rounded-lg p-4 border border-border/30">
+        <div className="bg-background/95 rounded-lg p-4 border border-border/60 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <Flame className="h-4 w-4 text-orange-500" />
             <span className="text-sm font-medium">Trading Streak</span>
@@ -91,7 +91,7 @@ export function UserScoreCard() {
         </div>
 
         {/* Achievements */}
-        <div className="bg-muted/80 rounded-lg p-4 border border-border/30">
+        <div className="bg-background/95 rounded-lg p-4 border border-border/60 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <Trophy className="h-4 w-4 text-yellow-500" />
             <span className="text-sm font-medium">Achievements</span>
@@ -106,7 +106,7 @@ export function UserScoreCard() {
           <h4 className="text-sm font-medium text-muted-foreground">
             Recent Activity
           </h4>
-          <div className="space-y-2">
+          <div className="space-y-2 bg-background/90 rounded-lg p-3 border border-border/40">
             {recentActions.slice(0, 3).map((action, index) => (
               <div
                 key={index}
@@ -114,11 +114,11 @@ export function UserScoreCard() {
               >
                 <div className="flex items-center gap-2">
                   {getActionIcon(action.action)}
-                  <span className="text-muted-foreground">
+                  <span className="text-muted-foreground font-medium">
                     {formatActionName(action.action)}
                   </span>
                 </div>
-                <span className="font-medium text-primary">
+                <span className="font-semibold text-primary">
                   +{action.score}
                 </span>
               </div>
@@ -133,11 +133,11 @@ export function UserScoreCard() {
           <h4 className="text-sm font-medium text-muted-foreground">
             Recent Achievements
           </h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 bg-background/90 rounded-lg p-3 border border-border/40">
             {achievements.slice(0, 5).map((achievement) => (
               <div
                 key={achievement}
-                className="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-medium border border-primary/20"
+                className="bg-primary/25 text-primary px-3 py-1 rounded-full text-xs font-semibold border border-primary/30 shadow-sm"
               >
                 {formatAchievementName(achievement)}
               </div>
