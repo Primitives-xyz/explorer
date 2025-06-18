@@ -120,5 +120,30 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/profiles/create', '/api/comments'],
+  matcher: [
+    // Profile management
+    '/api/profiles/create',
+    '/api/profiles/:username',
+    
+    // Comments
+    '/api/comments',
+    '/api/comments/:id/like',
+    '/api/comments/:id/unlike', 
+    '/api/comments/:id/likes',
+    
+    // Followers
+    '/api/followers/add',
+    '/api/followers/remove',
+    
+    // Content management
+    '/api/content',
+    '/api/content/:id',
+    
+    // File uploads
+    '/api/upload/:filename',
+    
+    // Rewards and staking
+    '/api/claim-reward',
+    '/api/unstake',
+  ],
 }

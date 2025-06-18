@@ -2,6 +2,7 @@ import { scoreManager } from '@/services/scoring/score-manager'
 import { contentServer } from '@/utils/content-server'
 import { sendNotification } from '@/utils/notification'
 import redis from '@/utils/redis'
+import { verifyRequestAuth, getUserIdFromToken } from '@/utils/auth'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -39,6 +40,23 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Verify authentication
+    const verifiedToken = await verifyRequestAuth(request.headers)
+    if (!verifiedToken) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const userId = getUserIdFromToken(verifiedToken)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     const {
       id,

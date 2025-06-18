@@ -1,13 +1,31 @@
 import { FetchMethod } from '@/utils/api'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
+import { verifyRequestAuth, getUserIdFromToken } from '@/utils/auth'
 import { NextResponse, type NextRequest } from 'next/server'
 
 type RouteContext = {
   params: Promise<{ filename: string }>
 }
 
-export async function POST(_request: NextRequest, context: RouteContext) {
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
+    // Verify authentication
+    const verifiedToken = await verifyRequestAuth(request.headers)
+    if (!verifiedToken) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const userId = getUserIdFromToken(verifiedToken)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      )
+    }
+
     const params = await context.params
     const { filename } = params
 
