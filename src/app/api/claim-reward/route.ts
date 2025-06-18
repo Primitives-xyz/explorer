@@ -6,10 +6,28 @@ import {
   serializeTransactionForClient,
 } from '@/utils/transaction-helpers'
 import { Connection, PublicKey, Transaction } from '@solana/web3.js'
+import { verifyRequestAuth, getUserIdFromToken } from '@/utils/auth'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
+    // Verify authentication
+    const verifiedToken = await verifyRequestAuth(req.headers)
+    if (!verifiedToken) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const userId = getUserIdFromToken(verifiedToken)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      )
+    }
+
     const { walletAddy, walletAddress } = await req.json()
 
     // Support both field names for backward compatibility

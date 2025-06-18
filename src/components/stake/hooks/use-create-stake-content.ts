@@ -2,6 +2,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { EXPLORER_NAMESPACE, SSE_TOKEN_MINT } from '@/utils/constants'
 import isFungibleToken from '@/utils/helper'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 
 interface CreateStakeContentParams {
   signature: string
@@ -75,10 +76,12 @@ export function useCreateStakeContentNode() {
       }
 
       // Post the content to the API
+      const authToken = getAuthToken()
       await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(authToken && { Authorization: `Bearer ${authToken}` }),
         },
         body: JSON.stringify({
           id: signature,

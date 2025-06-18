@@ -11,7 +11,11 @@ export async function GET() {
       },
     })
 
-    return NextResponse.json(response)
+    return NextResponse.json(response, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=760, max-age=760',
+      },
+    })
   } catch (error: any) {
     console.error('Error:', error)
     return NextResponse.json(

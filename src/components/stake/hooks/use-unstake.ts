@@ -1,6 +1,7 @@
 import { useCreateUnstakeContentNode } from '@/components/stake/hooks/use-create-unstake-content'
 import { useStakeInfo } from '@/components/stake/hooks/use-stake-info'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
@@ -32,10 +33,12 @@ export function useUnstake() {
     try {
       setIsLoading(true)
 
+      const authToken = getAuthToken()
       const response = await fetch(`/api/unstake`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(authToken && { Authorization: `Bearer ${authToken}` }),
         },
         body: JSON.stringify({
           walletAddy: walletAddress,

@@ -1,5 +1,6 @@
 import { contentServer } from '@/utils/content-server'
 import { dedupContent } from '@/utils/redis-dedup'
+import { verifyRequestAuth, getUserIdFromToken } from '@/utils/auth'
 import { NextResponse } from 'next/server'
 
 type RouteContext = {
@@ -60,9 +61,26 @@ export async function GET(request: Request, context: RouteContext) {
 }
 
 export async function PUT(request: Request, context: RouteContext) {
-  const params = await context.params
-  const { id } = params
   try {
+    // Verify authentication
+    const verifiedToken = await verifyRequestAuth(request.headers)
+    if (!verifiedToken) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const userId = getUserIdFromToken(verifiedToken)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      )
+    }
+
+    const params = await context.params
+    const { id } = params
     const body = await request.json()
     const { properties } = body
 
@@ -85,9 +103,27 @@ export async function PUT(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
-  const params = await context.params
-  const { id } = params
   try {
+    // Verify authentication
+    const verifiedToken = await verifyRequestAuth(request.headers)
+    if (!verifiedToken) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const userId = getUserIdFromToken(verifiedToken)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      )
+    }
+
+    const params = await context.params
+    const { id } = params
+    
     await contentServer.deleteContent(id)
     return NextResponse.json({ success: true })
   } catch (error: any) {

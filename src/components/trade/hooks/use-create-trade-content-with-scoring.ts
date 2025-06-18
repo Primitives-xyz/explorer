@@ -2,6 +2,7 @@ import { refreshUserScores } from '@/hooks/use-user-score'
 import type { TransactionContent } from '@/types/content'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 
 interface CreateContentNodeParams {
   signature: string
@@ -215,10 +216,12 @@ export function useCreateTradeContentNodeWithScoring() {
       }
 
       // Post the content to the API
+      const authToken = getAuthToken()
       const response = await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(authToken && { Authorization: `Bearer ${authToken}` }),
         },
         body: JSON.stringify({
           id: signature,

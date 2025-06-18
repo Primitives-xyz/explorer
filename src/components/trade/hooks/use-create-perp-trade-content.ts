@@ -2,6 +2,7 @@ import type { PerpTradeContent } from '@/types/content'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { OrderType, PositionDirection } from '@drift-labs/sdk-browser'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 
 interface CreatePerpTradeContentNodeParams {
   signature: string
@@ -103,10 +104,12 @@ export function useCreatePerpTradeContent() {
       }
 
       // Post the content to the API
+      const authToken = getAuthToken()
       await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(authToken && { Authorization: `Bearer ${authToken}` }),
         },
         body: JSON.stringify({
           // Assuming signature is the unique ID for the content node
