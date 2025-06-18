@@ -1,13 +1,11 @@
 'use client'
 
+import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
+import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import { Avatar } from '@/components/ui/avatar/avatar'
 import { useIsMobile } from '@/utils/use-is-mobile'
-import {
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
-  Trophy,
-  Zap,
-} from 'lucide-react'
+import { abbreviateWalletAddress } from '@/utils/utils'
+import { ChevronLeft, ChevronRight, Trophy } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 interface Trader {
@@ -22,6 +20,8 @@ interface Trader {
     token: string
     profit: number | string
   }
+  username?: string
+  imageUrl?: string | null
   isPlaceholder?: boolean
 }
 
@@ -144,6 +144,157 @@ interface TrenchesLeaderboardProps {
   solPrice: number | null
 }
 
+function TraderCard({
+  trader,
+  currency,
+  solPrice,
+  getRankStyle,
+  getRankBorder,
+  formatValue,
+}: {
+  trader: Trader
+  currency: 'SOL' | 'USD'
+  solPrice: number | null
+  getRankStyle: (rank: number) => string
+  getRankBorder: (rank: number) => string
+  formatValue: (value: number | string) => string
+}) {
+  // Placeholder logic
+  if (trader.isPlaceholder) {
+    return (
+      <div
+        className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
+          trader.rank
+        )} group hover:scale-105`}
+      >
+        {/* Rank Badge + Username (column) */}
+        <div className="flex flex-col items-start mb-2 relative z-10 gap-1">
+          <div
+            className={`${getRankStyle(
+              trader.rank
+            )} px-2 py-1 rounded-full text-xs font-bold w-fit`}
+          >
+            #{trader.rank}
+          </div>
+          <div className="text-xs text-gray-400 italic">{trader.address}</div>
+        </div>
+        {/* PNL */}
+        <div className="mb-3 relative z-10">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-400">Total PNL</span>
+          </div>
+          <div className="text-lg font-bold text-gray-300">{trader.pnl}</div>
+        </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
+          <div className="bg-white/5 rounded p-1.5">
+            <div className="text-gray-400">Win Rate</div>
+            <div className="font-semibold text-gray-300">{trader.winRate}</div>
+          </div>
+          <div className="bg-white/5 rounded p-1.5">
+            <div className="text-gray-400">Trades</div>
+            <div className="font-semibold text-gray-300">
+              {trader.totalTrades}
+            </div>
+          </div>
+          <div className="bg-white/5 rounded p-1.5 col-span-2">
+            <div className="text-gray-400">Best Trade</div>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-purple-300">
+                {trader.bestTrade.token}
+              </span>
+              <span className="text-purple-400">{trader.bestTrade.profit}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Real trader: fetch profile and token info
+  const { profiles } = useGetProfiles({ walletAddress: trader.address })
+  const profile = profiles?.profiles?.[0]
+  const username =
+    profile?.profile?.username ||
+    abbreviateWalletAddress({ address: trader.address })
+  const imageUrl = profile?.profile?.image
+
+  // Best trade token info
+  const { symbol, image } = useTokenInfo(trader.bestTrade.token)
+
+  return (
+    <div
+      className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
+        trader.rank
+      )} group hover:scale-105`}
+    >
+      {/* Rank Badge + Username (column) */}
+      <div className="flex flex-col items-start mb-2 relative z-10 gap-1">
+        <div
+          className={`${getRankStyle(
+            trader.rank
+          )} px-2 py-1 rounded-full text-xs font-bold w-fit`}
+        >
+          #{trader.rank}
+        </div>
+        <div className="flex items-center gap-2">
+          <Avatar username={username} imageUrl={imageUrl} size={32} />
+          <span className="text-xs text-gray-400 italic">{username}</span>
+        </div>
+      </div>
+      {/* PNL */}
+      <div className="mb-3 relative z-10">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-400">Total PNL</span>
+        </div>
+        <div className="text-lg font-bold text-gray-300">
+          {formatValue(trader.pnl)}
+        </div>
+      </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
+        <div className="bg-white/5 rounded p-1.5">
+          <div className="text-gray-400">Win Rate</div>
+          <div className="font-semibold text-gray-300">
+            {typeof trader.winRate === 'number'
+              ? `${trader.winRate.toFixed(1)}%`
+              : trader.winRate}
+          </div>
+        </div>
+        <div className="bg-white/5 rounded p-1.5">
+          <div className="text-gray-400">Trades</div>
+          <div className="font-semibold text-gray-300">
+            {trader.totalTrades}
+          </div>
+        </div>
+        <div className="bg-white/5 rounded p-1.5 col-span-2">
+          <div className="text-gray-400">Best Trade</div>
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-purple-300 flex items-center gap-1">
+              {image && (
+                <img
+                  src={image}
+                  alt={symbol}
+                  className="w-4 h-4 rounded-full"
+                />
+              )}{' '}
+              {symbol ||
+                abbreviateWalletAddress({ address: trader.bestTrade.token })}
+            </span>
+            <span className="text-purple-400">
+              {typeof trader.bestTrade.profit === 'number'
+                ? `+$${trader.bestTrade.profit.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })}`
+                : trader.bestTrade.profit}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function TrenchesLeaderboard({
   currency,
   solPrice,
@@ -156,11 +307,66 @@ export function TrenchesLeaderboard({
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
+  // --- Leaderboard data integration ---
+  const [traders, setTraders] = useState<Trader[]>(placeholderTraders)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+    fetch('/api/pnl-leaderboard')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch leaderboard')
+        return res.json()
+      })
+      .then(async (data) => {
+        if (cancelled) return
+        const leaderboard = data.leaderboard as Array<{
+          walletAddress: string
+          realizedPnLUSD: number
+          tradeCount: number
+          winRate: number
+          bestTrade: { token: string; profit: number }
+        }>
+        // Map to Trader interface and fetch profile info for each
+        const mapped: Trader[] = await Promise.all(
+          leaderboard.map(async (entry, i) => {
+            return {
+              rank: i + 1,
+              address: entry.walletAddress,
+              pnl: entry.realizedPnLUSD,
+              pnlPercentage: '',
+              winRate: entry.winRate,
+              totalTrades: entry.tradeCount,
+              avgTradeSize: '---',
+              bestTrade: {
+                token: entry.bestTrade.token,
+                profit: entry.bestTrade.profit,
+              },
+            }
+          })
+        )
+        setTraders(mapped)
+        setLoading(false)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError('Failed to load leaderboard')
+        setTraders(placeholderTraders)
+        setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   // Create extended array with duplicates for smooth wrapping
   const extendedTraders = [
-    ...placeholderTraders.slice(-tradersPerSlide), // Last items at the beginning
-    ...placeholderTraders,
-    ...placeholderTraders.slice(0, tradersPerSlide), // First items at the end
+    ...traders.slice(-tradersPerSlide), // Last items at the beginning
+    ...traders,
+    ...traders.slice(0, tradersPerSlide), // First items at the end
   ]
 
   // Auto-scroll every 5 seconds
@@ -182,10 +388,10 @@ export function TrenchesLeaderboard({
       setIsTransitioning(false)
 
       // Reset to real position if we're at duplicates
-      if (currentIndex >= placeholderTraders.length + tradersPerSlide) {
+      if (currentIndex >= traders.length + tradersPerSlide) {
         setCurrentIndex(tradersPerSlide)
       } else if (currentIndex < tradersPerSlide) {
-        setCurrentIndex(placeholderTraders.length)
+        setCurrentIndex(traders.length)
       }
     }, 500) // Match transition duration
 
@@ -411,79 +617,14 @@ export function TrenchesLeaderboard({
                   isMobile ? 'w-full' : 'w-1/3'
                 } px-1.5`}
               >
-                <div
-                  className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
-                    trader.rank
-                  )} group hover:scale-105`}
-                >
-                  {/* Rank Badge */}
-                  <div className="flex items-center justify-between mb-2 relative z-10">
-                    <div
-                      className={`${getRankStyle(
-                        trader.rank
-                      )} px-2 py-1 rounded-full text-xs font-bold`}
-                    >
-                      #{trader.rank}
-                    </div>
-                    <div className="text-xs text-gray-400 italic">
-                      {trader.address}
-                    </div>
-                  </div>
-
-                  {/* PNL */}
-                  <div className="mb-3 relative z-10">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-400">Total PNL</span>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3 text-purple-400 pulse-glow" />
-                        <span className="text-sm font-bold text-purple-400">
-                          {typeof trader.pnlPercentage === 'string'
-                            ? trader.pnlPercentage
-                            : `+${trader.pnlPercentage.toFixed(1)}%`}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-lg font-bold text-gray-300">
-                      {formatValue(trader.pnl)}
-                    </div>
-                  </div>
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
-                    <div className="bg-white/5 rounded p-1.5">
-                      <div className="text-gray-400">Win Rate</div>
-                      <div className="font-semibold text-gray-300">
-                        {trader.winRate}
-                        {typeof trader.winRate === 'number' ? '%' : ''}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded p-1.5">
-                      <div className="text-gray-400">Trades</div>
-                      <div className="font-semibold text-gray-300">
-                        {trader.totalTrades}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded p-1.5 col-span-2">
-                      <div className="text-gray-400">Best Trade</div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-purple-300">
-                          {trader.bestTrade.token}
-                        </span>
-                        <span className="text-purple-400">
-                          {typeof trader.bestTrade.profit === 'string'
-                            ? trader.bestTrade.profit
-                            : `+${formatValue(trader.bestTrade.profit)}`}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  <button className="w-full mt-3 py-1.5 px-3 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1 relative z-10 group-hover:border-purple-400/70">
-                    <Zap className="w-3 h-3 pulse-glow" />
-                    {trader.rank <= 3 ? 'Reserve Spot' : 'Claim Position'}
-                  </button>
-                </div>
+                <TraderCard
+                  trader={trader}
+                  currency={currency}
+                  solPrice={solPrice}
+                  getRankStyle={getRankStyle}
+                  getRankBorder={getRankBorder}
+                  formatValue={formatValue}
+                />
               </div>
             ))}
           </div>
@@ -492,7 +633,7 @@ export function TrenchesLeaderboard({
         {/* Progress Dots */}
         <div className="flex items-center justify-center gap-1 mt-3">
           {Array.from({
-            length: Math.ceil(placeholderTraders.length / tradersPerSlide),
+            length: Math.ceil(traders.length / tradersPerSlide),
           }).map((_, i) => (
             <div
               key={i}
