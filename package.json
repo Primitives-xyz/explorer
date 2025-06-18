@@ -23,8 +23,7 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "type-check": "tsc --noEmit",
-    "preinstall": "npx only-allow pnpm",
-    "cleanup:scores": "npx tsx scripts/cleanup-user-scores.ts"
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.31.0",
