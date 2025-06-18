@@ -116,6 +116,32 @@ export interface PudgyProfileClaimContent {
   walletImage?: string
 }
 
+// Follow content
+export interface FollowContent {
+  type: 'follow'
+  timestamp: string
+  followId: string
+
+  // Follower details
+  followerUsername: string
+  followerAddress: string
+  followerImage: string
+  followerBio: string
+  followerFollowersCount: string
+  followerFollowingCount: string
+
+  // Followee details
+  followeeUsername: string
+  followeeAddress: string
+  followeeImage: string
+  followeeBio: string
+  followeeFollowersCount: string
+  followeeFollowingCount: string
+
+  // Relationship details
+  isMutualFollow: string
+}
+
 // Union type for all transaction content types
 export type TransactionContent =
   | DirectSwapContent
@@ -123,6 +149,7 @@ export type TransactionContent =
   | DirectPerpTradeContent
   | CopiedPerpTradeContent
   | PudgyProfileClaimContent
+  | FollowContent
 
 // Union type for Perp Trade content types
 export type PerpTradeContent = DirectPerpTradeContent | CopiedPerpTradeContent
@@ -167,6 +194,13 @@ export function isPudgyProfileClaim(
   content: TransactionContent
 ): content is PudgyProfileClaimContent {
   return content.type === 'pudgy_profile_claim'
+}
+
+// Type guard to check if a transaction is a follow action
+export function isFollowAction(
+  content: TransactionContent
+): content is FollowContent {
+  return content.type === 'follow'
 }
 
 // Base display data that all transactions share

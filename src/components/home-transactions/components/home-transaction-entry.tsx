@@ -1,6 +1,7 @@
 'use client'
 
 import { IHomeTransaction } from '../home-transactions.models'
+import { FollowTransactionsView } from './follow-transactions-view'
 import { PudgyClaimTransactionsView } from './pudgy-claim-transactions-view'
 import { StakeTransactionsView } from './stake-transactions-view'
 import { SwapTransactionsView } from './swap-transactions-view'
@@ -21,6 +22,16 @@ interface Props {
 }
 
 export function HomeTransactionEntry({ transaction }: Props) {
+  // Check if this is a follow transaction
+  if (transaction.content?.type === 'follow') {
+    return (
+      <FollowTransactionsView
+        transaction={transaction}
+        sourceWallet={transaction.sourceWallet || ''}
+      />
+    )
+  }
+  
   // Check if this is a pudgy profile claim transaction
   if (transaction.content?.type === 'pudgy_profile_claim') {
     return (
