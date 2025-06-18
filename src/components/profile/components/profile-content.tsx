@@ -1,7 +1,9 @@
 'use client'
 
 import { BackgroundTheme } from '@/components/pudgy/components/background-theme'
+import { UserScoreCard } from '@/components/scoring/user-score-card'
 import { IGetProfileResponse } from '@/components/tapestry/models/profiles.models'
+import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { ProfileHeader } from './profile-header/profile-header'
 import { ProfileSocial } from './profile-social'
 import { ProfileWallets } from './profile-wallets'
@@ -12,6 +14,11 @@ interface Props {
 }
 
 export function ProfileContent({ profileInfo, walletAddress }: Props) {
+  const { mainProfile } = useCurrentWallet()
+
+  // Only show score card if viewing own profile
+  const isOwnProfile = mainProfile?.username === profileInfo.profile.username
+
   return (
     <>
       <BackgroundTheme profile={profileInfo.profile} />
@@ -29,6 +36,11 @@ export function ProfileContent({ profileInfo, walletAddress }: Props) {
             walletAddress={walletAddress}
             profile={profileInfo.profile}
           />
+          {isOwnProfile && (
+            <div className="md:col-span-2">
+              <UserScoreCard />
+            </div>
+          )}
         </div>
       </div>
     </>

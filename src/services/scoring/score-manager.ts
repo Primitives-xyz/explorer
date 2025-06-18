@@ -185,15 +185,21 @@ export class ScoreManager {
       score,
       rank,
       recentActions: recentActions
-        .filter(
-          (a: string | null): a is string => a !== null && a !== undefined
-        )
-        .map((a: string) => {
-          try {
-            return JSON.parse(a)
-          } catch {
-            return null
+        .filter((a: any) => a !== null && a !== undefined)
+        .map((a: any) => {
+          // Check if it's already an object (Upstash Redis returns objects)
+          if (typeof a === 'object') {
+            return a
           }
+          // Try to parse if it's a string
+          if (typeof a === 'string') {
+            try {
+              return JSON.parse(a)
+            } catch {
+              return null
+            }
+          }
+          return null
         })
         .filter((a: any): a is any => a !== null),
       achievements: achievements as string[],
@@ -325,50 +331,7 @@ export class ScoreManager {
         await this.addScore(userId, 'FIRST_TRADE', {})
       }
 
-      // Check profit milestones
-      if (metadata.profitUsd && metadata.profitUsd > 0) {
-        const hasProfitable = await this.redis.sismember(
-          `user:${userId}:achievements`,
-          'FIRST_PROFITABLE_TRADE'
-        )
-        if (!hasProfitable) {
-          await this.addScore(userId, 'FIRST_PROFITABLE_TRADE', {})
-        }
-
-        // Track cumulative profit
-        const cumulativeProfit = await this.redis.incrbyfloat(
-          `user:${userId}:stats:profit`,
-          metadata.profitUsd
-        )
-
-        if (
-          cumulativeProfit >= 100 &&
-          !(await this.redis.sismember(
-            `user:${userId}:achievements`,
-            'PROFIT_MILESTONE_100'
-          ))
-        ) {
-          await this.addScore(userId, 'PROFIT_MILESTONE_100', {})
-        }
-        if (
-          cumulativeProfit >= 1000 &&
-          !(await this.redis.sismember(
-            `user:${userId}:achievements`,
-            'PROFIT_MILESTONE_1K'
-          ))
-        ) {
-          await this.addScore(userId, 'PROFIT_MILESTONE_1K', {})
-        }
-        if (
-          cumulativeProfit >= 10000 &&
-          !(await this.redis.sismember(
-            `user:${userId}:achievements`,
-            'PROFIT_MILESTONE_10K'
-          ))
-        ) {
-          await this.addScore(userId, 'PROFIT_MILESTONE_10K', {})
-        }
-      }
+      // Removed profit milestones - PNL handled by another team member
 
       // Check volume milestones
       if (metadata.volumeUSD) {

@@ -14,7 +14,7 @@ import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useCreateTradeContentNode } from './use-create-trade-content'
+import { useCreateTradeContentNodeWithScoring } from './use-create-trade-content-with-scoring'
 import { useJupiterTransaction } from './use-jupiter-transaction'
 import { useJupiterTransactionSSE } from './use-jupiter-transaction-sse'
 
@@ -89,7 +89,7 @@ export function useJupiterSwap({
   const [slippageBps, setSlippageBps] = useState<number | string>(
     DEFAULT_SLIPPAGE_BPS
   )
-  const { createContentNode } = useCreateTradeContentNode()
+  const { createContentNode } = useCreateTradeContentNodeWithScoring()
   const [priceImpact, setPriceImpact] = useState<string>('')
   const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const [error, setError] = useState<string | null>(null)

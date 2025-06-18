@@ -1,6 +1,7 @@
 'use client'
 
 import { OnboardingButton } from '@/components/onboarding/components/onboarding-button'
+import { ScoreIndicator } from '@/components/scoring/score-indicator'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
 import { Skeleton } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
@@ -124,6 +125,7 @@ export function ProfileInfos({ setOpen }: Props) {
           {`${t('common.balance')}: ${balanceLoading ? '...' : balance}`}
         </span>
       </div>
+      <ScoreIndicator className="w-full" />
       {!mainProfile?.hasSeenProfileSetupModal && !!mainProfile?.id && (
         <OnboardingButton profileId={mainProfile.id} />
       )}

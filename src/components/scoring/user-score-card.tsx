@@ -3,18 +3,28 @@
 import { useUserScore } from '@/hooks/use-user-score'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { cn } from '@/utils/utils'
-import { TrendingUp, Trophy, Zap, Star, Target, Flame } from 'lucide-react'
+import { Flame, Star, Target, TrendingUp, Trophy, Zap } from 'lucide-react'
 import { useState } from 'react'
 
 export function UserScoreCard() {
-  const [timeframe, setTimeframe] = useState<'lifetime' | 'daily' | 'weekly' | 'monthly'>('lifetime')
-  const { score, rank, percentile, recentActions, achievements, streaks, loading } = useUserScore({ timeframe })
+  const [timeframe, setTimeframe] = useState<
+    'lifetime' | 'daily' | 'weekly' | 'monthly'
+  >('lifetime')
+  const {
+    score,
+    rank,
+    percentile,
+    recentActions,
+    achievements,
+    streaks,
+    loading,
+  } = useUserScore({ timeframe })
 
   const timeframeOptions = [
     { value: 'lifetime', label: 'All Time' },
     { value: 'monthly', label: 'Monthly' },
     { value: 'weekly', label: 'Weekly' },
-    { value: 'daily', label: 'Today' }
+    { value: 'daily', label: 'Today' },
   ] as const
 
   if (loading) {
@@ -26,20 +36,20 @@ export function UserScoreCard() {
   }
 
   return (
-    <div className="bg-card rounded-lg p-6 space-y-6">
+    <div className="bg-card/95 backdrop-blur-sm rounded-lg p-6 space-y-6 border border-border/50">
       {/* Header with timeframe selector */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Your Score</h3>
-        <div className="flex gap-1 bg-muted rounded-lg p-1">
-          {timeframeOptions.map(option => (
+        <div className="flex gap-1 bg-muted/80 rounded-lg p-1">
+          {timeframeOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => setTimeframe(option.value)}
               className={cn(
-                "px-3 py-1 text-sm rounded transition-colors",
+                'px-3 py-1 text-sm rounded transition-colors',
                 timeframe === option.value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? 'bg-background/90 text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               {option.label}
@@ -49,13 +59,18 @@ export function UserScoreCard() {
       </div>
 
       {/* Score Display */}
-      <div className="text-center">
+      <div className="text-center bg-muted/30 rounded-lg py-6 px-4">
         <div className="text-4xl font-bold text-primary">
-          {formatSmartNumber(score, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+          {formatSmartNumber(score, {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })}
         </div>
         <div className="text-sm text-muted-foreground mt-1">
           {rank ? (
-            <>Rank #{rank} • Top {percentile}%</>
+            <>
+              Rank #{rank} • Top {percentile}%
+            </>
           ) : (
             'Start trading to earn points!'
           )}
@@ -65,7 +80,7 @@ export function UserScoreCard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4">
         {/* Trading Streak */}
-        <div className="bg-muted/50 rounded-lg p-4">
+        <div className="bg-muted/80 rounded-lg p-4 border border-border/30">
           <div className="flex items-center gap-2 mb-2">
             <Flame className="h-4 w-4 text-orange-500" />
             <span className="text-sm font-medium">Trading Streak</span>
@@ -76,7 +91,7 @@ export function UserScoreCard() {
         </div>
 
         {/* Achievements */}
-        <div className="bg-muted/50 rounded-lg p-4">
+        <div className="bg-muted/80 rounded-lg p-4 border border-border/30">
           <div className="flex items-center gap-2 mb-2">
             <Trophy className="h-4 w-4 text-yellow-500" />
             <span className="text-sm font-medium">Achievements</span>
@@ -88,15 +103,24 @@ export function UserScoreCard() {
       {/* Recent Actions */}
       {recentActions.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-muted-foreground">Recent Activity</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            Recent Activity
+          </h4>
           <div className="space-y-2">
             {recentActions.slice(0, 3).map((action, index) => (
-              <div key={index} className="flex items-center justify-between text-sm">
+              <div
+                key={index}
+                className="flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center gap-2">
                   {getActionIcon(action.action)}
-                  <span className="text-muted-foreground">{formatActionName(action.action)}</span>
+                  <span className="text-muted-foreground">
+                    {formatActionName(action.action)}
+                  </span>
                 </div>
-                <span className="font-medium text-primary">+{action.score}</span>
+                <span className="font-medium text-primary">
+                  +{action.score}
+                </span>
               </div>
             ))}
           </div>
@@ -106,12 +130,14 @@ export function UserScoreCard() {
       {/* Achievement Badges */}
       {achievements.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-muted-foreground">Recent Achievements</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            Recent Achievements
+          </h4>
           <div className="flex flex-wrap gap-2">
-            {achievements.slice(0, 5).map(achievement => (
+            {achievements.slice(0, 5).map((achievement) => (
               <div
                 key={achievement}
-                className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium"
+                className="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-medium border border-primary/20"
               >
                 {formatAchievementName(achievement)}
               </div>
@@ -148,7 +174,7 @@ function formatActionName(action: string): string {
     TRADING_STREAK_3: '3 Day Streak!',
     TRADING_STREAK_7: 'Week Streak!',
     DAILY_TRADE: 'Daily Trade',
-    DAILY_VOLUME_BONUS: 'Volume Bonus'
+    DAILY_VOLUME_BONUS: 'Volume Bonus',
   }
   return actionNames[action] || action.replace(/_/g, ' ').toLowerCase()
 }
@@ -167,7 +193,10 @@ function formatAchievementName(achievement: string): string {
     VOLUME_MILESTONE_100K: '📈 $100K Volume',
     PROFIT_MILESTONE_100: '💎 $100 Profit',
     PROFIT_MILESTONE_1K: '💎 $1K Profit',
-    PROFIT_MILESTONE_10K: '💎 $10K Profit'
+    PROFIT_MILESTONE_10K: '💎 $10K Profit',
   }
-  return achievementNames[achievement] || achievement.replace(/_/g, ' ').toLowerCase()
+  return (
+    achievementNames[achievement] ||
+    achievement.replace(/_/g, ' ').toLowerCase()
+  )
 }

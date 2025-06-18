@@ -20,38 +20,39 @@ export const SCORING_CONFIG = {
           if (volume >= 100) return 1.5
           return 1.0
         },
-        profitMultiplier: (profitPercent: number) => {
-          if (profitPercent >= 100) return 3.0
-          if (profitPercent >= 50) return 2.0
-          if (profitPercent >= 10) return 1.5
-          if (profitPercent >= 0) return 1.0
-          return 0.5 // Loss penalty
-        }
-      }
+        // Removed profit multiplier - PNL handled by another team member
+      },
     },
-    
+
     // Copy Trading
     COPY_TRADE: {
       base: 5,
       multipliers: {
-        success: (profitable: boolean) => profitable ? 2.0 : 1.0,
+        volumeUSD: (volume: number) => {
+          // Same volume multipliers as regular trades
+          if (volume >= 10000) return 5.0
+          if (volume >= 5000) return 3.0
+          if (volume >= 1000) return 2.0
+          if (volume >= 100) return 1.5
+          return 1.0
+        },
         speedBonus: (delayMs: number) => {
-          if (delayMs < 1000) return 2.0  // Under 1 second
-          if (delayMs < 5000) return 1.5  // Under 5 seconds
+          if (delayMs < 1000) return 2.0 // Under 1 second
+          if (delayMs < 5000) return 1.5 // Under 5 seconds
           if (delayMs < 30000) return 1.2 // Under 30 seconds
           return 1.0
-        }
-      }
+        },
+      },
     },
-    
+
     COPIED_BY_OTHERS: {
       base: 20,
       multipliers: {
         copierCount: (count: number) => Math.min(count, 10), // Up to 10x
-        profitableForCopier: (profitable: boolean) => profitable ? 2.0 : 0.5
-      }
+        // Removed profit multiplier - PNL handled by another team member
+      },
     },
-    
+
     // Staking
     STAKE_SSE: {
       base: 15,
@@ -68,8 +69,8 @@ export const SCORING_CONFIG = {
           if (days >= 180) return 2.0
           if (days >= 30) return 1.5
           return 1.0
-        }
-      }
+        },
+      },
     },
 
     CLAIM_STAKING_REWARDS: {
@@ -79,20 +80,15 @@ export const SCORING_CONFIG = {
           if (amount >= 10000) return 3.0
           if (amount >= 1000) return 2.0
           return 1.0
-        }
-      }
+        },
+      },
     },
-    
+
     // Social Actions
-    PROFILE_COMPLETE: { base: 50, oneTime: true },
-    PROFILE_VERIFIED: { base: 100, oneTime: true },
-    PROFILE_IMAGE_UPLOAD: { base: 25, oneTime: true },
-    REFERRAL_SIGNUP: { base: 100 },
-    REFERRAL_FIRST_TRADE: { base: 250 },
-    
+    // Removed social actions for now - can add back later
+
     // Milestones
     FIRST_TRADE: { base: 100, oneTime: true },
-    FIRST_PROFITABLE_TRADE: { base: 200, oneTime: true },
     FIRST_COPY_TRADE: { base: 150, oneTime: true },
     FIRST_TIME_COPIED: { base: 500, oneTime: true },
     TRADING_STREAK_3: { base: 200, oneTime: true },
@@ -101,21 +97,18 @@ export const SCORING_CONFIG = {
     VOLUME_MILESTONE_1K: { base: 250, oneTime: true },
     VOLUME_MILESTONE_10K: { base: 1000, oneTime: true },
     VOLUME_MILESTONE_100K: { base: 5000, oneTime: true },
-    PROFIT_MILESTONE_100: { base: 300, oneTime: true },
-    PROFIT_MILESTONE_1K: { base: 1500, oneTime: true },
-    PROFIT_MILESTONE_10K: { base: 10000, oneTime: true },
 
     // Daily Actions
     DAILY_LOGIN: { base: 5, dailyLimit: 1 },
     DAILY_TRADE: { base: 10, dailyLimit: 1 },
     DAILY_VOLUME_BONUS: { base: 50, dailyLimit: 1 }, // For >$1000 daily volume
   } as ActionsConfig,
-  
+
   // Decay factors for time-based scoring
   decay: {
-    daily: 0.9,    // Previous day scores worth 90%
-    weekly: 0.8,   // Previous week scores worth 80%
-    monthly: 0.7   // Previous month scores worth 70%
+    daily: 0.9, // Previous day scores worth 90%
+    weekly: 0.8, // Previous week scores worth 80%
+    monthly: 0.7, // Previous month scores worth 70%
   },
 
   // Categories for filtering
@@ -125,13 +118,8 @@ export const SCORING_CONFIG = {
     COPIED_BY_OTHERS: 'influence',
     STAKE_SSE: 'staking',
     CLAIM_STAKING_REWARDS: 'staking',
-    PROFILE_COMPLETE: 'social',
-    PROFILE_VERIFIED: 'social',
-    PROFILE_IMAGE_UPLOAD: 'social',
-    REFERRAL_SIGNUP: 'social',
-    REFERRAL_FIRST_TRADE: 'social',
+
     FIRST_TRADE: 'milestone',
-    FIRST_PROFITABLE_TRADE: 'milestone',
     FIRST_COPY_TRADE: 'milestone',
     FIRST_TIME_COPIED: 'milestone',
     TRADING_STREAK_3: 'milestone',
@@ -140,14 +128,18 @@ export const SCORING_CONFIG = {
     VOLUME_MILESTONE_1K: 'milestone',
     VOLUME_MILESTONE_10K: 'milestone',
     VOLUME_MILESTONE_100K: 'milestone',
-    PROFIT_MILESTONE_100: 'milestone',
-    PROFIT_MILESTONE_1K: 'milestone',
-    PROFIT_MILESTONE_10K: 'milestone',
     DAILY_LOGIN: 'daily',
     DAILY_TRADE: 'daily',
     DAILY_VOLUME_BONUS: 'daily',
-  } as const
+  } as const,
 }
 
 export type ActionType = keyof typeof SCORING_CONFIG.actions
-export type ScoringCategory = 'trading' | 'copying' | 'influence' | 'staking' | 'social' | 'milestone' | 'daily'
+export type ScoringCategory =
+  | 'trading'
+  | 'copying'
+  | 'influence'
+  | 'staking'
+  | 'social'
+  | 'milestone'
+  | 'daily'

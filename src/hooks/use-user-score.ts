@@ -2,6 +2,7 @@
 
 import { useQuery } from '@/utils/api'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import useSWR, { mutate } from 'swr'
 
 interface UserScoreData {
   userId: string
@@ -28,30 +29,36 @@ interface UseUserScoreOptions {
   skip?: boolean
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
 export function useUserScore({
   userId,
   timeframe = 'lifetime',
-  skip = false
+  skip = false,
 }: UseUserScoreOptions = {}) {
   const { mainProfile } = useCurrentWallet()
-  const targetUserId = userId || mainProfile?.id
+  const targetUserId = userId || mainProfile?.username
 
-  const { data, error, loading, refetch } = useQuery<UserScoreData>({
-    endpoint: `scores/${targetUserId}`,
-    queryParams: { timeframe },
-    skip: skip || !targetUserId
-  })
+  const { data, error, isLoading } = useSWR<UserScoreData>(
+    targetUserId && !skip
+      ? `/api/scores/${targetUserId}?timeframe=${timeframe}`
+      : null,
+    fetcher,
+    {
+      refreshInterval: 30000, // Refresh every 30 seconds
+      revalidateOnFocus: true,
+    }
+  )
 
   return {
     score: data?.score || 0,
-    rank: data?.rank,
+    rank: data?.rank || null,
     percentile: data?.percentile || 0,
     recentActions: data?.recentActions || [],
     achievements: data?.achievements || [],
     streaks: data?.streaks || { trading: 0, lastTradeDate: null },
-    loading,
+    loading: isLoading,
     error,
-    refetch
   }
 }
 
@@ -74,7 +81,14 @@ interface LeaderboardData {
 
 interface UseLeaderboardOptions {
   timeframe?: 'lifetime' | 'daily' | 'weekly' | 'monthly'
-  category?: 'trading' | 'copying' | 'influence' | 'staking' | 'social' | 'milestone' | 'daily'
+  category?:
+    | 'trading'
+    | 'copying'
+    | 'influence'
+    | 'staking'
+    | 'social'
+    | 'milestone'
+    | 'daily'
   limit?: number
   offset?: number
 }
@@ -83,7 +97,7 @@ export function useScoreLeaderboard({
   timeframe = 'lifetime',
   category,
   limit = 100,
-  offset = 0
+  offset = 0,
 }: UseLeaderboardOptions = {}) {
   const { data, error, loading, refetch } = useQuery<LeaderboardData>({
     endpoint: 'scores/leaderboard',
@@ -91,8 +105,8 @@ export function useScoreLeaderboard({
       timeframe,
       ...(category && { category }),
       limit,
-      offset
-    }
+      offset,
+    },
   })
 
   return {
@@ -100,6 +114,14 @@ export function useScoreLeaderboard({
     total: data?.total || 0,
     loading,
     error,
-    refetch
+    refetch,
   }
+}
+
+// Global function to refresh user scores after actions like trading
+export function refreshUserScores(userId: string) {
+  // Invalidate all timeframe queries for this user
+  mutate((key) => {
+    return typeof key === 'string' && key.includes(`/api/scores/${userId}`)
+  })
 }

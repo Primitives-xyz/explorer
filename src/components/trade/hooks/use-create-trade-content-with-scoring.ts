@@ -1,8 +1,7 @@
+import { refreshUserScores } from '@/hooks/use-user-score'
 import type { TransactionContent } from '@/types/content'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { scoreManager } from '@/services/scoring/score-manager'
-import redis from '@/utils/redis'
 
 interface CreateContentNodeParams {
   signature: string
@@ -100,25 +99,13 @@ export function useCreateTradeContentNodeWithScoring() {
         // Use the swap USD value from Jupiter quote
         inputAmountUsd = parseFloat(swapUsdValue)
 
-        // Calculate output USD value based on token amounts and relative value
-        const inputAmountNum =
-          parseFloat(inputAmount) / Math.pow(10, inputTokenDecimals)
-        const outputAmountNum =
-          parseFloat(expectedOutput) / Math.pow(10, outputTokenDecimals)
+        // For output amount, just use input amount adjusted for price impact
+        // We're not tracking PNL, so this is just for record keeping
+        outputAmountUsd = inputAmountUsd * (1 - parseFloat(priceImpact) / 100)
 
-        // If we have token prices, use them for more accurate calculation
-        if (inputTokenPrice && outputTokenPrice) {
-          outputAmountUsd = outputAmountNum * outputTokenPrice
-        } else {
-          // Otherwise estimate based on the swap ratio
-          const ratio = outputAmountNum / inputAmountNum
-          outputAmountUsd =
-            inputAmountUsd * ratio * (1 - parseFloat(priceImpact) / 100)
-        }
-
-        profitUsd = outputAmountUsd - inputAmountUsd
-        profitPercentage =
-          inputAmountUsd > 0 ? (profitUsd / inputAmountUsd) * 100 : 0
+        // Set profit to 0 - another team member is handling PNL tracking
+        profitUsd = 0
+        profitPercentage = 0
       }
 
       // For copy trades, calculate copy delay
@@ -141,66 +128,7 @@ export function useCreateTradeContentNodeWithScoring() {
         }
       }
 
-      // Award points for the trade
-      if (mainProfile?.id) {
-        const scoreMetadata = {
-          volumeUSD: inputAmountUsd,
-          profitPercent: profitPercentage,
-          category: 'trading' as const,
-          inputMint,
-          outputMint,
-          isCopyTrade: !!sourceWallet,
-          profitable: profitUsd > 0,
-          speedBonus: copyDelay, // For copy trades
-          profitUsd
-        }
-
-        // Award points for executing a trade
-        const earnedScore = await scoreManager.addScore(
-          mainProfile.id,
-          sourceWallet ? 'COPY_TRADE' : 'TRADE_EXECUTE',
-          scoreMetadata
-        )
-
-        console.log(`Earned ${earnedScore} points for trade`)
-
-        // If this trade was copied, award points to the source
-        if (sourceWallet && sourceProfile?.id) {
-          // Atomically increment and get the new copier count
-          const newCopierCount = await redis.hincrby(
-            `trader:${sourceProfile.id}:stats`, 
-            'copier_count', 
-            1
-          )
-          
-          // Award points with the current copier count (before this increment)
-          await scoreManager.addScore(
-            sourceProfile.id,
-            'COPIED_BY_OTHERS',
-            {
-              copierCount: newCopierCount, // This is already the new count after increment
-              category: 'influence' as const,
-              copiedByUser: mainProfile.id,
-              profitableForCopier: profitUsd > 0
-            }
-          )
-
-          // Update profitable copies if needed
-          if (profitUsd > 0) {
-            await redis.hincrby(`trader:${sourceProfile.id}:stats`, 'profitable_copies', 1)
-          }
-        }
-
-        // Check for first trade daily bonus
-        const today = new Date().toISOString().split('T')[0]
-        const hasTradedToday = await redis.hget(
-          `user:${mainProfile.id}:daily:${today}`,
-          'DAILY_TRADE'
-        )
-        if (!hasTradedToday) {
-          await scoreManager.addScore(mainProfile.id, 'DAILY_TRADE', {})
-        }
-      }
+      // Scoring will be handled server-side in the API route
 
       // Create the base content properties (existing code)
       const baseContent = {
@@ -287,7 +215,7 @@ export function useCreateTradeContentNodeWithScoring() {
       }
 
       // Post the content to the API
-      await fetch('/api/content', {
+      const response = await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -302,6 +230,17 @@ export function useCreateTradeContentNodeWithScoring() {
           properties: contentToProperties(content),
         }),
       })
+
+      if (response.ok) {
+        // Check if scores were updated
+        const scoreUpdated = response.headers.get('X-Score-Updated')
+        const scoreUser = response.headers.get('X-Score-User')
+
+        if (scoreUpdated === 'true' && scoreUser) {
+          // Refresh the user's scores across all components
+          refreshUserScores(scoreUser)
+        }
+      }
     } catch (err) {
       console.error('Error creating content node:', err)
     }
