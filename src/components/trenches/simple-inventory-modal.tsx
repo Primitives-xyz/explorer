@@ -118,7 +118,7 @@ function useTokenInfo(mints: string[]) {
     if (mintsToFetch.length > 0) {
       fetchTokenInfo(mintsToFetch)
     }
-  }, [mints.join(',')])
+  }, [mints.sort().join(',')]) // Sort to ensure stable key
 
   return { tokenInfo, loading }
 }
@@ -198,7 +198,7 @@ function useCurrentPrices(mints: string[]) {
     if (mintsToFetch.length > 0) {
       fetchPrices(mintsToFetch)
     }
-  }, [mints.join(',')])
+  }, [mints.sort().join(',')]) // Sort to ensure stable key
 
   return { prices, loading }
 }
@@ -275,7 +275,6 @@ function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
 
   // Group transactions by token mint
   transactions.forEach((tx) => {
-    console.log('tx', tx)
     if (tx.tradeType === 'swap') return // Skip swaps for now
 
     const isBuy = tx.tradeType === 'buy'
@@ -641,15 +640,20 @@ export function SimpleInventoryModal({
   const [showOpenPositions, setShowOpenPositions] = useState(true)
   const [showClosedPositions, setShowClosedPositions] = useState(true)
 
-  // Fetch transaction history
-  const { transactions, isLoading, isError } = useTapestryTransactionHistory(
-    walletAddress || '',
-    isOpen && !!walletAddress
-  )
+  // Fetch transaction history - only when modal is open
+  const { transactions, meta, isLoading, isError } =
+    useTapestryTransactionHistory(walletAddress || '', {
+      enabled: isOpen && !!walletAddress && !walletLoading,
+      limit: 200, // Get more transactions for better position calculation
+      sortOrder: 'desc',
+    })
 
-  // Calculate positions from transactions
+  // Calculate positions from transactions - prevent unnecessary recalculations
   const positions = useMemo(() => {
-    if (!transactions || transactions.length === 0) return []
+    // Skip recalculation if we're still loading or already have positions
+    if (isLoading || !transactions || transactions.length === 0) {
+      return []
+    }
 
     // Cast transactions to proper type and filter valid ones
     const validTransactions = transactions
@@ -661,20 +665,30 @@ export function SimpleInventoryModal({
       )
       .map((tx: any) => tx as TradeTransaction)
 
-    return calculatePositions(validTransactions)
-  }, [transactions])
+    const result = calculatePositions(validTransactions)
 
-  // Get unique mints for token info fetching
+    return result
+  }, [transactions, isLoading])
+
+  // Get unique mints for token info fetching - prevent unnecessary recalculations
   const uniqueMints = useMemo(() => {
-    return positions.map((p) => p.mint)
-  }, [positions])
+    if (!positions || positions.length === 0) {
+      return []
+    }
+    const mints = positions.map((p) => p.mint)
+    const uniqueMints = [...new Set(mints)] // Remove duplicates
+    return uniqueMints
+  }, [positions.length, positions.map((p) => p.mint).join(',')]) // More stable dependency array
 
-  // Fetch token info for all positions with caching
-  const { tokenInfo, loading: loadingTokenInfo } = useTokenInfo(uniqueMints)
+  // Fetch token info for all positions with caching - only if we have mints
+  const { tokenInfo, loading: loadingTokenInfo } = useTokenInfo(
+    uniqueMints.length > 0 ? uniqueMints : []
+  )
 
-  // Fetch current prices for all positions
-  const { prices: currentPrices, loading: loadingPrices } =
-    useCurrentPrices(uniqueMints)
+  // Fetch current prices for all positions - only if we have mints
+  const { prices: currentPrices, loading: loadingPrices } = useCurrentPrices(
+    uniqueMints.length > 0 ? uniqueMints : []
+  )
 
   // Enrich positions with token info
   const enrichedPositions: EnrichedTokenPosition[] = useMemo(() => {
@@ -684,7 +698,12 @@ export function SimpleInventoryModal({
       name: tokenInfo[position.mint]?.name || position.symbol,
       image: tokenInfo[position.mint]?.image,
     }))
-  }, [positions, tokenInfo])
+  }, [
+    positions.length,
+    positions.map((p) => p.mint).join(','),
+    Object.keys(tokenInfo).length,
+    JSON.stringify(tokenInfo),
+  ])
 
   const openPositions = enrichedPositions.filter((p) => p.isOpen)
   const closedPositions = enrichedPositions.filter((p) => !p.isOpen)
