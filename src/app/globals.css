@@ -157,3 +157,15 @@ kbd {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
+
+.blink.x-dark {
+  --blink-text-button: hsl(var(--primary-foreground));
+  --blink-button: hsl(var(--primary));
+  --blink-button-hover: hsl(var(--primary) / 0.8);
+  --blink-input-stroke: hsl(var(--primary));
+  --blink-input-stroke-hover: hsl(var(--primary));
+  --blink-input-stroke-selected: hsl(var(--primary));
+  --blink-input-background: hsl(var(--primary));
+  --blink-stroke-primary: hsl(var(--primary));
+  --blink-input-bg-selected: hsl(var(--primary));
+}
