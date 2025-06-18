@@ -8,6 +8,7 @@ import { Badge, Card, CardContent, CardHeader } from '@/components/ui'
 import { getSourceIcon } from '@/utils/transactions'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { abbreviateWalletAddress } from '@/utils/utils'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import { Copy } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
@@ -121,10 +122,12 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       ) {
         try {
           // Create content for this transaction
+          const authToken = getAuthToken()
           await fetch('/api/content', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              ...(authToken && { Authorization: `Bearer ${authToken}` }),
             },
             body: JSON.stringify({
               id: transaction.signature,

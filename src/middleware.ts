@@ -28,12 +28,12 @@ export async function middleware(request: NextRequest) {
   }
 
   // Skip authentication for GET requests on public endpoints
-  const publicGetEndpoints = ['/api/content', '/api/comments', '/api/profiles/']
+  const publicGetEndpoints = ['/api/content', '/api/comments', '/api/profiles']
 
   if (request.method === 'GET') {
     const pathname = request.nextUrl.pathname
     const isPublicGet = publicGetEndpoints.some(
-      (endpoint) => pathname === endpoint || pathname.startsWith(endpoint)
+      (endpoint) => pathname === endpoint || pathname.startsWith(endpoint + '/')
     )
 
     if (isPublicGet) {
@@ -135,10 +135,10 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Public endpoints that may need GET bypass
+    // Content endpoints (GET is public, mutations require auth)
     '/api/content/:path*',
     '/api/comments/:path*',
-    '/api/profiles/:path*',
+    // Note: /api/profiles is NOT in the matcher because GET requests should be public
 
     // Followers (mutations only)
     '/api/followers/add',
@@ -146,5 +146,9 @@ export const config = {
 
     // File uploads - using regex for any filename
     '/api/upload/:path*',
+
+    // Authenticated endpoints
+    '/api/claim-reward',
+    '/api/unstake',
   ],
 }

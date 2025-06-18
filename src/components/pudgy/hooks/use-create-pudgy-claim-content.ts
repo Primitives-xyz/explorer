@@ -1,6 +1,7 @@
 import type { PudgyProfileClaimContent } from '@/types/content'
 import { EXPLORER_NAMESPACE } from '@/utils/constants'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 
 interface CreatePudgyClaimContentParams {
   signature: string
@@ -76,10 +77,12 @@ export function useCreatePudgyClaimContent() {
       }
 
       // Post the content to the API
+      const authToken = getAuthToken()
       await fetch('/api/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(authToken && { Authorization: `Bearer ${authToken}` }),
         },
         body: JSON.stringify({
           id: signature,
