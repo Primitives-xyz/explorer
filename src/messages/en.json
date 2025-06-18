@@ -111,7 +111,6 @@
             }
           }
         },
-        "share_button": "Share your SOLID score",
         "share_dialog": {
           "title": "🚀 You're on the board, but it's locked",
           "percentile_text": "Your score ranks you in the Top {percentile}% of SSE users!",
