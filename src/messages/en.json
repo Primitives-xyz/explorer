@@ -83,17 +83,17 @@
         "title": "Leaderboard",
         "share_button": "Share your SOLID score",
         "tabs": {
-          "sse_scores": "SSE Scores 🔥",
+          "sse_scores": "Aura Scores 🔥",
           "solid_scores": "SOLID Scores",
           "timeframes": {
             "all_time": "All Time",
-            "monthly": "Monthly", 
+            "monthly": "Monthly",
             "weekly": "Weekly",
             "today": "Today"
           }
         },
         "sse_scores": {
-          "title": "🏆 SSE Activity Scores",
+          "title": "🔥 Aura Activity Scores",
           "description": "Earn points for trading, staking, and engaging with the SSE ecosystem. The more active you are, the higher you rank!",
           "your_position": "Your Position",
           "categories": {
@@ -102,7 +102,7 @@
               "description": "Execute trades and copy successful traders"
             },
             "staking": {
-              "title": "💎 Staking", 
+              "title": "💎 Staking",
               "description": "Stake SSE tokens to earn bonus points"
             },
             "social": {

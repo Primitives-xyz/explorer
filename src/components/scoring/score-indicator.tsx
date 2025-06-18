@@ -142,7 +142,7 @@ export function ScoreIndicator({ className }: ScoreIndicatorProps) {
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
             <div className="text-left">
-              <p className="text-xs text-muted-foreground">SSE Score</p>
+              <p className="text-xs text-muted-foreground">Aura Score</p>
               <div className="flex items-center gap-1.5">
                 <span className="text-lg font-semibold leading-none">
                   {formatSmartNumber(score, {
