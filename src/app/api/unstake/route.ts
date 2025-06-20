@@ -5,6 +5,7 @@ import {
   createTransactionErrorResponse,
   serializeTransactionForClient,
 } from '@/utils/transaction-helpers'
+import { verifyRequestAuth, getUserIdFromToken } from '@/utils/auth'
 import * as anchor from '@coral-xyz/anchor'
 import { Connection, PublicKey, Transaction } from '@solana/web3.js'
 import { NextRequest, NextResponse } from 'next/server'
@@ -19,6 +20,23 @@ function convertToBN(value: number, decimals: number) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Verify authentication
+    const verifiedToken = await verifyRequestAuth(req.headers)
+    if (!verifiedToken) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const userId = getUserIdFromToken(verifiedToken)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      )
+    }
+
     const { walletAddy, walletAddress, amount } = await req.json()
 
     // Support both field names for backward compatibility

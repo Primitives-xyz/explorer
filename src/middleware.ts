@@ -27,6 +27,20 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
+  // Skip authentication for GET requests on public endpoints
+  const publicGetEndpoints = ['/api/content', '/api/comments', '/api/profiles']
+
+  if (request.method === 'GET') {
+    const pathname = request.nextUrl.pathname
+    const isPublicGet = publicGetEndpoints.some(
+      (endpoint) => pathname === endpoint || pathname.startsWith(endpoint + '/')
+    )
+
+    if (isPublicGet) {
+      return response
+    }
+  }
+
   const authToken = request.headers.get('Authorization')
   const jwt = authToken?.split(' ')[1]
 
@@ -120,5 +134,22 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/profiles/create', '/api/comments'],
+  matcher: [
+    // Content endpoints (GET is public, mutations require auth)
+    '/api/content/:path*',
+    '/api/comments/:path*',
+    // Profiles (GET is public, mutations require auth)
+    '/api/profiles/:path*',
+
+    // Followers (mutations only)
+    '/api/followers/add',
+    '/api/followers/remove',
+
+    // File uploads - using regex for any filename
+    '/api/upload/:path*',
+
+    // Authenticated endpoints
+    '/api/claim-reward',
+    '/api/unstake',
+  ],
 }

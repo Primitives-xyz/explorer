@@ -8,7 +8,6 @@ import {
 import { SSE_TOKEN_DECIMAL } from '@/utils/constants'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { formatRawAmount } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useStakeInfo } from '../hooks/use-stake-info'
@@ -88,10 +87,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     try {
       const stakedAmount = Number(stakeAmount)
       const quarterAmount = stakedAmount * 0.25
-      const formattedAmount = formatRawAmount(
-        BigInt(quarterAmount),
-        BigInt(SSE_TOKEN_DECIMAL)
-      )
+      const formattedAmount = formatAmount(quarterAmount, SSE_TOKEN_DECIMAL)
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -108,10 +104,7 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
     try {
       const stakedAmount = Number(stakeAmount)
       const halfAmount = stakedAmount * 0.5
-      const formattedAmount = formatRawAmount(
-        BigInt(halfAmount),
-        BigInt(SSE_TOKEN_DECIMAL)
-      )
+      const formattedAmount = formatAmount(halfAmount, SSE_TOKEN_DECIMAL)
 
       if (validateAmount(formattedAmount)) {
         setDisplayAmount(formattedAmount)
@@ -125,14 +118,10 @@ export function UnstakeForm({ initialAmount = '' }: Props) {
   const handleMaxAmount = () => {
     if (!stakeAmount) return
 
-    const formattedAmount = formatRawAmount(
-      BigInt(stakeAmount),
-      BigInt(SSE_TOKEN_DECIMAL)
-    )
-
     try {
-      if (validateAmount(formattedAmount)) {
-        setDisplayAmount(formattedAmount)
+      // stakeAmount is already in human-readable format
+      if (validateAmount(stakeAmount)) {
+        setDisplayAmount(stakeAmount)
         if (debouncedUpdate) clearTimeout(debouncedUpdate)
       }
     } catch (err) {

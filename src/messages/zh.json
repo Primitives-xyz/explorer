@@ -23,6 +23,7 @@
       "followers": "关注者",
       "following": "正在关注",
       "share_follow": "分享 关注",
+      "share_blink": "Share Blink",
       "blink_copied": "关注 blink 已复制！分享后，只需在 Solana 上点击一下，即可让其他人关注 @{username}！🚀",
       "blink_copy_failed": "复制链接失败",
       "blink_tooltip": "分享@{username} 的关注链接 - 让其他人通过一笔 Solana 交易来关注！"
@@ -81,6 +82,35 @@
       "leaderboard": {
         "title": "排行榜",
         "share_button": "分享你的SOLID分数",
+        "tabs": {
+          "sse_scores": "Aura Scores 🔥",
+          "solid_scores": "SOLID Scores",
+          "timeframes": {
+            "all_time": "All Time",
+            "monthly": "Monthly",
+            "weekly": "Weekly",
+            "today": "Today"
+          }
+        },
+        "sse_scores": {
+          "title": "🔥 Aura Activity Scores",
+          "description": "Earn points for trading, staking, and engaging with the SSE ecosystem. The more active you are, the higher you rank!",
+          "your_position": "Your Position",
+          "categories": {
+            "trading": {
+              "title": "🎯 Trading",
+              "description": "Execute trades and copy successful traders"
+            },
+            "staking": {
+              "title": "💎 Staking",
+              "description": "Stake SSE tokens to earn bonus points"
+            },
+            "social": {
+              "title": "🤝 Social",
+              "description": "Follow traders and engage with the community"
+            }
+          }
+        },
         "share_dialog": {
           "title": "🚀 You're on the board, but it's locked",
           "percentile_text": "Your score ranks you in the Top {percentile}% of SSE users!",
@@ -231,6 +261,10 @@
     "waiting_for_confirmation": "等待确认",
     "transaction_successful": "交易成功",
     "transaction_failed": "交易失败",
+    "the_claim_transaction_was_successful_creating_shareable_link": "The claim transaction was successful. Creating shareable link",
+    "the_claim_transaction_failed_please_try_again": "The claim transaction failed. Please try again",
+    "no_rewards_to_claim": "No rewards to claim",
+    "confirming_transaction": "Confirming Transaction",
     "search_tokens": "搜索代币...",
     "verified_tokens_only": "仅已验证代币",
     "no_tokens_found": "未找到代币",
@@ -367,7 +401,12 @@
     "confirming_transaction": {
       "title": "正在确认交易",
       "description": "等待确认"
-    }
+    },
+    "initializing_wallet": "Initializing Wallet",
+    "wallet_sdk": "Loading wallet SDK",
+    "fetching_profile": "Fetching profile",
+    "initializing_trading": "Initializing trading",
+    "loading_accounts": "Loading accounts"
   },
   "success": {
     "transaction": {
@@ -546,6 +585,21 @@
       "view_transaction": "查看交易",
       "connect_wallet_error": "请连接您的钱包",
       "claim_failed": "领取奖励失败。请重试。"
+    },
+    "migration": {
+      "success_title": "Migration Successful!",
+      "success_description": "Your staking account has been successfully migrated to the new format.",
+      "required_title": "Account Migration Required",
+      "required_description": "Your staking account needs to be migrated to the new format to continue earning rewards.",
+      "current_status_title": "Current Account Status",
+      "staked": "Staked",
+      "last_update": "Last Update",
+      "status": "Status",
+      "status_active": "Active",
+      "status_inactive": "Inactive",
+      "migration_info": "This is a one-time migration. Your staked tokens will be transferred to the new account format.",
+      "processing": "Processing Migration...",
+      "migrate_button": "Migrate Account"
     }
   },
   "swap": {
@@ -577,7 +631,15 @@
       "fee_exceeds_balance": "Transaction fee exceeds your SSE balance.",
       "not_enough_sse_for_fees": "You do not have enough SSE to pay for transaction fees.",
       "pay_with_sse": "Pay fee with SSE",
-      "get_discount": "Get 50% off on transaction fees"
+      "get_discount": "Get 50% off on transaction fees",
+      "spl_transfer_errors": {
+        "missing_ata": "Associated token account doesn't exist for destination wallet",
+        "insufficient_balance": "Insufficient token balance for transfer",
+        "invalid_mint": "Invalid token mint address",
+        "invalid_wallet": "Invalid destination wallet address",
+        "network_error": "Network error during transfer. Please try again",
+        "generic_error": "Failed to complete token transfer"
+      }
     },
     "price": {
       "price_impact": "Price Impact",
@@ -589,7 +651,11 @@
     },
     "buttons": {
       "swap_tokens": "Swap Tokens"
-    }
+    },
+    "low_fee_sse": "Low Fee Mode",
+    "fee_paid_with_sse": "Fee paid with SSE",
+    "lowest_fees_available": "Lowest fees available",
+    "platform_fee": "Platform fee"
   },
   "token_holders": {
     "others_own": "and +{count} others own this",

@@ -1,17 +1,17 @@
 'use client'
 
-import { useScoreLeaderboard } from '@/hooks/use-user-score'
-import { Button, ButtonSize, ButtonVariant } from '@/components/ui'
+import { Button, ButtonVariant } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { DataTable } from '@/components/ui/table/data-table'
 import { SortableHeader } from '@/components/ui/table/sortable-header'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs/tabs'
+import { useScoreLeaderboard } from '@/hooks/use-user-score'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
 import { ColumnDef } from '@tanstack/react-table'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs/tabs'
 import { SSEUserPosition } from './sse-user-position'
 
 const baseColumnStyles = {
@@ -28,15 +28,22 @@ type TimeframeType = 'lifetime' | 'daily' | 'weekly' | 'monthly'
 
 export function SSELeaderboard({ currentUsername }: SSELeaderboardProps) {
   const [timeframe, setTimeframe] = useState<TimeframeType>('lifetime')
-  const { leaderboard, loading } = useScoreLeaderboard({ 
+  const { leaderboard, loading } = useScoreLeaderboard({
     timeframe,
-    limit: 100 
+    limit: 100,
   })
   const t = useTranslations('menu.solid_score.leaderboard')
   const tTable = useTranslations('menu.solid_score.leaderboard.table')
 
   const isUserInTopList = leaderboard.some(
-    (entry: { username?: string; userId: string }) => entry.username === currentUsername || entry.userId === currentUsername
+    (entry: { username?: string; userId: string }) => {
+      const cleanUserId = entry.userId.startsWith('user_')
+        ? entry.userId.slice(5)
+        : entry.userId
+      return (
+        entry.username === currentUsername || cleanUserId === currentUsername
+      )
+    }
   )
 
   const columns: ColumnDef<{
@@ -55,8 +62,12 @@ export function SSELeaderboard({ currentUsername }: SSELeaderboardProps) {
       ),
       cell: ({ getValue, row }) => {
         const value = getValue<number>()
-        const isCurrentUser = row.original.username === currentUsername || 
-                            row.original.userId === currentUsername
+        const cleanUserId = row.original.userId.startsWith('user_')
+          ? row.original.userId.slice(5)
+          : row.original.userId
+        const isCurrentUser =
+          row.original.username === currentUsername ||
+          cleanUserId === currentUsername
         return (
           <div
             className={cn(baseColumnStyles.rank, {
@@ -77,7 +88,10 @@ export function SSELeaderboard({ currentUsername }: SSELeaderboardProps) {
         </div>
       ),
       cell: ({ row }) => {
-        const username = row.original.username || row.original.userId
+        const cleanUserId = row.original.userId.startsWith('user_')
+          ? row.original.userId.slice(5)
+          : row.original.userId
+        const username = row.original.username || cleanUserId
         const isCurrentUser = username === currentUsername
 
         return (
@@ -110,8 +124,12 @@ export function SSELeaderboard({ currentUsername }: SSELeaderboardProps) {
       ),
       cell: ({ getValue, row }) => {
         const value = getValue<number>()
-        const isCurrentUser = row.original.username === currentUsername || 
-                            row.original.userId === currentUsername
+        const cleanUserId = row.original.userId.startsWith('user_')
+          ? row.original.userId.slice(5)
+          : row.original.userId
+        const isCurrentUser =
+          row.original.username === currentUsername ||
+          cleanUserId === currentUsername
         return (
           <div
             className={cn(baseColumnStyles.score, {
@@ -135,18 +153,33 @@ export function SSELeaderboard({ currentUsername }: SSELeaderboardProps) {
 
   const TimeframeSelector = () => (
     <div className="mb-4">
-      <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeframeType)}>
+      <Tabs
+        value={timeframe}
+        onValueChange={(value) => setTimeframe(value as TimeframeType)}
+      >
         <TabsList className="grid w-full grid-cols-4 bg-background/50 backdrop-blur-sm">
-          <TabsTrigger value="lifetime" className="data-[state=active]:bg-primary/10">
+          <TabsTrigger
+            value="lifetime"
+            className="data-[state=active]:bg-primary/10"
+          >
             {t('tabs.timeframes.all_time')}
           </TabsTrigger>
-          <TabsTrigger value="monthly" className="data-[state=active]:bg-primary/10">
+          <TabsTrigger
+            value="monthly"
+            className="data-[state=active]:bg-primary/10"
+          >
             {t('tabs.timeframes.monthly')}
           </TabsTrigger>
-          <TabsTrigger value="weekly" className="data-[state=active]:bg-primary/10">
+          <TabsTrigger
+            value="weekly"
+            className="data-[state=active]:bg-primary/10"
+          >
             {t('tabs.timeframes.weekly')}
           </TabsTrigger>
-          <TabsTrigger value="daily" className="data-[state=active]:bg-primary/10">
+          <TabsTrigger
+            value="daily"
+            className="data-[state=active]:bg-primary/10"
+          >
             {t('tabs.timeframes.today')}
           </TabsTrigger>
         </TabsList>
@@ -179,16 +212,28 @@ export function SSELeaderboard({ currentUsername }: SSELeaderboardProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-background/50 backdrop-blur-sm rounded-lg p-4 border border-foreground/10">
-          <h4 className="font-semibold text-sm mb-1">{t('sse_scores.categories.trading.title')}</h4>
-          <p className="text-xs text-muted-foreground">{t('sse_scores.categories.trading.description')}</p>
+          <h4 className="font-semibold text-sm mb-1">
+            {t('sse_scores.categories.trading.title')}
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            {t('sse_scores.categories.trading.description')}
+          </p>
         </div>
         <div className="bg-background/50 backdrop-blur-sm rounded-lg p-4 border border-foreground/10">
-          <h4 className="font-semibold text-sm mb-1">{t('sse_scores.categories.staking.title')}</h4>
-          <p className="text-xs text-muted-foreground">{t('sse_scores.categories.staking.description')}</p>
+          <h4 className="font-semibold text-sm mb-1">
+            {t('sse_scores.categories.staking.title')}
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            {t('sse_scores.categories.staking.description')}
+          </p>
         </div>
         <div className="bg-background/50 backdrop-blur-sm rounded-lg p-4 border border-foreground/10">
-          <h4 className="font-semibold text-sm mb-1">{t('sse_scores.categories.social.title')}</h4>
-          <p className="text-xs text-muted-foreground">{t('sse_scores.categories.social.description')}</p>
+          <h4 className="font-semibold text-sm mb-1">
+            {t('sse_scores.categories.social.title')}
+          </h4>
+          <p className="text-xs text-muted-foreground">
+            {t('sse_scores.categories.social.description')}
+          </p>
         </div>
       </div>
     </div>
