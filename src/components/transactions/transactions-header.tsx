@@ -141,12 +141,12 @@ function Username({
     <Button
       variant={ButtonVariant.GHOST}
       href={route('entity', {
-        id: sourceWallet,
+        id: sourceWallet || sourceProfile?.username || '',
       })}
-      className="p-0 hover:bg-transparent"
+      className="p-0 hover:bg-transparent max-w-[120px] md:max-w-[160px]"
     >
       {sourceProfile?.username && sourceProfile.username !== sourceWallet ? (
-        `@${sourceProfile.username}`
+        <span className="truncate block w-full">@{sourceProfile.username}</span>
       ) : (
         <span>{abbreviateWalletAddress({ address: sourceWallet })}</span>
       )}
