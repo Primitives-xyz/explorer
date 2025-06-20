@@ -39,6 +39,7 @@ export function useDriftUsers() {
     }
 
     getUserAccountIds()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress, driftClient])
 
   // Reset when wallet changes

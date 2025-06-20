@@ -33,9 +33,11 @@ export function ProfileWithUsername({ username }: Props) {
   }
 
   return (
-    <ProfileContent
-      profileInfo={profileInfo}
-      walletAddress={profileInfo.walletAddress}
-    />
+    <>
+      <ProfileContent
+        profileInfo={profileInfo}
+        walletAddress={profileInfo.walletAddress}
+      />
+    </>
   )
 }

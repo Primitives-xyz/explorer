@@ -1,3 +1,5 @@
+'use client'
+
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import {
   useDynamicContext,

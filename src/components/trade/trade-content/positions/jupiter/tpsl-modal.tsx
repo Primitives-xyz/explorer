@@ -132,6 +132,7 @@ export default function TPSLModal({
     if (isTxSuccess) {
       setIsModalOpen(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTxSuccess])
 
   return (

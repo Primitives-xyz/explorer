@@ -63,6 +63,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
     ? Number(transaction.content.outputAmountUsd)
     : null
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fromToken = fromTokenMint
     ? {
         mint: fromTokenMint,
@@ -71,6 +72,7 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       }
     : processedTx.primaryOutgoingToken
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const toToken = toTokenMint
     ? {
         mint: toTokenMint,
@@ -254,16 +256,10 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
       <CardContent className="space-y-4">
         <SwapTransactionsViewDetails
           token={{ ...fromToken, ...fromTokenInfo }}
-          tokenLoading={fromTokenLoading}
-          tokenPrice={fromTokenPrice ?? null}
-          priceLoading={fromTokenLoading}
           usdValue={fromAmountUsd}
         />
         <SwapTransactionsViewDetails
           token={{ ...toToken, ...toTokenInfo }}
-          tokenLoading={toTokenLoading}
-          tokenPrice={toTokenPrice ?? null}
-          priceLoading={toTokenLoading}
           isReceived
           showUsd={false}
           usdValue={toAmountUsd}

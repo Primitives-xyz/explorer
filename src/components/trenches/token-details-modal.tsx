@@ -9,6 +9,7 @@ import { useIsMobile } from '@/utils/use-is-mobile'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { AnimatePresence, motion, PanInfo } from 'framer-motion'
 import { Activity, ArrowLeft, Clock, TrendingUp, Users, X } from 'lucide-react'
+import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { TokenBadges } from './token-badges'
 import { TokenBondedBar } from './token-bonded-bar'
@@ -57,6 +58,7 @@ export function TokenDetailsModal({
       document.addEventListener('keydown', handleEscape)
       return () => document.removeEventListener('keydown', handleEscape)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
 
   const handleClose = () => {
@@ -226,9 +228,11 @@ export function TokenDetailsModal({
                     </button>
                   )}
                   {agg.mintImage && (
-                    <img
+                    <Image
                       src={agg.mintImage}
                       alt={agg.mintSymbol || 'Token'}
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-full ring-2 ring-white/20"
                     />
                   )}

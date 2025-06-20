@@ -20,8 +20,8 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react'
+import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
-
 // Simple token info cache
 const TOKEN_INFO_CACHE = new Map<
   string,
@@ -118,6 +118,7 @@ function useTokenInfo(mints: string[]) {
     if (mintsToFetch.length > 0) {
       fetchTokenInfo(mintsToFetch)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mints.join(',')])
 
   return { tokenInfo, loading }
@@ -198,6 +199,7 @@ function useCurrentPrices(mints: string[]) {
     if (mintsToFetch.length > 0) {
       fetchPrices(mintsToFetch)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mints.join(',')])
 
   return { prices, loading }
@@ -354,10 +356,12 @@ function TokenDisplay({
   return (
     <div className="flex items-center gap-3">
       {position.image ? (
-        <img
+        <Image
           src={position.image}
           alt={position.symbol}
-          className="w-10 h-10 rounded-full"
+          width={40}
+          height={40}
+          className="rounded-full"
           onError={(e) => {
             const target = e.target as HTMLImageElement
             target.style.display = 'none'

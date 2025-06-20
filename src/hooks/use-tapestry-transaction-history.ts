@@ -80,6 +80,7 @@ export function useTapestryTransactionHistory(
     }
 
     fetchTransactions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, walletAddress])
 
   // Reset when wallet changes

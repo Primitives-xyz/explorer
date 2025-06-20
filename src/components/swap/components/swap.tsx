@@ -531,6 +531,7 @@ export function Swap({ autoFocus }: Props) {
         refreshQuote()
       }, 100) // Small delay to ensure state updates properly
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isFullyConfirmed,
     txStatus,

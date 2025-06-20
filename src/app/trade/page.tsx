@@ -1,10 +1,11 @@
 'use client'
 
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
+import { StatusBar } from '@/components/status-bar/status-bar'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
+import { TradeProvider } from '@/components/trade/context/trade-context'
 import { TradeLeftContent } from '@/components/trade/left-content/trade-left-content'
 import { TradeContent } from '@/components/trade/trade-content/trade-content'
-import { TradeProvider } from '@/components/trade/context/trade-context'
 import { SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
@@ -56,9 +57,12 @@ export default function TradePage() {
 
   return (
     <TradeProvider>
-      <MainContentWrapper className="flex flex-col md:flex-row w-full gap-6 pb-10">
-        <TradeLeftContent />
-        <TradeContent />
+      <MainContentWrapper>
+        <StatusBar condensed />
+        <div className="flex flex-col md:flex-row w-full gap-6 pb-10">
+          <TradeLeftContent />
+          <TradeContent />
+        </div>
       </MainContentWrapper>
     </TradeProvider>
   )

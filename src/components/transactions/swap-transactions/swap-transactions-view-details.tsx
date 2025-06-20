@@ -4,9 +4,6 @@ import { TokenLine } from '@/components/transactions/common/token-line'
 
 interface Props {
   token: import('./swap-transactions-view').TokenDisplay
-  tokenLoading: boolean
-  tokenPrice: number | null
-  priceLoading: boolean
   isReceived?: boolean
   usdValue?: number | null
   showUsd?: boolean
@@ -14,9 +11,6 @@ interface Props {
 
 export function SwapTransactionsViewDetails({
   token,
-  tokenLoading,
-  tokenPrice,
-  priceLoading,
   isReceived,
   usdValue,
   showUsd = true,

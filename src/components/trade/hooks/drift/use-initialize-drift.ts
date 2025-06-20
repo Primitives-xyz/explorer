@@ -54,6 +54,7 @@ export function useInitializeDrift() {
     }
 
     initializeClient()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress, primaryWallet])
 
   // Clean up on wallet disconnect
