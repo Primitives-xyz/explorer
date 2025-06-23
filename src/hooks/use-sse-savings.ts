@@ -111,7 +111,6 @@ export function useSSESavings(walletAddress?: string) {
 
         setData(enhancedData)
       } catch (err) {
-        console.error('Error fetching SSE savings:', err)
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
         setLoading(false)

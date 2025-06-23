@@ -82,9 +82,6 @@ export async function GET(request: NextRequest) {
         properties: content.content, // Content fields are directly accessible
       }))
 
-    // Debug: Log transaction counts
-    console.log('Total swap transactions found:', swapTransactions.length)
-
     // Analyze field availability
     const fieldAnalysis = {
       withSSEFee: 0,
@@ -126,39 +123,6 @@ export async function GET(request: NextRequest) {
         }
       }
     })
-
-    console.log('\nField Analysis:')
-    console.log(`- Transactions with sseFeeAmount: ${fieldAnalysis.withSSEFee}`)
-    console.log(
-      `- Transactions with usdcFeeAmount: ${fieldAnalysis.withUSDCFee}`
-    )
-    console.log(
-      `- Transactions with inputAmountUsd: ${fieldAnalysis.withInputAmountUSD}`
-    )
-    console.log(
-      `- Transactions with swapUsdValue: ${fieldAnalysis.withSwapUSDValue}`
-    )
-    console.log(
-      `- Transactions with no USD data: ${fieldAnalysis.withNoUSDData}`
-    )
-
-    if (fieldAnalysis.sampleWithoutUSD.length > 0) {
-      console.log('\nSample transactions without USD data:')
-      fieldAnalysis.sampleWithoutUSD.forEach((sample, i) => {
-        console.log(`\nTransaction ${i + 1}:`)
-        console.log(`  Signature: ${sample.signature}`)
-        console.log(
-          `  Timestamp: ${sample.timestamp} (${new Date(
-            parseInt(sample.timestamp)
-          ).toISOString()})`
-        )
-        console.log(`  Input: ${sample.inputAmount} of ${sample.inputMint}`)
-        console.log(
-          `  Output: ${sample.expectedOutput} of ${sample.outputMint}`
-        )
-        console.log(`  Available fields: ${sample.availableFields.join(', ')}`)
-      })
-    }
 
     // Calculate savings
     let totalSavingsUSD = 0
@@ -209,22 +173,8 @@ export async function GET(request: NextRequest) {
           // Calculate USD value based on whichever token we have a price for
           if (inputPrice && inputAmount) {
             swapValueUSD = Number(inputAmount) * inputPrice
-            if (tradesWithoutUsdData < 3) {
-              console.log(
-                `Historical price calc: ${inputAmount} @ $${inputPrice} = $${swapValueUSD.toFixed(
-                  2
-                )}`
-              )
-            }
           } else if (outputPrice && expectedOutput) {
             swapValueUSD = Number(expectedOutput) * outputPrice
-            if (tradesWithoutUsdData < 3) {
-              console.log(
-                `Historical price calc: ${expectedOutput} @ $${outputPrice} = $${swapValueUSD.toFixed(
-                  2
-                )}`
-              )
-            }
           }
         }
       }
@@ -248,27 +198,11 @@ export async function GET(request: NextRequest) {
           const potentialSavedUSD = regularFeeUSD - sseFeeUSD
 
           potentialAdditionalSavings += potentialSavedUSD
-
-          // Log first few non-SSE trades with USD values
-          if (tradesWithoutSSE <= 3) {
-            console.log(`\nNon-SSE trade ${tradesWithoutSSE}:`)
-            console.log(`  Swap value: $${swapValueUSD.toFixed(2)}`)
-            console.log(`  Potential savings: $${potentialSavedUSD.toFixed(4)}`)
-          }
         }
       } else {
         tradesWithoutUsdData++
       }
     }
-
-    console.log('\n=== Calculation Summary ===')
-    console.log(`Trades with SSE: ${tradesWithSSE}`)
-    console.log(`Trades without SSE: ${tradesWithoutSSE}`)
-    console.log(`Trades without USD data: ${tradesWithoutUsdData}`)
-    console.log(`Total savings: $${totalSavingsUSD.toFixed(4)}`)
-    console.log(
-      `Potential additional savings: $${potentialAdditionalSavings.toFixed(4)}`
-    )
 
     const averageSavingsPerTrade =
       tradesWithSSE > 0 ? totalSavingsUSD / tradesWithSSE : 0
