@@ -117,7 +117,7 @@ export function TrenchesContent({
     return () => {
       ws.close()
     }
-  }, [])
+  }, [handleWebSocketMessage])
 
   // Use paused data when updates are paused
   const displayMintMap = pauseUpdates ? pausedMintMapRef.current : mintMap
@@ -181,7 +181,7 @@ export function TrenchesContent({
         recently_graduated: recentlyGraduated,
       },
     }
-  }, [displayMintMap, sourceFilter])
+  }, [displayMintMap, sourceFilter, filterTokensBySource])
 
   // Helper for price display
   const solPriceDisplay = solPriceLoading

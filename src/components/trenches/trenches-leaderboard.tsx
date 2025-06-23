@@ -344,7 +344,7 @@ export function TrenchesLeaderboard({
     }, 500) // Match transition duration
 
     return () => clearTimeout(timer)
-  }, [currentIndex, isTransitioning])
+  }, [currentIndex, isTransitioning, traders.length, tradersPerSlide])
 
   const handlePrevious = () => {
     setIsAutoScrolling(false)
