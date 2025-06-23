@@ -1,10 +1,14 @@
 'use client'
 
 import { ShareSolidScoreDialog } from '@/components/pudgy/components/share-tweet-dialog/share-solid-score-dialog'
-import { useSolidScoreLeaderboard } from '@/components/solid-score/hooks/use-solid-score-leaderboard'
-import { useScoreLeaderboard } from '@/hooks/use-user-score'
+import { useSolidScoreLeaderboardInfinite } from '@/components/solid-score/hooks/use-solid-score-leaderboard-infinite'
 import { Button, ButtonSize, Spinner } from '@/components/ui'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs/tabs'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs/tabs'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { useTranslations } from 'next-intl'
@@ -14,17 +18,19 @@ import { DataTableUserPosition } from './data-table-user-position'
 import { SSELeaderboard } from './sse-leaderboard'
 
 export function LeaderboardContent() {
-  const { data: solidScoreData, loading: solidScoreLoading } = useSolidScoreLeaderboard()
+  const {
+    data: solidScoreData,
+    loading: solidScoreLoading,
+    onLoadMore,
+    hasMore,
+    loading: loadingMore,
+  } = useSolidScoreLeaderboardInfinite({ pageSize: 20 })
   const { mainProfile, loading: walletLoading } = useCurrentWallet()
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('sse-scores')
   const t = useTranslations('menu.solid_score.leaderboard')
 
   const hasRevealedShare = !!mainProfile?.userHasClickedOnShareHisSolidScore
-
-  const isUserInTopList = solidScoreData?.some(
-    (item) => item.username === mainProfile?.username
-  )
 
   if (walletLoading) {
     return (
@@ -43,16 +49,16 @@ export function LeaderboardContent() {
       <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
         {t('title')}
       </h1>
-      
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-background/50 backdrop-blur-sm border border-foreground/10 rounded-lg p-1">
-          <TabsTrigger 
-            value="sse-scores" 
+          <TabsTrigger
+            value="sse-scores"
             className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-semibold"
           >
             {t('tabs.sse_scores')}
           </TabsTrigger>
-          <TabsTrigger 
+          <TabsTrigger
             value="solid-scores"
             className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-semibold"
           >
@@ -73,10 +79,13 @@ export function LeaderboardContent() {
             >
               <DataTableLeaderboard
                 data={solidScoreData ?? []}
-                loading={solidScoreLoading}
+                loading={solidScoreLoading && solidScoreData?.length === 0}
                 currentUsername={mainProfile?.username}
+                onLoadMore={onLoadMore}
+                hasMore={hasMore}
+                loadingMore={loadingMore}
               />
-              {mainProfile && !isUserInTopList && <DataTableUserPosition />}
+              {mainProfile && <DataTableUserPosition />}
             </div>
             {!hasRevealedShare && (
               <div className="absolute inset-0 flex items-center justify-center">
