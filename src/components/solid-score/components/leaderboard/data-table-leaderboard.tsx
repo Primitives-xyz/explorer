@@ -1,7 +1,7 @@
 'use client'
 
 import { ISolidScoreLeaderboardResponse } from '@/components/tapestry/models/solid.score.models'
-import { Button, ButtonVariant } from '@/components/ui'
+import { Button, ButtonVariant, Spinner } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { DataTable } from '@/components/ui/table/data-table'
 import { SortableHeader } from '@/components/ui/table/sortable-header'
@@ -10,7 +10,7 @@ import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
 import { ColumnDef, SortingState } from '@tanstack/react-table'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const baseColumnStyles = {
   rank: 'md:w-[100px]',
@@ -19,21 +19,71 @@ const baseColumnStyles = {
   percentile: 'md:w-[150px]',
 }
 
-interface DataTableLeaderboardProps {
+interface Props {
   data: ISolidScoreLeaderboardResponse[]
   loading: boolean
   currentUsername?: string
+  hasMore?: boolean
+  loadingMore?: boolean
+  onLoadMore?: () => void
 }
 
 export function DataTableLeaderboard({
   data,
   loading,
   currentUsername,
-}: DataTableLeaderboardProps) {
+  hasMore = false,
+  loadingMore = false,
+  onLoadMore,
+}: Props) {
   const t = useTranslations('menu.solid_score.leaderboard.table')
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'position', desc: false },
   ])
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isLoadingRef = useRef<boolean>(false)
+
+  const handleScroll = useCallback(() => {
+    if (
+      !containerRef.current ||
+      !hasMore ||
+      loadingMore ||
+      isLoadingRef.current
+    ) {
+      return
+    }
+
+    const container = containerRef.current
+    const scrollTop = container.scrollTop
+    const scrollHeight = container.scrollHeight
+    const clientHeight = container.clientHeight
+
+    const threshold = 100
+    const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold
+
+    if (isNearBottom) {
+      isLoadingRef.current = true
+      onLoadMore?.()
+    }
+  }, [hasMore, loadingMore, onLoadMore])
+
+  useEffect(() => {
+    if (!loadingMore) {
+      isLoadingRef.current = false
+    }
+  }, [loadingMore])
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    container.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll)
+    }
+  }, [handleScroll])
 
   const columns: ColumnDef<ISolidScoreLeaderboardResponse>[] = [
     {
@@ -146,14 +196,27 @@ export function DataTableLeaderboard({
   ]
 
   return (
-    <DataTable
-      data={data}
-      columns={columns}
-      loading={loading}
-      tableClassName="h-[600px]"
-      sorting={sorting}
-      isSmall
-      onSortingChange={setSorting}
-    />
+    <div className="space-y-4">
+      <div
+        ref={containerRef}
+        className="overflow-auto"
+        style={{ height: '500px' }}
+      >
+        <DataTable
+          data={data}
+          columns={columns}
+          loading={loading}
+          sorting={sorting}
+          isSmall
+          onSortingChange={setSorting}
+        />
+      </div>
+
+      {loadingMore && (
+        <div className="flex justify-center py-4">
+          <Spinner />
+        </div>
+      )}
+    </div>
   )
 }
