@@ -3,9 +3,11 @@
 import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
 import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { Avatar } from '@/components/ui/avatar/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import { abbreviateWalletAddress } from '@/utils/utils'
 import { ChevronLeft, ChevronRight, Trophy } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 interface Trader {
@@ -24,120 +26,6 @@ interface Trader {
   imageUrl?: string | null
   isPlaceholder?: boolean
 }
-
-// Placeholder data for upcoming leaderboard
-const placeholderTraders: Trader[] = [
-  {
-    rank: 1,
-    address: 'Your Address Here?',
-    pnl: 'Calculating...',
-    pnlPercentage: '∞',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'LEGEND', profit: 'Epic' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 2,
-    address: 'Top Trencher #2',
-    pnl: 'Being Tracked...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'BEAST', profit: 'Massive' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 3,
-    address: 'Elite Trader #3',
-    pnl: 'Processing...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'MOON', profit: 'Huge' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 4,
-    address: 'Could Be You?',
-    pnl: 'Analyzing...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'DEGEN', profit: 'Big' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 5,
-    address: 'Future Whale',
-    pnl: 'Loading...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'PUMP', profit: 'Nice' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 6,
-    address: 'Trench Master',
-    pnl: 'Compiling...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'ALPHA', profit: 'Sweet' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 7,
-    address: 'Degen Royalty',
-    pnl: 'Scanning...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'GEMS', profit: 'Solid' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 8,
-    address: 'Your Spot?',
-    pnl: 'Pending...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'REKT', profit: 'Good' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 9,
-    address: 'Future Legend',
-    pnl: 'Calculating...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'BAGS', profit: 'Nice' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 10,
-    address: 'Claim This Spot',
-    pnl: 'Available...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'MOON', profit: 'Soon' },
-    isPlaceholder: true,
-  },
-]
 
 interface TrenchesLeaderboardProps {
   currency: 'SOL' | 'USD'
@@ -169,12 +57,28 @@ function TraderCard({
 
   const { symbol, image } = useTokenInfo(trader.bestTrade.token)
 
+  const router = useRouter()
+
   // Only render the real trader UI
+  const handleClick = () => {
+    if (profile?.profile?.username) {
+      router.push(`/${profile.profile.username}`)
+    } else {
+      router.push(`/${trader.address}`)
+    }
+  }
+
   return (
     <div
       className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
         trader.rank
       )} group hover:scale-105`}
+      onClick={handleClick}
+      tabIndex={0}
+      role="button"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') handleClick()
+      }}
     >
       {/* Rank Badge + Username (column) */}
       <div className="flex flex-col items-start mb-2 relative z-10 gap-1">
@@ -256,7 +160,7 @@ export function TrenchesLeaderboard({
   const [isTransitioning, setIsTransitioning] = useState(false)
 
   // --- Leaderboard data integration ---
-  const [traders, setTraders] = useState<Trader[]>(placeholderTraders)
+  const [traders, setTraders] = useState<Trader[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -302,7 +206,7 @@ export function TrenchesLeaderboard({
       .catch((err) => {
         if (cancelled) return
         setError('Failed to load leaderboard')
-        setTraders(placeholderTraders)
+        setTraders([])
         setLoading(false)
       })
     return () => {
@@ -558,23 +462,34 @@ export function TrenchesLeaderboard({
             className={`flex transition-transform duration-500 ease-in-out`}
             style={carouselStyle}
           >
-            {extendedTraders.map((trader, index) => (
-              <div
-                key={`${trader.rank}-${index}`}
-                className={`flex-shrink-0 ${
-                  isMobile ? 'w-full' : 'w-1/3'
-                } px-1.5`}
-              >
-                <TraderCard
-                  trader={trader}
-                  currency={currency}
-                  solPrice={solPrice}
-                  getRankStyle={getRankStyle}
-                  getRankBorder={getRankBorder}
-                  formatValue={formatValue}
-                />
-              </div>
-            ))}
+            {loading
+              ? Array.from({ length: tradersPerSlide * 2 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className={`flex-shrink-0 ${
+                      isMobile ? 'w-full' : 'w-1/3'
+                    } px-1.5`}
+                  >
+                    <Skeleton className="w-full h-[220px] rounded-lg bg-neutral-800" />
+                  </div>
+                ))
+              : extendedTraders.map((trader, index) => (
+                  <div
+                    key={`${trader.rank}-${index}`}
+                    className={`flex-shrink-0 ${
+                      isMobile ? 'w-full' : 'w-1/3'
+                    } px-1.5`}
+                  >
+                    <TraderCard
+                      trader={trader}
+                      currency={currency}
+                      solPrice={solPrice}
+                      getRankStyle={getRankStyle}
+                      getRankBorder={getRankBorder}
+                      formatValue={formatValue}
+                    />
+                  </div>
+                ))}
           </div>
         </div>
 

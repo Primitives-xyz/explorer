@@ -118,7 +118,7 @@ function useTokenInfo(mints: string[]) {
     if (mintsToFetch.length > 0) {
       fetchTokenInfo(mintsToFetch)
     }
-  }, [mints.sort().join(',')]) // Sort to ensure stable key
+  }, [[...mints].sort().join(',')]) // Sort to ensure stable key
 
   return { tokenInfo, loading }
 }
@@ -198,7 +198,7 @@ function useCurrentPrices(mints: string[]) {
     if (mintsToFetch.length > 0) {
       fetchPrices(mintsToFetch)
     }
-  }, [mints.sort().join(',')]) // Sort to ensure stable key
+  }, [[...mints].sort().join(',')]) // Sort to ensure stable key
 
   return { prices, loading }
 }
