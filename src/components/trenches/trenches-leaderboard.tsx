@@ -159,59 +159,7 @@ function TraderCard({
   getRankBorder: (rank: number) => string
   formatValue: (value: number | string) => string
 }) {
-  // Placeholder logic
-  if (trader.isPlaceholder) {
-    return (
-      <div
-        className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
-          trader.rank
-        )} group hover:scale-105`}
-      >
-        {/* Rank Badge + Username (column) */}
-        <div className="flex flex-col items-start mb-2 relative z-10 gap-1">
-          <div
-            className={`${getRankStyle(
-              trader.rank
-            )} px-2 py-1 rounded-full text-xs font-bold w-fit`}
-          >
-            #{trader.rank}
-          </div>
-          <div className="text-xs text-gray-400 italic">{trader.address}</div>
-        </div>
-        {/* PNL */}
-        <div className="mb-3 relative z-10">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">Total PNL</span>
-          </div>
-          <div className="text-lg font-bold text-gray-300">{trader.pnl}</div>
-        </div>
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
-          <div className="bg-white/5 rounded p-1.5">
-            <div className="text-gray-400">Win Rate</div>
-            <div className="font-semibold text-gray-300">{trader.winRate}</div>
-          </div>
-          <div className="bg-white/5 rounded p-1.5">
-            <div className="text-gray-400">Trades</div>
-            <div className="font-semibold text-gray-300">
-              {trader.totalTrades}
-            </div>
-          </div>
-          <div className="bg-white/5 rounded p-1.5 col-span-2">
-            <div className="text-gray-400">Best Trade</div>
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-purple-300">
-                {trader.bestTrade.token}
-              </span>
-              <span className="text-purple-400">{trader.bestTrade.profit}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Real trader: fetch profile and token info
+  // Always call hooks at the top
   const { profiles } = useGetProfiles({ walletAddress: trader.address })
   const profile = profiles?.profiles?.[0]
   const username =
@@ -219,9 +167,9 @@ function TraderCard({
     abbreviateWalletAddress({ address: trader.address })
   const imageUrl = profile?.profile?.image
 
-  // Best trade token info
   const { symbol, image } = useTokenInfo(trader.bestTrade.token)
 
+  // Only render the real trader UI
   return (
     <div
       className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
