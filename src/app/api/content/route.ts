@@ -1,8 +1,8 @@
 import { scoreManager } from '@/services/scoring/score-manager'
+import { getUserIdFromToken, verifyRequestAuth } from '@/utils/auth'
 import { contentServer } from '@/utils/content-server'
 import { sendNotification } from '@/utils/notification'
 import redis from '@/utils/redis'
-import { verifyRequestAuth, getUserIdFromToken } from '@/utils/auth'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -73,6 +73,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'Missing required fields: id and profileId' },
         { status: 400 }
+      )
+    }
+
+    // SECURITY: Ensure the authenticated user can only create content for their own profile
+    if (userId !== profileId) {
+      return NextResponse.json(
+        { error: 'You can only create content for your own profile' },
+        { status: 403 }
       )
     }
 
