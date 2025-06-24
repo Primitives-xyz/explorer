@@ -13,6 +13,7 @@ import {
   CopyToClipboardButton,
 } from '@/components/ui/button'
 import { SSE_CONTRACT_ADDRESS } from '@/utils/constants'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { CopyIcon, Lock, MessageCircle } from 'lucide-react'
@@ -38,7 +39,7 @@ export function LeftSideMenu() {
       <div className="flex flex-col justify-between h-full overflow-y-auto pb-5 px-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Button href="/" isInvisible>
+            <Button href={route('home')} isInvisible>
               <h1 className="font-bold text-primary leading-none">
                 {t('menu.title')}
               </h1>

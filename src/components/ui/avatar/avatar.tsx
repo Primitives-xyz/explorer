@@ -1,3 +1,5 @@
+'use client'
+
 import { EPudgyTheme } from '@/components/pudgy/pudgy.models'
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
 import { getDicebearUrl } from '@/utils/constants'

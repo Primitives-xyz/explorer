@@ -2,6 +2,7 @@ import { MainContentWrapper } from '@/components/common/main-content-wrapper'
 import { NFTContent } from '@/components/nft/NFTContent'
 import { ProfileWithUsername } from '@/components/profile/components/profile-with-username'
 import { ProfileWithWallet } from '@/components/profile/components/profile-with-wallet'
+import { StatusBar } from '@/components/status-bar/status-bar'
 import { SwapTray } from '@/components/swap/components/swap-tray'
 import { IGetProfilesResponse } from '@/components/tapestry/models/profiles.models'
 import TransactionDetails from '@/components/transactions/transaction-view'
@@ -63,6 +64,7 @@ export default async function EntityPage({
   return (
     <>
       <MainContentWrapper className="relative">
+        <StatusBar condensed />
         <div className="md:pr-[36px]">{renderContent(routeType, cleanId)}</div>
       </MainContentWrapper>
       <SwapTray />

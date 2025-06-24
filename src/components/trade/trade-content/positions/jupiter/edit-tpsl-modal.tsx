@@ -31,7 +31,7 @@ export default function EditTPSLModal({
   setIsModalOpen,
   editTPSLRequest,
 }: TPSLModalProps) {
-  const [triggerPrice, setTriggerPrice] = useState<string>("")
+  const [triggerPrice, setTriggerPrice] = useState<string>('')
   const { editTPSL, isLoading, isTxExecuteLoading, isTxSuccess } = useEditTPSL({
     positionRequestPubkey: editTPSLRequest?.positionRequestPubkey || '',
     triggerPrice: convertPrecision(triggerPrice),
@@ -45,6 +45,7 @@ export default function EditTPSLModal({
     if (isTxSuccess) {
       setIsModalOpen(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTxSuccess])
 
   return (

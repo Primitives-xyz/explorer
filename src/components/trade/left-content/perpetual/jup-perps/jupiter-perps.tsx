@@ -137,6 +137,7 @@ export function JupiterPerps() {
 
       return sizeTokenDelta
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [increaseResponse])
 
   const orderAmountForLimitOrder = useMemo(() => {
@@ -147,6 +148,7 @@ export function JupiterPerps() {
 
       return sizeTokenDelta
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitResponse])
 
   // Memoized handlers

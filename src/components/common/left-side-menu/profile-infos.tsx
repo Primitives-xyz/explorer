@@ -1,7 +1,6 @@
 'use client'
 
 import { OnboardingButton } from '@/components/onboarding/components/onboarding-button'
-import { ScoreIndicator } from '@/components/scoring/score-indicator'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
 import { Skeleton } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
@@ -16,7 +15,6 @@ import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { EllipsisVerticalIcon, LogOutIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 interface Props {
@@ -99,44 +97,6 @@ export function ProfileInfos({ setOpen }: Props) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
-
-      <div className="bg-muted/30 rounded-lg p-3 space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/images/sse.png"
-              width={20}
-              height={20}
-              alt="SSE"
-              className="rounded-full"
-            />
-            <div>
-              <p className="text-xs text-muted-foreground">$SSE Balance</p>
-              <p className="text-lg font-semibold leading-none">
-                {balanceLoading ? (
-                  <span className="animate-pulse">...</span>
-                ) : (
-                  balance
-                )}
-              </p>
-            </div>
-          </div>
-          <Button
-            isInvisible
-            onClick={() => {
-              setOpen && setOpen(false)
-            }}
-            href={route('trade')}
-            className="text-xs text-muted-foreground hover:text-foreground"
-          >
-            View →
-          </Button>
-        </div>
-
-        <div className="border-t border-border/50 pt-2">
-          <ScoreIndicator className="w-full" />
         </div>
       </div>
 
