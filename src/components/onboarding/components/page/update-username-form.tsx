@@ -7,7 +7,6 @@ import {
 } from '@/components/tapestry/models/profiles.models'
 import {
   Button,
-  ButtonVariant,
   Form,
   FormControl,
   FormDescription,
@@ -17,12 +16,10 @@ import {
   Input,
   Label,
 } from '@/components/ui'
-import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -50,7 +47,6 @@ export function UpdateUsernameForm({
     profileId: mainProfile.id,
   })
   const { refetch: refetchCurrentUser } = useCurrentWallet()
-  const { push } = useRouter()
 
   const formSchema = z.object({
     username: z
@@ -112,7 +108,6 @@ export function UpdateUsernameForm({
 
       refetchCurrentUser()
       setStep(EOnboardingSteps.IMAGE)
-      push(route('entity', { id: values.username }))
 
       // form.reset()
     } catch (error: any) {
