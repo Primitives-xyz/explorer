@@ -5,13 +5,13 @@ import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-import { PoweredbyTapestry } from '../../common/powered-by-tapestry'
-import { Card, CardContent, Spinner } from '../../ui'
-import { useGetSuggestions } from '../hooks/use-get-suggestions'
-import { EOnboardingSteps } from '../onboarding.models'
-import { AddBioForm } from './add-bio-form'
-import { AddProfileImage } from './add-profile-image'
-import { StepsWrapper } from './steps-wrapper'
+import { PoweredbyTapestry } from '../../../common/powered-by-tapestry'
+import { Card, CardContent, Spinner } from '../../../ui'
+import { useGetSuggestions } from '../../hooks/use-get-suggestions'
+import { EOnboardingSteps } from '../../onboarding.models'
+import { AddBioForm } from '../add-bio-form'
+import { AddProfileImage } from '../add-profile-image'
+import { StepsWrapper } from '../steps-wrapper'
 import { SuggestedFollow } from './suggested-follow'
 import { UpdateUsernameForm } from './update-username-form'
 
@@ -21,7 +21,6 @@ interface Props {
 
 export function Onboarding({ profileId }: Props) {
   const t = useTranslations()
-  const [open, setOpen] = useState(false)
   const {
     mainProfile,
     walletAddress,
@@ -93,7 +92,6 @@ export function Onboarding({ profileId }: Props) {
                       suggestedUsernames={suggestedUsernames}
                       mainProfile={mainProfile}
                       setStep={setStep}
-                      closeModal={() => setOpen(false)}
                     />
                   )}
 
@@ -116,7 +114,6 @@ export function Onboarding({ profileId }: Props) {
                   {step === EOnboardingSteps.FOLLOW && mainProfile && (
                     <SuggestedFollow
                       mainProfile={mainProfile}
-                      closeModal={() => setOpen(false)}
                       setStep={setStep}
                     />
                   )}
