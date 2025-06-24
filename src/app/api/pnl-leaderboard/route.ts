@@ -25,21 +25,17 @@ cachedLeaderboard = null
 cacheTimestamp = null
 
 export async function GET(req: NextRequest) {
-  console.log('🏆 Fetching leaderboard - cache check...')
   // Serve from cache if fresh
   if (
     cachedLeaderboard &&
     cacheTimestamp &&
     Date.now() - cacheTimestamp < CACHE_DURATION
   ) {
-    console.log('📦 Serving from cache')
     return new Response(JSON.stringify({ leaderboard: cachedLeaderboard }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })
   }
-
-  console.log('🔄 Cache miss - fetching fresh data')
 
   // Fetch all trades from Tapestry
   const url = `${
@@ -68,12 +64,6 @@ export async function GET(req: NextRequest) {
   // Calculate realized PnL, win rate, and best trade for each wallet using shared utility
   const leaderboard: LeaderboardEntry[] = Object.entries(tradesByWallet).map(
     ([walletAddress, walletTrades]) => {
-      console.log(
-        `🏆 Calculating PnL for wallet: ${walletAddress.substring(0, 8)} with ${
-          walletTrades.length
-        } trades`
-      )
-
       // Use the shared utility for consistent calculations
       const pnlResult = calculatePnLMetrics(walletTrades, {
         includePositions: false, // Don't need positions for leaderboard

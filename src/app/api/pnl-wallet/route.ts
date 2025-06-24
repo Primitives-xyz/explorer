@@ -40,13 +40,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.log('💰 Calculating PnL for wallet:', {
-      walletAddress: walletAddress.substring(0, 8),
-      since: since ? new Date(parseInt(since) * 1000).toISOString() : 'none',
-      until: until ? new Date(parseInt(until) * 1000).toISOString() : 'none',
-      limit,
-    })
-
     // Build query string
     const params = new URLSearchParams({
       walletAddress,
