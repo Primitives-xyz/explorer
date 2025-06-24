@@ -164,11 +164,35 @@ export function TrenchesLeaderboard({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Helper function to get the start of the current week (last Sunday at 00:00:00 UTC)
+  const getWeekStart = (): number => {
+    const now = new Date()
+    const dayOfWeek = now.getUTCDay() // 0 = Sunday, 1 = Monday, etc.
+    const daysToSubtract = dayOfWeek
+
+    const weekStart = new Date(now)
+    weekStart.setUTCDate(now.getUTCDate() - daysToSubtract)
+    weekStart.setUTCHours(0, 0, 0, 0) // Set to start of day
+
+    return weekStart.getTime()
+  }
+
   useEffect(() => {
     let cancelled = false
     setLoading(true)
     setError(null)
-    fetch('/api/pnl-leaderboard')
+
+    // Calculate weekly time range
+    const since = getWeekStart()
+    const params = new URLSearchParams({
+      since: since.toString(),
+    })
+
+    console.log(
+      `Fetching weekly leaderboard since: ${new Date(since).toISOString()}`
+    )
+
+    fetch(`/api/pnl-leaderboard?${params.toString()}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch leaderboard')
         return res.json()
@@ -430,10 +454,10 @@ export function TrenchesLeaderboard({
               <Trophy className="w-5 h-5 text-yellow-400 flex-shrink-0" />
               <div className="flex flex-col">
                 <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
-                  SSE PROFIT LEADERBOARD
+                  WEEKLY SSE PROFIT LEADERBOARD
                 </h2>
                 <p className="text-xs text-gray-400 leading-tight">
-                  Most profitable SSE traders earn their legendary status
+                  Top performers this week (resets every Sunday)
                 </p>
               </div>
               <div className="bg-purple-600/20 px-2 py-0.5 rounded-full text-xs text-purple-300 border border-purple-500/30 pulse-glow">
@@ -523,8 +547,8 @@ export function TrenchesLeaderboard({
         {/* Teaser Footer */}
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-400 italic">
-            🔥 Your SSE trades are being tracked! Most profitable traders will
-            earn their spots on this leaderboard. Only positions opened AND
+            🔥 Weekly rankings reset every Sunday! Most profitable traders this
+            week earn their spots on the leaderboard. Only positions opened AND
             closed through SSE count toward your ranking 🔥
           </p>
         </div>

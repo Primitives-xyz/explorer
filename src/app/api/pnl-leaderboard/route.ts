@@ -17,30 +17,48 @@ type LeaderboardEntry = {
 
 // --- In-memory cache ---
 let cachedLeaderboard: LeaderboardEntry[] | null = null
-let cacheTimestamp: number | null = null
-const CACHE_DURATION = 24 * 60 * 60 * 1000 // 1 day
+let cacheKey: string | null = null // Cache key based on time parameters
 
 // Clear cache on startup to force fresh calculation
 cachedLeaderboard = null
-cacheTimestamp = null
+cacheKey = null
 
 export async function GET(req: NextRequest) {
-  // Serve from cache if fresh
-  if (
-    cachedLeaderboard &&
-    cacheTimestamp &&
-    Date.now() - cacheTimestamp < CACHE_DURATION
-  ) {
+  const { searchParams } = new URL(req.url)
+  const since = searchParams.get('since')
+  const until = searchParams.get('until')
+
+  // Create cache key from parameters
+  const currentCacheKey = `${since || 'all'}-${until || 'now'}`
+
+  // Serve from cache if we have data for the same parameters
+  if (cachedLeaderboard && cacheKey === currentCacheKey) {
     return new Response(JSON.stringify({ leaderboard: cachedLeaderboard }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })
   }
 
-  // Fetch all trades from Tapestry
-  const url = `${
+  // Build URL with time range parameters
+  const baseUrl = `${
     process.env.TAPESTRY_URL || 'https://tapestry.fly.dev'
   }/trades/all-trades`
+
+  const params = new URLSearchParams({
+    limit: '10000', // Set a high limit to get all trades for the period
+  })
+
+  if (since) {
+    params.set('since', since)
+  }
+  if (until) {
+    params.set('until', until)
+  }
+
+  const url = `${baseUrl}?${params.toString()}`
+
+  console.log(`Fetching leaderboard data with params:`, { since, until })
+
   const response = await fetch(url)
   if (!response.ok) {
     return new Response(
@@ -52,6 +70,8 @@ export async function GET(req: NextRequest) {
     )
   }
   const { data: trades }: { data: TradeLogData[] } = await response.json()
+
+  console.log(`Fetched ${trades.length} trades for leaderboard`)
 
   // Group by wallet
   const tradesByWallet: Record<string, TradeLogData[]> = {}
@@ -84,12 +104,17 @@ export async function GET(req: NextRequest) {
   leaderboard.sort((a, b) => b.realizedPnLUSD - a.realizedPnLUSD)
   const top10 = leaderboard.slice(0, 10)
 
-  // Cache result
+  // Cache result for these parameters
   cachedLeaderboard = top10
-  cacheTimestamp = Date.now()
+  cacheKey = currentCacheKey
 
-  return new Response(JSON.stringify({ leaderboard: top10 }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  })
+  return new Response(
+    JSON.stringify({
+      leaderboard: top10,
+    }),
+    {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  )
 }
