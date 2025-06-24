@@ -13,8 +13,10 @@ import {
   Paragraph,
   Spinner,
 } from '@/components/ui'
+import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useGetSuggestedProfiles } from '../../hooks/use-get-suggested-profiles'
 import { EFollowUsersType, EOnboardingSteps } from '../../onboarding.models'
@@ -27,6 +29,7 @@ interface Props {
 
 export function SuggestedFollow({ mainProfile, setStep }: Props) {
   const t = useTranslations()
+  const { push } = useRouter()
   const [selectedType, setSelectedType] = useState(EFollowUsersType.TOP_TRADERS)
   const { traders, loading: loadingLeaderboard } = useGetLeaderboard({
     skip: selectedType !== EFollowUsersType.TOP_TRADERS,
@@ -61,6 +64,10 @@ export function SuggestedFollow({ mainProfile, setStep }: Props) {
       value: EFollowUsersType.RECENT,
     },
   ]
+
+  const handleComplete = () => {
+    push(route('entity', { id: mainProfile.username }))
+  }
 
   useEffect(() => {
     if (!!suggestedProfiles) {
@@ -148,6 +155,7 @@ export function SuggestedFollow({ mainProfile, setStep }: Props) {
           {t('onboarding.buttons.back')}
         </Button>
         <Button
+          onClick={handleComplete}
           className="w-[48%] flex md:hidden"
           disabled={(socialCounts?.following ?? 0) < 3}
         >
@@ -158,6 +166,7 @@ export function SuggestedFollow({ mainProfile, setStep }: Props) {
             {t('onboarding.progress', { count: socialCounts?.following ?? 0 })}
           </p>
           <Button
+            onClick={handleComplete}
             className="w-[160px]"
             disabled={(socialCounts?.following ?? 0) < 3}
           >
