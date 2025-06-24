@@ -266,15 +266,24 @@ export function TrenchesLeaderboard({
       return value
     }
 
-    if (currency === 'USD' && solPrice) {
-      const valueInUsd = value * solPrice
-      return `$${valueInUsd.toLocaleString(undefined, {
-        maximumFractionDigits: 0,
+    if (currency === 'USD') {
+      // Value is already in USD from the API
+      return `$${value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
       })}`
+    } else {
+      // Convert USD to SOL for display
+      if (solPrice && solPrice > 0) {
+        const valueInSol = value / solPrice
+        return `${valueInSol.toLocaleString(undefined, {
+          maximumFractionDigits: 4,
+        })} SOL`
+      } else {
+        return `${value.toLocaleString(undefined, {
+          maximumFractionDigits: 2,
+        })} USD`
+      }
     }
-    return `${value.toLocaleString(undefined, {
-      maximumFractionDigits: 2,
-    })} SOL`
   }
 
   const getRankStyle = (rank: number) => {

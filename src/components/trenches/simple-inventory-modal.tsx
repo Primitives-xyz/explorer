@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useTapestryTransactionHistory } from '@/hooks/use-tapestry-transaction-history'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { useIsMobile } from '@/utils/use-is-mobile'
 import {
@@ -223,44 +222,42 @@ function formatCryptoValue(
   return `$${usdValue.toFixed(2)}`
 }
 
-// Transaction interface based on the API TradeLogSchema
-interface TradeTransaction {
-  id?: number
-  transactionSignature: string
-  walletAddress: string
-  profileId?: string
-  inputMint: string
-  outputMint: string
-  inputAmount: number
-  outputAmount: number
-  inputValueSOL: number
-  outputValueSOL: number
-  inputValueUSD?: number
-  outputValueUSD?: number
-  solPrice?: number
-  timestamp: number
-  source?: string
-  slippage?: number
-  priorityFee?: number
-  tradeType: 'buy' | 'sell' | 'swap'
-  platform: 'trenches' | 'main'
-  sourceWallet?: string
-  sourceTransactionId?: string
-}
-
+// Types from the API
 interface TokenPosition {
   mint: string
   symbol: string
-  totalBought: number // total tokens bought
-  totalSold: number // total tokens sold
-  remainingTokens: number // bought - sold
-  totalCostUSD: number // total USD spent buying
-  totalRevenueUSD: number // total USD received selling
-  realizedPnLUSD: number // revenue - cost for sold portion
-  isOpen: boolean // has remaining tokens
-  transactions: TradeTransaction[]
-  averageBuyPriceUSD: number // cost per token bought
-  averageSellPriceUSD: number // revenue per token sold
+  totalBought: number
+  totalSold: number
+  remainingTokens: number
+  totalCostUSD: number
+  totalRevenueUSD: number
+  realizedPnLUSD: number
+  isOpen: boolean
+  transactions: any[]
+  averageBuyPriceUSD: number
+  averageSellPriceUSD: number
+  positionId: string
+  isIncomplete: boolean
+  incompleteReason?: string
+  soldAmount?: number
+  soldPrice?: number
+  costBasis?: number
+}
+
+interface WalletPnLStats {
+  walletAddress: string
+  realizedPnLUSD: number
+  tradeCount: number
+  winRate: number
+  bestTrade: {
+    profit: number
+    token: string
+  }
+  dateRange: {
+    since?: number
+    until?: number
+  }
+  positions?: TokenPosition[]
 }
 
 // Enhanced TokenPosition interface with token info
@@ -269,77 +266,49 @@ interface EnrichedTokenPosition extends TokenPosition {
   image?: string
 }
 
-// Simple position calculator using transaction USD values
-function calculatePositions(transactions: TradeTransaction[]): TokenPosition[] {
-  const positionMap = new Map<string, TokenPosition>()
+// Hook to fetch wallet PnL and positions from API
+function useWalletPnL(walletAddress: string | null, enabled: boolean) {
+  const [data, setData] = useState<WalletPnLStats | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Group transactions by token mint
-  transactions.forEach((tx) => {
-    if (tx.tradeType === 'swap') return // Skip swaps for now
-
-    const isBuy = tx.tradeType === 'buy'
-    const tokenMint = isBuy ? tx.outputMint : tx.inputMint
-
-    // Skip SOL transactions
-    if (tokenMint === 'So11111111111111111111111111111111111111112') return
-
-    if (!positionMap.has(tokenMint)) {
-      positionMap.set(tokenMint, {
-        mint: tokenMint,
-        symbol: tokenMint.substring(0, 8), // Use first 8 chars as symbol
-        totalBought: 0,
-        totalSold: 0,
-        remainingTokens: 0,
-        totalCostUSD: 0,
-        totalRevenueUSD: 0,
-        realizedPnLUSD: 0,
-        isOpen: false,
-        transactions: [],
-        averageBuyPriceUSD: 0,
-        averageSellPriceUSD: 0,
-      })
+  useEffect(() => {
+    if (!enabled || !walletAddress) {
+      setData(null)
+      return
     }
 
-    const position = positionMap.get(tokenMint)!
-    position.transactions.push(tx)
+    const fetchData = async () => {
+      setLoading(true)
+      setError(null)
 
-    if (isBuy) {
-      position.totalBought += tx.outputAmount
-      position.totalCostUSD += tx.inputValueUSD || 0
-      if (!tx.inputValueUSD) {
-        console.log('tx missing inputValueUSD: ', tx)
-      }
-    } else {
-      position.totalSold += tx.inputAmount
-      position.totalRevenueUSD += tx.outputValueUSD || 0
-      if (!tx.outputValueUSD) {
-        console.log('tx missing outputValueUSD: ', tx)
+      try {
+        const params = new URLSearchParams({
+          walletAddress,
+          includePositions: 'true',
+          limit: '200',
+        })
+
+        const response = await fetch(`/api/pnl-wallet?${params.toString()}`)
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.status}`)
+        }
+
+        const result = await response.json()
+        setData(result.stats)
+      } catch (err) {
+        console.error('Failed to fetch wallet PnL:', err)
+        setError(err instanceof Error ? err.message : 'Unknown error')
+      } finally {
+        setLoading(false)
       }
     }
-  })
 
-  // Calculate final position stats
-  const positions: TokenPosition[] = []
-  positionMap.forEach((position) => {
-    position.remainingTokens = position.totalBought - position.totalSold
-    position.isOpen = position.remainingTokens > 0.001
-    position.realizedPnLUSD = position.totalRevenueUSD - position.totalCostUSD
-    position.averageBuyPriceUSD =
-      position.totalBought > 0
-        ? position.totalCostUSD / position.totalBought
-        : 0
-    position.averageSellPriceUSD =
-      position.totalSold > 0 ? position.totalRevenueUSD / position.totalSold : 0
+    fetchData()
+  }, [walletAddress, enabled])
 
-    // Sort transactions by timestamp
-    position.transactions.sort((a, b) => a.timestamp - b.timestamp)
-
-    if (position.totalBought > 0) {
-      positions.push(position)
-    }
-  })
-
-  return positions
+  return { data, loading, error }
 }
 
 // Enhanced Token Display Component
@@ -377,6 +346,14 @@ function TokenDisplay({
         <div className="flex items-center gap-2">
           <div className="font-semibold">{position.symbol}</div>
           {!isOpen && <span className="text-xs text-green-400">✅</span>}
+          {position.isIncomplete && (
+            <span
+              className="text-xs text-yellow-400 cursor-help"
+              title={position.incompleteReason}
+            >
+              ⚠️
+            </span>
+          )}
         </div>
         <div className="text-sm text-gray-500">{position.name}</div>
         <div className="text-xs">
@@ -388,234 +365,13 @@ function TokenDisplay({
             fullAddressOnHover={false}
           />
         </div>
+        {position.isIncomplete && (
+          <div className="text-xs text-yellow-400 mt-1">
+            {position.incompleteReason}
+          </div>
+        )}
       </div>
     </div>
-  )
-}
-
-// Open Position Component
-function OpenPosition({
-  position,
-  currency,
-  solPrice,
-  currentPrice,
-  onSell,
-}: {
-  position: EnrichedTokenPosition
-  currency: 'SOL' | 'USD'
-  solPrice: number | null
-  currentPrice?: number
-  onSell: (mint: string, amount: number) => void
-}) {
-  const { isMobile } = useIsMobile()
-
-  const formatValue = (usdValue: number) =>
-    formatCryptoValue(usdValue, currency, solPrice)
-
-  const costBasis =
-    position.totalCostUSD * (position.remainingTokens / position.totalBought)
-  const currentValue = currentPrice
-    ? currentPrice * position.remainingTokens
-    : 0
-  const pnl = currentValue - costBasis
-  const pnlPercent = costBasis > 0 ? (pnl / costBasis) * 100 : 0
-
-  if (isMobile) {
-    return (
-      <div className="bg-white/5 rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <TokenDisplay position={position} isOpen={true} />
-          <div className="text-right">
-            <div className="text-xs text-gray-500 mb-1">
-              {position.remainingTokens.toFixed(2)} tokens
-            </div>
-            {currentPrice ? (
-              <>
-                <div
-                  className={`font-bold ${
-                    pnl >= 0 ? 'text-green-400' : 'text-red-400'
-                  }`}
-                >
-                  {pnl >= 0 ? '+' : ''}
-                  {formatValue(pnl)}
-                </div>
-                <div className="text-sm text-gray-400">
-                  ({pnl >= 0 ? '+' : ''}
-                  {pnlPercent.toFixed(1)}%)
-                </div>
-              </>
-            ) : (
-              <div className="text-sm text-gray-400">Loading...</div>
-            )}
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => onSell(position.mint, position.remainingTokens)}
-            className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 rounded-lg text-sm font-medium text-red-400"
-          >
-            Sell All
-          </button>
-          <button
-            onClick={() => onSell(position.mint, position.remainingTokens / 2)}
-            className="flex-1 py-2 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/50 rounded-lg text-sm font-medium text-orange-400"
-          >
-            Sell 50%
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <tr className="border-b border-white/5 hover:bg-white/5">
-      <td className="py-4 px-2">
-        <TokenDisplay position={position} isOpen={true} />
-      </td>
-      <td className="text-right py-4 px-2">
-        {position.remainingTokens.toFixed(2)}
-      </td>
-      <td className="text-right py-4 px-2">
-        {currentPrice ? (
-          formatValue(currentValue)
-        ) : (
-          <span className="text-gray-500">--</span>
-        )}
-      </td>
-      <td className="text-right py-4 px-2">{formatValue(costBasis)}</td>
-      <td
-        className={`text-right py-4 px-2 font-medium ${
-          pnl >= 0 ? 'text-green-400' : 'text-red-400'
-        }`}
-      >
-        {currentPrice ? (
-          <div className="flex items-center justify-end gap-1">
-            {pnl >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-            <span>
-              {pnl >= 0 ? '+' : ''}
-              {formatValue(pnl)}
-              <span className="text-xs ml-1">
-                ({pnl >= 0 ? '+' : ''}
-                {pnlPercent.toFixed(1)}%)
-              </span>
-            </span>
-          </div>
-        ) : (
-          <span className="text-gray-500">--</span>
-        )}
-      </td>
-      <td className="text-right py-4 px-2">
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => onSell(position.mint, position.remainingTokens)}
-            className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 rounded-lg text-xs font-medium text-red-400"
-          >
-            Sell All
-          </button>
-          <button
-            onClick={() => onSell(position.mint, position.remainingTokens / 2)}
-            className="px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/50 rounded-lg text-xs font-medium text-orange-400"
-          >
-            50%
-          </button>
-        </div>
-      </td>
-    </tr>
-  )
-}
-
-// Closed Position Component
-function ClosedPosition({
-  position,
-  currency,
-  solPrice,
-}: {
-  position: EnrichedTokenPosition
-  currency: 'SOL' | 'USD'
-  solPrice: number | null
-}) {
-  const { isMobile } = useIsMobile()
-
-  const formatValue = (usdValue: number) =>
-    formatCryptoValue(usdValue, currency, solPrice)
-
-  const pnlPercent =
-    position.totalCostUSD > 0
-      ? (position.realizedPnLUSD / position.totalCostUSD) * 100
-      : 0
-
-  if (isMobile) {
-    return (
-      <div className="bg-white/5 rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <TokenDisplay position={position} isOpen={false} />
-          <div className="text-right">
-            <div
-              className={`font-bold ${
-                position.realizedPnLUSD >= 0 ? 'text-green-400' : 'text-red-400'
-              }`}
-            >
-              {position.realizedPnLUSD >= 0 ? '+' : ''}
-              {formatValue(position.realizedPnLUSD)}
-            </div>
-            <div className="text-sm text-gray-400">
-              ({pnlPercent >= 0 ? '+' : ''}
-              {pnlPercent.toFixed(1)}%)
-            </div>
-            <div className="text-xs text-gray-500">
-              {position.totalSold.toFixed(2)} tokens sold
-            </div>
-          </div>
-        </div>
-        <div className="py-2 bg-gray-600/20 rounded-lg text-sm font-medium text-gray-400 text-center">
-          Position Closed
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <tr className="border-b border-white/5 hover:bg-white/5">
-      <td className="py-4 px-2">
-        <TokenDisplay position={position} isOpen={false} />
-      </td>
-      <td className="text-right py-4 px-2">
-        {position.totalSold.toFixed(2)} sold
-      </td>
-      <td className="text-right py-4 px-2">
-        {formatValue(position.averageBuyPriceUSD)}
-      </td>
-      <td className="text-right py-4 px-2">
-        {formatValue(position.averageSellPriceUSD)}
-      </td>
-      <td className="text-right py-4 px-2">
-        {formatValue(position.totalCostUSD)}
-      </td>
-      <td
-        className={`text-right py-4 px-2 font-medium ${
-          position.realizedPnLUSD >= 0 ? 'text-green-400' : 'text-red-400'
-        }`}
-      >
-        <div className="flex items-center justify-end gap-1">
-          {position.realizedPnLUSD >= 0 ? (
-            <TrendingUp size={14} />
-          ) : (
-            <TrendingDown size={14} />
-          )}
-          <span>
-            {position.realizedPnLUSD >= 0 ? '+' : ''}
-            {formatValue(position.realizedPnLUSD)}
-            <span className="text-xs ml-1">
-              ({pnlPercent >= 0 ? '+' : ''}
-              {pnlPercent.toFixed(1)}%)
-            </span>
-          </span>
-        </div>
-      </td>
-      <td className="text-right py-4 px-2">
-        <div className="text-xs text-gray-400">Fully Realized</div>
-      </td>
-    </tr>
   )
 }
 
@@ -640,55 +396,30 @@ export function SimpleInventoryModal({
   const [showOpenPositions, setShowOpenPositions] = useState(true)
   const [showClosedPositions, setShowClosedPositions] = useState(true)
 
-  // Fetch transaction history - only when modal is open
-  const { transactions, meta, isLoading, isError } =
-    useTapestryTransactionHistory(walletAddress || '', {
-      enabled: isOpen && !!walletAddress && !walletLoading,
-      limit: 200, // Get more transactions for better position calculation
-      sortOrder: 'desc',
-    })
+  // Fetch PnL data and positions from API
+  const {
+    data: pnlData,
+    loading: pnlLoading,
+    error: pnlError,
+  } = useWalletPnL(walletAddress, isOpen && !!walletAddress && !walletLoading)
 
-  // Calculate positions from transactions - prevent unnecessary recalculations
-  const positions = useMemo(() => {
-    // Skip recalculation if we're still loading or already have positions
-    if (isLoading || !transactions || transactions.length === 0) {
-      return []
-    }
+  const positions = pnlData?.positions || []
 
-    // Cast transactions to proper type and filter valid ones
-    const validTransactions = transactions
-      .filter(
-        (tx: any) =>
-          tx.transactionSignature &&
-          (tx.inputValueUSD || tx.outputValueUSD) &&
-          tx.tradeType !== 'swap'
-      )
-      .map((tx: any) => tx as TradeTransaction)
-
-    const result = calculatePositions(validTransactions)
-
-    return result
-  }, [transactions, isLoading])
-
-  // Get unique mints for token info fetching - prevent unnecessary recalculations
+  // Get unique mints for token info fetching
   const uniqueMints = useMemo(() => {
     if (!positions || positions.length === 0) {
       return []
     }
     const mints = positions.map((p) => p.mint)
-    const uniqueMints = [...new Set(mints)] // Remove duplicates
-    return uniqueMints
-  }, [positions.length, positions.map((p) => p.mint).join(',')]) // More stable dependency array
+    return [...new Set(mints)]
+  }, [positions])
 
-  // Fetch token info for all positions with caching - only if we have mints
-  const { tokenInfo, loading: loadingTokenInfo } = useTokenInfo(
-    uniqueMints.length > 0 ? uniqueMints : []
-  )
+  // Fetch token info for all positions with caching
+  const { tokenInfo, loading: loadingTokenInfo } = useTokenInfo(uniqueMints)
 
-  // Fetch current prices for all positions - only if we have mints
-  const { prices: currentPrices, loading: loadingPrices } = useCurrentPrices(
-    uniqueMints.length > 0 ? uniqueMints : []
-  )
+  // Fetch current prices for all positions
+  const { prices: currentPrices, loading: loadingPrices } =
+    useCurrentPrices(uniqueMints)
 
   // Enrich positions with token info
   const enrichedPositions: EnrichedTokenPosition[] = useMemo(() => {
@@ -698,41 +429,46 @@ export function SimpleInventoryModal({
       name: tokenInfo[position.mint]?.name || position.symbol,
       image: tokenInfo[position.mint]?.image,
     }))
-  }, [
-    positions.length,
-    positions.map((p) => p.mint).join(','),
-    Object.keys(tokenInfo).length,
-    JSON.stringify(tokenInfo),
-  ])
+  }, [positions, tokenInfo])
 
   const openPositions = enrichedPositions.filter((p) => p.isOpen)
   const closedPositions = enrichedPositions.filter((p) => !p.isOpen)
 
   // Calculate portfolio stats
   const stats = useMemo(() => {
-    const totalInvested = enrichedPositions.reduce(
+    if (!pnlData) return null
+
+    // Only count positions with complete data for accurate stats
+    const completePositions = enrichedPositions.filter((p) => !p.isIncomplete)
+    const incompletePositions = enrichedPositions.filter((p) => p.isIncomplete)
+
+    const totalInvested = completePositions.reduce(
       (sum, p) => sum + p.totalCostUSD,
       0
     )
-    const totalRealized = enrichedPositions.reduce(
-      (sum, p) => sum + p.realizedPnLUSD,
-      0
-    )
-    const openInvested = openPositions.reduce(
-      (sum, p) => sum + p.totalCostUSD * (p.remainingTokens / p.totalBought),
-      0
-    )
+    const openInvested = openPositions
+      .filter((p) => !p.isIncomplete)
+      .reduce((sum, p) => sum + p.totalCostUSD, 0)
+
+    const winningPositions = completePositions.filter(
+      (p) => p.realizedPnLUSD > 0
+    ).length
+    const losingPositions = completePositions.filter(
+      (p) => p.realizedPnLUSD < 0
+    ).length
 
     return {
       totalInvested,
-      openValue: openInvested, // Cost basis of open positions
-      totalRealized,
-      winningPositions: enrichedPositions.filter((p) => p.realizedPnLUSD > 0)
-        .length,
-      losingPositions: enrichedPositions.filter((p) => p.realizedPnLUSD < 0)
-        .length,
+      openValue: openInvested,
+      totalRealized: pnlData.realizedPnLUSD,
+      winningPositions,
+      losingPositions,
+      incompleteCount: incompletePositions.length,
+      totalPositions: enrichedPositions.length,
+      tradeCount: pnlData.tradeCount,
+      winRate: pnlData.winRate,
     }
-  }, [enrichedPositions, openPositions])
+  }, [pnlData, enrichedPositions, openPositions])
 
   const formatValue = (usdValue: number) =>
     formatCryptoValue(usdValue, currency, solPrice)
@@ -746,6 +482,8 @@ export function SimpleInventoryModal({
       inputAmount: amount,
     })
   }
+
+  const isLoading = pnlLoading || loadingTokenInfo || loadingPrices
 
   if (!walletAddress && !walletLoading) {
     return (
@@ -779,7 +517,7 @@ export function SimpleInventoryModal({
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5 text-primary" />
               <DialogTitle className="text-xl font-bold">Inventory</DialogTitle>
-              {(loadingTokenInfo || loadingPrices) && (
+              {isLoading && (
                 <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
               )}
             </div>
@@ -794,73 +532,85 @@ export function SimpleInventoryModal({
           </div>
 
           {/* Compact Portfolio Stats */}
-          <div
-            className={`grid gap-2 mt-3 ${
-              isMobile ? 'grid-cols-2' : 'grid-cols-5'
-            }`}
-          >
-            <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-xs text-gray-400">Invested</div>
-              <div className="text-sm font-bold">
-                {formatValue(stats.totalInvested)}
-              </div>
-            </div>
-            <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-xs text-gray-400">Open Basis</div>
-              <div className="text-sm font-bold">
-                {formatValue(stats.openValue)}
-              </div>
-            </div>
-            <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-xs text-gray-400">Realized P&L</div>
-              <div
-                className={`text-sm font-bold ${
-                  stats.totalRealized >= 0 ? 'text-green-400' : 'text-red-400'
-                }`}
-              >
-                {stats.totalRealized >= 0 ? '+' : ''}
-                {formatValue(stats.totalRealized)}
-              </div>
-            </div>
-            {!isMobile && (
-              <>
-                <div className="bg-white/5 rounded-lg p-2">
-                  <div className="text-xs text-gray-400">Win Rate</div>
-                  <div className="text-sm font-bold">
-                    {stats.winningPositions}/
-                    {stats.winningPositions + stats.losingPositions}
-                    <span className="text-xs text-gray-400 ml-1">
-                      (
-                      {(
-                        (stats.winningPositions /
-                          (stats.winningPositions + stats.losingPositions)) *
-                          100 || 0
-                      ).toFixed(0)}
-                      %)
-                    </span>
-                  </div>
+          {stats && (
+            <div
+              className={`grid gap-2 mt-3 ${
+                isMobile ? 'grid-cols-2' : 'grid-cols-5'
+              }`}
+            >
+              <div className="bg-white/5 rounded-lg p-2">
+                <div className="text-xs text-gray-400">Invested</div>
+                <div className="text-sm font-bold">
+                  {formatValue(stats.totalInvested)}
                 </div>
-                <div className="bg-white/5 rounded-lg p-2">
-                  <div className="text-xs text-gray-400">Positions</div>
-                  <div className="text-sm font-bold">
-                    {openPositions.length} open, {closedPositions.length} closed
-                  </div>
+              </div>
+              <div className="bg-white/5 rounded-lg p-2">
+                <div className="text-xs text-gray-400">Open Basis</div>
+                <div className="text-sm font-bold">
+                  {formatValue(stats.openValue)}
                 </div>
-              </>
-            )}
-          </div>
+              </div>
+              <div className="bg-white/5 rounded-lg p-2">
+                <div className="text-xs text-gray-400">Realized P&L</div>
+                <div
+                  className={`text-sm font-bold ${
+                    stats.totalRealized >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}
+                >
+                  {stats.totalRealized >= 0 ? '+' : ''}
+                  {formatValue(stats.totalRealized)}
+                </div>
+              </div>
+              {!isMobile && (
+                <>
+                  <div className="bg-white/5 rounded-lg p-2">
+                    <div className="text-xs text-gray-400">Win Rate</div>
+                    <div className="text-sm font-bold">
+                      {stats.winningPositions}/
+                      {stats.winningPositions + stats.losingPositions}
+                      <span className="text-xs text-gray-400 ml-1">
+                        ({stats.winRate.toFixed(0)}%)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-2">
+                    <div className="text-xs text-gray-400">Positions</div>
+                    <div className="text-sm font-bold">
+                      {openPositions.length} open, {closedPositions.length}{' '}
+                      closed
+                      {stats.incompleteCount > 0 && (
+                        <div className="text-xs text-yellow-400">
+                          {stats.incompleteCount} incomplete
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
-          {/* WIP Notice - More Compact */}
-          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-2 mt-2">
-            <div className="flex items-center gap-2 text-yellow-400 text-xs font-medium">
-              🚧 <span>WIP: PnL tracking may not be accurate</span>
+          {/* Notice */}
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-2 mt-2">
+            <div className="flex items-center gap-2 text-blue-400 text-xs font-medium">
+              ℹ️{' '}
+              <span>
+                Now using the same PnL calculation as the leaderboard. Each sell
+                transaction creates a separate closed position.
+              </span>
             </div>
           </div>
         </DialogHeader>
 
         {/* Positions List - Takes remaining space */}
         <div className="flex-1 overflow-y-auto">
-          {isLoading ? (
+          {pnlError ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <Package className="w-12 h-12 text-red-600 mb-3" />
+              <p className="text-red-400">Error loading positions</p>
+              <p className="text-sm text-gray-500 mt-1">{pnlError}</p>
+            </div>
+          ) : isLoading ? (
             <div className="flex flex-col items-center justify-center h-full">
               <Package className="w-12 h-12 text-gray-600 mb-3 animate-pulse" />
               <p className="text-gray-400">Loading positions...</p>
@@ -895,14 +645,111 @@ export function SimpleInventoryModal({
                       {isMobile ? (
                         <div className="space-y-3">
                           {openPositions.map((position) => (
-                            <OpenPosition
-                              key={position.mint}
-                              position={position}
-                              currency={currency}
-                              solPrice={solPrice}
-                              currentPrice={currentPrices[position.mint]}
-                              onSell={handleSell}
-                            />
+                            <div
+                              key={position.positionId}
+                              className="bg-white/5 rounded-xl p-4"
+                            >
+                              <div className="flex items-center justify-between mb-3">
+                                <TokenDisplay
+                                  position={position}
+                                  isOpen={true}
+                                />
+                                <div className="text-right">
+                                  <div className="text-xs text-gray-500 mb-1">
+                                    {position.remainingTokens.toFixed(2)} tokens
+                                  </div>
+                                  {currentPrices[position.mint] ? (
+                                    <>
+                                      <div
+                                        className={`font-bold ${
+                                          currentPrices[position.mint] *
+                                            position.remainingTokens -
+                                            position.totalCostUSD *
+                                              (position.remainingTokens /
+                                                position.totalBought) >=
+                                          0
+                                            ? 'text-green-400'
+                                            : 'text-red-400'
+                                        }`}
+                                      >
+                                        {currentPrices[position.mint] *
+                                          position.remainingTokens -
+                                          position.totalCostUSD *
+                                            (position.remainingTokens /
+                                              position.totalBought) >=
+                                        0
+                                          ? '+'
+                                          : ''}
+                                        {formatCryptoValue(
+                                          currentPrices[position.mint] *
+                                            position.remainingTokens -
+                                            position.totalCostUSD *
+                                              (position.remainingTokens /
+                                                position.totalBought),
+                                          currency,
+                                          solPrice
+                                        )}
+                                      </div>
+                                      <div className="text-sm text-gray-400">
+                                        (
+                                        {currentPrices[position.mint] *
+                                          position.remainingTokens -
+                                          position.totalCostUSD *
+                                            (position.remainingTokens /
+                                              position.totalBought) >=
+                                        0
+                                          ? '+'
+                                          : ''}
+                                        {(position.totalCostUSD *
+                                          (position.remainingTokens /
+                                            position.totalBought) >
+                                        0
+                                          ? ((currentPrices[position.mint] *
+                                              position.remainingTokens -
+                                              position.totalCostUSD *
+                                                (position.remainingTokens /
+                                                  position.totalBought)) /
+                                              (position.totalCostUSD *
+                                                (position.remainingTokens /
+                                                  position.totalBought))) *
+                                            100
+                                          : 0
+                                        ).toFixed(1)}
+                                        %)
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <div className="text-sm text-gray-400">
+                                      Loading...
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() =>
+                                    handleSell(
+                                      position.mint,
+                                      position.remainingTokens
+                                    )
+                                  }
+                                  className="flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 rounded-lg text-sm font-medium text-red-400"
+                                >
+                                  Sell All
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleSell(
+                                      position.mint,
+                                      position.remainingTokens / 2
+                                    )
+                                  }
+                                  className="flex-1 py-2 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/50 rounded-lg text-sm font-medium text-orange-400"
+                                >
+                                  Sell 50%
+                                </button>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       ) : (
@@ -923,16 +770,117 @@ export function SimpleInventoryModal({
                               </tr>
                             </thead>
                             <tbody>
-                              {openPositions.map((position) => (
-                                <OpenPosition
-                                  key={position.mint}
-                                  position={position}
-                                  currency={currency}
-                                  solPrice={solPrice}
-                                  currentPrice={currentPrices[position.mint]}
-                                  onSell={handleSell}
-                                />
-                              ))}
+                              {openPositions.map((position) => {
+                                const costBasis =
+                                  position.totalCostUSD *
+                                  (position.remainingTokens /
+                                    position.totalBought)
+                                const currentValue = currentPrices[
+                                  position.mint
+                                ]
+                                  ? currentPrices[position.mint] *
+                                    position.remainingTokens
+                                  : 0
+                                const pnl = currentValue - costBasis
+                                const pnlPercent =
+                                  costBasis > 0 ? (pnl / costBasis) * 100 : 0
+
+                                return (
+                                  <tr
+                                    key={position.positionId}
+                                    className="border-b border-white/5 hover:bg-white/5"
+                                  >
+                                    <td className="py-4 px-2">
+                                      <TokenDisplay
+                                        position={position}
+                                        isOpen={true}
+                                      />
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      {position.remainingTokens.toFixed(2)}
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      {currentPrices[position.mint] ? (
+                                        formatCryptoValue(
+                                          currentValue,
+                                          currency,
+                                          solPrice
+                                        )
+                                      ) : (
+                                        <span className="text-gray-500">
+                                          --
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      {formatCryptoValue(
+                                        costBasis,
+                                        currency,
+                                        solPrice
+                                      )}
+                                    </td>
+                                    <td
+                                      className={`text-right py-4 px-2 font-medium ${
+                                        pnl >= 0
+                                          ? 'text-green-400'
+                                          : 'text-red-400'
+                                      }`}
+                                    >
+                                      {currentPrices[position.mint] ? (
+                                        <div className="flex items-center justify-end gap-1">
+                                          {pnl >= 0 ? (
+                                            <TrendingUp size={14} />
+                                          ) : (
+                                            <TrendingDown size={14} />
+                                          )}
+                                          <span>
+                                            {pnl >= 0 ? '+' : ''}
+                                            {formatCryptoValue(
+                                              pnl,
+                                              currency,
+                                              solPrice
+                                            )}
+                                            <span className="text-xs ml-1">
+                                              ({pnl >= 0 ? '+' : ''}
+                                              {pnlPercent.toFixed(1)}%)
+                                            </span>
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <span className="text-gray-500">
+                                          --
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      <div className="flex justify-end gap-2">
+                                        <button
+                                          onClick={() =>
+                                            handleSell(
+                                              position.mint,
+                                              position.remainingTokens
+                                            )
+                                          }
+                                          className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 rounded-lg text-xs font-medium text-red-400"
+                                        >
+                                          Sell All
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            handleSell(
+                                              position.mint,
+                                              position.remainingTokens / 2
+                                            )
+                                          }
+                                          className="px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/50 rounded-lg text-xs font-medium text-orange-400"
+                                        >
+                                          50%
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )
+                              })}
                             </tbody>
                           </table>
                         </div>
@@ -961,14 +909,77 @@ export function SimpleInventoryModal({
                     <>
                       {isMobile ? (
                         <div className="space-y-3">
-                          {closedPositions.map((position) => (
-                            <ClosedPosition
-                              key={position.mint}
-                              position={position}
-                              currency={currency}
-                              solPrice={solPrice}
-                            />
-                          ))}
+                          {closedPositions.map((position) => {
+                            const pnlPercent =
+                              position.totalCostUSD > 0
+                                ? (position.realizedPnLUSD /
+                                    position.totalCostUSD) *
+                                  100
+                                : 0
+                            const sellTransaction = position.transactions[0]
+                            const sellDate = sellTransaction
+                              ? new Date(
+                                  sellTransaction.timestamp
+                                ).toLocaleDateString()
+                              : 'N/A'
+
+                            return (
+                              <div
+                                key={position.positionId}
+                                className="bg-white/5 rounded-xl p-4"
+                              >
+                                <div className="flex items-center justify-between mb-3">
+                                  <TokenDisplay
+                                    position={position}
+                                    isOpen={false}
+                                  />
+                                  <div className="text-right">
+                                    <div
+                                      className={`font-bold ${
+                                        position.realizedPnLUSD >= 0
+                                          ? 'text-green-400'
+                                          : 'text-red-400'
+                                      }`}
+                                    >
+                                      {position.isIncomplete ? (
+                                        <span className="text-yellow-400">
+                                          --
+                                        </span>
+                                      ) : (
+                                        <>
+                                          {position.realizedPnLUSD >= 0
+                                            ? '+'
+                                            : ''}
+                                          {formatCryptoValue(
+                                            position.realizedPnLUSD,
+                                            currency,
+                                            solPrice
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+                                    {!position.isIncomplete && (
+                                      <div className="text-sm text-gray-400">
+                                        ({pnlPercent >= 0 ? '+' : ''}
+                                        {pnlPercent.toFixed(1)}%)
+                                      </div>
+                                    )}
+                                    <div className="text-xs text-gray-500">
+                                      {position.soldAmount?.toFixed(2) ||
+                                        position.totalSold.toFixed(2)}{' '}
+                                      tokens sold
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      {sellDate}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="py-2 bg-gray-600/20 rounded-lg text-sm font-medium text-gray-400 text-center">
+                                  Position Closed
+                                </div>
+                              </div>
+                            )
+                          })}
                         </div>
                       ) : (
                         <div className="overflow-x-auto">
@@ -993,14 +1004,125 @@ export function SimpleInventoryModal({
                               </tr>
                             </thead>
                             <tbody>
-                              {closedPositions.map((position) => (
-                                <ClosedPosition
-                                  key={position.mint}
-                                  position={position}
-                                  currency={currency}
-                                  solPrice={solPrice}
-                                />
-                              ))}
+                              {closedPositions.map((position) => {
+                                const pnlPercent =
+                                  position.totalCostUSD > 0
+                                    ? (position.realizedPnLUSD /
+                                        position.totalCostUSD) *
+                                      100
+                                    : 0
+                                const sellTransaction = position.transactions[0]
+                                const sellDate = sellTransaction
+                                  ? new Date(
+                                      sellTransaction.timestamp
+                                    ).toLocaleDateString()
+                                  : 'N/A'
+
+                                return (
+                                  <tr
+                                    key={position.positionId}
+                                    className="border-b border-white/5 hover:bg-white/5"
+                                  >
+                                    <td className="py-4 px-2">
+                                      <TokenDisplay
+                                        position={position}
+                                        isOpen={false}
+                                      />
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      <div>
+                                        {(
+                                          position.soldAmount ||
+                                          position.totalSold
+                                        ).toFixed(2)}{' '}
+                                        sold
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        {sellDate}
+                                      </div>
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      {position.isIncomplete ? (
+                                        <span className="text-yellow-400">
+                                          --
+                                        </span>
+                                      ) : (
+                                        formatCryptoValue(
+                                          position.averageBuyPriceUSD,
+                                          currency,
+                                          solPrice
+                                        )
+                                      )}
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      {position.isIncomplete ? (
+                                        <span className="text-yellow-400">
+                                          --
+                                        </span>
+                                      ) : (
+                                        formatCryptoValue(
+                                          position.averageSellPriceUSD,
+                                          currency,
+                                          solPrice
+                                        )
+                                      )}
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      {position.isIncomplete ? (
+                                        <span className="text-yellow-400">
+                                          --
+                                        </span>
+                                      ) : (
+                                        formatCryptoValue(
+                                          position.totalCostUSD,
+                                          currency,
+                                          solPrice
+                                        )
+                                      )}
+                                    </td>
+                                    <td
+                                      className={`text-right py-4 px-2 font-medium ${
+                                        position.isIncomplete
+                                          ? 'text-yellow-400'
+                                          : position.realizedPnLUSD >= 0
+                                          ? 'text-green-400'
+                                          : 'text-red-400'
+                                      }`}
+                                    >
+                                      {position.isIncomplete ? (
+                                        <span>Data Incomplete</span>
+                                      ) : (
+                                        <div className="flex items-center justify-end gap-1">
+                                          {position.realizedPnLUSD >= 0 ? (
+                                            <TrendingUp size={14} />
+                                          ) : (
+                                            <TrendingDown size={14} />
+                                          )}
+                                          <span>
+                                            {position.realizedPnLUSD >= 0
+                                              ? '+'
+                                              : ''}
+                                            {formatCryptoValue(
+                                              position.realizedPnLUSD,
+                                              currency,
+                                              solPrice
+                                            )}
+                                            <span className="text-xs ml-1">
+                                              ({pnlPercent >= 0 ? '+' : ''}
+                                              {pnlPercent.toFixed(1)}%)
+                                            </span>
+                                          </span>
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td className="text-right py-4 px-2">
+                                      <div className="text-xs text-gray-400">
+                                        Fully Realized
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )
+                              })}
                             </tbody>
                           </table>
                         </div>

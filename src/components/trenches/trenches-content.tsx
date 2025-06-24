@@ -117,7 +117,7 @@ export function TrenchesContent({
     return () => {
       ws.close()
     }
-  })
+  }, [])
 
   // Use paused data when updates are paused
   const displayMintMap = pauseUpdates ? pausedMintMapRef.current : mintMap
