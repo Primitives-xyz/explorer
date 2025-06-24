@@ -1,44 +1,11 @@
 import { FetchMethod } from '@/utils/api'
 import { fetchTapestryServer } from '@/utils/api/tapestry-server'
+import {
+  calculatePnLMetrics,
+  type TokenPosition,
+  type TradeLogData,
+} from '@/utils/pnl-calculations'
 import { NextRequest, NextResponse } from 'next/server'
-
-// --- Types ---
-type TradeLogData = {
-  transactionSignature: string
-  walletAddress: string
-  tradeType: 'buy' | 'sell' | 'swap'
-  inputMint: string
-  outputMint: string
-  inputAmount: number
-  outputAmount: number
-  inputValueSOL: number
-  outputValueSOL: number
-  inputValueUSD?: number
-  outputValueUSD?: number
-  solPrice?: number
-  timestamp: number
-}
-
-type TokenPosition = {
-  mint: string
-  symbol: string
-  totalBought: number // total tokens bought
-  totalSold: number // total tokens sold
-  remainingTokens: number // bought - sold
-  totalCostUSD: number // total USD spent buying
-  totalRevenueUSD: number // total USD received selling
-  realizedPnLUSD: number // revenue - cost for sold portion
-  isOpen: boolean // has remaining tokens
-  transactions: TradeLogData[]
-  averageBuyPriceUSD: number // cost per token bought
-  averageSellPriceUSD: number // revenue per token sold
-  positionId: string // unique identifier for this position
-  isIncomplete: boolean // missing USD values
-  incompleteReason?: string // why the position is incomplete
-  soldAmount?: number // for closed positions, amount sold
-  soldPrice?: number // for closed positions, price per token sold
-  costBasis?: number // for closed positions, cost basis of sold tokens
-}
 
 type WalletPnLStats = {
   walletAddress: string
@@ -441,33 +408,30 @@ export async function GET(request: NextRequest) {
       transactionCount: trades.length,
     })
 
-    // Calculate PnL and stats
-    const realizedPnLUSD = calculateRealizedPnL(trades)
-    const tradeCount = trades.length
-    const { winRate, bestTrade } = calculateWinRateAndBestTrade(trades)
+    // Calculate PnL and stats using shared utility for consistent calculations
+    const pnlResult = calculatePnLMetrics(trades, {
+      includePositions, // Only calculate positions if requested
+      trackBestTrade: true, // Always track best trade
+    })
 
     const walletStats: WalletPnLStats = {
       walletAddress,
-      realizedPnLUSD,
-      tradeCount,
-      winRate,
-      bestTrade,
+      realizedPnLUSD: pnlResult.realizedPnLUSD,
+      tradeCount: pnlResult.tradeCount,
+      winRate: pnlResult.winRate,
+      bestTrade: pnlResult.bestTrade,
       dateRange: {
         since: since ? parseInt(since) : undefined,
         until: until ? parseInt(until) : undefined,
       },
-    }
-
-    // Calculate positions if requested (for inventory modal)
-    if (includePositions) {
-      walletStats.positions = calculatePositions(trades)
+      positions: pnlResult.positions, // Will be undefined if not requested
     }
 
     console.log('✅ PnL calculation complete:', {
       walletAddress: walletAddress.substring(0, 8),
-      realizedPnLUSD: realizedPnLUSD.toFixed(2),
-      tradeCount,
-      winRate: winRate.toFixed(1) + '%',
+      realizedPnLUSD: pnlResult.realizedPnLUSD.toFixed(2),
+      tradeCount: pnlResult.tradeCount,
+      winRate: pnlResult.winRate.toFixed(1) + '%',
     })
 
     return NextResponse.json({ stats: walletStats })
