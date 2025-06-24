@@ -31,7 +31,7 @@ export function SuggestedUsernames({
           </div>
         )}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="space-x-2 space-y-2 h-[350px] overflow-y-auto">
         {suggestedUsernames?.map((entry, index) => (
           <Button
             key={index}
