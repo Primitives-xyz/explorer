@@ -164,17 +164,14 @@ export function TrenchesLeaderboard({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Helper function to get the start of the current week (last Sunday at 00:00:00 UTC)
-  const getWeekStart = (): number => {
+  // Helper function to get the start of the current month (1st day at 00:00:00 UTC)
+  const getMonthStart = (): number => {
     const now = new Date()
-    const dayOfWeek = now.getUTCDay() // 0 = Sunday, 1 = Monday, etc.
-    const daysToSubtract = dayOfWeek
+    const monthStart = new Date(now)
+    monthStart.setUTCDate(1) // Set to first day of the month
+    monthStart.setUTCHours(0, 0, 0, 0) // Set to start of day
 
-    const weekStart = new Date(now)
-    weekStart.setUTCDate(now.getUTCDate() - daysToSubtract)
-    weekStart.setUTCHours(0, 0, 0, 0) // Set to start of day
-
-    return weekStart.getTime()
+    return monthStart.getTime()
   }
 
   useEffect(() => {
@@ -182,14 +179,14 @@ export function TrenchesLeaderboard({
     setLoading(true)
     setError(null)
 
-    // Calculate weekly time range
-    const since = getWeekStart()
+    // Calculate monthly time range
+    const since = getMonthStart()
     const params = new URLSearchParams({
       since: since.toString(),
     })
 
     console.log(
-      `Fetching weekly leaderboard since: ${new Date(since).toISOString()}`
+      `Fetching monthly leaderboard since: ${new Date(since).toISOString()}`
     )
 
     fetch(`/api/pnl-leaderboard?${params.toString()}`)
@@ -454,10 +451,10 @@ export function TrenchesLeaderboard({
               <Trophy className="w-5 h-5 text-yellow-400 flex-shrink-0" />
               <div className="flex flex-col">
                 <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
-                  WEEKLY SSE PROFIT LEADERBOARD
+                  MONTHLY SSE PROFIT LEADERBOARD
                 </h2>
                 <p className="text-xs text-gray-400 leading-tight">
-                  Top performers this week (resets every Sunday)
+                  Top performers this month (resets every 1st)
                 </p>
               </div>
               <div className="bg-purple-600/20 px-2 py-0.5 rounded-full text-xs text-purple-300 border border-purple-500/30 pulse-glow">
@@ -547,8 +544,8 @@ export function TrenchesLeaderboard({
         {/* Teaser Footer */}
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-400 italic">
-            🔥 Weekly rankings reset every Sunday! Most profitable traders this
-            week earn their spots on the leaderboard. Only positions opened AND
+            🔥 Monthly rankings reset every 1st! Most profitable traders this
+            month earn their spots on the leaderboard. Only positions opened AND
             closed through SSE count toward your ranking 🔥
           </p>
         </div>
