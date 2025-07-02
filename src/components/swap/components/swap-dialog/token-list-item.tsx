@@ -9,11 +9,7 @@ import { Button, ButtonVariant } from '@/components/ui'
 import { Check, CheckIcon, CopyIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-<<<<<<< Updated upstream
-=======
-import { useEffect } from 'react'
 import useClipboard from 'react-use-clipboard'
->>>>>>> Stashed changes
 
 interface TokenListItemProps {
   token: ITokenSearchResult
