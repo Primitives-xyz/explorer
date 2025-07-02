@@ -1,13 +1,13 @@
 'use client'
 
+import { useGetProfiles } from '@/components/tapestry/hooks/use-get-profiles'
+import { useTokenInfo } from '@/components/token/hooks/use-token-info'
+import { Avatar } from '@/components/ui/avatar/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useIsMobile } from '@/utils/use-is-mobile'
-import {
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
-  Trophy,
-  Zap,
-} from 'lucide-react'
+import { abbreviateWalletAddress } from '@/utils/utils'
+import { ChevronLeft, ChevronRight, Trophy } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
 interface Trader {
@@ -22,126 +22,129 @@ interface Trader {
     token: string
     profit: number | string
   }
+  username?: string
+  imageUrl?: string | null
   isPlaceholder?: boolean
 }
-
-// Placeholder data for upcoming leaderboard
-const placeholderTraders: Trader[] = [
-  {
-    rank: 1,
-    address: 'Your Address Here?',
-    pnl: 'Calculating...',
-    pnlPercentage: '∞',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'LEGEND', profit: 'Epic' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 2,
-    address: 'Top Trencher #2',
-    pnl: 'Being Tracked...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'BEAST', profit: 'Massive' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 3,
-    address: 'Elite Trader #3',
-    pnl: 'Processing...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'MOON', profit: 'Huge' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 4,
-    address: 'Could Be You?',
-    pnl: 'Analyzing...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'DEGEN', profit: 'Big' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 5,
-    address: 'Future Whale',
-    pnl: 'Loading...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'PUMP', profit: 'Nice' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 6,
-    address: 'Trench Master',
-    pnl: 'Compiling...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'ALPHA', profit: 'Sweet' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 7,
-    address: 'Degen Royalty',
-    pnl: 'Scanning...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'GEMS', profit: 'Solid' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 8,
-    address: 'Your Spot?',
-    pnl: 'Pending...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'REKT', profit: 'Good' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 9,
-    address: 'Future Legend',
-    pnl: 'Calculating...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'BAGS', profit: 'Nice' },
-    isPlaceholder: true,
-  },
-  {
-    rank: 10,
-    address: 'Claim This Spot',
-    pnl: 'Available...',
-    pnlPercentage: '???',
-    winRate: 'TBD',
-    totalTrades: 'Coming Soon',
-    avgTradeSize: '---',
-    bestTrade: { token: 'MOON', profit: 'Soon' },
-    isPlaceholder: true,
-  },
-]
 
 interface TrenchesLeaderboardProps {
   currency: 'SOL' | 'USD'
   solPrice: number | null
+}
+
+function TraderCard({
+  trader,
+  currency,
+  solPrice,
+  getRankStyle,
+  getRankBorder,
+  formatValue,
+}: {
+  trader: Trader
+  currency: 'SOL' | 'USD'
+  solPrice: number | null
+  getRankStyle: (rank: number) => string
+  getRankBorder: (rank: number) => string
+  formatValue: (value: number | string) => string
+}) {
+  // Always call hooks at the top
+  const { profiles } = useGetProfiles({ walletAddress: trader.address })
+  const profile = profiles?.profiles?.[0]
+  const username =
+    profile?.profile?.username ||
+    abbreviateWalletAddress({ address: trader.address })
+  const imageUrl = profile?.profile?.image
+
+  const { symbol, image } = useTokenInfo(trader.bestTrade.token)
+
+  const router = useRouter()
+
+  // Only render the real trader UI
+  const handleClick = () => {
+    if (profile?.profile?.username) {
+      router.push(`/${profile.profile.username}`)
+    } else {
+      router.push(`/${trader.address}`)
+    }
+  }
+
+  return (
+    <div
+      className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
+        trader.rank
+      )} group hover:scale-105`}
+      onClick={handleClick}
+      tabIndex={0}
+      role="button"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') handleClick()
+      }}
+    >
+      {/* Rank Badge + Username (column) */}
+      <div className="flex flex-col items-start mb-2 relative z-10 gap-1">
+        <div
+          className={`${getRankStyle(
+            trader.rank
+          )} px-2 py-1 rounded-full text-xs font-bold w-fit`}
+        >
+          #{trader.rank}
+        </div>
+        <div className="flex items-center gap-2">
+          <Avatar username={username} imageUrl={imageUrl} size={32} />
+          <span className="text-xs text-gray-400 italic">{username}</span>
+        </div>
+      </div>
+      {/* PNL */}
+      <div className="mb-3 relative z-10">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-400">Total PNL</span>
+        </div>
+        <div className="text-lg font-bold text-gray-300">
+          {formatValue(trader.pnl)}
+        </div>
+      </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
+        <div className="bg-white/5 rounded p-1.5">
+          <div className="text-gray-400">Win Rate</div>
+          <div className="font-semibold text-gray-300">
+            {typeof trader.winRate === 'number'
+              ? `${trader.winRate.toFixed(1)}%`
+              : trader.winRate}
+          </div>
+        </div>
+        <div className="bg-white/5 rounded p-1.5">
+          <div className="text-gray-400">Trades</div>
+          <div className="font-semibold text-gray-300">
+            {trader.totalTrades}
+          </div>
+        </div>
+        <div className="bg-white/5 rounded p-1.5 col-span-2">
+          <div className="text-gray-400">Best Trade</div>
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-purple-300 flex items-center gap-1">
+              {image && (
+                <img
+                  src={image}
+                  alt={symbol}
+                  className="w-4 h-4 rounded-full"
+                />
+              )}{' '}
+              {symbol ||
+                abbreviateWalletAddress({ address: trader.bestTrade.token })}
+            </span>
+            <span className="text-purple-400">
+              {typeof trader.bestTrade.profit === 'number'
+                ? `+$${trader.bestTrade.profit.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })}`
+                : trader.bestTrade.profit}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function TrenchesLeaderboard({
@@ -156,11 +159,90 @@ export function TrenchesLeaderboard({
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
+  // --- Leaderboard data integration ---
+  const [traders, setTraders] = useState<Trader[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Helper function to get the start of the current week (last Sunday at 00:00:00 UTC)
+  const getWeekStart = (): number => {
+    const now = new Date()
+    const dayOfWeek = now.getUTCDay() // 0 = Sunday, 1 = Monday, etc.
+    const daysToSubtract = dayOfWeek
+
+    const weekStart = new Date(now)
+    weekStart.setUTCDate(now.getUTCDate() - daysToSubtract)
+    weekStart.setUTCHours(0, 0, 0, 0) // Set to start of day
+
+    return weekStart.getTime()
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    // Calculate weekly time range
+    const since = getWeekStart()
+    const params = new URLSearchParams({
+      since: since.toString(),
+    })
+
+    console.log(
+      `Fetching weekly leaderboard since: ${new Date(since).toISOString()}`
+    )
+
+    fetch(`/api/pnl-leaderboard?${params.toString()}`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch leaderboard')
+        return res.json()
+      })
+      .then(async (data) => {
+        if (cancelled) return
+        const leaderboard = data.leaderboard as Array<{
+          walletAddress: string
+          realizedPnLUSD: number
+          tradeCount: number
+          winRate: number
+          bestTrade: { token: string; profit: number }
+        }>
+        // Map to Trader interface and fetch profile info for each
+        const mapped: Trader[] = await Promise.all(
+          leaderboard.map(async (entry, i) => {
+            return {
+              rank: i + 1,
+              address: entry.walletAddress,
+              pnl: entry.realizedPnLUSD,
+              pnlPercentage: '',
+              winRate: entry.winRate,
+              totalTrades: entry.tradeCount,
+              avgTradeSize: '---',
+              bestTrade: {
+                token: entry.bestTrade.token,
+                profit: entry.bestTrade.profit,
+              },
+            }
+          })
+        )
+        setTraders(mapped)
+        setLoading(false)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError('Failed to load leaderboard')
+        setTraders([])
+        setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   // Create extended array with duplicates for smooth wrapping
   const extendedTraders = [
-    ...placeholderTraders.slice(-tradersPerSlide), // Last items at the beginning
-    ...placeholderTraders,
-    ...placeholderTraders.slice(0, tradersPerSlide), // First items at the end
+    ...traders.slice(-tradersPerSlide), // Last items at the beginning
+    ...traders,
+    ...traders.slice(0, tradersPerSlide), // First items at the end
   ]
 
   // Auto-scroll every 5 seconds
@@ -182,15 +264,15 @@ export function TrenchesLeaderboard({
       setIsTransitioning(false)
 
       // Reset to real position if we're at duplicates
-      if (currentIndex >= placeholderTraders.length + tradersPerSlide) {
+      if (currentIndex >= traders.length + tradersPerSlide) {
         setCurrentIndex(tradersPerSlide)
       } else if (currentIndex < tradersPerSlide) {
-        setCurrentIndex(placeholderTraders.length)
+        setCurrentIndex(traders.length)
       }
     }, 500) // Match transition duration
 
     return () => clearTimeout(timer)
-  }, [currentIndex, isTransitioning])
+  }, [currentIndex, isTransitioning, traders.length, tradersPerSlide])
 
   const handlePrevious = () => {
     setIsAutoScrolling(false)
@@ -208,15 +290,24 @@ export function TrenchesLeaderboard({
       return value
     }
 
-    if (currency === 'USD' && solPrice) {
-      const valueInUsd = value * solPrice
-      return `$${valueInUsd.toLocaleString(undefined, {
-        maximumFractionDigits: 0,
+    if (currency === 'USD') {
+      // Value is already in USD from the API
+      return `$${value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
       })}`
+    } else {
+      // Convert USD to SOL for display
+      if (solPrice && solPrice > 0) {
+        const valueInSol = value / solPrice
+        return `${valueInSol.toLocaleString(undefined, {
+          maximumFractionDigits: 4,
+        })} SOL`
+      } else {
+        return `${value.toLocaleString(undefined, {
+          maximumFractionDigits: 2,
+        })} USD`
+      }
     }
-    return `${value.toLocaleString(undefined, {
-      maximumFractionDigits: 2,
-    })} SOL`
   }
 
   const getRankStyle = (rank: number) => {
@@ -363,10 +454,10 @@ export function TrenchesLeaderboard({
               <Trophy className="w-5 h-5 text-yellow-400 flex-shrink-0" />
               <div className="flex flex-col">
                 <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
-                  SSE PROFIT LEADERBOARD
+                  WEEKLY SSE PROFIT LEADERBOARD
                 </h2>
                 <p className="text-xs text-gray-400 leading-tight">
-                  Most profitable SSE traders earn their legendary status
+                  Top performers this week (resets every Sunday)
                 </p>
               </div>
               <div className="bg-purple-600/20 px-2 py-0.5 rounded-full text-xs text-purple-300 border border-purple-500/30 pulse-glow">
@@ -404,95 +495,41 @@ export function TrenchesLeaderboard({
             className={`flex transition-transform duration-500 ease-in-out`}
             style={carouselStyle}
           >
-            {extendedTraders.map((trader, index) => (
-              <div
-                key={`${trader.rank}-${index}`}
-                className={`flex-shrink-0 ${
-                  isMobile ? 'w-full' : 'w-1/3'
-                } px-1.5`}
-              >
-                <div
-                  className={`rounded-lg p-3 transition-all cursor-pointer h-full ${getRankBorder(
-                    trader.rank
-                  )} group hover:scale-105`}
-                >
-                  {/* Rank Badge */}
-                  <div className="flex items-center justify-between mb-2 relative z-10">
-                    <div
-                      className={`${getRankStyle(
-                        trader.rank
-                      )} px-2 py-1 rounded-full text-xs font-bold`}
-                    >
-                      #{trader.rank}
-                    </div>
-                    <div className="text-xs text-gray-400 italic">
-                      {trader.address}
-                    </div>
+            {loading
+              ? Array.from({ length: tradersPerSlide * 2 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className={`flex-shrink-0 ${
+                      isMobile ? 'w-full' : 'w-1/3'
+                    } px-1.5`}
+                  >
+                    <Skeleton className="w-full h-[220px] rounded-lg bg-neutral-800" />
                   </div>
-
-                  {/* PNL */}
-                  <div className="mb-3 relative z-10">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-400">Total PNL</span>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3 text-purple-400 pulse-glow" />
-                        <span className="text-sm font-bold text-purple-400">
-                          {typeof trader.pnlPercentage === 'string'
-                            ? trader.pnlPercentage
-                            : `+${trader.pnlPercentage.toFixed(1)}%`}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-lg font-bold text-gray-300">
-                      {formatValue(trader.pnl)}
-                    </div>
+                ))
+              : extendedTraders.map((trader, index) => (
+                  <div
+                    key={`${trader.rank}-${index}`}
+                    className={`flex-shrink-0 ${
+                      isMobile ? 'w-full' : 'w-1/3'
+                    } px-1.5`}
+                  >
+                    <TraderCard
+                      trader={trader}
+                      currency={currency}
+                      solPrice={solPrice}
+                      getRankStyle={getRankStyle}
+                      getRankBorder={getRankBorder}
+                      formatValue={formatValue}
+                    />
                   </div>
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 gap-2 text-xs relative z-10">
-                    <div className="bg-white/5 rounded p-1.5">
-                      <div className="text-gray-400">Win Rate</div>
-                      <div className="font-semibold text-gray-300">
-                        {trader.winRate}
-                        {typeof trader.winRate === 'number' ? '%' : ''}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded p-1.5">
-                      <div className="text-gray-400">Trades</div>
-                      <div className="font-semibold text-gray-300">
-                        {trader.totalTrades}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded p-1.5 col-span-2">
-                      <div className="text-gray-400">Best Trade</div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-purple-300">
-                          {trader.bestTrade.token}
-                        </span>
-                        <span className="text-purple-400">
-                          {typeof trader.bestTrade.profit === 'string'
-                            ? trader.bestTrade.profit
-                            : `+${formatValue(trader.bestTrade.profit)}`}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  <button className="w-full mt-3 py-1.5 px-3 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1 relative z-10 group-hover:border-purple-400/70">
-                    <Zap className="w-3 h-3 pulse-glow" />
-                    {trader.rank <= 3 ? 'Reserve Spot' : 'Claim Position'}
-                  </button>
-                </div>
-              </div>
-            ))}
+                ))}
           </div>
         </div>
 
         {/* Progress Dots */}
         <div className="flex items-center justify-center gap-1 mt-3">
           {Array.from({
-            length: Math.ceil(placeholderTraders.length / tradersPerSlide),
+            length: Math.ceil(traders.length / tradersPerSlide),
           }).map((_, i) => (
             <div
               key={i}
@@ -510,8 +547,8 @@ export function TrenchesLeaderboard({
         {/* Teaser Footer */}
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-400 italic">
-            🔥 Your SSE trades are being tracked! Most profitable traders will
-            earn their spots on this leaderboard. Only positions opened AND
+            🔥 Weekly rankings reset every Sunday! Most profitable traders this
+            week earn their spots on the leaderboard. Only positions opened AND
             closed through SSE count toward your ranking 🔥
           </p>
         </div>
