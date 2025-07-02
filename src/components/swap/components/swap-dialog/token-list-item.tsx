@@ -36,6 +36,10 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
       })}`
     : null
 
+  useEffect(() => {
+    console.log('token', token)
+  }, [token])
+
   return (
     <Button
       variant={ButtonVariant.GHOST}
