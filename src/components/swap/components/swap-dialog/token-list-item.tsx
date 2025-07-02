@@ -6,10 +6,10 @@ import {
   formatPrice,
 } from '@/components/swap/utils/token-utils'
 import { Button, ButtonVariant } from '@/components/ui'
-import { Check } from 'lucide-react'
+import { Check, CheckIcon, CopyIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import { useEffect } from 'react'
+import useClipboard from 'react-use-clipboard'
 
 interface TokenListItemProps {
   token: ITokenSearchResult
@@ -18,6 +18,9 @@ interface TokenListItemProps {
 
 export function TokenListItem({ token, onSelect }: TokenListItemProps) {
   const t = useTranslations()
+  const [isCopied, setCopied] = useClipboard(token.address, {
+    successDuration: 2000,
+  })
 
   // Format balance to a readable format
   const formattedBalance = token.uiAmount
@@ -33,14 +36,10 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
       })}`
     : null
 
-  useEffect(() => {
-    console.log('token', token)
-  }, [token])
-
   return (
     <Button
       variant={ButtonVariant.GHOST}
-      className="w-full p-3 flex items-center gap-3 text-left h-18"
+      className="w-full p-3 flex items-center gap-3 text-left h-18 my-4"
       onClick={() => onSelect(token)}
     >
       <div className="relative w-8 h-8 shrink-0">
@@ -49,14 +48,14 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
             <Image
               src={token.logoURI}
               alt={token.symbol}
-              width={32}
-              height={32}
+              width={48}
+              height={48}
               className="rounded-full"
             />
           </div>
         ) : (
           <div className="w-8 h-8 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium">
+            <span className="text-xs font-medium">
               {(token.symbol || '??').slice(0, 2)}
             </span>
           </div>
@@ -67,47 +66,67 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
           </div>
         )}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 space-y-0.5">
         <div className="flex items-center gap-2">
-          <span className="font-medium">{token.symbol}</span>
-          <span className="text-sm truncate">{token.name}</span>
+          <span className="text-xs font-medium">{token.symbol}</span>
+          <span className="text-xs truncate">{token.name}</span>
           {token.chainId && (
             <span className="text-xs px-1.5 py-0.5 rounded-full">
               {token.chainId}
             </span>
           )}
         </div>
-        <div className="flex flex-col gap-0.5">
-          <div className="text-sm font-medium flex items-center gap-2">
-            <span>{formatPrice(token.price || token.priceUsd || 0)}</span>
-            {formattedBalance && (
-              <span className="text-xs text-primary">
-                {formattedBalance} {token.symbol}
+
+        <div className="text-xs font-medium flex items-center gap-2">
+          <span>{formatPrice(token.price || token.priceUsd || 0)}</span>
+          {formattedBalance && (
+            <span className="text-xs text-primary">
+              {formattedBalance} {token.symbol}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 text-xs">
+          {formattedValue ? (
+            <span>{formattedValue}</span>
+          ) : (
+            <span className="font-medium">
+              {t('common.m_cap')}:{' '}
+              {formatMarketCap(token.market_cap, t('trade.no_m_cap'))}
+            </span>
+          )}
+          {token.volume_24h_usd > 0 && (
+            <>
+              <span>•</span>
+              <span>
+                {t('common.vol')}: $
+                {(token.volume_24h_usd / 1e6).toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                })}
+                {t('common.m')}
               </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            {formattedValue ? (
-              <span>{formattedValue}</span>
+            </>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <span className="text-xs">
+            {token.address.slice(0, 5)}...{token.address.slice(-5)}
+          </span>
+          <Button
+            variant={ButtonVariant.GHOST}
+            onClick={(e) => {
+              e.stopPropagation()
+              setCopied()
+            }}
+            className="h-4 w-4 p-0"
+          >
+            {isCopied ? (
+              <CheckIcon className="h-3 w-3 text-primary" />
             ) : (
-              <span className="font-medium">
-                {t('common.m_cap')}:{' '}
-                {formatMarketCap(token.market_cap, t('trade.no_m_cap'))}
-              </span>
+              <CopyIcon className="h-3 w-3" />
             )}
-            {token.volume_24h_usd > 0 && (
-              <>
-                <span>•</span>
-                <span>
-                  {t('common.vol')}: $
-                  {(token.volume_24h_usd / 1e6).toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                  })}
-                  {t('common.m')}
-                </span>
-              </>
-            )}
-          </div>
+          </Button>
         </div>
       </div>
     </Button>
