@@ -8,6 +8,7 @@ import {
   simulateTransaction,
 } from '@/services/jupiter'
 import type { SwapRouteResponse } from '@/types/jupiter-service'
+import { SOL_MINT } from '@/utils/constants'
 import { createATAIfNotExists } from '@/utils/token'
 import { getAssociatedTokenAddress } from '@solana/spl-token'
 import {
@@ -138,7 +139,7 @@ export class SwapService {
 
   public async buildSwapTransaction(
     request: SwapRequest,
-    outputAta: PublicKey
+    outputAta: PublicKey | null
   ): Promise<{
     transaction: VersionedTransaction
     swapResponse: any
@@ -152,13 +153,19 @@ export class SwapService {
 
       let swapResponse
       try {
-        swapResponse = await fetchSwapInstructions({
+        const swapInstructionsRequest: any = {
           quoteResponse: request.quoteResponse,
           userPublicKey: request.walletAddress,
           prioritizationFeeLamports: request.priorityFee,
-          feeAccount: outputAta.toString(),
           slippageBps: effectiveSlippageBps,
-        })
+        }
+
+        // Only add feeAccount if outputAta is provided (skip for SOL swaps)
+        if (outputAta) {
+          swapInstructionsRequest.feeAccount = outputAta.toString()
+        }
+
+        swapResponse = await fetchSwapInstructions(swapInstructionsRequest)
       } catch (error: any) {
         await this.logError({
           operation: 'fetchSwapInstructions',
@@ -166,7 +173,7 @@ export class SwapService {
           walletAddress: request.walletAddress,
           mintAddress: request.mintAddress,
           details: {
-            outputAta: outputAta.toString(),
+            outputAta: outputAta?.toString() || 'none',
             slippageBps: effectiveSlippageBps,
             priorityFee: request.priorityFee,
           },
@@ -245,7 +252,7 @@ export class SwapService {
         walletAddress: request.walletAddress,
         mintAddress: request.mintAddress,
         details: {
-          outputAta: outputAta.toString(),
+          outputAta: outputAta?.toString() || 'none',
           hasSSEFee: !!request.sseTokenAccount,
         },
       })
@@ -257,12 +264,36 @@ export class SwapService {
     request: SwapRequest
   ): Promise<SwapRouteResponse> {
     try {
-      // Verify output token ATA
-      const outputAta = await this.verifyOrCreateATA(
-        request.mintAddress,
-        JUPITER_CONFIG.FEE_WALLET,
-        3
-      )
+      // Special handling for wSOL (wrapped SOL) - no ATA needed as it auto-unwraps to native SOL
+      const isWrappedSOL = request.mintAddress === SOL_MINT
+
+      let outputAta: PublicKey | null
+
+      if (isWrappedSOL) {
+        // For SOL swaps, skip platform fee collection due to wSOL unwrapping complexity
+        // This avoids ATA creation timeouts and Jupiter simulation failures
+        outputAta = null
+        console.log(
+          JSON.stringify(
+            {
+              operation: 'createSwapTransaction:wSOL_no_platform_fee',
+              mintAddress: request.mintAddress,
+              feeWallet: JUPITER_CONFIG.FEE_WALLET,
+              message:
+                'Skipping platform fee for SOL swaps to avoid wSOL ATA issues',
+            },
+            null,
+            2
+          )
+        )
+      } else {
+        // For all other tokens, create/verify ATA normally
+        outputAta = await this.verifyOrCreateATA(
+          request.mintAddress,
+          JUPITER_CONFIG.FEE_WALLET,
+          3
+        )
+      }
 
       // Verify SSE token ATA if needed
       if (request.sseTokenAccount) {
@@ -312,6 +343,7 @@ export class SwapService {
             operation: 'createSwapTransaction:success',
             walletAddress: request.walletAddress,
             mintAddress: request.mintAddress,
+            isWrappedSOL: isWrappedSOL,
             details: {
               lastValidBlockHeight: response.lastValidBlockHeight,
               computeUnitLimit: response.computeUnitLimit,
