@@ -115,6 +115,7 @@ export function TokenDetails({ id }: TokenDetailsProps) {
   if (overview) {
     // Debug log to see what data we're getting
     console.log('Token Overview Data:', {
+      ca: id,
       symbol: overview.symbol,
       price: overview.price,
       mc: overview.mc,
