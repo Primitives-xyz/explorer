@@ -9,6 +9,7 @@ import { Button, ButtonVariant } from '@/components/ui'
 import { Check } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
+import { useEffect } from 'react'
 
 interface TokenListItemProps {
   token: ITokenSearchResult
@@ -31,6 +32,10 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
         maximumFractionDigits: 2,
       })}`
     : null
+
+  useEffect(() => {
+    console.log('token', token)
+  }, [token])
 
   return (
     <Button
