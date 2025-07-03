@@ -24,9 +24,9 @@
       "following": "正在关注",
       "share_follow": "分享关注",
       "share_blink": "分享眨眼",
-      "blink_copied": "关注眨眼已复制！分享后，只需在 Solana 上点击一下，即可让其他人关注 @{用户名}！🚀",
+      "blink_copied": "关注眨眼已复制！分享后，只需在 Solana 上点击一下，即可让其他人关注 @{username}！🚀",
       "blink_copy_failed": "复制关注链接失败",
-      "blink_tooltip": "分享@{用户名} 的关注链接 - 让其他人通过一笔 Solana 交易来关注！"
+      "blink_tooltip": "分享@{username} 的关注链接 - 让其他人通过一笔 Solana 交易来关注！"
     },
     "no_description": "暂无描述",
     "since": "注册于",
@@ -125,7 +125,7 @@
           },
           "then": "然后",
           "share_x": "分享到 X",
-          "tweet_text": "我的 原则 分数是 {分数} — 在 $SSE 上排名前 {percentile}%\n\n您能超越我吗？在 SSE 上显示您的 @usetapestry x @solanaidentity 原则 分数",
+          "tweet_text": "我的 原则 分数是 {score} — 在 $SSE 上排名前 {percentile}%\n\n您能超越我吗？在 SSE 上显示您的 @usetapestry x @solanaidentity 原则 分数",
           "copy_success": {
             "title": "图片已复制！",
             "description": "您现在可以将其粘贴到您的 X 帖子中。"
@@ -225,7 +225,7 @@
           "name": "原生质押者",
           "description": "直接与验证者质押 SOL"
         },
-        "more_badges": "+ {数} 更多"
+        "more_badges": "+ {count} 更多"
       },
       "smart_cta": {
         "reveal": {
@@ -289,7 +289,7 @@
       "volume": "交易量",
       "liquidity": "流动性",
       "buy": "购买",
-      "rank": "#{数字}"
+      "rank": "#{number}"
     },
     "top_traders": {
       "trader": "交易者",
@@ -297,7 +297,7 @@
       "pnl_trade": "每笔交易盈亏",
       "volume": "交易量",
       "trades": "交易",
-      "rank": "#{数字}",
+      "rank": "#{number}",
       "unrealized": "未实现",
       "no_trades": "无交易",
       "holding": "持有",
@@ -442,8 +442,8 @@
     },
     "profile": {
       "see_original": "查看原始",
-      "followers_count": "{数} 关注者",
-      "following_count": "{数} 正在关注",
+      "followers_count": "{count} 关注者",
+      "following_count": "{count} 正在关注",
       "owned_by": "拥有者",
       "created": "创建于"
     }
@@ -457,7 +457,7 @@
       "errors": {
         "invalid_number": "请输入有效数字",
         "amount_greater_than_zero": "数量必须大于 0",
-        "decimal_places": "最多允许 {小数} 位小数",
+        "decimal_places": "最多允许 {decimals} 位小数",
         "exceeds_balance": "余额不足以进行此交易",
         "exceeds_staked_balance": "数量超过您的质押余额"
       }
@@ -658,7 +658,7 @@
     "platform_fee": "平台费用"
   },
   "token_holders": {
-    "others_own": "以及 +{数} 其他人拥有此代币",
+    "others_own": "以及 +{count} 其他人拥有此代币",
     "own_this": "拥有此代币"
   },
   "onboarding": {
@@ -705,11 +705,11 @@
     "suggested": {
       "bios": {
         "title": "建议的个人简介",
-        "available": "（{数} 个可用）"
+        "available": "（{count} 个可用）"
       },
       "usernames": {
         "title": "建议的用户名",
-        "available": "（{数} 个可用）"
+        "available": "（{count} 个可用）"
       },
       "follow": {
         "title": "至少关注 3 个其他个人资料以完成入门并填充您的信息流。",
@@ -718,8 +718,8 @@
           "top_traders": "顶级交易者",
           "recently_created": "最近创建"
         },
-        "trades_count": "{数} 笔交易",
-        "trades_count_plural": "{数} 笔交易"
+        "trades_count": "{count} 笔交易",
+        "trades_count_plural": "{count} 笔交易"
       }
     },
     "buttons": {
@@ -728,6 +728,6 @@
       "cancel": "取消",
       "complete": "完成"
     },
-    "progress": "{数}/3"
+    "progress": "{count}/3"
   }
 }
