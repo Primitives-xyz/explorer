@@ -9,7 +9,7 @@
     "max": "最大",
     "connect_wallet": "连接钱包",
     "loading": "加载中",
-    "on": "on",
+    "on": "在",
     "swap": "交换",
     "stake": "质押",
     "unstake": "取消质押",
@@ -22,9 +22,10 @@
       "unfollow": "取消关注",
       "followers": "关注者",
       "following": "正在关注",
-      "share_follow": "分享 关注",
-      "blink_copied": "关注 blink 已复制！分享后，只需在 Solana 上点击一下，即可让其他人关注 @{username}！🚀",
-      "blink_copy_failed": "复制链接失败",
+      "share_follow": "分享关注",
+      "share_blink": "分享眨眼",
+      "blink_copied": "关注眨眼已复制！分享后，只需在 Solana 上点击一下，即可让其他人关注 @{username}！🚀",
+      "blink_copy_failed": "复制关注链接失败",
       "blink_tooltip": "分享@{username} 的关注链接 - 让其他人通过一笔 Solana 交易来关注！"
     },
     "no_description": "暂无描述",
@@ -51,160 +52,189 @@
   },
   "menu": {
     "home": "首页",
-    "trenches": "Trenches",
+    "trenches": "战壕",
     "trade": "交易",
     "discover": "探索",
-    "stake": "Stake",
-    "leaderboard": "Leaderboard",
+    "stake": "质押",
+    "leaderboard": "排行榜",
     "title": "solana_social_explorer",
     "profile": {
-      "greeting": "hi",
+      "greeting": "你好",
       "logout": "登出"
     },
     "low_fee_trades": {
-      "title": "Low Fee Trades with SSE",
-      "description": "SSE offers the lowest fees across all current platforms.",
-      "trade_button": "Trade"
+      "title": "使用 SSE 进行低费用交易",
+      "description": "SSE 在所有当前平台中提供最低费用。",
+      "trade_button": "交易"
     },
     "actions": {
-      "unlock_perpetuals": "Unlock Perpetuals",
-      "deposit_withdraw": "Deposit/Withdraw",
-      "give_feedback": "Give Feedback",
-      "perpetuals": "Perpetuals",
-      "feedback": "Feedback"
+      "unlock_perpetuals": "解锁永续合约",
+      "deposit_withdraw": "存款/提款",
+      "give_feedback": "提供反馈",
+      "perpetuals": "永续合约",
+      "feedback": "反馈"
     },
     "solid_score": {
-      "reveal_button": "Reveal score",
-      "your_score": "你的SOLID分数",
-      "reveal_your_score": "揭晓你的SOLID分数",
-      "see_your_rank": "查看你的排名",
+      "reveal_button": "显示分数",
+      "your_score": "您的 原则 分数",
+      "reveal_your_score": "显示您的 原则 分数",
+      "see_your_rank": "查看您的排名",
       "leaderboard": {
         "title": "排行榜",
-        "share_button": "分享你的SOLID分数",
+        "share_button": "分享您的 原则 分数",
+        "tabs": {
+          "sse_scores": "光环分数 🔥",
+          "solid_scores": "原则 分数",
+          "timeframes": {
+            "all_time": "全部时间",
+            "monthly": "月度",
+            "weekly": "周度",
+            "today": "今日"
+          }
+        },
+        "sse_scores": {
+          "title": "🔥 光环活动分数",
+          "description": "通过交易、质押和参与 SSE 生态系统获得积分。您越活跃，排名就越高！",
+          "your_position": "您的排名",
+          "categories": {
+            "trading": {
+              "title": "🎯 交易",
+              "description": "执行交易并复制成功的交易者"
+            },
+            "staking": {
+              "title": "💎 质押",
+              "description": "质押 SSE 代币以获得奖励积分"
+            },
+            "social": {
+              "title": "🤝 社交",
+              "description": "关注交易者并与社区互动"
+            }
+          }
+        },
         "share_dialog": {
-          "title": "🚀 You're on the board, but it's locked",
-          "percentile_text": "Your score ranks you in the Top {percentile}% of SSE users!",
-          "unlock_text": "Share your score to unlock your rank and see how you stack up",
-          "score_intro": "My SOLID Score is...",
-          "claim_text": "Claim yours at SSE.gg",
+          "title": "🚀 您已上榜，但排名已锁定",
+          "percentile_text": "您的分数在 SSE 用户中排名前 {percentile}%！",
+          "unlock_text": "分享您的分数以解锁排名并查看您的表现",
+          "score_intro": "我的 原则 分数是...",
+          "claim_text": "在 SSE.gg 领取您的分数",
           "copy_image": {
-            "generating": "Generating...",
-            "no_image": "No image",
-            "copy_again": "Copy again",
-            "default": "Copy Image"
+            "generating": "生成中...",
+            "no_image": "无图片",
+            "copy_again": "再次复制",
+            "default": "复制图片"
           },
-          "then": "then",
-          "share_x": "Share on X",
-          "tweet_text": "My SOLID Score is {score} — in the top {percentile}% on $SSE\n\nCan you beat me? Reveal your @usetapestry x @solanaidentity SOLID score on SSE",
+          "then": "然后",
+          "share_x": "分享到 X",
+          "tweet_text": "我的 原则 分数是 {score} — 在 $SSE 上排名前 {percentile}%\n\n您能超越我吗？在 SSE 上显示您的 @usetapestry x @solanaidentity 原则 分数",
           "copy_success": {
-            "title": "Image copied!",
-            "description": "You can now paste it in your X post."
+            "title": "图片已复制！",
+            "description": "您现在可以将其粘贴到您的 X 帖子中。"
           },
           "download_success": {
             "title": "图片已下载！",
             "description": "您现在可以将其上传到您的 X 帖子中。"
           },
           "share_x_instructions": {
-            "title": "Share your SOLID Score on X",
+            "title": "在 X 上分享您的 原则 分数",
             "desktop": {
-              "instruction": "Press {shortcut} to paste your SOLID Score image"
+              "instruction": "按 {shortcut} 粘贴您的图片"
             },
             "mobile": {
-              "step_1": "Tap and hold in the tweet composer",
-              "step_2": "Select 'Paste' from the menu",
-              "step_3": "Your SOLID Score image will be added to your tweet"
+              "step_1": "在推文编辑器中长按",
+              "step_2": "从菜单中选择\"粘贴\"",
+              "step_3": "您的 原则 分数图片将添加到您的推文中"
             },
-            "ready_button": "Ok, I'm ready"
+            "ready_button": "好的，我准备好了"
           },
           "instructions": {
-            "title": "如何分享你的分数：",
+            "title": "如何分享您的分数：",
             "copy_image": "复制图片",
-            "share_x": "点击 \"分享到 X\"",
+            "share_x": "点击\"分享到 X\"",
             "paste_image": "将图片粘贴到推文中"
           }
         },
         "table": {
           "columns": {
-            "rank": "Rank",
-            "username": "Username",
-            "score": "Score",
-            "percentile": "Percentile"
+            "rank": "排名",
+            "username": "用户名",
+            "分数": "分数",
+            "percentile": "百分位"
           },
           "position_prefix": "#"
         },
         "locked": {
-          "title": "🚀 你已上榜，但排名已锁定",
-          "description": "分享你的分数来解锁排名，看看你的表现如何。",
+          "title": "🚀 您已上榜，但排名已锁定",
+          "description": "分享您的分数以解锁排名并查看您的表现。",
           "unlock_button": "解锁我的排名"
         }
       },
       "badges": {
         "solana_og": {
           "name": "Solana OG",
-          "description": "Early adopter with a long history of engagement"
+          "description": "具有长期参与历史的早期采用者"
         },
         "solana_power_user": {
-          "name": "Solana Power User",
-          "description": "High-volume transactor with consistent, frequent activity"
+          "name": "Solana 高级用户",
+          "description": "具有一致、频繁活动的高交易量用户"
         },
         "hodler": {
-          "name": "Hodler",
-          "description": "Consistently holds assets without frequent trading"
+          "name": "持有者",
+          "description": "持续持有资产而不频繁交易"
         },
         "dex_trader": {
-          "name": "DEX Trader",
-          "description": "Actively trades on decentralized exchanges"
+          "name": "DEX 交易者",
+          "description": "在去中心化交易所积极交易"
         },
         "risk_taker": {
-          "name": "Risk Taker",
-          "description": "High-volatility trader with a history of significant PnL swings"
+          "name": "风险承担者",
+          "description": "具有显著盈亏波动历史的高波动性交易者"
         },
         "diverse_nft_trader": {
-          "name": "Diverse NFT Trader",
-          "description": "Holds NFTs from a variety of collections"
+          "name": "多元化 NFT 交易者",
+          "description": "持有来自各种收藏的 NFT"
         },
         "liquidity_provider": {
-          "name": "Liquidity Provider",
-          "description": "Supplies liquidity to DeFi protocols or DEX pools"
+          "name": "流动性提供者",
+          "description": "为 DeFi 协议或 DEX 池提供流动性"
         },
         "diverse_liquidity_provider": {
-          "name": "Diverse Liquidity Provider",
-          "description": "Provides liquidity positions across multiple asset pairs"
+          "name": "多元化流动性提供者",
+          "description": "在多个资产对中提供流动性头寸"
         },
         "diverse_hodler": {
-          "name": "Diverse Hodler",
-          "description": "Holds a wide variety of tokens across different categories"
+          "name": "多元化持有者",
+          "description": "持有跨不同类别的各种代币"
         },
         "multiplatform_dex_trader": {
-          "name": "Multiplatform DEX Trader",
-          "description": "Trades across multiple DEXs"
+          "name": "多平台 DEX 交易者",
+          "description": "在多个 DEX 上交易"
         },
         "nft_trader": {
-          "name": "NFT Trader",
-          "description": "Buys and sells NFTs actively on Solana"
+          "name": "NFT 交易者",
+          "description": "在 Solana 上积极买卖 NFT"
         },
         "multiplatform_nft_trader": {
-          "name": "Multiplatform NFT Trader",
-          "description": "Trades NFTs across multiple marketplaces"
+          "name": "多平台 NFT 交易者",
+          "description": "在多个市场上交易 NFT"
         },
         "multiplatform_liquidity_provider": {
-          "name": "Multiplatform Liquidity Provider",
-          "description": "Provides liquidity across multiple platforms"
+          "name": "多平台流动性提供者",
+          "description": "在多个平台上提供流动性"
         },
         "native_staker": {
-          "name": "Native Staker",
-          "description": "Stakes SOL directly with validators"
+          "name": "原生质押者",
+          "description": "直接与验证者质押 SOL"
         },
-        "more_badges": "+ {count} more"
+        "more_badges": "+ {count} 更多"
       },
       "smart_cta": {
         "reveal": {
-          "title": "🧠 你的钱包有多强大？",
-          "description": "解锁你的SOLID分数并在排行榜上展示。",
+          "title": "🧠 您的钱包有多强大？",
+          "description": "解锁您的 原则 分数并在排行榜上展示。",
           "button": "显示我的分数"
         },
         "unlock": {
-          "title": "🔓 查看你在排行榜上的排名",
+          "title": "🔓 查看您在排行榜上的排名",
           "description": "顶级钱包已经在展示中。",
           "button": "解锁我的排名"
         }
@@ -219,8 +249,8 @@
       "following": "正在关注"
     },
     "transactions": {
-      "swap_on": "on",
-      "trade_button": "Copy Trade",
+      "swap_on": "在",
+      "trade_button": "复制交易",
       "received": "收到"
     }
   },
@@ -231,134 +261,138 @@
     "waiting_for_confirmation": "等待确认",
     "transaction_successful": "交易成功",
     "transaction_failed": "交易失败",
+    "the_claim_transaction_was_successful_creating_shareable_link": "领取交易成功。正在创建可分享链接",
+    "the_claim_transaction_failed_please_try_again": "领取交易失败。请重试",
+    "no_rewards_to_claim": "没有可领取的奖励",
+    "confirming_transaction": "正在确认交易",
     "search_tokens": "搜索代币...",
     "verified_tokens_only": "仅已验证代币",
     "no_tokens_found": "未找到代币",
     "start_typing_to_search_for_tokens": "开始输入以搜索代币",
     "maximum": "最大",
-    "decimal_places_allowed": "decimal places allowed",
-    "no_m_cap": "N/A"
+    "decimal_places_allowed": "允许的小数位数",
+    "no_m_cap": "无数据"
   },
   "discover": {
     "filters": {
-      "trending_tokens": "Trending Tokens",
-      "top_traders": "Top Traders",
+      "trending_tokens": "热门代币",
+      "top_traders": "顶级交易者",
       "time_frames": {
-        "today": "Today",
-        "yesterday": "Yesterday",
-        "one_week": "1W"
+        "today": "今日",
+        "yesterday": "昨日",
+        "one_week": "1周"
       }
     },
     "trending_tokens": {
-      "token": "Token",
-      "price": "Price",
-      "volume": "Vol",
-      "liquidity": "Liquidity",
-      "buy": "Buy",
+      "token": "代币",
+      "price": "价格",
+      "volume": "交易量",
+      "liquidity": "流动性",
+      "buy": "购买",
       "rank": "#{number}"
     },
     "top_traders": {
-      "trader": "Trader",
-      "pnl": "PNL",
-      "pnl_trade": "PNL/Trade",
-      "volume": "Volume",
-      "trades": "Trades",
+      "trader": "交易者",
+      "pnl": "盈亏",
+      "pnl_trade": "每笔交易盈亏",
+      "volume": "交易量",
+      "trades": "交易",
       "rank": "#{number}",
       "unrealized": "未实现",
       "no_trades": "无交易",
-      "holding": "Holding",
-      "no_volume": "No volume"
+      "holding": "持有",
+      "no_volume": "无交易量"
     }
   },
   "error": {
-    "http_error_status": "HTTP错误！状态",
+    "http_error_status": "HTTP 错误！状态",
     "please_enter_a_valid_number": "请输入有效数字",
-    "amount_must_be_greater_than_0": "数量必须大于0",
+    "amount_must_be_greater_than_0": "数量必须大于 0",
     "amount_exceeds_your_balance": "余额不足以进行此交易",
-    "amount_exceeds_your_staked_balance": "Amount exceeds your staked balance",
+    "amount_exceeds_your_staked_balance": "数量超过您的质押余额",
     "error_fetching_tokens": "获取代币时出错",
     "failed_to_fetch_tokens": "未能获取代币",
     "error_fetching_transactions": "获取交易时出错",
     "error_checking_for_new_transactions": "检查新交易时出错",
     "an_error_occurred": "发生错误",
-    "sdk_load_timeout_reached_forcing_loaded_state": "SDK加载超时，强制加载状态",
+    "sdk_load_timeout_reached_forcing_loaded_state": "SDK 加载超时，强制加载状态",
     "fee_calculation": {
-      "title": "Fee Calculation Error",
-      "description": "Failed to calculate SSE fees. Please try again or check your inputs."
+      "title": "费用计算错误",
+      "description": "计算 SSE 费用失败。请重试或检查您的输入。"
     },
     "jup_quote_api": {
-      "title": "Quote API Error",
-      "description": "Failed to fetch Quote API. Please try again later"
+      "title": "报价 API 错误",
+      "description": "获取报价 API 失败。请稍后重试"
     },
     "jup_swap_api": {
-      "title": "SWAP API Error",
-      "description": "Failed to fetch SWAP API. Please try again later"
+      "title": "交换 API 错误",
+      "description": "获取交换 API 失败。请稍后重试"
     },
     "wallet_connection": {
       "title": "钱包错误",
-      "description": "请连接Solana钱包"
+      "description": "请连接 Solana 钱包"
     },
     "transaction_failed": {
       "title": "交易失败",
       "description": "交换交易失败。请重试。"
     },
     "perps_order": {
-      "title": "Transaction Failed",
-      "description": "Failed to Place Perps Order. Please try again later."
+      "title": "交易失败",
+      "description": "下永续合约订单失败。请稍后重试。"
     },
     "deposit_collateral": {
-      "title": "Transaction Failed",
-      "description": "Failed to deposit collateral"
+      "title": "交易失败",
+      "description": "存入保证金失败"
     },
     "order_size": {
-      "title": "Order Size Error",
-      "description": "Order size must be at least 0.01 SOL"
+      "title": "订单大小错误",
+      "description": "订单大小必须至少为 0.01 SOL"
     },
     "drift_client": {
-      "title": "Drift Client Error",
-      "description": "Drift client not initialized"
+      "title": "Drift 客户端错误",
+      "description": "Drift 客户端未初始化"
     },
     "perps_market": {
-      "title": "Perpetual Market Error",
-      "description": "Perpetual Market Not Found"
+      "title": "永续合约市场错误",
+      "description": "未找到永续合约市场"
     },
     "perps_market_account": {
-      "title": "Perpetual Market Account Error",
-      "description": "Perpetual Market Account Not Found"
+      "title": "永续合约市场账户错误",
+      "description": "未找到永续合约市场账户"
     },
     "limit_price_long": {
-      "title": "Limit Price Error",
-      "description": "The limit price is above or equal to the current orderbook ask price"
+      "title": "限价错误",
+      "description": "限价高于或等于当前订单簿卖价"
     },
     "limit_price_short": {
-      "title": "Limit Price Error",
-      "description": "The limit price is below the current ask price"
+      "title": "限价错误",
+      "description": "限价低于当前卖价"
     },
     "close_position": {
-      "title": "Close Position Error",
-      "description": "Failed close position. Please try again later"
+      "title": "平仓错误",
+      "description": "平仓失败。请稍后重试"
     },
     "perps_user": {
-      "title": "Drift User Account Error",
-      "description": "Drift User Not Found"
+      "title": "Drift 用户账户错误",
+      "description": "未找到 Drift 用户"
     },
     "fetch_perps_position": {
-      "title": "Fetch Open Positions Error",
-      "description": "Failed Fetching Open Positions. Please try again later"
+      "title": "获取开仓头寸错误",
+      "description": "获取开仓头寸失败。请稍后重试"
     },
     "cancel_order": {
-      "title": "Transaction Failed",
-      "description": "Failed Cancel Order, Please try again later"
+      "title": "交易失败",
+      "description": "取消订单失败，请稍后重试"
     },
     "withdraw_deposit": {
-      "title": "Transaction Failed",
-      "description": "Failed to withdraw deposit, Please try again later"
+      "title": "交易失败",
+      "description": "提取存款失败，请稍后重试"
     }
   },
   "loading": {
     "preparing_swap": {
       "title": "正在准备交换",
-      "description": "正在准备你的交换交易"
+      "description": "正在准备您的交换交易"
     },
     "sending_transaction": {
       "title": "正在发送交易",
@@ -367,7 +401,12 @@
     "confirming_transaction": {
       "title": "正在确认交易",
       "description": "等待确认"
-    }
+    },
+    "initializing_wallet": "正在初始化钱包",
+    "wallet_sdk": "正在加载钱包 SDK",
+    "fetching_profile": "正在获取个人资料",
+    "initializing_trading": "正在初始化交易",
+    "loading_accounts": "正在加载账户"
   },
   "success": {
     "transaction": {
@@ -376,30 +415,30 @@
     },
     "place_perps_order": {
       "title": "交易成功",
-      "description": "Place Perps Order Transaction Success"
+      "description": "下永续合约订单交易成功"
     },
     "deposit_collateral": {
       "title": "交易成功",
-      "description": "Deposite Collateral Success"
+      "description": "存入保证金成功"
     },
     "close_position": {
       "title": "交易成功",
-      "description": "Close Postion Success"
+      "description": "平仓成功"
     },
     "cancel_order": {
       "title": "交易成功",
-      "description": "Cancel Order Success"
+      "description": "取消订单成功"
     },
     "perps_withdraw": {
       "title": "交易成功",
-      "description": "Withdraw deposit Success"
+      "description": "提取存款成功"
     }
   },
   "namespace": {
     "profiles": {
-      "title": "Namespace profiles",
-      "followers": "Followers",
-      "followings": "Followings"
+      "title": "命名空间个人资料",
+      "followers": "关注者",
+      "followings": "正在关注"
     },
     "profile": {
       "see_original": "查看原始",
@@ -411,102 +450,102 @@
   },
   "stake": {
     "form": {
-      "amount": "Amount",
-      "balance": "Balance",
-      "staked_balance": "Staked Balance",
-      "max": "Max",
+      "amount": "数量",
+      "balance": "余额",
+      "staked_balance": "质押余额",
+      "max": "最大",
       "errors": {
-        "invalid_number": "Please enter a valid number",
-        "amount_greater_than_zero": "Amount must be greater than 0",
-        "decimal_places": "Maximum {decimals} decimal places allowed",
-        "exceeds_balance": "Insufficient balance for this transaction",
-        "exceeds_staked_balance": "Amount exceeds your staked balance"
+        "invalid_number": "请输入有效数字",
+        "amount_greater_than_zero": "数量必须大于 0",
+        "decimal_places": "最多允许 {decimals} 位小数",
+        "exceeds_balance": "余额不足以进行此交易",
+        "exceeds_staked_balance": "数量超过您的质押余额"
       }
     },
     "transaction": {
-      "checking_wallet": "Checking wallet status",
-      "building": "Building Transaction",
-      "sending": "Sending Transaction",
-      "waiting_confirmation": "Waiting for confirmation",
+      "checking_wallet": "正在检查钱包状态",
+      "building": "正在构建交易",
+      "sending": "正在发送交易",
+      "waiting_confirmation": "等待确认",
       "confirming": "正在确认交易",
-      "successful": "Transaction Successful",
-      "failed": "Transaction Failed",
-      "stake_failed_try_again": "The stake transaction failed. Please try again",
-      "stake_successful": "The stake transaction was successful. Creating shareable link"
+      "successful": "交易成功",
+      "failed": "交易失败",
+      "stake_failed_try_again": "质押交易失败。请重试",
+      "stake_successful": "质押交易成功。正在创建可分享的链接"
     },
     "tabs": {
-      "stake": "Stake",
-      "unstake": "Unstake",
-      "claim_rewards": "Claim Rewards"
+      "stake": "质押",
+      "unstake": "取消质押",
+      "claim_rewards": "领取奖励"
     },
     "details": {
       "benefits": {
-        "title": "Staking Benefits",
+        "title": "质押福利",
         "fee_sharing": {
-          "title": "Fee Sharing",
-          "description": "Earn rewards that dynamically adjust based on platform activity. The more you stake, the greater your share of the rewards pool."
+          "title": "费用分享",
+          "description": "根据平台活动动态调整的奖励。您质押的越多，您在奖励池中的份额就越大。"
         },
         "flexible_staking": {
-          "title": "Flexible Staking",
-          "description": "Stake to unlock platform benefits and fee discounts. Your rewards grow based on your engagement in the ecosystem."
+          "title": "灵活质押",
+          "description": "质押以解锁平台福利和费用折扣。您的奖励基于您在生态系统中的参与度增长。"
         },
         "how_it_works": {
-          "title": "How It Works",
-          "point1": "Stake once every 24 hours to increase your position and boost your eligibility for rewards",
-          "point2": "Rewards adjust based on your participation level and overall network activity",
-          "point3": "No fixed APY - incentives grow with ecosystem usage and your stake amount"
+          "title": "工作原理",
+          "point1": "每 24 小时质押一次以增加您的头寸并提高您获得奖励的资格",
+          "point2": "奖励根据您的参与水平和整体网络活动进行调整",
+          "point3": "无固定年化收益率 - 激励随着生态系统使用量和您的质押量增长"
         }
       },
       "tiers": {
-        "title": "Staking Tiers & Benefits",
+        "title": "质押等级和福利",
         "gold": {
-          "title": "Gold",
+          "title": "黄金",
           "requirement": "500,000+ SSE",
           "benefits": {
-            "swap_fee": "50% off swap fees",
-            "comment_fee": "60% off comment fees"
+            "swap_fee": "交换费用 50% 折扣",
+            "comment_fee": "评论费用 60% 折扣"
           }
         },
         "silver": {
-          "title": "Silver",
+          "title": "白银",
           "requirement": "200,000+ SSE",
           "benefits": {
-            "swap_fee": "25% off swap fees",
-            "comment_fee": "40% off comment fees"
+            "swap_fee": "交换费用 25% 折扣",
+            "comment_fee": "评论费用 40% 折扣"
           }
         },
         "bronze": {
-          "title": "Bronze",
+          "title": "青铜",
           "requirement": "50,000+ SSE",
           "benefits": {
-            "swap_fee": "10% off swap fees",
-            "comment_fee": "30% off comment fees"
+            "swap_fee": "交换费用 10% 折扣",
+            "comment_fee": "评论费用 30% 折扣"
           }
         },
-        "disclaimer": "Crypto involves risk. Rewards vary and are not guaranteed based on platform usage."
+        "disclaimer": "加密货币涉及风险。奖励会变化，不保证基于平台使用情况。"
       }
     },
     "errors": {
-      "no_staking_found": "No Staking Found",
-      "no_staking_description": "You haven't staked any tokens yet. Please use the Stake tab to stake tokens before attempting to unstake.",
-      "no_stake_warning": "You haven't staked yet.",
-      "stake_first": "Stake tokens first to see your balance here.",
-      "transaction_failed": "The stake transaction failed. Please try again",
-      "unstake_transaction_failed": "The unstake transaction failed. Please try again"
+      "no_staking_found": "未找到质押",
+      "no_staking_description": "您还没有质押任何代币。请使用质押标签在尝试取消质押之前质押代币。",
+      "no_stake_warning": "您还没有质押。",
+      "stake_first": "先质押代币以在此处查看您的余额。",
+      "transaction_failed": "质押交易失败。请重试",
+      "unstake_transaction_failed": "取消质押交易失败。请重试"
     },
     "platform_stats": {
-      "platform_total_stake": "Platform Total Stake",
-      "total_reward_amount": "Total Reward Amount",
-      "total_staking_amount": "Total Staking Amount",
-      "token_unit": "tokens"
+      "platform_total_stake": "平台总质押量",
+      "total_reward_amount": "总奖励金额",
+      "total_staking_amount": "总质押金额",
+      "token_unit": "代币"
     },
     "claim": {
-      "title": "Claim Rewards",
-      "available_rewards": "Available Rewards",
-      "no_rewards": "No rewards available",
-      "no_rewards_description": "You don't have any rewards to claim at this time",
-      "description": "Claim your accumulated rewards from staking",
-      "connect_wallet_description": "Connect your wallet to view and claim your accumulated rewards"
+      "title": "领取奖励",
+      "available_rewards": "可用奖励",
+      "no_rewards": "无可用奖励",
+      "no_rewards_description": "您目前没有任何可领取的奖励",
+      "description": "领取您从质押中累积的奖励",
+      "connect_wallet_description": "连接您的钱包以查看和领取您累积的奖励"
     },
     "v2_unlock": {
       "title": "欢迎来到质押 V2！",
@@ -546,121 +585,148 @@
       "view_transaction": "查看交易",
       "connect_wallet_error": "请连接您的钱包",
       "claim_failed": "领取奖励失败。请重试。"
+    },
+    "migration": {
+      "success_title": "迁移成功！",
+      "success_description": "您的质押账户已成功迁移到新格式。",
+      "required_title": "需要账户迁移",
+      "required_description": "您的质押账户需要迁移到新格式才能继续赚取奖励。",
+      "current_status_title": "当前账户状态",
+      "staked": "已质押",
+      "last_update": "最后更新",
+      "status": "状态",
+      "status_active": "活跃",
+      "status_inactive": "非活跃",
+      "migration_info": "这是一次性迁移。您的质押代币将转移到新的账户格式。",
+      "processing": "正在处理迁移...",
+      "migrate_button": "迁移账户"
     }
   },
   "swap": {
-    "execute_swap": "Execute Swap",
-    "insufficient_sse": "Insufficient SSE",
-    "insufficient_balance": "Insufficient {token}",
+    "execute_swap": "执行交换",
+    "insufficient_sse": "SSE 不足",
+    "insufficient_balance": "{token} 不足",
     "error": {
-      "invalid_token": "Invalid token selected",
-      "calculating_amount": "Error calculating amount:"
+      "invalid_token": "选择了无效代币",
+      "calculating_amount": "计算数量时出错："
     },
     "fee": {
-      "title": "Low Fee Trades with SSE",
-      "description": "SSE offers the lowest fees across all current platforms.",
-      "amount": "SSE Fee Amount",
-      "use_sse": "Use SSE for lower fees",
-      "not_enough_sse": "Not enough SSE for fees"
+      "title": "使用 SSE 进行低费用交易",
+      "description": "SSE 在所有当前平台中提供最低费用。",
+      "amount": "SSE 费用金额",
+      "use_sse": "使用 SSE 获得更低费用",
+      "not_enough_sse": "SSE 不足以支付费用"
     },
     "input": {
-      "pay": "Pay",
-      "receive": "Receive",
-      "balance_label": "Balance:",
-      "max": "MAX"
+      "pay": "支付",
+      "receive": "接收",
+      "balance_label": "余额：",
+      "max": "最大"
     },
     "token": {
-      "select": "Select a token",
-      "search": "Search tokens",
-      "no_verified_tokens": "No verified tokens found",
-      "route_info": "Route Information $ Fees",
-      "fee_exceeds_balance": "Transaction fee exceeds your SSE balance.",
-      "not_enough_sse_for_fees": "You do not have enough SSE to pay for transaction fees.",
-      "pay_with_sse": "Pay fee with SSE",
-      "get_discount": "Get 50% off on transaction fees"
+      "select": "选择代币",
+      "search": "搜索代币",
+      "no_verified_tokens": "未找到已验证代币",
+      "route_info": "路由信息和费用",
+      "fee_exceeds_balance": "交易费用超过您的 SSE 余额。",
+      "not_enough_sse_for_fees": "您需要 SSE 代币来使用更低费用",
+      "pay_with_sse": "使用 SSE 支付费用",
+      "get_discount": "获得交易费用 50% 折扣",
+      "spl_transfer_errors": {
+        "missing_ata": "目标钱包的关联代币账户不存在",
+        "insufficient_balance": "代币余额不足以进行转账",
+        "invalid_mint": "无效的代币铸造地址",
+        "invalid_wallet": "无效的目标钱包地址",
+        "network_error": "转账期间网络错误。请重试",
+        "generic_error": "完成代币转账失败"
+      }
     },
     "price": {
-      "price_impact": "Price Impact",
-      "minimum_received": "Minimum Received",
-      "rate": "Rate"
+      "price_impact": "价格影响",
+      "minimum_received": "最少接收",
+      "rate": "汇率"
     },
     "loading": {
-      "fetching_quote": "Fetching quote..."
+      "fetching_quote": "正在获取报价..."
     },
     "buttons": {
-      "swap_tokens": "Swap Tokens"
-    }
+      "swap_tokens": "交换代币"
+    },
+    "low_fee_sse": "低费用模式",
+    "fee_paid_with_sse": "使用 SSE 支付费用",
+    "lowest_fees_available": "可用最低费用",
+    "platform_fee": "平台费用"
   },
   "token_holders": {
-    "others_own": "and +{count} others own this",
-    "own_this": "own this"
+    "others_own": "以及 +{count} 其他人拥有此代币",
+    "own_this": "拥有此代币"
   },
   "onboarding": {
-    "create_profile": "Create Your Profile",
-    "onboarding_success": "Your profile has been successfully updated!",
+    "create_profile": "完善您的个人资料",
+    "onboarding_success": "您的个人资料已成功更新！",
     "steps": {
-      "username": "Username",
-      "profile_image": "Profile Image",
-      "bio": "Bio",
-      "follow": "Follow",
+      "username": "用户名",
+      "profile_image": "个人资料图片",
+      "bio": "个人简介",
+      "follow": "关注",
       "titles": {
-        "add_username": "Add Username",
-        "add_profile_image": "Add Profile Image",
-        "add_bio": "Add Bio"
+        "add_username": "添加用户名",
+        "add_profile_image": "添加个人资料图片",
+        "add_bio": "添加个人简介"
       },
       "descriptions": {
-        "username": "Type in your own username or use one from your imported identities.",
-        "profile_image": "We've generated a profile image for you! Don't love it? Customize your profile image from what you already own or by uploading.",
-        "bio": "Stand out from the crowd—describe yourself!"
+        "username": "输入您自己的用户名或使用您导入的身份之一。",
+        "profile_image": "我们为您生成了个人资料图片！不喜欢？从您已有的内容或上传中自定义您的个人资料图片。",
+        "bio": "脱颖而出 — 描述您自己！"
       }
     },
     "form": {
       "bio": {
-        "label": "Bio (optional)",
-        "placeholder": "Tell us about yourself",
-        "error": "Bio must not exceed 300 characters"
+        "label": "个人简介（可选）",
+        "placeholder": "告诉我们关于您自己",
+        "error": "个人简介不能超过 300 个字符"
       },
       "username": {
-        "label": "Username",
-        "placeholder": "Please add a username",
-        "description": "用户名只能包含字母、数字、下划线和句点（用于SNS名称，如.sol）",
+        "label": "用户名",
+        "placeholder": "请添加用户名",
+        "description": "用户名只能包含字母、数字、下划线和句点（用于 SNS 名称，如 .sol）",
         "validation": {
-          "min_length": "Username must be at least 3 characters long",
-          "max_length": "Username must not exceed 30 characters",
-          "format": "用户名只能包含字母、数字、下划线和句点。支持SNS名称（.sol）"
+          "min_length": "用户名必须至少 3 个字符长",
+          "max_length": "用户名不能超过 30 个字符",
+          "format": "用户名只能包含字母、数字、下划线和句点。支持 SNS 名称（.sol）"
         }
       },
       "profile_image": {
-        "label": "Profile Image",
-        "alt": "Profile Image",
-        "upload_button": "Upload Image"
+        "label": "个人资料图片",
+        "alt": "个人资料图片",
+        "upload_button": "上传图片"
       }
     },
     "suggested": {
       "bios": {
-        "title": "Suggested Bios",
-        "available": "({count} available)"
+        "title": "建议的个人简介",
+        "available": "（{count} 个可用）"
       },
       "usernames": {
-        "title": "Suggested Usernames",
-        "available": "({count} available)"
+        "title": "建议的用户名",
+        "available": "（{count} 个可用）"
       },
       "follow": {
-        "title": "Follow at least 3 other profiles to finish onboarding and populate your feed.",
-        "subtitle": "Here are some people you may know.",
+        "title": "至少关注 3 个其他个人资料以完成入门并填充您的信息流。",
+        "subtitle": "这里有一些您可能认识的人。",
         "tabs": {
-          "top_traders": "Top Traders",
-          "recently_created": "Recently Created"
+          "top_traders": "顶级交易者",
+          "recently_created": "最近创建"
         },
-        "trades_count": "{count} trade",
-        "trades_count_plural": "{count} trades"
+        "trades_count": "{count} 笔交易",
+        "trades_count_plural": "{count} 笔交易"
       }
     },
     "buttons": {
-      "back": "Back",
-      "next": "Next",
-      "cancel": "Cancel",
-      "complete": "Complete"
+      "back": "返回",
+      "next": "下一步",
+      "cancel": "取消",
+      "complete": "完成"
     },
     "progress": "{count}/3"
   }
