@@ -5,11 +5,10 @@ import {
   Button,
   ButtonSize,
   ButtonVariant,
+  Dialog,
+  DialogContent,
   Input,
   InputPrefix,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Separator,
 } from '@/components/ui'
 import { cn } from '@/utils/utils'
@@ -27,13 +26,13 @@ export function SearchButton() {
   const [query, setQuery] = useState('')
   const ref = useRef<HTMLInputElement>(null)
 
-  const closePopover = () => {
+  const closeModal = () => {
     setOpen(false)
     setQuery('')
   }
 
   return (
-    <Popover
+    <Dialog
       open={open}
       onOpenChange={(open) => {
         setOpen(open)
@@ -42,25 +41,22 @@ export function SearchButton() {
         }
       }}
     >
-      <PopoverTrigger asChild>
-        <Button
-          variant={ButtonVariant.GHOST}
-          className={cn(
-            'hidden md:flex justify-start w-full gap-4 hover:bg-primary hover:text-background',
-            {
-              'bg-primary text-background': open,
-            }
-          )}
-        >
-          <SearchIcon size={20} />
-          Search
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        side="right"
-        sideOffset={16}
-        className="w-[375px] p-0 overflow-hidden"
+      <Button
+        variant={ButtonVariant.GHOST}
+        className={cn(
+          'flex justify-start w-full gap-4 hover:bg-primary hover:text-background text-lg md:text-sm',
+          {
+            'bg-primary text-background': open,
+          }
+        )}
+        onClick={() => setOpen(true)}
+      >
+        <SearchIcon size={20} />
+        <span>Search</span>
+      </Button>
+      <DialogContent
+        className="w-[95vw] md:w-[90vw] max-w-[500px] p-0 overflow-hidden max-h-[90vh]"
+        onClose={closeModal}
       >
         <Input
           ref={ref}
@@ -90,30 +86,27 @@ export function SearchButton() {
           }
         />
         <div className="pb-4 flex flex-col items-center">
-          <div className="h-[630px] w-full">
+          <div className="h-[350px] md:h-[500px] w-full overflow-y-auto">
             {query.length > 2 ? (
               <>
                 <SearchResultsProfiles
                   query={query}
-                  closePopover={closePopover}
+                  closePopover={closeModal}
                 />
                 <Separator className="mt-3 mb-0" />
-                <SearchResultsTokens
-                  query={query}
-                  closePopover={closePopover}
-                />
+                <SearchResultsTokens query={query} closePopover={closeModal} />
               </>
             ) : (
               <>
-                <SearchTopTraders closePopover={closePopover} />
+                <SearchTopTraders closePopover={closeModal} />
                 <Separator className="mt-3 mb-0" />
-                <SearchTrendingTokens closePopover={closePopover} />
+                <SearchTrendingTokens closePopover={closeModal} />
               </>
             )}
           </div>
           <PoweredbyTapestry />
         </div>
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   )
 }
