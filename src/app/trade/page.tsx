@@ -8,6 +8,7 @@ import { TradeProvider } from '@/components/trade/context/trade-context'
 import { SOL_MINT, SSE_MINT } from '@/utils/constants'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
+import { StatusBar } from '@/components/status-bar/status-bar'
 
 export default function TradePage() {
   const searchParams = useSearchParams()
@@ -56,9 +57,12 @@ export default function TradePage() {
 
   return (
     <TradeProvider>
-      <MainContentWrapper className="flex flex-col md:flex-row w-full gap-6 pb-10">
-        <TradeLeftContent />
-        <TradeContent />
+      <MainContentWrapper>
+        <StatusBar condensed={false} />
+        <div className="flex flex-col md:flex-row w-full gap-6 pb-10">
+          <TradeLeftContent />
+          <TradeContent />
+        </div>
       </MainContentWrapper>
     </TradeProvider>
   )

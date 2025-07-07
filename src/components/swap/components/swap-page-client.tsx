@@ -1,6 +1,7 @@
 'use client'
 
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
+import { StatusBar } from '@/components/status-bar/status-bar'
 import { Swap } from '@/components/swap/components/swap'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
 import { SOL_MINT, SSE_MINT } from '@/utils/constants'
@@ -49,9 +50,10 @@ export function SwapPageClient() {
   }, [inputs.inputMint, inputs.outputMint, updateUrlFromStore])
 
   return (
-    <MainContentWrapper className="min-w-main-content max-w-main-content mx-auto flex justify-center py-8">
+    <MainContentWrapper className="min-w-main-content max-w-main-content mx-auto flex justify-center">
       {/* Render the main Swap component, which now relies on the store */}
       <div className="w-[350px]">
+        <StatusBar condensed={false} />
         <Swap />
       </div>
     </MainContentWrapper>

@@ -267,7 +267,7 @@ interface EnrichedTokenPosition extends TokenPosition {
 }
 
 // Hook to fetch wallet PnL and positions from API
-function useWalletPnL(walletAddress: string | null, enabled: boolean) {
+export function useWalletPnL(walletAddress: string | null, enabled: boolean) {
   const [data, setData] = useState<WalletPnLStats | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
