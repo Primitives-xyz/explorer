@@ -26,7 +26,13 @@ export function DefaultStatusBar({ data }: Props) {
           <span className="text-background text-xs md:text-sm flex items-center">
             <p className="desktop">SSE All-Time Savings: </p>
             <p className="mobile">All-Time Savings: </p>
-            <span className="font-bold ml-2">{data.allTimeSavings}</span>
+            <span className="font-bold ml-2">
+              {data.sseSavingsLoading ? (
+                <span className="animate-pulse">...</span>
+              ) : (
+                data.allTimeSavings
+              )}
+            </span>
           </span>
           <TopRightForm />
         </div>
@@ -62,15 +68,33 @@ export function DefaultStatusBar({ data }: Props) {
               <p className="text-primary text-xs desktop">$SSE OWNED</p>
               <p className="text-primary text-xs mobile">$SSE</p>
             </span>
-            <p className="text-foreground font-bold">{data.balance}</p>
+            <p className="text-foreground font-bold">
+              {data.balanceLoading ? (
+                <span className="animate-pulse">...</span>
+              ) : (
+                data.balance
+              )}
+            </p>
           </div>
           <div className="w-1/2 h-full border-r-1 border-primary flex items-center justify-between px-2 text-xs">
             <p className="text-foreground">SOLID</p>
-            <p className="text-foreground font-bold">{data.solidScore}</p>
+            <p className="text-foreground font-bold">
+              {data.solidScoreLoading ? (
+                <span className="animate-pulse">...</span>
+              ) : (
+                data.solidScore
+              )}
+            </p>
           </div>
           <div className="w-1/2 h-full flex items-center justify-between px-2 text-xs">
             <p className="text-foreground">PNL</p>
-            <p className="text-foreground font-bold">{data.walletPnL}</p>
+            <p className="text-foreground font-bold">
+              {data.walletPnLLoading ? (
+                <span className="animate-pulse">...</span>
+              ) : (
+                data.walletPnL
+              )}
+            </p>
           </div>
         </div>
       </div>

@@ -4,11 +4,10 @@ import { useSolidScore } from '@/components/solid-score/hooks/use-solid-score'
 import { CondensedStatusBar } from '@/components/status-bar/condensed/condensed'
 import { DefaultStatusBar } from '@/components/status-bar/default'
 import { useGetBalance } from '@/components/tapestry/hooks/use-get-balance'
+import { useWalletPnL } from '@/components/trenches/simple-inventory-modal'
+import { useSSESavings } from '@/hooks/use-sse-savings'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
-import { useWalletPnL } from '@/components/trenches/simple-inventory-modal'
-import { useEffect } from 'react'
-import { useSSESavings } from '@/hooks/use-sse-savings'
 
 interface Props {
   condensed?: boolean
@@ -21,16 +20,25 @@ export interface StatusBarData {
   allTimeSavings: number
   balance: string
   walletPnL: number
+  walletPnLLoading: boolean
+  sseSavingsLoading: boolean
+  solidScoreLoading: boolean
+  balanceLoading: boolean
 }
 
 export function StatusBar({ condensed }: Props) {
   const { mainProfile, walletAddress } = useCurrentWallet()
-  const { data: walletPnL } = useWalletPnL(walletAddress, true)
-  const { data: sseSavings } = useSSESavings(walletAddress)
-
-  const { data } = useSolidScore({ profileId: mainProfile?.id })
-
-  const { balance } = useGetBalance({ walletAddress })
+  const { data: walletPnL, loading: walletPnLLoading } = useWalletPnL(
+    walletAddress,
+    true
+  )
+  const { data: sseSavings, loading: sseSavingsLoading } = useSSESavings(
+    walletAddress
+  )
+  const { data, loading: solidScoreLoading } = useSolidScore({
+    profileId: mainProfile?.id,
+  })
+  const { balance, loading: balanceLoading } = useGetBalance({ walletAddress })
 
   const statusBarData: StatusBarData = {
     username: mainProfile?.username,
@@ -44,11 +52,11 @@ export function StatusBar({ condensed }: Props) {
     balance: balance || '0',
     allTimeSavings: sseSavings?.totalSavingsUSD || 0,
     walletPnL: walletPnL?.realizedPnLUSD || 0,
+    walletPnLLoading,
+    sseSavingsLoading,
+    solidScoreLoading,
+    balanceLoading,
   }
-
-  useEffect(() => {
-    console.log('walletPnL', walletPnL)
-  }, [walletPnL])
 
   if (
     !mainProfile?.userRevealedTheSolidScore &&
