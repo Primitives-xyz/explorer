@@ -3,6 +3,7 @@
 import { MainContentWrapper } from '@/components/common/main-content-wrapper'
 import { RightSidebarWrapper } from '@/components/common/right-sidebar-wrapper'
 import { HomeContent } from '@/components/home/home-content/home-content'
+import { StatusBar } from '@/components/status-bar/status-bar'
 import { SwapTray } from '@/components/swap/components/swap-tray'
 import { route } from '@/utils/route'
 import { useIsMobile } from '@/utils/use-is-mobile'
@@ -25,7 +26,8 @@ export default function Home() {
 
   return (
     <>
-      <MainContentWrapper className="md:min-w-main-content md:max-w-main-content mx-auto flex justify-center">
+      <MainContentWrapper className="md:min-w-main-content md:max-w-main-content mx-auto flex flex-col">
+        <StatusBar condensed={false} />
         <HomeContent />
       </MainContentWrapper>
       <RightSidebarWrapper>

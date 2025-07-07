@@ -102,7 +102,7 @@ export function ProfileInfos({ setOpen }: Props) {
         </div>
       </div>
 
-      <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+      {/* <div className="bg-muted/30 rounded-lg p-3 space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Image
@@ -138,7 +138,7 @@ export function ProfileInfos({ setOpen }: Props) {
         <div className="border-t border-border/50 pt-2">
           <ScoreIndicator className="w-full" />
         </div>
-      </div>
+      </div> */}
 
       {!mainProfile?.hasSeenProfileSetupModal && !!mainProfile?.id && (
         <OnboardingButton profileId={mainProfile.id} />
