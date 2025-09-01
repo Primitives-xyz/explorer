@@ -12,6 +12,7 @@ import {
   House,
   LucideIcon,
   PocketKnife,
+  TrendingUp,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
@@ -47,6 +48,13 @@ export function Menu({ setOpen }: Props) {
         title={t('menu.trenches')}
         icon={PocketKnife}
         href={route('trenches')}
+        setOpen={setOpen}
+      />
+
+      <Entry
+        title="Stonks"
+        icon={TrendingUp}
+        href={route('stonks')}
         setOpen={setOpen}
       />
 
