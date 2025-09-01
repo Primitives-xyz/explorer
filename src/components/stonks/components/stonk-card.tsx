@@ -2,7 +2,7 @@
 
 import { SolanaAddressDisplay } from '@/components/common/solana-address-display'
 import { useSwapStore } from '@/components/swap/stores/use-swap-store'
-import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
+import { Graph } from '@/components/trade/trade-content/graph'
 import {
   Badge,
   Button,
@@ -23,6 +23,7 @@ interface Props {
   isExpanded: boolean
   onClick: () => void
   precomputedUsdPrice?: number | null
+  precomputedChange24h?: number | null
 }
 
 export function StonkCard({
@@ -30,34 +31,17 @@ export function StonkCard({
   isExpanded,
   onClick,
   precomputedUsdPrice,
+  precomputedChange24h,
 }: Props) {
   const { setOpen, setInputs } = useSwapStore()
   const [priceHistory, setPriceHistory] = useState<number[]>([])
 
-  const {
-    price: fetchedPrice,
-    loading: priceLoading,
-    error: priceError,
-  } = useTokenUSDCPrice({
-    tokenMint: stock.symbol === 'USDC' ? null : stock.mint,
-    decimals: stock.decimals,
-    precomputedUsdPrice,
-  })
-
   // Prefer fetched price for xStock tokens; avoid falling back to hardcoded if no liquidity
-  const currentPrice =
-    stock.symbol === 'USDC'
-      ? 1
-      : stock.symbol === 'SOL'
-      ? fetchedPrice ?? stock.price ?? 0
-      : fetchedPrice ?? 0
+  const currentPrice = stock.symbol === 'USDC' ? 1 : precomputedUsdPrice ?? 0
 
   const hasValidPrice = typeof currentPrice === 'number' && currentPrice > 0
-  const noLiquidity =
-    !priceLoading &&
-    stock.symbol !== 'USDC' &&
-    stock.symbol !== 'SOL' &&
-    (!hasValidPrice || !!priceError)
+  const noLiquidity = stock.symbol !== 'USDC' && !hasValidPrice
+  const priceLoading = false
 
   // Simulate price history for chart (in production, fetch from API)
   useEffect(() => {
@@ -69,9 +53,11 @@ export function StonkCard({
     }
   }, [currentPrice])
 
-  // Simulate 24h change (in production, calculate from historical data)
-  const change24h = stock.symbol === 'USDC' ? 0 : (Math.random() - 0.5) * 10
-  const isPositive = change24h >= 0
+  // Use v3 priceChange24h only; if unavailable, don't show a value
+  const hasChange =
+    precomputedChange24h !== null && precomputedChange24h !== undefined
+  const change24h = hasChange ? precomputedChange24h : null
+  const isPositive = change24h !== null ? change24h >= 0 : false
 
   const handleBuy = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -149,7 +135,7 @@ export function StonkCard({
                   </Badge>
                 )}
               </div>
-              {!noLiquidity && (
+              {!noLiquidity && hasChange && change24h !== null && (
                 <div
                   className={cn(
                     'flex items-center gap-1 text-xs md:text-sm',
@@ -165,6 +151,11 @@ export function StonkCard({
                     {isPositive ? '+' : ''}
                     {change24h.toFixed(2)}%
                   </span>
+                </div>
+              )}
+              {!noLiquidity && !hasChange && (
+                <div className="text-[10px] md:text-xs text-muted-foreground">
+                  —
                 </div>
               )}
             </div>
@@ -211,10 +202,10 @@ export function StonkCard({
                       <SolanaAddressDisplay address={stock.mint} />
                     </div>
                   )}
-                  {/* Full Chart */}
-                  {!noLiquidity && (
-                    <div className="h-32 md:h-48 mb-4 md:mb-6">
-                      <StockChart data={priceHistory} isPositive={isPositive} />
+                  {/* Full Chart (Birdeye) */}
+                  {!!stock.mint && (
+                    <div className="mb-4 md:mb-6">
+                      <Graph id={stock.mint} />
                     </div>
                   )}
 

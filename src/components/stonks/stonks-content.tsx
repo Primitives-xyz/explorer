@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@/utils/api'
+import { useTokenPriceV3 } from '@/components/token/hooks/use-token-price-v3'
 import { USDC_MINT } from '@/utils/constants'
 import { useEffect, useMemo, useState } from 'react'
 import { StonkCard } from './components/stonk-card'
@@ -657,20 +657,7 @@ export function StonksContent() {
   )
 
   // Fetch v3 prices for all at once (every minute)
-  const { data: v3Data } = useQuery<
-    Record<string, { usdPrice: number; priceChange24h?: number }>
-  >({
-    endpoint: 'jupiter/price-v3',
-    queryParams: priceIds ? { ids: priceIds } : undefined,
-    skip: !priceIds,
-    config: {
-      refreshInterval: 60000,
-      dedupingInterval: 10000,
-      keepPreviousData: true,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-    },
-  })
+  const { data: v3Data } = useTokenPriceV3({ mints: stocks.map((s) => s.mint) })
 
   // Update stock data every minute (force re-render)
   useEffect(() => {
@@ -705,6 +692,7 @@ export function StonksContent() {
             isExpanded={expandedIndex === index}
             onClick={() => handleCardClick(index)}
             precomputedUsdPrice={v3Data?.[stock.mint]?.usdPrice ?? null}
+            precomputedChange24h={v3Data?.[stock.mint]?.priceChange24h ?? null}
           />
         ))}
       </div>
