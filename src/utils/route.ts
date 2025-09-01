@@ -19,6 +19,7 @@ const routes = {
     `/trade${query ? `?${toQueryString(query)}` : ''}`,
   stake: () => '/stake',
   trenches: () => '/trenches',
+  stonks: () => '/stonks',
   namespace: ({ id }: { id: string }) => `/namespace/${id}`,
   namespaceProfile: ({ id, profile }: { id: string; profile: string }) =>
     `/namespace/${id}/${profile}`,
