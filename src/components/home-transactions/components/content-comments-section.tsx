@@ -8,6 +8,7 @@ import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import Link from 'next/link'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useContentComments } from '../hooks/use-content-comments'
 
 export function CommentsSection({
@@ -26,12 +27,11 @@ export function CommentsSection({
   const [submitting, setSubmitting] = useState(false)
 
   async function handleSubmit() {
-    console.log('handleSubmit', text, mainProfile, mainProfile?.username)
     if (!text.trim() || !mainProfile?.username) return
     setSubmitting(true)
     try {
       const authToken = getAuthToken()
-      await fetch('/api/comments/create', {
+      const response = await fetch('/api/comments/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,9 +43,22 @@ export function CommentsSection({
           text: text.trim(),
         }),
       })
+      if (!response.ok) {
+        let description = 'Please try again.'
+        try {
+          const data = await response.json()
+          description = data?.error || data?.message || description
+        } catch {}
+        toast.error('Failed to post comment', { description })
+        return
+      }
       setText('')
       await refetch()
       onAfterSubmit?.()
+    } catch (error) {
+      const description =
+        error instanceof Error ? error.message : 'Unknown error'
+      toast.error('Failed to post comment', { description })
     } finally {
       setSubmitting(false)
     }
