@@ -15,7 +15,7 @@ import { useEffect } from 'react'
 import { IHomeTransaction } from '../home-transactions.models'
 import { useTransactionContent } from '../hooks/use-transaction-content'
 import { processSwapTransaction } from '../utils/swap-transaction.utils'
-import { LikesButton } from './likes-button'
+import { ContentActions } from './content-actions'
 import { TransactionsHeader } from './transactions-header'
 
 export type TokenDisplay = {
@@ -269,17 +269,18 @@ export function SwapTransactionsView({ transaction, sourceWallet }: Props) {
           usdValue={toAmountUsd}
         />
 
-        {/* Likes section in bottom right */}
-        <div className="flex justify-end">
-          {transaction.signature && (
-            <LikesButton
+        {/* Actions: likes + comments */}
+        {transaction.signature && (
+          <div className="w-full">
+            <ContentActions
               contentId={transaction.signature}
               initialLikeCount={likeCount}
               initialHasLiked={hasLiked}
+              initialCommentCount={content?.socialCounts?.commentCount || 0}
               onLikeChange={handleLikeChange}
             />
-          )}
-        </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

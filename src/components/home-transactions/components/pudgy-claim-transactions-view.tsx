@@ -9,6 +9,7 @@ import { CheckCircle, ExternalLink, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { IHomeTransaction } from '../home-transactions.models'
+import { ContentActions } from './content-actions'
 
 interface Props {
   transaction: IHomeTransaction & {
@@ -165,6 +166,17 @@ export function PudgyClaimTransactionsView({ transaction }: Props) {
                 View Pudgy Profile →
               </div>
             </Link>
+            {/* Actions: likes + comments */}
+            {content.txSignature && (
+              <div className="w-full">
+                <ContentActions
+                  contentId={content.txSignature}
+                  initialLikeCount={0}
+                  initialHasLiked={false}
+                  initialCommentCount={0}
+                />
+              </div>
+            )}
           </div>
         </div>
 
