@@ -11,6 +11,7 @@ export async function fetchTapestryServer<T = any>({
 }): Promise<T> {
   const BASE_URL = process.env.TAPESTRY_URL?.replace(/\/+$/, '')
   const API_KEY = process.env.TAPESTRY_API_KEY
+  const DEBUG = false
 
   if (!BASE_URL || !API_KEY) {
     throw new Error(
@@ -35,10 +36,26 @@ export async function fetchTapestryServer<T = any>({
       options.body = JSON.stringify(data)
     }
 
+    if (DEBUG) {
+      console.debug('[Tapestry] Request:', {
+        method,
+        url,
+        hasBody: !!data,
+      })
+    }
+
     const response = await fetch(url, options)
 
     if (!response.ok) {
       const errorText = await response.text()
+      if (DEBUG) {
+        console.error('[Tapestry] Error response:', {
+          method,
+          url,
+          status: response.status,
+          errorText,
+        })
+      }
 
       // Handle specific status codes
       switch (response.status) {

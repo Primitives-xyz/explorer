@@ -8,6 +8,7 @@ import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { IHomeTransaction } from '../home-transactions.models'
+import { ContentActions } from './content-actions'
 import { TransactionsHeader } from './transactions-header'
 
 interface Props {
@@ -117,6 +118,18 @@ export function StakeTransactionsView({ transaction, sourceWallet }: Props) {
             </p>
           </div>
         </div>
+
+        {/* Actions: likes + comments */}
+        {transaction.signature && (
+          <div className="w-full">
+            <ContentActions
+              contentId={transaction.signature}
+              initialLikeCount={0}
+              initialHasLiked={false}
+              initialCommentCount={0}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   )
