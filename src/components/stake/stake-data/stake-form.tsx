@@ -276,6 +276,12 @@ export function StakeForm({
       >
         {showStakeLoading ? <Spinner /> : t('stake.tabs.stake')}
       </Button>
+
+      {!isStakingEnabled && (
+        <p className="mt-2 text-sm text-center text-orange-300 font-medium">
+          Temporarily disabled
+        </p>
+      )}
     </div>
   )
 }

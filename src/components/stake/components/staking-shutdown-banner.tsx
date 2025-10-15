@@ -65,7 +65,7 @@ export function StakingShutdownBanner({
               <p>
                 3. Follow our announcement on{' '}
                 <a
-                  href="https://twitter.com/TapestryProto"
+                  href="https://x.com/usetapestry"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:text-blue-400 underline"
@@ -111,7 +111,7 @@ export function StakingShutdownBanner({
               <p>
                 • Follow our{' '}
                 <a
-                  href="https://twitter.com/TapestryProto"
+                  href="https://x.com/usetapestry"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 underline"
