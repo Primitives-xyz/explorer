@@ -99,11 +99,10 @@ export function StakingShutdownBanner({
           </div>
           <div className="flex-1">
             <h3 className="text-xl font-bold text-orange-400 mb-2">
-              Staking Temporarily Paused
+              New Staking Temporarily Paused – Unstake Still Available
             </h3>
             <p className="text-sm text-gray-300 mb-3">
-              New staking deposits are currently disabled. Please unstake and
-              claim all your rewards using the tabs below.
+            New staking deposits are currently disabled for maintenance. Please unstake and claim all your rewards.
             </p>
             <div className="space-y-2 text-sm text-gray-300">
               <p>• Use the &quot;Unstake&quot; tab to withdraw your staked SSE</p>
