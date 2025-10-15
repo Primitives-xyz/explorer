@@ -10,9 +10,10 @@ import { useTranslations } from 'next-intl'
 
 interface Props {
   selectedType: StakeFilterType
+  isStakingEnabled: boolean
 }
 
-export function StakeData({ selectedType }: Props) {
+export function StakeData({ selectedType, isStakingEnabled }: Props) {
   const t = useTranslations('stake')
   const {
     stakeAmount,
@@ -56,7 +57,7 @@ export function StakeData({ selectedType }: Props) {
   const renderForm = () => {
     switch (selectedType) {
       case StakeFilterType.STAKE:
-        return <StakeForm />
+        return <StakeForm isStakingEnabled={isStakingEnabled} />
 
       case StakeFilterType.UNSTAKE:
         return (

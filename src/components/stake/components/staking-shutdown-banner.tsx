@@ -1,6 +1,5 @@
 'use client'
 
-import { ENABLE_STAKING } from '@/utils/constants'
 import { motion } from 'framer-motion'
 import { AlertCircle, ArrowRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -13,11 +12,6 @@ export function StakingShutdownBanner({
   isOverlayMode = false,
 }: StakingShutdownBannerProps) {
   const t = useTranslations()
-
-  // Only show if staking is disabled
-  if (ENABLE_STAKING) {
-    return null
-  }
 
   // If in overlay mode, use modal-like design
   if (isOverlayMode) {

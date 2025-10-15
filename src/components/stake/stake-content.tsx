@@ -12,7 +12,6 @@ import { StakingShutdownBanner } from './components/staking-shutdown-banner'
 import { StakingV2UnlockModal } from './components/staking-v2-unlock-modal'
 import { useMigrationCheck } from './hooks/use-migration-check'
 import { useStakeInfo } from './hooks/use-stake-info'
-import { ENABLE_STAKING } from '@/utils/constants'
 
 export enum StakeFilterType {
   STAKE = 'stake',
@@ -20,7 +19,11 @@ export enum StakeFilterType {
   CLAIM_REWARDS = 'claim-rewards',
 }
 
-export function StakeContent() {
+interface StakeContentProps {
+  isStakingEnabled: boolean
+}
+
+export function StakeContent({ isStakingEnabled }: StakeContentProps) {
   const t = useTranslations('stake')
   const options = [
     { label: t('tabs.stake'), value: StakeFilterType.STAKE },
@@ -76,17 +79,8 @@ export function StakeContent() {
 
   return (
     <div className="flex flex-col w-full space-y-6 relative">
-      {/* Shutdown Banner - Show as overlay when staking is disabled */}
-      {!ENABLE_STAKING && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <StakingShutdownBanner isOverlayMode={true} />
-          </div>
-        </div>
-      )}
-
       {/* Migration Banner - Now positioned as overlay when migration is needed */}
-      {ENABLE_STAKING && needsMigration && !isMigrationLoading && (
+      {isStakingEnabled && needsMigration && !isMigrationLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <MigrationBanner
@@ -98,16 +92,21 @@ export function StakeContent() {
         </div>
       )}
 
-      {/* Main Content - Blurred when migration is needed or staking is disabled */}
+      {/* Main Content - Blurred only when migration is needed */}
       <div
         className={`transition-all duration-500 ${
-          (!ENABLE_STAKING || (needsMigration && !isMigrationLoading))
+          isStakingEnabled && needsMigration && !isMigrationLoading
             ? 'blur-sm pointer-events-none select-none'
             : ''
         }`}
       >
+        {/* Shutdown Banner - Show as normal banner when staking is disabled */}
+        {!isStakingEnabled && (
+          <StakingShutdownBanner isOverlayMode={false} />
+        )}
+
         {/* Migration Banner for non-critical display (when no migration needed) */}
-        {ENABLE_STAKING && (!needsMigration || isMigrationLoading) && (
+        {isStakingEnabled && (!needsMigration || isMigrationLoading) && (
           <MigrationBanner
             hideWhenModalOpen={false}
             isModalOpen={showV2Modal}
@@ -143,7 +142,10 @@ export function StakeContent() {
                 selected={selectedType}
                 onSelect={setSelectedType}
               />
-              <StakeData selectedType={selectedType} />
+              <StakeData
+                selectedType={selectedType}
+                isStakingEnabled={isStakingEnabled}
+              />
             </div>
           </div>
         </div>
