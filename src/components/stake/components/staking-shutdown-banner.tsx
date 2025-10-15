@@ -43,12 +43,11 @@ export function StakingShutdownBanner({
                 <div className="absolute inset-0 h-5 w-5 sm:h-6 sm:w-6 animate-ping rounded-full bg-orange-400/30" />
               </div>
               <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white to-orange-200 bg-clip-text text-transparent">
-                Staking Temporarily Paused
+                New Staking Temporarily Paused – Unstake Still Available
               </h2>
             </div>
             <p className="text-sm sm:text-base text-orange-100/90">
-              New staking deposits are currently disabled. Please unstake and
-              claim all your rewards.
+              New staking deposits are currently disabled for maintenance. Please unstake and claim all your rewards.
             </p>
           </div>
         </div>
