@@ -58,6 +58,8 @@ export const TAPESTRY_API_KEY = process.env.TAPESTRY_API_KEY
 export const ENABLE_ANALYTICS =
   process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true'
 export const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+export const ENABLE_STAKING =
+  process.env.NEXT_PUBLIC_ENABLE_STAKING === 'true'
 
 // Utility Functions
 export const getHeliusEndpoint = (path: string) =>
