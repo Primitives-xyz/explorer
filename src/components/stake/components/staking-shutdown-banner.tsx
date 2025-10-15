@@ -92,11 +92,7 @@ export function StakingShutdownBanner({
 
   // Original banner design for non-overlay mode
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 backdrop-blur-sm p-6 mb-6 border border-orange-500/30 shadow-xl"
-    >
+    <div className="w-full rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 backdrop-blur-sm p-6 mb-6 border border-orange-500/30 shadow-xl">
       <div className="flex flex-col space-y-4">
         <div className="flex items-start space-x-4">
           <div className="w-12 h-12 rounded-full bg-orange-500/30 flex items-center justify-center flex-shrink-0">
@@ -136,6 +132,6 @@ export function StakingShutdownBanner({
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

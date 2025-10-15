@@ -2,12 +2,18 @@
 
 import { useTheme } from 'next-themes'
 import { createPortal } from 'react-dom'
+import { useEffect, useState } from 'react'
 import { Toaster as Sonner } from 'sonner'
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme()
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const toasterContent = (
     <Sonner
@@ -28,8 +34,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
     />
   )
 
-  // Only render in the browser
-  if (typeof window === 'undefined') return null
+  // Only render in the browser after hydration
+  if (typeof window === 'undefined' || !isMounted) return null
 
   return createPortal(toasterContent, document.body)
 }
