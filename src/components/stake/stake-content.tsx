@@ -8,9 +8,11 @@ import { FilterTabs } from '@/components/ui'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { MigrationBanner } from './components/migration-banner'
+import { StakingShutdownBanner } from './components/staking-shutdown-banner'
 import { StakingV2UnlockModal } from './components/staking-v2-unlock-modal'
 import { useMigrationCheck } from './hooks/use-migration-check'
 import { useStakeInfo } from './hooks/use-stake-info'
+import { ENABLE_STAKING } from '@/utils/constants'
 
 export enum StakeFilterType {
   STAKE = 'stake',
@@ -74,8 +76,17 @@ export function StakeContent() {
 
   return (
     <div className="flex flex-col w-full space-y-6 relative">
+      {/* Shutdown Banner - Show as overlay when staking is disabled */}
+      {!ENABLE_STAKING && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <StakingShutdownBanner isOverlayMode={true} />
+          </div>
+        </div>
+      )}
+
       {/* Migration Banner - Now positioned as overlay when migration is needed */}
-      {needsMigration && !isMigrationLoading && (
+      {ENABLE_STAKING && needsMigration && !isMigrationLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <MigrationBanner
@@ -87,16 +98,16 @@ export function StakeContent() {
         </div>
       )}
 
-      {/* Main Content - Blurred when migration is needed */}
+      {/* Main Content - Blurred when migration is needed or staking is disabled */}
       <div
         className={`transition-all duration-500 ${
-          needsMigration && !isMigrationLoading
+          (!ENABLE_STAKING || (needsMigration && !isMigrationLoading))
             ? 'blur-sm pointer-events-none select-none'
             : ''
         }`}
       >
         {/* Migration Banner for non-critical display (when no migration needed) */}
-        {(!needsMigration || isMigrationLoading) && (
+        {ENABLE_STAKING && (!needsMigration || isMigrationLoading) && (
           <MigrationBanner
             hideWhenModalOpen={false}
             isModalOpen={showV2Modal}

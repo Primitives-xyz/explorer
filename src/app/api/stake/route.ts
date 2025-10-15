@@ -1,4 +1,4 @@
-import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
+import { SSE_MINT, SSE_TOKEN_DECIMAL, ENABLE_STAKING } from '@/utils/constants'
 import { detectStakingVersion } from '@/utils/staking-version'
 import { getAssociatedTokenAccount } from '@/utils/token'
 import {
@@ -24,6 +24,17 @@ function convertToBN(value: number, decimals: number) {
 
 export async function GET(req: NextRequest) {
   try {
+    // Check if staking is enabled
+    if (!ENABLE_STAKING) {
+      return NextResponse.json(
+        {
+          error: 'Staking is currently disabled. Please unstake and claim your rewards.',
+          disabled: true
+        },
+        { status: 403 }
+      )
+    }
+
     const { searchParams } = new URL(req.url)
     const amount = searchParams.get('amount')
     const walletAddress = searchParams.get('walletAddress')
@@ -101,6 +112,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if staking is enabled
+    if (!ENABLE_STAKING) {
+      return NextResponse.json(
+        {
+          error: 'Staking is currently disabled. Please unstake and claim your rewards.',
+          disabled: true
+        },
+        { status: 403 }
+      )
+    }
+
     const { signedTransaction } = await req.json()
 
     if (!signedTransaction) {

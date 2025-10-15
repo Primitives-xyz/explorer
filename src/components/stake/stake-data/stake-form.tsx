@@ -7,7 +7,7 @@ import {
   Input,
   Spinner,
 } from '@/components/ui'
-import { SSE_MINT, SSE_TOKEN_DECIMAL } from '@/utils/constants'
+import { SSE_MINT, SSE_TOKEN_DECIMAL, ENABLE_STAKING } from '@/utils/constants'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { formatRawAmount } from '@/utils/utils'
@@ -262,7 +262,8 @@ export function StakeForm({ initialAmount = '' }: Props) {
       <Button
         className="mt-6 w-full"
         onClick={handleStake}
-        disabled={showStakeLoading || !displayAmount || !!inputError}
+        disabled={!ENABLE_STAKING || showStakeLoading || !displayAmount || !!inputError}
+        title={!ENABLE_STAKING ? 'Staking is currently disabled' : undefined}
       >
         {showStakeLoading ? <Spinner /> : t('stake.tabs.stake')}
       </Button>
