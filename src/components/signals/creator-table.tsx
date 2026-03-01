@@ -32,6 +32,7 @@ export function CreatorTable({ creators, onSelectWallet }: Props) {
   const [sortKey, setSortKey] = useState<SortKey>('totalTokensCreated')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [filterSelfSellers, setFilterSelfSellers] = useState(false)
+  const [hideGraduated, setHideGraduated] = useState(false)
 
   const handleBuy = (mint: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -48,6 +49,10 @@ export function CreatorTable({ creators, onSelectWallet }: Props) {
     let list = [...creators]
     if (filterSelfSellers) {
       list = list.filter((c) => c.soldOwnTokens)
+    }
+    if (hideGraduated) {
+      // Keep creators who still have at least one non-graduated token
+      list = list.filter((c) => c.tokensCreated.some((t) => !t.fullyBonded))
     }
     list.sort((a, b) => {
       let aVal: number
@@ -75,7 +80,7 @@ export function CreatorTable({ creators, onSelectWallet }: Props) {
       return sortDir === 'desc' ? bVal - aVal : aVal - bVal
     })
     return list
-  }, [creators, sortKey, sortDir, filterSelfSellers])
+  }, [creators, sortKey, sortDir, filterSelfSellers, hideGraduated])
 
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -98,7 +103,7 @@ export function CreatorTable({ creators, onSelectWallet }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {/* Filter controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <button
           onClick={() => setFilterSelfSellers(!filterSelfSellers)}
           className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
@@ -108,6 +113,16 @@ export function CreatorTable({ creators, onSelectWallet }: Props) {
           }`}
         >
           Self-sellers only
+        </button>
+        <button
+          onClick={() => setHideGraduated(!hideGraduated)}
+          className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+            hideGraduated
+              ? 'bg-green-500/15 border-green-500/30 text-green-400'
+              : 'bg-card border-border text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Hide graduated
         </button>
         <span className="text-xs text-muted-foreground font-mono">
           {sorted.length} creator{sorted.length !== 1 ? 's' : ''}

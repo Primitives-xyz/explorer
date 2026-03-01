@@ -6,17 +6,28 @@ import { ProfitorTable } from './profitor-table'
 import { WalletDetailPanel } from './wallet-detail-panel'
 import { LiveFeed } from './live-feed'
 import { InfoTip } from './info-tip'
+import { BondingFunnel } from './bonding-funnel'
 import {
   TokenActivityView,
   type WalletTokenActivity,
 } from './token-activity-view'
 import type {
   CreatorProfile,
+  IndividualTrade,
   ProfitorProfile,
   CreatorSelfSellAlert,
 } from './signals-types'
 
-type Tab = 'creators' | 'profitors' | 'feed'
+function deduplicateTradesBySignature(trades: IndividualTrade[]): IndividualTrade[] {
+  const seen = new Set<string>()
+  return trades.filter((trade) => {
+    if (seen.has(trade.signature)) return false
+    seen.add(trade.signature)
+    return true
+  })
+}
+
+type Tab = 'creators' | 'profitors' | 'feed' | 'bonding'
 
 type TokenViewState = {
   mint: string
@@ -33,18 +44,46 @@ export function SignalsContent() {
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null)
   const [tokenView, setTokenView] = useState<TokenViewState>(null)
   const [connected, setConnected] = useState(false)
+  // High-water mark: the maximum bonding progress each token has ever reached.
+  // Tracked separately because sells can push the live value back down.
+  const [maxBondingProgress, setMaxBondingProgress] = useState<Record<string, number>>({})
   const wsRef = useRef<WebSocket | null>(null)
   const alertsRef = useRef(alerts)
   alertsRef.current = alerts
+
+  /** Update maxBondingProgress from a list of token entries (never decreases). */
+  const applyBondingHighWaterMark = useCallback(
+    (tokens: CreatorProfile['tokensCreated']) => {
+      setMaxBondingProgress((prev) => {
+        let changed = false
+        const next = { ...prev }
+        for (const token of tokens) {
+          const prog = token.fullyBonded ? 1 : token.bondingProgress
+          if (prog > (next[token.mint] ?? 0)) {
+            next[token.mint] = prog
+            changed = true
+          }
+        }
+        return changed ? next : prev
+      })
+    },
+    []
+  )
 
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
       const msg = JSON.parse(event.data)
 
       switch (msg.type) {
-        case 'CreatorMapSnapshot':
-          setCreatorMap(msg.data || {})
+        case 'CreatorMapSnapshot': {
+          const snapshot = (msg.data || {}) as Record<string, CreatorProfile>
+          setCreatorMap(snapshot)
+          // Seed high-water marks from the snapshot
+          for (const profile of Object.values(snapshot)) {
+            applyBondingHighWaterMark(profile.tokensCreated)
+          }
           break
+        }
 
         case 'ProfitorLeaderboard':
           setProfitorList(msg.data || [])
@@ -53,6 +92,7 @@ export function SignalsContent() {
         case 'CreatorUpdate': {
           const profile = msg.data as CreatorProfile
           setCreatorMap((prev) => ({ ...prev, [profile.wallet]: profile }))
+          applyBondingHighWaterMark(profile.tokensCreated)
           break
         }
 
@@ -130,13 +170,35 @@ export function SignalsContent() {
     for (const profitor of profitorList) {
       const tokenEntry = profitor.tokenActivity.find((t) => t.mint === mint)
       if (tokenEntry) {
+        const trades = deduplicateTradesBySignature(tokenEntry.trades || [])
         activities.push({
           wallet: profitor.wallet,
           buyVolume: tokenEntry.buyVolume,
           sellVolume: tokenEntry.sellVolume,
-          tradeCount: tokenEntry.tradeCount,
-          trades: tokenEntry.trades || [],
+          tradeCount: trades.length,
+          trades,
           isCreator: profitor.wallet === creatorWallet,
+        })
+      }
+    }
+
+    // The creator wallet may not be in profitorList (which is capped at top 100
+    // by sell volume). If we have creator-profile data for this token, synthesize
+    // an entry from it so the creator always appears in the activity table.
+    if (creatorWallet && !activities.find((a) => a.wallet === creatorWallet)) {
+      const selfSell = creatorMap[creatorWallet]?.selfSellDetails.find(
+        (s) => s.mint === mint
+      )
+      const buyVolume = creatorToken?.creatorInitialBuySol ?? 0
+      const sellVolume = selfSell?.sellVolume ?? 0
+      if (buyVolume > 0 || sellVolume > 0) {
+        activities.push({
+          wallet: creatorWallet,
+          buyVolume,
+          sellVolume,
+          tradeCount: (buyVolume > 0 ? 1 : 0) + (selfSell?.sellCount ?? 0),
+          trades: [],
+          isCreator: true,
         })
       }
     }
@@ -152,6 +214,7 @@ export function SignalsContent() {
     { key: 'creators', label: 'Token Creators', count: creatorCount },
     { key: 'profitors', label: 'Top Profitors', count: profitorList.length },
     { key: 'feed', label: 'Live Feed', count: alerts.length },
+    { key: 'bonding', label: 'Bonding Funnel' },
   ]
 
   return (
@@ -260,6 +323,13 @@ export function SignalsContent() {
       )}
       {activeTab === 'feed' && (
         <LiveFeed alerts={alerts} onSelectWallet={setSelectedWallet} />
+      )}
+      {activeTab === 'bonding' && (
+        <BondingFunnel
+          maxProgress={maxBondingProgress}
+          creatorMap={creatorMap}
+          onSelectWallet={setSelectedWallet}
+        />
       )}
 
       {/* Wallet detail panel */}

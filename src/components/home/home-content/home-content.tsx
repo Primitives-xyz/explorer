@@ -1,13 +1,13 @@
 'use client'
 
-import { Button, ButtonVariant } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { route } from '@/utils/route'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
   ArrowRightLeft,
-  Globe,
+  Radio,
   Search,
   Terminal,
   Users,
@@ -15,9 +15,10 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { GlobalFeed } from './global-feed'
 
 export function HomeContent() {
-  const { mainProfile, isLoggedIn, setShowAuthFlow, walletAddress } = useCurrentWallet()
+  const { mainProfile, isLoggedIn, setShowAuthFlow } = useCurrentWallet()
 
   return (
     <div className="w-full space-y-6 pt-2">
@@ -48,13 +49,13 @@ export function HomeContent() {
           href={route('investigate')}
           icon={Search}
           title="Investigate"
-          description="Explore wallets"
+          description="Explore a wallet"
         />
         <QuickAction
-          href={route('map')}
-          icon={Globe}
-          title="Map"
-          description="Find community"
+          href={route('signals')}
+          icon={Radio}
+          title="Signals"
+          description="Live Pump.fun feed"
         />
       </div>
 
@@ -68,8 +69,7 @@ export function HomeContent() {
             </span>
           </div>
           <p className="font-mono text-xs text-muted-foreground max-w-md mx-auto">
-            Connect your wallet to follow users, set your location on the map,
-            and track your transactions.
+            Connect your wallet to follow users and track your transactions.
           </p>
           <Button
             onClick={() => setShowAuthFlow(true)}
@@ -85,12 +85,10 @@ export function HomeContent() {
         <FollowingSection username={mainProfile.username} />
       )}
 
-      {/* Recent Wallet Activity (when logged in) */}
-      {isLoggedIn && walletAddress && (
-        <RecentActivity walletAddress={walletAddress} />
-      )}
+      {/* Global trade feed */}
+      <GlobalFeed />
 
-      {/* Network Stats */}
+      {/* Quick Links */}
       <div className="bg-card/50 border border-border/20 rounded-md p-4">
         <div className="flex items-center gap-2 mb-3">
           <Users size={14} className="text-primary/60" />
@@ -102,7 +100,7 @@ export function HomeContent() {
           {[
             { label: 'Trade Tokens', href: route('trade') },
             { label: 'Investigate', href: route('investigate') },
-            { label: 'Community Map', href: route('map') },
+            { label: 'Signals', href: route('signals') },
             { label: 'My Profile', href: isLoggedIn && mainProfile ? route('entity', { id: mainProfile.username }) : '#' },
           ].map((link) => (
             <Link
@@ -223,84 +221,6 @@ function FollowingSection({ username }: { username: string }) {
           </Link>
         ))}
       </div>
-    </div>
-  )
-}
-
-function RecentActivity({ walletAddress }: { walletAddress: string }) {
-  const [transactions, setTransactions] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchRecent() {
-      try {
-        const res = await fetch(
-          `/api/investigate/transactions?address=${walletAddress}&limit=5&transactionDetails=signatures`
-        )
-        if (res.ok) {
-          const data = await res.json()
-          setTransactions(data?.data || [])
-        }
-      } catch (e) {
-        console.error('Failed to fetch recent activity:', e)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchRecent()
-  }, [walletAddress])
-
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Zap size={14} className="text-primary/60" />
-          <span className="font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
-            Recent Activity
-          </span>
-        </div>
-        <Link
-          href={route('investigate', { address: walletAddress })}
-          className="font-mono text-[10px] text-primary/60 hover:text-primary transition-colors"
-        >
-          View all →
-        </Link>
-      </div>
-
-      {loading ? (
-        <div className="space-y-1">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="w-full h-8 rounded" />
-          ))}
-        </div>
-      ) : transactions.length === 0 ? (
-        <p className="font-mono text-xs text-muted-foreground/50 py-3">
-          No recent transactions
-        </p>
-      ) : (
-        <div className="space-y-0.5">
-          {transactions.map((tx: any, i: number) => {
-            const sig = tx.signature || tx.transaction?.signatures?.[0] || ''
-            const time = tx.blockTime
-              ? new Date(tx.blockTime * 1000).toLocaleString()
-              : '--'
-            return (
-              <Link
-                key={sig || i}
-                href={route('entity', { id: sig })}
-                className="flex items-center justify-between px-3 py-2 rounded hover:bg-primary/5 transition-colors"
-              >
-                <span className="font-mono text-xs text-foreground/60 truncate max-w-[200px]">
-                  {sig ? `${sig.slice(0, 12)}...${sig.slice(-6)}` : '--'}
-                </span>
-                <span className="font-mono text-[10px] text-muted-foreground/50">
-                  {time}
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      )}
     </div>
   )
 }

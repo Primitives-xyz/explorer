@@ -468,9 +468,9 @@ export function TokenActivityView({
                 <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
                   {[...selectedWalletTrades.trades]
                     .reverse()
-                    .map((trade, idx) => (
+                    .map((trade) => (
                       <div
-                        key={`${trade.signature}-${idx}`}
+                        key={trade.signature}
                         className={`flex items-center gap-3 px-3 py-2 rounded-md text-xs ${
                           trade.isBuy
                             ? 'bg-green-500/5 border border-green-500/10'

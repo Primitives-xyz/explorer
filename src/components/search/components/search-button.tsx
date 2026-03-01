@@ -17,7 +17,6 @@ import { useRef, useState } from 'react'
 import { SearchResultsProfiles } from './search-results-profiles'
 import { SearchResultsTokens } from './search-results-tokens'
 import { SearchTopTraders } from './search-top-traders'
-import { SearchTrendingTokens } from './search-trending-tokens'
 
 export const SEARCH_RESULTS_LIMIT = 5
 
@@ -97,11 +96,7 @@ export function SearchButton() {
                 <SearchResultsTokens query={query} closePopover={closeModal} />
               </>
             ) : (
-              <>
-                <SearchTopTraders closePopover={closeModal} />
-                <Separator className="mt-3 mb-0" />
-                <SearchTrendingTokens closePopover={closeModal} />
-              </>
+              <SearchTopTraders closePopover={closeModal} />
             )}
           </div>
           <PoweredbyTapestry />

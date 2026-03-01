@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import {
   Table,
   TableBody,
@@ -31,6 +32,7 @@ export function WalletDetailPanel({
   onViewToken,
 }: Props) {
   const { setOpen, setInputs } = useSwapStore()
+  const [hideGraduated, setHideGraduated] = useState(false)
 
   const handleBuy = (mint: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -157,14 +159,26 @@ export function WalletDetailPanel({
           {/* Created tokens */}
           {creator && creator.tokensCreated.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1.5">
-                Tokens Created
-                {onViewToken && (
-                  <span className="text-xs font-normal text-muted-foreground">
-                    — click a row to view token activity
-                  </span>
-                )}
-              </h3>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  Tokens Created
+                  {onViewToken && (
+                    <span className="text-xs font-normal text-muted-foreground">
+                      — click a row to view token activity
+                    </span>
+                  )}
+                </h3>
+                <button
+                  onClick={() => setHideGraduated((v) => !v)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${
+                    hideGraduated
+                      ? 'bg-green-500/15 border-green-500/30 text-green-400'
+                      : 'bg-card border-border text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Hide graduated
+                </button>
+              </div>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -201,6 +215,7 @@ export function WalletDetailPanel({
                   {creator.tokensCreated
                     .slice()
                     .reverse()
+                    .filter((token) => !hideGraduated || !token.fullyBonded)
                     .map((token) => {
                       const selfSell = creator.selfSellDetails.find(
                         (s) => s.mint === token.mint

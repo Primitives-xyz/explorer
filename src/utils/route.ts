@@ -26,6 +26,7 @@ const routes = {
   leaderboard: () => '/leaderboard',
   apps: ({ name }: { name: string }) => `/apps/${name}`,
   map: () => '/map',
+  signals: () => '/signals',
   investigate: (query?: { address?: string }) =>
     query?.address ? `/investigate/${query.address}` : '/investigate',
 }

@@ -5,9 +5,9 @@ import { route } from '@/utils/route'
 import { cn } from '@/utils/utils'
 import {
   ArrowRightLeft,
-  Globe,
   House,
   LucideIcon,
+  Radio,
   Search,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -32,13 +32,6 @@ export function Menu({ setOpen }: Props) {
       />
 
       <Entry
-        title="Map"
-        icon={Globe}
-        href={route('map')}
-        setOpen={setOpen}
-      />
-
-      <Entry
         title={t('menu.trade')}
         icon={ArrowRightLeft}
         href={route('trade')}
@@ -49,6 +42,13 @@ export function Menu({ setOpen }: Props) {
         title="Investigate"
         icon={Search}
         href={route('investigate')}
+        setOpen={setOpen}
+      />
+
+      <Entry
+        title="Signals"
+        icon={Radio}
+        href={route('signals')}
         setOpen={setOpen}
       />
 
