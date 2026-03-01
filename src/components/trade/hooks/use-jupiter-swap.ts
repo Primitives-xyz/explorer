@@ -1,22 +1,16 @@
 'use client'
 
-import { useSSEPrice } from '@/components/trade/hooks/use-sse-price'
-import {
-  DEFAULT_SLIPPAGE_BPS,
-  DEFAULT_SLIPPAGE_VALUE,
-  PLATFORM_FEE_ACCOUNT,
-  PLATFORM_FEE_BPS,
-  SSE_TOKEN_MINT,
-} from '@/utils/constants'
+import type {
+  UltraExecuteResponse,
+  UltraOrderResponse,
+} from '@/types/jupiter-service'
+import { PLATFORM_FEE_BPS } from '@/utils/constants'
 import { isSolanaWallet } from '@dynamic-labs/solana'
-import { getAssociatedTokenAddressSync } from '@solana/spl-token'
-import { PublicKey, VersionedTransaction } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useCreateTradeContentNodeWithScoring } from './use-create-trade-content-with-scoring'
-import { useJupiterTransaction } from './use-jupiter-transaction'
-import { useJupiterTransactionSSE } from './use-jupiter-transaction-sse'
 
 interface UseJupiterSwapParams {
   inputMint: string
@@ -24,45 +18,24 @@ interface UseJupiterSwapParams {
   inputAmount: string
   inputDecimals?: number
   outputDecimals?: number
-  platformFeeBps?: number
   primaryWallet: any
   walletAddress: string
   swapMode?: string
-  useSSE?: boolean // Enable Server-Sent Events for real-time updates
-  sourceWallet?: string // For copy trades
-  sourceTransactionId?: string // For copy trades
+  sourceWallet?: string
+  sourceTransactionId?: string
 }
 
-interface QuoteResponse {
-  inputMint: string
-  inAmount: string
-  outputMint: string
-  outAmount: string
-  otherAmountThreshold: string
-  swapMode: string
-  slippageBps: number
-  platformFee?: {
-    amount: string
-    feeBps: number
-  }
-  priceImpactPct: string
-  routePlan: {
-    swapInfo: {
-      ammKey: string
-      label: string
-      inputMint: string
-      outputMint: string
-      inAmount: string
-      outAmount: string
-      feeAmount: string
-      feeMint: string
-    }
-    percent: number
-  }[]
-  contextSlot: number
-  timeTaken: number
-  swapUsdValue?: string
-  simplerRouteUsed?: boolean
+// Status type compatible with existing UI (swap.tsx)
+interface TransactionStatusUpdate {
+  status:
+    | 'sending'
+    | 'sent'
+    | 'confirming'
+    | 'confirmed'
+    | 'failed'
+    | 'timeout'
+  signature?: string
+  error?: string
 }
 
 export function useJupiterSwap({
@@ -71,124 +44,27 @@ export function useJupiterSwap({
   inputAmount,
   inputDecimals,
   outputDecimals,
-  platformFeeBps = PLATFORM_FEE_BPS,
   primaryWallet,
   walletAddress,
   swapMode = 'ExactIn',
-  useSSE = true, // Default to using SSE for better performance
   sourceWallet,
   sourceTransactionId,
 }: UseJupiterSwapParams) {
   const t = useTranslations()
-  const [quoteResponse, setQuoteResponse] = useState<QuoteResponse | null>(null)
+  const [quoteResponse, setQuoteResponse] = useState<UltraOrderResponse | null>(
+    null
+  )
   const [expectedOutput, setExpectedOutput] = useState<string>('')
   const [txSignature, setTxSignature] = useState<string>('')
   const [isFullyConfirmed, setIsFullyConfirmed] = useState<boolean>(false)
   const [isQuoteRefreshing, setIsQuoteRefreshing] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
-  const [slippageBps, setSlippageBps] = useState<number | string>(
-    DEFAULT_SLIPPAGE_BPS
-  )
-  const { createContentNode } = useCreateTradeContentNodeWithScoring()
   const [priceImpact, setPriceImpact] = useState<string>('')
-  const [sseFeeAmount, setSseFeeAmount] = useState<string>('0')
   const [error, setError] = useState<string | null>(null)
-  const { ssePrice } = useSSEPrice()
+  const [txStatus, setTxStatus] = useState<TransactionStatusUpdate | null>(null)
+  const { createContentNode } = useCreateTradeContentNodeWithScoring()
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const pathname = usePathname()
-
-  // Store the last transaction for retry
-  const lastTransactionRef = useRef<{
-    transaction: VersionedTransaction
-    metadata: any
-  } | null>(null)
-
-  // Common callbacks for both transaction hooks
-  const onStatusUpdate = useCallback((status: any) => {
-    // Just update the signature when sent
-    if (status.status === 'sent' && status.signature) {
-      setTxSignature(status.signature)
-    } else if (status.status === 'confirmed' && status.signature) {
-      setIsFullyConfirmed(true)
-    }
-  }, [])
-
-  const onSuccess = useCallback(
-    async (signature: string) => {
-      // Create content node on success
-      await createContentNode({
-        signature,
-        inputMint,
-        outputMint,
-        inputAmount,
-        expectedOutput,
-        priceImpact,
-        slippageBps:
-          slippageBps === 'auto'
-            ? calculateAutoSlippage(priceImpact)
-            : Number(slippageBps),
-        priorityLevel: 'low',
-        inputDecimals: inputDecimals || 6,
-        outputDecimals: outputDecimals || 6,
-        walletAddress,
-        sourceWallet,
-        sourceTransactionId,
-        swapUsdValue: quoteResponse?.swapUsdValue,
-        usdcFeeAmount: quoteResponse?.swapUsdValue
-          ? (
-              Number(quoteResponse.swapUsdValue) *
-              (platformFeeBps === 1
-                ? PLATFORM_FEE_BPS / 20000
-                : PLATFORM_FEE_BPS / 10000)
-            ).toString()
-          : '0',
-        route: (() => {
-          const path = pathname
-          if (path.includes('/trenches')) return 'trenches'
-          if (path.includes('/trade')) return 'trade'
-          return 'home'
-        })(),
-        sseFeeAmount: platformFeeBps === 1 ? sseFeeAmount : undefined,
-      })
-    },
-    [
-      createContentNode,
-      inputMint,
-      outputMint,
-      inputAmount,
-      expectedOutput,
-      priceImpact,
-      slippageBps,
-      inputDecimals,
-      outputDecimals,
-      walletAddress,
-      sourceWallet,
-      sourceTransactionId,
-      quoteResponse?.swapUsdValue,
-      platformFeeBps,
-      pathname,
-      sseFeeAmount,
-    ]
-  )
-
-  // Initialize the regular transaction hook
-  const regularTxHook = useJupiterTransaction({
-    onStatusUpdate,
-    onSuccess,
-  })
-
-  // Initialize the SSE transaction hook
-  const sseTxHook = useJupiterTransactionSSE({
-    onStatusUpdate,
-    onSuccess,
-  })
-
-  // Select which hook to use based on useSSE flag
-  const {
-    sendAndConfirmTransaction,
-    status: txStatus,
-    error: txError,
-  } = useSSE ? sseTxHook : regularTxHook
 
   const resetQuoteState = useCallback(() => {
     setQuoteResponse(null)
@@ -196,12 +72,12 @@ export function useJupiterSwap({
     setPriceImpact('')
     setTxSignature('')
     setError(null)
-    setTxSignature('')
     setIsFullyConfirmed(false)
     setIsQuoteRefreshing(false)
-    setSseFeeAmount('0')
+    setTxStatus(null)
   }, [])
 
+  // Fetch a quote (order without taker) from Jupiter Ultra
   const fetchQuote = useCallback(async () => {
     if (
       Number(inputAmount) === 0 ||
@@ -225,56 +101,37 @@ export function useJupiterSwap({
       const inputAmountInDecimals = Math.floor(
         Number(inputAmount) * Math.pow(10, inputDecimals)
       )
-      const QUOTE_URL = `
-        https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${inputAmountInDecimals}&slippageBps=${DEFAULT_SLIPPAGE_VALUE}&platformFeeBps=${
-        platformFeeBps !== 0 ? platformFeeBps ?? PLATFORM_FEE_BPS : 1
-      }&feeAccount=${PLATFORM_FEE_ACCOUNT}&swapMode=${swapMode}
-      `
-      const response = await fetch(QUOTE_URL).then((res) => res.json())
-      if (swapMode == 'ExactIn') {
+
+      // Call our Ultra order proxy (without taker = quote only)
+      const url = new URL('/api/jupiter/order', window.location.origin)
+      url.searchParams.set('inputMint', inputMint)
+      url.searchParams.set('outputMint', outputMint)
+      url.searchParams.set('amount', inputAmountInDecimals.toString())
+
+      const response = await fetch(url.toString()).then((res) => res.json())
+
+      if (response.error) {
+        throw new Error(response.error)
+      }
+
+      const order: UltraOrderResponse = response
+
+      if (swapMode === 'ExactIn') {
         setExpectedOutput(
-          (Number(response.outAmount) / Math.pow(10, outputDecimals)).toString()
+          (Number(order.outAmount) / Math.pow(10, outputDecimals)).toString()
         )
       } else {
         setExpectedOutput(
-          (Number(response.inAmount) / Math.pow(10, outputDecimals)).toString()
+          (Number(order.inAmount) / Math.pow(10, outputDecimals)).toString()
         )
       }
-      setPriceImpact(response.priceImpactPct)
-      setQuoteResponse(response)
 
-      if (platformFeeBps === 1 && ssePrice) {
-        try {
-          // Get the input amount in USDC terms using the quote's USD value
-          const swapValueUSDC = Number(response.swapUsdValue ?? '0')
-          const inputAmountUSDC = swapValueUSDC || 0
-
-          // Calculate fees based on USD value
-          const platformFeeUSDC = inputAmountUSDC * (PLATFORM_FEE_BPS / 10000) // 1% of input
-          const halfFeeUSDC = platformFeeUSDC / 2 // 0.5% for SSE
-
-          // Convert USDC fee to SSE using the current SSE/USDC price
-          // If 1 SSE = 0.00782 USDC, then to get SSE amount we divide USDC by 0.00782
-          const sseAmount = halfFeeUSDC / ssePrice
-
-          // Convert to base units (6 decimals)
-          const currentSseFeeAmount = Math.floor(
-            sseAmount * Math.pow(10, 6)
-          ).toString()
-          setSseFeeAmount(currentSseFeeAmount)
-        } catch (err) {
-          console.error(t('error.error_calculating_sse_fee_during_quote'), err)
-          setSseFeeAmount('0')
-        }
-      } else {
-        setSseFeeAmount('0')
-      }
-
+      setPriceImpact(order.priceImpactPct)
+      setQuoteResponse(order)
       setError('')
     } catch (err) {
       console.error(err)
-      setError('Failed to output amount')
-      setSseFeeAmount('0')
+      setError('Failed to fetch quote')
     } finally {
       setLoading(false)
       setIsQuoteRefreshing(false)
@@ -286,7 +143,6 @@ export function useJupiterSwap({
     inputDecimals,
     outputMint,
     outputDecimals,
-    platformFeeBps,
     resetQuoteState,
   ])
 
@@ -300,149 +156,148 @@ export function useJupiterSwap({
   const handleSwap = async () => {
     setLoading(true)
     setIsFullyConfirmed(false)
+    setTxStatus({ status: 'sending' })
+    setError(null)
 
     if (!primaryWallet || !isSolanaWallet(primaryWallet)) {
       setError('Wallet not connected')
       setLoading(false)
+      setTxStatus(null)
       return
     }
 
-    if (platformFeeBps === 1 && !ssePrice) {
-      setError('Unable to calculate SSE fee')
+    if (!inputDecimals || !outputDecimals) {
+      setError('Token decimals not loaded')
       setLoading(false)
-      return
-    }
-
-    if (!quoteResponse) {
-      setError('No quote available')
-      setLoading(false)
-      return
-    }
-
-    let currentSseFeeAmount = '0'
-    try {
-      if (platformFeeBps === 1 && ssePrice) {
-        const swapValueUSDC = Number(quoteResponse.swapUsdValue ?? '0')
-        const inputAmountUSDC = swapValueUSDC || 0
-
-        // Calculate fees based on USD value
-        const platformFeeUSDC = inputAmountUSDC * (PLATFORM_FEE_BPS / 10000) // 1% of input
-        const halfFeeUSDC = platformFeeUSDC / 2 // 0.5% for SSE
-
-        // Convert USDC fee to SSE using the current SSE/USDC price
-        // If 1 SSE = 0.00782 USDC, then to get SSE amount we divide USDC by 0.00782
-        const sseAmount = halfFeeUSDC / ssePrice
-
-        // Convert to base units (6 decimals)
-        currentSseFeeAmount = Math.floor(sseAmount * Math.pow(10, 6)).toString()
-        setSseFeeAmount(currentSseFeeAmount)
-      }
-    } catch (error) {
-      setError('Failed to calculate fees')
-      currentSseFeeAmount = '0'
-      setLoading(false)
-      setSseFeeAmount('0')
+      setTxStatus(null)
       return
     }
 
     try {
-      // Derive SSE Fee Destination ATA if needed
-      let sseFeeDestinationAtaString: string | undefined = undefined
-      if (platformFeeBps === 1) {
-        try {
-          const sseFeeDestinationAta = getAssociatedTokenAddressSync(
-            new PublicKey(SSE_TOKEN_MINT),
-            new PublicKey(PLATFORM_FEE_ACCOUNT)
-          )
-          sseFeeDestinationAtaString = sseFeeDestinationAta.toBase58()
-        } catch (e) {
-          console.error('Failed to derive SSE fee destination ATA:', e)
-          setError('Failed to determine SSE fee account')
-          setLoading(false)
-          return
-        }
-      }
+      // Step 1: Get a fresh order WITH taker (returns unsigned transaction)
+      const inputAmountInDecimals = Math.floor(
+        Number(inputAmount) * Math.pow(10, inputDecimals)
+      )
 
-      const response = await fetch('/api/jupiter/swap', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          quoteResponse,
-          walletAddress,
-          mintAddress: outputMint,
-          sseFeeAmount: platformFeeBps === 1 ? currentSseFeeAmount : undefined,
-          sseTokenAccount: sseFeeDestinationAtaString,
-          slippageMode: slippageBps === 'auto' ? 'auto' : 'fixed',
-          slippageBps:
-            slippageBps === 'auto'
-              ? calculateAutoSlippage(priceImpact)
-              : slippageBps,
-          swapMode,
-        }),
-      }).then((res) => res.json())
+      const orderUrl = new URL('/api/jupiter/order', window.location.origin)
+      orderUrl.searchParams.set('inputMint', inputMint)
+      orderUrl.searchParams.set('outputMint', outputMint)
+      orderUrl.searchParams.set('amount', inputAmountInDecimals.toString())
+      orderUrl.searchParams.set('taker', walletAddress)
 
-      if (response.error) {
-        setError('Failed to prepare swap transaction')
+      const orderResponse: UltraOrderResponse = await fetch(
+        orderUrl.toString()
+      ).then((res) => res.json())
+
+      if (orderResponse.errorCode || (orderResponse as any).error) {
+        const errMsg =
+          orderResponse.errorMessage ||
+          (orderResponse as any).error ||
+          'Failed to get swap order'
+        setError(errMsg)
         setLoading(false)
+        setTxStatus({ status: 'failed', error: errMsg })
         return
       }
 
+      if (!orderResponse.transaction) {
+        const errMsg =
+          orderResponse.errorMessage || 'No transaction returned from Jupiter'
+        setError(errMsg)
+        setLoading(false)
+        setTxStatus({ status: 'failed', error: errMsg })
+        return
+      }
+
+      // Step 2: Deserialize and sign the transaction
       const transaction = VersionedTransaction.deserialize(
-        Buffer.from(response.transaction, 'base64')
+        Buffer.from(orderResponse.transaction, 'base64')
       )
 
-      // Sign the transaction
       const signer = await primaryWallet.getSigner()
       const signedTransaction = await signer.signTransaction(transaction)
 
-      // Prepare metadata for the transaction
-      const metadata = {
-        inputMint,
-        outputMint,
-        inputAmount,
-        expectedOutput,
-        priceImpact,
-        slippageBps:
-          slippageBps === 'auto'
-            ? calculateAutoSlippage(priceImpact).toString()
-            : slippageBps.toString(),
-        usdcFeeAmount: quoteResponse.swapUsdValue
-          ? (
-              Number(quoteResponse.swapUsdValue) *
-              (platformFeeBps === 1
-                ? PLATFORM_FEE_BPS / 20000
-                : PLATFORM_FEE_BPS / 10000)
-            ).toString()
-          : '0',
-        route: (() => {
-          const path = pathname
-          if (path.includes('/trenches')) return 'trenches'
-          if (path.includes('/trade')) return 'trade'
-          return 'home'
-        })(),
-      }
+      setTxStatus({ status: 'sent' })
 
-      // Store for retry
-      lastTransactionRef.current = {
-        transaction: signedTransaction,
-        metadata,
-      }
+      // Step 3: Execute via Jupiter Ultra
+      const serializedTx = Buffer.from(
+        signedTransaction.serialize()
+      ).toString('base64')
 
-      // Send and confirm using the new system
-      await sendAndConfirmTransaction(
-        signedTransaction,
-        walletAddress,
-        metadata
-      )
+      const executeResponse: UltraExecuteResponse = await fetch(
+        '/api/jupiter/execute',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            signedTransaction: serializedTx,
+            requestId: orderResponse.requestId,
+          }),
+        }
+      ).then((res) => res.json())
+
+      // Step 4: Handle result
+      if (executeResponse.status === 'Success' && executeResponse.signature) {
+        setTxSignature(executeResponse.signature)
+        setTxStatus({
+          status: 'confirmed',
+          signature: executeResponse.signature,
+        })
+        setIsFullyConfirmed(true)
+
+        // Update quoteResponse with actual amounts from execution
+        setQuoteResponse(orderResponse)
+
+        // Create content node for the trade
+        await createContentNode({
+          signature: executeResponse.signature,
+          inputMint,
+          outputMint,
+          inputAmount,
+          expectedOutput,
+          priceImpact,
+          slippageBps: orderResponse.slippageBps,
+          priorityLevel: 'low',
+          inputDecimals: inputDecimals || 6,
+          outputDecimals: outputDecimals || 6,
+          walletAddress,
+          sourceWallet,
+          sourceTransactionId,
+          swapUsdValue: orderResponse.swapUsdValue?.toString(),
+          usdcFeeAmount: orderResponse.swapUsdValue
+            ? (
+                Number(orderResponse.swapUsdValue) *
+                (PLATFORM_FEE_BPS / 10000)
+              ).toString()
+            : '0',
+          route: (() => {
+            const path = pathname
+            if (path.includes('/trenches')) return 'trenches'
+            if (path.includes('/signals')) return 'signals'
+            if (path.includes('/trade')) return 'trade'
+            return 'home'
+          })(),
+        })
+      } else {
+        const errMsg = executeResponse.error || 'Swap execution failed'
+        setError(errMsg)
+        setTxStatus({ status: 'failed', error: errMsg })
+
+        // Still set signature if available (for failed tx lookup)
+        if (executeResponse.signature) {
+          setTxSignature(executeResponse.signature)
+        }
+      }
     } catch (error: any) {
-      setError(error.message || 'Transaction failed')
+      const errMsg = error.message || 'Transaction failed'
+      setError(errMsg)
+      setTxStatus({ status: 'failed', error: errMsg })
     } finally {
       setLoading(false)
     }
   }
 
+  // Auto-refresh quote every 15 seconds
   useEffect(() => {
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current)
@@ -457,7 +312,7 @@ export function useJupiterSwap({
       !isFullyConfirmed
     ) {
       refreshIntervalRef.current = setInterval(() => {
-        if (!isQuoteRefreshing && !loading) fetchQuote() // Use a flag to prevent multiple concurrent refreshes
+        if (!isQuoteRefreshing && !loading) fetchQuote()
       }, 15000)
     }
 
@@ -477,8 +332,9 @@ export function useJupiterSwap({
     isQuoteRefreshing,
   ])
 
+  // Fetch quote when inputs change — also re-fires when decimals become available
+  // (decimals start as undefined while token info loads; quote can't be computed without them)
   useEffect(() => {
-    // Only fetch quote if we have the necessary inputs and not already refreshing
     if (
       Number(inputAmount) !== 0 &&
       inputAmount &&
@@ -490,15 +346,7 @@ export function useJupiterSwap({
       fetchQuote()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    inputAmount,
-    inputMint,
-    outputMint,
-    slippageBps,
-    platformFeeBps,
-    ssePrice,
-    // Remove fetchQuote from dependencies to prevent circular updates
-  ])
+  }, [inputAmount, inputMint, outputMint, inputDecimals, outputDecimals])
 
   return {
     loading,
@@ -509,26 +357,10 @@ export function useJupiterSwap({
     priceImpact,
     isFullyConfirmed,
     isQuoteRefreshing,
-    sseFeeAmount,
     handleSwap,
     refreshQuote,
     txStatus,
-    txError,
+    txError: txStatus?.error || null,
     resetQuoteState,
   }
-}
-
-function calculateAutoSlippage(priceImpactPct: string): number {
-  const impact = Math.abs(parseFloat(priceImpactPct))
-
-  // Default to 0.5% (50 bps) if no price impact or invalid
-  if (!impact || isNaN(impact)) return 50
-
-  // Scale slippage based on price impact
-  if (impact <= 0.1) return 50 // 0.5% slippage for very low impact
-  if (impact <= 0.5) return 100 // 1% slippage for low impact
-  if (impact <= 1.0) return 200 // 2% slippage for medium impact
-  if (impact <= 2.0) return 500 // 5% slippage for high impact
-  if (impact <= 5.0) return 1000 // 10% slippage for very high impact
-  return 1500 // 15% slippage for extreme impact
 }

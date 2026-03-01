@@ -1,6 +1,6 @@
 'use client'
 
-import { useGetHomeAllTransactions } from '@/components/home-transactions/hooks/use-get-home-all-transactions'
+
 import { TokenSearch } from '@/components/swap/components/swap-dialog/token-search'
 import { BottomSwap } from '@/components/swap/components/swap-elements/bottom-swap'
 import { CenterButtonSwap } from '@/components/swap/components/swap-elements/center-button-swap'
@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAutoTradeLogger } from '@/hooks/use-auto-trade-logger'
-import { EXPLORER_NAMESPACE, SOL_MINT, SSE_MINT } from '@/utils/constants'
+import { EXPLORER_NAMESPACE, SOL_MINT } from '@/utils/constants'
 import { listCache } from '@/utils/redis'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import {
@@ -119,7 +119,6 @@ export function Swap({ autoFocus }: Props) {
     setOutAmount,
   } = useSwapStore()
 
-  const [useSSEForFees, setUseSSEForFeesState] = useState(false)
   const [showInputTokenSearch, setShowInputTokenSearch] = useState(false)
   const [showOutputTokenSearch, setShowOutputTokenSearch] = useState(false)
   const [displayCurrency, setDisplayCurrency] = useState<'SOL' | 'USD'>(() => {
@@ -169,12 +168,6 @@ export function Swap({ autoFocus }: Props) {
     tokenMint: SOL_MINT,
     decimals: 9,
   })
-  const {
-    balance: sseBalance,
-    rawBalance: sseRawBalance,
-    mutate: mutateSseBalance,
-  } = useTokenBalance(walletAddress, SSE_MINT)
-
   // Add output token balance hook
   const {
     balance: outputBalance,
@@ -187,7 +180,6 @@ export function Swap({ autoFocus }: Props) {
     quoteResponse,
     expectedOutput,
     isQuoteRefreshing,
-    sseFeeAmount,
     handleSwap,
     txStatus,
     error: swapError,
@@ -207,7 +199,6 @@ export function Swap({ autoFocus }: Props) {
       swapMode === ESwapMode.EXACT_OUT
         ? inputTokenDecimals
         : outputTokenDecimals,
-    platformFeeBps: useSSEForFees ? 1 : undefined,
     primaryWallet: primaryWallet,
     walletAddress: walletAddress,
     swapMode: swapMode,
@@ -267,18 +258,6 @@ export function Swap({ autoFocus }: Props) {
     }
     return formatUsdValue(outputTokenUsdPrice * parseFloat(outAmount))
   }, [outputTokenUsdPrice, outAmount])
-
-  const displaySseFeeAmount = useMemo(() => {
-    const fee = (Number(sseFeeAmount) / Math.pow(10, 6)).toString()
-
-    return formatLargeNumber(parseFloat(fee), 6)
-  }, [sseFeeAmount])
-
-  const sseFeeRaw = useMemo(() => {
-    return BigInt(Math.floor(Number(sseFeeAmount)))
-  }, [sseFeeAmount])
-
-  const notEnoughSSE = useSSEForFees && sseRawBalance < sseFeeRaw
 
   const inputAmountRaw = useMemo(() => {
     if (!inAmount || isNaN(Number(inAmount)) || !inputTokenDecimals) return 0n
@@ -424,22 +403,6 @@ export function Swap({ autoFocus }: Props) {
     }
   }, [inputTokenMint, outputTokenMint, setTokenMint])
 
-  useEffect(() => {
-    const hasUsed = localStorage.getItem('hasUsedSSEFee')
-    if (hasUsed === 'true' && !notEnoughSSE) {
-      setUseSSEForFeesState(true)
-    } else {
-      setUseSSEForFeesState(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    if (useSSEForFees) {
-      localStorage.setItem('hasUsedSSEFee', 'true')
-    }
-  }, [useSSEForFees])
-
   // Persist display currency preference
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -452,14 +415,9 @@ export function Swap({ autoFocus }: Props) {
     []
   )
 
-  // Get refetch function from home transactions hook if we're on the home page
+  // Check if we're on the home page
   const isHomePage =
     typeof window !== 'undefined' && window.location.pathname === '/'
-  const { refetch: refetchHomeTransactions } = useGetHomeAllTransactions({
-    pageSize: 20,
-    infiniteScroll: true,
-    skip: !isHomePage, // Skip if not on home page
-  })
 
   // Automatically log trades to Tapestry backend
   // Note: Import useAutoTradeLogger from '@/hooks/use-auto-trade-logger' at the top
@@ -501,22 +459,12 @@ export function Swap({ autoFocus }: Props) {
       // Refresh token balances after successful swap
       mutateInputBalance()
       mutateOutputBalance()
-      if (useSSEForFees) {
-        mutateSseBalance()
-      }
 
       // Clear cache and refresh feed if on home page
       const clearCacheAndRefresh = async () => {
         try {
           // Clear the list cache for home transactions
           await listCache.invalidate('home-all:*')
-
-          // Refetch home transactions if we're on the home page
-          if (isHomePage && refetchHomeTransactions) {
-            setTimeout(() => {
-              refetchHomeTransactions()
-            }, 1000) // Give the content API time to process
-          }
         } catch (error) {
           console.error('Error clearing cache:', error)
         }
@@ -539,20 +487,12 @@ export function Swap({ autoFocus }: Props) {
     refreshQuote,
     mutateInputBalance,
     mutateOutputBalance,
-    mutateSseBalance,
-    useSSEForFees,
     isHomePage,
-    refetchHomeTransactions,
   ])
 
   const dismissTransaction = (signature: string) => {
     setConfirmedTransactions((prev) => prev.filter((sig) => sig !== signature))
   }
-
-  // Determine if the user has used SSE before
-  const hasUsedSSEBefore =
-    typeof window !== 'undefined' &&
-    localStorage.getItem('hasUsedSSEFee') === 'true'
 
   let executeButtonText = t('swap.execute_swap')
   let buttonDisabled = false
@@ -575,9 +515,6 @@ export function Swap({ autoFocus }: Props) {
         buttonDisabled = false
         break
     }
-  } else if (notEnoughSSE) {
-    executeButtonText = t('swap.insufficient_sse')
-    buttonDisabled = true
   } else if (notEnoughInput) {
     executeButtonText = t('swap.insufficient_balance', {
       token: inputTokenSymbol || 'Balance',
@@ -721,16 +658,11 @@ export function Swap({ autoFocus }: Props) {
       )}
 
       <BottomSwap
-        useSSEForFees={useSSEForFees}
-        displaySseFeeAmount={displaySseFeeAmount}
         quoteResponse={quoteResponse}
         outputTokenSymbol={outputTokenSymbol}
         outputTokenDecimals={outputTokenDecimals}
         expectedOutput={expectedOutput}
         isQuoteRefreshing={isQuoteRefreshing}
-        setUseSSEForFees={setUseSSEForFeesState}
-        notEnoughSSE={notEnoughSSE}
-        hasUsedSSEBefore={hasUsedSSEBefore}
       />
 
       {(showInputTokenSearch || showOutputTokenSearch) && (

@@ -1,14 +1,27 @@
-// Utility to fetch current token prices from Jupiter
-const JUPITER_PRICE_API = 'https://price.jup.ag/v4'
+// Utility to fetch current token prices from Jupiter Price API v3
+const JUPITER_PRICE_API = 'https://api.jup.ag/price/v3'
+const JUPITER_API_KEY = process.env.JUPITER_API_KEY || ''
 
-interface JupiterPriceResponse {
+interface JupiterPriceV3Response {
   data: {
     [mint: string]: {
       id: string
-      mintSymbol: string
-      vsToken: string
-      vsTokenSymbol: string
-      price: number
+      type: string
+      price: string
+      extraInfo?: {
+        lastSwappedPrice?: {
+          lastJupiterSellAt: number
+          lastJupiterSellPrice: string
+          lastJupiterBuyAt: number
+          lastJupiterBuyPrice: string
+        }
+        quotedPrice?: {
+          buyPrice: string
+          buyAt: number
+          sellPrice: string
+          sellAt: number
+        }
+      }
     }
   }
   timeTaken: number
@@ -17,6 +30,16 @@ interface JupiterPriceResponse {
 // Cache prices for 5 minutes
 const priceCache = new Map<string, { price: number; timestamp: number }>()
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
+function getHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+  }
+  if (JUPITER_API_KEY) {
+    headers['x-api-key'] = JUPITER_API_KEY
+  }
+  return headers
+}
 
 export async function getCurrentTokenPrice(
   mint: string
@@ -28,20 +51,26 @@ export async function getCurrentTokenPrice(
   }
 
   try {
-    const response = await fetch(`${JUPITER_PRICE_API}/price?ids=${mint}`)
+    const response = await fetch(`${JUPITER_PRICE_API}?ids=${mint}`, {
+      headers: getHeaders(),
+    })
     if (!response.ok) {
       console.error('Failed to fetch price from Jupiter:', response.statusText)
       return null
     }
 
-    const data: JupiterPriceResponse = await response.json()
+    const data: JupiterPriceV3Response = await response.json()
     const priceData = data.data[mint]
 
     if (!priceData) {
       return null
     }
 
-    const price = priceData.price
+    const price = Number(priceData.price)
+
+    if (isNaN(price) || price <= 0) {
+      return null
+    }
 
     // Cache the price
     priceCache.set(mint, { price, timestamp: Date.now() })
@@ -74,27 +103,31 @@ export async function getCurrentTokenPrices(
   }
 
   try {
-    // Jupiter allows up to 100 tokens per request
+    // Jupiter Price API v3 allows up to 50 tokens per request
     const chunks = []
-    for (let i = 0; i < uncachedMints.length; i += 100) {
-      chunks.push(uncachedMints.slice(i, i + 100))
+    for (let i = 0; i < uncachedMints.length; i += 50) {
+      chunks.push(uncachedMints.slice(i, i + 50))
     }
 
     await Promise.all(
       chunks.map(async (chunk) => {
         const response = await fetch(
-          `${JUPITER_PRICE_API}/price?ids=${chunk.join(',')}`
+          `${JUPITER_PRICE_API}?ids=${chunk.join(',')}`,
+          { headers: getHeaders() }
         )
         if (!response.ok) return
 
-        const data: JupiterPriceResponse = await response.json()
+        const data: JupiterPriceV3Response = await response.json()
 
         Object.entries(data.data).forEach(([mint, priceData]) => {
-          prices.set(mint, priceData.price)
-          priceCache.set(mint, {
-            price: priceData.price,
-            timestamp: Date.now(),
-          })
+          const price = Number(priceData.price)
+          if (!isNaN(price) && price > 0) {
+            prices.set(mint, price)
+            priceCache.set(mint, {
+              price,
+              timestamp: Date.now(),
+            })
+          }
         })
       })
     )

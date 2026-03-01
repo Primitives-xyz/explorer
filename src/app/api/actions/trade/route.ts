@@ -276,6 +276,16 @@ export async function POST(req: NextRequest) {
   }
 }
 
+const JUPITER_API_KEY_HEADER = process.env.JUPITER_API_KEY || ''
+
+function getJupiterHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { Accept: 'application/json' }
+  if (JUPITER_API_KEY_HEADER) {
+    headers['x-api-key'] = JUPITER_API_KEY_HEADER
+  }
+  return headers
+}
+
 // Function to fetch SSE price
 async function fetchSsePrice(): Promise<number | null> {
   try {
@@ -283,9 +293,10 @@ async function fetchSsePrice(): Promise<number | null> {
     // Request a quote for 1 SSE to USDC
     const amount = Math.pow(10, SSE_DECIMALS) // 1 SSE in base units
     const response = await fetch(
-      `https://quote-api.jup.ag/v6/quote?inputMint=${SSE_TOKEN_MINT}` +
+      `https://api.jup.ag/swap/v1/quote?inputMint=${SSE_TOKEN_MINT}` +
         `&outputMint=${USDC_MINT}&amount=${amount}` +
-        `&slippageBps=50`
+        `&slippageBps=50`,
+      { headers: getJupiterHeaders() }
     ).then((res) => res.json())
 
     if (response.error) {
@@ -312,14 +323,13 @@ async function fetchSsePrice(): Promise<number | null> {
   }
 }
 
-// Function to fetch quote from Jupiter
+// Function to fetch quote from Jupiter (Metis API v1)
 async function fetchJupiterQuote({
   inputMint,
   outputMint,
   amount,
   slippageBps,
   platformFeeBps,
-  feeAccount,
 }: {
   inputMint: string
   outputMint: string
@@ -329,19 +339,20 @@ async function fetchJupiterQuote({
   feeAccount: string
 }) {
   try {
-    const quoteUrl = new URL('https://quote-api.jup.ag/v6/quote')
+    const quoteUrl = new URL('https://api.jup.ag/swap/v1/quote')
     quoteUrl.searchParams.append('inputMint', inputMint)
     quoteUrl.searchParams.append('outputMint', outputMint)
     quoteUrl.searchParams.append('amount', amount.toString())
     quoteUrl.searchParams.append('slippageBps', slippageBps.toString())
 
     // Add platform fee if provided
-    if (platformFeeBps && feeAccount) {
+    if (platformFeeBps) {
       quoteUrl.searchParams.append('platformFeeBps', platformFeeBps.toString())
-      quoteUrl.searchParams.append('feeAccount', feeAccount)
     }
 
-    const response = await fetch(quoteUrl.toString())
+    const response = await fetch(quoteUrl.toString(), {
+      headers: getJupiterHeaders(),
+    })
 
     if (!response.ok) {
       throw new Error(`Quote API error: ${response.statusText}`)
@@ -369,11 +380,9 @@ async function buildSwapTransactionBad({
   sseFeeAmount?: string
 }) {
   try {
-    // Try multiple Jupiter API endpoints
+    // Try Jupiter Metis swap endpoint
     const endpoints = [
       'https://api.jup.ag/swap/v1/swap',
-      'https://quote-api.jup.ag/v4/swap',
-      'https://quote-api.jup.ag/v6/swap',
     ]
 
     let response = null
@@ -413,6 +422,9 @@ async function buildSwapTransactionBad({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            ...(JUPITER_API_KEY_HEADER
+              ? { 'x-api-key': JUPITER_API_KEY_HEADER }
+              : {}),
           },
           body: JSON.stringify(swapData),
         })

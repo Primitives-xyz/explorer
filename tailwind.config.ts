@@ -20,6 +20,10 @@ module.exports = {
       none: '0px',
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-rethink-sans)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'Menlo', 'monospace'],
+      },
       fontSize: {
         lg: 'var(--text-lg)',
         xl: 'var(--text-xl)',
@@ -33,6 +37,9 @@ module.exports = {
         card: 'var(--shadow-card)',
         toolkit: 'var(--shadow-toolkit)',
         'card-sm': 'var(--shadow-card-sm)',
+        'glow-sm': 'var(--glow-sm)',
+        'glow-md': 'var(--glow-md)',
+        'glow-lg': 'var(--glow-lg)',
       },
       height: {
         topbar: 'var(--topbar-height)',

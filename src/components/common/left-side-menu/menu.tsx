@@ -1,18 +1,14 @@
 'use client'
 
-import { DialectNotificationsComponent } from '@/components/notifications/dialect-notifications-component'
 import { Button, ButtonVariant } from '@/components/ui/button'
 import { route } from '@/utils/route'
-import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import {
-  AlignJustify,
   ArrowRightLeft,
-  Beef,
+  Globe,
   House,
   LucideIcon,
-  PocketKnife,
-  TrendingUp,
+  Search,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
@@ -24,19 +20,10 @@ interface Props {
 }
 
 export function Menu({ setOpen }: Props) {
-  const { isLoggedIn } = useCurrentWallet()
   const t = useTranslations()
 
   return (
-    <div className="space-y-4 md:space-y-2">
-      <Entry
-        title={t('menu.trade')}
-        icon={ArrowRightLeft}
-        href={route('trade')}
-        setOpen={setOpen}
-        onlyMobile
-      />
-
+    <div className="space-y-1 md:space-y-1">
       <Entry
         title={t('menu.home')}
         icon={House}
@@ -45,48 +32,29 @@ export function Menu({ setOpen }: Props) {
       />
 
       <Entry
-        title={t('menu.trenches')}
-        icon={PocketKnife}
-        href={route('trenches')}
+        title="Map"
+        icon={Globe}
+        href={route('map')}
         setOpen={setOpen}
       />
-
-      <Entry
-        title="Stonks"
-        icon={TrendingUp}
-        href={route('stonks')}
-        setOpen={setOpen}
-      />
-
-      <SearchButton />
 
       <Entry
         title={t('menu.trade')}
         icon={ArrowRightLeft}
         href={route('trade')}
         setOpen={setOpen}
-        onlyDesktop
       />
 
       <Entry
-        title={t('menu.stake')}
-        icon={Beef}
-        href={route('stake')}
+        title="Investigate"
+        icon={Search}
+        href={route('investigate')}
         setOpen={setOpen}
       />
 
-      {isLoggedIn && (
-        <Entry
-          title={t('menu.leaderboard')}
-          icon={AlignJustify}
-          href={route('leaderboard')}
-          setOpen={setOpen}
-        />
-      )}
-
-      {process.env.NODE_ENV === 'production' && (
-        <DialectNotificationsComponent />
-      )}
+      <div className="pt-2">
+        <SearchButton />
+      </div>
     </div>
   )
 }
@@ -112,15 +80,18 @@ function Entry({
 }: IEntry) {
   const pathname = usePathname()
   const Icon = icon
+  const isActive = pathname === href || (typeof href === 'string' && pathname.startsWith(href) && href !== '/')
 
   return (
     <Button
       disabled={disabled}
       variant={ButtonVariant.GHOST}
       className={cn(
-        'justify-start w-full gap-4 hover:bg-primary hover:text-background text-lg md:text-sm h-12 md:h-9',
+        'justify-start w-full gap-3 text-sm h-9 font-mono tracking-wide',
+        'hover:bg-primary/10 hover:text-primary transition-colors',
         {
-          'bg-primary text-background': pathname === href,
+          'bg-primary/15 text-primary shadow-glow-sm': isActive,
+          'text-muted-foreground': !isActive,
           'hidden md:flex': onlyDesktop,
           'flex md:hidden': onlyMobile,
         }
@@ -130,7 +101,7 @@ function Entry({
         setOpen && setOpen(false)
       }}
     >
-      <Icon size={20} />
+      <Icon size={16} />
       {title}
     </Button>
   )

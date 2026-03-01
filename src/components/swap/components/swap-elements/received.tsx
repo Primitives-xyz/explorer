@@ -9,6 +9,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
+import { SSE_MINT } from '@/utils/constants'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -32,6 +33,7 @@ export function Receive({ setShowOutputTokenSearch, walletAddress }: Props) {
     symbol: outputTokenSymbol,
     image: outputTokenImageUri,
     decimals: outputTokenDecimals,
+    loading: isTokenInfoLoading,
   } = useTokenInfo(outputMint)
   const { price: outputTokenUsdPrice } = useTokenUSDCPrice({
     tokenMint: outputMint,
@@ -46,6 +48,19 @@ export function Receive({ setShowOutputTokenSearch, walletAddress }: Props) {
   const { data: tokenHolders } = useGetProfilesOwnSpecificToken({
     tokenAddress: outputMint,
   })
+
+  // Determine what symbol to display
+  let symbolToDisplay = outputTokenSymbol
+  if (!symbolToDisplay) {
+    if (outputMint === SSE_MINT) {
+      symbolToDisplay = DEFAULT_OUTPUT_TOKEN_SYMBOL
+    } else if (isTokenInfoLoading) {
+      symbolToDisplay = '...'
+    } else {
+      // If not loading and no symbol, show abbreviated mint
+      symbolToDisplay = `${outputMint.slice(0, 4)}...${outputMint.slice(-2)}`
+    }
+  }
 
   const handleOutAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -106,7 +121,7 @@ export function Receive({ setShowOutputTokenSearch, walletAddress }: Props) {
               {outputTokenImageUri ? (
                 <ValidatedImage
                   src={outputTokenImageUri}
-                  alt={`${outputTokenSymbol || t('swap.token.select')} logo`}
+                  alt={`${symbolToDisplay || t('swap.token.select')} logo`}
                   width={32}
                   height={32}
                   className="rounded-full aspect-square object-cover max-w-[32px] max-h-[32px]"
@@ -115,11 +130,7 @@ export function Receive({ setShowOutputTokenSearch, walletAddress }: Props) {
                 <span className="rounded-full h-[32px] w-[32px] bg-background" />
               )}
             </div>
-            <span>
-              {outputTokenSymbol
-                ? outputTokenSymbol
-                : DEFAULT_OUTPUT_TOKEN_SYMBOL}
-            </span>
+            <span>{symbolToDisplay}</span>
           </div>
           <ChevronDownIcon />
         </Button>

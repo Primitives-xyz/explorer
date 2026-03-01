@@ -19,13 +19,14 @@ const buttonBase = cn(
 const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
   variants: {
     variant: {
-      default: 'bg-primary text-primary-foreground hover:bg-primary/80',
+      default:
+        'bg-primary text-primary-foreground hover:bg-primary/80 shadow-glow-sm hover:shadow-glow-md',
       secondary:
-        'bg-primary/10 text-foreground/90 border border-primary hover:bg-primary/20',
+        'bg-primary/10 text-foreground/90 border border-primary/30 hover:bg-primary/20 hover:border-primary/50',
       outline:
-        'border border-primary text-primary bg-transparent hover:bg-accent',
+        'border border-primary/40 text-primary bg-transparent hover:bg-primary/10',
       badge:
-        'bg-primary/10 text-primary/80 border border-primary/20 hover:bg-primary/20',
+        'bg-primary/8 text-primary/80 border border-primary/15 hover:bg-primary/15',
 
       'default-social':
         'bg-secondary text-secondary-foreground hover:bg-secondary/80',
@@ -37,20 +38,20 @@ const buttonVariants = cva(cn(buttonBase, 'rounded-button font-medium'), {
         'bg-secondary/10 text-secondary/80 border border-secondary/20 hover:bg-secondary/20',
 
       'badge-white':
-        'bg-foreground/10 text-foreground/80 border border-foreground/20 hover:bg-foreground/20',
+        'bg-foreground/8 text-foreground/80 border border-foreground/15 hover:bg-foreground/15',
       'outline-white':
-        'border border-foreground text-foreground bg-transparent hover:bg-accent',
-      ghost: 'hover:bg-accent text-foreground',
+        'border border-foreground/30 text-foreground bg-transparent hover:bg-foreground/5',
+      ghost: 'hover:bg-primary/8 text-foreground hover:text-primary',
       selectable:
         'bg-primary/10 text-foreground border border-primary/20 rounded-full',
       'selectable-active':
-        'bg-primary text-primary-foreground border border-primary rounded-full',
-      link: 'underline-offset-4 hover:opacity-80 h-auto! p-0! rounded-sm',
+        'bg-primary text-primary-foreground border border-primary rounded-full shadow-glow-sm',
+      link: 'underline-offset-4 hover:opacity-80 h-auto! p-0! rounded-sm text-primary',
 
       'pudgy-default':
-        'bg-pudgy-primary text-pudgy-primary-foreground hover:bg-pudgy-primary/80 border-2 border-pudgy-border uppercase font-pudgy-heading text-xl!',
+        'bg-primary text-primary-foreground hover:bg-primary/80',
       'pudgy-secondary':
-        'bg-pudgy-secondary text-pudgy-secondary-foreground hover:bg-pudgy-secondary/80 border-2 border-pudgy-border uppercase font-pudgy-heading text-xl!',
+        'bg-secondary text-secondary-foreground hover:bg-secondary/80',
     },
     size: {
       default: 'h-9 px-4 py-2 text-sm',

@@ -1,6 +1,7 @@
+import { JUPITER_PRICE_API } from '@/utils/constants'
 import { NextRequest, NextResponse } from 'next/server'
 
-const JUP_PRICE_V3 = 'https://lite-api.jup.ag/price/v3'
+const JUPITER_API_KEY = process.env.JUPITER_API_KEY || ''
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const chunks: T[][] = []
@@ -36,18 +37,23 @@ export async function GET(req: NextRequest) {
   // Jupiter v3 limit is 50 ids per request; chunk and merge
   const chunks = chunkArray(idList, 50)
 
+  const headers: Record<string, string> = {
+    accept: 'application/json',
+  }
+  if (JUPITER_API_KEY) {
+    headers['x-api-key'] = JUPITER_API_KEY
+  }
+
   try {
     const results = await Promise.all(
       chunks.map(async (chunk) => {
-        const upstreamUrl = `${JUP_PRICE_V3}?ids=${encodeURIComponent(
+        const upstreamUrl = `${JUPITER_PRICE_API}?ids=${encodeURIComponent(
           chunk.join(',')
         )}`
         const res = await fetch(upstreamUrl, {
           method: 'GET',
           cache: 'no-store',
-          headers: {
-            accept: 'application/json',
-          },
+          headers,
         })
         const text = await res.text()
         try {

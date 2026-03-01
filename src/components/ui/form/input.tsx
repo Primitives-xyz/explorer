@@ -28,7 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            'flex file:py-2 h-12 w-full rounded-input border border-input-border bg-input text-input-foreground px-3 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 read-only:cursor-default focus:outline-hidden focus:border-primary',
+            'flex file:py-2 h-12 w-full rounded-input border border-border/40 bg-card text-foreground px-3 font-mono text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/40 disabled:cursor-not-allowed disabled:opacity-50 read-only:cursor-default focus:outline-hidden focus:border-primary/50 transition-colors',
             {
               // 'border-destructive': !!error,
               // 'focus-visible:ring-destructive border-destructive': !!error,

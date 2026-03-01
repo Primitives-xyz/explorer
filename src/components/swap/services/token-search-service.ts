@@ -1,104 +1,144 @@
 import { ITokenSearchResult } from '@/components/swap/swap.models'
 import { DEFAULT_TOKENS } from '@/components/swap/utils/token-utils'
 
-export async function searchTokensByAddress(
-  address: string
-): Promise<ITokenSearchResult | null> {
-  try {
-    const response = await fetch(
-      `https://api.jup.ag/tokens/v1/token/${address}`,
-      {
-        headers: {
-          accept: 'application/json',
-        },
-      }
-    )
-
-    if (!response.ok) {
-      return null
-    }
-
-    const token = await response.json()
-    if (!token) {
-      return null
-    }
-
-    // Map Jupiter token to our common format
-    return {
-      address: token.address,
-      symbol: token.symbol,
-      name: token.name,
-      decimals: token.decimals,
-      logoURI: token.logoURI,
-      price: null, // Jupiter doesn't provide price
-      volume_24h_usd: token.daily_volume || 0,
-      verified: token.tags?.includes('verified') || false,
-      market_cap: 0, // Jupiter doesn't provide market cap
-    }
-  } catch (error) {
-    console.error('Error searching token by address:', error)
-    return null
+interface JupiterTokenV2 {
+  id: string
+  name: string
+  symbol: string
+  icon?: string
+  decimals: number
+  holderCount?: number
+  organicScore?: number
+  organicScoreLabel?: string
+  isVerified?: boolean
+  tags?: string[]
+  fdv?: number
+  mcap?: number
+  usdPrice?: number
+  liquidity?: number
+  stats24h?: {
+    priceChange?: number
+    buyVolume?: number
+    sellVolume?: number
+    numBuys?: number
+    numSells?: number
+    numTraders?: number
   }
 }
 
-export async function searchTokensByKeyword(
-  query: string,
-  verifiedOnly: boolean
+function mapJupiterTokenToResult(token: JupiterTokenV2): ITokenSearchResult {
+  const volume24h =
+    (token.stats24h?.buyVolume || 0) + (token.stats24h?.sellVolume || 0)
+
+  return {
+    address: token.id,
+    symbol: token.symbol || 'Unknown',
+    name: token.name || 'Unknown Token',
+    decimals: token.decimals,
+    logoURI: token.icon || '',
+    price: token.usdPrice ?? null,
+    volume_24h_usd: volume24h,
+    verified: token.isVerified ?? false,
+    market_cap: token.mcap || 0,
+    holderCount: token.holderCount,
+    organicScore: token.organicScore,
+    organicScoreLabel: token.organicScoreLabel,
+    liquidity: token.liquidity,
+    fdv: token.fdv,
+    priceChange24h: token.stats24h?.priceChange,
+    numTraders24h: token.stats24h?.numTraders,
+  }
+}
+
+export async function searchTokensByQuery(
+  query: string
 ): Promise<ITokenSearchResult[]> {
   if (!query.trim()) {
     return DEFAULT_TOKENS
   }
 
   try {
-    const response = await fetch(
-      `https://public-api.birdeye.so/defi/v3/search?chain=solana&keyword=${encodeURIComponent(
-        query
-      )}&target=token&sort_by=marketcap&sort_type=desc&verify_token=${verifiedOnly}&offset=0&limit=20`,
-      {
-        headers: {
-          'X-API-KEY': 'ce36cc09be9d41d68f9fd4c45346c9f3',
-          accept: 'application/json',
-        },
-      }
-    )
+    const url = new URL('/api/jupiter/tokens/search', window.location.origin)
+    url.searchParams.set('query', query)
+
+    const response = await fetch(url.toString())
 
     if (!response.ok) {
-      throw new Error('Failed to fetch tokens')
+      throw new Error('Failed to search tokens')
     }
 
-    const data = await response.json()
-    if (!data.success || !data.data?.items?.[0]?.result) {
+    const data: JupiterTokenV2[] = await response.json()
+
+    if (!Array.isArray(data)) {
       return []
     }
 
-    return data.data.items[0].result
-      .filter((item: any) => {
-        // More strict validation to prevent invalid tokens
-        return (
-          item &&
-          typeof item.symbol === 'string' &&
-          typeof item.name === 'string' &&
-          typeof item.decimals === 'number' &&
-          item.decimals >= 0 &&
-          typeof item.address === 'string' &&
-          item.address.length >= 32
-        )
-      })
-      .map((item: any) => ({
-        address: item.address,
-        symbol: item.symbol || 'Unknown',
-        name: item.name || 'Unknown Token',
-        decimals: item.decimals,
-        logoURI: item.logo_uri || '',
-        price: typeof item.price === 'number' ? item.price : 0,
-        volume_24h_usd:
-          typeof item.volume_24h_usd === 'number' ? item.volume_24h_usd : 0,
-        verified: Boolean(item.verified),
-        market_cap: typeof item.market_cap === 'number' ? item.market_cap : 0,
-      }))
+    return data
+      .filter(
+        (token) =>
+          token &&
+          typeof token.symbol === 'string' &&
+          typeof token.name === 'string' &&
+          typeof token.decimals === 'number' &&
+          token.decimals >= 0 &&
+          typeof token.id === 'string' &&
+          token.id.length >= 32
+      )
+      .map(mapJupiterTokenToResult)
   } catch (error) {
-    console.error('Error searching tokens by keyword:', error)
-    // Return empty array instead of throwing to prevent UI errors
+    console.error('Error searching tokens via Jupiter V2:', error)
     return []
   }
+}
+
+export async function fetchTrendingTokens(
+  category: 'toptraded' | 'toptrending' | 'toporganicscore' = 'toptraded',
+  interval: '5m' | '1h' | '6h' | '24h' = '24h',
+  limit: number = 20
+): Promise<ITokenSearchResult[]> {
+  try {
+    const url = new URL('/api/jupiter/tokens/trending', window.location.origin)
+    url.searchParams.set('category', category)
+    url.searchParams.set('interval', interval)
+    url.searchParams.set('limit', limit.toString())
+
+    const response = await fetch(url.toString())
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch trending tokens')
+    }
+
+    const data: JupiterTokenV2[] = await response.json()
+
+    if (!Array.isArray(data)) {
+      return []
+    }
+
+    return data
+      .filter(
+        (token) =>
+          token &&
+          typeof token.id === 'string' &&
+          typeof token.symbol === 'string'
+      )
+      .map(mapJupiterTokenToResult)
+  } catch (error) {
+    console.error('Error fetching trending tokens:', error)
+    return []
+  }
+}
+
+// Legacy exports for backward compatibility
+export const searchTokensByAddress = async (
+  address: string
+): Promise<ITokenSearchResult | null> => {
+  const results = await searchTokensByQuery(address)
+  return results.length > 0 ? results[0] : null
+}
+
+export const searchTokensByKeyword = async (
+  query: string,
+  _verifiedOnly: boolean
+): Promise<ITokenSearchResult[]> => {
+  return searchTokensByQuery(query)
 }

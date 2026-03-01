@@ -1,17 +1,14 @@
-import { ActivityTape } from '@/components/activity-tape/components/activity-tape'
 import { SignupHandler } from '@/components/auth/components/signup-handler'
 import { WalletProvider } from '@/components/auth/components/wallet-provider'
 import { LeftSideMenu } from '@/components/common/left-side-menu/left-side-menu'
 import { MobileHeader } from '@/components/common/mobile-menu/mobile-header'
 import { AddressHighlightProvider } from '@/components/common/use-address-highlight'
-import { RevealScoreAnimation } from '@/components/solid-score/components/animation/reveal-score-animation'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/utils/utils'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-import { Rethink_Sans } from 'next/font/google'
-import localFont from 'next/font/local'
+import { Rethink_Sans, JetBrains_Mono } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 
@@ -22,27 +19,17 @@ const rethinkSans = Rethink_Sans({
   variable: '--font-rethink-sans',
 })
 
-// Pudgy fonts
-const ttTrailersExtraBold = localFont({
-  src: '../../public/fonts/tt-trailers-extrabold.otf',
-  variable: '--font-tt-trailers-extra-bold',
-  weight: '800',
-})
-const fobbleRegular = localFont({
-  src: '../../public/fonts/fobble-regular.otf',
-  variable: '--font-fobble-regular',
-  weight: '400',
-})
-const mencoBold = localFont({
-  src: '../../public/fonts/menco-bold.otf',
-  variable: '--font-menco-bold',
-  weight: '700',
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
 })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const name = 'Solana Social Explorer | Tapestry Protocol'
+  const name = 'Tapestry Explorer'
   const description =
-    'Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.'
+    'Explore Solana wallets, transactions, and social connections. Trade tokens, investigate on-chain activity, and connect with the global Solana community.'
   const url = 'https://sse.gg'
 
   return {
@@ -50,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: process.env.NEXT_PUBLIC_APP_NAME || name,
     description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
     keywords:
-      'Solana, Social Graph, Tapestry Protocol, Blockchain Analytics, NFT Explorer, Wallet Analysis, Social Connections, Web3 Social',
+      'Solana, Wallet Explorer, Transaction History, Tapestry Protocol, Blockchain Analytics, Web3 Social, Token Trading',
     openGraph: {
       title: process.env.NEXT_PUBLIC_APP_NAME || name,
       description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
@@ -61,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `https://assets.usetapestry.dev/sse2.png`,
           width: 1200,
           height: 630,
-          alt: 'Solana Social Explorer Interface',
+          alt: 'Tapestry Explorer Interface',
         },
       ],
       siteName: process.env.NEXT_PUBLIC_APP_NAME || name,
@@ -116,9 +103,7 @@ export default async function RootLayout({
         className={cn(
           'relative min-h-screen antialiased font-sans',
           rethinkSans.variable,
-          ttTrailersExtraBold.variable,
-          fobbleRegular.variable,
-          mencoBold.variable
+          jetbrainsMono.variable
         )}
       >
         <NextIntlClientProvider messages={messages}>
@@ -129,9 +114,7 @@ export default async function RootLayout({
               <div className="relative z-20">
                 <Toaster />
                 <SignupHandler />
-                <ActivityTape />
                 <MobileHeader />
-                <RevealScoreAnimation />
 
                 <main className="w-full md:flex md:justify-between md:pt-topbar">
                   <LeftSideMenu />

@@ -18,6 +18,13 @@ export interface ITokenSearchResult extends ITokenInfo {
   valueUsd?: number
   priceUsd?: number
   prioritized?: boolean
+  holderCount?: number
+  organicScore?: number
+  organicScoreLabel?: string
+  liquidity?: number
+  fdv?: number
+  priceChange24h?: number
+  numTraders24h?: number
 }
 
 export interface ISortOption {
@@ -42,5 +49,5 @@ export interface ISwapInputs {
   inputAmount: number
   sourceWallet?: string
   sourceTransactionId?: string
-  platform?: 'trenches' | 'main'
+  platform?: 'trenches' | 'signals' | 'main'
 }

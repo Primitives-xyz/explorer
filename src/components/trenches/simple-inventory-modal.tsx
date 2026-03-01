@@ -144,7 +144,7 @@ function useCurrentPrices(mints: string[]) {
         // Use Jupiter price API for current prices
         const mintParams = mintsToFetch.join(',')
         const response = await fetch(
-          `https://price.jup.ag/v4/price?ids=${mintParams}`
+          `/api/jupiter/price-v3?ids=${mintParams}`
         )
 
         if (response.ok) {

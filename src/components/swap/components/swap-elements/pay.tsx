@@ -7,6 +7,7 @@ import { useTokenInfo } from '@/components/token/hooks/use-token-info'
 import { useTokenUSDCPrice } from '@/components/token/hooks/use-token-usdc-price'
 import { Button, ButtonSize, ButtonVariant, Input } from '@/components/ui'
 import { ValidatedImage } from '@/components/ui/validated-image/validated-image'
+import { SOL_MINT } from '@/utils/constants'
 import { formatUsdValue } from '@/utils/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -39,6 +40,7 @@ export function Pay({
     symbol: inputTokenSymbol,
     image: inputTokenImageUri,
     decimals: inputTokenDecimals,
+    loading: isTokenInfoLoading,
   } = useTokenInfo(inputMint)
   const { price: inputTokenUsdPrice } = useTokenUSDCPrice({
     tokenMint: inputMint,
@@ -49,6 +51,18 @@ export function Pay({
   const displayInAmountInUsd = inputTokenUsdPrice
     ? formatUsdValue(parseFloat(inAmount) * inputTokenUsdPrice)
     : '...'
+
+  // Determine what symbol to display
+  let symbolToDisplay = inputTokenSymbol
+  if (!symbolToDisplay) {
+    if (inputMint === SOL_MINT) {
+      symbolToDisplay = DEFAULT_INPUT_TOKEN_SYMBOL
+    } else if (isTokenInfoLoading) {
+      symbolToDisplay = '...'
+    } else {
+      symbolToDisplay = `${inputMint.slice(0, 4)}...${inputMint.slice(-2)}`
+    }
+  }
 
   const handleInAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -110,7 +124,7 @@ export function Pay({
             {inputTokenImageUri ? (
               <ValidatedImage
                 src={inputTokenImageUri}
-                alt={`${inputTokenSymbol || t('swap.token.select')} logo`}
+                alt={`${symbolToDisplay || t('swap.token.select')} logo`}
                 width={32}
                 height={32}
                 className="rounded-full aspect-square object-cover max-w-[32px] max-h-[32px]"
@@ -119,9 +133,7 @@ export function Pay({
               <span className="rounded-full h-[32px] w-[32px] bg-background" />
             )}
           </div>
-          <span>
-            {inputTokenSymbol ? inputTokenSymbol : DEFAULT_INPUT_TOKEN_SYMBOL}
-          </span>
+          <span>{symbolToDisplay}</span>
         </div>
         <ChevronDownIcon />
       </Button>
