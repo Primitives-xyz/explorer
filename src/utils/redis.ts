@@ -11,6 +11,7 @@ export const CACHE_TTL = {
   TRANSACTION: 60 * 60 * 24 * 7, // 7 days for immutable transaction data
   TRANSACTION_LIST: 60 * 5, // 5 minutes for transaction lists
   PROFILE: 60 * 60, // 1 hour for profile data
+  PLATFORM_SAVINGS: 60 * 60, // 1 hour for platform-wide savings data
 }
 
 // Helper functions for transaction caching
