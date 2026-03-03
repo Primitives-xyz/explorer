@@ -5,6 +5,7 @@ import { useUpdateProfile } from '@/components/tapestry/hooks/use-update-profile
 import { useUploadFiles } from '@/components/ui'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { createURL, FetchMethod, fetchWrapper } from '@/utils/api'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { Camera } from 'lucide-react'
 import { useState } from 'react'
@@ -36,9 +37,12 @@ export function ProfileImageEditor({
 
   const { uploadFiles, UploadFilesModal } = useUploadFiles({
     getUploadUrl: async (file: File) => {
+      const authToken = getAuthToken()
+
       const response = await fetchWrapper<{ postUrl: string }>({
         method: FetchMethod.POST,
         endpoint: `upload/${file.name}`,
+        jwt: authToken,
       })
       return response.postUrl
     },

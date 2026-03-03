@@ -7,6 +7,7 @@ import {
   useUploadFiles,
 } from '@/components/ui'
 import { createURL, FetchMethod, fetchWrapper } from '@/utils/api'
+import { getAuthToken } from '@dynamic-labs/sdk-react-core'
 import { useCurrentWallet } from '@/utils/use-current-wallet'
 import { cn } from '@/utils/utils'
 import { UploadIcon } from 'lucide-react'
@@ -36,9 +37,12 @@ export function AddProfileImage({
   })
   const { uploadFiles, UploadFilesModal } = useUploadFiles({
     getUploadUrl: async (file: File) => {
+      const authToken = getAuthToken()
+
       const response = await fetchWrapper<{ postUrl: string }>({
         method: FetchMethod.POST,
         endpoint: `upload/${file.name}`,
+        jwt: authToken,
       })
       return response.postUrl
     },
