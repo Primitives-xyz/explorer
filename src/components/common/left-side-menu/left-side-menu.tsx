@@ -27,7 +27,7 @@ export function LeftSideMenu() {
           <div>
             <Button href="/" isInvisible>
               <h1 className="font-mono font-bold text-primary text-sm tracking-widest uppercase leading-none">
-                Tapestry
+                SSE
               </h1>
             </Button>
             <p className="text-[10px] font-mono text-muted-foreground tracking-wider mt-1">

@@ -49,7 +49,7 @@ export function MapPageContent() {
 
         {/* Description */}
         <p className="font-mono text-xs text-muted-foreground">
-          See where the Tapestry community is located around the world.
+          See where the SSE community is located around the world.
           Set your location to appear on the map and connect with nearby users.
         </p>
 

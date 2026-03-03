@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url)
     const backgroundImageUrl = `${url.protocol}//${url.host}/images/menu/solid-score-share-modal-bg.png`
     const solanaIdLogoUrl = `${url.protocol}//${url.host}/images/solid-score/solana-id.png`
-    const tapestryLogoUrl = `${url.protocol}//${url.host}/images/solid-score/tapestry-logo-white.svg`
+    const sseLogoUrl = `${url.protocol}//${url.host}/images/solid-score/tapestry-logo-white.svg`
 
     const font = await fetch(
       new URL('./fonts/RethinkSans-Bold.ttf', import.meta.url)
@@ -231,8 +231,8 @@ export async function GET(req: NextRequest) {
                 }}
               >
                 <img
-                  src={tapestryLogoUrl}
-                  alt="Tapestry Logo"
+                  src={sseLogoUrl}
+                  alt="SSE Logo"
                   style={{
                     width: '180px',
                     height: '100px',

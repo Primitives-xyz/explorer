@@ -36,7 +36,7 @@ export const APP_DESCRIPTION =
 export const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.usetapestry.dev'
 export const APP_TWITTER_HANDLE =
-  process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto'
+  process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE
 
 // Tapestry Configuration
 export const TAPESTRY_API_URL =

@@ -1,6 +1,6 @@
-# Contributing to Tapestry Protocol Explorer
+# Contributing to Solana Social Explorer
 
-First off, thank you for considering contributing to Tapestry Protocol Explorer! It's people like you that make Tapestry Protocol Explorer such a great tool.
+First off, thank you for considering contributing to Solana Social Explorer! It's people like you that make Solana Social Explorer such a great tool.
 
 ## Code of Conduct
 

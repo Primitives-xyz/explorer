@@ -29,7 +29,7 @@ export function HomeContent() {
           <h1 className="font-mono text-lg font-bold tracking-wider">
             {isLoggedIn && mainProfile
               ? `gm, ${mainProfile.username}`
-              : 'Tapestry Explorer'}
+              : 'Solana Social Explorer'}
           </h1>
         </div>
         <p className="font-mono text-xs text-muted-foreground">

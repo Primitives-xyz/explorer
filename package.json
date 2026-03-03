@@ -1,11 +1,11 @@
 {
   "name": "tapestry-explorer",
   "version": "0.1.0",
-  "description": "A social graph explorer for the Solana blockchain, built with Tapestry Protocol",
+  "description": "A social graph explorer for the Solana blockchain, built for Solana Social Explorer (SSE)",
   "private": false,
   "license": "MIT",
   "author": {
-    "name": "Tapestry Protocol",
+    "name": "Solana Social Explorer",
     "url": "https://usetapestry.dev"
   },
   "repository": {
@@ -139,7 +139,7 @@
     "blockchain",
     "social-graph",
     "explorer",
-    "tapestry-protocol",
+    "solana-social-explorer",
     "web3",
     "nextjs",
     "react"

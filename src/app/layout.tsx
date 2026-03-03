@@ -27,7 +27,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const name = 'Tapestry Explorer'
+  const name = 'Solana Social Explorer'
   const description =
     'Explore Solana wallets, transactions, and social connections. Trade tokens, investigate on-chain activity, and connect with the global Solana community.'
   const url = 'https://sse.gg'
@@ -37,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: process.env.NEXT_PUBLIC_APP_NAME || name,
     description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
     keywords:
-      'Solana, Wallet Explorer, Transaction History, Tapestry Protocol, Blockchain Analytics, Web3 Social, Token Trading',
+      'Solana, Wallet Explorer, Transaction History, Solana Social Explorer, Blockchain Analytics, Web3 Social, Token Trading',
     openGraph: {
       title: process.env.NEXT_PUBLIC_APP_NAME || name,
       description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
@@ -48,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: `https://assets.usetapestry.dev/sse2.png`,
           width: 1200,
           height: 630,
-          alt: 'Tapestry Explorer Interface',
+          alt: 'Solana Social Explorer Interface',
         },
       ],
       siteName: process.env.NEXT_PUBLIC_APP_NAME || name,
@@ -58,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: process.env.NEXT_PUBLIC_APP_NAME || name,
       description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || description,
       images: [`https://assets.usetapestry.dev/sse2.png`],
-      creator: process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto',
+      creator: process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE,
     },
     robots: {
       index: true,

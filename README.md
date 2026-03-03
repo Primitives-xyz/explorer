@@ -1,6 +1,6 @@
-# Tapestry Protocol Explorer
+# Solana Social Explorer
 
-A social graph explorer for the Solana blockchain, built with [Tapestry Protocol](https://usetapestry.dev). Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the Tapestry Protocol ecosystem.
+A social graph explorer for the Solana blockchain, built with [Solana Social Explorer (SSE)](https://sse.gg). Explore social connections, NFTs, and token holdings on Solana. View detailed wallet analytics, track social relationships, and discover new connections in the SSE ecosystem.
 
 ## Features
 
@@ -18,13 +18,13 @@ A social graph explorer for the Solana blockchain, built with [Tapestry Protocol
 - [TypeScript](https://www.typescriptlang.org/) - Type Safety
 - [pnpm](https://pnpm.io/) - Package Manager
 - [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/) - Blockchain Interaction
-- [Tapestry Protocol](https://docs.usetapestry.dev/) - Social Graph Protocol
+- [Solana Social Explorer](https://sse.gg/) - Social Graph Protocol
 
 ## Prerequisites
 
 - Node.js 18+
 - pnpm 8+
-- A Tapestry Protocol API key
+- An SSE API key
 - A Helius RPC URL and API key
 - A Birdeye API key (optional, for token analytics)
 
@@ -92,6 +92,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Twitter: [@TapestryProto](https://twitter.com/TapestryProto)
 - Email: support@usetapestry.dev
 
-## Tapestry endpoints
+## SSE endpoints
 
-Tapestry endpoints are defined in the file `tapestry.ts`
+SSE endpoints are defined in the API route files.
