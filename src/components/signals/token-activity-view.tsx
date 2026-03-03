@@ -446,8 +446,7 @@ export function TokenActivityView({
           </div>
 
           {/* Individual trade history for selected wallet */}
-          {selectedWalletTrades &&
-            selectedWalletTrades.trades.length > 0 && (
+          {selectedWalletTrades && (
               <div className="rounded-lg border border-border bg-card/50 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
@@ -465,6 +464,13 @@ export function TokenActivityView({
                     Close
                   </button>
                 </div>
+                {selectedWalletTrades.trades.length === 0 ? (
+                  <p className="text-xs text-muted-foreground/60 font-mono py-2">
+                    Individual trade history is only available for wallets tracked
+                    in the profitor leaderboard. This wallet&apos;s volume is recorded
+                    from creator-profile data only (aggregates, no per-trade signatures).
+                  </p>
+                ) : (
                 <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
                   {[...selectedWalletTrades.trades]
                     .reverse()
@@ -502,6 +508,7 @@ export function TokenActivityView({
                       </div>
                     ))}
                 </div>
+                )}
               </div>
             )}
         </div>
