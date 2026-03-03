@@ -248,6 +248,16 @@ export function useJupiterSwap({
         // Update quoteResponse with actual amounts from execution
         setQuoteResponse(orderResponse)
 
+        const route:
+          | 'trenches'
+          | 'trade'
+          | 'home' = (() => {
+          const path = pathname
+          if (path.includes('/trenches')) return 'trenches'
+          if (path.includes('/trade')) return 'trade'
+          return 'home'
+        })()
+
         // Create content node for the trade
         await createContentNode({
           signature: executeResponse.signature,
@@ -270,13 +280,7 @@ export function useJupiterSwap({
                 (PLATFORM_FEE_BPS / 10000)
               ).toString()
             : '0',
-          route: (() => {
-            const path = pathname
-            if (path.includes('/trenches')) return 'trenches'
-            if (path.includes('/signals')) return 'signals'
-            if (path.includes('/trade')) return 'trade'
-            return 'home'
-          })(),
+          route,
         })
       } else {
         const errMsg = executeResponse.error || 'Swap execution failed'

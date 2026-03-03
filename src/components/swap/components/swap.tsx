@@ -13,7 +13,7 @@ import { useJupiterSwap } from '@/components/trade/hooks/use-jupiter-swap'
 import { useTokenBalance } from '@/components/trade/hooks/use-token-balance'
 import { Avatar } from '@/components/ui/avatar/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Button, ButtonSize, ButtonVariant } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAutoTradeLogger } from '@/hooks/use-auto-trade-logger'
 import { EXPLORER_NAMESPACE, SOL_MINT } from '@/utils/constants'
@@ -419,9 +419,11 @@ export function Swap({ autoFocus }: Props) {
   const isHomePage =
     typeof window !== 'undefined' && window.location.pathname === '/'
 
+  const normalizedAutoTradePlatform: 'trenches' | 'main' =
+    platform === 'signals' ? 'main' : platform || 'main'
+
   // Automatically log trades to Tapestry backend
-  // Note: Import useAutoTradeLogger from '@/hooks/use-auto-trade-logger' at the top
-  useAutoTradeLogger({ platform: platform || 'main' })
+  useAutoTradeLogger({ platform: normalizedAutoTradePlatform })
 
   // Auto-reset transaction state after success and refetch quote
   useEffect(() => {
@@ -450,7 +452,7 @@ export function Swap({ autoFocus }: Props) {
           outputTokenDecimals: outputTokenDecimals || 6,
           sourceWallet: sourceWallet,
           sourceTransactionId: sourceTransactionId,
-          platform: platform || 'main',
+          platform: normalizedAutoTradePlatform,
           quoteResponse: quoteResponse,
         },
       })
@@ -541,7 +543,6 @@ export function Swap({ autoFocus }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Badge
-                  variant="secondary"
                   className="bg-muted text-muted-foreground border border-border/50"
                 >
                   <Copy size={12} className="mr-1" />
@@ -568,8 +569,7 @@ export function Swap({ autoFocus }: Props) {
                 </div>
               </div>
               <Button
-                variant={ButtonVariant.GHOST}
-                size={ButtonSize.ICON_SM}
+                className="h-6 w-6 p-0 hover:bg-primary/8 text-foreground hover:text-primary"
                 onClick={() => {
                   setInputs({
                     inputMint: inputTokenMint,
