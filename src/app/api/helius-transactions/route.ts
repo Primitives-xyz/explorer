@@ -1,84 +1,20 @@
-import {
-  ETransactionType,
-  IExtendedHeliusTransaction,
-} from '@/components/home-transactions/home-transactions.models'
-import { fetchWrapper } from '@/utils/api'
-import { EnrichedTransaction } from 'helius-sdk'
+import { HELIUS_API_KEY } from '@/utils/constants'
+import redis from '@/utils/redis'
 import { NextRequest, NextResponse } from 'next/server'
 
-const COMMISSION_WALLET = '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
+/**
+ * Fetches transaction history for a wallet address using Helius getTransactionsForAddress.
+ * This replaces the old /v0/addresses/{address}/transactions endpoint.
+ */
 
-const getTransactionType = (
-  transaction: EnrichedTransaction
-): ETransactionType => {
-  const conditions = [
-    {
-      check:
-        transaction.tokenTransfers?.length === 2 &&
-        transaction.tokenTransfers.some(
-          (t) => t.toTokenAccount === COMMISSION_WALLET && t.tokenAmount === 20
-        ) &&
-        transaction.tokenTransfers.some(
-          (t) => t.toTokenAccount !== COMMISSION_WALLET && t.tokenAmount === 80
-        ),
-      type: ETransactionType.COMMENT,
-    },
-    { check: transaction.type === 'SWAP', type: ETransactionType.SWAP },
-    {
-      check:
-        transaction.source === 'SYSTEM_PROGRAM' &&
-        transaction.type === 'TRANSFER',
-      type: ETransactionType.SOL_TRANSFER,
-    },
-    {
-      check:
-        (transaction.source === 'SOLANA_PROGRAM_LIBRARY' ||
-          transaction.source === 'PHANTOM') &&
-        transaction.type === 'TRANSFER',
-      type: ETransactionType.SPL_TRANSFER,
-    },
-    {
-      check:
-        transaction.source === 'MAGIC_EDEN' ||
-        transaction.source === 'TENSOR' ||
-        transaction.type === 'COMPRESSED_NFT_MINT',
-      type: ETransactionType.NFT,
-    },
-  ]
-
-  return conditions.find((c) => c.check)?.type || ETransactionType.OTHER
-}
-
-function isSpamTransaction(transaction: EnrichedTransaction) {
-  // If it's not a TRANSFER type, it's not spam
-  if (transaction.type !== 'TRANSFER') return false
-
-  // If there are no native transfers, it's not spam
-  if (!transaction.nativeTransfers || transaction.nativeTransfers.length === 0)
-    return false
-
-  // For transfers, check if it's a mass airdrop of tiny amounts
-  if (transaction.nativeTransfers.length > 15) {
-    // Check if all transfers are tiny amounts (less than 0.00001 SOL)
-    const allTinyTransfers = transaction.nativeTransfers.every(
-      (transfer: any) => Math.abs(transfer.amount / 1e9) < 0.00001
-    )
-    if (allTinyTransfers) return true
-  }
-
-  return false
-}
+const HELIUS_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
-
-  const limit = searchParams.get('limit') || '20'
-  const before = searchParams.get('before')
-  // Get type(s) - can be comma-separated list
   const walletAddress = searchParams.get('walletAddress')
+  const limit = searchParams.get('limit') || '20'
+  const paginationToken = searchParams.get('paginationToken')
   const type = searchParams.get('type')
-
-  const heliusApiKey = process.env.HELIUS_API_KEY
 
   if (!walletAddress) {
     return NextResponse.json(
@@ -87,49 +23,87 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  if (!heliusApiKey) {
+  if (!HELIUS_API_KEY) {
     return NextResponse.json(
       { error: 'Helius API key not configured' },
       { status: 500 }
     )
   }
 
+  // Build cache key
+  const cacheKey = `helius-txs:${walletAddress}:${limit}:${paginationToken || 'first'}`
+
+  // Check cache
   try {
-    const heliusUrl = new URL(
-      `https://api.helius.xyz/v0/addresses/${walletAddress}/transactions`
-    )
-
-    heliusUrl.searchParams.set('api-key', heliusApiKey)
-    heliusUrl.searchParams.set('limit', limit)
-
-    if (type) {
-      heliusUrl.searchParams.set('type', type)
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      return NextResponse.json(cached, {
+        headers: { 'X-Cache': 'HIT' },
+      })
     }
+  } catch (e) {
+    // Cache miss, continue
+  }
 
-    if (before) {
-      heliusUrl.searchParams.set('before', before)
-    }
+  try {
+    const params: [string, Record<string, any>] = [
+      walletAddress,
+      {
+        transactionDetails: 'full',
+        encoding: 'jsonParsed',
+        maxSupportedTransactionVersion: 0,
+        sortOrder: 'desc',
+        limit: Math.min(Number(limit), 100),
+        filters: {
+          status: 'succeeded',
+          tokenAccounts: 'balanceChanged',
+        },
+        ...(paginationToken && { paginationToken }),
+      },
+    ]
 
-    const heliusTransactions = await fetchWrapper<EnrichedTransaction[]>({
-      endpoint: heliusUrl.toString(),
-      toBackend: false,
+    const response = await fetch(HELIUS_RPC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 'helius-transactions',
+        method: 'getTransactionsForAddress',
+        params,
+      }),
     })
 
-    const parsedTransactions = heliusTransactions.filter(
-      (transaction) => !isSpamTransaction(transaction)
-    )
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
 
-    const extendedTransactions: IExtendedHeliusTransaction[] =
-      parsedTransactions.map((transaction) => ({
-        ...transaction,
-        sourceWallet: walletAddress,
-        type: getTransactionType(transaction),
-      }))
+    const json = await response.json()
 
-    return NextResponse.json(extendedTransactions)
+    if (json.error) {
+      console.error('Helius RPC error:', json.error)
+      return NextResponse.json(
+        { error: json.error.message || 'RPC error' },
+        { status: 400 }
+      )
+    }
+
+    const result = json.result || { data: [], paginationToken: null }
+
+    // Cache for 2 minutes
+    try {
+      await redis.setex(cacheKey, 120, JSON.stringify(result))
+    } catch (e) {
+      // Cache write failure is non-critical
+    }
+
+    return NextResponse.json(result, {
+      headers: {
+        'X-Cache': 'MISS',
+        'Cache-Control': 'public, s-maxage=60',
+      },
+    })
   } catch (error) {
     console.error('Error fetching transactions:', error)
-
     return NextResponse.json(
       { error: 'Failed to fetch transactions' },
       { status: 500 }

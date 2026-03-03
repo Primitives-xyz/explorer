@@ -3,7 +3,6 @@
 @import '../styles/motion.css' layer(base);
 @import '../styles/backgrounds.css' layer(base);
 @import '../styles/dialect.css' layer(base);
-@import '../components/stake/components/staking-v2-modal.css' layer(base);
 
 @import 'tailwindcss';
 
@@ -12,17 +11,7 @@
 @theme inline {
   /* Fonts */
   --font-sans: var(--font-rethink-sans);
-  --font-pudgy-heading: var(--font-tt-trailers-extra-bold);
-  --font-pudgy-body: var(--font-menco-bold);
-  --font-pudgy-highlight: var(--font-fobble-regular);
-
-  /* Pudgy Colors */
-  --color-pudgy-background: hsl(var(--pudgy-background));
-  --color-pudgy-primary: hsl(var(--pudgy-primary));
-  --color-pudgy-primary-foreground: hsl(var(--pudgy-primary-foreground));
-  --color-pudgy-secondary: hsl(var(--pudgy-secondary));
-  --color-pudgy-secondary-foreground: hsl(var(--pudgy-secondary-foreground));
-  --color-pudgy-border: hsl(var(--pudgy-border));
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 /*
@@ -115,49 +104,50 @@ input[type='number'] {
 }
 
 kbd {
-  @apply bg-muted text-muted-foreground rounded-sm px-1 py-0.5;
+  @apply bg-muted text-muted-foreground rounded-sm px-1 py-0.5 font-mono text-xs;
 }
 
 /* ========================= */
-/* 🎨 STYLES SCROLLBAR - Thumb only, transparent track */
+/* Scrollbar - Terminal green tint */
 /* ========================= */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* fully transparent track */
+  background: transparent;
   border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: hsla(142deg 70% 45% / 0.15);
   border-radius: 0;
   border: none;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: hsla(142deg 70% 45% / 0.3);
 }
 
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: hsla(142deg 70% 45% / 0.15) transparent;
 }
 
 /* Hide scrollbar utility */
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
 }
 
+/* Blink theme */
 .blink.x-dark {
   --blink-text-button: hsl(var(--primary-foreground));
   --blink-button: hsl(var(--primary));
@@ -168,4 +158,15 @@ kbd {
   --blink-input-background: hsl(var(--primary));
   --blink-stroke-primary: hsl(var(--primary));
   --blink-input-bg-selected: hsl(var(--primary));
+}
+
+/* Terminal-style utility classes */
+.terminal-text {
+  @apply font-mono text-sm tracking-wide;
+  color: hsl(var(--primary));
+}
+
+.terminal-text-dim {
+  @apply font-mono text-xs tracking-wide;
+  color: hsl(var(--primary) / 0.6);
 }

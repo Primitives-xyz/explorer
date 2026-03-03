@@ -16,25 +16,47 @@ interface TokenListItemProps {
   onSelect: (token: ITokenSearchResult) => void
 }
 
+function OrganicBadge({ score, label }: { score?: number; label?: string }) {
+  if (!score || !label) return null
+  const color =
+    label === 'high'
+      ? 'text-green-400 bg-green-500/10 border-green-500/20'
+      : label === 'medium'
+        ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+        : 'text-red-400 bg-red-500/10 border-red-500/20'
+  return (
+    <span
+      className={`text-[9px] px-1.5 py-0.5 rounded-full border font-medium ${color}`}
+    >
+      {Math.round(score)}
+    </span>
+  )
+}
+
 export function TokenListItem({ token, onSelect }: TokenListItemProps) {
   const t = useTranslations()
   const [isCopied, setCopied] = useClipboard(token.address, {
     successDuration: 2000,
   })
 
-  // Format balance to a readable format
   const formattedBalance = token.uiAmount
     ? token.uiAmount.toLocaleString(undefined, {
         maximumFractionDigits: token.uiAmount > 1000 ? 2 : 4,
       })
     : null
 
-  // Format value to a readable format
   const formattedValue = token.valueUsd
     ? `$${token.valueUsd.toLocaleString(undefined, {
         maximumFractionDigits: 2,
       })}`
     : null
+
+  const priceChangeColor =
+    token.priceChange24h && token.priceChange24h > 0
+      ? 'text-green-400'
+      : token.priceChange24h && token.priceChange24h < 0
+        ? 'text-red-400'
+        : 'text-muted-foreground'
 
   return (
     <Button
@@ -70,15 +92,20 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium">{token.symbol}</span>
           <span className="text-xs truncate">{token.name}</span>
-          {token.chainId && (
-            <span className="text-xs px-1.5 py-0.5 rounded-full">
-              {token.chainId}
-            </span>
-          )}
+          <OrganicBadge
+            score={token.organicScore}
+            label={token.organicScoreLabel}
+          />
         </div>
 
         <div className="text-xs font-medium flex items-center gap-2">
           <span>{formatPrice(token.price || token.priceUsd || 0)}</span>
+          {token.priceChange24h !== undefined && (
+            <span className={`text-[10px] ${priceChangeColor}`}>
+              {token.priceChange24h > 0 ? '+' : ''}
+              {token.priceChange24h.toFixed(2)}%
+            </span>
+          )}
           {formattedBalance && (
             <span className="text-xs text-primary">
               {formattedBalance} {token.symbol}
@@ -104,6 +131,17 @@ export function TokenListItem({ token, onSelect }: TokenListItemProps) {
                   maximumFractionDigits: 2,
                 })}
                 {t('common.m')}
+              </span>
+            </>
+          )}
+          {token.holderCount && token.holderCount > 0 && (
+            <>
+              <span>•</span>
+              <span>
+                {token.holderCount >= 1000
+                  ? `${(token.holderCount / 1000).toFixed(1)}K`
+                  : token.holderCount}{' '}
+                holders
               </span>
             </>
           )}

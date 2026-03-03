@@ -86,7 +86,7 @@ export async function GET(
           // No profile found for this wallet - not followable
           return new Response(
             JSON.stringify({
-              error: `This wallet address doesn't have a profile on Tapestry and cannot be followed.`,
+              error: `This wallet address doesn't have a profile on Solana Social Explorer (SSE) and cannot be followed.`,
             }),
             { status: 400, headers }
           )
@@ -94,7 +94,7 @@ export async function GET(
       } catch (err) {
         return new Response(
           JSON.stringify({
-            error: `This wallet address doesn't have a profile on Tapestry and cannot be followed.`,
+            error: `This wallet address doesn't have a profile on Solana Social Explorer (SSE) and cannot be followed.`,
           }),
           { status: 400, headers }
         )
@@ -125,7 +125,7 @@ export async function GET(
       type: 'action',
       icon: userIcon,
       title: `Follow @${displayUsername}`,
-      description: `Sign a message to follow @${displayUsername} on Tapestry Protocol - the decentralized social graph for Solana`,
+      description: `Sign a message to follow @${displayUsername} on Solana Social Explorer (SSE) - the decentralized social graph for Solana`,
       label: `Follow @${displayUsername}`,
       disabled: false,
       links: {
@@ -212,7 +212,7 @@ export async function POST(
         return new Response(
           JSON.stringify({
             error:
-              "This wallet address doesn't have a profile on Tapestry and cannot be followed.",
+                "This wallet address doesn't have a profile on Solana Social Explorer (SSE) and cannot be followed.",
           }),
           { status: 400, headers }
         )

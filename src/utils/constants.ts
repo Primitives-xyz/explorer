@@ -1,7 +1,11 @@
 // API Endpoints
 export const HELIUS_API_BASE = 'https://api.helius.xyz/v0'
 export const BIRDEYE_API_BASE = 'https://public-api.birdeye.so'
-export const JUPITER_API_BASE = 'https://quote-api.jup.ag/v6'
+export const JUPITER_API_BASE = 'https://api.jup.ag'
+export const JUPITER_ULTRA_API = 'https://api.jup.ag/ultra/v1'
+export const JUPITER_SWAP_API = 'https://api.jup.ag/swap/v1' // Metis (legacy, used by Actions/Blinks)
+export const JUPITER_PRICE_API = 'https://api.jup.ag/price/v3'
+export const JUPITER_API_KEY = process.env.JUPITER_API_KEY || ''
 export const DICEBEAR_API_BASE = 'https://api.dicebear.com/7.x'
 
 // DiceBear Avatar Styles
@@ -32,7 +36,7 @@ export const APP_DESCRIPTION =
 export const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL || 'https://explorer.usetapestry.dev'
 export const APP_TWITTER_HANDLE =
-  process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE || '@TapestryProto'
+  process.env.NEXT_PUBLIC_APP_TWITTER_HANDLE
 
 // Tapestry Configuration
 export const TAPESTRY_API_URL =
@@ -65,7 +69,8 @@ export const ENABLE_STAKING =
 export const getHeliusEndpoint = (path: string) =>
   `${HELIUS_API_BASE}${path}?api-key=${HELIUS_API_KEY}`
 export const getBirdeyeEndpoint = (path: string) => `${BIRDEYE_API_BASE}${path}`
-export const getJupiterEndpoint = (path: string) => `${JUPITER_API_BASE}${path}`
+export const getJupiterEndpoint = (path: string) =>
+  `${JUPITER_SWAP_API}${path}`
 export const getSolscanTxUrl = (signature: string) =>
   `${SOLSCAN_BASE}/tx/${signature}`
 export const getSolscanAddressUrl = (address: string) =>
@@ -85,6 +90,18 @@ export const PLATFORM_FEE_BPS = 80 // 0.8% = 80 basis points
 export const PLATFORM_FEE_ACCOUNT =
   '8jTiTDW9ZbMHvAD9SZWvhPfRx5gUgK7HACMdgbFp2tUz'
 export const SSE_TOKEN_MINT = 'H4phNbsqjV5rqk8u6FUACTLB6rNZRTAPGnBb8KXJpump'
+
+// Jupiter Ultra Referral configuration
+// To collect integrator fees via Ultra, set up a referral account at:
+// https://referral.jup.ag/ under project DkiqsTrw1u1bYFumumC7sCG2S8K25qc2vemJFHyW2wJc
+// Then create referralTokenAccounts for SOL, USDC, and any other fee mints.
+export const JUPITER_REFERRAL_ACCOUNT =
+  process.env.NEXT_PUBLIC_JUPITER_REFERRAL_ACCOUNT || ''
+// referralFee in bps (50-255). Jupiter takes 20% of this.
+// e.g. 100 bps = 1% total, you keep 80 bps (0.8%), Jupiter gets 20 bps.
+export const JUPITER_REFERRAL_FEE = Number(
+  process.env.NEXT_PUBLIC_JUPITER_REFERRAL_FEE || '100'
+)
 
 export const DEFAULT_SLIPPAGE_BPS = 'auto' // Default to auto slippage
 export const DEFAULT_SLIPPAGE_VALUE = 50 // 0.5% as base value when needed

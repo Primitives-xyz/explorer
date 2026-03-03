@@ -1,4 +1,7 @@
+import { JUPITER_SWAP_API } from '@/utils/constants'
 import { NextRequest, NextResponse } from 'next/server'
+
+const JUPITER_API_KEY = process.env.JUPITER_API_KEY || ''
 
 // Simple in-memory rate limiting
 const RATE_LIMIT_WINDOW = 1000 // 1 second
@@ -47,13 +50,11 @@ export async function GET(request: NextRequest) {
     // Check cache first
     const cached = quoteCache[cacheKey]
     if (cached && now - cached.timestamp < CACHE_DURATION) {
-      console.log('Returning cached quote for:', cacheKey)
       return NextResponse.json(cached.data)
     }
 
     // Check rate limit
     if (isRateLimited()) {
-      console.log('Rate limited, using stale cache if available')
       // If rate limited but we have a stale cache, return it
       if (cached) {
         return NextResponse.json(cached.data)
@@ -70,21 +71,19 @@ export async function GET(request: NextRequest) {
     // Add timestamp for rate limiting
     requestTimestamps.push(now)
 
-    const url = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${
+    const url = `${JUPITER_SWAP_API}/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${
       slippageBps || 50
     }`
-    console.log('Fetching Jupiter quote:', url)
 
-    const response = await fetch(url)
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+    }
+    if (JUPITER_API_KEY) {
+      headers['x-api-key'] = JUPITER_API_KEY
+    }
+
+    const response = await fetch(url, { headers })
     const data = await response.json()
-
-    // console.log('Jupiter API response:', {
-    //   status: response.status,
-    //   data,
-    //   inputMint,
-    //   outputMint,
-    //   amount
-    // })
 
     if (!response.ok) {
       return NextResponse.json(

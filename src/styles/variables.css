@@ -1,59 +1,53 @@
 :root {
-  --background: 30deg 0% 20%;
-  --foreground: 220deg 30% 96%;
+  /* Terminal Dark Green Theme */
+  --background: 160deg 15% 4%;
+  --foreground: 150deg 10% 85%;
 
-  --muted: 0deg 0% 40% / 0.2;
-  --muted-foreground: 0deg 0% 100% / 0.7;
+  --muted: 150deg 5% 20% / 0.4;
+  --muted-foreground: 150deg 5% 60%;
 
-  --accent: var(--foreground) / 0.1;
-  --accent-foreground: var(--foreground);
+  --accent: 142deg 70% 45% / 0.1;
+  --accent-foreground: 142deg 70% 55%;
 
-  --popover: var(--foreground) / 0.1;
-  --popover-foreground: 220 50% 97%;
+  --popover: 160deg 12% 8%;
+  --popover-foreground: 150deg 10% 90%;
 
-  /* --border: 360deg 1% 39%; */
-  --border: 218deg 67% 98% / 0.2;
+  --border: 150deg 15% 18% / 0.6;
 
-  --input: var(--foreground) / 0.2;
+  --input: 150deg 10% 12%;
   --input-foreground: var(--foreground);
-  --input-border: var(--foreground) / 0.3;
+  --input-border: 150deg 15% 22% / 0.8;
 
-  --card: var(--foreground) / 0.1;
-  --card-foreground: 220 50% 97%;
-  --card-accent: 10, 4%, 37%;
-  --card-border: 10, 2%, 40%;
+  --card: 160deg 12% 7%;
+  --card-foreground: 150deg 10% 90%;
+  --card-accent: 150deg 10% 12%;
+  --card-border: 150deg 15% 18%;
 
-  --modal: var(--foreground) / 0.1;
-  --modal-foreground: 220 50% 97%;
+  --modal: 160deg 14% 6%;
+  --modal-foreground: 150deg 10% 90%;
 
-  --primary: 109deg 58% 67%;
-  --primary-foreground: 67deg 78% 15%;
+  --primary: 142deg 70% 45%;
+  --primary-foreground: 160deg 20% 4%;
 
-  /* --secondary: 252deg 5% 27%; */
-  --secondary: 245deg 100% 88%;
-  --secondary-foreground: 67deg 78% 15%;
+  --secondary: 160deg 15% 15%;
+  --secondary-foreground: 150deg 10% 85%;
 
-  /* --outline: 177deg 73% 45%; */
-  /* --outline-foreground: var(--background); */
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 90% 70%;
 
-  --destructive: 0 100% 70%;
-  --destructive-foreground: 2 73% 67%;
+  --switch: 150deg 10% 15%;
+  --switch-foreground: 150deg 10% 40%;
+  --switch-checked: 142deg 70% 45%;
+  --switch-checked-foreground: 160deg 20% 4%;
 
-  --switch: var(--foreground) / 0.2;
-  --switch-foreground: var(--foreground) / 0.4;
-  --switch-checked: var(--foreground);
-  --switch-checked-foreground: var(--background) / 0.4;
+  --progress: 150deg 10% 15%;
+  --progress-foreground: 142deg 70% 45%;
 
-  --progress: var(--foreground) / 0.2;
-  --progress-foreground: var(--foreground) / 0.6;
-
-  /* Pudgy colors */
-  --pudgy-primary: 220deg 100% 75%;
-  --pudgy-primary-foreground: 192deg 100% 98%;
-  --pudgy-secondary: 192deg 100% 98%;
-  --pudgy-secondary-foreground: 213deg 100% 9%;
-  --pudgy-border: 213deg 100% 9%;
-  --pudgy-background: 222deg 98% 64%;
+  /* Terminal green glow */
+  --glow-color: 142deg 70% 45%;
+  --glow-sm: 0 0 6px hsla(var(--glow-color) / 0.15);
+  --glow-md: 0 0 12px hsla(var(--glow-color) / 0.2);
+  --glow-lg: 0 0 24px hsla(var(--glow-color) / 0.25);
 
   /* Fonts */
   --text-lg: 20px;
@@ -61,44 +55,22 @@
   --text-2xl: 28px;
   --text-3xl: 32px;
 
-  /* Radius */
+  /* Radius - tighter for terminal feel */
   --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
   --radius-button: var(--radius-md);
-  --radius-input: var(--radius-lg);
-  --radius-card: var(--radius-lg);
+  --radius-input: var(--radius-md);
+  --radius-card: var(--radius-md);
   --radius-tabs: var(--radius-sm);
   --radius-popover-card: var(--radius-md);
 
-  /* Dark */
-  --background-dark: 221deg 9% 18%;
-  --foreground-dark: 218deg 57% 98%;
-
   /* Shadow */
-  /* --shadow-card: 0 10px 0 0 hsl(var(--primary)); */
-  --shadow-sm: 0 2px 6px hsla(var(--foreground) / 0.05);
-  /* --shadow-card: var(--shadow-lg); */
-  --shadow-card-sm: 0 5px 0 0 hsl(var(--primary));
+  --shadow-sm: 0 1px 3px hsla(0deg 0% 0% / 0.3);
+  --shadow-card-sm: 0 2px 0 0 hsla(var(--primary) / 0.15);
 
   --topbar-height: 48px;
-  --sidebar-left-width: 270px;
+  --sidebar-left-width: 240px;
   --sidebar-right-width: 300px;
-  --main-content-width: 642px;
+  --main-content-width: 720px;
 }
-
-/* .dark {
-  --background: var(--background-dark);
-  --foreground: var(--foreground-dark);
-
-  --secondary-foreground: 221deg 9% 18%;
-
-  --card: 221deg 6% 24%;
-  --simple-card: 221deg 9% 12% / 0.7;
-  --simple-card-border: 221deg 9% 10% / 0.6;
-
-  --border: var(--foreground-dark) / 0.1;
-
-  --muted: var(--foreground-dark) / 0.1;
-  --muted-foreground: var(--foreground-dark) / 0.6;
-} */

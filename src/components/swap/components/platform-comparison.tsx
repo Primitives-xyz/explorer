@@ -1,13 +1,12 @@
 'use client'
 
 import { PlatformLogo } from '@/components/swap/components/platform-logo'
-import { QuoteResponse } from '@/components/tapestry/models/jupiter.models'
 import { formatSmartNumber } from '@/utils/formatting/format-number'
 import { cn } from '@/utils/utils'
 import { useMemo } from 'react'
 
 interface Props {
-  jupiterSwapResponse: QuoteResponse | null
+  jupiterSwapResponse: Record<string, any> | null
   outputTokenSymbol?: string
   outputTokenDecimals?: number
   platformExpectedOutAmount: string

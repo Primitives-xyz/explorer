@@ -1,6 +1,6 @@
 'use client'
 
-import { TransactionStatusUpdate } from '@/app/api/jupiter/send-and-confirm/route'
+import { TransactionStatusUpdate } from '@/types/Transaction'
 
 interface TransactionStatusProps {
   status: TransactionStatusUpdate | null

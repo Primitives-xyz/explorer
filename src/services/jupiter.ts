@@ -99,26 +99,37 @@ export const simulateTransaction = async (
   }
 }
 
-// Function to fetch swap instructions from Jupiter API
+const JUPITER_API_KEY = process.env.JUPITER_API_KEY || ''
+
+// Function to fetch swap instructions from Jupiter Metis API
+// Used by SwapService for Actions/Blinks flow
 export const fetchSwapInstructions = async (
   request: SwapInstructionsRequest
 ): Promise<SwapInstructionsResponse> => {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  if (JUPITER_API_KEY) {
+    headers['x-api-key'] = JUPITER_API_KEY
+  }
+
   const response = await fetch(
-    'https://quote-api.jup.ag/v6/swap-instructions',
+    'https://api.jup.ag/swap/v1/swap-instructions',
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         quoteResponse: request.quoteResponse,
         userPublicKey: request.userPublicKey,
-        prioritizationFeeLamports: request.prioritizationFeeLamports,
         dynamicComputeUnitLimit: true,
-        dynamicSlippage: request.slippageBps === 'auto' ? true : false,
         useSharedAccounts: false,
-        priorityLevel: 'medium',
         feeAccount: request.feeAccount,
+        prioritizationFeeLamports: request.prioritizationFeeLamports ?? {
+          priorityLevelWithMaxLamports: {
+            priorityLevel: 'medium',
+            maxLamports: 1000000,
+          },
+        },
       }),
     }
   ).then((res) => res.json())
